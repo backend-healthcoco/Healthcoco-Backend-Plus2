@@ -7,8 +7,10 @@ import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.collections.UserCollection;
 
 public interface MailBodyGenerator {
-	/*public String generateActivationEmailBody(String fName, String tokenId, String templatePath, String doctorName,
-			String clinicName) throws Exception;*/
+	/*
+	 * public String generateActivationEmailBody(String fName, String tokenId,
+	 * String templatePath, String doctorName, String clinicName) throws Exception;
+	 */
 
 	public String generateForgotPasswordEmailBody(String fName, String tokenId);
 
@@ -33,7 +35,7 @@ public interface MailBodyGenerator {
 			String mailRecordCreatedDate, String medicalRecordType, String templatePath);
 
 	public String generatePaymentEmailBody(String orderId, String planName, String amount, String patientName,
-			String templatePath);
+			String time, String templatePath);
 
 	public String generateFeedbackEmailBody(String patientName, String doctorName, String locationName,
 			String uniqueFeedbackId, String templatePath);

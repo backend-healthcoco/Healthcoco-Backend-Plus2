@@ -242,8 +242,8 @@ public class AsyncService {
 	}
 
 	@Async
-	public void sendNutritionTransactionStatusMessage(UserNutritionSubscriptionResponse userNutritionSubscriptionResponse,
-			UserCollection userCollection) {
+	public void sendNutritionTransactionStatusMessage(
+			UserNutritionSubscriptionResponse userNutritionSubscriptionResponse, UserCollection userCollection) {
 		try {
 
 			if (userCollection != null) {
@@ -266,8 +266,7 @@ public class AsyncService {
 				smsDetail.setUserName(userCollection.getFirstName());
 				sms.setSmsText(message
 						.replace("{amount}", "Rs." + userNutritionSubscriptionResponse.getAmount().toString())
-						.replace("{PlanName}",
-										userNutritionSubscriptionResponse.getSubscriptionPlan().getTitle()));
+						.replace("{PlanName}", userNutritionSubscriptionResponse.getSubscriptionPlan().getTitle()));
 
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(userCollection.getMobileNumber());
@@ -299,21 +298,21 @@ public class AsyncService {
 			emailTrackCollection.setPatientName(userCollection.getFirstName());
 			emailTrackCollection.setPatientId(userCollection.getId());
 
-			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
-			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 			emailTackService.saveEmailTrack(emailTrackCollection);
-			String subject = "";
+			String template = "";
 			if (userNutritionSubscriptionResponse.getTransactionStatus().toLowerCase().equalsIgnoreCase("Success"))
-				subject = "Healthcoco Payment Received.";
+				template = "nutritionPaymentSuccess.vm";
 			else if (userNutritionSubscriptionResponse.getTransactionStatus().toLowerCase().equalsIgnoreCase("Aborted")
 					|| userNutritionSubscriptionResponse.getTransactionStatus().toLowerCase()
 							.equalsIgnoreCase("Decline"))
-				subject = "Healthcoco Payment Failed.";
+				template = "nutritionPaymentFailed.vm";
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 
 			String body = mailBodyGenerator.generatePaymentEmailBody(userNutritionSubscriptionResponse.getOrderId(),
 					userNutritionSubscriptionResponse.getNutritionPlan().getTitle(),
 					userNutritionSubscriptionResponse.getAmount().toString(), userCollection.getFirstName(),
-					"nutritionPaymentTemplate.vm");
+					sdf.format(userNutritionSubscriptionResponse.getFromDate()), template);
 			mailService.sendEmail(userCollection.getEmailAddress(), "Healthcoco sent you Transaction Status", body,
 					null);
 

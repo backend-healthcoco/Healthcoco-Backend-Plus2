@@ -1,0 +1,65 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,400italic' rel='stylesheet' type='text/css'>
+  </head>
+
+  <body cz-shortcut-listen="true" style="font-family: 'Roboto Condensed', sans-serif; background-color:#edecec">
+    <div style="background-color:#edecec;line-height:25px;margin-bottom:30px;font-family:'Open Sans',sans-serif;margin:0px auto;min-width:200px;max-width:600px">
+
+      <div align="center">
+        <img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/hc_logo_blue.png" style="width:280px; display:block; ">
+      </div>
+
+      <div style="background-color: #ffffff; padding:20px; margin-top: 15px">
+
+      <h1 style="color:#2c3335;font-size:27px;text-align: center;">Order Confirmed!<br></h1>
+
+      <p style="color:#2c3335;font-size:20px;text-align: center;">Order ID: ${orderId}</p>
+
+        <div align="center" style="">
+          <img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/img1.png" style=" width: 200px">
+        </div>
+
+        <div>
+         <p style="color:#2c3335;font-size:15px;padding-left: 15px">Hi, ${patientName}<br>Your payment of ${planName} for Rs. ${amount} is received.<br>
+
+         <h1 style="color: #123493;padding-left: 15px;font-size: 17px">Order Summary:<br></h1><p style="color: #2c3335; text-align: center; border: 2px dotted #ff6000;
+    outline: 1px;    
+    padding: 10px;
+    ">Plan Name: ${planName}</p>
+
+         <h1 style="color: #123493;padding-left: 15px;font-size: 17px; ">Additional Information:<br></h1><p style="color: #2c3335;margin-left:200px ">Cost: Rs. ${amount} <br><br> Time: ${time}<br><br> Plan: ${planName} <br><br> Total: Rs. ${amount}</p>
+          <p style="color: #2c3335;text-align: center;font-weight: bold">Download The Healthcoco App Now!</p>        
+          <div align="center" style="">
+             <a style="color: #0077b5;text-decoration:none; "href="" target="_blank"><img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/immy.png" style="width: 112px"></a>
+              <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/imy.png" style="width: 112px;margin-left: 25px"></a>
+         </div>
+
+      
+        <p style="color:#2c3335;font-size:15px;">For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at  <a style="color: #123493;text-decoration:none;"href="https://www.healthcoco.com/" target="_blank">www.healthcoco.com</a><br><br>Stay Healthy and Happy,<br>Team Healthcoco.</p><br>
+
+      
+          
+          </div>
+      </div>
+         
+        <div style="padding:20px;">
+          <p style="font-size:14px; display:inline;">
+             <span>This message was sent to you by Healthcoco.</span>
+          </p>
+          <p style="display:inline;float: right; margin-top: -5px;">
+             <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/fb.png" style="width: 30px"></a>
+              <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/insata.png" style="width: 30px"></a>
+             <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/twitter.png" style="width: 30px"></a>
+              <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/google+pluss.png" style="width: 30px"></a>
+             <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/linkdn.png" style="width: 30px"></a> 
+
+          </p>
+        </div>  
+                
+    </div>  
+          
+   </body>
+</html>
+
