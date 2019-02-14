@@ -2592,12 +2592,13 @@ public class BillingServiceImpl implements BillingService {
 					throw new BusinessException(ServiceError.NoRecord, "Doctor found with DoctorId");
 				}
 				expenseTypeCollection = new ExpenseTypeCollection();
+				
 				expenseTypeCollection.setCreatedBy(
 						(DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? "Dr." : userCollection.getTitle())
 								+ " " + userCollection.getFirstName());
 				expenseTypeCollection.setCreatedTime(new Date());
-
 				BeanUtil.map(request, expenseTypeCollection);
+				
 			}
 			expenseTypeCollection = expenseTypeRepository.save(expenseTypeCollection);
 			ESExpenseTypeDocument esDocument = new ESExpenseTypeDocument();
