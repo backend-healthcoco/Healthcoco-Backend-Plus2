@@ -2,9 +2,10 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.request.FoodAndAllergiesRequest;
 
-public class PatientAssesentmentHistoryRequest {
+public class PatientAssesentmentHistoryRequest extends GenericCollection{
 
 	private String id;
 

@@ -16,8 +16,7 @@ import com.dpdocter.beans.DrugsAndAllergies;
 import com.dpdocter.beans.FoodAndAllergies;
 import com.dpdocter.beans.GeneralData;
 import com.dpdocter.beans.PersonalHistory;
-import com.dpdocter.beans.PrescriptionAddItem;
-import com.dpdocter.request.FoodAndAllergiesRequest;
+import com.dpdocter.beans.PrescriptionItem;
 
 @Document(collection = "history_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
@@ -84,7 +83,7 @@ public class HistoryCollection extends GenericCollection {
 	private FoodAndAllergies foodAndAllergies;
 
 	@Field
-	private List<PrescriptionAddItem> existingMedication;
+	private List<PrescriptionItem> existingMedication;
 
 	@Field
 	private ObjectId assessmentId;
@@ -269,11 +268,11 @@ public class HistoryCollection extends GenericCollection {
 		this.foodAndAllergies = foodAndAllergies;
 	}
 
-	public List<PrescriptionAddItem> getExistingMedication() {
+	public List<PrescriptionItem> getExistingMedication() {
 		return existingMedication;
 	}
 
-	public void setExistingMedication(List<PrescriptionAddItem> existingMedication) {
+	public void setExistingMedication(List<PrescriptionItem> existingMedication) {
 		this.existingMedication = existingMedication;
 	}
 
@@ -284,6 +283,5 @@ public class HistoryCollection extends GenericCollection {
 	public void setAssessmentId(ObjectId assessmentId) {
 		this.assessmentId = assessmentId;
 	}
-	
 
 }

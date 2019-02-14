@@ -30,7 +30,7 @@ public class PatientMeasurementInfo extends GenericCollection {
 
 	private Integer bmr = 0;
 
-	private Double vFat = 0.0;
+	private Double vfat = 0.0;;
 
 	private BodyContent wholeBody;
 
@@ -136,14 +136,12 @@ public class PatientMeasurementInfo extends GenericCollection {
 		this.bmr = bmr;
 	}
 
-
-
-	public Double getVFat() {
-		return vFat;
+	public Double getVfat() {
+		return vfat;
 	}
 
-	public void setVFat(Double vFat) {
-		this.vFat = vFat;
+	public void setVfat(Double vfat) {
+		this.vfat = vfat;
 	}
 
 	public BodyContent getWholeBody() {

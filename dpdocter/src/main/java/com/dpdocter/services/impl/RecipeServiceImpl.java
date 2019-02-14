@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.Ingredient;
 import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.IngredientItem;
@@ -25,18 +26,18 @@ import com.dpdocter.beans.RecipeItem;
 import com.dpdocter.collections.IngredientCollection;
 import com.dpdocter.collections.NutrientCollection;
 import com.dpdocter.collections.RecipeCollection;
-import com.dpdocter.elasticsearch.beans.DrugDocument;
-import com.dpdocter.elasticsearch.document.ESDrugDocument;
-import com.dpdocter.enums.Range;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.IngredientRepository;
 import com.dpdocter.repository.NutrientRepository;
 import com.dpdocter.repository.RecipeRepository;
+import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.IngredientSearchRequest;
 import com.dpdocter.request.RecipeGetRequest;
 import com.dpdocter.services.RecipeService;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -56,6 +57,9 @@ public class RecipeServiceImpl implements RecipeService {
 	@Autowired
 	private RecipeRepository recipeRepository;
 
+	@Autowired
+	private UserRepository userRepository;
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -64,17 +68,28 @@ public class RecipeServiceImpl implements RecipeService {
 		Nutrient response = null;
 		try {
 			NutrientCollection nutrientCollection = null;
+
+			UserCollection doctor = userRepository.findOne(new ObjectId(request.getId()));
+			if (doctor == null) {
+				throw new BusinessException(ServiceError.NotFound, "doctor Not found with Id");
+			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				nutrientCollection = nutrientRepository.findOne(new ObjectId(request.getId()));
 				if (nutrientCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "Nutrient Not found with Id");
 				}
-				nutrientCollection.setUpdatedTime(new Date());
-				nutrientCollection.setName(request.getName());
+				request.setUpdatedTime(new Date());
+				request.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
+						+ " " + doctor.getFirstName());
+				request.setCreatedTime(nutrientCollection.getCreatedTime());
+				BeanUtil.map(request, nutrientCollection);
+
 			} else {
 				nutrientCollection = new NutrientCollection();
 				BeanUtil.map(request, nutrientCollection);
-				nutrientCollection.setCreatedBy("ADMIN");
+				nutrientCollection
+						.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
+								+ " " + doctor.getFirstName());
 				nutrientCollection.setUpdatedTime(new Date());
 				nutrientCollection.setCreatedTime(new Date());
 			}
@@ -166,7 +181,6 @@ public class RecipeServiceImpl implements RecipeService {
 		List<RecipeItem> recipeItems = null;
 
 		try {
-
 			if (request != null) {
 				if (!request.getRecipeImages().isEmpty() && request.getRecipeImages() != null)
 					for (int index = 0; index < request.getRecipeImages().size(); index++) {
@@ -178,13 +192,21 @@ public class RecipeServiceImpl implements RecipeService {
 				}
 			}
 			RecipeCollection recipeCollection = null;
+			UserCollection doctor = userRepository.findOne(new ObjectId(request.getId()));
+			if (doctor == null) {
+				throw new BusinessException(ServiceError.NotFound, "doctor Not found with Id");
+			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				recipeCollection = recipeRepository.findOne(new ObjectId(request.getId()));
 				if (recipeCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "Recipe Not found with Id");
 				}
 
-				recipeCollection.setUpdatedTime(new Date());
+				request.setUpdatedTime(new Date());
+				request.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
+						+ " " + doctor.getFirstName());
+				request.setCreatedTime(recipeCollection.getCreatedTime());
+				BeanUtil.map(request, recipeCollection);
 				if (!DPDoctorUtils.anyStringEmpty(request.getName())) {
 					recipeCollection.setName(request.getName());
 				}
@@ -242,13 +264,16 @@ public class RecipeServiceImpl implements RecipeService {
 				}
 
 			} else {
-				recipeCollection = recipeRepository.save(recipeCollection);
 				recipeCollection = new RecipeCollection();
 				BeanUtil.map(request, recipeCollection);
-				recipeCollection.setCreatedBy("ADMIN");
+				recipeCollection
+						.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
+								+ " " + doctor.getFirstName());
 				recipeCollection.setUpdatedTime(new Date());
 				recipeCollection.setCreatedTime(new Date());
+
 			}
+			recipeCollection = recipeRepository.save(recipeCollection);
 			response = new Recipe();
 			BeanUtil.map(recipeCollection, response);
 			if (response != null) {
@@ -281,44 +306,47 @@ public class RecipeServiceImpl implements RecipeService {
 			}
 
 			if (request.getIngredients() != null && !request.getIngredients().isEmpty()) {
-				criteria = criteria.and("ingredients").elemMatch(new Criteria("name").in(request.getIngredients()));
+				criteria = criteria.and("ingredients").is(new Criteria("name").in(request.getIngredients()));
 			}
 			if (request.getNutrients() != null && !request.getNutrients().isEmpty()) {
-				criteria = criteria.and("nutrients").elemMatch(new Criteria("name").in(request.getNutrients()));
+				criteria = criteria.and("nutrients").is(new Criteria("name").in(request.getNutrients()));
 			}
-			/*
-			 * CustomAggregationOperation aggregationOperation = new
-			 * CustomAggregationOperation(new BasicDBObject("$group", new
-			 * BasicDBObject("_id", "$_id").append("videoUrl", new BasicDBObject("$first",
-			 * "$videoUrl")) .append("recipeImages", new BasicDBObject("$first",
-			 * "$recipeImages")) .append("includeIngredients", new BasicDBObject("$first",
-			 * "$includeIngredients")) .append("excludeIngredients", new
-			 * BasicDBObject("$first", "$excludeIngredients")) .append("dishType", new
-			 * BasicDBObject("$first", "$dishType")) .append("technique", new
-			 * BasicDBObject("$first", "$technique")) .append("isPopular", new
-			 * BasicDBObject("$first", "$isPopular")) .append("isHoliday", new
-			 * BasicDBObject("$first", "$isHoliday")) .append("discarded", new
-			 * BasicDBObject("$first", "$discarded")) .append("direction", new
-			 * BasicDBObject("$first", "$direction")) .append("dietaryConcerns", new
-			 * BasicDBObject("$first", "$dietaryConcerns")) .append("forMember", new
-			 * BasicDBObject("$first", "$forMember")) .append("cost", new
-			 * BasicDBObject("$first", "$cost")) .append("meal", new BasicDBObject("$first",
-			 * "$meal")) .append("cuisine", new BasicDBObject("$first", "$cuisine"))
-			 * .append("course", new BasicDBObject("$first", "$course"))
-			 * .append("preparationTime", new BasicDBObject("$first", "$preparationTime"))
-			 * .append("createdTime", new BasicDBObject("$first", "$createdTime"))
-			 * .append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-			 * .append("createdBy", new BasicDBObject("$first", "$createdBy"))));
-			 */
+
+			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", "$_id").append("videoUrl", new BasicDBObject("$first", "$videoUrl"))
+							.append("quantity", new BasicDBObject("$first", "$quantity"))
+							.append("equivalentMeasurements", new BasicDBObject("$first", "$equivalentMeasurements"))
+							.append("name", new BasicDBObject("$first", "$name"))
+							.append("recipeImages", new BasicDBObject("$first", "$recipeImages"))
+							.append("includeIngredients", new BasicDBObject("$first", "$includeIngredients"))
+							.append("excludeIngredients", new BasicDBObject("$first", "$excludeIngredients"))
+							.append("dishType", new BasicDBObject("$first", "$dishType"))
+							.append("technique", new BasicDBObject("$first", "$technique"))
+							.append("isPopular", new BasicDBObject("$first", "$isPopular"))
+							.append("isHoliday", new BasicDBObject("$first", "$isHoliday"))
+							.append("discarded", new BasicDBObject("$first", "$discarded"))
+							.append("direction", new BasicDBObject("$first", "$direction"))
+							.append("dietaryConcerns", new BasicDBObject("$first", "$dietaryConcerns"))
+							.append("forMember", new BasicDBObject("$first", "$forMember"))
+							.append("cost", new BasicDBObject("$first", "$cost"))
+							.append("meal", new BasicDBObject("$first", "$meal"))
+							.append("cuisine", new BasicDBObject("$first", "$cuisine"))
+							.append("course", new BasicDBObject("$first", "$course"))
+							.append("verified", new BasicDBObject("$first", "$verified"))
+							.append("preparationTime", new BasicDBObject("$first", "$preparationTime"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
+
 			Aggregation aggregation = null;
 			if (request.getSize() > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("ingredients"),
-						Aggregation.unwind("nutrients"), Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("nutrients"),
+						Aggregation.unwind("ingredients"), Aggregation.match(criteria), aggregationOperation,
 						Aggregation.skip(request.getPage() * request.getSize()), Aggregation.limit(request.getSize()),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("ingredients"),
-						Aggregation.unwind("nutrients"), Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("nutrients"),
+						Aggregation.unwind("ingredients"), Aggregation.match(criteria), aggregationOperation,
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
 			response = mongoTemplate.aggregate(aggregation, RecipeCollection.class, Recipe.class).getMappedResults();
@@ -405,19 +433,21 @@ public class RecipeServiceImpl implements RecipeService {
 		Ingredient response = null;
 		try {
 			IngredientCollection ingredientCollection = null;
+
+			UserCollection doctor = userRepository.findOne(new ObjectId(request.getId()));
+			if (doctor == null) {
+				throw new BusinessException(ServiceError.NotFound, "doctor Not found with Id");
+			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				ingredientCollection = ingredientRepository.findOne(new ObjectId(request.getId()));
 				if (ingredientCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "ingredient Not found with Id");
 				}
-
-				ingredientCollection.setUpdatedTime(new Date());
-				if (!DPDoctorUtils.anyStringEmpty(request.getName())) {
-					ingredientCollection.setName(request.getName());
-				}
-				if (!DPDoctorUtils.anyStringEmpty(request.getNote())) {
-					ingredientCollection.setNote(request.getNote());
-				}
+				request.setUpdatedTime(new Date());
+				request.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
+						+ " " + doctor.getFirstName());
+				request.setCreatedTime(ingredientCollection.getCreatedTime());
+				BeanUtil.map(request, ingredientCollection);
 				if (request.getNutrients() != null && !request.getNutrients().isEmpty()) {
 					List<IngredientItem> ingredientItems = new ArrayList<IngredientItem>();
 					for (IngredientAddItem item : request.getNutrients()) {
@@ -425,12 +455,15 @@ public class RecipeServiceImpl implements RecipeService {
 						BeanUtil.map(item, ingredientItem);
 						ingredientItems.add(ingredientItem);
 					}
-
+					ingredientCollection.setNutrients(ingredientItems);
 				}
+
 			} else {
 				ingredientCollection = new IngredientCollection();
 				BeanUtil.map(request, ingredientCollection);
-				ingredientCollection.setCreatedBy("ADMIN");
+				ingredientCollection
+						.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
+								+ " " + doctor.getFirstName());
 				ingredientCollection.setUpdatedTime(new Date());
 				ingredientCollection.setCreatedTime(new Date());
 			}
@@ -458,15 +491,28 @@ public class RecipeServiceImpl implements RecipeService {
 						new Criteria("name").regex("^" + request.getSearchTerm()));
 
 			if (request.getNutrients() != null && !request.getNutrients().isEmpty()) {
-				criteria = criteria.and("nutrients").elemMatch(new Criteria("name").in(request.getNutrients()));
+				criteria = criteria.and("nutrients").is(new Criteria("name").in(request.getNutrients()));
 			}
+			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", "$_id").append("quantity", new BasicDBObject("$first", "$quantity"))
+							.append("name", new BasicDBObject("$first", "$name"))
+							.append("note", new BasicDBObject("$first", "$note"))
+							.append("locationId", new BasicDBObject("$first", "$locationId"))
+							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+							.append("discarded", new BasicDBObject("$first", "$discarded"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
+
 			Aggregation aggregation = null;
 			if (request.getSize() > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.skip(request.getPage() * request.getSize()), Aggregation.limit(request.getSize()),
+				aggregation = Aggregation.newAggregation(Aggregation.unwind("nutrients"), Aggregation.match(criteria),
+						aggregationOperation, Aggregation.skip(request.getPage() * request.getSize()),
+						Aggregation.limit(request.getSize()),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), aggregationOperation,
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
 			response = mongoTemplate.aggregate(aggregation, IngredientCollection.class, Ingredient.class)

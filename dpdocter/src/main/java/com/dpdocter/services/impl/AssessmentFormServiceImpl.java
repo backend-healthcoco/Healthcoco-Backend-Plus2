@@ -21,13 +21,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AssessmentPersonalDetail;
 import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.PatientAssesentmentHistoryRequest;
 import com.dpdocter.beans.PatientFoodAndExcercise;
 import com.dpdocter.beans.PatientLifeStyle;
 import com.dpdocter.beans.PatientMeasurementInfo;
+import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.collections.AssessmentPersonalDetailCollection;
 import com.dpdocter.collections.DiseasesCollection;
+import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientFoodAndExcerciseCollection;
@@ -41,16 +46,19 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AssessmentPersonalDetailRepository;
 import com.dpdocter.repository.DiseasesRepository;
+import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.PatientFoodAndExerciseRepository;
 import com.dpdocter.repository.PatientLifeStyleRepository;
 import com.dpdocter.repository.PatientMeasurementRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.AssessmentFormHistoryResponse;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.services.AssessmentFormService;
+import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
 
@@ -94,6 +102,12 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 	@Autowired
 	private DiseasesRepository diseasesRepository;
+
+	@Autowired
+	private DrugRepository drugRepository;
+	
+	@Autowired
+	private PrescriptionServices prescriptionservice;
 
 	@Value(value = "${Signup.DOB}")
 	private String DOB;
@@ -146,7 +160,6 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 						new ObjectId(request.getPatientId()), new ObjectId(request.getLocationId()),
 						new ObjectId(request.getHospitalId()));
 				BeanUtil.map(patientCollection, response);
-
 				BeanUtil.map(assessmentPersonalDetailCollection, response);
 
 			}
@@ -217,12 +230,82 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				BeanUtil.map(request, historyCollection);
 				historyCollection.setCreatedTime(new Date());
 				historyCollection.setUpdatedTime(new Date());
-				historyCollection.setCreatedBy(doctor.getFirstName());
+				historyCollection
+						.setCreatedBy((DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? "Dr." : doctor.getTitle())
+								+ " " + doctor.getFirstName());
 
 			} else {
 				historyCollection = historyRepository.findOne(new ObjectId(request.getId()));
+				request.setUpdatedTime(new Date());
+				request.setCreatedBy(historyCollection.getCreatedBy());
+				request.setCreatedTime(historyCollection.getCreatedTime());
+				
 				BeanUtil.map(request, historyCollection);
 				historyCollection.setUpdatedTime(new Date());
+			}
+			if (historyCollection.getExistingMedication() != null) {
+				List<PrescriptionItem> items = null;
+				DrugCollection drugCollection = null;
+				for (PrescriptionItem item : historyCollection.getExistingMedication()) {
+					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+					List<DrugDirection> directions = null;
+					if (item.getDirection() != null && !item.getDirection().isEmpty()) {
+						for (DrugDirection drugDirection : item.getDirection()) {
+							if (drugDirection != null && !DPDoctorUtils.anyStringEmpty(drugDirection.getId())) {
+								if (directions == null)
+									directions = new ArrayList<DrugDirection>();
+								directions.add(drugDirection);
+							}
+						}
+						item.setDirection(directions);
+					}
+					if (item.getDuration() != null && item.getDuration().getDurationUnit() != null) {
+						if (item.getDuration().getDurationUnit().getId() == null)
+							item.setDuration(null);
+					} else {
+						item.setDuration(null);
+					}
+					if (items == null) {
+						items = new ArrayList<PrescriptionItem>();
+
+					}
+
+					BeanUtil.map(item, prescriptionItemDetail);
+					if (!DPDoctorUtils.allStringsEmpty(item.getDrugId())) {
+						drugCollection = drugRepository.findOne(item.getDrugId());
+					} else {
+						drugCollection = new DrugCollection();
+					}
+					Drug drug = new Drug();
+					DrugAddEditRequest drugAddEditRequest = new DrugAddEditRequest();
+					if (drugCollection != null) {
+						BeanUtil.map(drugCollection, drugAddEditRequest);
+					}
+					drugAddEditRequest.setDoctorId(request.getDoctorId());
+					drugAddEditRequest.setHospitalId(request.getHospitalId());
+					drugAddEditRequest.setLocationId(request.getLocationId());
+					if (!DPDoctorUtils.allStringsEmpty(item.getDrugName())) {
+						drugAddEditRequest.setDrugName(item.getDrugName());
+					}
+					if (item.getDrugType() != null) {
+						drugAddEditRequest.setDrugType(item.getDrugType());
+					}
+					if (!DPDoctorUtils.anyStringEmpty(item.getInstructions())) {
+						drugAddEditRequest.setExplanation(item.getInstructions());
+						drugCollection.setExplanation(item.getInstructions());
+					}
+					// System.out.println(item.getInstructions());
+					drugAddEditRequest.setDirection(item.getDirection());
+					drugAddEditRequest.setDuration(item.getDuration());
+					drugAddEditRequest.setDosage(item.getDosage());
+					drugAddEditRequest.setDosageTime(item.getDosageTime());
+					drug = prescriptionservice.addFavouriteDrug(drugAddEditRequest, drugCollection, historyCollection.getCreatedBy());
+					item.setDrugId(new ObjectId(drug.getId()));
+
+					prescriptionItemDetail.setDrug(drug);
+					items.add(item);
+					historyCollection.setExistingMedication(items);
+				}
 			}
 			historyCollection = historyRepository.save(historyCollection);
 			response = new AssessmentFormHistoryResponse();
