@@ -18,6 +18,8 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.Exercise;
+import com.dpdocter.elasticsearch.document.ESExerciseDocument;
 import com.dpdocter.elasticsearch.document.ESIngredientDocument;
 import com.dpdocter.elasticsearch.document.ESNutrientDocument;
 import com.dpdocter.elasticsearch.document.ESRecipeDocument;
@@ -29,6 +31,8 @@ import com.dpdocter.elasticsearch.response.ESNutrientResponse;
 import com.dpdocter.elasticsearch.response.ESRecipeResponse;
 import com.dpdocter.elasticsearch.services.ESRecipeService;
 import com.dpdocter.enums.Resource;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.services.TransactionalManagementService;
 
@@ -178,6 +182,42 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 				BeanUtil.map(ingrdient, esIngredientResponse);
 				response.add(esIngredientResponse);
 			}
+		}
+		return response;
+
+	}
+	
+	@Override
+	public List<Exercise> searchExercise(int page, int size, Boolean discarded, String searchTerm) {
+
+		List<Exercise> response = null;
+		try {
+			Exercise exerciseResponse = null;
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+					.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
+			}
+			if (size == 0)
+				size = 15;
+			List<ESExerciseDocument> exercises = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
+					.withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("name").order(SortOrder.ASC))
+					.withPageable(new PageRequest(page, size)).build(), ESExerciseDocument.class);
+
+			if (exercises != null && !exercises.isEmpty()) {
+				response = new ArrayList<Exercise>();
+				for (ESExerciseDocument excerciseDocument : exercises) {
+					exerciseResponse = new Exercise();
+					BeanUtil.map(excerciseDocument, exerciseResponse);
+					response.add(exerciseResponse);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while search exercise: " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while search exercise:  " + e.getCause().getMessage());
+
 		}
 		return response;
 

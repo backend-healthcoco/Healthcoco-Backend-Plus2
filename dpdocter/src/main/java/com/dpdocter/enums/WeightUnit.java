@@ -1,8 +1,8 @@
 package com.dpdocter.enums;
 
 public enum WeightUnit {
-	KG("KG"),GRAM("GRAM");
-	
+	KG("KG"), GRAM("GRAM"), LBS("LBS"), ST("ST");
+
 	private String unit;
 
 	private WeightUnit(String unit) {

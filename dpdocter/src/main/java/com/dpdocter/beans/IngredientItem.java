@@ -10,17 +10,10 @@ public class IngredientItem {
 	private ObjectId id;
 	private String name;
 	private NutrientCategaoryEnum category = NutrientCategaoryEnum.CARBOHYDRATE;
-	private double value;
 	private double inPercent;
+	private Double value;
+	private QuantityEnum type = QuantityEnum.G;
 	private String note;
-
-	public double getInPercent() {
-		return inPercent;
-	}
-
-	public void setInPercent(double inPercent) {
-		this.inPercent = inPercent;
-	}
 
 	public String getNote() {
 		return note;
@@ -38,12 +31,20 @@ public class IngredientItem {
 		this.category = category;
 	}
 
-	public double getValue() {
+	public Double getValue() {
 		return value;
 	}
 
-	public void setValue(double value) {
+	public void setValue(Double value) {
 		this.value = value;
+	}
+
+	public QuantityEnum getType() {
+		return type;
+	}
+
+	public void setType(QuantityEnum type) {
+		this.type = type;
 	}
 
 	public ObjectId getId() {
@@ -60,6 +61,14 @@ public class IngredientItem {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public double getInPercent() {
+		return inPercent;
+	}
+
+	public void setInPercent(double inPercent) {
+		this.inPercent = inPercent;
 	}
 
 }

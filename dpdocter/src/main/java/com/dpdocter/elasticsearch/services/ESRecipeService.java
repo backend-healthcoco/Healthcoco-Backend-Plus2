@@ -2,6 +2,7 @@ package com.dpdocter.elasticsearch.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.Exercise;
 import com.dpdocter.elasticsearch.document.ESIngredientDocument;
 import com.dpdocter.elasticsearch.document.ESNutrientDocument;
 import com.dpdocter.elasticsearch.document.ESRecipeDocument;
@@ -22,5 +23,7 @@ public interface ESRecipeService {
 	public List<ESNutrientResponse> searchNutrient(int page, int size, Boolean discarded, String searchTerm);
 
 	public List<ESRecipeResponse> searchRecipe(int page, int size, Boolean discarded, String searchTerm);
+
+	List<Exercise> searchExercise(int page, int size, Boolean discarded, String searchTerm);
 
 }

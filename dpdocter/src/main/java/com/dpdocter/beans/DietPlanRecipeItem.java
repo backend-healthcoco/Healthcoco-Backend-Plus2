@@ -28,17 +28,19 @@ public class DietPlanRecipeItem {
 
 	private MealQuantity fiber;
 
-	private List<IngredientAddItem> generalNutrients;
+	private List<IngredientItem> generalNutrients;
 
-	private List<IngredientAddItem> carbNutrients;
+	private List<IngredientItem> carbNutrients;
 
-	private List<IngredientAddItem> lipidNutrients;
+	private List<IngredientItem> lipidNutrients;
 
-	private List<IngredientAddItem> proteinAminoAcidNutrients;
+	private List<IngredientItem> proteinAminoAcidNutrients;
 
-	private List<IngredientAddItem> mineralNutrients;
+	private List<IngredientItem> mineralNutrients;
 
-	private List<IngredientAddItem> otherNutrients;
+	private List<IngredientItem> otherNutrients;
+	
+	private List<IngredientItem> vitaminNutrients;
 
 	public MealQuantity getFat() {
 		return fat;
@@ -70,54 +72,6 @@ public class DietPlanRecipeItem {
 
 	public void setFiber(MealQuantity fiber) {
 		this.fiber = fiber;
-	}
-
-	public List<IngredientAddItem> getCarbNutrients() {
-		return carbNutrients;
-	}
-
-	public void setCarbNutrients(List<IngredientAddItem> carbNutrients) {
-		this.carbNutrients = carbNutrients;
-	}
-
-	public List<IngredientAddItem> getLipidNutrients() {
-		return lipidNutrients;
-	}
-
-	public void setLipidNutrients(List<IngredientAddItem> lipidNutrients) {
-		this.lipidNutrients = lipidNutrients;
-	}
-
-	public List<IngredientAddItem> getGeneralNutrients() {
-		return generalNutrients;
-	}
-
-	public void setGeneralNutrients(List<IngredientAddItem> generalNutrients) {
-		this.generalNutrients = generalNutrients;
-	}
-
-	public List<IngredientAddItem> getProteinAminoAcidNutrients() {
-		return proteinAminoAcidNutrients;
-	}
-
-	public void setProteinAminoAcidNutrients(List<IngredientAddItem> proteinAminoAcidNutrients) {
-		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
-	}
-
-	public List<IngredientAddItem> getMineralNutrients() {
-		return mineralNutrients;
-	}
-
-	public void setMineralNutrients(List<IngredientAddItem> mineralNutrients) {
-		this.mineralNutrients = mineralNutrients;
-	}
-
-	public List<IngredientAddItem> getOtherNutrients() {
-		return otherNutrients;
-	}
-
-	public void setOtherNutrients(List<IngredientAddItem> otherNutrients) {
-		this.otherNutrients = otherNutrients;
 	}
 
 	public MealQuantity getCalories() {
@@ -174,6 +128,62 @@ public class DietPlanRecipeItem {
 
 	public void setNote(String note) {
 		this.note = note;
+	}
+
+	public List<IngredientItem> getGeneralNutrients() {
+		return generalNutrients;
+	}
+
+	public void setGeneralNutrients(List<IngredientItem> generalNutrients) {
+		this.generalNutrients = generalNutrients;
+	}
+
+	public List<IngredientItem> getCarbNutrients() {
+		return carbNutrients;
+	}
+
+	public void setCarbNutrients(List<IngredientItem> carbNutrients) {
+		this.carbNutrients = carbNutrients;
+	}
+
+	public List<IngredientItem> getLipidNutrients() {
+		return lipidNutrients;
+	}
+
+	public void setLipidNutrients(List<IngredientItem> lipidNutrients) {
+		this.lipidNutrients = lipidNutrients;
+	}
+
+	public List<IngredientItem> getProteinAminoAcidNutrients() {
+		return proteinAminoAcidNutrients;
+	}
+
+	public void setProteinAminoAcidNutrients(List<IngredientItem> proteinAminoAcidNutrients) {
+		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
+	}
+
+	public List<IngredientItem> getMineralNutrients() {
+		return mineralNutrients;
+	}
+
+	public void setMineralNutrients(List<IngredientItem> mineralNutrients) {
+		this.mineralNutrients = mineralNutrients;
+	}
+
+	public List<IngredientItem> getOtherNutrients() {
+		return otherNutrients;
+	}
+
+	public void setOtherNutrients(List<IngredientItem> otherNutrients) {
+		this.otherNutrients = otherNutrients;
+	}
+
+	public List<IngredientItem> getVitaminNutrients() {
+		return vitaminNutrients;
+	}
+
+	public void setVitaminNutrients(List<IngredientItem> vitaminNutrients) {
+		this.vitaminNutrients = vitaminNutrients;
 	}
 
 }

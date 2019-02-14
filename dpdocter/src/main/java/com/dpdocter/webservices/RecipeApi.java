@@ -64,7 +64,7 @@ public class RecipeApi {
 				request.getName())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput,
-					"name,doctor,location or hospital should not be null or empty");
+					"name,doctor,location or hospital Id should not be null or empty");
 
 		}
 
@@ -93,7 +93,7 @@ public class RecipeApi {
 				request.getName())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput,
-					"name,doctor,location or hospital should not be null or empty");
+					"name,doctor,location or hospital Id should not be null or empty");
 
 		}
 		Ingredient ingredient = recipeService.addEditIngredient(request);
@@ -259,7 +259,7 @@ public class RecipeApi {
 				request.getName())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput,
-					"name,doctor,location or hospital should not be null or empty");
+					"name,doctor,location or hospital Id should not be null or empty");
 
 		}
 		Recipe recipe = recipeService.addEditRecipe(request);

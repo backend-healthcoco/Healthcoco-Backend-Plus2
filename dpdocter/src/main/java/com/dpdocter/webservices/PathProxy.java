@@ -1876,7 +1876,6 @@ public interface PathProxy {
 		public static final String SEARCH_NUTRIENTS = "nutrient/search";
 		public static final String SEARCH_INGREDIENTS = "ingredient/search";
 		public static final String SEARCH_RECIPES = "search";
-
 		public static final String SEARCH_EXERCISE = "exercise/search";
 		public static final String SEARCH_RECIPES_FOR_USER_APP = "user/app/search";
 	}
@@ -1914,13 +1913,13 @@ public interface PathProxy {
 		public static final String GET_DIET_PLAN = "{planId}/get";
 	}
 
-
 	public static final String COUNTER_BASE_URL = BASE_URL + "/counter";
 
 	public interface CounterUrls {
 
 		public static final String ADD_EDIT_WATER_COUNTER = "water/addEdit";
 		public static final String GET_WATER_COUNTER = "water/{counterId}/get";
+
 		public static final String DELETE_WATER_COUNTER = "water/{counterId}/delete";
 		public static final String GET_WATER_COUNTERS = "water/{userId}/list/get";
 
@@ -1933,23 +1932,18 @@ public interface PathProxy {
 		public static final String GET_MEAL_COUNTER = "meal/{counterId}/get";
 		public static final String DELETE_MEAL_COUNTER = "meal/{counterId}/delete";
 		public static final String GET_MEAL_COUNTERS = "meal/{userId}/list/get";
-
 		public static final String ADD_EDIT_EXERCISE_COUNTER = "exercise/addEdit";
 		public static final String GET_EXERCISE_COUNTER = "exercise/{counterId}/get";
 		public static final String DELETE_EXERCISE_COUNTER = "exercise/{counterId}/delete";
 		public static final String GET_EXERCISE_COUNTERS = "exercise/{userId}/list/get";
-
 		public static final String ADD_EDIT_CALORIES_COUNTER = "calories/addEdit";
 		public static final String GET_CALORIES_COUNTER = "calories/{counterId}/get";
 		public static final String DELETE_CALORIES_COUNTER = "calories/{counterId}/delete";
 		public static final String GET_CALORIES_COUNTERS = "calories/{userId}/list/get";
-
 		public static final String ADD_EDIT_WATER_COUNTER_SETTING = "water/setting/addEdit";
 		public static final String GET_WATER_COUNTER_SETTING = "water/setting/{userId}/get";
-
 		public static final String ADD_EDIT_WEIGHT_COUNTER_SETTING = "weight/setting/addEdit";
 		public static final String GET_WEIGHT_COUNTER_SETTING = "weight/setting/{userId}/get";
-
 	}
 
 	public static final String PAEDIATRIC_BASE_URL = BASE_URL + "/paediatric";
@@ -1991,6 +1985,5 @@ public interface PathProxy {
 		public static final String LIKE_SESSION_QUESTION = "/session/question/{questionId}/like";
 
 	}
-
 
 }

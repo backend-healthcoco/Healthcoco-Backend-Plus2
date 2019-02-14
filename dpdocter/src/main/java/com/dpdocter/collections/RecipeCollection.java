@@ -127,7 +127,7 @@ public class RecipeCollection extends GenericCollection {
 	private List<IngredientItem> proteinAminoAcidNutrients;
 
 	@Field
-	private List<IngredientAddItem> vitaminNutrients;
+	private List<IngredientItem> vitaminNutrients;
 
 	@Field
 	private List<IngredientItem> mineralNutrients;
@@ -298,10 +298,6 @@ public class RecipeCollection extends GenericCollection {
 		this.meal = meal;
 	}
 
-	
-	
-	
-
 	public Integer getPreparationTime() {
 		return preparationTime;
 	}
@@ -446,11 +442,11 @@ public class RecipeCollection extends GenericCollection {
 		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
 	}
 
-	public List<IngredientAddItem> getVitaminNutrients() {
+	public List<IngredientItem> getVitaminNutrients() {
 		return vitaminNutrients;
 	}
 
-	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
+	public void setVitaminNutrients(List<IngredientItem> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
 	}
 
