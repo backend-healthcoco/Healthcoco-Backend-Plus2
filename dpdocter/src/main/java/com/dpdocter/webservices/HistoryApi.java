@@ -147,9 +147,7 @@ public class HistoryApi {
     	    logger.warn("Range or Doctor Id Cannot Be Empty");
     	    throw new BusinessException(ServiceError.InvalidInput, "Range or Doctor Id Cannot Be Empty");
     	}
-	List<DiseaseListResponse> diseaseListResponse = historyServices.getDiseases(range, page, size, doctorId, hospitalId, locationId, updatedTime, discarded, false, null);
-	Response<DiseaseListResponse> response = new Response<DiseaseListResponse>();
-	response.setDataList(diseaseListResponse);
+    Response<DiseaseListResponse> response = historyServices.getDiseases(range, page, size, doctorId, hospitalId, locationId, updatedTime, discarded, false, null);
 	return response;
     }
 

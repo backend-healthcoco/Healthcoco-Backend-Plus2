@@ -262,37 +262,12 @@ public class ContactsApi {
 			@QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-		String packageType = "ADVANCE";
 		if (DPDoctorUtils.anyStringEmpty(locationId)&&DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<Object> response = new Response<Object>();
-		List<Group> groups = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, updatedTime,
+		Response<Object> response = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, updatedTime,
 				discarded);
-		if (groups != null) {
-			for (Group group : groups) {
-				GetDoctorContactsRequest getDoctorContactsRequest = new GetDoctorContactsRequest();
-				getDoctorContactsRequest.setDoctorId(doctorId);
-				List<String> groupList = new ArrayList<String>();
-				groupList.add(group.getId());
-
-				if (!DPDoctorUtils.anyStringEmpty(group.getPackageType())) {
-					packageType = group.getPackageType();
-
-				}
-				getDoctorContactsRequest.setGroups(groupList);
-				int ttlCount = contactsService.getContactsTotalSize(getDoctorContactsRequest);
-				group.setCount(ttlCount);
-			}
-		} else {
-			response.setData(PackageType.ADVANCE.getType());
-		}
-
-		response.setData(packageType);
-
-		response.setDataList(groups);
-
 		return response;
 	}
 

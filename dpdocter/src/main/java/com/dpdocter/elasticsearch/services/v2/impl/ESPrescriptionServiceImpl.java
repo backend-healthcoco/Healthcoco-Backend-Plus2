@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.elasticsearch.client.transport.TransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.services.InventoryService;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
 
 @Service(value = "ESPrescriptionServiceImplV2")
 public class ESPrescriptionServiceImpl implements ESPrescriptionService {
@@ -40,13 +42,14 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	@Autowired
 	InventoryService inventoryService;
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<?> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId,
+	public Response<Object> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
-		List<?> response = null;
-		List<ESDrugDocument> esDrugDocuments = null;
-		List<DrugDocument> drugDocuments = null;
-
+		Response<Object> response = new Response<Object>();
+		Response<ESDrugDocument> esDrugDocuments = null;
+		Response<DrugDocument> drugDocuments = null;
+		
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 			searchTerm = searchTerm.toUpperCase();
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -54,27 +57,32 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		case GLOBAL:
 			esDrugDocuments = getGlobalDrugs(page, size, updatedTime, discarded, searchTerm, category,
 					searchByGenericName);
-			response = addStockToDrug(esDrugDocuments);
+			response.setDataList(addStockToDrug((List<ESDrugDocument>) esDrugDocuments.getDataList()));
+			response.setCount(esDrugDocuments.getCount());
 			break;
 		case CUSTOM:
 			esDrugDocuments = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 					searchTerm, category, searchByGenericName);
-			response = addStockToDrug(esDrugDocuments);
+			response.setDataList(addStockToDrug((List<ESDrugDocument>) esDrugDocuments.getDataList()));
+			response.setCount(esDrugDocuments.getCount());
 			break;
 		case BOTH:
 			esDrugDocuments = getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 					searchTerm, category, searchByGenericName);
-			response = addStockToDrug(esDrugDocuments);
+			response.setDataList(addStockToDrug((List<ESDrugDocument>) esDrugDocuments.getDataList()));
+			response.setCount(esDrugDocuments.getCount());
 			break;
 		case FAVOURITES:
 			drugDocuments = getFavouritesDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 					searchTerm, category, searchByGenericName);
-			response = addStockToDrugWeb(drugDocuments);
+			response.setDataList(addStockToDrugWeb((List<DrugDocument>) drugDocuments.getDataList()));
+			response.setCount(drugDocuments.getCount());
 			break;
 		case WEBBOTH:
 			drugDocuments = getCustomGlobalDrugsForWeb(page, size, doctorId, locationId, hospitalId, updatedTime,
 					discarded, searchTerm, category, searchByGenericName);
-			response = addStockToDrugWeb(drugDocuments);
+			response.setDataList(addStockToDrugWeb((List<DrugDocument>) drugDocuments.getDataList()));
+			response.setCount(drugDocuments.getCount());
 			break;
 		default:
 			break;
@@ -83,16 +91,17 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 	}
 
-	private List<DrugDocument> getCustomGlobalDrugsForWeb(int page, int size, String doctorId, String locationId,
+	private Response<DrugDocument> getCustomGlobalDrugsForWeb(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category,
 			Boolean searchByGenericName) {
-		List<DrugDocument> response = null;
+		Response<DrugDocument> response = new Response<DrugDocument>();
 		try {
-			if (page > 0)
-				return new ArrayList<DrugDocument>();
-			if (doctorId == null)
-				response = new ArrayList<DrugDocument>();
-			else {
+			if (page > 0) {
+				response.setDataList(new ArrayList<DrugDocument>());
+			}
+			if (doctorId == null) {
+				response.setDataList(new ArrayList<DrugDocument>());
+			}else {
 				SearchQuery searchQuery = null;
 
 				if (searchByGenericName) {
@@ -104,23 +113,28 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 							hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 				}
 
-				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
-						ESDrugDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDrugDocument.class);
 
-				if (esDrugDocuments != null) {
-					esDrugDocuments = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(esDrugDocuments));
-				}
-				response = new ArrayList<DrugDocument>();
-				for (ESDrugDocument esDrugDocument : esDrugDocuments) {
-					String drugTypeStr = esDrugDocument.getDrugType();
-					esDrugDocument.setDrugType(null);
-					DrugDocument drugDocument = new DrugDocument();
-					BeanUtil.map(esDrugDocument, drugDocument);
-					DrugType drugType = new DrugType();
-					drugType.setId(esDrugDocument.getDrugTypeId());
-					drugType.setType(drugTypeStr);
-					drugDocument.setDrugType(drugType);
-					response.add(drugDocument);
+				if(count > 0) {
+					List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,ESDrugDocument.class);
+
+					if (esDrugDocuments != null) {
+						esDrugDocuments = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(esDrugDocuments));
+					}
+					List<DrugDocument> drugs = new ArrayList<DrugDocument>();
+					for (ESDrugDocument esDrugDocument : esDrugDocuments) {
+						String drugTypeStr = esDrugDocument.getDrugType();
+						esDrugDocument.setDrugType(null);
+						DrugDocument drugDocument = new DrugDocument();
+						BeanUtil.map(esDrugDocument, drugDocument);
+						DrugType drugType = new DrugType();
+						drugType.setId(esDrugDocument.getDrugTypeId());
+						drugType.setType(drugTypeStr);
+						drugDocument.setDrugType(drugType);
+						drugs.add(drugDocument);
+					}
+					response.setDataList(drugs);
+					response.setCount(count);
 				}
 			}
 		} catch (Exception e) {
@@ -131,15 +145,15 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<DrugDocument> getFavouritesDrugs(int page, int size, String doctorId, String locationId,
+	private Response<DrugDocument> getFavouritesDrugs(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category,
 			Boolean searchByGenericName) {
-		List<DrugDocument> response = null;
+		Response<DrugDocument> response = new Response<DrugDocument>();
 		try {
 //			if (page > 0)
 //				return new ArrayList<DrugDocument>();
 			if (doctorId == null)
-				response = new ArrayList<DrugDocument>();
+				response.setDataList(new ArrayList<DrugDocument>());
 			else {
 				SearchQuery searchQuery = null;
 
@@ -161,20 +175,25 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 								updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
 
-				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
-						ESDrugDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDrugDocument.class);
 
-				response = new ArrayList<DrugDocument>();
-				for (ESDrugDocument esDrugDocument : esDrugDocuments) {
-					String drugTypeStr = esDrugDocument.getDrugType();
-					esDrugDocument.setDrugType(null);
-					DrugDocument drugDocument = new DrugDocument();
-					BeanUtil.map(esDrugDocument, drugDocument);
-					DrugType drugType = new DrugType();
-					drugType.setId(esDrugDocument.getDrugTypeId());
-					drugType.setType(drugTypeStr);
-					drugDocument.setDrugType(drugType);
-					response.add(drugDocument);
+				if(count > 0) {
+					List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+					List<DrugDocument> drugs = new ArrayList<DrugDocument>();
+					
+					for (ESDrugDocument esDrugDocument : esDrugDocuments) {
+						String drugTypeStr = esDrugDocument.getDrugType();
+						esDrugDocument.setDrugType(null);
+						DrugDocument drugDocument = new DrugDocument();
+						BeanUtil.map(esDrugDocument, drugDocument);
+						DrugType drugType = new DrugType();
+						drugType.setId(esDrugDocument.getDrugTypeId());
+						drugType.setType(drugTypeStr);
+						drugDocument.setDrugType(drugType);
+						drugs.add(drugDocument);
+					}
+					response.setCount(count);
+					response.setDataList(drugs);
 				}
 			}
 		} catch (Exception e) {
@@ -185,11 +204,10 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-
-	private List<ESDrugDocument> getCustomGlobalDrugs(int page, int size, String doctorId, String locationId,
+	private Response<ESDrugDocument> getCustomGlobalDrugs(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, boolean discarded, String searchTerm, String category,
 			Boolean searchByGenericName) {
-		List<ESDrugDocument> response = null;
+		Response<ESDrugDocument> response = new Response<ESDrugDocument>();
 		try {
 			SearchQuery searchQuery = null;
 
@@ -202,10 +220,11 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 			}
 
-			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
-
-			if (response != null)
-				response = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(response));
+			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDrugDocument.class);
+			if(count > 0) {
+				response.setCount(count);
+				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
@@ -214,9 +233,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<ESDrugDocument> getGlobalDrugs(int page, int size, String updatedTime, boolean discarded,
+	private Response<ESDrugDocument> getGlobalDrugs(int page, int size, String updatedTime, boolean discarded,
 			String searchTerm, String category, Boolean searchByGenericName) {
-		List<ESDrugDocument> response = null;
+		Response<ESDrugDocument> response = new Response<ESDrugDocument>();
 		try {
 			SearchQuery searchQuery = null;
 			if (searchByGenericName) {
@@ -226,7 +245,13 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, page, size, updatedTime, discarded, null,
 						searchTerm, null, category, null, "drugName");
 			}
-			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+			
+			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDrugDocument.class);
+			if(count > 0) {
+				response.setCount(count);
+				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class));
+			}
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -236,15 +261,16 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<ESDrugDocument> getCustomDrugs(int page, int size, String doctorId, String locationId,
+	private Response<ESDrugDocument> getCustomDrugs(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, boolean discarded, String searchTerm, String category,
 			Boolean searchByGenericName) {
-		List<ESDrugDocument> response = null;
+		Response<ESDrugDocument> response = new Response<ESDrugDocument>();
 		try {
-			if (page > 0)
-				return new ArrayList<ESDrugDocument>();
-			if (doctorId == null)
-				response = new ArrayList<ESDrugDocument>();
+			if (page > 0) {
+				response.setDataList(new ArrayList<DrugDocument>());
+			}
+			if (doctorId == null) 
+				response.setDataList(new ArrayList<DrugDocument>());
 			else {
 				SearchQuery searchQuery = null;
 				if (searchByGenericName) {
@@ -254,7 +280,11 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
 							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
-				response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDrugDocument.class);
+				if(count > 0) {
+					response.setCount(count);
+					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class));
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
