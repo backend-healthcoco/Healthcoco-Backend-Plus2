@@ -1341,10 +1341,12 @@ public interface PathProxy {
 
 		public static final String GET_EXPENSES = "/expense/get";
 
+		public static final String GET_EXPENSE = "/expense/{expenseId}/get";
+
 		public static final String DELETE_EXPENSE = "/expense/{expenseId}/delete";
 
 		public static final String TOTAL_EXPENSES_COST = "/total/expense/cost";
-		
+
 		public static final String ADD_EXPENSE_TYPE = "/expenseType/add";
 
 		public static final String GET_EXPENSE_TYPE = "/expenseType/get";
@@ -2012,7 +2014,7 @@ public interface PathProxy {
 		public static final String LIKE_SESSION_QUESTION = "/session/question/{questionId}/like";
 
 	}
-	
+
 	public static final String SOLR_BILLING_BASE_URL = BASE_URL + "/solr/billing";
 
 	public interface SolrBillingUrls {

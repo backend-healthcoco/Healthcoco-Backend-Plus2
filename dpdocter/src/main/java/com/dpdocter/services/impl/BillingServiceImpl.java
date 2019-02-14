@@ -69,6 +69,7 @@ import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.InvoiceItemType;
 import com.dpdocter.enums.ReceiptType;
 import com.dpdocter.enums.SMSStatus;
+import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -297,7 +298,7 @@ public class BillingServiceImpl implements BillingService {
 						&& paidAmount > request.getGrandTotal()) {
 					throw new BusinessException(ServiceError.Unknown,
 							"Invoice cannot be edited as old invoice's total is less than paid amount.");
-				}	
+				}
 				if (request.getCreatedTime() != null) {
 					doctorPatientInvoiceCollection.setCreatedTime(request.getCreatedTime());
 				}
@@ -2116,16 +2117,14 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	/*
-<<<<<<< HEAD
-	 * private void updateInventoryItem(String itemId, String locationId , String
-	 * hospitalId , Quantity quantity) { InventoryStockCollection
-=======
 	 * <<<<<<< HEAD private void updateInventoryItem(String itemId, String
 	 * locationId , String hospitalId , Quantity quantity) {
-	 * InventoryStockCollection ======= private void updateInventoryItem(String
-	 * itemId, String locationId , String hospitalId , Quantity quantity) {
-	 * InventoryStockCollection >>>>>>> e5408604ee47a0585cf6f3af38163a2902fe3750
->>>>>>> 19bad9e10... HAPPY-3936
+	 * InventoryStockCollection ======= <<<<<<< HEAD private void
+	 * updateInventoryItem(String itemId, String locationId , String hospitalId ,
+	 * Quantity quantity) { InventoryStockCollection ======= private void
+	 * updateInventoryItem(String itemId, String locationId , String hospitalId ,
+	 * Quantity quantity) { InventoryStockCollection >>>>>>>
+	 * e5408604ee47a0585cf6f3af38163a2902fe3750 >>>>>>> 19bad9e10... HAPPY-3936
 	 * inventoryStockCollection =
 	 * inventoryStockRepository.getByResourceIdLocationIdHospitalId(itemId,
 	 * locationId, hospitalId); if(inventoryStockCollection != null) { Long
@@ -2469,6 +2468,7 @@ public class BillingServiceImpl implements BillingService {
 				}
 				request.setCreatedBy(expenseCollection.getCreatedBy());
 				request.setCreatedTime(expenseCollection.getCreatedTime());
+				request.setUniqueExpenseId(expenseCollection.getUniqueExpenseId());
 				request.setUpdatedTime(new Date());
 				BeanUtil.map(request, expenseCollection);
 			} else {
@@ -2483,6 +2483,8 @@ public class BillingServiceImpl implements BillingService {
 								+ " " + userCollection.getFirstName());
 				expenseCollection.setCreatedTime(new Date());
 				expenseCollection.setAdminCreatedTime(new Date());
+				expenseCollection
+						.setUniqueExpenseId(UniqueIdInitial.EXPENSE.getInitial() + DPDoctorUtils.generateRandomId());
 			}
 			expenseCollection = doctorExpenseRepository.save(expenseCollection);
 			response = new DoctorExpense();
@@ -2596,7 +2598,6 @@ public class BillingServiceImpl implements BillingService {
 		return response;
 	}
 
-
 	@Override
 	public DoctorExpense getDoctorExpense(String expenseId) {
 		DoctorExpense response = null;
@@ -2635,12 +2636,13 @@ public class BillingServiceImpl implements BillingService {
 					throw new BusinessException(ServiceError.NoRecord, "Doctor found with DoctorId");
 				}
 				expenseTypeCollection = new ExpenseTypeCollection();
+
+				BeanUtil.map(request, expenseTypeCollection);
 				expenseTypeCollection.setCreatedBy(
 						(DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? "Dr." : userCollection.getTitle())
 								+ " " + userCollection.getFirstName());
 				expenseTypeCollection.setCreatedTime(new Date());
 
-				BeanUtil.map(request, expenseTypeCollection);
 			}
 			expenseTypeCollection = expenseTypeRepository.save(expenseTypeCollection);
 			ESExpenseTypeDocument esDocument = new ESExpenseTypeDocument();
