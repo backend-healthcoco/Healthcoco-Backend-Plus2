@@ -4,10 +4,6 @@ import java.util.List;
 
 import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.IngredientAddItem;
-<<<<<<< HEAD
-import com.dpdocter.beans.IngredientItem;
-=======
->>>>>>> 613fa84d8... HAPPY-3724
 import com.dpdocter.beans.MealQuantity;
 
 public class ESIngredientResponse {
@@ -25,10 +21,7 @@ public class ESIngredientResponse {
 	private MealQuantity calaries;
 	
 	private List<EquivalentQuantities> equivalentMeasurements;
-<<<<<<< HEAD
-	
-	
-=======
+
 
 	private MealQuantity fat;
 
@@ -50,7 +43,30 @@ public class ESIngredientResponse {
 
 	private List<IngredientAddItem> otherNutrients;
 
->>>>>>> 613fa84d8... HAPPY-3724
+
+	public MealQuantity getFat() {
+		return fat;
+	}
+
+	public void setFat(MealQuantity fat) {
+		this.fat = fat;
+	}
+
+	public MealQuantity getProtein() {
+		return protein;
+	}
+
+	public void setProtein(MealQuantity protein) {
+		this.protein = protein;
+	}
+
+	public MealQuantity getCarbohydreate() {
+		return carbohydreate;
+	}
+
+	public void setCarbohydreate(MealQuantity carbohydreate) {
+		this.carbohydreate = carbohydreate;
+	}
 
 	public MealQuantity getCalaries() {
 		return calaries;
