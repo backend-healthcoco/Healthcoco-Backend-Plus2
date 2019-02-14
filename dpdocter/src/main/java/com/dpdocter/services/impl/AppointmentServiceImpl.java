@@ -2132,6 +2132,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 	}
 
+	
 	@Override
 	@Transactional
 	public Response<Object> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
