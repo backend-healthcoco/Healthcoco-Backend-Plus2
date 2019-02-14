@@ -245,7 +245,6 @@ public class AsyncService {
 	public void sendNutritionTransactionStatusMessage(
 			UserNutritionSubscriptionResponse userNutritionSubscriptionResponse, UserCollection userCollection) {
 		try {
-
 			if (userCollection != null) {
 				String message = "";
 				if (userNutritionSubscriptionResponse.getTransactionStatus().toLowerCase().equalsIgnoreCase("Success"))
@@ -265,7 +264,7 @@ public class AsyncService {
 				SMS sms = new SMS();
 				smsDetail.setUserName(userCollection.getFirstName());
 				sms.setSmsText(message
-						.replace("{amount}", "Rs." + userNutritionSubscriptionResponse.getAmount().toString())
+						.replace("{amount}", "Rs. " + userNutritionSubscriptionResponse.getAmount().toString())
 						.replace("{PlanName}", userNutritionSubscriptionResponse.getSubscriptionPlan().getTitle()));
 
 				SMSAddress smsAddress = new SMSAddress();
