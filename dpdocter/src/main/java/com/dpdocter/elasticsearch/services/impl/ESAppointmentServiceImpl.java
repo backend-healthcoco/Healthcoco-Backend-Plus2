@@ -614,11 +614,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					if (doctorDocument.getSpecialities() != null) {
 						Iterable<ESSpecialityDocument> specialities = esSpecialityRepository.findAll(doctorDocument.getSpecialities());
 						if(specialities != null) {
-<<<<<<< HEAD
-							doctorDocument.setSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("superSpeciality")));
-=======
 							doctorDocument.setServices((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("superSpeciality")));
->>>>>>> 2df7e7012... HAPPY-3502 Updated string of speciality and services
 						}
 					}
 

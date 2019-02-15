@@ -1,47 +1,26 @@
 package com.dpdocter.enums;
 
 public enum Resource {
-	COMPLAINT("COMPLAINT"), OBSERVATION("OBSERVATION"), INVESTIGATION("INVESTIGATION"), DIAGNOSIS("DIAGNOSIS"), NOTES(
-			"NOTES"), DIAGRAM("DIAGRAM"), PATIENT("PATIENT"), DRUG("DRUG"), LABTEST("LABTEST"), COUNTRY(
-					"COUNTRY"), STATE("STATE"), CITY("CITY"), LANDMARKLOCALITY("LANDMARKLOCALITY"), DOCTOR(
-							"DOCTOR"), LOCATION("LOCATION"), DIAGNOSTICTEST("DIAGNOSTICTEST"), REFERENCE(
-									"REFERENCE"), DISEASE("DISEASE"), TREATMENTSERVICE(
-											"TREATMENTSERVICE"), TREATMENTSERVICECOST(
-													"TREATMENTSERVICECOST"), DOCTORDRUG("DOCTORDRUG"), ADVICE(
-															"ADVICE"), PRESENT_COMPLAINT(
-																	"PRESENT_COMPLAINT"), PROVISIONAL_DIAGNOSIS(
-																			"PROVISIONAL_DIAGNOSIS"), GENERAL_EXAMINATION(
-																					"GENERAL_EXAMINATION"), SYSTEMIC_EXAMINATION(
-																							"SYSTEMIC_EXAMINATION"), HISTORY_OF_PRESENT_COMPLAINT(
-																									"HISTORY_OF_PRESENT_COMPLAINT"), MENSTRUAL_HISTORY(
-																											"MENSTRUAL_HISTORY"), OBSTETRIC_HISTORY(
-																													"OBSTETRIC_HISTORY"), INDICATION_OF_USG(
-																															"INDICATION_OF_USG"), PA(
-																																	"PA"), PV(
-																																			"PV"), PS(
-																																					"PS"), ECG(
-																																							"ECG"), XRAY(
-																																									"XRAY"), ECHO(
-																																											"ECHO"), HOLTER(
-																																													"HOLTER"), PHARMACY(
-																																															"PHARMACY"), COLLECTION_BOY(
-																																																	"COLLECTION_BOY"), PROCEDURE_NOTE(
-																																																			"PROCEDURE_NOTE"), BABY_NOTES(
-																																																					"BABY_NOTES"), OPERATION_NOTES(
-																																																							"OPERATION_NOTES"), LABOUR_NOTES(
-																																																									"LABOUR_NOTES"), PC_NOSE(
-																																																											"PC_NOSE"), PC_EARS(
-																																																													"PC_EARS"), PC_THROAT(
-																																																															"PC_THROAT"), PC_ORAL_CAVITY(
-																																																																	"PC_ORAL_CAVITY"), NOSE_EXAM(
-																																																																			"NOSE_EXAM"), NECK_EXAM(
-																																																																					"NECK_EXAM"), EARS_EXAM(
-																																																																							"EARS_EXAM"), ORAL_CAVITY_THROAT_EXAM(
-																																																																									"ORAL_CAVITY_THROAT_EXAM"), INDIRECT_LARYGOSCOPY_EXAM(
-																																																																											"INDIRECT_LARYGOSCOPY_EXAM"), LAB(
-																																																																													"LAB"), CEMENT(
-																																																																															"CEMENT"), IMPLANT(
-																																																																																	"IMPLANT") , DENTAL_WORKS("DENTAL_WORKS"), SERVICE("SERVICE");
+
+	COMPLAINT("COMPLAINT"), OBSERVATION("OBSERVATION"), INVESTIGATION("INVESTIGATION"), DIAGNOSIS("DIAGNOSIS"),
+	NOTES("NOTES"), DIAGRAM("DIAGRAM"), PATIENT("PATIENT"), DRUG("DRUG"), LABTEST("LABTEST"), COUNTRY("COUNTRY"),
+	STATE("STATE"), CITY("CITY"), LANDMARKLOCALITY("LANDMARKLOCALITY"), DOCTOR("DOCTOR"), LOCATION("LOCATION"),
+	DIAGNOSTICTEST("DIAGNOSTICTEST"), REFERENCE("REFERENCE"), DISEASE("DISEASE"), TREATMENTSERVICE("TREATMENTSERVICE"),
+	TREATMENTSERVICECOST("TREATMENTSERVICECOST"), DOCTORDRUG("DOCTORDRUG"), ADVICE("ADVICE"),
+	PRESENT_COMPLAINT("PRESENT_COMPLAINT"), PROVISIONAL_DIAGNOSIS("PROVISIONAL_DIAGNOSIS"),
+	GENERAL_EXAMINATION("GENERAL_EXAMINATION"), SYSTEMIC_EXAMINATION("SYSTEMIC_EXAMINATION"),
+	HISTORY_OF_PRESENT_COMPLAINT("HISTORY_OF_PRESENT_COMPLAINT"), MENSTRUAL_HISTORY("MENSTRUAL_HISTORY"),
+	OBSTETRIC_HISTORY("OBSTETRIC_HISTORY"), INDICATION_OF_USG("INDICATION_OF_USG"), PA("PA"), PV("PV"), PS("PS"),
+	ECG("ECG"), XRAY("XRAY"), ECHO("ECHO"), HOLTER("HOLTER"), PHARMACY("PHARMACY"), COLLECTION_BOY("COLLECTION_BOY"),
+	PROCEDURE_NOTE("PROCEDURE_NOTE"), BABY_NOTES("BABY_NOTES"), OPERATION_NOTES("OPERATION_NOTES"),
+	LABOUR_NOTES("LABOUR_NOTES"), PC_NOSE("PC_NOSE"), PC_EARS("PC_EARS"), PC_THROAT("PC_THROAT"),
+	PC_ORAL_CAVITY("PC_ORAL_CAVITY"), NOSE_EXAM("NOSE_EXAM"), NECK_EXAM("NECK_EXAM"), EARS_EXAM("EARS_EXAM"),
+	ORAL_CAVITY_THROAT_EXAM("ORAL_CAVITY_THROAT_EXAM"), INDIRECT_LARYGOSCOPY_EXAM("INDIRECT_LARYGOSCOPY_EXAM"),
+	LAB("LAB"), CEMENT("CEMENT"), IMPLANT("IMPLANT"), DENTAL_WORKS("DENTAL_WORKS"), NUTRIENT("NUTRIENT"),
+	INGREDIENT("INGREDIENT"), RECIPE("RECIPE"), EXERCISE("EXERCISE"), EXPENSE_TYPE("EXPENSE_TYPE"),
+	INSTITUDE("INSTITUDE"), QAULIFICATION("QAULIFICATION"), SPECIALITY("SPECIALITY"),
+	PROFESSIONAL_MEMBERSHIP("PROFESSIONAL_MEMBERSHIP"), SERVICE("SERVICE");
+
 	private String type;
 
 	private Resource(String type) {

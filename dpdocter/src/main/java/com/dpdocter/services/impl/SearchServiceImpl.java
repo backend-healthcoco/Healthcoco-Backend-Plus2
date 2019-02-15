@@ -80,6 +80,17 @@ public class SearchServiceImpl implements SearchService {
 			if (city.equalsIgnoreCase("undefined")) {
 				return null;
 			}
+			if (DPDoctorUtils.allStringsEmpty(speciality) || speciality.equalsIgnoreCase("undefined")) {
+				speciality = null;
+			}else {
+				speciality = speciality.replaceAll("-", " ");
+			}
+
+			if (DPDoctorUtils.allStringsEmpty(service) || service.equalsIgnoreCase("undefined")) {
+				service = null;
+			} else {
+				service = service.replace("doctor-for-","").replace("-treatment","").replaceAll("-", " ");
+			}
 
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.matchQuery("isDoctorListed", true))
@@ -284,9 +295,9 @@ public class SearchServiceImpl implements SearchService {
 					
 					response.setMetaData(unformattedService + " in ");
 				} else {
+
 					response.setMetaData("Doctors in ");
 				}
-//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
@@ -319,6 +330,8 @@ public class SearchServiceImpl implements SearchService {
 	@SuppressWarnings("unchecked")
 	private QueryBuilder createServiceFilter(String service) {
 		QueryBuilder queryBuilder = null;
+		if (!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("DOCTOR")) {
+
 			List<ESServicesDocument> esServicesDocuments = esServicesRepository.findByQueryAnnotation(service);
 			
 			if (esServicesDocuments != null) {
@@ -328,12 +341,15 @@ public class SearchServiceImpl implements SearchService {
 					serviceIds = CollectionUtils.EMPTY_COLLECTION;
 				queryBuilder = QueryBuilders.termsQuery("services", serviceIds);
 			}
+		}
 		return queryBuilder;
 	}
 
 	@SuppressWarnings("unchecked")
 	private QueryBuilder createSpecialityFilter(String speciality) {
 		QueryBuilder queryBuilder = null;
+		if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("DOCTOR")) {
+			speciality = speciality.replaceAll("-", " ");
 			if (speciality.equalsIgnoreCase("GYNECOLOGIST")) {
 				speciality = "GYNAECOLOGIST";
 			}else if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")) {
@@ -359,6 +375,7 @@ public class SearchServiceImpl implements SearchService {
 				if (specialityIds == null)specialityIds = CollectionUtils.EMPTY_COLLECTION;
 				queryBuilder = QueryBuilders.termsQuery("specialities", specialityIds);
 			}
+		}
 		return queryBuilder;
 	}
 
