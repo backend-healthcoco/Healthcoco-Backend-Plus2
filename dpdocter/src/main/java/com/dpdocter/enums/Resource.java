@@ -41,8 +41,7 @@ public enum Resource {
 																																																																											"INDIRECT_LARYGOSCOPY_EXAM"), LAB(
 																																																																													"LAB"), CEMENT(
 																																																																															"CEMENT"), IMPLANT(
-																																																																																	"IMPLANT") , DENTAL_WORKS("DENTAL_WORKS");
-
+																																																																																	"IMPLANT") , DENTAL_WORKS("DENTAL_WORKS"), SERVICE("SERVICE");
 	private String type;
 
 	private Resource(String type) {

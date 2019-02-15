@@ -12,6 +12,7 @@ import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.ProfessionalMembership;
+import com.dpdocter.beans.Services;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorAddEditFacilityRequest;
@@ -120,5 +121,7 @@ public interface DoctorProfileService {
 	DoctorServicesAddEditRequest addEditServices(DoctorServicesAddEditRequest request);
 
 	Boolean addEditDrugTypePlacement(String doctorId, String drugTypePlacement);
+
+	List<Services> getServices(int page, int size, String updatedTime);
 
 }

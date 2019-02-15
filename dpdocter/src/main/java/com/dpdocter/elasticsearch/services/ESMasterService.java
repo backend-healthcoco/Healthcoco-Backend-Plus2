@@ -11,6 +11,7 @@ import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.elasticsearch.document.ESDiseasesDocument;
+import com.dpdocter.elasticsearch.document.ESServicesDocument;
 import com.dpdocter.response.DiseaseListResponse;
 
 public interface ESMasterService {
@@ -38,4 +39,6 @@ public interface ESMasterService {
     List<Speciality> searchSpeciality(String searchTerm, String updatedTime, int page, int size);
 
     void addEditDisease(ESDiseasesDocument esDiseasesDocument);
+
+	void addEditServices(ESServicesDocument esServicesDocument);
 }

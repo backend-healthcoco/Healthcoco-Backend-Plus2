@@ -28,7 +28,6 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,6 +91,7 @@ import com.dpdocter.collections.ProvisionalDiagnosisCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.ServicesCollection;
 import com.dpdocter.collections.SystemExamCollection;
 import com.dpdocter.collections.TransactionalCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
@@ -144,6 +144,7 @@ import com.dpdocter.elasticsearch.document.ESPresentingComplaintOralCavityDocume
 import com.dpdocter.elasticsearch.document.ESPresentingComplaintThroatDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
+import com.dpdocter.elasticsearch.document.ESServicesDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
@@ -222,6 +223,7 @@ import com.dpdocter.repository.ProvisionalDiagnosisRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SMSTrackRepository;
+import com.dpdocter.repository.ServicesRepository;
 import com.dpdocter.repository.SystemExamRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.TreatmentServicesCostRepository;
@@ -461,6 +463,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Autowired
 	private RoleRepository roleRepository;
+
+	@Autowired
+	private ServicesRepository servicesRepository;
 	
 	@Value(value = "${mail.appointment.details.subject}")
 	private String appointmentDetailsSub;
@@ -650,6 +655,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						case COLLECTION_BOY:
 							break;
 						case STATE:
+							break;
+						case SERVICE:checkService(transactionalCollection.getResourceId());
 							break;
 						default:
 							break;
@@ -2357,4 +2364,17 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
+	private void checkService(ObjectId resourceId) {
+		try {
+			ServicesCollection services = servicesRepository.findOne(resourceId);
+			if (services != null) {
+				ESServicesDocument esServicesDocument = new ESServicesDocument();
+				BeanUtil.map(services, esServicesDocument);
+				esMasterService.addEditServices(esServicesDocument);
+			}
+		}catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e);
+			}
+	}
 }

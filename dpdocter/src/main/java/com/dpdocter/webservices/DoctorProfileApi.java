@@ -30,6 +30,7 @@ import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
+import com.dpdocter.beans.Services;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.Resource;
@@ -498,6 +499,17 @@ public class DoctorProfileApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 		List<Speciality> specialities = doctorProfileService.getSpecialities(page, size, updatedTime);
 		Response<Speciality> response = new Response<Speciality>();
+		response.setDataList(specialities);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.GET_SERVICES)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_SERVICES, notes = PathProxy.DoctorProfileUrls.GET_SERVICES)
+	public Response<Services> getServices(@QueryParam("page") int page, @QueryParam("size") int size,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+		List<Services> specialities = doctorProfileService.getServices(page, size, updatedTime);
+		Response<Services> response = new Response<Services>();
 		response.setDataList(specialities);
 		return response;
 	}
