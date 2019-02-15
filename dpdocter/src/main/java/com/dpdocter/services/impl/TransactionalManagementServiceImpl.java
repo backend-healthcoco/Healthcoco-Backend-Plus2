@@ -96,6 +96,7 @@ import com.dpdocter.collections.RecipeCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.ServicesCollection;
 import com.dpdocter.collections.SystemExamCollection;
 import com.dpdocter.collections.TransactionalCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
@@ -152,6 +153,7 @@ import com.dpdocter.elasticsearch.document.ESPresentingComplaintThroatDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESRecipeDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
+import com.dpdocter.elasticsearch.document.ESServicesDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
@@ -236,6 +238,7 @@ import com.dpdocter.repository.RecipeRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SMSTrackRepository;
+import com.dpdocter.repository.ServicesRepository;
 import com.dpdocter.repository.SystemExamRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.TreatmentServicesCostRepository;
@@ -494,6 +497,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Autowired
 	private ESRecipeService ESRecipeService;
 
+	@Autowired
+	private ServicesRepository servicesRepository;
+	
 	@Value(value = "${mail.appointment.details.subject}")
 	private String appointmentDetailsSub;
 
@@ -693,6 +699,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							checkNutrient(transactionalCollection.getResourceId());
 							break;
 						case STATE:
+							break;
+						case SERVICE:checkService(transactionalCollection.getResourceId());
 							break;
 						default:
 							break;
@@ -2445,6 +2453,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ESExpenseTypeDocument expenseDocument = new ESExpenseTypeDocument();
 				BeanUtil.map(typeCollection, expenseDocument);
 				exExpenseTypeService.addEditExpenseType(expenseDocument);
+	
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2497,4 +2506,17 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
+	private void checkService(ObjectId resourceId) {
+		try {
+			ServicesCollection services = servicesRepository.findOne(resourceId);
+			if (services != null) {
+				ESServicesDocument esServicesDocument = new ESServicesDocument();
+				BeanUtil.map(services, esServicesDocument);
+				esMasterService.addEditServices(esServicesDocument);
+			}
+		}catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e);
+			}
+	}
 }

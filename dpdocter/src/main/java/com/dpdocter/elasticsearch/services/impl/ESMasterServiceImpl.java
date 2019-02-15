@@ -39,6 +39,7 @@ import com.dpdocter.elasticsearch.document.ESMedicalCouncilDocument;
 import com.dpdocter.elasticsearch.document.ESProfessionDocument;
 import com.dpdocter.elasticsearch.document.ESProfessionalMembershipDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
+import com.dpdocter.elasticsearch.document.ESServicesDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.repository.ESCityRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
@@ -51,6 +52,7 @@ import com.dpdocter.elasticsearch.repository.ESMedicalCouncilRepository;
 import com.dpdocter.elasticsearch.repository.ESProfessionRepository;
 import com.dpdocter.elasticsearch.repository.ESProfessionalMembershipRepository;
 import com.dpdocter.elasticsearch.repository.ESReferenceRepository;
+import com.dpdocter.elasticsearch.repository.ESServicesRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.Range;
@@ -122,6 +124,9 @@ public class ESMasterServiceImpl implements ESMasterService {
 
     @Autowired
     ESDiagnosticTestRepository esDiagnosticTestRepository;
+    
+    @Autowired
+	ESServicesRepository esServicesRepository;
     
     @Override
     public Response<Reference> searchReference(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
@@ -549,5 +554,17 @@ public class ESMasterServiceImpl implements ESMasterService {
 		    logger.error("Error while adding disease " + e.getMessage());
 		}
 	}
+	@Override
+	public void addEditServices(ESServicesDocument esServicesDocument) {
+		try {
+			esServicesRepository.save(esServicesDocument);
+			transactionalManagementService.addResource(new ObjectId(esServicesDocument.getId()), Resource.SERVICE,
+					true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while adding  ES data service " + e.getMessage());
+		}
+	}
+
 		
 }

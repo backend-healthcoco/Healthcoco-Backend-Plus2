@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -41,6 +42,7 @@ import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EducationInstituteCollection;
 import com.dpdocter.collections.EducationQualificationCollection;
 import com.dpdocter.collections.InvestigationCollection;
+import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MedicalCouncilCollection;
 import com.dpdocter.collections.ObservationCollection;
@@ -48,6 +50,7 @@ import com.dpdocter.collections.ProcedureNoteCollection;
 import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.ResumeCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.ServicesCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
@@ -57,10 +60,12 @@ import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESEducationInstituteDocument;
 import com.dpdocter.elasticsearch.document.ESEducationQualificationDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
+import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.document.ESMedicalCouncilDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProfessionalMembershipDocument;
+import com.dpdocter.elasticsearch.document.ESServicesDocument;
 import com.dpdocter.elasticsearch.repository.ESComplaintsRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosesRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
@@ -68,11 +73,13 @@ import com.dpdocter.elasticsearch.repository.ESDrugRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationInstituteRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationQualificationRepository;
 import com.dpdocter.elasticsearch.repository.ESInvestigationsRepository;
+import com.dpdocter.elasticsearch.repository.ESLandmarkLocalityRepository;
 import com.dpdocter.elasticsearch.repository.ESMedicalCouncilRepository;
 import com.dpdocter.elasticsearch.repository.ESObservationsRepository;
 import com.dpdocter.elasticsearch.repository.ESProcedureNoteRepository;
 import com.dpdocter.elasticsearch.repository.ESProfessionalMembershipRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
+import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.AppType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
@@ -83,16 +90,17 @@ import com.dpdocter.repository.CityRepository;
 import com.dpdocter.repository.ContactUsRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DrugRepository;
-import com.dpdocter.repository.DrugTypeRepository;
 import com.dpdocter.repository.EducationInstituteRepository;
 import com.dpdocter.repository.EducationQualificationRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.InvestigationRepository;
+import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MedicalCouncilRepository;
 import com.dpdocter.repository.ProcedureNoteRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.ResumeRepository;
+import com.dpdocter.repository.ServicesRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
@@ -107,6 +115,7 @@ import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
 
+import common.util.web.CSVUtils;
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -173,9 +182,6 @@ public class AdminServicesImpl implements AdminServices {
 
 	@Autowired
 	private DrugRepository drugRepository;
-
-	@Autowired
-	private DrugTypeRepository drugTypeRepository;
 
 	@Autowired
 	private ProfessionalMembershipRepository professionalMembershipRepository;
@@ -245,6 +251,18 @@ public class AdminServicesImpl implements AdminServices {
 	
 	@Autowired
 	UserRoleRepository userRoleRepository;
+	
+	@Autowired
+	LandmarkLocalityRepository landmarkLocalityRepository;
+	
+	@Autowired
+	ESLandmarkLocalityRepository esLandmarkLocalityRepository;
+	
+	@Autowired
+	ServicesRepository servicesRepository;
+	
+	@Autowired
+	private ESMasterService esMasterService;
 	
 	@Override
 	@Transactional
@@ -321,10 +339,7 @@ public class AdminServicesImpl implements AdminServices {
 	@Override
 	@Transactional
 	public void importDrug() {
-		String csvFile = "/home/ubuntu/Drugs.csv";
 		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = ",";
 
 		try {
 			// br = new BufferedReader(new FileReader(csvFile));
@@ -831,4 +846,81 @@ public class AdminServicesImpl implements AdminServices {
 		return response;
 	}
 
+	public Boolean importLandmarkLocalities() {
+		
+		String csvFile = "/home/ubuntu/landmarklocalities.csv";
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = ",";
+
+		try {
+			br = new BufferedReader(new FileReader(csvFile));
+			while ((line = br.readLine()) != null) {
+				String[] obj = line.split(cvsSplitBy);
+				
+				CityCollection cityCollection = cityRepository.findByName(obj[3]);
+				
+				if(cityCollection != null) {
+					LandmarkLocalityCollection landmarkLocalityCollection = new LandmarkLocalityCollection();
+					landmarkLocalityCollection.setCityId(cityCollection.getId());
+					landmarkLocalityCollection.setLocality(obj[0]);
+					landmarkLocalityCollection.setLatitude(Double.parseDouble(obj[1]));
+					landmarkLocalityCollection.setLongitude(Double.parseDouble(obj[2]));
+					
+					landmarkLocalityCollection = landmarkLocalityRepository.save(landmarkLocalityCollection);
+					ESLandmarkLocalityDocument esLandmarkLocalityDocument = new ESLandmarkLocalityDocument();
+					BeanUtil.map(landmarkLocalityCollection, esLandmarkLocalityDocument);
+					esLandmarkLocalityDocument.setGeoPoint(new GeoPoint(landmarkLocalityCollection.getLatitude(), landmarkLocalityCollection.getLongitude()));
+					
+					transactionalManagementService.addResource(new ObjectId(esLandmarkLocalityDocument.getId()),
+							Resource.LANDMARKLOCALITY, false);
+					esCityService.addLocalityLandmark(esLandmarkLocalityDocument);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public Boolean addServices() {
+		Boolean response = false;
+		
+		try {
+			Scanner scanner = new Scanner(new File("/home/ubuntu/GlobalTreatments.csv"));
+	        while (scanner.hasNext()) {
+	        		String csvLine = scanner.nextLine();
+	        		List<String> line = CSVUtils.parseLine(csvLine);
+	        		ServicesCollection servicesCollection = new ServicesCollection();
+	        		servicesCollection.setAdminCreatedTime(new Date());
+	        		servicesCollection.setCreatedTime(new Date());
+	        		servicesCollection.setUpdatedTime(new Date());
+	        		servicesCollection.setCreatedBy("ADMIN");
+	        		servicesCollection.setService(line.get(0));
+	        		servicesCollection.setToShow(true);
+	        		servicesCollection = servicesRepository.save(servicesCollection);
+	        		
+	        		if (servicesCollection != null) {
+	        			transactionalManagementService.addResource(servicesCollection.getId(), Resource.SERVICE,
+	        					false);
+	    				ESServicesDocument esServicesDocument = new ESServicesDocument();
+	    				BeanUtil.map(servicesCollection, esServicesDocument);
+	    				esMasterService.addEditServices(esServicesDocument);
+	    			}
+	        }
+	        scanner.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
 }
