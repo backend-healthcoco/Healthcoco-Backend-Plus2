@@ -30,8 +30,7 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 public class DietPlansServiceImpl implements DietPlansService {
-	
-	
+
 	private static Logger logger = Logger.getLogger(DietPlansServiceImpl.class.getName());
 	@Autowired
 	private DietPlanRepository dietPlanRepository;
@@ -39,7 +38,6 @@ public class DietPlansServiceImpl implements DietPlansService {
 	private UserRepository userRepository;
 	@Autowired
 	private MongoTemplate mongoTemplate;
-	
 
 	@Override
 	public DietPlan addEditDietPlan(DietPlan request) {
@@ -92,7 +90,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 		List<DietPlan> response = null;
 		try {
 
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTime)).and("discarded").is(discarded);
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTime));
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
@@ -108,6 +106,10 @@ public class DietPlansServiceImpl implements DietPlansService {
 				criteria.and("doctorId").is(doctorObjectId);
 			if (!DPDoctorUtils.anyStringEmpty(patientObjectId))
 				criteria.and("patientId").is(patientObjectId);
+
+			if (!discarded) {
+				criteria.and("discarded").is(discarded);
+			}
 
 			Aggregation aggregation = null;
 
@@ -172,6 +174,5 @@ public class DietPlansServiceImpl implements DietPlansService {
 		}
 		return response;
 	}
-
 
 }

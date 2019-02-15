@@ -495,8 +495,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			if (updateTime > 0) {
 				criteria.and("createdTime").lte(new Date(updateTime));
 			}
-
+          if(!discarded) {
 			criteria.and("discarded").is(discarded);
+          }
 			Aggregation aggregation = null;
 			if (size > 0)
 
