@@ -14,7 +14,6 @@ public interface RecipeService {
 	public List<Nutrient> getNutrients(int size, int page, boolean discarded, String searchTerm, String category,
 			String doctorId, String locationId, String hospitalId);
 
-
 	public Nutrient discardNutrient(String id, boolean discarded);
 
 	public Nutrient getNutrient(String id);

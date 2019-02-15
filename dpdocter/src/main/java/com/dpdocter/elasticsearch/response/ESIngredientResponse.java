@@ -12,8 +12,6 @@ public class ESIngredientResponse {
 
 	private String name;
 
-	private List<IngredientAddItem> nutrients;
-
 	private MealQuantity quantity;
 
 	private String note;
@@ -44,33 +42,8 @@ public class ESIngredientResponse {
 	
 	private List<IngredientAddItem> vitaminNutrients;
 
-	public MealQuantity getFat() {
-		return fat;
-	}
-
-	public void setFat(MealQuantity fat) {
-		this.fat = fat;
-	}
-
-	public MealQuantity getProtein() {
-		return protein;
-	}
-
-	public void setProtein(MealQuantity protein) {
-		this.protein = protein;
-	}
-
-	public MealQuantity getCarbohydreate() {
-		return carbohydreate;
-	}
-
-	public void setCarbohydreate(MealQuantity carbohydreate) {
-		this.carbohydreate = carbohydreate;
-	}
-
 	public MealQuantity getCalories() {
 		return calories;
-
 	}
 
 	public void setCalories(MealQuantity calories) {
@@ -109,12 +82,28 @@ public class ESIngredientResponse {
 		this.name = name;
 	}
 
-	public List<IngredientAddItem> getNutrients() {
-		return nutrients;
+	public MealQuantity getFat() {
+		return fat;
 	}
 
-	public void setNutrients(List<IngredientAddItem> nutrients) {
-		this.nutrients = nutrients;
+	public void setFat(MealQuantity fat) {
+		this.fat = fat;
+	}
+
+	public MealQuantity getProtein() {
+		return protein;
+	}
+
+	public void setProtein(MealQuantity protein) {
+		this.protein = protein;
+	}
+
+	public MealQuantity getCarbohydreate() {
+		return carbohydreate;
+	}
+
+	public void setCarbohydreate(MealQuantity carbohydreate) {
+		this.carbohydreate = carbohydreate;
 	}
 
 	public String getNote() {

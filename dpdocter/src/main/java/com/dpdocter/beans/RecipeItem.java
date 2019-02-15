@@ -5,16 +5,11 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.dpdocter.enums.LevelType;
-import com.dpdocter.enums.QuantityEnum;
-
 
 public class RecipeItem {
 	private ObjectId id;
+
 	private String name;
-
-	private double value;
-	private QuantityEnum type;
-
 
 	private MealQuantity quantity;
 
@@ -23,10 +18,8 @@ public class RecipeItem {
 	private LevelType costType;
 
 	private List<EquivalentQuantities> equivalentMeasurements;
+
 	private MealQuantity calories;
-
-
-	private List<IngredientItem> nutrients;
 
 	private MealQuantity fat;
 
@@ -56,10 +49,6 @@ public class RecipeItem {
 
 	public void setCalories(MealQuantity calories) {
 		this.calories = calories;
-	}
-
-	public List<IngredientItem> getNutrients() {
-		return nutrients;
 	}
 
 	public MealQuantity getFat() {
@@ -112,11 +101,10 @@ public class RecipeItem {
 
 	public List<IngredientItem> getOtherNutrients() {
 		return otherNutrients;
-
 	}
 
-	public void setNutrients(List<IngredientItem> nutrients) {
-		this.nutrients = nutrients;
+	public void setOtherNutrients(List<IngredientItem> otherNutrients) {
+		this.otherNutrients = otherNutrients;
 	}
 
 	public ObjectId getId() {
@@ -159,10 +147,6 @@ public class RecipeItem {
 		this.fiber = fiber;
 	}
 
-	public void setOtherNutrients(List<IngredientItem> otherNutrients) {
-		this.otherNutrients = otherNutrients;
-	}
-
 	public List<IngredientItem> getGeneralNutrients() {
 		return generalNutrients;
 	}
@@ -177,7 +161,6 @@ public class RecipeItem {
 
 	public void setProteinAminoAcidNutrients(List<IngredientItem> proteinAminoAcidNutrients) {
 		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
-
 	}
 
 	public List<IngredientItem> getVitaminNutrients() {
@@ -187,24 +170,6 @@ public class RecipeItem {
 	public void setVitaminNutrients(List<IngredientItem> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
 	}
-
-
-	public double getValue() {
-		return value;
-	}
-
-	public void setValue(double value) {
-		this.value = value;
-	}
-
-	public QuantityEnum getType() {
-		return type;
-	}
-
-	public void setType(QuantityEnum type) {
-		this.type = type;
-	}
-
 
 	public Double getCost() {
 		return cost;
@@ -221,6 +186,5 @@ public class RecipeItem {
 	public void setCostType(LevelType costType) {
 		this.costType = costType;
 	}
-
 
 }

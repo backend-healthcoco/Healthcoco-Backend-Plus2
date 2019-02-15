@@ -13,8 +13,6 @@ public class Ingredient extends GenericCollection {
 
 	private List<EquivalentQuantities> equivalentMeasurements;
 
-	private List<IngredientAddItem> nutrients;
-
 	private String name;
 	
 	private Double cost = 0.0;
@@ -61,14 +59,6 @@ public class Ingredient extends GenericCollection {
 
 	public void setCalories(MealQuantity calories) {
 		this.calories = calories;
-	}
-
-	public List<IngredientAddItem> getNutrients() {
-		return nutrients;
-	}
-
-	public void setNutrients(List<IngredientAddItem> nutrients) {
-		this.nutrients = nutrients;
 	}
 
 	public String getNote() {

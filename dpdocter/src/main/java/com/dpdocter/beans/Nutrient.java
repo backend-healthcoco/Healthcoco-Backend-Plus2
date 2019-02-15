@@ -13,14 +13,24 @@ public class Nutrient extends GenericCollection {
 	private String locationId;
 
 	private String doctorId;
-	
+
 	private String hospitalId;
-	
+
 	private NutrientType type = NutrientType.MICRO_NUTRIENT;
 
 	private NutrientCategaoryEnum category = NutrientCategaoryEnum.CARBOHYDRATE;
 
 	private Boolean discarded = false;
+
+	private String nutrientCode;
+
+	public String getNutrientCode() {
+		return nutrientCode;
+	}
+
+	public void setNutrientCode(String nutrientCode) {
+		this.nutrientCode = nutrientCode;
+	}
 
 	public NutrientType getType() {
 		return type;

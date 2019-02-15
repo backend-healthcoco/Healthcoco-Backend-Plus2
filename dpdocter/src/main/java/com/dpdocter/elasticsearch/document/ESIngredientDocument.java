@@ -33,9 +33,6 @@ public class ESIngredientDocument {
 	@Field(type = FieldType.String)
 	private String locationId;
 
-	@Field(type = FieldType.Nested)
-	private List<IngredientAddItem> nutrients;
-
 	@Field(type = FieldType.String)
 	private String doctorId;
 
@@ -128,14 +125,6 @@ public class ESIngredientDocument {
 
 	public void setLocationId(String locationId) {
 		this.locationId = locationId;
-	}
-
-	public List<IngredientAddItem> getNutrients() {
-		return nutrients;
-	}
-
-	public void setNutrients(List<IngredientAddItem> nutrients) {
-		this.nutrients = nutrients;
 	}
 
 	public MealQuantity getFat() {

@@ -52,9 +52,6 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Nested)
 	private List<RecipeAddItem> ingredients;
 
-	@Field(type = FieldType.Nested)
-	private List<IngredientAddItem> nutrients;
-
 	@Field(type = FieldType.String)
 	private String dishType;
 
@@ -111,7 +108,6 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity calories;
-
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity fat;
@@ -212,7 +208,6 @@ public class ESRecipeDocument {
 	public void setIngredients(List<RecipeAddItem> ingredients) {
 		this.ingredients = ingredients;
 	}
-
 
 	public MealQuantity getFat() {
 		return fat;
@@ -430,7 +425,6 @@ public class ESRecipeDocument {
 		this.hospitalId = hospitalId;
 	}
 
-
 	public void setMineralNutrients(List<IngredientAddItem> mineralNutrients) {
 		this.mineralNutrients = mineralNutrients;
 	}
@@ -462,17 +456,6 @@ public class ESRecipeDocument {
 	public List<IngredientAddItem> getOtherNutrients() {
 		return otherNutrients;
 	}
-
-
-	public List<IngredientAddItem> getNutrients() {
-		return nutrients;
-	}
-
-	public void setNutrients(List<IngredientAddItem> nutrients) {
-		this.nutrients = nutrients;
-	}
-
-
 
 	public List<IngredientAddItem> getVitaminNutrients() {
 		return vitaminNutrients;

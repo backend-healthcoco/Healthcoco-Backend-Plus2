@@ -19,8 +19,6 @@ public class RecipeAddItem {
 
 	private MealQuantity calories;
 
-	private List<IngredientAddItem> nutrients;
-
 	private MealQuantity fat;
 
 	private MealQuantity protein;
@@ -57,14 +55,6 @@ public class RecipeAddItem {
 
 	public void setCalories(MealQuantity calories) {
 		this.calories = calories;
-	}
-
-	public List<IngredientAddItem> getNutrients() {
-		return nutrients;
-	}
-
-	public void setNutrients(List<IngredientAddItem> nutrients) {
-		this.nutrients = nutrients;
 	}
 
 	public String getId() {

@@ -16,13 +16,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.Ingredient;
-import com.dpdocter.beans.IngredientAddItem;
-import com.dpdocter.beans.IngredientItem;
 import com.dpdocter.beans.Nutrient;
 import com.dpdocter.beans.Recipe;
-import com.dpdocter.beans.RecipeAddItem;
 import com.dpdocter.beans.RecipeItem;
 import com.dpdocter.collections.FavouriteRecipeCollection;
 import com.dpdocter.collections.IngredientCollection;
@@ -130,17 +126,14 @@ public class RecipeServiceImpl implements RecipeService {
 	}
 
 	@Override
-
 	public List<Nutrient> getNutrients(int size, int page, boolean discarded, String searchTerm, String category,
 			String doctorId, String locationId, String hospitalId) {
-
 		List<Nutrient> response = null;
 		try {
 			Criteria criteria = new Criteria("discarded").is(discarded);
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
 						new Criteria("name").regex("^" + searchTerm));
-
 			if (!DPDoctorUtils.anyStringEmpty(category))
 				criteria = criteria.and("category").is(category.toUpperCase());
 
@@ -151,10 +144,10 @@ public class RecipeServiceImpl implements RecipeService {
 			if (!DPDoctorUtils.allStringsEmpty(hospitalId))
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 
-
 			Aggregation aggregation = null;
 			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip(page * size),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip(page * size),
 						Aggregation.limit(size), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -249,70 +242,13 @@ public class RecipeServiceImpl implements RecipeService {
 					request.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
 							+ " " + doctor.getFirstName());
 					request.setCreatedTime(recipeCollection.getCreatedTime());
+					recipeCollection = new RecipeCollection();
 					BeanUtil.map(request, recipeCollection);
-					if (!DPDoctorUtils.anyStringEmpty(request.getName())) {
-						recipeCollection.setName(request.getName());
-					}
-
-					if (request.getIngredients() != null && !request.getIngredients().isEmpty()) {
-						recipeItems = new ArrayList<RecipeItem>();
-						for (RecipeAddItem item : request.getIngredients()) {
-							RecipeItem recipeitem = new RecipeItem();
-							BeanUtil.map(item, recipeitem);
-							recipeItems.add(recipeitem);
-						}
-						recipeCollection.setIngredients(recipeItems);
-
-					}
-
-					if (request.getExcludeIngredients() != null && !request.getExcludeIngredients().isEmpty()) {
-						recipeItems = new ArrayList<RecipeItem>();
-						for (RecipeAddItem item : request.getIngredients()) {
-							RecipeItem recipeitem = new RecipeItem();
-							BeanUtil.map(item, recipeitem);
-							recipeItems.add(recipeitem);
-						}
-						recipeCollection.setExcludeIngredients(recipeItems);
-					}
-					
-					if (request.getMealTiming() != null && !request.getMealTiming().isEmpty()) {
-						recipeCollection.setMealTiming(new ArrayList<String>());
-						recipeCollection.setMealTiming(request.getMealTiming());
-
-					}
-
-					if (request.getIncludeIngredients() != null && !request.getIncludeIngredients().isEmpty()) {
-						recipeItems = new ArrayList<RecipeItem>();
-						for (RecipeAddItem item : request.getIngredients()) {
-							RecipeItem recipeitem = new RecipeItem();
-							BeanUtil.map(item, recipeitem);
-							recipeItems.add(recipeitem);
-						}
-						recipeCollection.setIncludeIngredients(recipeItems);
-					}
-
-					if (request.getNutrients() != null && !request.getNutrients().isEmpty()) {
-						List<IngredientItem> ingredientItems = new ArrayList<IngredientItem>();
-						for (IngredientAddItem item : request.getNutrients()) {
-							IngredientItem ingredientItem = new IngredientItem();
-							BeanUtil.map(item, ingredientItem);
-							ingredientItems.add(ingredientItem);
-						}
-						recipeCollection.setNutrients(ingredientItems);
-					}
 
 					if (request.getRecipeImages() != null && !request.getRecipeImages().isEmpty()) {
-
 						recipeCollection.setRecipeImages(new ArrayList<String>());
 						recipeCollection.setRecipeImages(request.getRecipeImages());
 					}
-
-					if (request.getEquivalentMeasurements() != null && !request.getEquivalentMeasurements().isEmpty()) {
-
-						recipeCollection.setEquivalentMeasurements(new ArrayList<EquivalentQuantities>());
-						recipeCollection.setEquivalentMeasurements(request.getEquivalentMeasurements());
-					}
-
 				} else {
 					recipeCollection = new RecipeCollection();
 					BeanUtil.map(request, recipeCollection);
@@ -345,7 +281,7 @@ public class RecipeServiceImpl implements RecipeService {
 		try {
 			Criteria criteria = new Criteria("discarded").is(discarded);
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("name").regex("^" +searchTerm, "i"),
+				criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
 						new Criteria("name").regex(searchTerm));
 			}
 			if (!DPDoctorUtils.allStringsEmpty(doctorId))
@@ -354,54 +290,16 @@ public class RecipeServiceImpl implements RecipeService {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			if (!DPDoctorUtils.allStringsEmpty(hospitalId))
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-			
 
-			CustomAggregationOperation aggregationOperationFirst = new CustomAggregationOperation(new BasicDBObject(
-					"$group",
-					new BasicDBObject("_id", new BasicDBObject("id", "$id").append("nutrientId", "$nutrients.id"))
-							.append("videoUrl", new BasicDBObject("$first", "$videoUrl"))
-							.append("quantity", new BasicDBObject("$first", "$quantity"))
-							.append("equivalentMeasurements", new BasicDBObject("$first", "$equivalentMeasurements"))
-							.append("name", new BasicDBObject("$first", "$name"))
-							.append("recipeImages", new BasicDBObject("$first", "$recipeImages"))
-							.append("includeIngredients", new BasicDBObject("$first", "$includeIngredients"))
-							.append("excludeIngredients", new BasicDBObject("$first", "$excludeIngredients"))
-							.append("dishType", new BasicDBObject("$first", "$dishType"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-							.append("technique", new BasicDBObject("$first", "$technique"))
-							.append("isPopular", new BasicDBObject("$first", "$isPopular"))
-							.append("isHoliday", new BasicDBObject("$first", "$isHoliday"))
-							.append("discarded", new BasicDBObject("$first", "$discarded"))
-							.append("direction", new BasicDBObject("$first", "$direction"))
-							.append("dietaryConcerns", new BasicDBObject("$first", "$dietaryConcerns"))
-							.append("forMember", new BasicDBObject("$first", "$forMember"))
-							.append("cost", new BasicDBObject("$first", "$cost"))
-							.append("meal", new BasicDBObject("$first", "$meal"))
-							.append("cuisine", new BasicDBObject("$first", "$cuisine"))
-							.append("course", new BasicDBObject("$first", "$course"))
-							.append("verified", new BasicDBObject("$first", "$verified"))
-							.append("preparationTime", new BasicDBObject("$first", "$preparationTime"))
-							.append("mealTiming", new BasicDBObject("$first", "$mealTiming"))
-							.append("calaries", new BasicDBObject("$first", "$calaries"))
-							.append("nutrientValueAtRecipeLevel",
-									new BasicDBObject("$first", "$nutrientValueAtRecipeLevel"))
-							.append("nutrients", new BasicDBObject("$first", "$nutrients"))
-							.append("ingredients", new BasicDBObject("$first", "$ingredients"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
+		
 
-
-			
 			Aggregation aggregation = null;
 			if (size > 0) {
-				aggregation = Aggregation.newAggregation( Aggregation.match(criteria),
-						 Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
-						Aggregation.skip(page * size), Aggregation.limit(size));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip(page * size),
+						Aggregation.limit(size));
 			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), 
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
 
@@ -504,22 +402,8 @@ public class RecipeServiceImpl implements RecipeService {
 				request.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
 						+ " " + doctor.getFirstName());
 				request.setCreatedTime(ingredientCollection.getCreatedTime());
+				ingredientCollection = new IngredientCollection();
 				BeanUtil.map(request, ingredientCollection);
-				if (request.getNutrients() != null && !request.getNutrients().isEmpty()) {
-					List<IngredientItem> ingredientItems = new ArrayList<IngredientItem>();
-					for (IngredientAddItem item : request.getNutrients()) {
-						IngredientItem ingredientItem = new IngredientItem();
-						BeanUtil.map(item, ingredientItem);
-						ingredientItems.add(ingredientItem);
-					}
-					ingredientCollection.setNutrients(ingredientItems);
-				}
-
-				if (request.getEquivalentMeasurements() != null && !request.getEquivalentMeasurements().isEmpty()) {
-					ingredientCollection.setEquivalentMeasurements(new ArrayList<EquivalentQuantities>());
-					ingredientCollection.setEquivalentMeasurements(request.getEquivalentMeasurements());
-				}
-
 			} else {
 				ingredientCollection = new IngredientCollection();
 				BeanUtil.map(request, ingredientCollection);
@@ -550,16 +434,14 @@ public class RecipeServiceImpl implements RecipeService {
 		try {
 			Criteria criteria = new Criteria("discarded").is(discarded);
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-				criteria = criteria.orOperator(new Criteria("name").regex("^" +searchTerm, "i"),
+				criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
 						new Criteria("name").regex("^" + searchTerm));
-
 			if (!DPDoctorUtils.allStringsEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			if (!DPDoctorUtils.allStringsEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 			if (!DPDoctorUtils.allStringsEmpty(hospitalId))
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-
 			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", "$_id").append("quantity", new BasicDBObject("$first", "$quantity"))
 							.append("name", new BasicDBObject("$first", "$name"))
@@ -577,11 +459,11 @@ public class RecipeServiceImpl implements RecipeService {
 
 			Aggregation aggregation = null;
 			if (size > 0) {
-				aggregation = Aggregation.newAggregation( Aggregation.match(criteria),
-						 Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
-						Aggregation.skip(page * size), Aggregation.limit(size));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip(page * size),
+						Aggregation.limit(size));
 			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), 
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
 			response = mongoTemplate.aggregate(aggregation, IngredientCollection.class, Ingredient.class)
@@ -594,7 +476,6 @@ public class RecipeServiceImpl implements RecipeService {
 		}
 		return response;
 	}
-
 
 	@Override
 	public Ingredient discardIngredient(String id, boolean discarded) {

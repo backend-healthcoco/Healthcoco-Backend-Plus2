@@ -1,7 +1,5 @@
 package com.dpdocter.webservices;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -16,7 +14,6 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.Ingredient;
@@ -147,17 +144,14 @@ public class RecipeApi {
 	@Path(value = PathProxy.RecipeUrls.GET_NUTRIENTS)
 	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRIENTS, notes = PathProxy.RecipeUrls.GET_NUTRIENTS)
-
 	public Response<Nutrient> getNutrients(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") Boolean discarded,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("category") String category) {
 
 		Response<Nutrient> response = new Response<Nutrient>();
-
 		response.setDataList(recipeService.getNutrients(size, page, discarded, searchTerm, category, doctorId,
 				locationId, hospitalId));
-
 		return response;
 	}
 

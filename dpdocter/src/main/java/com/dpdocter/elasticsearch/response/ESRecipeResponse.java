@@ -229,4 +229,5 @@ public class ESRecipeResponse {
 	public void setCostType(LevelType costType) {
 		this.costType = costType;
 	}
+
 }

@@ -43,9 +43,6 @@ public class RecipeCollection extends GenericCollection {
 	private List<RecipeItem> ingredients;
 
 	@Field
-	private List<IngredientItem> nutrients;
-
-	@Field
 	private ObjectId locationId;
 
 	@Field
@@ -219,14 +216,6 @@ public class RecipeCollection extends GenericCollection {
 
 	public void setIngredients(List<RecipeItem> ingredients) {
 		this.ingredients = ingredients;
-	}
-
-	public List<IngredientItem> getNutrients() {
-		return nutrients;
-	}
-
-	public void setNutrients(List<IngredientItem> nutrients) {
-		this.nutrients = nutrients;
 	}
 
 	public String getDishType() {

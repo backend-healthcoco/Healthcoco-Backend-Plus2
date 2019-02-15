@@ -25,8 +25,6 @@ public class Recipe extends GenericCollection {
 
 	private List<RecipeAddItem> ingredients;
 
-	private List<IngredientAddItem> nutrients;
-
 	private String dishType;
 
 	private List<String> mealTiming;
@@ -267,12 +265,60 @@ public class Recipe extends GenericCollection {
 		this.ingredients = ingredients;
 	}
 
-	public List<IngredientAddItem> getNutrients() {
-		return nutrients;
+	public MealQuantity getFat() {
+		return fat;
 	}
 
-	public void setNutrients(List<IngredientAddItem> nutrients) {
-		this.nutrients = nutrients;
+	public void setFat(MealQuantity fat) {
+		this.fat = fat;
+	}
+
+	public MealQuantity getProtein() {
+		return protein;
+	}
+
+	public void setProtein(MealQuantity protein) {
+		this.protein = protein;
+	}
+
+	public MealQuantity getCarbohydreate() {
+		return carbohydreate;
+	}
+
+	public void setCarbohydreate(MealQuantity carbohydreate) {
+		this.carbohydreate = carbohydreate;
+	}
+
+	public List<IngredientAddItem> getCarbNutrients() {
+		return carbNutrients;
+	}
+
+	public void setCarbNutrients(List<IngredientAddItem> carbNutrients) {
+		this.carbNutrients = carbNutrients;
+	}
+
+	public List<IngredientAddItem> getLipidNutrients() {
+		return lipidNutrients;
+	}
+
+	public void setLipidNutrients(List<IngredientAddItem> lipidNutrients) {
+		this.lipidNutrients = lipidNutrients;
+	}
+
+	public List<IngredientAddItem> getMineralNutrients() {
+		return mineralNutrients;
+	}
+
+	public void setMineralNutrients(List<IngredientAddItem> mineralNutrients) {
+		this.mineralNutrients = mineralNutrients;
+	}
+
+	public List<IngredientAddItem> getOtherNutrients() {
+		return otherNutrients;
+	}
+
+	public void setOtherNutrients(List<IngredientAddItem> otherNutrients) {
+		this.otherNutrients = otherNutrients;
 	}
 
 	public MealQuantity getQuantity() {
@@ -329,62 +375,6 @@ public class Recipe extends GenericCollection {
 
 	public void setFiber(MealQuantity fiber) {
 		this.fiber = fiber;
-	}
-
-	public MealQuantity getFat() {
-		return fat;
-	}
-
-	public void setFat(MealQuantity fat) {
-		this.fat = fat;
-	}
-
-	public MealQuantity getProtein() {
-		return protein;
-	}
-
-	public void setProtein(MealQuantity protein) {
-		this.protein = protein;
-	}
-
-	public MealQuantity getCarbohydreate() {
-		return carbohydreate;
-	}
-
-	public void setCarbohydreate(MealQuantity carbohydreate) {
-		this.carbohydreate = carbohydreate;
-	}
-
-	public List<IngredientAddItem> getCarbNutrients() {
-		return carbNutrients;
-	}
-
-	public void setCarbNutrients(List<IngredientAddItem> carbNutrients) {
-		this.carbNutrients = carbNutrients;
-	}
-
-	public List<IngredientAddItem> getLipidNutrients() {
-		return lipidNutrients;
-	}
-
-	public void setLipidNutrients(List<IngredientAddItem> lipidNutrients) {
-		this.lipidNutrients = lipidNutrients;
-	}
-
-	public List<IngredientAddItem> getMineralNutrients() {
-		return mineralNutrients;
-	}
-
-	public void setMineralNutrients(List<IngredientAddItem> mineralNutrients) {
-		this.mineralNutrients = mineralNutrients;
-	}
-
-	public List<IngredientAddItem> getOtherNutrients() {
-		return otherNutrients;
-	}
-
-	public void setOtherNutrients(List<IngredientAddItem> otherNutrients) {
-		this.otherNutrients = otherNutrients;
 	}
 
 	public List<IngredientAddItem> getGeneralNutrients() {
