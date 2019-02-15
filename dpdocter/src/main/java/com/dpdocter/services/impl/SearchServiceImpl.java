@@ -118,38 +118,9 @@ public class SearchServiceImpl implements SearchService {
 				speciality = speciality.replaceAll("-", " ");
 			}
 
-			if (DPDoctorUtils.allStringsEmpty(service) || service.equalsIgnoreCase("undefined")) {
-				service = null;
-			} else {
-				service = service.replace("doctors-for-","").replaceAll("-", " ");
-			}
-
-			if (!(DPDoctorUtils.allStringsEmpty(expertIn) || expertIn.equalsIgnoreCase("undefined") || expertIn.equalsIgnoreCase("DOCTOR"))) {
-				
-				if(expertIn.startsWith("doctors-for-")) {
-					service = expertIn.replace("doctors-for-","").replaceAll("-", " ");
-					QueryBuilder serviceQueryBuilder = createServiceFilter(service);
-					if (serviceQueryBuilder != null) {
-						boolQueryBuilder.must(serviceQueryBuilder);
-						boolQueryBuilderForNearByDoctors.must(serviceQueryBuilder);
-					}
-				}
-				else {
-					speciality = expertIn.replaceAll("-", " ");
-					QueryBuilder specialityQueryBuilder = createSpecialityFilter(speciality);
-					if (specialityQueryBuilder != null) {
-						boolQueryBuilder.must(specialityQueryBuilder);
-						boolQueryBuilderForNearByDoctors.must(specialityQueryBuilder);
-					}
-				}
-			}
-			
-			if (booking != null && calling != null && !(booking && calling)) { 
-				QueryBuilder facilityQueryBuilder = createFacilityBuilder(booking, calling);
-				if (facilityQueryBuilder != null) {
-					boolQueryBuilder.must(facilityQueryBuilder);
-					boolQueryBuilderForNearByDoctors.must(facilityQueryBuilder);
-				}
+			if (specialityQueryBuilder != null) {
+				boolQueryBuilder.must(specialityQueryBuilder);
+				boolQueryBuilderForNearByDoctors.must(specialityQueryBuilder);
 			}
 
 			if (serviceQueryBuilder != null) {
@@ -278,10 +249,10 @@ public class SearchServiceImpl implements SearchService {
 				
 				} else if (!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("NAGPUR")) {
 					
-					String unformattedService = "Doctor for "+StringUtils.capitalize(service);
+					String unformattedService = "Doctor for "+StringUtils.capitalize(service)+" treatment";
 					response.setUnformattedService(unformattedService);
 					
-					service = "doctor-for-"+service.toLowerCase().replaceAll(" ", "-");
+					service = "doctor-for-"+service.toLowerCase().replaceAll(" ", "-")+"-treatment";
 					response.setService(service);
 					
 					
