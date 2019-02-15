@@ -51,6 +51,7 @@ import com.dpdocter.collections.ProcedureNoteCollection;
 import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.ResumeCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.ServicesCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
@@ -95,7 +96,6 @@ import com.dpdocter.repository.CityRepository;
 import com.dpdocter.repository.ContactUsRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DrugRepository;
-import com.dpdocter.repository.DrugTypeRepository;
 import com.dpdocter.repository.EducationInstituteRepository;
 import com.dpdocter.repository.EducationQualificationRepository;
 import com.dpdocter.repository.HospitalRepository;
@@ -106,6 +106,7 @@ import com.dpdocter.repository.MedicalCouncilRepository;
 import com.dpdocter.repository.ProcedureNoteRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.ResumeRepository;
+import com.dpdocter.repository.ServicesRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
@@ -187,9 +188,6 @@ public class AdminServicesImpl implements AdminServices {
 
 	@Autowired
 	private DrugRepository drugRepository;
-
-	@Autowired
-	private DrugTypeRepository drugTypeRepository;
 
 	@Autowired
 	private ProfessionalMembershipRepository professionalMembershipRepository;
@@ -356,10 +354,7 @@ public class AdminServicesImpl implements AdminServices {
 	@Override
 	@Transactional
 	public void importDrug() {
-		String csvFile = "/home/ubuntu/Drugs.csv";
 		BufferedReader br = null;
-		String line = "";
-		String cvsSplitBy = ",";
 
 		try {
 			// br = new BufferedReader(new FileReader(csvFile));

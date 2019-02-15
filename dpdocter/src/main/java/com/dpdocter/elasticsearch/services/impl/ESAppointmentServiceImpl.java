@@ -45,17 +45,16 @@ import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESLabTestDocument;
 import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.document.ESLocationDocument;
+import com.dpdocter.elasticsearch.document.ESServicesDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
-import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
-import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.repository.ESCityRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.elasticsearch.repository.ESLandmarkLocalityRepository;
 import com.dpdocter.elasticsearch.repository.ESLocationRepository;
+import com.dpdocter.elasticsearch.repository.ESServicesRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
-import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
 import com.dpdocter.elasticsearch.response.ESWEBResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
@@ -98,7 +97,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	private ESDiagnosticTestRepository esDiagnosticTestRepository;
 
 	@Autowired
-	private ESTreatmentServiceRepository esTreatmentServiceRepository;
+	private ESServicesRepository esServicesRepository;
 
 	@Autowired
 	TransportClient transportClient;
@@ -120,7 +119,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			response = searchSpeciality(response, searchTerm);
 			// response = searchSymptons(response, searchTerm);
 			response = searchTests(response, searchTerm);
-			response = searchTreatmentService(response, searchTerm);
+			response = searchService(response, searchTerm);
 			response = searchDoctors(response, city, location, latitude, longitude, searchTerm);
 			response = searchLocations(response, city, location, latitude, longitude, searchTerm);
 			response = searchPharmacy(response, city, location, latitude, longitude, searchTerm);
@@ -419,21 +418,21 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		return response;
 	}
 
-	private List<AppointmentSearchResponse> searchTreatmentService(List<AppointmentSearchResponse> response,
+	private List<AppointmentSearchResponse> searchService(List<AppointmentSearchResponse> response,
 			String searchTerm) {
 		if (response.size() < 50) {
-			List<ESTreatmentServiceDocument> treatmentServiceDocuments = esTreatmentServiceRepository
-					.findByName(searchTerm);
-			Set<String> esTreatmentServiceset = null;
-			if (treatmentServiceDocuments != null) {
-				esTreatmentServiceset = new HashSet<String>();
-				for (ESTreatmentServiceDocument esTreatmentServiceDocument : treatmentServiceDocuments) {
-					if (esTreatmentServiceset.size() >= 50)
+			List<ESServicesDocument> serviceDocuments = esServicesRepository
+					.findByQueryAnnotation(searchTerm);
+			Set<String> esServiceset = null;
+			if (serviceDocuments != null) {
+				esServiceset = new HashSet<String>();
+				for (ESServicesDocument esServiceDocument : serviceDocuments) {
+					if (esServiceset.size() >= 50)
 						break;
-					esTreatmentServiceset.add(esTreatmentServiceDocument.getName());
+					esServiceset.add(esServiceDocument.getService());
 
 				}
-				for (String serviceName : esTreatmentServiceset) {
+				for (String serviceName : esServiceset) {
 					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
 					appointmentSearchResponse.setResponse(serviceName);
 					appointmentSearchResponse.setResponseType(AppointmentResponseType.SERVICE);
@@ -513,14 +512,13 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		return response;
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ESDoctorDocument> getDoctors(int page, int size, String city, String location, String latitude,
 			String longitude, String speciality, String symptom, Boolean booking, Boolean calling, int minFee,
 			int maxFee, int minTime, int maxTime, List<String> days, String gender, int minExperience,
 			int maxExperience, String service) {
 		List<ESDoctorDocument> esDoctorDocuments = null;
-		List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = null;
 		List<ESDoctorDocument> response = null;
 		if (size == 0)
 			size = 10;
@@ -539,54 +537,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (DPDoctorUtils.anyStringEmpty(longitude, latitude))
 				return esDoctorDocuments;
 
-			Set<String> specialityIdSet = new HashSet<String>();
-			Set<String> locationIds = null, doctorIds = null;
-
-//			if (!DPDoctorUtils.anyStringEmpty(service)) {
-//				List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository
-//						.findByName(service);
-//				if (esTreatmentServiceDocuments != null) {
-//					Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments,
-//							new BeanToPropertyValueTransformer("id"));
-//					Collection<String> specialities = CollectionUtils.collect(esTreatmentServiceDocuments,
-//							new BeanToPropertyValueTransformer("speciality"));
-//
-//					for (String specialitySTR : specialities) {
-//						List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
-//								.findByQueryAnnotation(specialitySTR);
-//						if (esSpecialityDocuments != null && !esSpecialityDocuments.isEmpty()) {
-//							Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments,
-//									new BeanToPropertyValueTransformer("id"));
-//							if (specialityIds != null) {
-//								specialityIdSet.addAll(specialityIds);
-//							}
-//						}
-//
-//					}
-//
-//					int count = (int) elasticsearchTemplate.count(
-//							new CriteriaQuery(new Criteria("treatmentServiceId").in(serviceIds)),
-//							ESTreatmentServiceCostDocument.class);
-//					if (count > 0)
-//						esTreatmentServiceCostDocuments = elasticsearchTemplate.queryForList(
-//								new NativeSearchQueryBuilder()
-//										.withQuery(QueryBuilders.termsQuery("treatmentServiceId", serviceIds))
-//										.withPageable(new PageRequest(0, count)).build(),
-//								ESTreatmentServiceCostDocument.class);
-//
-//				}
-//				if (esTreatmentServiceCostDocuments == null || esTreatmentServiceCostDocuments.isEmpty()) {
-//					return null;
-//				}
-//				locationIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
-//						new BeanToPropertyValueTransformer("locationId")));
-//				doctorIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
-//						new BeanToPropertyValueTransformer("doctorId")));
-//
-//				locationIds.remove(null);
-//				doctorIds.remove(null);
-//			}
-
 			QueryBuilder specialityQueryBuilder = createSpecialityFilter(speciality);
 			QueryBuilder serviceQueryBuilder = createServiceFilter(service);
 			QueryBuilder facilityQueryBuilder = createFacilityBuilder(booking, calling);
@@ -597,31 +547,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 						.must(QueryBuilders.matchQuery("isDoctorListed", true))
 						.must(QueryBuilders.matchQuery("isClinic", true));
-				if (specialityIdSet != null && !specialityIdSet.isEmpty()) {
-					boolQueryBuilder.must(QueryBuilders.termsQuery("specialities", specialityIdSet));
-				}
-
-				if ((locationIds != null && !locationIds.isEmpty()) && (doctorIds != null && !doctorIds.isEmpty())) {
-					boolQueryBuilder.must(QueryBuilders.termsQuery("userId", doctorIds))
-							.must(QueryBuilders.termsQuery("locationId", locationIds));
-				}
-
-				/*
-				 * if (!DPDoctorUtils.anyStringEmpty(symptom)) { List<ESComplaintsDocument>
-				 * esComplaintsDocuments = esComplaintsRepository.findByComplaint(symptom); if
-				 * (esComplaintsDocuments == null || esComplaintsDocuments.isEmpty()) { return
-				 * null; } Set<String> locationIds = new
-				 * HashSet<>(CollectionUtils.collect(esComplaintsDocuments, new
-				 * BeanToPropertyValueTransformer("locationId"))); Set<String> doctorIds = new
-				 * HashSet<>( CollectionUtils.collect(esComplaintsDocuments, new
-				 * BeanToPropertyValueTransformer("doctorId")));
-				 * 
-				 * locationIds.remove(null); doctorIds.remove(null); if ((locationIds == null ||
-				 * locationIds.isEmpty()) && (doctorIds == null || doctorIds.isEmpty())) {
-				 * return null; } boolQueryBuilder.must(QueryBuilders.termsQuery("userId",
-				 * doctorIds)) .must(QueryBuilders.termsQuery("locationId", locationIds)); }
-				 */
-
 				if (specialityQueryBuilder != null)
 					boolQueryBuilder.must(specialityQueryBuilder);
 				
@@ -681,19 +606,20 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 			if (esDoctorDocuments != null) {
 
-				List<String> specialities = null;
 				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 
 					if (doctorDocument.getSpecialities() != null) {
-						specialities = new ArrayList<String>();
-						for (String specialityId : doctorDocument.getSpecialities()) {
-							ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
-							if (specialityCollection != null) {
-								specialities.add(specialityCollection.getSuperSpeciality());
-
-							}
+						Iterable<ESSpecialityDocument> specialities = esSpecialityRepository.findAll(doctorDocument.getSpecialities());
+						if(specialities != null) {
+							doctorDocument.setServices((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("superSpeciality")));
 						}
-						doctorDocument.setSpecialities(specialities);
+					}
+
+					if (doctorDocument.getServices() != null) {
+						Iterable<ESServicesDocument> services = esServicesRepository.findAll(doctorDocument.getServices());
+						if(services != null) {
+							doctorDocument.setServices((List<String>)CollectionUtils.collect(services.iterator(), new BeanToPropertyValueTransformer("service")));
+						}					
 					}
 
 					if (doctorDocument.getImageUrl() != null)
@@ -761,10 +687,10 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		QueryBuilder queryBuilder = null;
 		if (!DPDoctorUtils.anyStringEmpty(service)) {
 			
-			List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository.findByName(service);
+			List<ESServicesDocument> esServicesDocuments = esServicesRepository.findByQueryAnnotation(service);
 			
-			if (esTreatmentServiceDocuments != null) {
-				Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments,
+			if (esServicesDocuments != null) {
+				Collection<String> serviceIds = CollectionUtils.collect(esServicesDocuments,
 						new BeanToPropertyValueTransformer("id"));
 				if (serviceIds == null)
 					serviceIds = CollectionUtils.EMPTY_COLLECTION;
@@ -774,12 +700,10 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		return queryBuilder;
 	}
 
-	@SuppressWarnings({ "unchecked" })
 	@Override
 	public Integer getDoctorCount(String city, String location, String latitude, String longitude, String speciality,
 			String symptom, Boolean booking, Boolean calling, int minFee, int maxFee, int minTime, int maxTime,
 			List<String> days, String gender, int minExperience, int maxExperience, String service) {
-		List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = null;
 		Integer response = 0;
 		try {
 
@@ -797,52 +721,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			Set<String> specialityIdSet = new HashSet<String>();
 			Set<String> locationIds = null, doctorIds = null;
 
-			if (!DPDoctorUtils.anyStringEmpty(service)) {
-				List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository
-						.findByName(service);
-				if (esTreatmentServiceDocuments != null) {
-					Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments,
-							new BeanToPropertyValueTransformer("id"));
-					Collection<String> specialities = CollectionUtils.collect(esTreatmentServiceDocuments,
-							new BeanToPropertyValueTransformer("speciality"));
-
-					for (String specialitySTR : specialities) {
-						List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
-								.findByQueryAnnotation(specialitySTR);
-						if (esSpecialityDocuments != null && !esSpecialityDocuments.isEmpty()) {
-							Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments,
-									new BeanToPropertyValueTransformer("id"));
-							if (specialityIds != null) {
-								specialityIdSet.addAll(specialityIds);
-							}
-						}
-
-					}
-
-					int count = (int) elasticsearchTemplate.count(
-							new CriteriaQuery(new Criteria("treatmentServiceId").in(serviceIds)),
-							ESTreatmentServiceCostDocument.class);
-					if (count > 0)
-						esTreatmentServiceCostDocuments = elasticsearchTemplate.queryForList(
-								new NativeSearchQueryBuilder()
-										.withQuery(QueryBuilders.termsQuery("treatmentServiceId", serviceIds))
-										.withPageable(new PageRequest(0, count)).build(),
-								ESTreatmentServiceCostDocument.class);
-
-				}
-				if (esTreatmentServiceCostDocuments == null || esTreatmentServiceCostDocuments.isEmpty()) {
-					return null;
-				}
-				locationIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
-						new BeanToPropertyValueTransformer("locationId")));
-				doctorIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
-						new BeanToPropertyValueTransformer("doctorId")));
-
-				locationIds.remove(null);
-				doctorIds.remove(null);
-			}
-
 			QueryBuilder specialityQueryBuilder = createSpecialityFilter(speciality);
+			QueryBuilder serviceQueryBuilder = createServiceFilter(service);
 			QueryBuilder facilityQueryBuilder = createFacilityBuilder(booking, calling);
 			Integer distance = 4;
 			String citylongitude = null, citylatitude = null;
@@ -900,6 +780,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 				if (specialityQueryBuilder != null)
 					boolQueryBuilder.must(specialityQueryBuilder);
+				if (serviceQueryBuilder != null)
+					boolQueryBuilder.must(serviceQueryBuilder);
 				if (facilityQueryBuilder != null)
 					boolQueryBuilder.must(facilityQueryBuilder);
 
@@ -1531,13 +1413,12 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (DPDoctorUtils.allStringsEmpty(speciality) || speciality.equalsIgnoreCase("undefined")) {
 				speciality = null;
 			} else {
-				speciality = speciality.replace("-", " ");
+				speciality = speciality.replaceAll("-", " ");
 			}
-			
 			if (DPDoctorUtils.allStringsEmpty(service) || service.equalsIgnoreCase("undefined")) {
 				service = null;
 			} else {
-				service = service.replace("-", " ");
+				service = service.replaceAll("-", " ");
 			}
 			
 			List<ESDoctorDocument> doctors = getDoctors(page, size, city, location, latitude, longitude, speciality,

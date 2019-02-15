@@ -168,6 +168,7 @@ public class AdminAPI {
 		response.setData(adminServices.addServices());
 		return response;
 	}
+<<<<<<< HEAD
 	
 	@Path(value = PathProxy.AdminUrls.UPDATE_SERVICES_AND_SPECIALITIES_IN_DOCTORS)
 	@GET
@@ -180,4 +181,6 @@ public class AdminAPI {
 	}
 	
 	
+=======
+>>>>>>> 7ebc3fc8a... HAPPY-4192 Backend : Dpdocter : Add/Edit/Get Services(For doctor search)
 }

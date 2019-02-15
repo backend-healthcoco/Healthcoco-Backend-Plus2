@@ -34,6 +34,7 @@ import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Role;
+import com.dpdocter.beans.Services;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.beans.UIPermissions;
@@ -50,8 +51,8 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.RoleCollection;
+import com.dpdocter.collections.ServicesCollection;
 import com.dpdocter.collections.SpecialityCollection;
-import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
@@ -70,9 +71,8 @@ import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DynamicUIRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.RecommendationsRepository;
-import com.dpdocter.repository.RoleRepository;
+import com.dpdocter.repository.ServicesRepository;
 import com.dpdocter.repository.SpecialityRepository;
-import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserResourceFavouriteRepository;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
@@ -127,15 +127,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Autowired
 	private SpecialityRepository specialityRepository;
-
+	
 	@Autowired
-	private TreatmentServicesRepository treatmentServicesRepository;
-
+	private ServicesRepository servicesRepository;
+	
 	@Autowired
 	private FileManager fileManager;
-
-	@Autowired
-	private RoleRepository roleRepository;
 
 	@Autowired
 	private TransactionalManagementService transnationalService;
@@ -595,8 +592,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 				if (doctorCollection.getServices() != null && !doctorCollection.getServices().isEmpty()) {
 					services = (List<String>) CollectionUtils.collect(
-							(Collection<?>) treatmentServicesRepository.findAll(doctorCollection.getServices()),
-							new BeanToPropertyValueTransformer("name"));
+							(Collection<?>) servicesRepository.findAll(doctorCollection.getServices()),
+							new BeanToPropertyValueTransformer("service"));
 				}
 				doctorProfile.setServices(services);
 
@@ -1052,6 +1049,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		return qualifications;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	public DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request) {
@@ -1094,10 +1092,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					List<SpecialityCollection> specialityCollections = specialityRepository
 							.findBySuperSpeciality(request.getSpeciality());
 					if (specialityCollections != null && !specialityCollections.isEmpty()) {
-						@SuppressWarnings("unchecked")
 						Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections,
 								new BeanToPropertyValueTransformer("id"));
-						@SuppressWarnings("unchecked")
 						Collection<String> specialities = CollectionUtils.collect(specialityCollections,
 								new BeanToPropertyValueTransformer("superSpeciality"));
 						Collection<String> parentSpecialities = CollectionUtils.collect(specialityCollections,
@@ -1506,8 +1502,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 				if (doctorCollection.getServices() != null && !doctorCollection.getServices().isEmpty()) {
 					services = (List<String>) CollectionUtils.collect(
-							(Collection<?>) treatmentServicesRepository.findAll(doctorCollection.getServices()),
-							new BeanToPropertyValueTransformer("name"));
+							(Collection<?>) servicesRepository.findAll(doctorCollection.getServices()),
+							new BeanToPropertyValueTransformer("service"));
 				}
 				doctorProfile.setServices(services);
 
@@ -1656,8 +1652,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			if (doctorCollection != null) {
 				response = new DoctorServicesAddEditRequest();
 				if (request.getServices() != null && !request.getServices().isEmpty()) {
-					List<TreatmentServicesCollection> servicesCollections = treatmentServicesRepository
-							.findbyServicesName(request.getServices());
+					List<ServicesCollection> servicesCollections = servicesRepository
+							.findbyService(request.getServices());
 					@SuppressWarnings("unchecked")
 					Collection<ObjectId> serviceIds = CollectionUtils.collect(servicesCollections,
 							new BeanToPropertyValueTransformer("id"));
@@ -1702,5 +1698,29 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			return response;
 	}
 
-
+	@Override
+	public List<Services> getServices(int page, int size, String updatedTime) {
+		List<Services> response = null;
+		try {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			Aggregation aggregation = null;
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(
+						Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(
+						Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<Services> aggregationResults = mongoTemplate.aggregate(aggregation,
+					ServicesCollection.class, Services.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting Services");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Services");
+		}
+		return response;
+	}
 }

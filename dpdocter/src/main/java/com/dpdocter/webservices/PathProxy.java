@@ -797,6 +797,8 @@ public interface PathProxy {
 
 		public static final String ADD_EDIT_SERVICES = "/addEditServices";
 
+		public static final String GET_SERVICES = "/services";
+
 	}
 
 	public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";
@@ -1205,7 +1207,6 @@ public interface PathProxy {
 		public static final String ADD_SERVICES = "/services/add";
 
 		public static final String UPDATE_SERVICES_AND_SPECIALITIES_IN_DOCTORS = "/updateServicesAndSpecialities";
-
 	}
 
 	public static final String PUSH_NOTIFICATION_BASE_URL = BASE_URL + "/notification";
