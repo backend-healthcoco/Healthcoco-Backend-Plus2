@@ -1459,7 +1459,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		List<DoctorClinicProfile> clinicProfile = new ArrayList<DoctorClinicProfile>();
 		List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = null;
 		try {
-			Criteria criteria = new Criteria("user.userUId").is(userUId);
+			Criteria criteria = new Criteria("user.userUId").is(userUId).and("isDoctorListed").is(true);
 
 			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.lookup("location_cl", "locationId", "_id", "location"),
@@ -1680,26 +1680,25 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public Boolean addEditDrugTypePlacement(String doctorId , String drugTypePlacement) {
-			Boolean response = false;
-			DoctorCollection doctorCollection = null;
-			try {
-				doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-				if (doctorCollection != null) {
-					doctorCollection.setDrugTypePlacement(drugTypePlacement);
-					doctorRepository.save(doctorCollection);
-					response = true;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error(e + " Error Editing Drug type placement");
-				throw new BusinessException(ServiceError.Unknown, "Error Editing Drug type placement");
+	public Boolean addEditDrugTypePlacement(String doctorId, String drugTypePlacement) {
+		Boolean response = false;
+		DoctorCollection doctorCollection = null;
+		try {
+			doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection != null) {
+				doctorCollection.setDrugTypePlacement(drugTypePlacement);
+				doctorRepository.save(doctorCollection);
+				response = true;
 			}
-			return response;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Editing Drug type placement");
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Drug type placement");
+		}
+		return response;
 	}
-
 
 }
