@@ -127,10 +127,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Autowired
 	private SpecialityRepository specialityRepository;
-	
+
 	@Autowired
 	private ServicesRepository servicesRepository;
-	
+
 	@Autowired
 	private FileManager fileManager;
 
@@ -552,7 +552,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					Aggregation.lookup("hospital_cl", "location.hospitalId", "_id", "hospital"),
 					Aggregation.unwind("hospital"), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
 					Aggregation.unwind("user"), Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
-					Aggregation.unwind("doctor")).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+					Aggregation.unwind("doctor"))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(aggregation,
 					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
 			if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
@@ -1456,7 +1457,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		List<DoctorClinicProfile> clinicProfile = new ArrayList<DoctorClinicProfile>();
 		List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = null;
 		try {
-			Criteria criteria = new Criteria("user.userUId").is(userUId);
+			Criteria criteria = new Criteria("user.userUId").is(userUId).and("isDoctorListed").is(true);
 
 			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.lookup("location_cl", "locationId", "_id", "location"),
@@ -1719,4 +1720,5 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
+
 }
