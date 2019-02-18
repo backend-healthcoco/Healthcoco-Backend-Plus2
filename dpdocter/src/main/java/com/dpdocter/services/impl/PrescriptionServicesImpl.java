@@ -3964,7 +3964,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								duration = "--";
 							else
 								duration = durationValue + " " + durationUnit;
-							no = no + 1;
+							
 
 							PrescriptionJasperDetails prescriptionJasperDetails = null;
 							if (printSettings.getContentSetup() != null) {
