@@ -1,8 +1,6 @@
 package com.dpdocter.tests;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -15,8 +13,50 @@ public class GeneralTests {
 
 	public static void main(String args[]) throws SAXException, IOException, DocumentException, ParserConfigurationException {
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
-		sdf.format(new Date(Long.parseLong("1520286012812")));
-        System.out.println(sdf.format(new Date(Long.parseLong("1520286012812"))));
+//		int startMillis = 480;
+//        int endMillis = 720;
+//        int durationMillis = endMillis - startMillis;
+//        int chunkSize = 25;
+//
+//        while(startMillis < endMillis) {
+//            System.out.println(startMillis);
+//            int cal = startMillis += chunkSize;
+//            System.out.println(cal);
+//            
+//            System.out.println(String.format("%02d:%02d", startMillis / 60, startMillis % 60));
+//            System.out.println(String.format("%02d:%02d", cal / 60, cal % 60));
+//        }
+        
+		String service = "-abc-";
+		String slugUrl = service.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-");
+		
+//		int countOfCharoccurence = Strings.countOccurrencesOf(slugUrl, "--");
+//		if(countOfCharoccurence > 0) {
+//			slugUrl = slugUrl.replaceAll("--","-");
+//		}
+//		char[] repeat = new char[countOfCharoccurence];
+//		Arrays.fill(repeat, '-');
+//		slugUrl = slugUrl.replace(repeat.toString(), "-");
+			
+//		slugUrl = "doctors-for-"+slugUrl;
+		
+//		int length = slugUrl.length();
+//		char[] updatedSlug = slugUrl.toCharArray();
+//		char[] newSLug = {};
+//		
+//		Boolean isPresent = false;
+//		for(int i = 0; i<length; i++) {
+//			if(updatedSlug[i] == '-') {
+//				for(int j=i; j<length; j++) {
+//					if(updatedSlug[j] == '-') {
+//						
+//					}
+//				}
+//			}
+//		}
+		
+		System.out.println(slugUrl.replaceAll("-*-","-"));
+//		System.out.println(Pattern.compile(slugUrl).matcher(slugUrl).replaceAll("-*-"));
+		
 	}
 }
