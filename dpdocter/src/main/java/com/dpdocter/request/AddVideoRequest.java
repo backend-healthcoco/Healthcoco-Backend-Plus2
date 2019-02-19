@@ -2,8 +2,6 @@ package com.dpdocter.request;
 
 import java.util.List;
 
-import common.util.web.JacksonUtil;
-
 public class AddVideoRequest {
 
 	private String name;

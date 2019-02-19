@@ -1,7 +1,5 @@
 package com.dpdocter.response;
 
-import org.bson.types.ObjectId;
-
 public class MasterVaccineResponse {
 
 	private String id;

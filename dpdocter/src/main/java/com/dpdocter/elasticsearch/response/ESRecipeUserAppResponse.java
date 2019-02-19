@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.MealQuantity;
-import com.dpdocter.response.RecipeItemResponse;
 
 public class ESRecipeUserAppResponse {
 	private String id;

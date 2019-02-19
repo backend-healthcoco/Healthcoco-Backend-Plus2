@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import com.dpdocter.beans.v2.PrescriptionItemDetail;
 import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.WorkingHours;

@@ -4,7 +4,6 @@ import java.util.Date;
 
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.PatientCard;
-import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;

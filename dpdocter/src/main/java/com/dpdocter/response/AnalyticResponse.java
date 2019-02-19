@@ -3,9 +3,6 @@ package com.dpdocter.response;
 import java.util.Date;
 import java.util.List;
 
-import com.dpdocter.beans.Address;
-import com.dpdocter.beans.DOB;
-import com.dpdocter.beans.GroupPatientCount;
 import com.dpdocter.beans.PatientAnalyticData;
 
 public class AnalyticResponse {

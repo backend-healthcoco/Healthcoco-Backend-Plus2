@@ -58,7 +58,6 @@ import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.CollectionBoyDoctorAssociationCollection;
 import com.dpdocter.collections.DentalLabDoctorAssociationCollection;
 import com.dpdocter.collections.DentalLabPickupCollection;
-import com.dpdocter.collections.DentalLabPrintSettingCollection;
 import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.DentalWorksAmountCollection;
 import com.dpdocter.collections.DentalWorksInvoiceCollection;

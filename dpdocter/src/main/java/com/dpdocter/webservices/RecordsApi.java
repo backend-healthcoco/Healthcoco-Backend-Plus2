@@ -153,14 +153,14 @@ public class RecordsApi {
 			@QueryParam("page") int page, @QueryParam("size") int size,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
-			@DefaultValue("false") @QueryParam("isDoctorApp") Boolean isDoctorApp) {
+			@DefaultValue("false") @QueryParam("isDoctorApp") Boolean isDoctorApp, @QueryParam(value = "sortBy") String sortBy) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("Patient Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
 		}
 
 		Response<Object> response = recordsService.getRecordsByPatientId(patientId, page, size, updatedTime, discarded,
-				isDoctorApp);
+				isDoctorApp, sortBy);
 		return response;
 
 	}

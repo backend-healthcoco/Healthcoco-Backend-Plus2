@@ -3,10 +3,9 @@ package com.dpdocter.response.v2;
 import java.util.Date;
 
 import com.dpdocter.beans.Location;
-import com.dpdocter.beans.v2.PatientCard;
-import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.beans.v2.PatientCard;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;

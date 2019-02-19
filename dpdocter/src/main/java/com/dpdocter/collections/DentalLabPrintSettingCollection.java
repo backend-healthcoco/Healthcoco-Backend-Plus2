@@ -4,17 +4,10 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.FooterSetup;
 import com.dpdocter.beans.HeaderSetup;
-import com.dpdocter.beans.PageSetup;
-import com.dpdocter.beans.PrintSettingsText;
-import com.dpdocter.enums.ComponentType;
-import com.dpdocter.enums.LineSpace;
-import com.dpdocter.enums.LineStyle;
 
 @Document(collection = "dental_lab_print_settings_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })

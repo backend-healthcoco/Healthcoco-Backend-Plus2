@@ -17,16 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.v2.DoctorContactsResponse;
 import com.dpdocter.beans.v2.PatientCard;
-import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.enums.ContactsSearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.services.v2.ContactsService;
 import com.dpdocter.services.v2.PatientVisitService;
-import com.dpdocter.webservices.v2.PathProxy;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;

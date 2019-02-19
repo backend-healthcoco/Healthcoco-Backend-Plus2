@@ -2,10 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.response.ImageURLResponse;
 
 public class LabPrintDocument {

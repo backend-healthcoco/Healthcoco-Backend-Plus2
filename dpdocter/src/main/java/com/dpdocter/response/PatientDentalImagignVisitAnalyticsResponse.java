@@ -1,11 +1,9 @@
 package com.dpdocter.response;
 
-import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import com.dpdocter.beans.PatientAnalyticData;
 import com.dpdocter.beans.User;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)

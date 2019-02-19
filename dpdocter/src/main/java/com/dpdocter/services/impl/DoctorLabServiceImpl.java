@@ -48,7 +48,6 @@ import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.DoctorLabDoctorReferenceCollection;
 import com.dpdocter.collections.DoctorLabFavouriteDoctorCollection;
 import com.dpdocter.collections.DoctorLabReportCollection;
-import com.dpdocter.collections.LabPrintSettingCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.SMSTrackDetail;

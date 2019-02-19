@@ -2,7 +2,6 @@ package com.dpdocter.response.v2;
 
 import java.util.Date;
 
-import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.v2.PatientCard;
 import com.dpdocter.collections.GenericCollection;
 

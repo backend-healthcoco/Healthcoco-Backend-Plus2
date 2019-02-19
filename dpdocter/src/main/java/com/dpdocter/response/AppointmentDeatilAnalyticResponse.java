@@ -2,12 +2,6 @@ package com.dpdocter.response;
 
 import java.util.Date;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.dpdocter.collections.PatientCollection;
-
 public class AppointmentDeatilAnalyticResponse {
 
 	private Date date;

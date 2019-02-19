@@ -2,8 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import javax.ws.rs.HEAD;
-
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.CollectionBoy;

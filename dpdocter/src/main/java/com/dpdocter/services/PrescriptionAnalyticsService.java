@@ -5,8 +5,8 @@ import java.util.List;
 import com.dpdocter.beans.PrescriptionAnalyticDetail;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.DoctorAnalyticPieChartResponse;
-import com.dpdocter.response.DoctorPrescriptionItemAnalyticResponse;
 import com.dpdocter.response.DoctorPrescriptionAnalyticResponse;
+import com.dpdocter.response.DoctorPrescriptionItemAnalyticResponse;
 
 public interface PrescriptionAnalyticsService {
 

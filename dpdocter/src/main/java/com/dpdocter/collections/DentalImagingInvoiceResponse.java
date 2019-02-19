@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.DentalImagingInvoiceItem;
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.InvoiceTax;
 import com.dpdocter.beans.Location;

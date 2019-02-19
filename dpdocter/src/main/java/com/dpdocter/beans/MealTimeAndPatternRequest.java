@@ -3,7 +3,6 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.enums.MealTimeEnum;
-import com.dpdocter.enums.MealType;
 import com.dpdocter.request.MealRequest;
 
 public class MealTimeAndPatternRequest {

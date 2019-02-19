@@ -2,9 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
-
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.LocaleType;
 import com.dpdocter.enums.UserState;

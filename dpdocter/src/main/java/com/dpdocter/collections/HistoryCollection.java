@@ -16,9 +16,7 @@ import com.dpdocter.beans.DrugsAndAllergies;
 import com.dpdocter.beans.FoodAndAllergies;
 import com.dpdocter.beans.GeneralData;
 import com.dpdocter.beans.PersonalHistory;
-import com.dpdocter.beans.PrescriptionAddItem;
 import com.dpdocter.beans.PrescriptionItem;
-import com.dpdocter.request.FoodAndAllergiesRequest;
 
 @Document(collection = "history_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })

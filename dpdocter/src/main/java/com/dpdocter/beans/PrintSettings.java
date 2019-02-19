@@ -4,7 +4,6 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.LineStyle;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class PrintSettings extends GenericCollection {
 

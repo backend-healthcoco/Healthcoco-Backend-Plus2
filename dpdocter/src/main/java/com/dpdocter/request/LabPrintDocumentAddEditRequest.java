@@ -3,7 +3,6 @@ package com.dpdocter.request;
 import java.util.List;
 
 import com.dpdocter.beans.FileDetails;
-import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.response.ImageURLResponse;
 
 public class LabPrintDocumentAddEditRequest {

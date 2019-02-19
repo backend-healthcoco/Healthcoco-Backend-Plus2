@@ -2,11 +2,9 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.beans.Appointment;
-import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.QuestionAnswers;

@@ -1,7 +1,6 @@
 package com.dpdocter.tests;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 

@@ -2,7 +2,6 @@ package com.dpdocter.elasticsearch.response.v2;
 
 import java.util.List;
 
-import com.dpdocter.response.DiagnosticTestResponse;
 import com.dpdocter.response.VaccineResponse;
 
 public class GroupedVaccineResponse {
