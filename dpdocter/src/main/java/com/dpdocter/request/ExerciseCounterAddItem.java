@@ -1,12 +1,9 @@
 package com.dpdocter.request;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.Distance;
 import com.dpdocter.beans.MealQuantity;
-import com.dpdocter.beans.SimpleCalorie;
 
 public class ExerciseCounterAddItem {
 

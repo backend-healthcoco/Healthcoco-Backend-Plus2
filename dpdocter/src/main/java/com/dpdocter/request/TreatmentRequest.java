@@ -3,8 +3,8 @@ package com.dpdocter.request;
 import java.util.List;
 
 import com.dpdocter.beans.Discount;
-import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.Fields;
+import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.enums.PatientTreatmentStatus;
 

@@ -317,29 +317,9 @@ public class SearchServiceImpl implements SearchService {
 			for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 				ESDoctorWEbSearch doctorWEbSearch = new ESDoctorWEbSearch();
 				BeanUtil.map(doctorDocument, doctorWEbSearch);
-<<<<<<< HEAD
 				
 				doctorWEbSearch.setSpecialities(doctorDocument.getSpecialitiesValue());
 				doctorWEbSearch.setServices(doctorDocument.getServicesValue());
-=======
-				if (doctorDocument.getSpecialities() != null) {
-					if (doctorDocument.getSpecialities() != null) {
-						Iterable<ESSpecialityDocument> specialities = esSpecialityRepository.findAll(doctorDocument.getSpecialities());
-						if(specialities != null) {
-							doctorWEbSearch.setSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("superSpeciality")));
-							doctorWEbSearch.setParentSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("speciality")));
-						}
-					}
-				}
-
-				if (doctorDocument.getServices() != null) {
-					Iterable<ESServicesDocument> services = esServicesRepository.findAll(doctorDocument.getServices());
-					if(services != null) {
-						doctorWEbSearch.setServices((List<String>)CollectionUtils.collect(services.iterator(), new BeanToPropertyValueTransformer("service")));
-					}					
-				}
-				
->>>>>>> 62681b782... HAPPY-4192 Backend : Dpdocter : Add/Edit/Get Services(For doctor search)
 				if (doctorWEbSearch.getThumbnailUrl() != null)
 					doctorWEbSearch.setThumbnailUrl(getFinalImageURL(doctorWEbSearch.getThumbnailUrl()));
 

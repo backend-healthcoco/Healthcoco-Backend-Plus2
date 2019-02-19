@@ -1,9 +1,6 @@
 package com.dpdocter.tests;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 

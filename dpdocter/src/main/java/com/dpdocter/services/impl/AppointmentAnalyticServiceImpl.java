@@ -27,7 +27,6 @@ import com.dpdocter.beans.PatientCard;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
-import com.dpdocter.collections.PatientQueueCollection;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;

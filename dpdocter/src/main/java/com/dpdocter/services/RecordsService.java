@@ -6,7 +6,6 @@ import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
-import com.dpdocter.beans.NutritionRecord;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.Tags;
@@ -64,7 +63,7 @@ public interface RecordsService {
 	void changeLabelAndDescription(String recordId, String label, String explanation);
 
 	Response<Object> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded,
-			Boolean isDoctorApp);
+			Boolean isDoctorApp, String sortBy);
 
 	Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request);
 

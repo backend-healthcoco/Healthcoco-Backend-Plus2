@@ -1,12 +1,6 @@
-package com.dpdocter.beans;
+ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import common.util.web.JacksonUtil;
-
-import com.dpdocter.enums.DrugTypePlacement;
-
 import com.dpdocter.enums.DrugTypePlacement;
 
 public class InventoryItem extends GenericCollection {

@@ -39,9 +39,9 @@ public interface AppointmentService {
 
 	Clinic getClinic(String locationId, String role, Boolean active);
 
-	List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
+	Response<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
-			String toTime, Boolean isWeb);
+			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb);
 
 	Response<Object> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime);

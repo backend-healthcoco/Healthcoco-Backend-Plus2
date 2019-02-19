@@ -2,7 +2,6 @@ package com.dpdocter.response;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.FeedbackType;

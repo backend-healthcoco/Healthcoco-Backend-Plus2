@@ -282,10 +282,8 @@ public class AppointmentApi {
 
 			@DefaultValue(value = "false") @QueryParam(value = "isWeb") Boolean isWeb) {
 
-		List<Appointment> appointment = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
-				page, size, updatedTime, status, sortBy, fromTime, toTime, isWeb);
-		Response<Appointment> response = new Response<Appointment>();
-		response.setDataList(appointment);
+		Response<Appointment> response = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
+				page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb);
 		return response;
 	}
 

@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.DailyPatientFeedback;
-import com.dpdocter.enums.FeelingTypeEnum;
 
 @Document(collection = "daily_improvement_feedback_cl")
 public class DailyImprovementFeedbackCollection extends GenericCollection {

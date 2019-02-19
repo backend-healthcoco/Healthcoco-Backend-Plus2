@@ -26,6 +26,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
+import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -1212,7 +1213,7 @@ public class RecordsServiceImpl implements RecordsService {
 	@Override
 	@Transactional
 	public Response<Object> getRecordsByPatientId(String patientId, int page, int size, String updatedTime,
-			Boolean discarded, Boolean isDoctorApp) {
+			Boolean discarded, Boolean isDoctorApp, String sortBy) {
 		Response<Object> response = new Response<Object>();
 		List<Records> records = null;
 		List<RecordsLookupResponse> recordsLookupResponses = null;
@@ -1227,6 +1228,12 @@ public class RecordsServiceImpl implements RecordsService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
 
+			SortOperation sortOperation = Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime"));
+			if(!DPDoctorUtils.anyStringEmpty(sortBy)) {
+				if(sortBy.equalsIgnoreCase("updatedTime")) {
+				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
+			}
+			}
 			if (isDoctorApp) {
 				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong))
 						.and("isPatientDiscarded").ne(true);
@@ -1246,13 +1253,13 @@ public class RecordsServiceImpl implements RecordsService {
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
 								Aggregation.unwind("patientVisit"),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+								sortOperation,
 								Aggregation.skip((page) * size), Aggregation.limit(size));
 					else
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
 								Aggregation.unwind("patientVisit"),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+								sortOperation);
 
 					AggregationResults<RecordsLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 							RecordsCollection.class, RecordsLookupResponse.class);
@@ -1277,13 +1284,13 @@ public class RecordsServiceImpl implements RecordsService {
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
 								Aggregation.unwind("patientVisit"),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+								sortOperation,
 								Aggregation.skip((page) * size), Aggregation.limit(size));
 					else
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
 								Aggregation.unwind("patientVisit"),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+								sortOperation);
 
 					AggregationResults<RecordsLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 							RecordsCollection.class, RecordsLookupResponse.class);

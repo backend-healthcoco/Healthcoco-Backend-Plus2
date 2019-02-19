@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import com.dpdocter.beans.GenericCode;
-
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrescriptionAddItem {
 	private String drugId;

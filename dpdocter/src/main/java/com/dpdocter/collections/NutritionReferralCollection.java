@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.DrugsAndAllergies;
 import com.dpdocter.beans.PersonalHistory;
-import com.dpdocter.collections.GenericCollection;
 
 @Document(collection = "nutrition_referral_cl")
 public class NutritionReferralCollection extends GenericCollection{

@@ -18,11 +18,10 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.v2.AppointmentDetails;
-import com.dpdocter.beans.v2.ClinicalNotes;
-import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalnoteLookupBean;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.v2.AppointmentDetails;
+import com.dpdocter.beans.v2.ClinicalNotes;
 import com.dpdocter.beans.v2.Diagram;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;

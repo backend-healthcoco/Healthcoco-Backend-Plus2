@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.EquivalentQuantities;
-import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.IngredientItem;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.enums.LevelType;

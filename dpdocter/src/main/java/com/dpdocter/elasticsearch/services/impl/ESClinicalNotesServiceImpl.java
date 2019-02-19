@@ -54,7 +54,6 @@ import com.dpdocter.elasticsearch.document.ESPresentingComplaintOralCavityDocume
 import com.dpdocter.elasticsearch.document.ESPresentingComplaintThroatDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
-import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;

@@ -2,8 +2,6 @@ package com.dpdocter.beans.v2;
 
 import java.util.List;
 
-import com.dpdocter.beans.v2.PatientCard;
-
 public class DoctorContactsResponse {
 
 	private List<PatientCard> patientCards;

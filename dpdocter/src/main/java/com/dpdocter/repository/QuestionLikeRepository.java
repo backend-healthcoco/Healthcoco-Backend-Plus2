@@ -4,7 +4,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-import com.dpdocter.collections.BlogLikesCollection;
 import com.dpdocter.collections.QuestionLikeCollection;
 
 public interface QuestionLikeRepository extends MongoRepository<QuestionLikeCollection, ObjectId> {

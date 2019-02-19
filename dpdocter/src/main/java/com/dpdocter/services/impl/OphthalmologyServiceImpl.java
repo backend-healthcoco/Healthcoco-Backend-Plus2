@@ -14,14 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.EyeObservation;
-import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.EyeObservationCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.EyeObservationRepository;
 import com.dpdocter.services.OphthalmologyService;
-import com.squareup.okhttp.internal.spdy.ErrorCode;
 
 import common.util.web.DPDoctorUtils;
 

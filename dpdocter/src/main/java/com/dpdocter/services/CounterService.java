@@ -3,7 +3,6 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.CaloriesCounter;
-import com.dpdocter.beans.Exercise;
 import com.dpdocter.beans.ExerciseCounter;
 import com.dpdocter.beans.MealCounter;
 import com.dpdocter.beans.WaterCounter;

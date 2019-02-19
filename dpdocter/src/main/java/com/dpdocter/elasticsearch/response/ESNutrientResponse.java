@@ -1,8 +1,5 @@
 package com.dpdocter.elasticsearch.response;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.enums.NutrientCategaoryEnum;
 import com.dpdocter.enums.NutrientType;
 

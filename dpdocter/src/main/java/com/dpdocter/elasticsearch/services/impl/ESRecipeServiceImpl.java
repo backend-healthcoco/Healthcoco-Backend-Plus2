@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
