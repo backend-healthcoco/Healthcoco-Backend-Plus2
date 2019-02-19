@@ -89,7 +89,7 @@ public class SearchServiceImpl implements SearchService {
 			if (DPDoctorUtils.allStringsEmpty(service) || service.equalsIgnoreCase("undefined")) {
 				service = null;
 			} else {
-				service = service.replace("doctor-for-","").replace("-treatment","").replaceAll("-", " ");
+				service = service.replace("doctors-for-","").replaceAll("-", " ");
 			}
 
 			QueryBuilder specialityQueryBuilder = createSpecialityFilter(speciality);
@@ -297,23 +297,7 @@ public class SearchServiceImpl implements SearchService {
 					
 					response.setMetaData(unformattedService + " in ");
 				} else {
-<<<<<<< HEAD
-					
-					if(!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("NAGPUR")) {
-						response.setSpeciality(StringUtils.capitalize(speciality));
-						response.setMetaData("Doctors in ");
-					}
-					else if(!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("NAGPUR")) {
-						response.setService(StringUtils.capitalize(service));
-						response.setMetaData(StringUtils.capitalize(service) + " services in ");
-					}else {
-						response.setSpeciality("ALL Specialities");
-						response.setMetaData("Doctors in ");
-					}
-
-=======
 					response.setMetaData("Doctors in ");
->>>>>>> 7ebc3fc8a... HAPPY-4192 Backend : Dpdocter : Add/Edit/Get Services(For doctor search)
 				}
 			}
 		} catch (Exception e) {
@@ -324,21 +308,38 @@ public class SearchServiceImpl implements SearchService {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<ESDoctorWEbSearch> formatDoctorData(List<ESDoctorDocument> esDoctorDocuments, String latitude,
 			String longitude) {
 		List<ESDoctorWEbSearch> response = new ArrayList<ESDoctorWEbSearch>();
 
 		if (esDoctorDocuments != null) {
-
-			List<String> specialities = null;
-			List<String> parentSpecialities = null;
-
 			for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 				ESDoctorWEbSearch doctorWEbSearch = new ESDoctorWEbSearch();
 				BeanUtil.map(doctorDocument, doctorWEbSearch);
+<<<<<<< HEAD
 				
 				doctorWEbSearch.setSpecialities(doctorDocument.getSpecialitiesValue());
 				doctorWEbSearch.setServices(doctorDocument.getServicesValue());
+=======
+				if (doctorDocument.getSpecialities() != null) {
+					if (doctorDocument.getSpecialities() != null) {
+						Iterable<ESSpecialityDocument> specialities = esSpecialityRepository.findAll(doctorDocument.getSpecialities());
+						if(specialities != null) {
+							doctorWEbSearch.setSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("superSpeciality")));
+							doctorWEbSearch.setParentSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("speciality")));
+						}
+					}
+				}
+
+				if (doctorDocument.getServices() != null) {
+					Iterable<ESServicesDocument> services = esServicesRepository.findAll(doctorDocument.getServices());
+					if(services != null) {
+						doctorWEbSearch.setServices((List<String>)CollectionUtils.collect(services.iterator(), new BeanToPropertyValueTransformer("service")));
+					}					
+				}
+				
+>>>>>>> 62681b782... HAPPY-4192 Backend : Dpdocter : Add/Edit/Get Services(For doctor search)
 				if (doctorWEbSearch.getThumbnailUrl() != null)
 					doctorWEbSearch.setThumbnailUrl(getFinalImageURL(doctorWEbSearch.getThumbnailUrl()));
 

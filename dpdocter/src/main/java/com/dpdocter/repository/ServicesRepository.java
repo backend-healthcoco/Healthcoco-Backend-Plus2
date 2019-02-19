@@ -10,7 +10,7 @@ import com.dpdocter.collections.ServicesCollection;
 
 public interface ServicesRepository extends MongoRepository<ServicesCollection, ObjectId> {
 
-	@Query("{'service' : {$in : '?0'}}")
+	@Query("{'service' : {$in : ?0}}")
 	List<ServicesCollection> findbyService(List<String> services);
 
   
