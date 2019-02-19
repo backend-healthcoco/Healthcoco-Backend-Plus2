@@ -1247,6 +1247,7 @@ public class RecordsServiceImpl implements RecordsService {
 				long count = mongoTemplate.count(new Query(criteria), RecordsCollection.class);
 				if (count > 0) {
 					response.setData(count);
+					response.setCount((int)count);
 					Aggregation aggregation = null;
 
 					if (size > 0)
@@ -1278,6 +1279,7 @@ public class RecordsServiceImpl implements RecordsService {
 				long count = mongoTemplate.count(new Query(criteria), RecordsCollection.class);
 				if (count > 0) {
 					response.setData(count);
+					response.setCount((int)count);
 					Aggregation aggregation = null;
 
 					if (size > 0)
