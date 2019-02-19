@@ -89,7 +89,7 @@ public class SearchServiceImpl implements SearchService {
 			if (DPDoctorUtils.allStringsEmpty(service) || service.equalsIgnoreCase("undefined")) {
 				service = null;
 			} else {
-				service = service.replace("doctor-for-","").replace("-treatment","").replaceAll("-", " ");
+				service = service.replace("doctors-for-","").replaceAll("-", " ");
 			}
 
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
@@ -295,7 +295,6 @@ public class SearchServiceImpl implements SearchService {
 					
 					response.setMetaData(unformattedService + " in ");
 				} else {
-
 					response.setMetaData("Doctors in ");
 				}
 		} catch (Exception e) {
@@ -315,9 +314,23 @@ public class SearchServiceImpl implements SearchService {
 			for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 				ESDoctorWEbSearch doctorWEbSearch = new ESDoctorWEbSearch();
 				BeanUtil.map(doctorDocument, doctorWEbSearch);
+				if (doctorDocument.getSpecialities() != null) {
+					if (doctorDocument.getSpecialities() != null) {
+						Iterable<ESSpecialityDocument> specialities = esSpecialityRepository.findAll(doctorDocument.getSpecialities());
+						if(specialities != null) {
+							doctorWEbSearch.setSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("superSpeciality")));
+							doctorWEbSearch.setParentSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("speciality")));
+						}
+					}
+				}
+
+				if (doctorDocument.getServices() != null) {
+					Iterable<ESServicesDocument> services = esServicesRepository.findAll(doctorDocument.getServices());
+					if(services != null) {
+						doctorWEbSearch.setServices((List<String>)CollectionUtils.collect(services.iterator(), new BeanToPropertyValueTransformer("service")));
+					}					
+				}
 				
-				doctorWEbSearch.setSpecialities(doctorDocument.getSpecialitiesValue());
-				doctorWEbSearch.setServices(doctorDocument.getServicesValue());
 				if (doctorWEbSearch.getThumbnailUrl() != null)
 					doctorWEbSearch.setThumbnailUrl(getFinalImageURL(doctorWEbSearch.getThumbnailUrl()));
 
