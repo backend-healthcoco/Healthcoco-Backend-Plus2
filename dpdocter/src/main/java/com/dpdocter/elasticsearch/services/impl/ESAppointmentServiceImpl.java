@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -438,8 +439,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					appointmentSearchResponse.setResponse(serviceName);
 					appointmentSearchResponse.setResponseType(AppointmentResponseType.SERVICE);
 					String slugUrl = serviceName.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-");
-					slugUrl = slugUrl.replaceAll("--", "-");
-					appointmentSearchResponse.setSlugUrl(slugUrl);
+					
+					slugUrl = slugUrl.replaceAll("-*-","-");					
+					appointmentSearchResponse.setSlugUrl("doctors-for-"+slugUrl);
 					response.add(appointmentSearchResponse);
 				}
 			}
@@ -505,7 +507,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				appointmentSearchResponse.setResponse(speciality.getSuperSpeciality());
 				appointmentSearchResponse.setResponseType(AppointmentResponseType.SPECIALITY);
 				String slugUrl = speciality.getSuperSpeciality().toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-");
-				slugUrl = slugUrl.replaceAll("--", "-");
+				slugUrl = slugUrl.replaceAll("-*-","-");
 				appointmentSearchResponse.setSlugUrl(slugUrl);
 				response.add(appointmentSearchResponse);
 			}
@@ -549,6 +551,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						.must(QueryBuilders.matchQuery("isClinic", true));
 				if (specialityQueryBuilder != null)
 					boolQueryBuilder.must(specialityQueryBuilder);
+				if (serviceQueryBuilder != null)
+					boolQueryBuilder.must(serviceQueryBuilder);
 				if (facilityQueryBuilder != null)
 					boolQueryBuilder.must(facilityQueryBuilder);
 
@@ -607,7 +611,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					if (doctorDocument.getSpecialities() != null) {
 						Iterable<ESSpecialityDocument> specialities = esSpecialityRepository.findAll(doctorDocument.getSpecialities());
 						if(specialities != null) {
-							doctorDocument.setServices((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("superSpeciality")));
+							doctorDocument.setSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("superSpeciality")));
 						}
 					}
 

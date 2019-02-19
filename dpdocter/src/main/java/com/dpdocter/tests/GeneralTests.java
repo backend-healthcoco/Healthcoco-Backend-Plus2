@@ -1,10 +1,7 @@
 package com.dpdocter.tests;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -13,56 +10,54 @@ import org.xml.sax.SAXException;
 
 import com.lowagie.text.DocumentException;
 
-import common.util.web.CSVUtils;
-
 public class GeneralTests {
 
 	public static void main(String args[]) throws SAXException, IOException, DocumentException, ParserConfigurationException {
 		
-		String csvLine = null;
-
-		Scanner scanner = new Scanner(new File("/Users/nehakariya/Downloads/PractoExport-faizan/Prescriptions.csv"));
-		
-		FileWriter fileWriter = new FileWriter("/Users/nehakariya/Prescriptions.csv");
-//		fileWriter.append(FILE_HEADER.toString());
-//		fileWriter.append("\n");
-		
-		while (scanner.hasNext()) {
-			csvLine = scanner.nextLine();
-            List<String> line = CSVUtils.parseLine(csvLine);
-            String pnum = line.get(2);
-            
-        	Boolean found = false;
-
-            Scanner scannerForApp = new Scanner(new File("/Users/nehakariya/Downloads/PractoExport-faizan/PatientsNotRegistered.csv"));
-	        while (scannerForApp.hasNext()) {
-	        	
-	        		List<String> appLine = CSVUtils.parseLine(scannerForApp.nextLine());
-	        		if(appLine.get(0).equalsIgnoreCase(pnum)) {
-	        			csvLine = csvLine.replace(pnum, appLine.get(1));
-	        			
-	        			fileWriter.append(csvLine);fileWriter.append("\n");
-	        			found = true;
-	        			break;
-	        		}
-//	        		else {
-//	        			csvLine = csvLine.replace(pnum, "");
-//	        			
-//	        			fileWriter.append(csvLine);fileWriter.append("\n");
-//	        		}
-   		        }
-	        if(!found) {
-    			csvLine = csvLine.replace(pnum, "");
-    			
-    			fileWriter.append(csvLine);fileWriter.append("\n");
-    		}
-	        scannerForApp.close();
-	        found = false;
-		}
-		fileWriter.close();
-		scanner.close();
-		
-		System.out.println("Done");
+//		int startMillis = 480;
+//        int endMillis = 720;
+//        int durationMillis = endMillis - startMillis;
+//        int chunkSize = 25;
+//
+//        while(startMillis < endMillis) {
+//            System.out.println(startMillis);
+//            int cal = startMillis += chunkSize;
+//            System.out.println(cal);
+//            
+//            System.out.println(String.format("%02d:%02d", startMillis / 60, startMillis % 60));
+//            System.out.println(String.format("%02d:%02d", cal / 60, cal % 60));
+//        }
         
+		String service = "-abc-";
+		String slugUrl = service.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-");
+		
+//		int countOfCharoccurence = Strings.countOccurrencesOf(slugUrl, "--");
+//		if(countOfCharoccurence > 0) {
+//			slugUrl = slugUrl.replaceAll("--","-");
+//		}
+//		char[] repeat = new char[countOfCharoccurence];
+//		Arrays.fill(repeat, '-');
+//		slugUrl = slugUrl.replace(repeat.toString(), "-");
+			
+//		slugUrl = "doctors-for-"+slugUrl;
+		
+//		int length = slugUrl.length();
+//		char[] updatedSlug = slugUrl.toCharArray();
+//		char[] newSLug = {};
+//		
+//		Boolean isPresent = false;
+//		for(int i = 0; i<length; i++) {
+//			if(updatedSlug[i] == '-') {
+//				for(int j=i; j<length; j++) {
+//					if(updatedSlug[j] == '-') {
+//						
+//					}
+//				}
+//			}
+//		}
+		
+		System.out.println(slugUrl.replaceAll("-*-","-"));
+//		System.out.println(Pattern.compile(slugUrl).matcher(slugUrl).replaceAll("-*-"));
+		
 	}
 }

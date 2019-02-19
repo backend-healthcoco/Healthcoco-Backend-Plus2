@@ -798,9 +798,11 @@ public class DPDoctorUtils {
 		SealedObject sealedObject;
 		try {
 			sealedObject = (SealedObject) inputStream.readObject();
+			inputStream.close();
 			return sealedObject.getObject(cipher);
 		} catch (ClassNotFoundException | IllegalBlockSizeException | BadPaddingException e) {
 			e.printStackTrace();
+			inputStream.close();
 			return null;
 		}
 	}

@@ -89,7 +89,7 @@ public class SearchServiceImpl implements SearchService {
 			if (DPDoctorUtils.allStringsEmpty(service) || service.equalsIgnoreCase("undefined")) {
 				service = null;
 			} else {
-				service = service.replace("doctor-for-","").replace("-treatment","").replaceAll("-", " ");
+				service = service.replace("doctors-for-","").replaceAll("-", " ");
 			}
 
 			QueryBuilder specialityQueryBuilder = createSpecialityFilter(speciality);
@@ -267,33 +267,32 @@ public class SearchServiceImpl implements SearchService {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<ESDoctorWEbSearch> formatDoctorData(List<ESDoctorDocument> esDoctorDocuments, String latitude,
 			String longitude) {
 		List<ESDoctorWEbSearch> response = new ArrayList<ESDoctorWEbSearch>();
 
 		if (esDoctorDocuments != null) {
-
-			List<String> specialities = null;
-			List<String> parentSpecialities = null;
-
 			for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 				ESDoctorWEbSearch doctorWEbSearch = new ESDoctorWEbSearch();
 				BeanUtil.map(doctorDocument, doctorWEbSearch);
 				if (doctorDocument.getSpecialities() != null) {
-					specialities = new ArrayList<String>();
-					parentSpecialities = new ArrayList<String>();
-
-					for (String specialityId : doctorDocument.getSpecialities()) {
-						ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
-						if (specialityCollection != null) {
-							specialities.add(specialityCollection.getSuperSpeciality());
-							parentSpecialities.add(specialityCollection.getSpeciality());
+					if (doctorDocument.getSpecialities() != null) {
+						Iterable<ESSpecialityDocument> specialities = esSpecialityRepository.findAll(doctorDocument.getSpecialities());
+						if(specialities != null) {
+							doctorWEbSearch.setSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("superSpeciality")));
+							doctorWEbSearch.setParentSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("speciality")));
 						}
 					}
-					doctorWEbSearch.setParentSpecialities(parentSpecialities);
-					doctorWEbSearch.setSpecialities(specialities);
 				}
 
+				if (doctorDocument.getServices() != null) {
+					Iterable<ESServicesDocument> services = esServicesRepository.findAll(doctorDocument.getServices());
+					if(services != null) {
+						doctorWEbSearch.setServices((List<String>)CollectionUtils.collect(services.iterator(), new BeanToPropertyValueTransformer("service")));
+					}					
+				}
+				
 				if (doctorWEbSearch.getThumbnailUrl() != null)
 					doctorWEbSearch.setThumbnailUrl(getFinalImageURL(doctorWEbSearch.getThumbnailUrl()));
 
