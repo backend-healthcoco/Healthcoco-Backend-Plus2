@@ -295,18 +295,19 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	private List<ESDrugDocument> addStockToDrug(List<ESDrugDocument> drugs) {
-
-		for (ESDrugDocument drug : drugs) {
-
-			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getId())) {
-				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
-						drug.getHospitalId(), drug.getDrugCode());
-				if (inventoryItem != null) {
-					InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
-							.getInventoryItem(inventoryItem.getId());
-					drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
-					drug.setRetailPrice(inventoryItemLookupResposne.getRetailPrice());
-					drug.setStockingUnit(inventoryItemLookupResposne.getStockingUnit());
+		System.out.println("drugs :: "+drugs);
+		if (drugs != null) {
+			for (ESDrugDocument drug : drugs) {
+				if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getId())) {
+					InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
+							drug.getHospitalId(), drug.getDrugCode());
+					if (inventoryItem != null) {
+						InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
+								.getInventoryItem(inventoryItem.getId());
+						drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+						drug.setRetailPrice(inventoryItemLookupResposne.getRetailPrice());
+						drug.setStockingUnit(inventoryItemLookupResposne.getStockingUnit());
+					}
 				}
 			}
 		}
