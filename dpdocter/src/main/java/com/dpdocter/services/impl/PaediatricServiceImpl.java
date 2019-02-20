@@ -524,6 +524,10 @@ public class PaediatricServiceImpl implements PaediatricService {
 			aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("vaccine_cl", "_id", "_id", "vaccine"),
 					Aggregation.unwind("vaccine"),
+					Aggregation.lookup("vaccine_brand_cl", "vaccine.vaccineBrandId", "_id", "vaccine.vaccineBrand"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$vaccine.vaccineBrand")
+									.append("preserveNullAndEmptyArrays", true))),
 					Aggregation.match(criteria),aggregationOperation, Aggregation.sort(new Sort(Direction.ASC, "periodTime")));
 			
 			responses = mongoTemplate
