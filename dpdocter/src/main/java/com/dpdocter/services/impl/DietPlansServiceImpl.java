@@ -247,7 +247,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 			for (DietplanItem item : dietPlanCollection.getItems()) {
 				detail = new DietPlanJasperDetail();
 				detail.setTiming(
-						item.getMealTiming() != null ? (StringUtils.capitalize(item.getMealTiming().getTime())) : " ");
+						item.getMealTiming() != null ? (StringUtils.capitalize(item.getMealTiming().getTime())).replace("_", " ") : " ");
 				for (DietPlanRecipeItem recipe : item.getRecipes()) {
 
 					if (DPDoctorUtils.anyStringEmpty(detail.getRecipe())) {
