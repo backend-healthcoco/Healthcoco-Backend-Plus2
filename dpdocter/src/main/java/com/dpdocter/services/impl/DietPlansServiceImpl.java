@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.swing.Spring;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -22,6 +24,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DietPlan;
@@ -243,25 +246,25 @@ public class DietPlansServiceImpl implements DietPlansService {
 			dietPlanItems = new ArrayList<DietPlanJasperDetail>();
 			for (DietplanItem item : dietPlanCollection.getItems()) {
 				detail = new DietPlanJasperDetail();
-				detail.setTiming(item.getMealTiming() != null ? (item.getMealTiming().toString()) : " ");
+				detail.setTiming(
+						item.getMealTiming() != null ? (StringUtils.capitalize(item.getMealTiming().getTime())) : " ");
 				for (DietPlanRecipeItem recipe : item.getRecipes()) {
 
 					if (DPDoctorUtils.anyStringEmpty(detail.getRecipe())) {
-						detail.setRecipe(recipe.getName());
+						detail.setRecipe(StringUtils.capitalize(recipe.getName()));
 					} else {
-						detail.setRecipe(detail.getRecipe() + "<br>" + recipe.getName());
+						detail.setRecipe(detail.getRecipe() + "<br>" + StringUtils.capitalize(recipe.getName()));
 					}
 					if (recipe.getQuantity() != null) {
 						quantity = recipe.getQuantity().getValue() + " "
-								+ (recipe.getQuantity().getType() != null ? recipe.getQuantity().getType()
-										: "");
+								+ (recipe.getQuantity().getType() != null ? recipe.getQuantity().getType() : "");
 					}
-					if (!DPDoctorUtils.anyStringEmpty(detail.getQuantity())) {
+					if (DPDoctorUtils.anyStringEmpty(detail.getQuantity())) {
 
-						detail.setQuantity(quantity);
+						detail.setQuantity(StringUtils.capitalize(quantity));
 
 					} else {
-						detail.setQuantity(detail.getQuantity() + "<br>" + quantity);
+						detail.setQuantity(detail.getQuantity() + "<br>" + StringUtils.capitalize(quantity));
 					}
 				}
 				dietPlanItems.add(detail);
