@@ -8237,7 +8237,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDietPlanItem(parameters, contentFontSize,
-				columnWidth, pageWidth, pageHeight, "$P{item}", normalStyle));
+				columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
 
 	}
 
