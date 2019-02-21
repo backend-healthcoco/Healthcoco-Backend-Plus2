@@ -15,4 +15,8 @@ public interface DietPlansService {
 	List<DietPlan> getDietPlans(int page, int size, String patientId, String doctorId, String hospitalId,
 			String locationId, long updatedTime, boolean discarded);
 
+	public String downloadDietPlan(String planId);
+
+	public Boolean emailDietPlan(String emailAddress, String planId);
+
 }
