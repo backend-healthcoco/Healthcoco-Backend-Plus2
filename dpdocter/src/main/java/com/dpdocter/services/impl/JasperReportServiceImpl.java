@@ -8266,12 +8266,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-		jrDesignTextField.setWidth(120);
-		jrDesignTextField.setFontSize(contentFontSize - 2);
+		jrDesignTextField.setWidth(100);
+		jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
-		xSpace = 138;
+		xSpace = 110;
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{recipe}"));
@@ -8279,11 +8279,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-		jrDesignTextField.setWidth(250);
+		jrDesignTextField.setWidth(235);
+		jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
-		xSpace = xSpace + 250;
+		xSpace = xSpace + 235;
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{quantity}"));
@@ -8292,6 +8293,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setWidth(160);
+		jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);

@@ -246,14 +246,14 @@ public class DietPlansServiceImpl implements DietPlansService {
 				detail.setTiming(item.getMealTiming() != null ? (item.getMealTiming().toString()) : " ");
 				for (DietPlanRecipeItem recipe : item.getRecipes()) {
 
-					if (!DPDoctorUtils.anyStringEmpty(detail.getRecipe())) {
+					if (DPDoctorUtils.anyStringEmpty(detail.getRecipe())) {
 						detail.setRecipe(recipe.getName());
 					} else {
 						detail.setRecipe(detail.getRecipe() + "<br>" + recipe.getName());
 					}
 					if (recipe.getQuantity() != null) {
-						quantity = recipe.getQuantity().toString() + " "
-								+ (recipe.getQuantity().getType() != null ? recipe.getQuantity().getType().toString()
+						quantity = recipe.getQuantity().getValue() + " "
+								+ (recipe.getQuantity().getType() != null ? recipe.getQuantity().getType()
 										: "");
 					}
 					if (!DPDoctorUtils.anyStringEmpty(detail.getQuantity())) {
@@ -275,7 +275,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 
 		patientVisitService.generatePrintSetup(parameters, printSettings, dietPlanCollection.getDoctorId());
 
-		String pdfName = "PRESCRIPTION-" + dietPlanCollection.getUniquePlanId() + new Date().getTime();
+		String pdfName = "diet-plan-" + dietPlanCollection.getUniquePlanId() + new Date().getTime();
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
