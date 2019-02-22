@@ -1,10 +1,8 @@
 package com.dpdocter.services.impl;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -15,6 +13,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -35,6 +34,7 @@ import com.dpdocter.enums.UnitType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.AmountDueAnalyticsDataResponse;
+import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.DoctorVisitAnalyticResponse;
 import com.dpdocter.response.ExpenseCountResponse;
 import com.dpdocter.response.IncomeAnalyticsDataResponse;
@@ -118,12 +118,75 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	}
 
+	@Override
+	public Integer countIncomeDetailsAnalyticsData(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate, String searchTerm) {
+		Integer response = 0;
+		try {
 
+			Criteria criteria = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+
+			Criteria criteria2 = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").in(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+				criteria2.and("patient.locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+				fromTime = new DateTime(from);
+				toTime = new DateTime(to);
+				criteria.and("invoiceDate").gte(fromTime).lte(toTime);
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				to = new Date(Long.parseLong(fromDate));
+				toTime = new DateTime(to);
+				criteria.and("invoiceDate").gte(fromTime);
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				to = new Date(Long.parseLong(toDate));
+				toTime = new DateTime(to);
+				criteria.and("invoiceDate").lte(toTime);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria2.orOperator(new Criteria("patient.localPatientName").regex(searchTerm, "i"),
+						new Criteria("user.firstName").regex(searchTerm, "i"),
+						new Criteria("user.mobileNumber").regex(searchTerm, "i"));
+			}
+			criteria.and("discarded").is(false);
+
+			response = mongoTemplate
+					.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+							Aggregation.unwind("user"), Aggregation.lookup("user_cl", "doctorId", "_id", "docter"),
+							Aggregation.unwind("docter"), Aggregation.match(criteria2)),
+							DoctorPatientInvoiceCollection.class, InvoiceAnalyticsDataDetailResponse.class)
+					.getMappedResults().size();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While count income analytics data");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While count income analytics data");
+		}
+
+		return response;
+	}
 
 	@Override
 	public List<InvoiceAnalyticsDataDetailResponse> getIncomeDetailsAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
-			int size) {
+			String hospitalId, String fromDate, String toDate, String searchTerm, int page, int size) {
 		List<InvoiceAnalyticsDataDetailResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -160,88 +223,94 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				to = new Date(Long.parseLong(toDate));
 				toTime = new DateTime(to);
 				criteria.and("invoiceDate").lte(toTime);
-
+			}
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria2.orOperator(new Criteria("patient.localPatientName").regex(searchTerm, "i"),
+						new Criteria("user.firstName").regex(searchTerm, "i"),
+						new Criteria("user.mobileNumber").regex(searchTerm, "i"));
 			}
 			criteria.and("discarded").is(false);
 			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", new BasicDBObject("uniqueInvoiceId", "$uniqueInvoiceId"))
+					new BasicDBObject("_id", "$_id")
 							.append("uniqueInvoiceId", new BasicDBObject("$first", "$uniqueInvoiceId"))
-							.append("discount", new BasicDBObject("$sum", "$resultantDiscount"))
-							.append("cost", new BasicDBObject("$sum", "$resultantCost"))
-							.append("tax", new BasicDBObject("$sum", "$resultantTax"))
-							.append("invoiceAmount", new BasicDBObject("$sum", "$resultantInvoiceAmount"))
-							.append("patientName", new BasicDBObject("$first", "$patientName"))
+							.append("discount", new BasicDBObject("$first", "$resultantDiscount"))
+							.append("cost", new BasicDBObject("$first", "$resultantCost"))
+							.append("tax", new BasicDBObject("$first", "$resultantTax"))
+							.append("invoiceAmount", new BasicDBObject("$first", "$resultantInvoiceAmount"))
+							.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+							.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
+							.append("firstName", new BasicDBObject("$first", "$firstName"))
+							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
+							.append("balanceAmount", new BasicDBObject("$first", "$balanceAmount"))
 							.append("date", new BasicDBObject("$first", "$invoiceDate"))));
 
 			if (size > 0) {
 				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.match(criteria2),
-						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject(
-								"resultantDiscount",
-								new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
-										Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
-												.append("then", new BasicDBObject("$multiply",
-														Arrays.asList(new BasicDBObject("$divide",
-																Arrays.asList("$totalDiscount.value", 100)),
-																"$totalCost")))
-												.append("else", "$totalDiscount.value")))
-														.append("resultantCost", "$totalCost")
-														.append("invoiceDate", "$invoiceDate")
-														.append("resultantTax", new BasicDBObject("$cond",
-																new BasicDBObject("if", new BasicDBObject("$eq",
-																		Arrays.asList("$totalTax.unit",
-																				UnitType.PERCENT.name()))).append(
-																						"then",
-																						new BasicDBObject("$multiply",
-																								Arrays.asList(
-																										new BasicDBObject(
-																												"$divide",
-																												Arrays.asList(
-																														"$totalTax.value",
-																														100)),
-																										"$totalCost")))
-																						.append("else",
-																								"$totalTax.value")))
-														.append("patientName", "$patient.localPatientName")
-														.append("uniqueInvoiceId", "$uniqueInvoiceId")
-														.append("resultantInvoiceAmount", "$grandTotal"))),
+						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+						Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+						Aggregation.unwind("user"), Aggregation.lookup("user_cl", "doctorId", "_id", "docter"),
+						Aggregation.unwind("docter"), Aggregation.match(criteria2),
+						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("id", "$id")
+								.append("resultantDiscount",
+										new BasicDBObject("$cond",
+												new BasicDBObject("if", new BasicDBObject("$eq",
+														Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
+																.append("then", new BasicDBObject("$multiply",
+																		Arrays.asList(new BasicDBObject("$divide",
+																				Arrays.asList("$totalDiscount.value",
+																						100)),
+																				"$totalCost")))
+																.append("else", "$totalDiscount.value")))
+								.append("resultantCost", "$totalCost").append("invoiceDate", "$invoiceDate")
+								.append("resultantTax",
+										new BasicDBObject("$cond",
+												new BasicDBObject("if", new BasicDBObject("$eq",
+														Arrays.asList("$totalTax.unit", UnitType.PERCENT.name())))
+																.append("then", new BasicDBObject("$multiply",
+																		Arrays.asList(new BasicDBObject("$divide",
+																				Arrays.asList("$totalTax.value", 100)),
+																				"$totalCost")))
+																.append("else", "$totalTax.value")))
+								.append("localPatientName", "$patient.localPatientName")
+								.append("firstName", "$user.firstName").append("mobileNumber", "$user.mobileNumber")
+								.append("doctorName", "$doctor.firstName").append("uniqueInvoiceId", "$uniqueInvoiceId")
+								.append("balanceAmount", "$balanceAmount")
+								.append("resultantInvoiceAmount", "$grandTotal"))),
 						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "invoiceDate")),
 						Aggregation.skip((page) * size), Aggregation.limit(size)), DoctorPatientInvoiceCollection.class,
 						InvoiceAnalyticsDataDetailResponse.class).getMappedResults();
 			} else {
 				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.match(criteria2),
-						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject(
-								"resultantDiscount",
-								new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$eq",
-										Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
-												.append("then", new BasicDBObject("$multiply",
-														Arrays.asList(new BasicDBObject("$divide",
-																Arrays.asList("$totalDiscount.value", 100)),
-																"$totalCost")))
-												.append("else", "$totalDiscount.value")))
-														.append("resultantCost", "$totalCost")
-														.append("invoiceDate", "$invoiceDate")
-														.append("resultantTax", new BasicDBObject("$cond",
-																new BasicDBObject("if", new BasicDBObject("$eq",
-																		Arrays.asList("$totalTax.unit",
-																				UnitType.PERCENT.name()))).append(
-																						"then",
-																						new BasicDBObject("$multiply",
-																								Arrays.asList(
-																										new BasicDBObject(
-																												"$divide",
-																												Arrays.asList(
-																														"$totalTax.value",
-																														100)),
-																										"$totalCost")))
-																						.append("else",
-																								"$totalTax.value")))
-														.append("patientName", "$patient.localPatientName")
-														.append("uniqueInvoiceId", "$uniqueInvoiceId")
-														.append("resultantInvoiceAmount", "$grandTotal"))),
+						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+						Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+						Aggregation.unwind("user"), Aggregation.lookup("user_cl", "doctorId", "_id", "docter"),
+						Aggregation.unwind("docter"), Aggregation.match(criteria2),
+						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("id", "$id")
+								.append("resultantDiscount",
+										new BasicDBObject("$cond",
+												new BasicDBObject("if", new BasicDBObject("$eq",
+														Arrays.asList("$totalDiscount.unit", UnitType.PERCENT.name())))
+																.append("then", new BasicDBObject("$multiply",
+																		Arrays.asList(new BasicDBObject("$divide",
+																				Arrays.asList("$totalDiscount.value",
+																						100)),
+																				"$totalCost")))
+																.append("else", "$totalDiscount.value")))
+								.append("resultantCost", "$totalCost").append("invoiceDate", "$invoiceDate")
+								.append("resultantTax",
+										new BasicDBObject("$cond",
+												new BasicDBObject("if", new BasicDBObject("$eq",
+														Arrays.asList("$totalTax.unit", UnitType.PERCENT.name())))
+																.append("then", new BasicDBObject("$multiply",
+																		Arrays.asList(new BasicDBObject("$divide",
+																				Arrays.asList("$totalTax.value", 100)),
+																				"$totalCost")))
+																.append("else", "$totalTax.value")))
+								.append("localPatientName", "$patient.localPatientName")
+								.append("firstName", "$user.firstName").append("mobileNumber", "$user.mobileNumber")
+								.append("doctorName", "$doctor.firstName").append("uniqueInvoiceId", "$uniqueInvoiceId")
+								.append("balanceAmount", "$balanceAmount")
+								.append("resultantInvoiceAmount", "$grandTotal"))),
 						aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "invoiceDate"))),
 						DoctorPatientInvoiceCollection.class, InvoiceAnalyticsDataDetailResponse.class)
 						.getMappedResults();
@@ -265,8 +334,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Criteria criteria = new Criteria();
 			DateTime fromTime = null;
 			DateTime toTime = null;
-			Date from = null;
-			Date to = null;
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").in(new ObjectId(doctorId));
 			}
@@ -747,8 +815,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	@Override
 	public List<PaymentDetailsAnalyticsDataResponse> getPaymentDetailsAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page,
-			int size) {
+			String hospitalId, String fromDate, String toDate, String searchTerm, int page, int size) {
 		List<PaymentDetailsAnalyticsDataResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -778,16 +845,26 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 			criteria.and("discarded").is(false);
 
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria2.orOperator(new Criteria("patient.localPatientName").regex(searchTerm, "i"),
+						new Criteria("user.firstName").regex(searchTerm, "i"),
+						new Criteria("user.mobileNumber").regex(searchTerm, "i"));
+			}
+
 			if (size > 0) {
 				response = mongoTemplate
 						.aggregate(
 								Aggregation
 										.newAggregation(Aggregation.match(criteria),
-												Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
-												Aggregation.unwind("patient"), Aggregation.match(criteria2),
+												Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+												Aggregation.unwind("patient"),
+												Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+												Aggregation.unwind("user"),
+												Aggregation.lookup("user_cl", "doctorId", "_id", "docter"),
+												Aggregation.unwind("docter"), Aggregation.match(criteria2),
 												new CustomAggregationOperation(
 														new BasicDBObject("$group",
-																new BasicDBObject("_id", "$uniqueReceiptId")
+																new BasicDBObject("_id", "$_id")
 																		.append("date",
 																				new BasicDBObject("$first",
 																						"$receivedDate"))
@@ -808,7 +885,22 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																						"$modeOfPayment"))
 																		.append("receiptType",
 																				new BasicDBObject("$first",
-																						"$receiptType")))),
+																						"$receiptType"))
+																		.append("localPatientName",
+																				new BasicDBObject("$first",
+																						"$patient.localPatientName"))
+																		.append("firstName",
+																				new BasicDBObject("$first",
+																						"$user.firstName"))
+																		.append("mobileNumber",
+																				new BasicDBObject("$first",
+																						"$user.mobileNumber"))
+																		.append("doctorName",
+																				new BasicDBObject("$first",
+																						"$doctor.firstName"))
+																		.append("usedAdvanceAmount",
+																				new BasicDBObject("$first",
+																						"$usedAdvanceAmount")))),
 												Aggregation.sort(new Sort(Sort.Direction.DESC, "receivedDate")),
 												Aggregation.skip((page) * size), Aggregation.limit(size)),
 								DoctorPatientReceiptCollection.class, PaymentDetailsAnalyticsDataResponse.class)
@@ -818,11 +910,15 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						.aggregate(
 								Aggregation
 										.newAggregation(Aggregation.match(criteria),
-												Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
-												Aggregation.unwind("patient"), Aggregation.match(criteria2),
+												Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+												Aggregation.unwind("patient"),
+												Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+												Aggregation.unwind("user"),
+												Aggregation.lookup("user_cl", "doctorId", "_id", "docter"),
+												Aggregation.unwind("docter"), Aggregation.match(criteria2),
 												new CustomAggregationOperation(
 														new BasicDBObject("$group",
-																new BasicDBObject("_id", "$uniqueReceiptId")
+																new BasicDBObject("_id", "$_id")
 																		.append("date",
 																				new BasicDBObject("$first",
 																						"$receivedDate"))
@@ -843,7 +939,22 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																						"$modeOfPayment"))
 																		.append("receiptType",
 																				new BasicDBObject("$first",
-																						"$receiptType")))),
+																						"$receiptType"))
+																		.append("localPatientName",
+																				new BasicDBObject("$first",
+																						"$patient.localPatientName"))
+																		.append("firstName",
+																				new BasicDBObject("$first",
+																						"$user.firstName"))
+																		.append("mobileNumber",
+																				new BasicDBObject("$first",
+																						"$user.mobileNumber"))
+																		.append("doctorName",
+																				new BasicDBObject("$first",
+																						"$doctor.firstName"))
+																		.append("usedAdvanceAmount",
+																				new BasicDBObject("$first",
+																						"$usedAdvanceAmount")))),
 												Aggregation.sort(new Sort(Sort.Direction.DESC, "receivedDate"))),
 								DoctorPatientReceiptCollection.class, PaymentDetailsAnalyticsDataResponse.class)
 						.getMappedResults();
@@ -854,6 +965,67 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			logger.error(e + " Error Occurred While getting payment details analytics data");
 			throw new BusinessException(ServiceError.Unknown,
 					"Error Occurred While getting payment details analytics data");
+		}
+		return response;
+	}
+
+	@Override
+	public Integer countPaymentDetailsAnalyticsData(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate, String searchTerm) {
+		Integer response = 0;
+		try {
+			Criteria criteria = new Criteria();
+
+			Criteria criteria2 = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").in(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+				criteria2.and("patient.locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+
+				DateTime start = new DateTime(new Date(Long.parseLong(fromDate)));
+				criteria.and("receivedDate").gt(start);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+
+				DateTime end = new DateTime(new Date(Long.parseLong(toDate)));
+				criteria.and("receivedDate").lte(end);
+			}
+			criteria.and("discarded").is(false);
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria2.orOperator(new Criteria("patient.localPatientName").regex(searchTerm, "i"),
+						new Criteria("user.firstName").regex(searchTerm, "i"),
+						new Criteria("user.mobileNumber").regex(searchTerm, "i"));
+			}
+
+			response = mongoTemplate
+					.aggregate(
+							Aggregation.newAggregation(Aggregation.match(criteria),
+									Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+									Aggregation.unwind("patient"),
+									Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+									Aggregation.unwind("user"),
+									Aggregation.lookup("user_cl", "doctorId", "_id", "docter"),
+									Aggregation.unwind("docter"), Aggregation.match(criteria2),
+									new CustomAggregationOperation(
+											new BasicDBObject("$group", new BasicDBObject("_id", "$_id")))),
+							DoctorPatientReceiptCollection.class, PaymentDetailsAnalyticsDataResponse.class)
+					.getMappedResults().size();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While count payment details analytics data");
+			throw new BusinessException(ServiceError.Unknown,
+					"Error Occurred While count payment details analytics data");
 		}
 		return response;
 	}
@@ -1232,7 +1404,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			DateTime toTime = null;
 			Date from = null;
 			Date to = null;
-			long date = 0;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").in(new ObjectId(doctorId));
 			}
@@ -1368,7 +1539,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			String paymentMode) {
 		List<ExpenseCountResponse> response = null;
 		try {
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 			DateTime fromTime = null;
 			DateTime toTime = null;
 			Date from = null;
@@ -1464,6 +1634,254 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
+	}
+
+	@Override
+	public List<AnalyticResponse> getReceiptAnalyticData(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate, String searchType, String searchTerm) {
+		List<AnalyticResponse> response = null;
+		try {
+			Criteria criteria = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
+
+			CustomAggregationOperation aggregationOperation = null;
+			ProjectionOperation projectList = new ProjectionOperation(
+					Fields.from(Fields.field("count", "$patientId"), Fields.field("receivedDate", "$receivedDate")));
+
+			criteria.and("receivedDate").gte(fromTime).lte(toTime);
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria = criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			criteria.and("discarded").is(false);
+			if (!DPDoctorUtils.anyStringEmpty(searchType)) {
+				switch (SearchType.valueOf(searchType.toUpperCase())) {
+				case DAILY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id",
+									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
+											.append("day", new BasicDBObject("$first", "$day"))
+											.append("month", new BasicDBObject("$first", "$month"))
+											.append("year", new BasicDBObject("$first", "$year"))
+											.append("week", new BasicDBObject("$first", "$week"))
+											.append("date", new BasicDBObject("$first", "$receivedDate"))
+											.append("receivedDate", new BasicDBObject("$first", "$receivedDate"))
+											.append("count", new BasicDBObject("$sum", 1))));
+
+					break;
+				}
+
+				case WEEKLY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id",
+									new BasicDBObject("week", "$week").append("month", "$month").append("year",
+											"$year")).append("month", new BasicDBObject("$first", "$month"))
+													.append("year", new BasicDBObject("$first", "$year"))
+													.append("week", new BasicDBObject("$first", "$week"))
+													.append("date", new BasicDBObject("$first", "$receivedDate"))
+													.append("receivedDate", new BasicDBObject("$first", "$receivedDate"))
+													.append("count", new BasicDBObject("$sum", 1))));
+
+					break;
+				}
+				case MONTHLY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
+									.append("month", new BasicDBObject("$first", "$month"))
+									.append("year", new BasicDBObject("$first", "$year"))
+									.append("date", new BasicDBObject("$first", "$receivedDate"))
+									.append("receivedDate", new BasicDBObject("$first", "$receivedDate"))
+									.append("count", new BasicDBObject("$sum", 1))));
+
+					break;
+				}
+				case YEARLY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
+									.append("year", new BasicDBObject("$first", "$year"))
+									.append("date", new BasicDBObject("$first", "$receivedDate"))
+									.append("receivedDate", new BasicDBObject("$first", "$receivedDate"))
+									.append("count", new BasicDBObject("$sum", 1))));
+
+					break;
+
+				}
+				default:
+					break;
+				}
+			}
+
+			Aggregation aggregation = Aggregation
+					.newAggregation(Aggregation.match(criteria),
+							projectList.and("receivedDate").as("date").and("receivedDate").extractDayOfMonth().as("day")
+									.and("receivedDate").extractMonth().as("month").and("receivedDate").extractYear()
+									.as("year").and("receivedDate").extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
+			AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DoctorPatientReceiptCollection.class, AnalyticResponse.class);
+			response = aggregationResults.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting Invoice Graph analytic");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Invoice Graph analytic");
+		}
+
+		return response;
+
+	}
+
+	@Override
+	public List<AnalyticResponse> getInvoiceAnalyticData(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate, String searchType, String searchTerm) {
+		List<AnalyticResponse> response = null;
+		try {
+			Criteria criteria = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
+
+			CustomAggregationOperation aggregationOperation = null;
+			ProjectionOperation projectList = new ProjectionOperation(
+					Fields.from(Fields.field("count", "$patientId"), Fields.field("invoiceDate", "$invoiceDate")));
+
+			criteria.and("invoiceDate").gte(fromTime).lte(toTime);
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria = criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			criteria.and("discarded").is(false);
+			if (!DPDoctorUtils.anyStringEmpty(searchType)) {
+				switch (SearchType.valueOf(searchType.toUpperCase())) {
+				case DAILY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id",
+									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
+											.append("day", new BasicDBObject("$first", "$day"))
+											.append("month", new BasicDBObject("$first", "$month"))
+											.append("year", new BasicDBObject("$first", "$year"))
+											.append("week", new BasicDBObject("$first", "$week"))
+											.append("date", new BasicDBObject("$first", "$invoiceDate"))
+											.append("invoiceDate", new BasicDBObject("$first", "$invoiceDate"))
+											.append("count", new BasicDBObject("$sum", 1))));
+
+					break;
+				}
+
+				case WEEKLY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id",
+									new BasicDBObject("week", "$week").append("month", "$month").append("year",
+											"$year")).append("month", new BasicDBObject("$first", "$month"))
+													.append("year", new BasicDBObject("$first", "$year"))
+													.append("week", new BasicDBObject("$first", "$week"))
+													.append("date", new BasicDBObject("$first", "$invoiceDate"))
+													.append("invoiceDate", new BasicDBObject("$first", "$invoiceDate"))
+													.append("count", new BasicDBObject("$sum", 1))));
+
+					break;
+				}
+				case MONTHLY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
+									.append("month", new BasicDBObject("$first", "$month"))
+									.append("year", new BasicDBObject("$first", "$year"))
+									.append("date", new BasicDBObject("$first", "$invoiceDate"))
+									.append("invoiceDate", new BasicDBObject("$first", "$invoiceDate"))
+									.append("count", new BasicDBObject("$sum", 1))));
+
+					break;
+				}
+				case YEARLY: {
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
+									.append("year", new BasicDBObject("$first", "$year"))
+									.append("date", new BasicDBObject("$first", "$invoiceDate"))
+									.append("invoiceDate", new BasicDBObject("$first", "$invoiceDate"))
+									.append("count", new BasicDBObject("$sum", 1))));
+
+					break;
+
+				}
+				default:
+					break;
+				}
+			}
+
+			Aggregation aggregation = Aggregation
+					.newAggregation(Aggregation.match(criteria),
+							projectList.and("invoiceDate").as("date").and("invoiceDate").extractDayOfMonth().as("day")
+									.and("invoiceDate").extractMonth().as("month").and("invoiceDate").extractYear()
+									.as("year").and("invoiceDate").extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "date")))
+					.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
+			AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DoctorPatientInvoiceCollection.class, AnalyticResponse.class);
+			response = aggregationResults.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting Invoice Graph analytic");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Invoice Graph analytic");
+		}
+
+		return response;
+
 	}
 
 }

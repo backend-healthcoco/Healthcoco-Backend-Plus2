@@ -220,13 +220,13 @@ public class AnalyticsAPI {
 		}
 
 		List<DoctorAnalyticPieChartResponse> appointmentAnalyticResponse = null;
-		
-			appointmentAnalyticResponse = appointmentAnalyticsService.getDoctorAppointmentAnalyticsForPieChart(doctorId,
-					locationId, hospitalId, fromDate, toDate, state, searchTerm, page, size);
-		
+
+		appointmentAnalyticResponse = appointmentAnalyticsService.getDoctorAppointmentAnalyticsForPieChart(doctorId,
+				locationId, hospitalId, fromDate, toDate, state, searchTerm, page, size);
+
 		Response<DoctorAnalyticPieChartResponse> response = new Response<DoctorAnalyticPieChartResponse>();
 		response.setDataList(appointmentAnalyticResponse);
-		
+
 		return response;
 	}
 
@@ -300,18 +300,23 @@ public class AnalyticsAPI {
 	public Response<InvoiceAnalyticsDataDetailResponse> getInvoiceIncomeAnalyticsData(
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("fromDate") String fromDate,
-			@QueryParam("toDate") String toDate, @DefaultValue(value = "ALL") @QueryParam("queryType") String queryType,
-			@QueryParam("searchType") String searchType, @QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("toDate") String toDate, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("page") int page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
 		}
-		List<InvoiceAnalyticsDataDetailResponse> incomeAnalyticsDataResponse = analyticsService
-				.getIncomeDetailsAnalyticsData(doctorId, locationId, hospitalId, fromDate, toDate, queryType,
-						searchType, page, size);
+		List<InvoiceAnalyticsDataDetailResponse> incomeAnalyticsDataResponse = null;
+		Integer count = analyticsService.countIncomeDetailsAnalyticsData(doctorId, locationId, hospitalId, fromDate,
+				toDate, searchTerm);
+		if (count > 0) {
+			incomeAnalyticsDataResponse = analyticsService.getIncomeDetailsAnalyticsData(doctorId, locationId,
+					hospitalId, fromDate, toDate, searchTerm, page, size);
+		}
 
 		Response<InvoiceAnalyticsDataDetailResponse> response = new Response<InvoiceAnalyticsDataDetailResponse>();
 		response.setDataList(incomeAnalyticsDataResponse);
+		response.setCount(count);
 		return response;
 	}
 
@@ -321,18 +326,22 @@ public class AnalyticsAPI {
 	public Response<PaymentDetailsAnalyticsDataResponse> getPaymentDetailsAnalyticsData(
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("fromDate") String fromDate,
-			@QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
-			@QueryParam("searchType") String searchType, @QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("toDate") String toDate, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("page") int page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
 		}
-		List<PaymentDetailsAnalyticsDataResponse> paymentDetailsAnalyticsDataResponses = analyticsService
-				.getPaymentDetailsAnalyticsData(doctorId, locationId, hospitalId, fromDate, toDate, queryType,
-						searchType, page, size);
-
+		List<PaymentDetailsAnalyticsDataResponse> paymentDetailsAnalyticsDataResponses = null;
+		Integer count = analyticsService.countIncomeDetailsAnalyticsData(doctorId, locationId, hospitalId, fromDate,
+				toDate, searchTerm);
+		if (count > 0) {
+			paymentDetailsAnalyticsDataResponses = analyticsService.getPaymentDetailsAnalyticsData(doctorId, locationId,
+					hospitalId, fromDate, toDate, searchTerm, page, size);
+		}
 		Response<PaymentDetailsAnalyticsDataResponse> response = new Response<PaymentDetailsAnalyticsDataResponse>();
 		response.setDataList(paymentDetailsAnalyticsDataResponses);
+		response.setCount(count);
 		return response;
 	}
 
@@ -664,6 +673,42 @@ public class AnalyticsAPI {
 		List<AnalyticResponse> data = prescriptionAnalyticService.getPrescriptionAnalyticData(doctorId, locationId,
 				hospitalId, fromDate, toDate, searchType, searchTerm);
 
+		Response<AnalyticResponse> response = new Response<AnalyticResponse>();
+		response.setDataList(data);
+		return response;
+	}
+
+	@Path(value = PathProxy.AnalyticsUrls.GET_INCOME_ANALYTICS_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_INCOME_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_INCOME_ANALYTICS_DATA)
+	public Response<AnalyticResponse> getInvoiceAnalyticData(@QueryParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("searchType") String searchType) {
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId, searchType)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					" locationId, hospitalId ,searchType should not be empty");
+		}
+
+		List<AnalyticResponse> data = null;
+		Response<AnalyticResponse> response = new Response<AnalyticResponse>();
+		response.setDataList(data);
+		return response;
+	}
+
+	@Path(value = PathProxy.AnalyticsUrls.GET_RECEIPT_ANALYTICS_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_RECEIPT_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_RECEIPT_ANALYTICS_DATA)
+	public Response<AnalyticResponse> getReceiptAnalyticData(@QueryParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("searchType") String searchType) {
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId, searchType)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					" locationId, hospitalId ,searchType should not be empty");
+		}
+
+		List<AnalyticResponse> data = null;
 		Response<AnalyticResponse> response = new Response<AnalyticResponse>();
 		response.setDataList(data);
 		return response;
