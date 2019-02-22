@@ -80,17 +80,6 @@ public class SearchServiceImpl implements SearchService {
 			if (city.equalsIgnoreCase("undefined")) {
 				return null;
 			}
-			if (DPDoctorUtils.allStringsEmpty(speciality) || speciality.equalsIgnoreCase("undefined")) {
-				speciality = null;
-			}else {
-				speciality = speciality.replaceAll("-", " ");
-			}
-
-			if (DPDoctorUtils.allStringsEmpty(service) || service.equalsIgnoreCase("undefined")) {
-				service = null;
-			} else {
-				service = service.replace("doctors-for-","").replaceAll("-", " ");
-			}
 
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.matchQuery("isDoctorListed", true))
@@ -99,6 +88,49 @@ public class SearchServiceImpl implements SearchService {
 					.must(QueryBuilders.matchQuery("isDoctorListed", true))
 					.must(QueryBuilders.matchQuery("isClinic", true));
 
+			
+			if (DPDoctorUtils.allStringsEmpty(speciality) || speciality.equalsIgnoreCase("undefined") || speciality.equalsIgnoreCase("DOCTOR")) {
+				speciality = null;
+			}else {
+				speciality = speciality.replaceAll("-", " ");
+				QueryBuilder specialityQueryBuilder = createSpecialityFilter(speciality);
+				if (specialityQueryBuilder != null) {
+					boolQueryBuilder.must(specialityQueryBuilder);
+					boolQueryBuilderForNearByDoctors.must(specialityQueryBuilder);
+				}
+			}
+
+			if (DPDoctorUtils.allStringsEmpty(service) || service.equalsIgnoreCase("undefined") || service.equalsIgnoreCase("DOCTOR")) {
+				service = null;
+			} else {
+				service = service.replace("doctors-for-","").replaceAll("-", " ");
+				QueryBuilder serviceQueryBuilder = createServiceFilter(service);
+				if (serviceQueryBuilder != null) {
+					boolQueryBuilder.must(serviceQueryBuilder);
+					boolQueryBuilderForNearByDoctors.must(serviceQueryBuilder);
+				}
+			}
+
+			if (!(DPDoctorUtils.allStringsEmpty(expertIn) || expertIn.equalsIgnoreCase("undefined") || expertIn.equalsIgnoreCase("DOCTOR"))) {
+				
+				if(expertIn.startsWith("doctors-for-")) {
+					service = expertIn.replace("doctors-for-","").replaceAll("-", " ");
+					QueryBuilder serviceQueryBuilder = createServiceFilter(service);
+					if (serviceQueryBuilder != null) {
+						boolQueryBuilder.must(serviceQueryBuilder);
+						boolQueryBuilderForNearByDoctors.must(serviceQueryBuilder);
+					}
+				}
+				else {
+					speciality = expertIn.replaceAll("-", " ");
+					QueryBuilder specialityQueryBuilder = createSpecialityFilter(speciality);
+					if (specialityQueryBuilder != null) {
+						boolQueryBuilder.must(specialityQueryBuilder);
+						boolQueryBuilderForNearByDoctors.must(specialityQueryBuilder);
+					}
+				}
+			}
+		
 			if (!DPDoctorUtils.anyStringEmpty(city)) {
 				long cityCount = elasticsearchTemplate.count(new CriteriaQuery(new Criteria("city").is(city).and("isActivated").is(true)),
 						ESCityDocument.class);
@@ -343,8 +375,6 @@ public class SearchServiceImpl implements SearchService {
 	@SuppressWarnings("unchecked")
 	private QueryBuilder createServiceFilter(String service) {
 		QueryBuilder queryBuilder = null;
-		if (!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("DOCTOR")) {
-
 			List<ESServicesDocument> esServicesDocuments = esServicesRepository.findByQueryAnnotation(service);
 			
 			if (esServicesDocuments != null) {
@@ -354,15 +384,12 @@ public class SearchServiceImpl implements SearchService {
 					serviceIds = CollectionUtils.EMPTY_COLLECTION;
 				queryBuilder = QueryBuilders.termsQuery("services", serviceIds);
 			}
-		}
 		return queryBuilder;
 	}
 
 	@SuppressWarnings("unchecked")
 	private QueryBuilder createSpecialityFilter(String speciality) {
 		QueryBuilder queryBuilder = null;
-		if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("DOCTOR")) {
-			speciality = speciality.replaceAll("-", " ");
 			if (speciality.equalsIgnoreCase("GYNECOLOGIST")) {
 				speciality = "GYNAECOLOGIST";
 			}else if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")) {
@@ -388,7 +415,6 @@ public class SearchServiceImpl implements SearchService {
 				if (specialityIds == null)specialityIds = CollectionUtils.EMPTY_COLLECTION;
 				queryBuilder = QueryBuilders.termsQuery("specialities", specialityIds);
 			}
-		}
 		return queryBuilder;
 	}
 
