@@ -75,10 +75,11 @@ public class SearchApi {
 			@MatrixParam("days") List<String> days, @QueryParam("gender") String gender,
 			@QueryParam("minExperience") int minExperience, @QueryParam("maxExperience") int maxExperience,
 			@QueryParam("service") String service, @QueryParam("locality") String locality,
-			@DefaultValue(value = "false") @QueryParam("otherArea") Boolean otherArea) {
+			@DefaultValue(value = "false") @QueryParam("otherArea") Boolean otherArea,
+			@QueryParam("expertIn") String expertIn) {
 		SearchDoctorResponse doctors = searchService.searchDoctors(page, size, city, location, latitude, longitude,
 				speciality, symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
-				maxExperience, service, locality, otherArea);
+				maxExperience, service, locality, otherArea, expertIn);
 
 		Response<SearchDoctorResponse> response = new Response<SearchDoctorResponse>();
 		response.setData(doctors);
