@@ -1589,7 +1589,7 @@ public interface PathProxy {
 		public static final String GET_APPOINTMENT_AVERAGE_TIME_ANALYTICS_DATA = "/appointment/averageTime/{locationId}/{hospitalId}";
 		public static final String GET_APPOINTMENT_PATIENT_GROUP_ANALYTICS_PIE_CHART = "/appointment/patient/group/{locationId}/{hospitalId}";
 		public static final String GET_DOCTOR_APPOINTMENT_ANALYTICS_PIE_CHART = "/appointment/doctor/{locationId}/{hospitalId}";
-		public static final String GET_APPOINTMENT_MAX_TIME_ANALYTIpaymentCS_DATA = "/appointment/maxtime/{locationId}/{hospitalId}";
+		public static final String GET_APPOINTMENT_MAX_TIME_ANALYTICS_DATA = "/appointment/maxtime/{locationId}/{hospitalId}";
 		public static final String GET_INCOME_DETAILS_ANALYTICS_DATA = "/incomeDetails";
 		public static final String GET_INCOME_ANALYTICS_DATA = "/income";
 		public static final String GET_PAYMENT_DETAILS_ANALYTICS_DATA = "/paymentDetails";
@@ -1606,7 +1606,7 @@ public interface PathProxy {
 		public static final String GET_PATIENT_VISIT_ANALYTIC = "/doctor/visit";
 		public static final String GET_DOCTOR_EXPENSE_ANALYTICS = "/doctor/expense";
 		public static final String GET_INCOME_ANALYTIC_DATA= "/income/{locationId}/{hospitalId}";
-		public static final String GET_PAYMENT_ANALYTIC_DATA = "//{locationId}/{hospitalId}";
+		public static final String GET_PAYMENT_ANALYTIC_DATA = "/payment/{locationId}/{hospitalId}";
 
 	}
 
