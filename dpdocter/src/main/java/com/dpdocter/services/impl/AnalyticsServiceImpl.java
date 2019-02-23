@@ -248,9 +248,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 						Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-						Aggregation.unwind("user"), Aggregation.lookup("user_cl", "doctorId", "_id", "docter"),
-						Aggregation.unwind("docter"), Aggregation.match(criteria2),
-						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("id", "$id")
+						Aggregation.unwind("user"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"), Aggregation.match(criteria2),
+						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
 								.append("resultantDiscount",
 										new BasicDBObject("$cond",
 												new BasicDBObject("if", new BasicDBObject("$eq",
@@ -283,9 +283,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 						Aggregation.unwind("patient"), Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-						Aggregation.unwind("user"), Aggregation.lookup("user_cl", "doctorId", "_id", "docter"),
-						Aggregation.unwind("docter"), Aggregation.match(criteria2),
-						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("id", "$id")
+						Aggregation.unwind("user"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"), Aggregation.match(criteria2),
+						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
 								.append("resultantDiscount",
 										new BasicDBObject("$cond",
 												new BasicDBObject("if", new BasicDBObject("$eq",
@@ -819,8 +819,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		List<PaymentDetailsAnalyticsDataResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
-
 			Criteria criteria2 = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").in(new ObjectId(doctorId));
 			}
@@ -833,15 +836,21 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+				fromTime = new DateTime(from);
+				toTime = new DateTime(to);
+				criteria.and("receivedDate").gte(fromTime).lte(toTime);
 
-				DateTime start = new DateTime(new Date(Long.parseLong(fromDate)));
-				criteria.and("receivedDate").gt(start);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-
-				DateTime end = new DateTime(new Date(Long.parseLong(toDate)));
-				criteria.and("receivedDate").lte(end);
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				to = new Date(Long.parseLong(fromDate));
+				toTime = new DateTime(to);
+				criteria.and("receivedDate").gte(fromTime);
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				to = new Date(Long.parseLong(toDate));
+				toTime = new DateTime(to);
+				criteria.and("receivedDate").lte(toTime);
 			}
 			criteria.and("discarded").is(false);
 
@@ -860,11 +869,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 												Aggregation.unwind("patient"),
 												Aggregation.lookup("user_cl", "patientId", "_id", "user"),
 												Aggregation.unwind("user"),
-												Aggregation.lookup("user_cl", "doctorId", "_id", "docter"),
-												Aggregation.unwind("docter"), Aggregation.match(criteria2),
+												Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+												Aggregation.unwind("doctor"), Aggregation.match(criteria2),
 												new CustomAggregationOperation(
 														new BasicDBObject("$group",
-																new BasicDBObject("_id", "$_id")
+																new BasicDBObject("_id", "$id")
 																		.append("date",
 																				new BasicDBObject("$first",
 																						"$receivedDate"))
@@ -914,8 +923,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 												Aggregation.unwind("patient"),
 												Aggregation.lookup("user_cl", "patientId", "_id", "user"),
 												Aggregation.unwind("user"),
-												Aggregation.lookup("user_cl", "doctorId", "_id", "docter"),
-												Aggregation.unwind("docter"), Aggregation.match(criteria2),
+												Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+												Aggregation.unwind("doctor"), Aggregation.match(criteria2),
 												new CustomAggregationOperation(
 														new BasicDBObject("$group",
 																new BasicDBObject("_id", "$_id")
@@ -1706,7 +1715,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 													.append("year", new BasicDBObject("$first", "$year"))
 													.append("week", new BasicDBObject("$first", "$week"))
 													.append("date", new BasicDBObject("$first", "$receivedDate"))
-													.append("receivedDate", new BasicDBObject("$first", "$receivedDate"))
+													.append("receivedDate",
+															new BasicDBObject("$first", "$receivedDate"))
 													.append("count", new BasicDBObject("$sum", 1))));
 
 					break;
