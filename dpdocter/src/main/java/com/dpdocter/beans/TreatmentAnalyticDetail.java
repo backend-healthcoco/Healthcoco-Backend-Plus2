@@ -11,7 +11,17 @@ public class TreatmentAnalyticDetail {
 	private String uniqueEmrId;
 	private Date createdTime;
 	private List<TreatmentService> services;
+	private List<String> status;
 	private String doctorName;
+	
+
+	public List<String> getStatus() {
+		return status;
+	}
+
+	public void setStatus(List<String> status) {
+		this.status = status;
+	}
 
 	public List<TreatmentService> getServices() {
 		return services;

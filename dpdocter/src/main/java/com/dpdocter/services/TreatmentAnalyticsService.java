@@ -23,11 +23,11 @@ public interface TreatmentAnalyticsService {
 			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm);
 
 	List<TreatmentAnalyticDetail> getTreatmentAnalyticDetail(int page, int size, String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String searchTerm);
+			String hospitalId, String fromDate, String toDate, String searchTerm,String status);
 
 	List<DoctorAnalyticPieChartResponse> getTreatmentAnalyticForPieChart(String locationId, String hospitalId,
 			String fromDate, String toDate);
 
-	Integer countTreatments(String doctorId, String locationId, String hospitalId, String fromDate, String toDate,String searchTerm);
+	Integer countTreatments(String doctorId, String locationId, String hospitalId, String fromDate, String toDate,String searchTerm,String status);
 
 }

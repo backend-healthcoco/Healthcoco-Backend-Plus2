@@ -507,7 +507,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 
 	@Override
 	public List<TreatmentAnalyticDetail> getTreatmentAnalyticDetail(int page, int size, String doctorId,
-			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm) {
+			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm, String status) {
 		List<TreatmentAnalyticDetail> response = null;
 		try {
 			Criteria criteria = null;
@@ -545,6 +545,9 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 				criteria.orOperator(new Criteria("patient.firstName").regex(searchTerm, "i"),
 						new Criteria("patient.localPatientName").regex(searchTerm, "i"));
 			}
+			if (!DPDoctorUtils.anyStringEmpty(status)) {
+				criteria.and("treatments.status").is(status.toUpperCase());
+			}
 			Aggregation aggregation = null;
 			if (size > 0) {
 
@@ -554,10 +557,10 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 						Aggregation.unwind("services"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-
 						Aggregation.unwind("patient"), Aggregation.match(criteria),
 						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
 								.append("services", new BasicDBObject("$push", "$services"))
+								.append("status", new BasicDBObject("$push", "$treatments.status"))
 								.append("localPatientName", new BasicDBObject("$first", "$patient.localPatientName"))
 								.append("firstName", new BasicDBObject("$first", "$patient.firstName"))
 								.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
@@ -576,6 +579,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 						Aggregation.unwind("patient"), Aggregation.match(criteria),
 						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
 								.append("services", new BasicDBObject("$push", "$services"))
+								.append("status", new BasicDBObject("$push", "$treatments.status"))
 								.append("localPatientName", new BasicDBObject("$first", "$patient.localPatientName"))
 								.append("firstName", new BasicDBObject("$first", "$patient.firstName"))
 								.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
@@ -670,7 +674,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 
 	@Override
 	public Integer countTreatments(String doctorId, String locationId, String hospitalId, String fromDate,
-			String toDate, String searchTerm) {
+			String toDate, String searchTerm, String status) {
 		Integer response = 0;
 		try {
 			Criteria criteria = new Criteria();
@@ -715,6 +719,9 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 			toTime = new DateTime(to);
 
 			criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
+			if (!DPDoctorUtils.anyStringEmpty(status)) {
+				criteria.and("status").is(status.toUpperCase());
+			}
 			criteria.and("discarded").is(false);
 
 			Aggregation aggregation = null;
@@ -780,7 +787,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 							new BasicDBObject("$group", new BasicDBObject("_id", "$treatments.treatmentServiceId"))));
 
 			response = mongoTemplate
-					.aggregate(aggregation, PatientTreatmentCollection.class, TretmentAnalyticMongoResponse.class)
+					.aggregate(aggregation, PatientTreatmentCollection.class, DoctorTreatmentAnalyticResponse.class)
 					.getMappedResults().size();
 
 		} catch (Exception e) {
