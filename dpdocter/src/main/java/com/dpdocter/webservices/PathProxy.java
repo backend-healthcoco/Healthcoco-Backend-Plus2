@@ -1605,10 +1605,8 @@ public interface PathProxy {
 		public static final String GET_DOCTOR_PRESCRIPTION_PIE_CHART = "/doctor/prescription/{locationId}/{hospitalId}";
 		public static final String GET_PATIENT_VISIT_ANALYTIC = "/doctor/visit";
 		public static final String GET_DOCTOR_EXPENSE_ANALYTICS = "/doctor/expense";
-		public static final String GET_INVOICE_ANALYTICS_DATA = "/invoice/{locationId}/{hospitalId}";
-		public static final String GET_RECEIPT_ANALYTICS_DATA = "/receipt/{locationId}/{hospitalId}";
-		public static final String GET_INVOICE_ANALYTICS_DETAIL = "/invoice/{locationId}/{hospitalId}";
-		public static final String GET_RECEIPT_ANALYTICS_DETAIL = "/receipt/{locationId}/{hospitalId}";
+		public static final String GET_INCOME_ANALYTIC_DATA= "/income/{locationId}/{hospitalId}";
+		public static final String GET_PAYMENT_ANALYTIC_DATA = "/payment/{locationId}/{hospitalId}";
 
 	}
 

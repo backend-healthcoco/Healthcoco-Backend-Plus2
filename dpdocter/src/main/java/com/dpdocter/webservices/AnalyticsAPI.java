@@ -678,9 +678,9 @@ public class AnalyticsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.AnalyticsUrls.GET_INCOME_ANALYTICS_DATA)
+	@Path(value = PathProxy.AnalyticsUrls.GET_INCOME_ANALYTIC_DATA)
 	@GET
-	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_INCOME_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_INCOME_ANALYTICS_DATA)
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_INCOME_ANALYTIC_DATA, notes = PathProxy.AnalyticsUrls.GET_INCOME_ANALYTIC_DATA)
 	public Response<AnalyticResponse> getInvoiceAnalyticData(@QueryParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
@@ -690,15 +690,15 @@ public class AnalyticsAPI {
 					" locationId, hospitalId ,searchType should not be empty");
 		}
 
-		List<AnalyticResponse> data = null;
+		List<AnalyticResponse> data = analyticsService.getInvoiceAnalyticData(doctorId, locationId, hospitalId, fromDate, toDate, searchType, searchTerm);
 		Response<AnalyticResponse> response = new Response<AnalyticResponse>();
 		response.setDataList(data);
 		return response;
 	}
 
-	@Path(value = PathProxy.AnalyticsUrls.GET_RECEIPT_ANALYTICS_DATA)
+	@Path(value = PathProxy.AnalyticsUrls.GET_PAYMENT_ANALYTIC_DATA)
 	@GET
-	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_RECEIPT_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_RECEIPT_ANALYTICS_DATA)
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PAYMENT_ANALYTIC_DATA, notes = PathProxy.AnalyticsUrls.GET_PAYMENT_ANALYTIC_DATA)
 	public Response<AnalyticResponse> getReceiptAnalyticData(@QueryParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
@@ -708,7 +708,7 @@ public class AnalyticsAPI {
 					" locationId, hospitalId ,searchType should not be empty");
 		}
 
-		List<AnalyticResponse> data = null;
+		List<AnalyticResponse> data = analyticsService.getReceiptAnalyticData(doctorId, locationId, hospitalId, fromDate, toDate, searchType, searchTerm);
 		Response<AnalyticResponse> response = new Response<AnalyticResponse>();
 		response.setDataList(data);
 		return response;
