@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.TreatmentAnalyticDetail;
 import com.dpdocter.beans.TreatmentService;
-import com.dpdocter.beans.TretmentAnalyticMongoResponse;
 import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
@@ -30,6 +29,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
+import com.dpdocter.response.TreatmentServiceAnalyticResponse;
 import com.dpdocter.services.TreatmentAnalyticsService;
 import com.mongodb.BasicDBObject;
 
@@ -448,13 +448,13 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 								Aggregation.skip((page) * size), Aggregation.limit(size));
 
 			}
-			AggregationResults<TretmentAnalyticMongoResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					PatientTreatmentCollection.class, TretmentAnalyticMongoResponse.class);
-			List<TretmentAnalyticMongoResponse> analyticMongoResponses = aggregationResults.getMappedResults();
+			AggregationResults<TreatmentServiceAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PatientTreatmentCollection.class, TreatmentServiceAnalyticResponse.class);
+			List<TreatmentServiceAnalyticResponse> analyticMongoResponses = aggregationResults.getMappedResults();
 			if (analyticMongoResponses != null && !analyticMongoResponses.isEmpty()) {
 				response = new ArrayList<DoctorTreatmentAnalyticResponse>();
 				DoctorTreatmentAnalyticResponse analyticResponse = new DoctorTreatmentAnalyticResponse();
-				for (TretmentAnalyticMongoResponse data : analyticMongoResponses) {
+				for (TreatmentServiceAnalyticResponse data : analyticMongoResponses) {
 					analyticResponse.setTotalTreatmentService(data.getTotalTreatmentService());
 					analyticResponse.setTreatmentServiceName(data.getTreatmentServiceName());
 					if (data.getTotalTreatmentServiceCompleted() != null
