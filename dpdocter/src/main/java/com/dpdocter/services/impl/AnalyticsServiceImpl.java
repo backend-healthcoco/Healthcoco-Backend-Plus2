@@ -998,15 +998,16 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 
-				DateTime start = new DateTime(new Date(Long.parseLong(fromDate)));
-				criteria.and("receivedDate").gt(start);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				criteria.and("receivedDate").gte(new DateTime(new Date(Long.parseLong(fromDate))))
+						.lte(new DateTime(new Date(Long.parseLong(toDate))));
 
-				DateTime end = new DateTime(new Date(Long.parseLong(toDate)));
-				criteria.and("receivedDate").lte(end);
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				criteria.and("receivedDate").gte(new DateTime(new Date(Long.parseLong(fromDate))));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+
+				criteria.and("receivedDate").lte(new DateTime(new Date(Long.parseLong(toDate))));
 			}
 			criteria.and("discarded").is(false);
 
