@@ -1415,7 +1415,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Date from = null;
 			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -1495,9 +1495,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 								Aggregation.unwind("doctor"),
+								Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoice"),
+								Aggregation.unwind("invoice"),
 								new CustomAggregationOperation(new BasicDBObject("$project",
 										new BasicDBObject("debitAmount", "$debitAmount")
-												.append("creditAmount", "$creditAmount").append("doctorId", "$doctorId")
+												.append("creditAmount", "$creditAmount")
+												.append("doctorId", "$invoice.doctorId")
 												.append("total",
 														new BasicDBObject("$subtract",
 																Arrays.asList("$debitAmount", "$creditAmount")))
@@ -1513,9 +1516,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 								Aggregation.unwind("doctor"),
+								Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoice"),
+								Aggregation.unwind("invoice"),
 								new CustomAggregationOperation(new BasicDBObject("$project",
 										new BasicDBObject("debitAmount", "$debitAmount")
-												.append("creditAmount", "$creditAmount").append("doctorId", "$doctorId")
+												.append("creditAmount", "$creditAmount")
+												.append("doctorId", "$invoice.doctorId")
 												.append("total",
 														new BasicDBObject("$subtract",
 																Arrays.asList("$debitAmount", "$creditAmount")))
