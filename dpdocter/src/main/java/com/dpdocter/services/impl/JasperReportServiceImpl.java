@@ -8235,12 +8235,16 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		band = new JRDesignBand();
+		band.setHeight(3);
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(1);
 		jrDesignLine.setWidth(columnWidth);
 		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
 		band.addElement(jrDesignLine);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDietPlanItem(parameters, contentFontSize,
 				columnWidth, pageWidth, pageHeight, "$P{items}", normalStyle));
 
