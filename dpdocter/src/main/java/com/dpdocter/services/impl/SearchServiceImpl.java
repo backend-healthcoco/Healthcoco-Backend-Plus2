@@ -329,6 +329,7 @@ public class SearchServiceImpl implements SearchService {
 				} else {
 					response.setMetaData("Doctors in ");
 				}
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
