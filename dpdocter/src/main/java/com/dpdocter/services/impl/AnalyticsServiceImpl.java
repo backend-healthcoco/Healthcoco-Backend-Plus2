@@ -1434,8 +1434,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
-				criteria3.and("invoice.hospitalId").is(new ObjectId(locationId));
-				criteria3.and("receipt.hospitalId").is(new ObjectId(locationId));
+				criteria3.and("invoice.hospitalId").is(new ObjectId(hospitalId));
+				criteria3.and("receipt.hospitalId").is(new ObjectId(hospitalId));
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
