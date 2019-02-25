@@ -23,6 +23,7 @@ import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.AmountDueAnalyticsDataResponse;
+import com.dpdocter.response.AnalyticCountResponse;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
@@ -698,21 +699,22 @@ public class AnalyticsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.AnalyticsUrls.GET_PAYMENT_ANALYTIC_DATA)
+	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_COUNT_ANALYTIC)
 	@GET
-	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PAYMENT_ANALYTIC_DATA, notes = PathProxy.AnalyticsUrls.GET_PAYMENT_ANALYTIC_DATA)
-	public Response<AnalyticResponse> getReceiptAnalyticData(@QueryParam("doctorId") String doctorId,
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PATIENT_COUNT_ANALYTIC, notes = PathProxy.AnalyticsUrls.GET_PATIENT_COUNT_ANALYTIC)
+	public Response<AnalyticCountResponse> getPatientCountAnalyticData(@QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("searchType") String searchType) {
-		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId, searchType)) {
+			@PathParam("type") String type, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("isVisited") boolean isVisited, @QueryParam("city") String city) {
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId, type)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					" locationId, hospitalId ,searchType should not be empty");
 		}
-
-		List<AnalyticResponse> data = analyticsService.getReceiptAnalyticData(doctorId, locationId, hospitalId,
-				fromDate, toDate, searchType, searchTerm);
-		Response<AnalyticResponse> response = new Response<AnalyticResponse>();
+		Response<AnalyticCountResponse> response = new Response<AnalyticCountResponse>();
+		List<AnalyticCountResponse> data = patientAnalyticService.getPatientCountAnalytic(size, page, doctorId,
+				locationId, hospitalId, fromDate, toDate, type, searchTerm, city, isVisited);
 		response.setDataList(data);
 		return response;
 	}

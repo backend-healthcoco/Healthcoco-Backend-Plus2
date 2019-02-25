@@ -40,7 +40,7 @@ public interface AnalyticsService {
 			String paymentMode);
 
 	public List<AnalyticResponse> getReceiptAnalyticData(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String searchType, String searchTerm);
+			String fromDate, String toDate, String searchType, String searchTerm,String paymentMode);
 
 	public List<AnalyticResponse> getInvoiceAnalyticData(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String searchType, String searchTerm);

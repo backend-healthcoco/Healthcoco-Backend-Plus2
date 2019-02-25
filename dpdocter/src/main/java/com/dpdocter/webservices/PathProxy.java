@@ -1596,6 +1596,7 @@ public interface PathProxy {
 		public static final String GET_PAYMENT_ANALYTICS_DATA = "/payment";
 		public static final String GET_AMOUNT_DUE_ANALYTICS_DATA = "/amountDue";
 		public static final String GET_PATIENT_ANALYTIC = "/doctor/patient";
+		public static final String GET_PATIENT_COUNT_ANALYTIC = "/count/patient/{locationId}/{hospitalId}";
 		public static final String GET_APPOINTMENT_ANALYTIC = "/doctor/appointment";
 		public static final String GET_PRESCRIPTION_ANALYTIC = "/doctor/prescription";
 		public static final String GET_PRESCRIPTION_ITEM_ANALYTIC = "/doctor/prescription/{type}";
@@ -1605,7 +1606,7 @@ public interface PathProxy {
 		public static final String GET_DOCTOR_PRESCRIPTION_PIE_CHART = "/doctor/prescription/{locationId}/{hospitalId}";
 		public static final String GET_PATIENT_VISIT_ANALYTIC = "/doctor/visit";
 		public static final String GET_DOCTOR_EXPENSE_ANALYTICS = "/doctor/expense";
-		public static final String GET_INCOME_ANALYTIC_DATA= "/income/{locationId}/{hospitalId}";
+		public static final String GET_INCOME_ANALYTIC_DATA = "/income/{locationId}/{hospitalId}";
 		public static final String GET_PAYMENT_ANALYTIC_DATA = "/payment/{locationId}/{hospitalId}";
 
 	}

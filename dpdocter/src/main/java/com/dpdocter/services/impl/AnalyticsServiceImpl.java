@@ -1423,10 +1423,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
+				criteria3.and("invoice.doctorId").is(new ObjectId(doctorId));
+				criteria4.and("receipt.doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
-				criteria2.and("patient.locationId").is(new ObjectId(locationId));
+				criteria2.and("patient.locationId").is(new ObjectId(locationId)).and("patient.discarded").is(false);
 				criteria3.and("invoice.locationId").is(new ObjectId(locationId)).and("invoice.discarded").is(false);
 				criteria4.and("receipt.locationId").is(new ObjectId(locationId)).and("receipt.discarded").is(false);
 			}
@@ -1464,35 +1466,45 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								.newAggregation(Aggregation.match(criteria),
 										Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 										Aggregation.unwind("patient"), Aggregation.match(criteria2),
-										Aggregation
-												.lookup("doctor_patient_invoice_cl", "doctorId", "doctorId", "invoice"),
+
+										new CustomAggregationOperation(new BasicDBObject("$group",
+												new BasicDBObject("_id", "$patientId")
+
+														.append("patientName",
+																new BasicDBObject("$first",
+																		"$patient.localPatientName"))
+														.append("pid", new BasicDBObject("$first", "$patient.PID"))
+														.append("patientId", new BasicDBObject("$first", "$patientId"))
+														.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+														.append("dueAmount", new BasicDBObject("$sum", "$dueAmount")))),
+										Aggregation.lookup(
+												"doctor_patient_invoice_cl", "patientId", "patientId", "invoice"),
 										Aggregation.unwind("invoice"), Aggregation.match(criteria3),
 										new CustomAggregationOperation(
 												new BasicDBObject("$group",
-														new BasicDBObject("_id", "$_id")
+														new BasicDBObject("_id", "$patientId")
 																.append("invoiced",
 																		new BasicDBObject("$sum",
-																				"$invoice.grandTotal"))
+																				"$invoice.balanceAmount"))
 																.append("patientName",
-																		new BasicDBObject("$first",
-																				"$patient.localPatientName"))
-																.append("pid",
-																		new BasicDBObject("$first", "$patient.PID"))
+																		new BasicDBObject("$first", "$patientName"))
+																.append("pid", new BasicDBObject("$first", "$pid"))
 																.append("patientId",
 																		new BasicDBObject("$first", "$patientId"))
 																.append("doctorId",
 																		new BasicDBObject("$first", "$doctorId"))
 																.append("dueAmount",
 																		new BasicDBObject("$first", "$dueAmount")))),
-										Aggregation
-												.lookup("doctor_patient_receipt_cl", "doctorId", "doctorId", "receipt"),
+										Aggregation.lookup(
+												"doctor_patient_receipt_cl", "patientId", "patientId", "receipt"),
 										Aggregation.unwind("receipt"), Aggregation.match(criteria4),
+
 										new CustomAggregationOperation(new BasicDBObject("$group",
 												new BasicDBObject("_id", "$patientId")
-														.append("invoiced", new BasicDBObject("$first", "$debitAmount"))
+														.append("invoiced", new BasicDBObject("$first", "$invoiced"))
 														.append("received",
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
-														.append("amountDue", new BasicDBObject("$sum", "$total"))
+														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
 														.append("patientName",
 																new BasicDBObject("$first", "$patientName"))
 														.append("pid", new BasicDBObject("$first", "$pid")))),
@@ -1502,40 +1514,45 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								.newAggregation(Aggregation.match(criteria),
 										Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 										Aggregation.unwind("patient"), Aggregation.match(criteria2),
+
+										new CustomAggregationOperation(new BasicDBObject("$group",
+												new BasicDBObject("_id", "$patientId")
+
+														.append("patientName",
+																new BasicDBObject("$first",
+																		"$patient.localPatientName"))
+														.append("pid", new BasicDBObject("$first", "$patient.PID"))
+														.append("patientId", new BasicDBObject("$first", "$patientId"))
+														.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+														.append("dueAmount", new BasicDBObject("$sum", "$dueAmount")))),
 										Aggregation
 												.lookup("doctor_patient_invoice_cl", "doctorId", "doctorId", "invoice"),
 										Aggregation.unwind("invoice"), Aggregation.match(criteria3),
 										new CustomAggregationOperation(
 												new BasicDBObject("$group",
-														new BasicDBObject("_id", "$_id")
+														new BasicDBObject("_id", "$patientId")
 																.append("invoiced",
 																		new BasicDBObject("$sum",
-																				"$invoice.grandTotal"))
+																				"$invoice.balanceAmount"))
 																.append("patientName",
-																		new BasicDBObject("$first",
-																				"$patient.localPatientName"))
-																.append("pid",
-																		new BasicDBObject("$first", "$patient.PID"))
+																		new BasicDBObject("$first", "$patientName"))
+																.append("pid", new BasicDBObject("$first", "$pid"))
 																.append("patientId",
 																		new BasicDBObject("$first", "$patientId"))
 																.append("doctorId",
 																		new BasicDBObject("$first", "$doctorId"))
-																.append("locationId",
-																		new BasicDBObject("$first", "$locationId"))
-																.append("hospitalId",
-																		new BasicDBObject("$first", "$hospitalId"))
-																.append("dueAmount", new BasicDBObject("$first",
-																		"$dueAmount")))),
+																.append("dueAmount",
+																		new BasicDBObject("$first", "$dueAmount")))),
 										Aggregation
 												.lookup("doctor_patient_receipt_cl", "doctorId", "doctorId", "receipt"),
 										Aggregation.unwind("receipt"), Aggregation.match(criteria4),
 
 										new CustomAggregationOperation(new BasicDBObject("$group",
 												new BasicDBObject("_id", "$patientId")
-														.append("invoiced", new BasicDBObject("$first", "$debitAmount"))
+														.append("invoiced", new BasicDBObject("$first", "$invoiced"))
 														.append("received",
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
-														.append("amountDue", new BasicDBObject("$sum", "$total"))
+														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
 														.append("patientName",
 																new BasicDBObject("$first", "$patientName"))
 														.append("pid", new BasicDBObject("$first", "$pid")))));
@@ -1546,15 +1563,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								.newAggregation(Aggregation.match(criteria),
 										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 										Aggregation.unwind("doctor"),
-										Aggregation
-												.lookup("doctor_patient_invoice_cl", "doctorId", "doctorId", "invoice"),
-										Aggregation.unwind("invoice"), Aggregation.match(criteria3),
 										new CustomAggregationOperation(
 												new BasicDBObject("$group",
-														new BasicDBObject("_id", "$_id")
-																.append("invoiced",
-																		new BasicDBObject("$sum",
-																				"$invoice.grandTotal"))
+														new BasicDBObject("_id", "$doctorId")
 																.append("doctorName",
 																		new BasicDBObject("$first",
 																				"$doctor.firstName"))
@@ -1564,8 +1575,27 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																		new BasicDBObject("$first", "$locationId"))
 																.append("hospitalId",
 																		new BasicDBObject("$first", "$hospitalId"))
-																.append("dueAmount", new BasicDBObject("$first",
-																		"$dueAmount")))),
+																.append("dueAmount",
+																		new BasicDBObject("$sum", "$dueAmount")))),
+										Aggregation
+												.lookup("doctor_patient_invoice_cl", "doctorId", "doctorId", "invoice"),
+										Aggregation.unwind("invoice"), Aggregation.match(criteria3),
+										new CustomAggregationOperation(
+												new BasicDBObject("$group",
+														new BasicDBObject("_id", "$doctorId")
+																.append("invoiced",
+																		new BasicDBObject("$sum",
+																				"$invoice.balanceAmount"))
+																.append("doctorName",
+																		new BasicDBObject("$first", "$doctorName"))
+																.append("doctorId",
+																		new BasicDBObject("$first", "$doctorId"))
+																.append("locationId",
+																		new BasicDBObject("$first", "$locationId"))
+																.append("hospitalId",
+																		new BasicDBObject("$first", "$hospitalId"))
+																.append("dueAmount",
+																		new BasicDBObject("$first", "$dueAmount")))),
 										Aggregation
 												.lookup("doctor_patient_receipt_cl", "doctorId", "doctorId", "receipt"),
 										Aggregation.unwind("receipt"), Aggregation.match(criteria4),
@@ -1574,7 +1604,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("invoiced", new BasicDBObject("$first", "$invoiced"))
 														.append("received",
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
-														.append("amountDue", new BasicDBObject("$sum", "$dueAmount"))
+														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
 														.append("doctorName",
 																new BasicDBObject("$first", "$doctorName")))),
 										Aggregation.skip(page * size), Aggregation.limit(size));
@@ -1583,15 +1613,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								.newAggregation(Aggregation.match(criteria),
 										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 										Aggregation.unwind("doctor"),
-										Aggregation
-												.lookup("doctor_patient_invoice_cl", "doctorId", "doctorId", "invoice"),
-										Aggregation.unwind("invoice"), Aggregation.match(criteria3),
 										new CustomAggregationOperation(
 												new BasicDBObject("$group",
-														new BasicDBObject("_id", "$_id")
-																.append("invoiced",
-																		new BasicDBObject("$sum",
-																				"$invoice.grandTotal"))
+														new BasicDBObject("_id", "$doctorId")
 																.append("doctorName",
 																		new BasicDBObject("$first",
 																				"$doctor.firstName"))
@@ -1601,8 +1625,27 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																		new BasicDBObject("$first", "$locationId"))
 																.append("hospitalId",
 																		new BasicDBObject("$first", "$hospitalId"))
-																.append("dueAmount", new BasicDBObject("$first",
-																		"$dueAmount")))),
+																.append("dueAmount",
+																		new BasicDBObject("$sum", "$dueAmount")))),
+										Aggregation
+												.lookup("doctor_patient_invoice_cl", "doctorId", "doctorId", "invoice"),
+										Aggregation.unwind("invoice"), Aggregation.match(criteria3),
+										new CustomAggregationOperation(
+												new BasicDBObject("$group",
+														new BasicDBObject("_id", "$doctorId")
+																.append("invoiced",
+																		new BasicDBObject("$sum",
+																				"$invoice.balanceAmount"))
+																.append("doctorName",
+																		new BasicDBObject("$first", "$doctorName"))
+																.append("doctorId",
+																		new BasicDBObject("$first", "$doctorId"))
+																.append("locationId",
+																		new BasicDBObject("$first", "$locationId"))
+																.append("hospitalId",
+																		new BasicDBObject("$first", "$hospitalId"))
+																.append("dueAmount",
+																		new BasicDBObject("$first", "$dueAmount")))),
 										Aggregation
 												.lookup("doctor_patient_receipt_cl", "doctorId", "doctorId", "receipt"),
 										Aggregation.unwind("receipt"), Aggregation.match(criteria4),
@@ -1611,7 +1654,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("invoiced", new BasicDBObject("$first", "$invoiced"))
 														.append("received",
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
-														.append("amountDue", new BasicDBObject("$sum", "$dueAmount"))
+														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
 														.append("doctorName",
 																new BasicDBObject("$first", "$doctorName")))));
 					}
@@ -1735,7 +1778,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	@Override
 	public List<AnalyticResponse> getReceiptAnalyticData(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String searchType, String searchTerm) {
+			String fromDate, String toDate, String searchType, String searchTerm, String paymentMode) {
 		List<AnalyticResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -1776,6 +1819,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			}
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(paymentMode)) {
+				criteria = criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
 			}
 			criteria.and("discarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(searchType)) {

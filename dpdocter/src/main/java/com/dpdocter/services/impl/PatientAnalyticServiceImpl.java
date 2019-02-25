@@ -24,6 +24,7 @@ import com.dpdocter.enums.PatientAnalyticType;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.AnalyticCountResponse;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.DoctorPatientAnalyticResponse;
 import com.dpdocter.services.PatientAnalyticService;
@@ -1126,5 +1127,401 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting Patient analytic");
 		}
 		return data;
+	}
+
+	private List<AnalyticCountResponse> getPatientCountByCitiWise(int size, int page, Date fromTime, Date toTime,
+			String doctorId, String locationId, String hospitalId, String city, boolean isVisited) {
+		Criteria criteria = new Criteria();
+		Criteria criteria2 = new Criteria();
+
+		if (!DPDoctorUtils.anyStringEmpty(city)) {
+			criteria.and("address.city").is(city);
+		}
+		if (!isVisited) {
+			if (toTime != null && fromTime != null) {
+
+				criteria.and("createdTime").gte(fromTime).lte(toTime);
+			} else if (toTime != null) {
+				criteria.and("createdTime").lte(toTime);
+			} else if (fromTime != null) {
+				criteria.and("createdTime").gte(fromTime);
+			}
+		} else {
+
+			if (toTime != null && fromTime != null) {
+
+				criteria2.and("visit.createdTime").gte(fromTime).lte(toTime);
+			} else if (toTime != null) {
+				criteria2.and("visit.createdTime").lte(toTime);
+			} else if (fromTime != null) {
+				criteria2.and("visit.createdTime").gte(fromTime);
+			}
+
+		}
+		ProjectionOperation projectList = new ProjectionOperation(
+				Fields.from(Fields.field("name", "$address.city"), Fields.field("count", "$userId")));
+
+		CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				new BasicDBObject("_id", "$name").append("name", new BasicDBObject("$first", "$name")).append("count",
+						new BasicDBObject("$sum", 1))));
+
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			criteria2.and("visit.doctorId").is(new ObjectId(doctorId));
+
+		}
+		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+			criteria = criteria.and("locationId").is(new ObjectId(locationId));
+			criteria2.and("visit.locationId").is(new ObjectId(locationId));
+
+		}
+		if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+			criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			criteria2.and("visit.hospitalId").is(new ObjectId(hospitalId));
+		}
+		criteria.and("discarded").is(false);
+		criteria2.and("visit.discarded").is(false);
+		Aggregation aggregation = null;
+		if (!isVisited) {
+			if (size > 0)
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria), projectList, aggregationOperation,
+								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
+								Aggregation.limit(size))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+			else
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria), projectList, aggregationOperation,
+								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+		} else {
+			if (size > 0)
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
+								Aggregation.unwind("visit"), Aggregation.match(criteria2),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("_id", "$userId")
+												.append("name", new BasicDBObject("$first", "$address.city"))
+												.append("count", new BasicDBObject("$first", "$userId")))),
+								aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
+								Aggregation.skip((page) * size), Aggregation.limit(size))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+			else
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
+								Aggregation.unwind("visit"), Aggregation.match(criteria2),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("_id", "$userId")
+												.append("name", new BasicDBObject("$first", "$address.city"))
+												.append("count", new BasicDBObject("$first", "$userId")))),
+								aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
+		}
+		AggregationResults<AnalyticCountResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+				PatientCollection.class, AnalyticCountResponse.class);
+		return aggregationResults.getMappedResults();
+	}
+
+	private List<AnalyticCountResponse> getPatientCountByReference(int size, int page, Date fromTime, Date toTime,
+			String doctorId, String locationId, String hospitalId, String city, boolean isVisited) {
+		Criteria criteria = new Criteria();
+		Criteria criteria2 = new Criteria();
+
+		if (!DPDoctorUtils.anyStringEmpty(city)) {
+			criteria.and("address.city").is(city);
+		}
+		if (!isVisited) {
+			if (toTime != null && fromTime != null) {
+
+				criteria.and("createdTime").gte(fromTime).lte(toTime);
+			} else if (toTime != null) {
+				criteria.and("createdTime").lte(toTime);
+			} else if (fromTime != null) {
+				criteria.and("createdTime").gte(fromTime);
+			}
+		} else {
+
+			if (toTime != null && fromTime != null) {
+
+				criteria2.and("visit.createdTime").gte(fromTime).lte(toTime);
+			} else if (toTime != null) {
+				criteria2.and("visit.createdTime").lte(toTime);
+			} else if (fromTime != null) {
+				criteria2.and("visit.createdTime").gte(fromTime);
+			}
+
+		}
+		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$user._id"),
+				Fields.field("name", "$user.firstName"), Fields.field("count", "$userId")));
+
+		CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name")).append("count",
+						new BasicDBObject("$sum", 1))));
+
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			criteria2.and("visit.doctorId").is(new ObjectId(doctorId));
+
+		}
+		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+			criteria = criteria.and("locationId").is(new ObjectId(locationId));
+			criteria2.and("visit.locationId").is(new ObjectId(locationId));
+
+		}
+		if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+			criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			criteria2.and("visit.hospitalId").is(new ObjectId(hospitalId));
+		}
+		criteria.and("discarded").is(false);
+		criteria2.and("visit.discarded").is(false);
+		Aggregation aggregation = null;
+		if (!isVisited) {
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "referredBy", "_id", "user"), Aggregation.unwind("user"),
+						projectList, aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
+						Aggregation.skip((page) * size), Aggregation.limit(size))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "referredBy", "_id", "user"), Aggregation.unwind("user"),
+						projectList, aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+		} else {
+			if (size > 0)
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("user_cl", "referredBy", "_id", "user"), Aggregation.unwind("user"),
+								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
+								Aggregation.unwind("visit"), Aggregation.match(criteria2),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("_id", "$userId")
+												.append("name", new BasicDBObject("$first", "$user.firstName"))
+												.append("count", new BasicDBObject("$first", "$user._id")))),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("_id", "$count")
+												.append("name", new BasicDBObject("$first", "$name"))
+												.append("count", new BasicDBObject("$sum", 1)))),
+								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
+								Aggregation.limit(size))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+			else
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("user_cl", "referredBy", "_id", "user"), Aggregation.unwind("user"),
+								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
+								Aggregation.unwind("visit"), Aggregation.match(criteria2),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("_id", "$userId")
+												.append("name", new BasicDBObject("$first", "$user.firstName"))
+												.append("count", new BasicDBObject("$first", "$user._id")))),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("_id", "$count")
+												.append("name", new BasicDBObject("$first", "$name"))
+												.append("count", new BasicDBObject("$sum", 1)))),
+								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
+		}
+		AggregationResults<AnalyticCountResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+				PatientCollection.class, AnalyticCountResponse.class);
+		return aggregationResults.getMappedResults();
+	}
+
+	private List<AnalyticCountResponse> getPatientCountByGroup(int size, int page, Date fromTime, Date toTime,
+			String doctorId, String locationId, String hospitalId, String city, boolean isVisited) {
+		Criteria criteria = new Criteria();
+		Criteria criteria2 = new Criteria();
+		Criteria criteria3 = new Criteria();
+
+		if (!DPDoctorUtils.anyStringEmpty(city)) {
+			criteria.and("address.city").is(city);
+		}
+		if (!isVisited) {
+			if (toTime != null && fromTime != null) {
+
+				criteria.and("createdTime").gte(fromTime).lte(toTime);
+			} else if (toTime != null) {
+				criteria.and("createdTime").lte(toTime);
+			} else if (fromTime != null) {
+				criteria.and("createdTime").gte(fromTime);
+			}
+		} else {
+
+			if (toTime != null && fromTime != null) {
+
+				criteria3.and("visit.createdTime").gte(fromTime).lte(toTime);
+			} else if (toTime != null) {
+				criteria3.and("visit.createdTime").lte(toTime);
+			} else if (fromTime != null) {
+				criteria3.and("visit.createdTime").gte(fromTime);
+			}
+
+		}
+		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$group._id"),
+				Fields.field("name", "$user.firstName"), Fields.field("count", "$userId")));
+
+		CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name")).append("count",
+						new BasicDBObject("$sum", 1))));
+
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			criteria3.and("visit.doctorId").is(new ObjectId(doctorId));
+			criteria2.and("group.doctorId").is(new ObjectId(doctorId));
+
+		}
+		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+			criteria = criteria.and("locationId").is(new ObjectId(locationId));
+			criteria3.and("visit.locationId").is(new ObjectId(locationId));
+			criteria2.and("group.locationId").is(new ObjectId(locationId));
+
+		}
+		if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+			criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			criteria3.and("visit.hospitalId").is(new ObjectId(hospitalId));
+			criteria2.and("group.hospitalId").is(new ObjectId(hospitalId));
+		}
+		criteria.and("discarded").is(false);
+		criteria3.and("visit.discarded").is(false);
+		Aggregation aggregation = null;
+		if (!isVisited) {
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
+						Aggregation.unwind("patientGroup"),
+						Aggregation.match(new Criteria("patientGroup.discarded").is(true)),
+						Aggregation.lookup("group_cl", "patientGroup.groupId", "_id", "group"),
+						Aggregation.unwind("group"), Aggregation.match(criteria2.and("group.discarded").is(true)),
+						projectList, aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
+						Aggregation.skip((page) * size), Aggregation.limit(size))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.match(criteria),
+						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
+						Aggregation.unwind("patientGroup"),
+						Aggregation.match(new Criteria("patientGroup.discarded").is(true)),
+						Aggregation.lookup("group_cl", "patientGroup.groupId", "_id", "group"),
+						Aggregation.unwind("group"), Aggregation.match(criteria2.and("group.discarded").is(true)),
+						projectList, aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+		} else {
+			if (size > 0)
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
+								Aggregation.unwind("patientGroup"),
+								Aggregation.match(new Criteria("patientGroup.discarded").is(true)),
+								Aggregation.lookup("group_cl", "patientGroup.groupId", "_id", "group"),
+								Aggregation.unwind("group"),
+								Aggregation.match(criteria2.and("group.discarded").is(true)),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("_id",
+												new BasicDBObject("groupId", "$group._id").append("userId", "$userId"))
+														.append("name", new BasicDBObject("$first", "$group.name"))
+														.append("userId", new BasicDBObject("$first", "$userId"))
+														.append("count", new BasicDBObject("$first", "$group._id")))),
+								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
+								Aggregation.unwind("visit"), Aggregation.match(criteria3),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("_id", "$_id")
+												.append("name", new BasicDBObject("$first", "$name"))
+												.append("count", new BasicDBObject("$first", "$count")))),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("_id", "$count")
+												.append("name", new BasicDBObject("$first", "$name"))
+												.append("count", new BasicDBObject("$sum", 1)))),
+								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
+								Aggregation.limit(size))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+			else
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
+								Aggregation.unwind("patientGroup"),
+								Aggregation.match(new Criteria("patientGroup.discarded").is(true)),
+								Aggregation.lookup("group_cl", "patientGroup.groupId", "_id", "group"),
+								Aggregation.unwind("group"),
+								Aggregation.match(criteria2.and("group.discarded").is(true)),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("_id",
+												new BasicDBObject("groupId", "$group._id").append("userId", "$userId"))
+														.append("name", new BasicDBObject("$first", "$group.name"))
+														.append("userId", new BasicDBObject("$first", "$userId"))
+														.append("count", new BasicDBObject("$first", "$group._id")))),
+								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
+								Aggregation.unwind("visit"), Aggregation.match(criteria3),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("_id", "$_id")
+												.append("name", new BasicDBObject("$first", "$name"))
+												.append("count", new BasicDBObject("$first", "$count")))),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("_id", "$count")
+												.append("name", new BasicDBObject("$first", "$name"))
+												.append("count", new BasicDBObject("$sum", 1)))),
+								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
+		}
+		AggregationResults<AnalyticCountResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+				PatientCollection.class, AnalyticCountResponse.class);
+		return aggregationResults.getMappedResults();
+	}
+
+	@Override
+	public List<AnalyticCountResponse> getPatientCountAnalytic(int size, int page, String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate, String queryType, String searchTerm, String city,
+			boolean isVisited) {
+		List<AnalyticCountResponse> response = null;
+
+		try {
+			Date from = null;
+			Date to = null;
+
+			long date = 0l;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+
+			if (queryType.equalsIgnoreCase("CITY_WISE")) {
+
+				response = getPatientCountByCitiWise(size, page, from, to, doctorId, locationId, hospitalId, city,
+						isVisited);
+
+			}
+
+			else if (queryType.equalsIgnoreCase("GROUP_WISE")) {
+
+				response = getPatientCountByGroup(size, page, from, to, doctorId, locationId, hospitalId, city,
+						isVisited);
+
+			} else if (queryType.equalsIgnoreCase("REFERRED_BY")) {
+
+				response = getPatientCountByReference(size, page, from, to, doctorId, locationId, hospitalId, city,
+						isVisited);
+
+			}
+
+		} catch (
+
+		Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting patient analytic");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting patient analytic");
+		}
+
+		return response;
+
 	}
 }
