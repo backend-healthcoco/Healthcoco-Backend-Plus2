@@ -239,7 +239,7 @@ public class SearchServiceImpl implements SearchService {
 					}
 				}
 			}
-			if (!(esDoctorDocuments == null && nearByDoctors == null)) {
+//			if (!(esDoctorDocuments == null && nearByDoctors == null)) {
 				response = new SearchDoctorResponse();
 
 				if (!DPDoctorUtils.allStringsEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
@@ -282,7 +282,7 @@ public class SearchServiceImpl implements SearchService {
 				} else {
 					response.setMetaData("Doctors in ");
 				}
-			}
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
