@@ -257,7 +257,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 								+ StringUtils.capitalize(recipe.getName() + "</b>"));
 					}
 					if (recipe.getQuantity() != null) {
-						quantity = recipe.getQuantity().getValue() + "--"
+						quantity = recipe.getQuantity().getValue() + " "
 								+ (recipe.getQuantity().getType() != null ? recipe.getQuantity().getType() : "");
 					}
 					if (DPDoctorUtils.anyStringEmpty(detail.getQuantity())) {
@@ -270,14 +270,19 @@ public class DietPlansServiceImpl implements DietPlansService {
 					}
 					for (RecipeItem recipeItem : recipe.getIngredients()) {
 
-						detail.setRecipe(detail.getRecipe() + "<br>" + StringUtils.capitalize(recipe.getName()));
-
-						if (recipeItem.getQuantity() != null) {
-							quantity = recipe.getQuantity().getValue() + "--"
-									+ (recipe.getQuantity().getType() != null ? recipe.getQuantity().getType() : "");
+						if (!DPDoctorUtils.anyStringEmpty(recipeItem.getName())) {
+							detail.setRecipe(
+									detail.getRecipe() + "<br>" + StringUtils.capitalize(recipeItem.getName()));
 						}
 
-						detail.setQuantity(detail.getQuantity() + "<br>" + StringUtils.capitalize(quantity));
+						if (recipeItem.getQuantity() != null) {
+							quantity = recipe.getQuantity().getValue() + " "
+									+ (recipe.getQuantity().getType() != null ? recipeItem.getQuantity().getType()
+											: "");
+							if (!DPDoctorUtils.anyStringEmpty(quantity)) {
+								detail.setQuantity(detail.getQuantity() + "<br>" + StringUtils.capitalize(quantity));
+							}
+						}
 
 					}
 
