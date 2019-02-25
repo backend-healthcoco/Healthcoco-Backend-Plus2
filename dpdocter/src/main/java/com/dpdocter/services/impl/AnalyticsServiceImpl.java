@@ -1464,7 +1464,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								.newAggregation(Aggregation.match(criteria),
 										Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 										Aggregation.unwind("patient"), Aggregation.match(criteria2),
-										Aggregation.lookup("doctor_patient_invoice_cl", "doctorId", "_id", "invoice"),
+										Aggregation
+												.lookup("doctor_patient_invoice_cl", "doctorId", "doctorId", "invoice"),
 										Aggregation.unwind("invoice"), Aggregation.match(criteria3),
 										new CustomAggregationOperation(
 												new BasicDBObject("$group",
@@ -1479,9 +1480,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																		new BasicDBObject("$first", "$patient.PID"))
 																.append("patientId",
 																		new BasicDBObject("$first", "$patientId"))
-																.append("dueAmount", new BasicDBObject("$first",
-																		"$dueAmount")))),
-										Aggregation.lookup("doctor_patient_receipt_cl", "doctorId", "_id", "receipt"),
+																.append("doctorId",
+																		new BasicDBObject("$first", "$doctorId"))
+																.append("dueAmount",
+																		new BasicDBObject("$first", "$dueAmount")))),
+										Aggregation
+												.lookup("doctor_patient_receipt_cl", "doctorId", "doctorId", "receipt"),
 										Aggregation.unwind("receipt"), Aggregation.match(criteria4),
 										new CustomAggregationOperation(new BasicDBObject("$group",
 												new BasicDBObject("_id", "$patientId")
@@ -1498,7 +1502,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								.newAggregation(Aggregation.match(criteria),
 										Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 										Aggregation.unwind("patient"), Aggregation.match(criteria2),
-										Aggregation.lookup("doctor_patient_invoice_cl", "doctorId", "_id", "invoice"),
+										Aggregation
+												.lookup("doctor_patient_invoice_cl", "doctorId", "doctorId", "invoice"),
 										Aggregation.unwind("invoice"), Aggregation.match(criteria3),
 										new CustomAggregationOperation(
 												new BasicDBObject("$group",
@@ -1513,9 +1518,16 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																		new BasicDBObject("$first", "$patient.PID"))
 																.append("patientId",
 																		new BasicDBObject("$first", "$patientId"))
+																.append("doctorId",
+																		new BasicDBObject("$first", "$doctorId"))
+																.append("locationId",
+																		new BasicDBObject("$first", "$locationId"))
+																.append("hospitalId",
+																		new BasicDBObject("$first", "$hospitalId"))
 																.append("dueAmount", new BasicDBObject("$first",
 																		"$dueAmount")))),
-										Aggregation.lookup("doctor_patient_receipt_cl", "doctorId", "_id", "receipt"),
+										Aggregation
+												.lookup("doctor_patient_receipt_cl", "doctorId", "doctorId", "receipt"),
 										Aggregation.unwind("receipt"), Aggregation.match(criteria4),
 
 										new CustomAggregationOperation(new BasicDBObject("$group",
@@ -1534,7 +1546,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								.newAggregation(Aggregation.match(criteria),
 										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 										Aggregation.unwind("doctor"),
-										Aggregation.lookup("doctor_patient_invoice_cl", "doctorId", "_id", "invoice"),
+										Aggregation
+												.lookup("doctor_patient_invoice_cl", "doctorId", "doctorId", "invoice"),
 										Aggregation.unwind("invoice"), Aggregation.match(criteria3),
 										new CustomAggregationOperation(
 												new BasicDBObject("$group",
@@ -1549,9 +1562,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																		new BasicDBObject("$first", "$doctorId"))
 																.append("locationId",
 																		new BasicDBObject("$first", "$locationId"))
+																.append("hospitalId",
+																		new BasicDBObject("$first", "$hospitalId"))
 																.append("dueAmount", new BasicDBObject("$first",
 																		"$dueAmount")))),
-										Aggregation.lookup("doctor_patient_receipt_cl", "doctorId", "_id", "receipt"),
+										Aggregation
+												.lookup("doctor_patient_receipt_cl", "doctorId", "doctorId", "receipt"),
 										Aggregation.unwind("receipt"), Aggregation.match(criteria4),
 										new CustomAggregationOperation(new BasicDBObject("$group",
 												new BasicDBObject("_id", "$doctorId")
@@ -1567,7 +1583,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 								.newAggregation(Aggregation.match(criteria),
 										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 										Aggregation.unwind("doctor"),
-										Aggregation.lookup("doctor_patient_invoice_cl", "doctorId", "_id", "invoice"),
+										Aggregation
+												.lookup("doctor_patient_invoice_cl", "doctorId", "doctorId", "invoice"),
 										Aggregation.unwind("invoice"), Aggregation.match(criteria3),
 										new CustomAggregationOperation(
 												new BasicDBObject("$group",
@@ -1582,9 +1599,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																		new BasicDBObject("$first", "$doctorId"))
 																.append("locationId",
 																		new BasicDBObject("$first", "$locationId"))
+																.append("hospitalId",
+																		new BasicDBObject("$first", "$hospitalId"))
 																.append("dueAmount", new BasicDBObject("$first",
 																		"$dueAmount")))),
-										Aggregation.lookup("doctor_patient_receipt_cl", "doctorId", "_id", "receipt"),
+										Aggregation
+												.lookup("doctor_patient_receipt_cl", "doctorId", "doctorId", "receipt"),
 										Aggregation.unwind("receipt"), Aggregation.match(criteria4),
 										new CustomAggregationOperation(new BasicDBObject("$group",
 												new BasicDBObject("_id", "$doctorId")
