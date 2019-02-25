@@ -36,6 +36,8 @@ import com.dpdocter.response.PatientStatusResponse;
 import com.dpdocter.response.RegisterDoctorResponse;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
+import common.util.web.Response;
+
 public interface RegistrationService {
 	User checkIfPatientExist(PatientRegistrationRequest request);
 
@@ -162,8 +164,8 @@ public interface RegistrationService {
 
 	UserAddress deleteUserAddress(String addressId, String userId, String mobileNumber, Boolean discarded);
 
-	Boolean deletePatient(String doctorId, String locationId, String hospitalId, String patientId,
-			Boolean discarded);
+	Response<Object> deletePatient(String doctorId, String locationId, String hospitalId, String patientId,
+			Boolean discarded, Boolean isMobileApp);
 
 	List<PatientShortCard> getDeletedPatient(String doctorId, String locationId, String hospitalId);
 

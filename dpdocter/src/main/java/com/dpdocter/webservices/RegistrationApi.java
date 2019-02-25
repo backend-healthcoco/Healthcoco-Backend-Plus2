@@ -1172,17 +1172,17 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.DELETE_PATIENT)
 	@DELETE
 	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_PATIENT, notes = PathProxy.RegistrationUrls.DELETE_PATIENT)
-	public Response<Boolean> deletePatient(@PathParam("doctorId") String doctorId,
+	public Response<Object> deletePatient(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@PathParam("patientId") String patientId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
+			@DefaultValue("false") @QueryParam("isMobileApp") Boolean isMobileApp) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Doctor Id, locationId, hospitalId & patientId could not null");
 
 		}
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(registrationService.deletePatient(doctorId, locationId, hospitalId, patientId, discarded));
+		Response<Object> response = registrationService.deletePatient(doctorId, locationId, hospitalId, patientId, discarded, isMobileApp);
 		return response;
 	}
 

@@ -250,6 +250,7 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
 
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
@@ -4370,9 +4371,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public Boolean deletePatient(String doctorId, String locationId, String hospitalId, String patientId,
-			Boolean discarded) {
-		Boolean response = false;
+	public Response<Object> deletePatient(String doctorId, String locationId, String hospitalId, String patientId,
+			Boolean discarded, Boolean isMobileApp) {
+		Response<Object> response = new Response<Object>();
+		response.setData(false);
+		List<PatientShortCard> patientShortCards = null;
 		try {
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
@@ -4392,13 +4395,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 					.aggregate(aggregation, PatientCollection.class, PatientCollection.class).getMappedResults();
 
 			if (patientCollections != null && !patientCollections.isEmpty()) {
-
+				if(isMobileApp)patientShortCards = new ArrayList<PatientShortCard>();
 				for (PatientCollection patientCollection : patientCollections) {
 					patientCollection.setIsPatientDiscarded(discarded);
 					patientCollection.setDiscarded(discarded);
 					patientCollection.setUpdatedTime(new Date());
-					patientRepository.save(patientCollection);
+					patientCollection = patientRepository.save(patientCollection);
 
+					if(isMobileApp) {
+						PatientShortCard patientShortCard = new PatientShortCard();
+						BeanUtil.map(patientCollection, patientShortCard);
+						patientShortCards.add(patientShortCard);
+					}
 					ESPatientDocument esPatientDocument = esPatientRepository
 							.findOne(patientCollection.getId().toString());
 					esPatientDocument.setIsPatientDiscarded(discarded);
@@ -4406,9 +4414,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 					esPatientDocument = esPatientRepository.save(esPatientDocument);
 
 					updatePatientData(locationObjectId, hospitalObjectId, patientObjectId, "isPatientDiscarded", discarded);
-					
-					response = true;
 				}
+				response.setData(true);
+				response.setDataList(patientShortCards);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
