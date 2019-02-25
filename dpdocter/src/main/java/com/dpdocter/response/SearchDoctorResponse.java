@@ -1,14 +1,15 @@
 package com.dpdocter.response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
 
 public class SearchDoctorResponse {
 
-	List<ESDoctorWEbSearch> doctors;
+	List<ESDoctorWEbSearch> doctors = new ArrayList<ESDoctorWEbSearch>();
 
-	List<ESDoctorWEbSearch> nearByDoctors;
+	List<ESDoctorWEbSearch> nearByDoctors = new ArrayList<ESDoctorWEbSearch>();
 
 	private String metaData;
 	private String speciality;
