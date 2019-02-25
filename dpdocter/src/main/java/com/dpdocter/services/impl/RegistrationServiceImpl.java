@@ -258,7 +258,6 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
-
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 
