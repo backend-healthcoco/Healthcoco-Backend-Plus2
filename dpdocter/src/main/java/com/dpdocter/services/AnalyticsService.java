@@ -23,7 +23,8 @@ public interface AnalyticsService {
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
 
 	public List<PaymentDetailsAnalyticsDataResponse> getPaymentDetailsAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String searchTerm, int page, int size);
+			String hospitalId, String fromDate, String toDate, String searchTerm, String paymentMode, int page,
+			int size);
 
 	public List<PaymentAnalyticsDataResponse> getPaymentAnalyticsData(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
@@ -45,7 +46,7 @@ public interface AnalyticsService {
 			String fromDate, String toDate, String searchType, String searchTerm);
 
 	public Integer countPaymentDetailsAnalyticsData(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String searchTerm);
+			String fromDate, String toDate, String searchTerm, String paymentMode);
 
 	public Integer countIncomeDetailsAnalyticsData(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String searchTerm);

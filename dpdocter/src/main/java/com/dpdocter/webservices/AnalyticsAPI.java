@@ -327,17 +327,17 @@ public class AnalyticsAPI {
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("fromDate") String fromDate,
 			@QueryParam("toDate") String toDate, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("paymentMode") String paymentMode, @QueryParam("page") int page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
 		}
 		List<PaymentDetailsAnalyticsDataResponse> paymentDetailsAnalyticsDataResponses = null;
 		Integer count = analyticsService.countPaymentDetailsAnalyticsData(doctorId, locationId, hospitalId, fromDate,
-				toDate, searchTerm);
+				toDate, searchTerm, paymentMode);
 		if (count > 0) {
 			paymentDetailsAnalyticsDataResponses = analyticsService.getPaymentDetailsAnalyticsData(doctorId, locationId,
-					hospitalId, fromDate, toDate, searchTerm, page, size);
+					hospitalId, fromDate, toDate, searchTerm, paymentMode, page, size);
 		}
 		Response<PaymentDetailsAnalyticsDataResponse> response = new Response<PaymentDetailsAnalyticsDataResponse>();
 		response.setDataList(paymentDetailsAnalyticsDataResponses);
@@ -600,7 +600,8 @@ public class AnalyticsAPI {
 		}
 		Response<DoctorAnalyticPieChartResponse> response = new Response<DoctorAnalyticPieChartResponse>();
 		Integer count = 0;
-		count = treatmentAnalyticsService.countTreatments(null, locationId, hospitalId, fromDate, toDate, searchTerm,null);
+		count = treatmentAnalyticsService.countTreatments(null, locationId, hospitalId, fromDate, toDate, searchTerm,
+				null);
 		List<DoctorAnalyticPieChartResponse> data = null;
 		if (count > 0) {
 			data = treatmentAnalyticsService.getTreatmentAnalyticForPieChart(locationId, hospitalId, fromDate, toDate);

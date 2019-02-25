@@ -815,7 +815,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	@Override
 	public List<PaymentDetailsAnalyticsDataResponse> getPaymentDetailsAnalyticsData(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String searchTerm, int page, int size) {
+			String hospitalId, String fromDate, String toDate, String searchTerm, String paymentMode, int page,
+			int size) {
 		List<PaymentDetailsAnalyticsDataResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -858,6 +859,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				criteria2.orOperator(new Criteria("patient.localPatientName").regex(searchTerm, "i"),
 						new Criteria("user.firstName").regex(searchTerm, "i"),
 						new Criteria("user.mobileNumber").regex(searchTerm, "i"));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(paymentMode)) {
+				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
 			}
 
 			if (size > 0) {
@@ -980,7 +985,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 	@Override
 	public Integer countPaymentDetailsAnalyticsData(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String searchTerm) {
+			String fromDate, String toDate, String searchTerm, String paymentMode) {
 		Integer response = 0;
 		try {
 			Criteria criteria = new Criteria();
@@ -1422,8 +1427,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
 				criteria2.and("patient.locationId").is(new ObjectId(locationId));
-				criteria3.and("invoice.locationId").is(new ObjectId(locationId));
-				criteria3.and("receipt.locationId").is(new ObjectId(locationId));
+				criteria3.and("invoice.locationId").is(new ObjectId(locationId)).and("invoice.discarded").is(false);
+				criteria3.and("receipt.locationId").is(new ObjectId(locationId)).and("receipt.discarded").is(false);
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
@@ -1449,7 +1454,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				toTime = new DateTime(to);
 				criteria.and("createdTime").lte(toTime);
 			}
-			criteria.and("discarded").is(false);
+
 			Aggregation aggregation = null;
 
 			if (!DPDoctorUtils.anyStringEmpty(queryType)) {
