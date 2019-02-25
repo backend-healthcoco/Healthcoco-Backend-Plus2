@@ -276,7 +276,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 						}
 
 						if (recipeItem.getQuantity() != null) {
-							quantity = recipe.getQuantity().getValue() + " "
+							quantity = recipeItem.getQuantity().getValue() + " "
 									+ (recipeItem.getQuantity().getType() != null ? recipeItem.getQuantity().getType()
 											: "");
 							if (!DPDoctorUtils.anyStringEmpty(quantity)) {
