@@ -4054,7 +4054,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								if (printSettings.getContentSetup().getInstructionAlign() != null && printSettings
 										.getContentSetup().getInstructionAlign().equals(FieldAlign.HORIZONTAL)) {
 
-									prescriptionJasperDetails = new PrescriptionJasperDetails(no, drugName,
+									prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
 													? prescriptionItem.getDosage()
 													: "--",
