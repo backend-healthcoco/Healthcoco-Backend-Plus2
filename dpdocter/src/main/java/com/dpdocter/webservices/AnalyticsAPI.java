@@ -726,7 +726,7 @@ public class AnalyticsAPI {
 			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
-			@PathParam("type") String type, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("type") String type, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("isVisited") boolean isVisited, @QueryParam("city") String city) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId, type)) {
 			throw new BusinessException(ServiceError.InvalidInput,

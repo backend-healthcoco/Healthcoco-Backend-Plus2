@@ -878,7 +878,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 												Aggregation.unwind("doctor"), Aggregation.match(criteria2),
 												new CustomAggregationOperation(
 														new BasicDBObject("$group",
-																new BasicDBObject("_id", "$id")
+																new BasicDBObject("_id", "$_id")
 																		.append("date",
 																				new BasicDBObject("$first",
 																						"$receivedDate"))
@@ -1022,6 +1022,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 						new Criteria("user.mobileNumber").regex(searchTerm, "i"));
 			}
 
+			if (!DPDoctorUtils.anyStringEmpty(paymentMode)) {
+				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
+			}
 			response = mongoTemplate
 					.aggregate(
 							Aggregation.newAggregation(Aggregation.match(criteria),
