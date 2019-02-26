@@ -4064,7 +4064,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 													: null,
 											genericName);
 								} else {
-									prescriptionJasperDetails = new PrescriptionJasperDetails(no, drugName,
+									prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
 													? prescriptionItem.getDosage()
 													: "--",
