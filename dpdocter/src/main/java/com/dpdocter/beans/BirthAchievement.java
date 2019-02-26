@@ -1,5 +1,6 @@
 package com.dpdocter.beans;
 
+import com.dpdocter.beans.v2.Duration;
 import com.dpdocter.collections.GenericCollection;
 
 public class BirthAchievement extends GenericCollection {
@@ -8,6 +9,8 @@ public class BirthAchievement extends GenericCollection {
 	private String patientId;
 	private String achievement;
 	private Long achievementDate;
+	private Duration duration;
+	private String note;
 
 	public String getId() {
 		return id;
@@ -41,9 +44,26 @@ public class BirthAchievement extends GenericCollection {
 		this.achievementDate = achievementDate;
 	}
 
+	public Duration getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Duration duration) {
+		this.duration = duration;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
 	@Override
 	public String toString() {
-		return "BirthAchievement [achievement=" + achievement + ", achievementDate=" + achievementDate + "]";
+		return "BirthAchievement [id=" + id + ", patientId=" + patientId + ", achievement=" + achievement
+				+ ", achievementDate=" + achievementDate + ", duration=" + duration + ", note=" + note + "]";
 	}
 
 }

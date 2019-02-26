@@ -5,7 +5,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 public class Duration {
     private String value;
 
-//    @Field(type = FieldType.Nested)
     private DrugDurationUnit durationUnit;
 
     public String getValue() {

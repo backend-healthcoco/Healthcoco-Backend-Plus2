@@ -54,6 +54,6 @@ public interface PaediatricService {
 
 	BirthAchievement getBirthAchievementById(String id);
 
-	List<BirthAchievement> getBirthAchievementList(String patientId, String updatedTime);
+	List<BirthAchievement> getBirthAchievementList(String patientId, String updatedTime, int page, int size);
 
 }
