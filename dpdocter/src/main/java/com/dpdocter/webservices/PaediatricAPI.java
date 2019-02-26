@@ -178,12 +178,12 @@ public class PaediatricAPI {
 	@Path(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENTS)
 	@GET
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENTS, notes = PathProxy.PaediatricUrls.GET_ACHIEVEMENTS)
-	public Response<BirthAchievement> getGrowthCharts(@PathParam("patientId") String patientId ,@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+	public Response<BirthAchievement> getGrowthCharts(@PathParam("patientId") String patientId ,@DefaultValue("0") @QueryParam("updatedTime") String updatedTime , @QueryParam("page") int page ,@QueryParam("size") int size) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<BirthAchievement> vaccineResponse = paediatricService.getBirthAchievementList(patientId, updatedTime);
+		List<BirthAchievement> vaccineResponse = paediatricService.getBirthAchievementList(patientId, updatedTime , page ,size);
 		Response<BirthAchievement> response = new Response<BirthAchievement>();
 		response.setDataList(vaccineResponse);
 		return response;

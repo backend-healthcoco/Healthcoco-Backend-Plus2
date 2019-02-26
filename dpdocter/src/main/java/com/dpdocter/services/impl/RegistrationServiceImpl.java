@@ -85,6 +85,7 @@ import com.dpdocter.collections.AdmitCardCollection;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.AppointmentGeneralFeedbackCollection;
 import com.dpdocter.collections.AssessmentPersonalDetailCollection;
+import com.dpdocter.collections.BirthAchievementCollection;
 import com.dpdocter.collections.BirthDetailsCollection;
 import com.dpdocter.collections.BirthHistoryCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
@@ -122,6 +123,7 @@ import com.dpdocter.collections.IPDReportsCollection;
 import com.dpdocter.collections.InventoryStockCollection;
 import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.MasterBabyAchievementCollection;
 import com.dpdocter.collections.MasterBabyImmunizationCollection;
 import com.dpdocter.collections.NutritionGoalStatusStampingCollection;
 import com.dpdocter.collections.NutritionRecordCollection;
@@ -185,6 +187,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AppointmentRepository;
+import com.dpdocter.repository.BirthAchievementRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.ConsentFormRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
@@ -195,6 +198,7 @@ import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.FormContentRepository;
 import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.MasterBabyAchievementRepository;
 import com.dpdocter.repository.MasterBabyImmunizationRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
@@ -385,6 +389,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private VaccineRepository vaccineRepository;
+	
+	@Autowired
+	private BirthAchievementRepository birthAchievementRepository;
+	
+	@Autowired
+	private MasterBabyAchievementRepository masterBabyAchievementRepository;
 
 	@Value(value = "${jasper.print.consentForm.a4.fileName}")
 	private String consentFormA4FileName;
@@ -724,6 +734,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			if (request.getIsChild() == true) {
 				createImmunisationChart(registeredPatientDetails);
+				createBabyAchievementChart(registeredPatientDetails);
 			}
 
 		} catch (Exception e) {
@@ -1132,6 +1143,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			if (request.getIsChild() == true) {
 				createImmunisationChart(registeredPatientDetails);
+				createBabyAchievementChart(registeredPatientDetails);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4893,6 +4905,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		vaccineRepository.save(vaccineCollections);
 	}
+	
+	
 
 	@Override
 	public Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId, String defaultDoctorId) {
@@ -4909,5 +4923,35 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 
+	@Async
+	@Transactional
+	private void createBabyAchievementChart(RegisteredPatientDetails request) {
+		List<BirthAchievementCollection> birthAchievementCollections = null;
+		birthAchievementCollections = birthAchievementRepository.findBypatientId(new ObjectId(request.getUserId()));
+		if (birthAchievementCollections == null || birthAchievementCollections.isEmpty()) {
+			birthAchievementCollections = new ArrayList<>();
+			List<MasterBabyAchievementCollection> babyAchievementCollections = masterBabyAchievementRepository
+					.findAll();
+			System.out.println(babyAchievementCollections);
+			for (MasterBabyAchievementCollection masterBabyAchievementCollection : babyAchievementCollections) {
+				BirthAchievementCollection birthAchievementCollection = new BirthAchievementCollection();
+				birthAchievementCollection.setPatientId(new ObjectId(request.getUserId()));
+				birthAchievementCollection.setAchievement(masterBabyAchievementCollection.getAchievement());
+				birthAchievementCollection.setNote(masterBabyAchievementCollection.getNote());
+				
+				birthAchievementCollections.add(birthAchievementCollection);
+			}
+		} /*else {
+			for (VaccineCollection vaccineCollection : vaccineCollections) {
+				if (vaccineCollection.getPeriodTime() != null) {
+					DateTime dueDate = new DateTime(calendar);
+					dueDate = dueDate.plusWeeks(vaccineCollection.getPeriodTime());
+					vaccineCollection.setDueDate(dueDate.toDate());
+				}
+			}
+		}*/
+
+		birthAchievementRepository.save(birthAchievementCollections);
+	}
 	
 }

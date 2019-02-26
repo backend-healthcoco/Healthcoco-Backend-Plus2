@@ -917,8 +917,9 @@ public class PaediatricServiceImpl implements PaediatricService{
 	
 	@Override
 	@Transactional
-	public List<BirthAchievement> getBirthAchievementList(String patientId,String updatedTime) {
+	public List<BirthAchievement> getBirthAchievementList(String patientId,String updatedTime , int page ,int size) {
 		List<BirthAchievement> responses = null;
+		Aggregation aggregation = null;
 		try {
 			// Criteria criteria = new Criteria();
 
@@ -930,9 +931,19 @@ public class PaediatricServiceImpl implements PaediatricService{
 				criteria.and("patientId").is(new ObjectId(patientId));
 			}
 			
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						 Aggregation.sort(new Sort(Direction.ASC, "id")),
+						 Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						 Aggregation.sort(new Sort(Direction.ASC, "id"))
+						);
+			}
+			
 			responses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(
-							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "achievementDate"))),
+					aggregation,
 					BirthAchievementCollection.class, BirthAchievement.class).getMappedResults();
 
 		} catch (Exception e) {
