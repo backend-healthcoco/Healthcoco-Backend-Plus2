@@ -132,7 +132,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			Criteria criteria2 = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -197,7 +197,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			Criteria criteria2 = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -336,7 +336,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			DateTime toTime = null;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -411,8 +411,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Criteria criteria = new Criteria();
 			Criteria criteria2 = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("group.doctorId").in(new ObjectId(doctorId));
-				criteria2.and("invoice.doctorId").in(new ObjectId(doctorId));
+				criteria.and("group.doctorId").is(new ObjectId(doctorId));
+				criteria2.and("invoice.doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("group.locationId").is(new ObjectId(locationId));
@@ -826,7 +826,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Date from = null;
 			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -992,7 +992,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 			Criteria criteria2 = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -1057,7 +1057,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			Date from = null;
 			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").in(new ObjectId(doctorId));
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -1445,16 +1445,20 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 				to = new Date(Long.parseLong(toDate));
 				fromTime = new DateTime(from);
 				toTime = new DateTime(to);
-				criteria.and("createdTime").gte(fromTime).lte(toTime);
+				criteria4.and("receipt.receivedDate").gte(fromTime).lte(toTime);
+				criteria3.and("invoice.invoiceDate").gte(fromTime).lte(toTime);
 
 			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				fromTime = new DateTime(from);
-				criteria.and("createdTime").gte(fromTime);
+				criteria4.and("receipt.receivedDate").gte(fromTime);
+				criteria3.and("invoice.invoiceDate").gte(fromTime);
+
 			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
 				to = new Date(Long.parseLong(toDate));
 				toTime = new DateTime(to);
-				criteria.and("createdTime").lte(toTime);
+				criteria4.and("receipt.receivedDate").lte(toTime);
+				criteria3.and("invoice.invoiceDate").lte(toTime);
 			}
 
 			Aggregation aggregation = null;
@@ -1485,7 +1489,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														new BasicDBObject("_id", "$patientId")
 																.append("invoiced",
 																		new BasicDBObject("$sum",
-																				"$invoice.balanceAmount"))
+																				"$invoice.grandTotal"))
 																.append("patientName",
 																		new BasicDBObject("$first", "$patientName"))
 																.append("pid", new BasicDBObject("$first", "$pid"))
@@ -1533,7 +1537,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														new BasicDBObject("_id", "$patientId")
 																.append("invoiced",
 																		new BasicDBObject("$sum",
-																				"$invoice.balanceAmount"))
+																				"$invoice.grandTotal"))
 																.append("patientName",
 																		new BasicDBObject("$first", "$patientName"))
 																.append("pid", new BasicDBObject("$first", "$pid"))
@@ -1585,7 +1589,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														new BasicDBObject("_id", "$doctorId")
 																.append("invoiced",
 																		new BasicDBObject("$sum",
-																				"$invoice.balanceAmount"))
+																				"$invoice.grandTotal"))
 																.append("doctorName",
 																		new BasicDBObject("$first", "$doctorName"))
 																.append("doctorId",
@@ -1635,7 +1639,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														new BasicDBObject("_id", "$doctorId")
 																.append("invoiced",
 																		new BasicDBObject("$sum",
-																				"$invoice.balanceAmount"))
+																				"$invoice.grandTotal"))
 																.append("doctorName",
 																		new BasicDBObject("$first", "$doctorName"))
 																.append("doctorId",

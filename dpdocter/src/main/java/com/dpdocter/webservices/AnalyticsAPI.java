@@ -699,6 +699,26 @@ public class AnalyticsAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.AnalyticsUrls.GET_PAYMENT_ANALYTIC_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PAYMENT_ANALYTIC_DATA, notes = PathProxy.AnalyticsUrls.GET_PAYMENT_ANALYTIC_DATA)
+	public Response<AnalyticResponse> getReceiptAnalyticData(@QueryParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("searchType") String searchType,
+			@QueryParam("paymentMode") String paymentMode) {
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId, searchType)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					" locationId, hospitalId ,searchType should not be empty");
+		}
+
+		List<AnalyticResponse> data = analyticsService.getReceiptAnalyticData(doctorId, locationId, hospitalId,
+				fromDate, toDate, searchType, searchTerm, paymentMode);
+		Response<AnalyticResponse> response = new Response<AnalyticResponse>();
+		response.setDataList(data);
+		return response;
+	}
+
 	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_COUNT_ANALYTIC)
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PATIENT_COUNT_ANALYTIC, notes = PathProxy.AnalyticsUrls.GET_PATIENT_COUNT_ANALYTIC)
