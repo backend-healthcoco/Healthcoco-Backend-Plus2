@@ -5,6 +5,8 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.beans.v2.GenericCode;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class TemplateItem {
 	private ObjectId drugId;
@@ -13,6 +15,10 @@ public class TemplateItem {
 
 	private String dosage;
 
+	private DrugType drugType;
+
+	private String drugName;
+
 	private List<Long> dosageTime;
 
 	private List<DrugDirection> direction;
@@ -20,6 +26,8 @@ public class TemplateItem {
 	private String instructions;
 
 	private Long inventoryQuantity;
+
+	private List<GenericCode> genericNames;
 
 	public ObjectId getDrugId() {
 		return drugId;
@@ -75,6 +83,30 @@ public class TemplateItem {
 
 	public void setInventoryQuantity(Long inventoryQuantity) {
 		this.inventoryQuantity = inventoryQuantity;
+	}
+
+	public DrugType getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(DrugType drugType) {
+		this.drugType = drugType;
+	}
+
+	public String getDrugName() {
+		return drugName;
+	}
+
+	public void setDrugName(String drugName) {
+		this.drugName = drugName;
+	}
+
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
 	}
 
 	@Override
