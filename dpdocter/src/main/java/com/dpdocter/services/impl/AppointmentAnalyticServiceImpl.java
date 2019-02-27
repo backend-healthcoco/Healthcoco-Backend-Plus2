@@ -31,6 +31,7 @@ import com.dpdocter.collections.PatientQueueCollection;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
+import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -38,9 +39,11 @@ import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
 import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
+import com.dpdocter.response.AppointmentBookedByCountResponse;
 import com.dpdocter.response.AppointmentDetailAnalyticResponse;
 import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
+import com.dpdocter.response.ScheduleAndCheckoutCount;
 import com.dpdocter.services.AppointmentAnalyticsService;
 import com.mongodb.BasicDBObject;
 
@@ -72,8 +75,106 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	}
 
 	@Override
-	public DoctorAppointmentAnalyticResponse getAppointmentAnalytic(String doctorId, String locationId,
+	public ScheduleAndCheckoutCount getScheduledAndCheckoutCount(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate) {
+		ScheduleAndCheckoutCount data = new ScheduleAndCheckoutCount();
+		try {
+			Criteria criteria = null;
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+
+			long date = 0;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
+
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
+					.and("type").is("APPOINTMENT");
+			data.setScheduled((int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
+					.and("status").is(QueueStatus.CHECKED_OUT).and("discarded").is(false);
+			data.setCheckOut((int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting Schedule and CheckOut analytic");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Schedule and CheckOut analytic");
+		}
+		return data;
+
+	}
+
+	@Override
+	public AppointmentBookedByCountResponse getAppointmentBookedByCount(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate) {
+		AppointmentBookedByCountResponse data = new AppointmentBookedByCountResponse();
+		try {
+			Criteria criteria = null;
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+
+			long date = 0;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
+
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
+					.and("type").is("APPOINTMENT");
+			data.setBookedBydoctor(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime).not()
+					.and("createdBy").regex("Dr. ").and("discarded").is(false);
+			data.setBookedByPatient(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
+					.and("discarded").is(false).and("createdBy").regex("Dr. ");
+			data.setTotal(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting Schedule and CheckOut analytic");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Schedule and CheckOut analytic");
+		}
+		return data;
+
+	}
+
+	@Override
+	public DoctorAppointmentAnalyticResponse getAppointmentAnalytic(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate, String status) {
 		DoctorAppointmentAnalyticResponse data = new DoctorAppointmentAnalyticResponse();
 		try {
 			Criteria criteria = null;
@@ -109,12 +210,20 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 					.and("type").is("APPOINTMENT");
 
+			if (!DPDoctorUtils.anyStringEmpty(status)) {
+				criteria.and("status").is(status.toUpperCase());
+
+			}
+
 			data.setTotalNoOfAppointment((int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 			// cancel by doctor
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 					.and("type").is("APPOINTMENT");
+			if (!DPDoctorUtils.anyStringEmpty(status)) {
+				criteria.and("status").is(status.toUpperCase());
 
+			}
 			data.setCancelBydoctor((int) mongoTemplate.count(new Query(criteria.and("cancelledByProfile")
 					.is(AppointmentCreatedBy.DOCTOR.getType()).and("state").is("CANCEL")),
 					AppointmentCollection.class));
@@ -122,6 +231,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			// cancel by Patient
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 					.and("type").is("APPOINTMENT");
+			if (!DPDoctorUtils.anyStringEmpty(status)) {
+				criteria.and("status").is(status.toUpperCase());
+
+			}
 			data.setCancelByPatient((int) mongoTemplate.count(new Query(criteria.and("cancelledByProfile")
 					.is(AppointmentCreatedBy.PATIENT.getType()).and("state").is("CANCEL")),
 					AppointmentCollection.class));
@@ -129,6 +242,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 						.and("type").is("APPOINTMENT");
+				if (!DPDoctorUtils.anyStringEmpty(status)) {
+					criteria.and("status").is(status.toUpperCase());
+
+				}
 				int appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("state").is("CANCEL")),
 						AppointmentCollection.class);
 
@@ -138,6 +255,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				// Booked percent
 				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 						.and("type").is("APPOINTMENT");
+				if (!DPDoctorUtils.anyStringEmpty(status)) {
+					criteria.and("status").is(status.toUpperCase());
+
+				}
 				appointmentCount = (int) mongoTemplate.count(new Query(criteria.and("state").is("CONFIRM")),
 						AppointmentCollection.class);
 
@@ -148,6 +269,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 						.and("type").is("APPOINTMENT");
+				if (!DPDoctorUtils.anyStringEmpty(status)) {
+					criteria.and("status").is(status.toUpperCase());
+
+				}
 				appointmentCount = (int) mongoTemplate.count(
 						new Query(criteria.and("status").is("SCHEDULED").and("state").is("NEW")),
 						AppointmentCollection.class);
@@ -158,6 +283,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				// hike
 				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(last).lte(fromTime)
 						.and("type").is("APPOINTMENT");
+				if (!DPDoctorUtils.anyStringEmpty(status)) {
+					criteria.and("status").is(status.toUpperCase());
+
+				}
 				appointmentCount = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
 
 				data.setChangeInAppointmentPercent(
@@ -170,6 +299,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 						.and("appointment.fromDate").gte(fromTime).and("appointment.type").is("APPOINTMENT");
 				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 					criteria.and("appointment.doctorId").is(new ObjectId(doctorId));
+				}
+				if (!DPDoctorUtils.anyStringEmpty(status)) {
+					criteria.and("appointment.status").is(status.toUpperCase());
+
 				}
 				Aggregation aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
@@ -462,16 +595,16 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	@Override
 	public List<AnalyticResponse> getAppointmentAnalytics(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String state, String queryType, String searchType, String searchTerm,
-			int page, int size) {
+			String status, int page, int size) {
 		List<AnalyticResponse> response = null;
 
 		if (!DPDoctorUtils.anyStringEmpty(queryType)) {
 			if (queryType.equals("IN_GROUP")) {
 				response = getpatientGroupAppointmentAnalytic(doctorId, locationId, hospitalId, fromDate, toDate, state,
-						searchType, page, size);
+						searchType, status, page, size);
 			} else {
 				response = getPatientAppointmentAnalytics(doctorId, locationId, hospitalId, fromDate, toDate, state,
-						searchType, searchTerm, page, size);
+						searchType, searchTerm, status, page, size);
 			}
 
 		}
@@ -480,7 +613,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	}
 
 	public List<AnalyticResponse> getPatientAppointmentAnalytics(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String state, String searchType, String searchTerm, int page, int size) {
+			String fromDate, String toDate, String state, String searchType, String searchTerm, String status, int page,
+			int size) {
 		List<AnalyticResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -520,7 +654,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				}
 
 			}
+			if (!DPDoctorUtils.anyStringEmpty(status)) {
+				criteria.and("status").is(status.toUpperCase());
 
+			}
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 			AggregationOperation aggregationOperation = null;
 
@@ -624,7 +761,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	}
 
 	public List<AnalyticResponse> getpatientGroupAppointmentAnalytic(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String state, String searchType, int page, int size) {
+			String hospitalId, String fromDate, String toDate, String state, String searchType, String status, int page,
+			int size) {
 		List<AnalyticResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -646,6 +784,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 							new Criteria("appointment.state").is(AppointmentState.RESCHEDULE.toString()),
 							new Criteria("appointment.state").is(AppointmentState.NEW.toString()));
 				}
+
+			}
+			if (!DPDoctorUtils.anyStringEmpty(status)) {
+				criteria.and("appointment.status").is(status.toUpperCase());
 
 			}
 
@@ -793,7 +935,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 	@Override
 	public List<AppointmentAnalyticGroupWiseResponse> getAppointmentAnalyticPatientGroup(String doctorId,
-			String locationId, String hospitalId, String fromDate, String toDate, String state, int page, int size) {
+			String locationId, String hospitalId, String fromDate, String toDate, String state, String status, int page,
+			int size) {
 		List<AppointmentAnalyticGroupWiseResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -808,6 +951,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("group.locationId").is(new ObjectId(locationId));
 				criteria2.and("appointment.locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(status)) {
+				criteria2.and("appointment.status").is(status.toUpperCase());
+
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
@@ -854,7 +1001,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 	@Override
 	public Integer countAppointmentAnalyticPatientGroup(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String state) {
+			String fromDate, String toDate, String state, String status) {
 		Integer response = 0;
 		try {
 			Criteria criteria = new Criteria();
@@ -884,6 +1031,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			} else {
 				from = new Date(date);
 				to = new Date();
+			}
+			if (!DPDoctorUtils.anyStringEmpty(status)) {
+				criteria2.and("appointment.status").is(status.toUpperCase());
+
 			}
 			criteria2.and("appointment.fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 			criteria2.and("appointment.type").is(AppointmentType.APPOINTMENT);
@@ -930,7 +1081,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
 				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
 					criteria.and("state").is(state);
-				} else {
+				}
+				else {
 					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
 							new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
 							new Criteria("state").is(AppointmentState.NEW.toString()));
@@ -992,7 +1144,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 	@Override
 	public List<AppointmentAnalyticData> getPatientAppointmentAnalyticsDetail(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String state, String searchTerm, int page, int size) {
+			String hospitalId, String fromDate, String toDate, String state, String searchTerm, String status, int page,
+			int size) {
 		List<AppointmentAnalyticData> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -1034,7 +1187,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				}
 
 			}
+			if (!DPDoctorUtils.anyStringEmpty(status)) {
+				criteria.and("status").is(status.toUpperCase());
 
+			}
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -1090,7 +1246,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 	@Override
 	public Integer countPatientAppointmentAnalyticsDetail(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String state, String searchTerm) {
+			String fromDate, String toDate, String state, String searchTerm, String status) {
 		Integer response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -1120,6 +1276,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
 				criteria2.and("profile.locationId").is(new ObjectId(locationId));
+
+			}
+			if (!DPDoctorUtils.anyStringEmpty(status)) {
+				criteria.and("status").is(status.toUpperCase());
 
 			}
 

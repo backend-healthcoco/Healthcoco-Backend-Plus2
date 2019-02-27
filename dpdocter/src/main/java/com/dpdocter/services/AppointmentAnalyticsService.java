@@ -7,8 +7,10 @@ import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
 import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
+import com.dpdocter.response.AppointmentBookedByCountResponse;
 import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
+import com.dpdocter.response.ScheduleAndCheckoutCount;
 
 public interface AppointmentAnalyticsService {
 	public AppointmentAnalyticResponse getAppointmentAnalyticsData(String doctorId, String locationId,
@@ -20,24 +22,31 @@ public interface AppointmentAnalyticsService {
 
 	public List<AnalyticResponse> getAppointmentAnalytics(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String state, String queryType, String searchType, String searchTerm,
-			int page, int size);
+			String status, int page, int size);
 
 	public DoctorAppointmentAnalyticResponse getAppointmentAnalytic(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate);
+			String hospitalId, String fromDate, String toDate, String status);
 
 	public List<AppointmentAnalyticGroupWiseResponse> getAppointmentAnalyticPatientGroup(String doctorId,
-			String locationId, String hospitalId, String fromDate, String toDate, String state, int page, int size);
+			String locationId, String hospitalId, String fromDate, String toDate, String state, String status, int page,
+			int size);
 
 	public Integer countAppointmentAnalyticPatientGroup(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String state);
+			String fromDate, String toDate, String state, String status);
 
 	public List<AppointmentAnalyticData> getPatientAppointmentAnalyticsDetail(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String state, String searchTerm, int page, int size);
+			String hospitalId, String fromDate, String toDate, String state, String searchTerm, String status, int page,
+			int size);
 
 	public Integer countPatientAppointmentAnalyticsDetail(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String state, String searchTerm);
+			String fromDate, String toDate, String state, String searchTerm, String status);
 
 	List<DoctorAnalyticPieChartResponse> getDoctorAppointmentAnalyticsForPieChart(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String state, String searchTerm, int page, int size);
 
+	public ScheduleAndCheckoutCount getScheduledAndCheckoutCount(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate);
+
+	public AppointmentBookedByCountResponse getAppointmentBookedByCount(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate);
 }

@@ -1533,7 +1533,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 														.append("dueAmount", new BasicDBObject("$sum", "$dueAmount")))),
 										Aggregation
-												.lookup("doctor_patient_invoice_cl", "doctorId", "doctorId", "invoice"),
+												.lookup("doctor_patient_invoice_cl", "patientId", "patientId", "invoice"),
 										Aggregation.unwind("invoice"), Aggregation.match(criteria3),
 										new CustomAggregationOperation(
 												new BasicDBObject("$group",
@@ -1551,7 +1551,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																.append("dueAmount",
 																		new BasicDBObject("$first", "$dueAmount")))),
 										Aggregation
-												.lookup("doctor_patient_receipt_cl", "doctorId", "doctorId", "receipt"),
+												.lookup("doctor_patient_receipt_cl", "patientId", "patientId", "receipt"),
 										Aggregation.unwind("receipt"), Aggregation.match(criteria4),
 
 										new CustomAggregationOperation(new BasicDBObject("$group",
