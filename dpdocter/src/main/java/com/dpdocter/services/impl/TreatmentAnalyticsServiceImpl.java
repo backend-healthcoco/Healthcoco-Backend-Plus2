@@ -448,8 +448,8 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 								Aggregation.skip((page) * size), Aggregation.limit(size));
 
 			}
-			AggregationResults<TreatmentServiceAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					PatientTreatmentCollection.class, TreatmentServiceAnalyticResponse.class);
+			AggregationResults<TreatmentServiceAnalyticResponse> aggregationResults = mongoTemplate
+					.aggregate(aggregation, PatientTreatmentCollection.class, TreatmentServiceAnalyticResponse.class);
 			List<TreatmentServiceAnalyticResponse> analyticMongoResponses = aggregationResults.getMappedResults();
 			if (analyticMongoResponses != null && !analyticMongoResponses.isEmpty()) {
 				response = new ArrayList<DoctorTreatmentAnalyticResponse>();
@@ -720,7 +720,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 
 			criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
 			if (!DPDoctorUtils.anyStringEmpty(status)) {
-				criteria.and("status").is(status.toUpperCase());
+				criteria.and("treatments.status").is(status.toUpperCase());
 			}
 			criteria.and("discarded").is(false);
 

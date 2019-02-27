@@ -1199,10 +1199,13 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 								Aggregation.unwind("visit"), Aggregation.match(criteria2),
+								new ProjectionOperation(Fields.from(
+										Fields.field("name", "$address.city"), Fields.field("count", "$userId"),
+										Fields.field("userId", "$userId"))),
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("_id", "$userId")
-												.append("name", new BasicDBObject("$first", "$address.city"))
-												.append("count", new BasicDBObject("$first", "$userId")))),
+												.append("name", new BasicDBObject("$first", "$name"))
+												.append("count", new BasicDBObject("$first", "$count")))),
 								aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
 								Aggregation.skip((page) * size), Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
@@ -1211,10 +1214,13 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 								Aggregation.unwind("visit"), Aggregation.match(criteria2),
+								new ProjectionOperation(Fields.from(
+										Fields.field("name", "$address.city"), Fields.field("count", "$userId"),
+										Fields.field("userId", "$userId"))),
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("_id", "$userId")
-												.append("name", new BasicDBObject("$first", "$address.city"))
-												.append("count", new BasicDBObject("$first", "$userId")))),
+												.append("name", new BasicDBObject("$first", "$name"))
+												.append("count", new BasicDBObject("$first", "$count")))),
 								aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
@@ -1295,12 +1301,14 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 								Aggregation.lookup("user_cl", "referredBy", "_id", "user"), Aggregation.unwind("user"),
 								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 								Aggregation.unwind("visit"), Aggregation.match(criteria2),
+
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("_id", "$userId")
 												.append("name", new BasicDBObject("$first", "$user.firstName"))
+												.append("doctorId", new BasicDBObject("$first", "$user._id"))
 												.append("count", new BasicDBObject("$first", "$user._id")))),
 								new CustomAggregationOperation(new BasicDBObject("$group",
-										new BasicDBObject("_id", "$count")
+										new BasicDBObject("_id", "$doctorId")
 												.append("name", new BasicDBObject("$first", "$name"))
 												.append("count", new BasicDBObject("$sum", 1)))),
 								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
@@ -1315,9 +1323,10 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("_id", "$userId")
 												.append("name", new BasicDBObject("$first", "$user.firstName"))
+												.append("doctorId", new BasicDBObject("$first", "$user._id"))
 												.append("count", new BasicDBObject("$first", "$user._id")))),
 								new CustomAggregationOperation(new BasicDBObject("$group",
-										new BasicDBObject("_id", "$count")
+										new BasicDBObject("_id", "$doctorId")
 												.append("name", new BasicDBObject("$first", "$name"))
 												.append("count", new BasicDBObject("$sum", 1)))),
 								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
@@ -1420,15 +1429,17 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 												new BasicDBObject("groupId", "$group._id").append("userId", "$userId"))
 														.append("name", new BasicDBObject("$first", "$group.name"))
 														.append("userId", new BasicDBObject("$first", "$userId"))
+														.append("groupId", new BasicDBObject("$first", "$group._id"))
 														.append("count", new BasicDBObject("$first", "$group._id")))),
 								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 								Aggregation.unwind("visit"), Aggregation.match(criteria3),
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("_id", "$_id")
 												.append("name", new BasicDBObject("$first", "$name"))
+												.append("groupId", new BasicDBObject("$first", "$groupId"))
 												.append("count", new BasicDBObject("$first", "$count")))),
 								new CustomAggregationOperation(new BasicDBObject("$group",
-										new BasicDBObject("_id", "$count")
+										new BasicDBObject("_id", "$groupId")
 												.append("name", new BasicDBObject("$first", "$name"))
 												.append("count", new BasicDBObject("$sum", 1)))),
 								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
@@ -1448,15 +1459,17 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 												new BasicDBObject("groupId", "$group._id").append("userId", "$userId"))
 														.append("name", new BasicDBObject("$first", "$group.name"))
 														.append("userId", new BasicDBObject("$first", "$userId"))
+														.append("groupId", new BasicDBObject("$first", "$group._id"))
 														.append("count", new BasicDBObject("$first", "$group._id")))),
 								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 								Aggregation.unwind("visit"), Aggregation.match(criteria3),
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("_id", "$_id")
 												.append("name", new BasicDBObject("$first", "$name"))
+												.append("groupId", new BasicDBObject("$first", "$groupId"))
 												.append("count", new BasicDBObject("$first", "$count")))),
 								new CustomAggregationOperation(new BasicDBObject("$group",
-										new BasicDBObject("_id", "$count")
+										new BasicDBObject("_id", "$groupId")
 												.append("name", new BasicDBObject("$first", "$name"))
 												.append("count", new BasicDBObject("$sum", 1)))),
 								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))

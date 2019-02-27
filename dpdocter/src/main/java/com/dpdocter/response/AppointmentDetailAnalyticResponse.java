@@ -2,7 +2,7 @@ package com.dpdocter.response;
 
 import java.util.Date;
 
-public class AppointmentDeatilAnalyticResponse {
+public class AppointmentDetailAnalyticResponse {
 
 	private Date date;
 	

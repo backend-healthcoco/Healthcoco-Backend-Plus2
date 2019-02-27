@@ -38,7 +38,7 @@ import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
 import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
-import com.dpdocter.response.AppointmentDeatilAnalyticResponse;
+import com.dpdocter.response.AppointmentDetailAnalyticResponse;
 import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.services.AppointmentAnalyticsService;
@@ -300,12 +300,12 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 									.append("doctorName", new BasicDBObject("$first", "$doctor.firstName")))),
 							Aggregation.sort(new Sort(Direction.DESC, "fromDate", "time.fromTime")));
 				}
-				List<AppointmentDeatilAnalyticResponse> analyticResponses = mongoTemplate
-						.aggregate(aggregation, AppointmentCollection.class, AppointmentDeatilAnalyticResponse.class)
+				List<AppointmentDetailAnalyticResponse> analyticResponses = mongoTemplate
+						.aggregate(aggregation, AppointmentCollection.class, AppointmentDetailAnalyticResponse.class)
 						.getMappedResults();
 				response.setTotalAppointments(count);
 
-				for (AppointmentDeatilAnalyticResponse appointmentDeatilAnalyticResponse : analyticResponses) {
+				for (AppointmentDetailAnalyticResponse appointmentDeatilAnalyticResponse : analyticResponses) {
 					List<PatientCard> patientCards = mongoTemplate.aggregate(
 							Aggregation.newAggregation(Aggregation.match(new Criteria("userId")
 									.is(new ObjectId(appointmentDeatilAnalyticResponse.getPatientId()))
