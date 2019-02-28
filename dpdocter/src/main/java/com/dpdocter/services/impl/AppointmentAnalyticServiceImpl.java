@@ -111,7 +111,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
 					new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
 					new Criteria("state").is(AppointmentState.NEW.toString()));
-		
+
 			data.setScheduled((int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
@@ -120,7 +120,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
 					new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
 					new Criteria("state").is(AppointmentState.NEW.toString()));
-		
+
 			data.setCheckOut((int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 		} catch (Exception e) {
@@ -133,8 +133,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	}
 
 	@Override
-	public BookedAndCancelAppointmentCount getBookedAndCancelledCount(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate) {
+	public BookedAndCancelAppointmentCount getBookedAndCancelledCount(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate) {
 		BookedAndCancelAppointmentCount data = new BookedAndCancelAppointmentCount();
 		try {
 			Criteria criteria = null;
@@ -168,14 +168,14 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
 					new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
 					new Criteria("state").is(AppointmentState.NEW.toString()));
-		
-			data.setBookedCount( mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+
+			data.setBookedCount(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 					.and("type").is("APPOINTMENT");
 
 			criteria.and("state").is(AppointmentState.CANCEL.toString());
-		
+
 			data.setCancelledCount(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 		} catch (Exception e) {
@@ -222,12 +222,12 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			data.setTotal(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime).not()
-					.and("createdBy").and("type").is("APPOINTMENT");
+					.and("createdBy").and("createdBy").regex("Dr. ").and("type").is("APPOINTMENT");
 			data.setBookedByPatient(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 					.and("createdBy").regex("Dr. ").and("type").is("APPOINTMENT");
-			data.setBookedBydoctor(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+			data.setBookedByDoctor(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -308,15 +308,11 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 						.and("type").is("APPOINTMENT");
 
-			
-						criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
-								new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
-								new Criteria("state").is(AppointmentState.NEW.toString()));
-					
+				criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
+						new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
+						new Criteria("state").is(AppointmentState.NEW.toString()));
 
-				
-				appointmentCount = (int) mongoTemplate.count(new Query(criteria),
-						AppointmentCollection.class);
+				appointmentCount = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
 
 				data.setBookedAppointmentInPercent(
 						((100 * (double) appointmentCount) / (double) data.getTotalNoOfAppointment()));

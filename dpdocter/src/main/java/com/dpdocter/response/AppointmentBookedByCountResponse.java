@@ -2,7 +2,7 @@ package com.dpdocter.response;
 
 public class AppointmentBookedByCountResponse {
 	private long bookedByPatient = 0;
-	private long bookedBydoctor = 0;
+	private long bookedByDoctor = 0;
 	private long total = 0;
 
 	public long getBookedByPatient() {
@@ -13,12 +13,12 @@ public class AppointmentBookedByCountResponse {
 		this.bookedByPatient = bookedByPatient;
 	}
 
-	public long getBookedBydoctor() {
-		return bookedBydoctor;
+	public long getBookedByDoctor() {
+		return bookedByDoctor;
 	}
 
-	public void setBookedBydoctor(long bookedBydoctor) {
-		this.bookedBydoctor = bookedBydoctor;
+	public void setBookedByDoctor(long bookedByDoctor) {
+		this.bookedByDoctor = bookedByDoctor;
 	}
 
 	public long getTotal() {
