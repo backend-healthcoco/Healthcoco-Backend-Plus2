@@ -1296,40 +1296,37 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 		} else {
 			if (size > 0)
-				aggregation = Aggregation
-						.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("user_cl", "referredBy", "_id", "user"), Aggregation.unwind("user"),
-								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
-								Aggregation.unwind("visit"), Aggregation.match(criteria2),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "referredBy", "_id", "user"), Aggregation.unwind("user"),
+						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
+						Aggregation.unwind("visit"), Aggregation.match(criteria2),
 
-								new CustomAggregationOperation(new BasicDBObject("$group",
-										new BasicDBObject("_id", "$userId")
-												.append("name", new BasicDBObject("$first", "$user.firstName"))
-												.append("doctorId", new BasicDBObject("$first", "$user._id"))
-												.append("count", new BasicDBObject("$first", "$user._id")))),
-								new CustomAggregationOperation(new BasicDBObject("$group",
-										new BasicDBObject("_id", "$doctorId")
-												.append("name", new BasicDBObject("$first", "$name"))
-												.append("count", new BasicDBObject("$sum", 1)))),
-								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
-								Aggregation.limit(size))
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("_id", "$userId").append("user", new BasicDBObject("$first", "$user"))
+										.append("userId", new BasicDBObject("$first", "$userId")))),
+						new ProjectionOperation(Fields.from(Fields.field("id", "$user._id"),
+								Fields.field("name", "$user.firstName"), Fields.field("count", "$userId"))),
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name"))
+										.append("count", new BasicDBObject("$sum", 1)))),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
+						Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
-				aggregation = Aggregation
-						.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("user_cl", "referredBy", "_id", "user"), Aggregation.unwind("user"),
-								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
-								Aggregation.unwind("visit"), Aggregation.match(criteria2),
-								new CustomAggregationOperation(new BasicDBObject("$group",
-										new BasicDBObject("_id", "$userId")
-												.append("name", new BasicDBObject("$first", "$user.firstName"))
-												.append("doctorId", new BasicDBObject("$first", "$user._id"))
-												.append("count", new BasicDBObject("$first", "$user._id")))),
-								new CustomAggregationOperation(new BasicDBObject("$group",
-										new BasicDBObject("_id", "$doctorId")
-												.append("name", new BasicDBObject("$first", "$name"))
-												.append("count", new BasicDBObject("$sum", 1)))),
-								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "referredBy", "_id", "user"), Aggregation.unwind("user"),
+						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
+						Aggregation.unwind("visit"), Aggregation.match(criteria2),
+
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("_id", "$userId").append("user", new BasicDBObject("$first", "$user"))
+										.append("userId", new BasicDBObject("$first", "$userId")))),
+						new ProjectionOperation(Fields.from(Fields.field("id", "$user._id"),
+								Fields.field("name", "$user.firstName"), Fields.field("count", "$userId"))),
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name"))
+										.append("count", new BasicDBObject("$sum", 1)))),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		}
@@ -1369,7 +1366,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 		}
 		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$group._id"),
-				Fields.field("name", "$user.firstName"), Fields.field("count", "$userId")));
+				Fields.field("name", "$group.name"), Fields.field("count", "$userId")));
 
 		CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 				new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name")).append("count",
@@ -1406,7 +1403,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						Aggregation.skip((page) * size), Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
 						Aggregation.unwind("patientGroup"),
 						Aggregation.match(new Criteria("patientGroup.discarded").is(true)),
@@ -1423,16 +1420,20 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 								Aggregation.match(new Criteria("patientGroup.discarded").is(true)),
 								Aggregation.lookup("group_cl", "patientGroup.groupId", "_id", "group"),
 								Aggregation.unwind("group"),
-								Aggregation.match(criteria2.and("group.discarded").is(true)),
+								Aggregation.match(criteria2.and(
+										"group.discarded").is(
+												true)),
 								new CustomAggregationOperation(new BasicDBObject("$group",
-										new BasicDBObject("_id",
-												new BasicDBObject("groupId", "$group._id").append("userId", "$userId"))
-														.append("name", new BasicDBObject("$first", "$group.name"))
-														.append("userId", new BasicDBObject("$first", "$userId"))
-														.append("groupId", new BasicDBObject("$first", "$group._id"))
-														.append("count", new BasicDBObject("$first", "$group._id")))),
+										new BasicDBObject("_id", "$patientGroup._id")
+												.append("name", new BasicDBObject("$first", "$group.name"))
+												.append("userId", new BasicDBObject("$first", "$userId"))
+												.append("groupId", new BasicDBObject("$first", "$group._id"))
+												.append("count", new BasicDBObject("$first", "$group._id")))),
 								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 								Aggregation.unwind("visit"), Aggregation.match(criteria3),
+								new ProjectionOperation(Fields.from(
+										Fields.field("name", "$name"), Fields.field("count", "$count"),
+										Fields.field("groupId", "$groupId"))),
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("_id", "$_id")
 												.append("name", new BasicDBObject("$first", "$name"))
@@ -1453,14 +1454,15 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 								Aggregation.match(new Criteria("patientGroup.discarded").is(true)),
 								Aggregation.lookup("group_cl", "patientGroup.groupId", "_id", "group"),
 								Aggregation.unwind("group"),
-								Aggregation.match(criteria2.and("group.discarded").is(true)),
+								Aggregation.match(criteria2.and(
+										"group.discarded").is(
+												true)),
 								new CustomAggregationOperation(new BasicDBObject("$group",
-										new BasicDBObject("_id",
-												new BasicDBObject("groupId", "$group._id").append("userId", "$userId"))
-														.append("name", new BasicDBObject("$first", "$group.name"))
-														.append("userId", new BasicDBObject("$first", "$userId"))
-														.append("groupId", new BasicDBObject("$first", "$group._id"))
-														.append("count", new BasicDBObject("$first", "$group._id")))),
+										new BasicDBObject("_id", "$patientGroup._id")
+												.append("name", new BasicDBObject("$first", "$group.name"))
+												.append("userId", new BasicDBObject("$first", "$userId"))
+												.append("groupId", new BasicDBObject("$first", "$group._id"))
+												.append("count", new BasicDBObject("$first", "$group._id")))),
 								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 								Aggregation.unwind("visit"), Aggregation.match(criteria3),
 								new CustomAggregationOperation(new BasicDBObject("$group",
