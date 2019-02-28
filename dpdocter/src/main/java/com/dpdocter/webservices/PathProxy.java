@@ -1610,6 +1610,7 @@ public interface PathProxy {
 		public static final String GET_PAYMENT_ANALYTIC_DATA = "/payment/{locationId}/{hospitalId}";
 		public static final String GET_SCHEDULED_AND_CHECKOUT_COUNT_ANALYTIC = "appointment/schedule/checkout/{locationId}/{hospitalId}";
 		public static final String GET_BOOKED_AND_CANCELLED_APPOINTMENT_ANALYTIC = "appointment/booked/cancel/{locationId}/{hospitalId}";
+		public static final String GET_BOOKED_BY_APPOINTMENT_ANALYTIC = "appointment/bookedby/{locationId}/{hospitalId}";
 
 	}
 
