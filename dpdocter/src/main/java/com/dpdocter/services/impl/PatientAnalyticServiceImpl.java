@@ -1396,9 +1396,9 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
 						Aggregation.unwind("patientGroup"),
-						Aggregation.match(new Criteria("patientGroup.discarded").is(true)),
+						Aggregation.match(new Criteria("patientGroup.discarded").is(false)),
 						Aggregation.lookup("group_cl", "patientGroup.groupId", "_id", "group"),
-						Aggregation.unwind("group"), Aggregation.match(criteria2.and("group.discarded").is(true)),
+						Aggregation.unwind("group"), Aggregation.match(criteria2.and("group.discarded").is(false)),
 						projectList, aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
 						Aggregation.skip((page) * size), Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
@@ -1406,9 +1406,9 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
 						Aggregation.unwind("patientGroup"),
-						Aggregation.match(new Criteria("patientGroup.discarded").is(true)),
+						Aggregation.match(new Criteria("patientGroup.discarded").is(false)),
 						Aggregation.lookup("group_cl", "patientGroup.groupId", "_id", "group"),
-						Aggregation.unwind("group"), Aggregation.match(criteria2.and("group.discarded").is(true)),
+						Aggregation.unwind("group"), Aggregation.match(criteria2.and("group.discarded").is(false)),
 						projectList, aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 		} else {
@@ -1417,23 +1417,19 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
 								Aggregation.unwind("patientGroup"),
-								Aggregation.match(new Criteria("patientGroup.discarded").is(true)),
+								Aggregation.match(new Criteria("patientGroup.discarded").is(false)),
 								Aggregation.lookup("group_cl", "patientGroup.groupId", "_id", "group"),
 								Aggregation.unwind("group"),
-								Aggregation.match(criteria2.and(
-										"group.discarded").is(
-												true)),
+								Aggregation.match(criteria2.and("group.discarded").is(false)),
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("_id", "$patientGroup._id")
-												.append("name", new BasicDBObject("$first", "$group.name"))
-												.append("userId", new BasicDBObject("$first", "$userId"))
-												.append("groupId", new BasicDBObject("$first", "$group._id"))
-												.append("count", new BasicDBObject("$first", "$group._id")))),
+												.append("group", new BasicDBObject("$first", "$group"))
+												.append("userId", new BasicDBObject("$first", "$userId")))),
 								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 								Aggregation.unwind("visit"), Aggregation.match(criteria3),
 								new ProjectionOperation(Fields.from(
-										Fields.field("name", "$name"), Fields.field("count", "$count"),
-										Fields.field("groupId", "$groupId"))),
+										Fields.field("name", "$group.name"), Fields.field("count", "$group._id"),
+										Fields.field("groupId", "$group._id"))),
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("_id", "$_id")
 												.append("name", new BasicDBObject("$first", "$name"))
@@ -1451,20 +1447,21 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
 								Aggregation.unwind("patientGroup"),
-								Aggregation.match(new Criteria("patientGroup.discarded").is(true)),
+								Aggregation.match(new Criteria("patientGroup.discarded").is(false)),
 								Aggregation.lookup("group_cl", "patientGroup.groupId", "_id", "group"),
 								Aggregation.unwind("group"),
 								Aggregation.match(criteria2.and(
 										"group.discarded").is(
-												true)),
+												false)),
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("_id", "$patientGroup._id")
-												.append("name", new BasicDBObject("$first", "$group.name"))
-												.append("userId", new BasicDBObject("$first", "$userId"))
-												.append("groupId", new BasicDBObject("$first", "$group._id"))
-												.append("count", new BasicDBObject("$first", "$group._id")))),
+												.append("group", new BasicDBObject("$first", "$group"))
+												.append("userId", new BasicDBObject("$first", "$userId")))),
 								Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 								Aggregation.unwind("visit"), Aggregation.match(criteria3),
+								new ProjectionOperation(Fields.from(
+										Fields.field("name", "$group.name"), Fields.field("count", "$group._id"),
+										Fields.field("groupId", "$group._id"))),
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("_id", "$_id")
 												.append("name", new BasicDBObject("$first", "$name"))
