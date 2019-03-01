@@ -221,12 +221,12 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					.and("type").is("APPOINTMENT");
 			data.setTotal(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime).not()
-					.and("createdBy").and("createdBy").regex("Dr. ").and("type").is("APPOINTMENT");
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
+					.and("createdBy").regex("Dr. ").and("type").is("APPOINTMENT");
 			data.setBookedByPatient(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-					.and("createdBy").regex("Dr. ").and("type").is("APPOINTMENT");
+					.and("createdBy").not().regex("Dr. ").and("type").is("APPOINTMENT");
 			data.setBookedByDoctor(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 		} catch (Exception e) {
