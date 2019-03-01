@@ -988,5 +988,25 @@ public class PaediatricServiceImpl implements PaediatricService {
 		}
 		return responses;
 	}
+	
+	@Transactional
+	@Override
+	public Boolean updateImmunisationChart(String patientId, Long vaccineStartDate) {
+		List<VaccineCollection> vaccineCollections = null;
+		Boolean status = false;
+		vaccineCollections = vaccineRepository.findBypatientId(new ObjectId(patientId));
+		
+		for (VaccineCollection vaccineCollection : vaccineCollections) {
+			if (vaccineCollection.getPeriodTime() != null && vaccineCollection.getStatus() != VaccineStatus.GIVEN) {
+				DateTime dueDate = new DateTime(vaccineStartDate);
+				dueDate = dueDate.plusWeeks(vaccineCollection.getPeriodTime());
+				vaccineCollection.setDueDate(dueDate.toDate());
+			}
+		}
+
+		vaccineRepository.save(vaccineCollections);
+		status = true;
+		return status;
+	}
 }
 

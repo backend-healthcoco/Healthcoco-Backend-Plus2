@@ -56,4 +56,6 @@ public interface PaediatricService {
 
 	List<BirthAchievement> getBirthAchievementList(String patientId, String updatedTime, int page, int size);
 
+	Boolean updateImmunisationChart(String patientId, Long vaccineStartDate);
+
 }
