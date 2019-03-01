@@ -101,10 +101,11 @@ public class DietPlanAPI {
 
 		return response;
 	}
+
 	@Path(value = PathProxy.DietPlanUrls.DOWNLOAD_DIET_PLAN)
 	@GET
 	@ApiOperation(value = PathProxy.DietPlanUrls.DOWNLOAD_DIET_PLAN, notes = PathProxy.DietPlanUrls.DOWNLOAD_DIET_PLAN)
-	public Response<String> downloadDietPlan(@QueryParam("planId") String planId) {
+	public Response<String> downloadDietPlan(@PathParam("planId") String planId) {
 
 		if (planId == null) {
 			logger.warn("Invalid Input");
@@ -131,7 +132,5 @@ public class DietPlanAPI {
 		response.setData(dietPlansService.emailDietPlan(emailAddress, planId));
 		return response;
 	}
-	
-	
 
 }
