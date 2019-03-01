@@ -101,5 +101,37 @@ public class DietPlanAPI {
 
 		return response;
 	}
+	@Path(value = PathProxy.DietPlanUrls.DOWNLOAD_DIET_PLAN)
+	@GET
+	@ApiOperation(value = PathProxy.DietPlanUrls.DOWNLOAD_DIET_PLAN, notes = PathProxy.DietPlanUrls.DOWNLOAD_DIET_PLAN)
+	public Response<String> downloadDietPlan(@QueryParam("planId") String planId) {
+
+		if (planId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<String> response = new Response<String>();
+		response.setData(dietPlansService.downloadDietPlan(planId));
+		return response;
+	}
+
+	@Path(value = PathProxy.DietPlanUrls.SEND_DIET_PLAN_EMAIL)
+	@GET
+	@ApiOperation(value = PathProxy.DietPlanUrls.SEND_DIET_PLAN_EMAIL, notes = PathProxy.DietPlanUrls.SEND_DIET_PLAN_EMAIL)
+	public Response<Boolean> emailDietPlan(@PathParam("planId") String planId,
+			@QueryParam("emailAddress") String emailAddress) {
+
+		if (emailAddress == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dietPlansService.emailDietPlan(emailAddress, planId));
+		return response;
+	}
+	
+	
 
 }
