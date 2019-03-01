@@ -7330,4 +7330,65 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
+
+	@Override
+	@Transactional
+	public NutritionReferral addNutritionReferral(NutritionReferralRequest request) {
+		NutritionReferral response = null;
+
+		try {
+			if (request != null) {
+				NutritionReferralCollection nutritionReferralCollection = new NutritionReferralCollection();
+				BeanUtil.map(request, nutritionReferralCollection);
+				nutritionReferralCollection = nutritionReferralRepository.save(nutritionReferralCollection);
+				if (nutritionReferralCollection != null) {
+					response = new NutritionReferral();
+					BeanUtil.map(nutritionReferralCollection, response);
+					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+							nutritionReferralCollection.getPatientId(), nutritionReferralCollection.getLocationId(),
+							nutritionReferralCollection.getHospitalId());
+					if (patientCollection != null) {
+						patientCollection.setIsNutritionActive(true);
+					}
+				}
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean updatePrescriptionDrugType() {
+		Boolean response = false;
+		try {
+			List<PrescriptionCollection> prescriptionCollections = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("items").ne(null).and("items.drugType").is(null))), PrescriptionCollection.class, PrescriptionCollection.class).getMappedResults();
+			
+			if(prescriptionCollections != null) {
+				for(PrescriptionCollection prescriptionCollection : prescriptionCollections) {
+					if(prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
+						List<PrescriptionItem> prescriptionItems = prescriptionCollection.getItems();
+						for(PrescriptionItem prescriptionItem : prescriptionItems) {
+							DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+							if(drugCollection != null) {
+								prescriptionItem.setDrugName(drugCollection.getDrugName());
+								prescriptionItem.setDrugType(drugCollection.getDrugType());
+							}
+							prescriptionCollection.setItems(null);
+							prescriptionCollection.setItems(prescriptionItems);
+							prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
+							
+						}
+					}
+				}
+				System.out.println(prescriptionCollections.size()+" prescriptions are updated.");
+				response = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
 }

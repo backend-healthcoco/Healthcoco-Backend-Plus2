@@ -20,6 +20,7 @@ import com.dpdocter.request.DrugDirectionAddEditRequest;
 import com.dpdocter.request.DrugDosageAddEditRequest;
 import com.dpdocter.request.DrugDurationUnitAddEditRequest;
 import com.dpdocter.request.DrugTypeAddEditRequest;
+import com.dpdocter.request.NutritionReferralRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
@@ -230,4 +231,7 @@ public interface PrescriptionServices {
 
 	Boolean updateDrugInteraction();
 
+	NutritionReferral addNutritionReferral(NutritionReferralRequest request);
+
+	Boolean updatePrescriptionDrugType();
 }
