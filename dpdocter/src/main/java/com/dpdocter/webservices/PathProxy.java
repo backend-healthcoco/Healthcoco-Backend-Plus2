@@ -2063,6 +2063,7 @@ public interface PathProxy {
 		public static final String ADD_EDIT_ACHIEVEMENT = "achievement/addEdit";
 		public static final String GET_ACHIEVEMENT_BY_ID = "achievement/get/{id}";
 		public static final String GET_ACHIEVEMENTS = "achievement/getList/{patientId}";
+		public static final String UPDATE_VACCINATION_CHART = "vaccine/updateChart/{patientId}/{vaccineStartDate}";
 	}
 
 	public static final String SOLR_BILLING_BASE_URL = BASE_URL + "/solr/billing";

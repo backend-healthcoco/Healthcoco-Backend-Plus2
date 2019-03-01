@@ -270,4 +270,18 @@ public class PaediatricAPI {
 		return response;
 	}
 	
+	
+	@Path(value = PathProxy.PaediatricUrls.UPDATE_VACCINATION_CHART)
+	@GET
+	@ApiOperation(value = PathProxy.PaediatricUrls.UPDATE_VACCINATION_CHART, notes = PathProxy.PaediatricUrls.UPDATE_VACCINATION_CHART)
+	public Response<Boolean> updateVaccinationChart(@PathParam("patientId") String patientId , @PathParam("vaccineStartDate") Long vaccineStartDate) {
+		if (DPDoctorUtils.anyStringEmpty(patientId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Boolean vaccineResponse = paediatricService.updateImmunisationChart(patientId, vaccineStartDate);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(vaccineResponse);
+		return response;
+	}
 }

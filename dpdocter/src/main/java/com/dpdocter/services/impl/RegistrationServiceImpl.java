@@ -183,6 +183,7 @@ import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.Type;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.UserState;
+import com.dpdocter.enums.VaccineStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -4953,5 +4954,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		birthAchievementRepository.save(birthAchievementCollections);
 	}
+	
+	
 	
 }
