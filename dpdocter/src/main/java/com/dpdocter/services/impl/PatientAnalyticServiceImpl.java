@@ -517,7 +517,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			firstAggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("week", "$week").append("month", "$month").append("year", "$year")
-									.append("userId", "$count")).append("month", new BasicDBObject("$first", "$month"))
+									).append("month", new BasicDBObject("$first", "$month"))
 											.append("year", new BasicDBObject("$first", "$year"))
 											.append("week", new BasicDBObject("$first", "$week"))
 											.append("date", new BasicDBObject("$first", "$date"))
@@ -530,7 +530,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		case MONTHLY: {
 			firstAggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id",
-							new BasicDBObject("month", "$month").append("year", "$year").append("userId", "$count"))
+							new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("month", new BasicDBObject("$first", "$month"))
 									.append("year", new BasicDBObject("$first", "$year"))
 									.append("date", new BasicDBObject("$first", "$date"))
@@ -542,7 +542,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		case YEARLY: {
 
 			firstAggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", new BasicDBObject("year", "$year").append("userId", "$count"))
+					new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 							.append("year", new BasicDBObject("$first", "$year"))
 							.append("date", new BasicDBObject("$first", "$date"))
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))

@@ -47,7 +47,7 @@ public interface AppointmentAnalyticsService {
 			String fromDate, String toDate);
 
 	public AppointmentBookedByCountResponse getAppointmentBookedByCount(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate);
+			String hospitalId, String fromDate, String toDate, String state);
 
 	public BookedAndCancelAppointmentCount getBookedAndCancelledCount(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate);

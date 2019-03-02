@@ -782,13 +782,13 @@ public class AnalyticsAPI {
 	public Response<AppointmentBookedByCountResponse> getBookedByAppointmentCount(
 			@QueryParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 			@PathParam("hospitalId") String hospitalId, @QueryParam("fromDate") String fromDate,
-			@QueryParam("toDate") String toDate) {
+			@QueryParam("toDate") String toDate, @QueryParam("state") String state) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, " locationId, hospitalId should not be empty");
 		}
 		Response<AppointmentBookedByCountResponse> response = new Response<AppointmentBookedByCountResponse>();
 		AppointmentBookedByCountResponse data = appointmentAnalyticsService.getAppointmentBookedByCount(doctorId,
-				locationId, hospitalId, fromDate, toDate);
+				locationId, hospitalId, fromDate, toDate, state);
 		response.setData(data);
 		return response;
 	}

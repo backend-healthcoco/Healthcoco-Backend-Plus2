@@ -189,7 +189,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 	@Override
 	public AppointmentBookedByCountResponse getAppointmentBookedByCount(String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate) {
+			String hospitalId, String fromDate, String toDate, String state) {
 		AppointmentBookedByCountResponse data = new AppointmentBookedByCountResponse();
 		try {
 			Criteria criteria = null;
@@ -219,14 +219,50 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 					.and("type").is("APPOINTMENT");
+			if (!DPDoctorUtils.anyStringEmpty(state)) {
+				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
+					criteria.and("state").is(state);
+				} else if (state.toUpperCase().equalsIgnoreCase("CHECKED_OUT")) {
+					criteria.and("status").is(state.toUpperCase());
+				} else {
+					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
+							new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
+							new Criteria("state").is(AppointmentState.NEW.toString()));
+				}
+
+			}
 			data.setTotal(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 					.and("createdBy").regex("Dr. ").and("type").is("APPOINTMENT");
+			if (!DPDoctorUtils.anyStringEmpty(state)) {
+				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
+					criteria.and("state").is(state);
+				} else if (state.toUpperCase().equalsIgnoreCase("CHECKED_OUT")) {
+					criteria.and("status").is(state.toUpperCase());
+				} else {
+					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
+							new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
+							new Criteria("state").is(AppointmentState.NEW.toString()));
+				}
+
+			}
 			data.setBookedByPatient(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
 					.and("createdBy").not().regex("Dr. ").and("type").is("APPOINTMENT");
+			if (!DPDoctorUtils.anyStringEmpty(state)) {
+				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
+					criteria.and("state").is(state);
+				} else if (state.toUpperCase().equalsIgnoreCase("CHECKED_OUT")) {
+					criteria.and("status").is(state.toUpperCase());
+				} else {
+					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
+							new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
+							new Criteria("state").is(AppointmentState.NEW.toString()));
+				}
+
+			}
 			data.setBookedByDoctor(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
 		} catch (Exception e) {
@@ -688,13 +724,13 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
 				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
-					criteria.and("appointment.state").is(state);
+					criteria.and("state").is(state);
 				} else if (state.toUpperCase().equalsIgnoreCase("CHECKED_OUT")) {
-					criteria.and("appointment.status").is(state.toUpperCase());
+					criteria.and("status").is(state.toUpperCase());
 				} else {
-					criteria.orOperator(new Criteria("appointment.state").is(AppointmentState.CONFIRM.toString()),
-							new Criteria("appointment.state").is(AppointmentState.RESCHEDULE.toString()),
-							new Criteria("appointment.state").is(AppointmentState.NEW.toString()));
+					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
+							new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
+							new Criteria("state").is(AppointmentState.NEW.toString()));
 				}
 
 			}
@@ -990,11 +1026,11 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
 				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
-					criteria.and("appointment.state").is(state);
+					criteria2.and("appointment.state").is(state);
 				} else if (state.toUpperCase().equalsIgnoreCase("CHECKED_OUT")) {
-					criteria.and("appointment.status").is(state.toUpperCase());
+					criteria2.and("appointment.status").is(state.toUpperCase());
 				} else {
-					criteria.orOperator(new Criteria("appointment.state").is(AppointmentState.CONFIRM.toString()),
+					criteria2.orOperator(new Criteria("appointment.state").is(AppointmentState.CONFIRM.toString()),
 							new Criteria("appointment.state").is(AppointmentState.RESCHEDULE.toString()),
 							new Criteria("appointment.state").is(AppointmentState.NEW.toString()));
 				}
@@ -1077,14 +1113,17 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				to = new Date();
 			}
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
-				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
-					criteria.and("appointment.state").is(state);
+				if (state.toUpperCase().equalsIgnoreCase(AppointmentState.CANCEL.getState())) {
+					criteria2.and("appointment.state").is(state);
+					System.out.println(state);
 				} else if (state.toUpperCase().equalsIgnoreCase("CHECKED_OUT")) {
-					criteria.and("appointment.status").is(state.toUpperCase());
+					criteria2.and("appointment.status").is(state.toUpperCase());
+					System.out.println(state);
 				} else {
-					criteria.orOperator(new Criteria("appointment.state").is(AppointmentState.CONFIRM.toString()),
-							new Criteria("appointment.state").is(AppointmentState.RESCHEDULE.toString()),
-							new Criteria("appointment.state").is(AppointmentState.NEW.toString()));
+					System.out.println(state);
+					criteria2.orOperator(new Criteria("appointment.state").is(AppointmentState.CONFIRM.getState()),
+							new Criteria("appointment.state").is(AppointmentState.RESCHEDULE.getState()),
+							new Criteria("appointment.state").is(AppointmentState.NEW.getState()));
 				}
 
 			}
@@ -1129,16 +1168,18 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			}
-
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
-				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
+				if (state.toUpperCase().equalsIgnoreCase(AppointmentState.CANCEL.getState())) {
 					criteria.and("state").is(state);
+					System.out.println(state);
 				} else if (state.toUpperCase().equalsIgnoreCase("CHECKED_OUT")) {
 					criteria.and("status").is(state.toUpperCase());
+					System.out.println(state);
 				} else {
-					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
-							new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
-							new Criteria("state").is(AppointmentState.NEW.toString()));
+					System.out.println(state);
+					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.getState()),
+							new Criteria("state").is(AppointmentState.RESCHEDULE.getState()),
+							new Criteria("state").is(AppointmentState.NEW.getState()));
 				}
 
 			}
@@ -1230,14 +1271,17 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
-				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
+				if (state.toUpperCase().equalsIgnoreCase(AppointmentState.CANCEL.getState())) {
 					criteria.and("state").is(state);
+					System.out.println(state);
 				} else if (state.toUpperCase().equalsIgnoreCase("CHECKED_OUT")) {
 					criteria.and("status").is(state.toUpperCase());
+					System.out.println(state);
 				} else {
-					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
-							new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
-							new Criteria("state").is(AppointmentState.NEW.toString()));
+					System.out.println(state);
+					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.getState()),
+							new Criteria("state").is(AppointmentState.RESCHEDULE.getState()),
+							new Criteria("state").is(AppointmentState.NEW.getState()));
 				}
 
 			}
@@ -1331,14 +1375,17 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
-				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
+				if (state.toUpperCase().equalsIgnoreCase(AppointmentState.CANCEL.getState())) {
 					criteria.and("state").is(state);
+					System.out.println(state);
 				} else if (state.toUpperCase().equalsIgnoreCase("CHECKED_OUT")) {
 					criteria.and("status").is(state.toUpperCase());
+					System.out.println(state);
 				} else {
-					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
-							new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
-							new Criteria("state").is(AppointmentState.NEW.toString()));
+					System.out.println(state);
+					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.getState()),
+							new Criteria("state").is(AppointmentState.RESCHEDULE.getState()),
+							new Criteria("state").is(AppointmentState.NEW.getState()));
 				}
 
 			}
