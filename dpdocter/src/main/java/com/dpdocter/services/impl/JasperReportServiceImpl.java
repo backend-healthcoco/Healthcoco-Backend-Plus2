@@ -8240,7 +8240,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
-		jrDesignLine.setHeight(1);
+		jrDesignLine.setHeight(5);
 		jrDesignLine.setWidth(columnWidth);
 		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
 		band.addElement(jrDesignLine);
