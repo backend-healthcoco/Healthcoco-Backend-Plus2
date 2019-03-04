@@ -40,7 +40,7 @@ public interface AnalyticsService {
 			String paymentMode);
 
 	public List<AnalyticResponse> getReceiptAnalyticData(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate, String searchType, String searchTerm,String paymentMode);
+			String fromDate, String toDate, String searchType, String searchTerm, String paymentMode);
 
 	public List<AnalyticResponse> getInvoiceAnalyticData(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String searchType, String searchTerm);
@@ -50,5 +50,8 @@ public interface AnalyticsService {
 
 	public Integer countIncomeDetailsAnalyticsData(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String searchTerm);
+
+	public Integer countAmountDueAnalyticsData(String doctorId, String locationId, String hospitalId, String fromDate,
+			String toDate, String queryType, String searchType);
 
 }

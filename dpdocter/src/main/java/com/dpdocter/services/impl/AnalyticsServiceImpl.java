@@ -1515,6 +1515,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("patientName",
 																new BasicDBObject("$first", "$patientName"))
 														.append("pid", new BasicDBObject("$first", "$pid")))),
+										Aggregation.sort(new Sort(Sort.Direction.ASC, "patientName")),
 										Aggregation.skip(page * size), Aggregation.limit(size));
 					} else {
 						aggregation = Aggregation
@@ -1532,8 +1533,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("patientId", new BasicDBObject("$first", "$patientId"))
 														.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 														.append("dueAmount", new BasicDBObject("$sum", "$dueAmount")))),
-										Aggregation
-												.lookup("doctor_patient_invoice_cl", "patientId", "patientId", "invoice"),
+										Aggregation.lookup(
+												"doctor_patient_invoice_cl", "patientId", "patientId", "invoice"),
 										Aggregation.unwind("invoice"), Aggregation.match(criteria3),
 										new CustomAggregationOperation(
 												new BasicDBObject("$group",
@@ -1550,8 +1551,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																		new BasicDBObject("$first", "$doctorId"))
 																.append("dueAmount",
 																		new BasicDBObject("$first", "$dueAmount")))),
-										Aggregation
-												.lookup("doctor_patient_receipt_cl", "patientId", "patientId", "receipt"),
+										Aggregation.lookup(
+												"doctor_patient_receipt_cl", "patientId", "patientId", "receipt"),
 										Aggregation.unwind("receipt"), Aggregation.match(criteria4),
 
 										new CustomAggregationOperation(new BasicDBObject("$group",
@@ -1562,7 +1563,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
 														.append("patientName",
 																new BasicDBObject("$first", "$patientName"))
-														.append("pid", new BasicDBObject("$first", "$pid")))));
+														.append("pid", new BasicDBObject("$first", "$pid")))),
+										Aggregation.sort(new Sort(Sort.Direction.ASC, "patientName")));
 					}
 				} else if (queryType.equalsIgnoreCase("DOCTORS")) {
 					if (size > 0) {
@@ -1614,6 +1616,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
 														.append("doctorName",
 																new BasicDBObject("$first", "$doctorName")))),
+										Aggregation.sort(new Sort(Sort.Direction.ASC, "doctorName")),
 										Aggregation.skip(page * size), Aggregation.limit(size));
 					} else {
 						aggregation = Aggregation
@@ -1663,7 +1666,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
 														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
 														.append("doctorName",
-																new BasicDBObject("$first", "$doctorName")))));
+																new BasicDBObject("$first", "$doctorName")))),
+										Aggregation.sort(new Sort(Sort.Direction.ASC, "doctorName")));
 					}
 				}
 			} else {
@@ -2033,6 +2037,144 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
 		return response;
 
+	}
+
+	@Override
+	public Integer countAmountDueAnalyticsData(String doctorId, String locationId, String hospitalId, String fromDate,
+			String toDate, String queryType, String searchType) {
+		Integer response = 0;
+		try {
+			Criteria criteria = new Criteria();
+			Criteria criteria2 = new Criteria();
+			Criteria criteria3 = new Criteria();
+			Criteria criteria4 = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+				criteria3.and("invoice.doctorId").is(new ObjectId(doctorId));
+				criteria4.and("receipt.doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+				criteria2.and("patient.locationId").is(new ObjectId(locationId)).and("patient.discarded").is(false);
+				criteria3.and("invoice.locationId").is(new ObjectId(locationId)).and("invoice.discarded").is(false);
+				criteria4.and("receipt.locationId").is(new ObjectId(locationId)).and("receipt.discarded").is(false);
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
+				criteria3.and("invoice.hospitalId").is(new ObjectId(hospitalId));
+				criteria4.and("receipt.hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+				fromTime = new DateTime(from);
+				toTime = new DateTime(to);
+				criteria4.and("receipt.receivedDate").gte(fromTime).lte(toTime);
+				criteria3.and("invoice.invoiceDate").gte(fromTime).lte(toTime);
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				fromTime = new DateTime(from);
+				criteria4.and("receipt.receivedDate").gte(fromTime);
+				criteria3.and("invoice.invoiceDate").gte(fromTime);
+
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				to = new Date(Long.parseLong(toDate));
+				toTime = new DateTime(to);
+				criteria4.and("receipt.receivedDate").lte(toTime);
+				criteria3.and("invoice.invoiceDate").lte(toTime);
+			}
+
+			Aggregation aggregation = null;
+
+			if (!DPDoctorUtils.anyStringEmpty(queryType)) {
+				if (queryType.equalsIgnoreCase("PATIENT")) {
+
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.unwind("patient"), Aggregation.match(criteria2),
+
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id", "$patientId")
+
+											.append("patientName",
+													new BasicDBObject("$first", "$patient.localPatientName"))
+											.append("pid", new BasicDBObject("$first", "$patient.PID"))
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("dueAmount", new BasicDBObject("$sum", "$dueAmount")))),
+							Aggregation.lookup("doctor_patient_invoice_cl", "patientId", "patientId", "invoice"),
+							Aggregation.unwind("invoice"), Aggregation.match(criteria3),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id", "$patientId")
+											.append("invoiced", new BasicDBObject("$sum", "$invoice.grandTotal"))
+											.append("patientName", new BasicDBObject("$first", "$patientName"))
+											.append("pid", new BasicDBObject("$first", "$pid"))
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("dueAmount", new BasicDBObject("$first", "$dueAmount")))),
+							Aggregation.lookup("doctor_patient_receipt_cl", "patientId", "patientId", "receipt"),
+							Aggregation.unwind("receipt"), Aggregation.match(criteria4),
+
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id", "$patientId")
+											.append("invoiced", new BasicDBObject("$first", "$invoiced"))
+											.append("received", new BasicDBObject("$sum", "$receipt.amountPaid"))
+											.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
+											.append("patientName", new BasicDBObject("$first", "$patientName"))
+											.append("pid", new BasicDBObject("$first", "$pid")))));
+
+				} else if (queryType.equalsIgnoreCase("DOCTORS")) {
+
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id", "$doctorId")
+											.append("doctorName", new BasicDBObject("$first", "$doctor.firstName"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("dueAmount", new BasicDBObject("$sum", "$dueAmount")))),
+							Aggregation.lookup("doctor_patient_invoice_cl", "doctorId", "doctorId", "invoice"),
+							Aggregation.unwind("invoice"), Aggregation.match(criteria3),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id", "$doctorId")
+											.append("invoiced", new BasicDBObject("$sum", "$invoice.grandTotal"))
+											.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("dueAmount", new BasicDBObject("$first", "$dueAmount")))),
+							Aggregation.lookup("doctor_patient_receipt_cl", "doctorId", "doctorId", "receipt"),
+							Aggregation.unwind("receipt"), Aggregation.match(criteria4),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id", "$doctorId")
+											.append("invoiced", new BasicDBObject("$first", "$invoiced"))
+											.append("received", new BasicDBObject("$sum", "$receipt.amountPaid"))
+											.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
+											.append("doctorName", new BasicDBObject("$first", "$doctorName")))));
+
+				} else {
+					throw new BusinessException(ServiceError.Unknown, "Query Type cannot be null");
+				}
+
+				response = mongoTemplate.aggregate(aggregation, DoctorPatientDueAmountCollection.class,
+						AmountDueAnalyticsDataResponse.class).getMappedResults().size();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While counting amount due analytics data");
+			throw new BusinessException(ServiceError.Unknown,
+					"Error Occurred While counting amount due analytics data");
+		}
+		return response;
 	}
 
 }

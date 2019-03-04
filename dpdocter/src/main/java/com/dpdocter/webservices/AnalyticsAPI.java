@@ -381,9 +381,13 @@ public class AnalyticsAPI {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId, locationId, hospitalId should not be empty");
 		}
-		List<AmountDueAnalyticsDataResponse> paymentAnalyticsDataResponses = analyticsService.getAmountDueAnalyticsData(
-				doctorId, locationId, hospitalId, fromDate, toDate, queryType, searchType, page, size);
-
+		Integer count = analyticsService.countAmountDueAnalyticsData(doctorId, locationId, hospitalId, fromDate, toDate,
+				queryType, searchType);
+		List<AmountDueAnalyticsDataResponse> paymentAnalyticsDataResponses = null;
+		if (count > 0) {
+			paymentAnalyticsDataResponses = analyticsService.getAmountDueAnalyticsData(doctorId, locationId, hospitalId,
+					fromDate, toDate, queryType, searchType, page, size);
+		}
 		Response<AmountDueAnalyticsDataResponse> response = new Response<AmountDueAnalyticsDataResponse>();
 		response.setDataList(paymentAnalyticsDataResponses);
 		return response;
