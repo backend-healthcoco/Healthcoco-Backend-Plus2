@@ -741,9 +741,14 @@ public class AnalyticsAPI {
 					" locationId, hospitalId ,searchType should not be empty");
 		}
 		Response<AnalyticCountResponse> response = new Response<AnalyticCountResponse>();
-		List<AnalyticCountResponse> data = patientAnalyticService.getPatientCountAnalytic(size, page, doctorId,
-				locationId, hospitalId, fromDate, toDate, type, searchTerm, city, isVisited);
-		response.setDataList(data);
+		Integer count = patientAnalyticService.getPatientCountAnalytic(0, page, doctorId, locationId, hospitalId,
+				fromDate, toDate, type, searchTerm, city, isVisited).size();
+		if (count > 0) {
+			List<AnalyticCountResponse> data = patientAnalyticService.getPatientCountAnalytic(size, page, doctorId,
+					locationId, hospitalId, fromDate, toDate, type, searchTerm, city, isVisited);
+			response.setDataList(data);
+		}
+		response.setCount(count);
 		return response;
 	}
 
