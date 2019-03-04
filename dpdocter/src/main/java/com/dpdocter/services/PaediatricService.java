@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.BirthAchievement;
 import com.dpdocter.beans.GrowthChart;
+import com.dpdocter.elasticsearch.response.GrowthChartGraphResponse;
 import com.dpdocter.request.MultipleVaccineEditRequest;
 import com.dpdocter.request.VaccineRequest;
 import com.dpdocter.response.GroupedVaccineBrandAssociationResponse;
@@ -57,5 +58,7 @@ public interface PaediatricService {
 	List<BirthAchievement> getBirthAchievementList(String patientId, String updatedTime, int page, int size);
 
 	Boolean updateImmunisationChart(String patientId, Long vaccineStartDate);
+
+	List<GrowthChartGraphResponse> getGrowthChartList(String patientId, String updatedTime);
 
 }

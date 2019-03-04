@@ -40,6 +40,7 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserDeviceCollection;
 import com.dpdocter.collections.VaccineBrandAssociationCollection;
 import com.dpdocter.collections.VaccineCollection;
+import com.dpdocter.elasticsearch.response.GrowthChartGraphResponse;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.VaccineStatus;
 import com.dpdocter.exceptions.BusinessException;
@@ -1008,5 +1009,37 @@ public class PaediatricServiceImpl implements PaediatricService {
 		status = true;
 		return status;
 	}
+	
+	@Override
+	@Transactional
+	public List<GrowthChartGraphResponse> getGrowthChartList(String patientId, String updatedTime) {
+		List<GrowthChartGraphResponse> responses = null;
+		try {
+			// Criteria criteria = new Criteria();
+
+			long createdTimestamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp));
+
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria.and("patientId").is(new ObjectId(patientId));
+			}
+			
+			criteria.and("discarded").is(false);
+			
+			responses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(
+							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+					GrowthChartCollection.class, GrowthChartGraphResponse.class).getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+
+		}
+		return responses;
+	}
+
+	
 }
 

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.BirthAchievement;
 import com.dpdocter.beans.GrowthChart;
+import com.dpdocter.elasticsearch.response.GrowthChartGraphResponse;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.MultipleVaccineEditRequest;
@@ -313,6 +314,20 @@ public class PaediatricAPI {
 		Boolean vaccineResponse = paediatricService.updateImmunisationChart(patientId, vaccineStartDate);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(vaccineResponse);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS_GRAPH)
+	@GET
+	@ApiOperation(value = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS_GRAPH, notes = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS_GRAPH)
+	public Response<GrowthChartGraphResponse> getGrowthCharts(@QueryParam("patientId") String patientId,@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+		if (DPDoctorUtils.anyStringEmpty(patientId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<GrowthChartGraphResponse> vaccineResponse = paediatricService.getGrowthChartList(patientId, updatedTime);
+		Response<GrowthChartGraphResponse> response = new Response<GrowthChartGraphResponse>();
+		response.setDataList(vaccineResponse);
 		return response;
 	}
 }
