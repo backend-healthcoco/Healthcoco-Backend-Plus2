@@ -390,6 +390,7 @@ public class AnalyticsAPI {
 		}
 		Response<AmountDueAnalyticsDataResponse> response = new Response<AmountDueAnalyticsDataResponse>();
 		response.setDataList(paymentAnalyticsDataResponses);
+		response.setCount(count);
 		return response;
 	}
 

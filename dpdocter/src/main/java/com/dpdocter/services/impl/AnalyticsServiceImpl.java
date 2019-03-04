@@ -1515,7 +1515,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("patientName",
 																new BasicDBObject("$first", "$patientName"))
 														.append("pid", new BasicDBObject("$first", "$pid")))),
-										Aggregation.sort(new Sort(Sort.Direction.ASC, "patientName")),
 										Aggregation.skip(page * size), Aggregation.limit(size));
 					} else {
 						aggregation = Aggregation
@@ -1563,8 +1562,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
 														.append("patientName",
 																new BasicDBObject("$first", "$patientName"))
-														.append("pid", new BasicDBObject("$first", "$pid")))),
-										Aggregation.sort(new Sort(Sort.Direction.ASC, "patientName")));
+														.append("pid", new BasicDBObject("$first", "$pid")))));
 					}
 				} else if (queryType.equalsIgnoreCase("DOCTORS")) {
 					if (size > 0) {
@@ -1616,7 +1614,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
 														.append("doctorName",
 																new BasicDBObject("$first", "$doctorName")))),
-										Aggregation.sort(new Sort(Sort.Direction.ASC, "doctorName")),
+
 										Aggregation.skip(page * size), Aggregation.limit(size));
 					} else {
 						aggregation = Aggregation
@@ -1666,8 +1664,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
 														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
 														.append("doctorName",
-																new BasicDBObject("$first", "$doctorName")))),
-										Aggregation.sort(new Sort(Sort.Direction.ASC, "doctorName")));
+																new BasicDBObject("$first", "$doctorName")))));
 					}
 				}
 			} else {
@@ -2123,13 +2120,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 							Aggregation.lookup("doctor_patient_receipt_cl", "patientId", "patientId", "receipt"),
 							Aggregation.unwind("receipt"), Aggregation.match(criteria4),
 
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id", "$patientId")
-											.append("invoiced", new BasicDBObject("$first", "$invoiced"))
-											.append("received", new BasicDBObject("$sum", "$receipt.amountPaid"))
-											.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
-											.append("patientName", new BasicDBObject("$first", "$patientName"))
-											.append("pid", new BasicDBObject("$first", "$pid")))));
+							new CustomAggregationOperation(
+									new BasicDBObject("$group", new BasicDBObject("_id", "$patientId"))));
 
 				} else if (queryType.equalsIgnoreCase("DOCTORS")) {
 
@@ -2153,13 +2145,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 											.append("dueAmount", new BasicDBObject("$first", "$dueAmount")))),
 							Aggregation.lookup("doctor_patient_receipt_cl", "doctorId", "doctorId", "receipt"),
-							Aggregation.unwind("receipt"), Aggregation.match(criteria4),
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id", "$doctorId")
-											.append("invoiced", new BasicDBObject("$first", "$invoiced"))
-											.append("received", new BasicDBObject("$sum", "$receipt.amountPaid"))
-											.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
-											.append("doctorName", new BasicDBObject("$first", "$doctorName")))));
+							Aggregation.unwind("receipt"), Aggregation.match(criteria4), new CustomAggregationOperation(
+									new BasicDBObject("$group", new BasicDBObject("_id", "$doctorId"))));
 
 				} else {
 					throw new BusinessException(ServiceError.Unknown, "Query Type cannot be null");
@@ -2171,8 +2158,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While counting amount due analytics data");
-			throw new BusinessException(ServiceError.Unknown,
-					"Error Occurred While counting amount due analytics data");
+			throw new BusinessException(ServiceError.Unknown, "Error Ocnew ProjectionOperation(\n"
+					+ "					Fields.from(Fields.field(\"count\", \"$patientId\"), Fields.field(\"receivedDate\", \"$receivedDate\")))curred While counting amount due analytics data");
 		}
 		return response;
 	}
