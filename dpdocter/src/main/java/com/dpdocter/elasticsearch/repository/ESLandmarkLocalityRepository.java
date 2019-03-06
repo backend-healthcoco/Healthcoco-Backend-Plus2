@@ -10,8 +10,9 @@ import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 
 public interface ESLandmarkLocalityRepository extends ElasticsearchRepository<ESLandmarkLocalityDocument, String> {
 
-//    @Query("cityId:*?0* OR landmark:?1* OR locality:?1*")
-//    List<ESLandmarkLocalityDocument> findByCityId(String cityId, String searchTerm);
+	@Query("{\"bool\": {\"must\": [{\"prefix\": {\"cityId\": \"?0\"}}]}}")
+    List<ESLandmarkLocalityDocument> findByCityId(String cityId);
+	
 //
 //    @Query("cityId:*?0* AND landmark:?1*")
 //    List<ESLandmarkLocalityDocument> findByCityIdAndLandmark(String cityId, String searchTerm);
