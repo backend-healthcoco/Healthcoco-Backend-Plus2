@@ -318,10 +318,10 @@ public class SearchServiceImpl implements SearchService {
 				
 				} else if (!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("NAGPUR")) {
 					
-					String unformattedService = "Doctor for "+StringUtils.capitalize(service)+" treatment";
+					String unformattedService = "Doctor for "+StringUtils.capitalize(service);
 					response.setUnformattedService(unformattedService);
 					
-					service = "doctor-for-"+service.toLowerCase().replaceAll(" ", "-")+"-treatment";
+					service = "doctor-for-"+service.toLowerCase().replaceAll(" ", "-");
 					response.setService(service);
 					
 					
