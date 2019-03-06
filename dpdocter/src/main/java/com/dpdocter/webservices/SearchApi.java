@@ -29,6 +29,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.BlogResponse;
 import com.dpdocter.response.ResourcesCountResponse;
 import com.dpdocter.response.SearchDoctorResponse;
+import com.dpdocter.response.SearchLandmarkLocalityResponse;
 import com.dpdocter.services.BlogService;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.SearchService;
@@ -258,6 +259,22 @@ public class SearchApi {
 		}
 		Response<DoctorProfile> response = new Response<DoctorProfile>();
 		response.setData(doctorProfile);
+		return response;
+	}
+
+	@Path(value = PathProxy.SearchUrls.GET_LANDMARKS_AND_LOCALITIES)
+	@GET
+	@ApiOperation(value = PathProxy.SearchUrls.GET_LANDMARKS_AND_LOCALITIES, notes = PathProxy.SearchUrls.GET_LANDMARKS_AND_LOCALITIES)
+	public Response<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(@PathParam("city") String city, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm) {
+		if (city == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<SearchLandmarkLocalityResponse> searchLandmarkLocalityResponses = searchService.getLandmarksAndLocalitiesByCity(city, page, size, searchTerm);
+
+		Response<SearchLandmarkLocalityResponse> response = new Response<SearchLandmarkLocalityResponse>();
+		response.setDataList(searchLandmarkLocalityResponses);
 		return response;
 	}
 	

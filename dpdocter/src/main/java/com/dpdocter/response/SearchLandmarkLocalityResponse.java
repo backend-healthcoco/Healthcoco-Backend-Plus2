@@ -12,8 +12,6 @@ public class SearchLandmarkLocalityResponse {
 
     private double longitude;
 
-    private String responseType;
-    
 	public String getCity() {
 		return city;
 	}
@@ -54,17 +52,9 @@ public class SearchLandmarkLocalityResponse {
 		this.longitude = longitude;
 	}
 
-	public String getResponseType() {
-		return responseType;
-	}
-
-	public void setResponseType(String responseType) {
-		this.responseType = responseType;
-	}
-
 	@Override
 	public String toString() {
 		return "SearchLandmarkLocalityResponse [city=" + city + ", name=" + name + ", slugUrl=" + slugUrl
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", responseType=" + responseType + "]";
+				+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
 	}
 }

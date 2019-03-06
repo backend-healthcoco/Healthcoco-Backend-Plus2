@@ -35,8 +35,11 @@ import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.document.ESServicesDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
+import com.dpdocter.elasticsearch.repository.ESCityRepository;
+import com.dpdocter.elasticsearch.repository.ESLandmarkLocalityRepository;
 import com.dpdocter.elasticsearch.repository.ESServicesRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.enums.DoctorFacility;
@@ -45,6 +48,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.response.ResourcesCountResponse;
 import com.dpdocter.response.SearchDoctorResponse;
+import com.dpdocter.response.SearchLandmarkLocalityResponse;
 import com.dpdocter.services.SearchService;
 import com.mongodb.BasicDBObject;
 
@@ -64,6 +68,12 @@ public class SearchServiceImpl implements SearchService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+
+	@Autowired
+	private ESCityRepository esCityRepository;
+	
+	@Autowired
+	private ESLandmarkLocalityRepository esLandmarkLocalityRepository;
 	
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -88,6 +98,17 @@ public class SearchServiceImpl implements SearchService {
 					.must(QueryBuilders.matchQuery("isDoctorListed", true))
 					.must(QueryBuilders.matchQuery("isClinic", true));
 
+			if (!DPDoctorUtils.anyStringEmpty(city)) {
+				long cityCount = elasticsearchTemplate.count(new CriteriaQuery(new Criteria("city").is(city).and("isActivated").is(true)),
+						ESCityDocument.class);
+
+				if (cityCount == 0) {
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid City");
+				}
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("city", city));
+				boolQueryBuilderForNearByDoctors.must(QueryBuilders.matchPhrasePrefixQuery("city", city));
+			}
+			
 			
 			if (DPDoctorUtils.allStringsEmpty(speciality) || speciality.equalsIgnoreCase("undefined") || speciality.equalsIgnoreCase("DOCTOR")) {
 				speciality = null;
@@ -701,6 +722,55 @@ public class SearchServiceImpl implements SearchService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error While Resources Count" + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public List<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(String city, int page, int size, String searchTerm) {
+		List<SearchLandmarkLocalityResponse> response = null;
+		try {
+			ESCityDocument cityDocument = esCityRepository.findByName(city);
+
+			if (cityDocument != null) {
+				
+				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.matchQuery("cityId", cityDocument.getId()));
+				if(!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					boolQueryBuilder.should(QueryBuilders.matchPhrasePrefixQuery("locality", searchTerm)).should(QueryBuilders.matchPhrasePrefixQuery("landmark", searchTerm)).minimumNumberShouldMatch(1);
+				}
+				
+				if(size == 0) {
+					size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESLandmarkLocalityDocument.class);	
+				}
+				
+				SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size)).build();
+				
+				List<ESLandmarkLocalityDocument> esLandmarkLocalityDocuments = elasticsearchTemplate.queryForList(searchQuery, ESLandmarkLocalityDocument.class);
+				if(esLandmarkLocalityDocuments != null) {
+					response = new ArrayList<SearchLandmarkLocalityResponse>();
+					SearchLandmarkLocalityResponse searchLandmarkLocalityResponse = null;
+					for(ESLandmarkLocalityDocument document : esLandmarkLocalityDocuments) {
+						searchLandmarkLocalityResponse = new SearchLandmarkLocalityResponse();
+						BeanUtil.map(document, searchLandmarkLocalityResponse);
+						searchLandmarkLocalityResponse.setCity(city);
+						
+						if(!DPDoctorUtils.anyStringEmpty(document.getLocality()))searchLandmarkLocalityResponse.setName(document.getLocality());
+						else if(!DPDoctorUtils.anyStringEmpty(document.getLandmark()))searchLandmarkLocalityResponse.setName(document.getLandmark());
+						
+						String slugUrl = searchLandmarkLocalityResponse.getName().toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-");
+						
+						slugUrl = slugUrl.replaceAll("-*-","-");	
+						
+						searchLandmarkLocalityResponse.setSlugUrl(slugUrl);
+						response.add(searchLandmarkLocalityResponse);
+					}
+				}
+			}else {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid City");
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,"Error While searching landmak and localities : " + e.getMessage());
 		}
 		return response;
 	}
