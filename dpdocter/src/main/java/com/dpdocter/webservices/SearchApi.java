@@ -265,12 +265,9 @@ public class SearchApi {
 	@Path(value = PathProxy.SearchUrls.GET_LANDMARKS_AND_LOCALITIES)
 	@GET
 	@ApiOperation(value = PathProxy.SearchUrls.GET_LANDMARKS_AND_LOCALITIES, notes = PathProxy.SearchUrls.GET_LANDMARKS_AND_LOCALITIES)
-	public Response<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(@PathParam("city") String city, @QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(@QueryParam("city") String city, @QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("searchTerm") String searchTerm) {
-		if (city == null) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
+		
 		List<SearchLandmarkLocalityResponse> searchLandmarkLocalityResponses = searchService.getLandmarksAndLocalitiesByCity(city, page, size, searchTerm);
 
 		Response<SearchLandmarkLocalityResponse> response = new Response<SearchLandmarkLocalityResponse>();
