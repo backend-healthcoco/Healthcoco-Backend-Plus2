@@ -11,7 +11,7 @@ import com.dpdocter.elasticsearch.document.ESCityDocument;
 public interface ESCityRepository extends ElasticsearchRepository<ESCityDocument, String> {
     
 	@Query("{\"bool\": {\"must\": [{\"prefix\": {\"city\": \"?0\"}}]}}")
-    List<ESCityDocument> findByQueryAnnotation(String searchTerm, Pageable pageable);
+	List<ESCityDocument> findByQueryAnnotation(String searchTerm);
 
 //    @Query("city:?0* AND isActivated:true AND !geofilt sfield='geoLocation'  pt=?1,?2 d=10")
 //    List<ESCityDocument> findByQueryAnnotation(String searchTerm, double latitude, double longitude);
