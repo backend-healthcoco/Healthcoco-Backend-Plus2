@@ -655,8 +655,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 					Aggregation.unwind("services"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"), group,
 					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("doctorId", "$doctorId").append("locationId", "$locationId"))
+							new BasicDBObject("_id", "$doctorId")
 											.append("count", new BasicDBObject("$sum", 1))
 											.append("firstName", new BasicDBObject("$first", "$firstName")))));
 

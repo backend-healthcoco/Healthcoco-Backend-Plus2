@@ -2,6 +2,8 @@ package com.dpdocter.response;
 
 public class DoctorAnalyticPieChartResponse {
 
+	private String id;
+
 	private String firstName;
 
 	private long count;

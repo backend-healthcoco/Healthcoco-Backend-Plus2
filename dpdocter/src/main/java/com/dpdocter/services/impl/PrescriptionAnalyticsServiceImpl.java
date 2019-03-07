@@ -79,7 +79,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 			Criteria criteria = null;
 			Criteria itemCriteria = new Criteria();
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("discarded").is(false);
-			
+
 			Aggregation aggregation = null;
 
 			DateTime fromTime = null;
@@ -117,8 +117,8 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("items"),
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "totalCount"),
 						Aggregation.unwind("totalCount"), Aggregation.match(itemCriteria),
-						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$totalCount._id"))));
+						new CustomAggregationOperation(
+								new BasicDBObject("$group", new BasicDBObject("_id", "$totalCount._id"))));
 				break;
 			}
 			case DIAGNOSTICTEST: {
@@ -1110,10 +1110,8 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 							new BasicDBObject("path", "$test").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"), group,
 					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id",
-									new BasicDBObject("doctorId", "$doctorId").append("locationId", "$locationId"))
-											.append("count", new BasicDBObject("$sum", 1))
-											.append("firstName", new BasicDBObject("$first", "$firstName")))));
+							new BasicDBObject("_id", "$doctorId").append("count", new BasicDBObject("$sum", 1))
+									.append("firstName", new BasicDBObject("$first", "$firstName")))));
 
 			AggregationResults<DoctorAnalyticPieChartResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PrescriptionCollection.class, DoctorAnalyticPieChartResponse.class);
