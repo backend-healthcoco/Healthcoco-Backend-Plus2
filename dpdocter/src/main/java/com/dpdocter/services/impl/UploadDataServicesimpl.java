@@ -1233,7 +1233,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 							WorkingHours workingHours = new WorkingHours();
 							workingHours.setFromTime(fromTime);
-							workingHours.setToTime(fromTime + 15);
+							workingHours.setToTime(fromTime + 30);
 
 							appointmentCollection = new AppointmentCollection();
 							appointmentCollection.setTime(workingHours);
