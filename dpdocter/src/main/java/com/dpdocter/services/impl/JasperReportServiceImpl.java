@@ -8258,7 +8258,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		band = new JRDesignBand();
-		band.setHeight(1);
+		band.setHeight(5);
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
