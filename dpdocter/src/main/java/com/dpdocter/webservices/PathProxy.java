@@ -1150,6 +1150,10 @@ public interface PathProxy {
 		public static final String GET_PHARMACIES_WEB = "/pharmacies/web";
 
 		public static final String GET_LABS_WEB = "/labs/web";
+
+		public static final String GET_DOCTORS_CARD = "/doctorsCard";
+
+		public static final String GET_LANDMARKS_AND_LOCALITIES = "/localitiesLandmarks";
 	}
 
 	public static final String GENERAL_TESTS_URL = BASE_URL + "/tests";
