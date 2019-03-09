@@ -8,6 +8,7 @@ import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.response.ESDoctorCardResponse;
 import com.dpdocter.elasticsearch.response.ESWEBResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
+import com.dpdocter.response.SearchLandmarkLocalityResponse;
 
 public interface ESAppointmentService {
 
@@ -49,5 +50,8 @@ public interface ESAppointmentService {
 	public Integer getDoctorCount(String city, String location, String latitude, String longitude, String speciality,
 			String symptom, Boolean booking, Boolean calling, int minFee, int maxFee, int minTime, int maxTime,
 			List<String> days, String gender, int minExperience, int maxExperience, String service);
+
+	List<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(String city, int page, int size,
+			String searchTerm);
 
 }

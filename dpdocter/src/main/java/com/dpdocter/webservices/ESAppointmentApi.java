@@ -22,6 +22,7 @@ import com.dpdocter.elasticsearch.response.ESDoctorCardResponse;
 import com.dpdocter.elasticsearch.response.ESWEBResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
+import com.dpdocter.response.SearchLandmarkLocalityResponse;
 
 import common.util.web.Response;
 import io.swagger.annotations.Api;
@@ -238,6 +239,19 @@ public class ESAppointmentApi {
 
 		Response<ESWEBResponse> response = new Response<ESWEBResponse>();
 		response.setData(labs);
+		return response;
+	}
+	
+	@Path(value = PathProxy.SolrAppointmentUrls.GET_LANDMARKS_AND_LOCALITIES)
+	@GET
+	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_LANDMARKS_AND_LOCALITIES, notes = PathProxy.SolrAppointmentUrls.GET_LANDMARKS_AND_LOCALITIES)
+	public Response<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(@QueryParam("city") String city, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm) {
+		
+		List<SearchLandmarkLocalityResponse> searchLandmarkLocalityResponses = solrAppointmentService.getLandmarksAndLocalitiesByCity(city, page, size, searchTerm);
+
+		Response<SearchLandmarkLocalityResponse> response = new Response<SearchLandmarkLocalityResponse>();
+		response.setDataList(searchLandmarkLocalityResponses);
 		return response;
 	}
 }

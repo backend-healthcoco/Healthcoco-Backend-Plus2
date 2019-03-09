@@ -5,9 +5,11 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -66,6 +68,7 @@ import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.response.SearchLandmarkLocalityResponse;
 import com.dpdocter.services.SMSServices;
 import com.google.common.collect.Lists;
 
@@ -1644,5 +1647,71 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					"Error While Getting Doctor Details From ES : " + e.getMessage());
 		}
 		return esDoctorCardResponses;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(String city, int page, int size, String searchTerm) {
+		List<SearchLandmarkLocalityResponse> response = new ArrayList<SearchLandmarkLocalityResponse>();
+		try {
+			List<ESCityDocument> cityDocument = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(
+					new BoolQueryBuilder().must(QueryBuilders.matchPhrasePrefixQuery("city", searchTerm)).must(QueryBuilders.matchQuery("isActivated", true))).build(), ESCityDocument.class);
+			
+			Map<String, String> cityMap = new HashMap<String, String>();
+			SearchLandmarkLocalityResponse searchLandmarkLocalityResponse = null;
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+			if (cityDocument != null && !cityDocument.isEmpty()) {
+				List<String> cityIds = (List<String>) CollectionUtils.collect(cityDocument, new BeanToPropertyValueTransformer("id"));
+				boolQueryBuilder.must(QueryBuilders.termsQuery("cityId", cityIds));	
+				
+				for(ESCityDocument esCityDocument : cityDocument) {
+					searchLandmarkLocalityResponse = new SearchLandmarkLocalityResponse();
+					BeanUtil.map(esCityDocument, searchLandmarkLocalityResponse);
+					searchLandmarkLocalityResponse.setName(esCityDocument.getCity());
+					searchLandmarkLocalityResponse.setResponseType("CITY");
+					response.add(searchLandmarkLocalityResponse);
+					cityMap.put(esCityDocument.getId(), esCityDocument.getCity());
+				}
+			}
+				if(!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					boolQueryBuilder.should(QueryBuilders.matchPhrasePrefixQuery("locality", searchTerm)).should(QueryBuilders.matchPhrasePrefixQuery("landmark", searchTerm)).minimumNumberShouldMatch(1);
+				}
+				
+//				if() {
+//					size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESLandmarkLocalityDocument.class);	
+//				}
+				size = size - response.size();
+				SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size)).build();
+				
+				List<ESLandmarkLocalityDocument> esLandmarkLocalityDocuments = elasticsearchTemplate.queryForList(searchQuery, ESLandmarkLocalityDocument.class);
+				if(esLandmarkLocalityDocuments != null) {
+					response = new ArrayList<SearchLandmarkLocalityResponse>();
+					
+					for(ESLandmarkLocalityDocument document : esLandmarkLocalityDocuments) {
+						searchLandmarkLocalityResponse = new SearchLandmarkLocalityResponse();
+						BeanUtil.map(document, searchLandmarkLocalityResponse);
+						searchLandmarkLocalityResponse.setCity(cityMap.get(document.getCityId()));
+						if(!DPDoctorUtils.anyStringEmpty(searchLandmarkLocalityResponse.getCity())) {
+							ESCityDocument esCityDocument = esCityRepository.findOne(document.getCityId());
+							cityMap.put(esCityDocument.getId(), esCityDocument.getCity());
+							searchLandmarkLocalityResponse.setCity(esCityDocument.getCity());
+						}
+						
+						if(!DPDoctorUtils.anyStringEmpty(document.getLocality()))searchLandmarkLocalityResponse.setName(document.getLocality());
+						else if(!DPDoctorUtils.anyStringEmpty(document.getLandmark()))searchLandmarkLocalityResponse.setName(document.getLandmark());
+						
+						String slugUrl = searchLandmarkLocalityResponse.getName().toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-");
+						
+						slugUrl = slugUrl.replaceAll("-*-","-");	
+						
+						searchLandmarkLocalityResponse.setSlugUrl(slugUrl);
+						response.add(searchLandmarkLocalityResponse);
+					}
+				}
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,"Error While searching landmak and localities : " + e.getMessage());
+		}
+		return response;
 	}
 }
