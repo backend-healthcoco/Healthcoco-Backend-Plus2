@@ -157,7 +157,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Autowired
 	PushNotificationServices pushNotificationServices;
-	
+
 	@Override
 	@Transactional
 	public TreatmentService addEditService(TreatmentService treatmentService) {
@@ -407,10 +407,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			BeanUtil.map(patientTreatmentCollection, response);
 			response.setTreatments(treatmentResponses);
 
-			pushNotificationServices.notifyUser(patientTreatmentCollection.getDoctorId().toString(),
-					"Treament Added",
-					ComponentType.TREATMENTS_REFRESH.getType(), patientTreatmentCollection.getPatientId().toString(), null);
-			
+			pushNotificationServices.notifyUser(patientTreatmentCollection.getDoctorId().toString(), "Treament Added",
+					ComponentType.TREATMENTS_REFRESH.getType(), patientTreatmentCollection.getPatientId().toString(),
+					null);
+
 		} catch (Exception e) {
 			logger.error("Error occurred while adding or editing treatment for patients", e);
 			e.printStackTrace();
@@ -1291,8 +1291,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Treatment", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Treatment", body,
-					mailResponse.getMailAttachment());
+			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Treatment",
+					body, mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -1864,6 +1864,30 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public List<TreatmentService> getTreatmentServices(List<ObjectId> idList) {
+		List<TreatmentService> response = null;
+		try {
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria("id").in(idList).and("discarded").is(false);
+
+			aggregation = Aggregation.newAggregation(
+
+					Aggregation.match(criteria), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+			AggregationResults<TreatmentService> results = mongoTemplate.aggregate(aggregation,
+
+					TreatmentServicesCollection.class, TreatmentService.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting TreatmentService");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting TreatmentService");
 		}
 		return response;
 	}

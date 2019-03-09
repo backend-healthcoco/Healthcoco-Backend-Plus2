@@ -233,4 +233,6 @@ public interface PrescriptionServices {
 	Boolean updateDrugInteraction();
 
 	NutritionReferral addNutritionReferral(NutritionReferralRequest request);
+	
+	public List<Drug> getDrugs(List<ObjectId> drugIds);
 }

@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.beans.NutritionGoalAnalytics;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
@@ -47,4 +49,8 @@ public interface NutritionService {
 	public List<NutritionPlanWithCategoryResponse> getNutritionPlanByCategory(NutritionPlanRequest request);
 
 	public void updateUserSubscritionPlan();
+
+	public List<SubscriptionNutritionPlan> getSubscritionPlans(List<ObjectId> idList);
+
+	public List<NutritionPlan> getNutritionPlans(List<ObjectId> idList);
 }

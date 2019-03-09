@@ -1035,5 +1035,72 @@ public class NutritionServiceImpl implements NutritionService {
 		}
 
 	}
+	@Override
+	public List<NutritionPlan> getNutritionPlans(List<ObjectId> idList) {
+		List<NutritionPlan> response = null;
+		try {
 
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria("id").in(idList).and("discarded").is(false);
+
+			aggregation = Aggregation.newAggregation(
+
+					Aggregation.match(criteria), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+			AggregationResults<NutritionPlan> results = mongoTemplate.aggregate(aggregation,
+					NutritionPlanCollection.class, NutritionPlan.class);
+			response = results.getMappedResults();
+			for (NutritionPlan plan : response) {
+				if (!DPDoctorUtils.anyStringEmpty(plan.getPlanImage())) {
+					plan.setPlanImage(getFinalImageURL(plan.getPlanImage()));
+				}
+				if (!DPDoctorUtils.anyStringEmpty(plan.getBannerImage())) {
+					plan.setBannerImage(getFinalImageURL(plan.getBannerImage()));
+				}
+			}
+		} catch (BusinessException e) {
+
+			logger.error("Error while getting nutrition Plan List" + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Err"
+					+ "or while getting nutrition Plan List " + e.getMessage());
+
+		}
+		return response;
+	}
+	
+
+	@Override
+	public List<SubscriptionNutritionPlan> getSubscritionPlans(List<ObjectId> idList) {
+		List<SubscriptionNutritionPlan> response = null;
+		try {
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria("id").in(idList).and("discarded").is(false);
+
+			aggregation = Aggregation.newAggregation(
+
+					Aggregation.match(criteria), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+			AggregationResults<SubscriptionNutritionPlan> results = mongoTemplate.aggregate(aggregation,
+					SubscriptionNutritionPlanCollection.class, SubscriptionNutritionPlan.class);
+			response = results.getMappedResults();
+			for (SubscriptionNutritionPlan subscriptionNutritionPlan : response) {
+				if (!DPDoctorUtils.anyStringEmpty(subscriptionNutritionPlan.getBackgroundImage())) {
+					subscriptionNutritionPlan
+							.setBackgroundImage(getFinalImageURL(subscriptionNutritionPlan.getBackgroundImage()));
+				}
+			}
+
+		} catch (BusinessException e) {
+
+			logger.error("Error while getting Subscrition Plan " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Subscrition Plan " + e.getMessage());
+
+		}
+		return response;
+	}
 }
