@@ -93,10 +93,15 @@ public class LoginApi {
 	@ApiOperation(value = PathProxy.LoginUrls.LOGIN_PATIENT, notes = PathProxy.LoginUrls.LOGIN_PATIENT)
 	public Response<Object> loginPatient(LoginPatientRequest request,
 			@DefaultValue("true") @QueryParam("discardedAddress") Boolean discardedAddress) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null
-				|| request.getPassword().length == 0) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getOtpNumber())
+				&& (request.getPassword() == null || request.getPassword().length == 0)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
 		}
 		List<RegisteredPatientDetails> users = loginService.loginPatient(request);
 		if (users != null && !users.isEmpty()) {

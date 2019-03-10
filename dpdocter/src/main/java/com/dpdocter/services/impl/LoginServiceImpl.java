@@ -216,7 +216,8 @@ public class LoginServiceImpl implements LoginService {
 									getFinalImageURL(locationAndAccessControl.getLogoThumbnailUrl()));
 							locationAndAccessControl
 									.setImages(getFinalClinicImages(locationAndAccessControl.getImages()));
-							locationAndAccessControl.setIsVaccinationModuleOn(doctorClinicProfileLookupResponse.getIsVaccinationModuleOn());
+							locationAndAccessControl.setIsVaccinationModuleOn(
+									doctorClinicProfileLookupResponse.getIsVaccinationModuleOn());
 							List<Role> roles = null;
 
 							Boolean isStaff = false;
@@ -394,7 +395,7 @@ public class LoginServiceImpl implements LoginService {
 							response = new ArrayList<RegisteredPatientDetails>();
 						response.add(user);
 					}
-				} else {
+				} else if (request.getPassword() != null && request.getPassword().length != 0) {
 					RegisteredPatientDetails user = new RegisteredPatientDetails();
 					char[] salt = userCollection.getSalt();
 					if (salt != null && salt.length > 0) {
@@ -412,7 +413,33 @@ public class LoginServiceImpl implements LoginService {
 						logger.warn(loginPatient);
 						throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 					}
+					PatientCollection patientCollection = patientRepository
+							.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
+					if (patientCollection != null) {
+						Patient patient = new Patient();
+						BeanUtil.map(patientCollection, patient);
+						BeanUtil.map(patientCollection, user);
+						patient.setPatientId(patientCollection.getUserId().toString());
+						user.setPatient(patient);
+					}
+					BeanUtil.map(userCollection, user);
+					user.setUserNutritionSubscriptions(addUserNutritionSubscriptionResponse(userCollection));
+					user.setUserId(userCollection.getId().toString());
 
+					if (response == null)
+						response = new ArrayList<RegisteredPatientDetails>();
+					response.add(user);
+
+				} else if (!DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
+					Boolean verifyOTPResponse = false;
+					if (!verifyOTPResponse) {
+						verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(), request.getOtpNumber());
+						if (!verifyOTPResponse) {
+							logger.warn(loginPatient);
+							throw new BusinessException(ServiceError.InvalidInput, loginPatient);
+						}
+					}
+					RegisteredPatientDetails user = new RegisteredPatientDetails();
 					PatientCollection patientCollection = patientRepository
 							.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
 					if (patientCollection != null) {

@@ -2,28 +2,38 @@ package com.dpdocter.request;
 
 public class LoginPatientRequest {
 
-    private String mobileNumber;
+	private String mobileNumber;
 
-    private char[] password;
+	private String otpNumber;
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
+	private char[] password;
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
 
-    public char[] getPassword() {
-	return password;
-    }
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
-    public void setPassword(char[] password) {
-	this.password = password;
-    }
+	public char[] getPassword() {
+		return password;
+	}
 
-    @Override
-    public String toString() {
-	return "LoginPatientRequest [mobileNumber=" + mobileNumber + ", password=" + password + "]";
-    }
+	public void setPassword(char[] password) {
+		this.password = password;
+	}
+
+	public String getOtpNumber() {
+		return otpNumber;
+	}
+
+	public void setOtpNumber(String otpNumber) {
+		this.otpNumber = otpNumber;
+	}
+
+	@Override
+	public String toString() {
+		return "LoginPatientRequest [mobileNumber=" + mobileNumber + ", password=" + password + "]";
+	}
 }
