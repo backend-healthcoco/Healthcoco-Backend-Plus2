@@ -1986,4 +1986,21 @@ public interface PathProxy {
 
 	}
 
+	public static final String TRENDING_URL = BASE_URL + "/Trending";
+
+	public interface TrendingUrls {
+
+		public static final String GET_TRENDING = "{id}/{userId}/get";
+		public static final String GET_OFFER = "{id}/get";
+
+	}
+
+	public static final String SOLR_TRENDING_BASE_URL = BASE_URL + "/solr/trending";
+
+	public interface ESTrendingUrl {
+		public static final String SEARCH_OFFERS = "/offer/search";
+
+		public static final String SEARCH_TRENDINGS = "/search";
+	}
+
 }
