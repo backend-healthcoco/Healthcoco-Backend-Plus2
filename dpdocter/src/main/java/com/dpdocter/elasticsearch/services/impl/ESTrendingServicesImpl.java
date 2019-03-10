@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
@@ -15,7 +16,9 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.Blog;
 import com.dpdocter.beans.Offer;
+import com.dpdocter.collections.BlogCollection;
 import com.dpdocter.elasticsearch.document.ESOfferDocument;
 import com.dpdocter.elasticsearch.document.ESTrendingDocument;
 import com.dpdocter.elasticsearch.repository.ESOfferRepository;
@@ -23,6 +26,7 @@ import com.dpdocter.elasticsearch.repository.ESTrendingRepository;
 import com.dpdocter.elasticsearch.services.ESTrendingServices;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.BlogRepository;
 import com.dpdocter.response.TrendingResponse;
 import com.dpdocter.services.TransactionalManagementService;
 
@@ -34,7 +38,7 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 	private static Logger logger = Logger.getLogger(ESTrendingServicesImpl.class.getName());
 
 	@Autowired
-	private ESOfferRepository esOfferRepsitory;
+	private ESOfferRepository esOfferRepository;
 
 	@Autowired
 	private ESTrendingRepository esTrendingRepository;
@@ -43,13 +47,19 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 	private ElasticsearchTemplate elasticsearchTemplate;
 
 	@Autowired
+	private BlogRepository blogRepository;
+
+	@Autowired
 	private TransactionalManagementService transactionalManagementService;
+
+	@Value(value = "${image.path}")
+	private String imagePath;
 
 	@Override
 	public boolean addOffer(ESOfferDocument request) {
 		boolean response = false;
 		try {
-			esOfferRepsitory.save(request);
+			esOfferRepository.save(request);
 			response = true;
 			transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.OFFER, true);
 		} catch (Exception e) {
@@ -159,7 +169,32 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 				response = new ArrayList<TrendingResponse>();
 				for (ESTrendingDocument document : documents) {
 					trending = new TrendingResponse();
+
 					BeanUtil.map(document, trending);
+					if (!DPDoctorUtils.anyStringEmpty(trending.getOfferId())) {
+						Offer offer = new Offer();
+						ESOfferDocument offerDocument = esOfferRepository.findOne(trending.getOfferId());
+						BeanUtil.map(offerDocument, offer);
+						if (offer != null) {
+							if (offer.getTitleImage() != null) {
+								if (!DPDoctorUtils.anyStringEmpty(offer.getTitleImage().getImageUrl()))
+									offer.getTitleImage()
+											.setImageUrl(getFinalImageURL(offer.getTitleImage().getImageUrl()));
+
+								if (!DPDoctorUtils.anyStringEmpty(offer.getTitleImage().getThumbnailUrl()))
+									offer.getTitleImage()
+											.setThumbnailUrl(getFinalImageURL(offer.getTitleImage().getThumbnailUrl()));
+
+							}
+						}
+					} else if (!DPDoctorUtils.anyStringEmpty(trending.getBlogId())) {
+						Blog blog = new Blog();
+						BlogCollection blogCollection = blogRepository.findOne(new ObjectId(trending.getBlogId()));
+						BeanUtil.map(blogCollection, blog);
+
+						if (blog != null && !DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
+							blog.setTitleImage(imagePath + blog.getTitleImage());
+					}
 					response.add(trending);
 				}
 			}
@@ -169,6 +204,13 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 			logger.error(e + " Error Occurred While search Trending in ES");
 		}
 		return response;
+	}
+
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null)
+			return imagePath + imageURL;
+		else
+			return null;
 	}
 
 }
