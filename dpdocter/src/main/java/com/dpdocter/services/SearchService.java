@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.dpdocter.response.ResourcesCountResponse;
 import com.dpdocter.response.SearchDoctorResponse;
-import com.dpdocter.response.SearchLandmarkLocalityResponse;
 
 public interface SearchService {
 
@@ -14,7 +13,5 @@ public interface SearchService {
 			List<String> days, String gender, int minExperience, int maxExperience, String service, String locality, Boolean otherArea, String expertIn);
 
 	List<ResourcesCountResponse> getResourcesCountByCity(String city, List<String> type);
-
-	List<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(String city, int page, int size, String searchTerm);
 
 }
