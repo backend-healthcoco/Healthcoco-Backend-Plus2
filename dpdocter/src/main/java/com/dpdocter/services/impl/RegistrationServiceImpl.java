@@ -257,9 +257,8 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 import common.util.web.DPDoctorUtils;
 <<<<<<< HEAD
 import common.util.web.DateUtil;
-=======
 import common.util.web.Response;
->>>>>>> 603adaa3b... HAPPY-4218 Backend : Dpdocter : Add response in delete patient API for
+
 
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
@@ -4548,7 +4547,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
-					.and("isPatientDiscarded").is(true);
+					.and("isPatientDiscarded").ne(true);
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
 
 		} catch (Exception e) {
