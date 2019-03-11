@@ -33,10 +33,10 @@ public class ESOfferDocument {
 	@Field(type = FieldType.String)
 	private String colorCode;
 
-	@Field(type = FieldType.Nested)
+	@Field(type = FieldType.String)
 	private List<OfferCategaryType> type;
 
-	@Field(type = FieldType.Nested)
+	@Field(type = FieldType.String)
 	private List<ProductType> productType;
 
 	@Field(type = FieldType.Object)

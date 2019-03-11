@@ -162,7 +162,7 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 				size = 15;
 
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(page, size, Direction.ASC, "updatedTime")).build();
+					.withPageable(new PageRequest(page, size, Direction.ASC, "rank")).build();
 			List<ESTrendingDocument> documents = elasticsearchTemplate.queryForList(searchQuery,
 					ESTrendingDocument.class);
 			if (documents != null && !documents.isEmpty()) {
@@ -186,14 +186,17 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 											.setThumbnailUrl(getFinalImageURL(offer.getTitleImage().getThumbnailUrl()));
 
 							}
+							trending.setOffer(offer);
 						}
 					} else if (!DPDoctorUtils.anyStringEmpty(trending.getBlogId())) {
 						Blog blog = new Blog();
 						BlogCollection blogCollection = blogRepository.findOne(new ObjectId(trending.getBlogId()));
 						BeanUtil.map(blogCollection, blog);
 
-						if (blog != null && !DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
+						if (blog != null && !DPDoctorUtils.anyStringEmpty(blog.getTitleImage())) {
 							blog.setTitleImage(imagePath + blog.getTitleImage());
+						}
+						trending.setBlog(blog);
 					}
 					response.add(trending);
 				}
