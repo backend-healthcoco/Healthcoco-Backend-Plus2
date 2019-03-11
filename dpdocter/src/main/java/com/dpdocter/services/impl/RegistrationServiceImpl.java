@@ -183,7 +183,6 @@ import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.Type;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.UserState;
-import com.dpdocter.enums.VaccineStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -4420,11 +4419,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 						BeanUtil.map(patientCollection, patientShortCard);
 						patientShortCards.add(patientShortCard);
 					}
-					ESPatientDocument esPatientDocument = esPatientRepository
-							.findOne(patientCollection.getId().toString());
-					esPatientDocument.setIsPatientDiscarded(discarded);
-					esPatientDocument.setDiscarded(discarded);
-					esPatientDocument = esPatientRepository.save(esPatientDocument);
+					ESPatientDocument esPatientDocument = esPatientRepository.findOne(patientCollection.getId().toString());
+					if(esPatientDocument != null) {
+						esPatientDocument.setIsPatientDiscarded(discarded);
+						esPatientDocument.setDiscarded(discarded);
+						esPatientDocument = esPatientRepository.save(esPatientDocument);
+					}
 
 					updatePatientData(locationObjectId, hospitalObjectId, patientObjectId, "isPatientDiscarded", discarded);
 				}
