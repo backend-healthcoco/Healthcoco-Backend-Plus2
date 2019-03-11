@@ -1677,15 +1677,12 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					boolQueryBuilder.should(QueryBuilders.matchPhrasePrefixQuery("locality", searchTerm)).should(QueryBuilders.matchPhrasePrefixQuery("landmark", searchTerm)).minimumNumberShouldMatch(1);
 				}
 				
-//				if() {
-//					size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESLandmarkLocalityDocument.class);	
-//				}
 				size = size - response.size();
 				SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size)).build();
 				
 				List<ESLandmarkLocalityDocument> esLandmarkLocalityDocuments = elasticsearchTemplate.queryForList(searchQuery, ESLandmarkLocalityDocument.class);
 				if(esLandmarkLocalityDocuments != null) {
-					response = new ArrayList<SearchLandmarkLocalityResponse>();
+					//response = new ArrayList<SearchLandmarkLocalityResponse>();
 					
 					for(ESLandmarkLocalityDocument document : esLandmarkLocalityDocuments) {
 						searchLandmarkLocalityResponse = new SearchLandmarkLocalityResponse();
@@ -1703,7 +1700,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						String slugUrl = searchLandmarkLocalityResponse.getName().toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-");
 						
 						slugUrl = slugUrl.replaceAll("-*-","-");	
-						
+						searchLandmarkLocalityResponse.setName(searchLandmarkLocalityResponse.getName()+", "+searchLandmarkLocalityResponse.getCity());
+						searchLandmarkLocalityResponse.setResponseType("LOCALITY");
 						searchLandmarkLocalityResponse.setSlugUrl(slugUrl);
 						response.add(searchLandmarkLocalityResponse);
 					}
