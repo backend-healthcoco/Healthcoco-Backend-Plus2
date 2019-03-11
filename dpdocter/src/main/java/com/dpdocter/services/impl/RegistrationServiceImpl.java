@@ -4515,11 +4515,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 						BeanUtil.map(patientCollection, patientShortCard);
 						patientShortCards.add(patientShortCard);
 					}
-					ESPatientDocument esPatientDocument = esPatientRepository
-							.findOne(patientCollection.getId().toString());
-					esPatientDocument.setIsPatientDiscarded(discarded);
-					esPatientDocument.setDiscarded(discarded);
-					esPatientDocument = esPatientRepository.save(esPatientDocument);
+					ESPatientDocument esPatientDocument = esPatientRepository.findOne(patientCollection.getId().toString());
+					if(esPatientDocument != null) {
+						esPatientDocument.setIsPatientDiscarded(discarded);
+						esPatientDocument.setDiscarded(discarded);
+						esPatientDocument = esPatientRepository.save(esPatientDocument);
+					}
 
 					updatePatientData(locationObjectId, hospitalObjectId, patientObjectId, "isPatientDiscarded", discarded);
 				}
