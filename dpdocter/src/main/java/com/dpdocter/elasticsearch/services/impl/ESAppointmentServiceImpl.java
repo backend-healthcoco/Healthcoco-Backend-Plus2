@@ -1688,7 +1688,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						searchLandmarkLocalityResponse = new SearchLandmarkLocalityResponse();
 						BeanUtil.map(document, searchLandmarkLocalityResponse);
 						searchLandmarkLocalityResponse.setCity(cityMap.get(document.getCityId()));
-						if(!DPDoctorUtils.anyStringEmpty(searchLandmarkLocalityResponse.getCity())) {
+						if(DPDoctorUtils.anyStringEmpty(searchLandmarkLocalityResponse.getCity())) {
 							ESCityDocument esCityDocument = esCityRepository.findOne(document.getCityId());
 							cityMap.put(esCityDocument.getId(), esCityDocument.getCity());
 							searchLandmarkLocalityResponse.setCity(esCityDocument.getCity());
