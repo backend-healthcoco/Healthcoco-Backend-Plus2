@@ -255,7 +255,6 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
-<<<<<<< HEAD
 import common.util.web.DateUtil;
 import common.util.web.Response;
 
@@ -4547,9 +4546,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
-					.and("isPatientDiscarded").ne(true);
+			Criteria criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId)
+					.and("hospitalId").is(hospitalObjectId).and("isPatientDiscarded").is(true);
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
+
+			response = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientShortCard.class)
+					.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
