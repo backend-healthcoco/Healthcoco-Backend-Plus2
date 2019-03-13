@@ -2098,6 +2098,23 @@ public interface PathProxy {
 		public static final String LIKE_SESSION_QUESTION = "/session/question/{questionId}/like";
 
 	}
+	
+	public static final String ORDER_MEDICINE_BASE_URL = BASE_URL + "/order/medicine";
+
+	public interface OrderMedicineUrls {
+
+		public static final String UPLOAD_PRESCRIPTION = "/upload/prescription";
+		public static final String MEDICINE_ORDER_ADD_EDIT_RX = "/addEditRx";
+		public static final String MEDICINE_ORDER_ADD_EDIT_ADDRESS = "/addEditAddress";
+		public static final String MEDICINE_ORDER_ADD_EDIT_PAYMENT = "/addEditPayment";
+		public static final String MEDICINE_ORDER_ADD_EDIT_PREFERENCE = "/addEditPreference";
+		public static final String DISCARD_MEDICINE_ORDER = "/discard/{id}";
+		public static final String UPDATE_STATUS = "/updateStatus/{id}";
+		public static final String PATIENT_GET_LIST = "/patient/getList/{patientId}";
+		public static final String GET_BY_ID = "/get/{id}";
+
+	}
+
 
 	public static final String TRENDING_URL = BASE_URL + "/Trending";
 
