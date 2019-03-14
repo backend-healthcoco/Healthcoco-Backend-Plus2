@@ -5,14 +5,11 @@ import java.util.List;
 
 import com.dpdocter.beans.Amount;
 import com.dpdocter.beans.Drug;
-import com.dpdocter.beans.LocaleImage;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.OfferSchedule;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.OfferCategaryType;
-import com.dpdocter.enums.ProductType;
 
 public class OfferResponse extends GenericCollection {
 	private String id;
@@ -25,9 +22,9 @@ public class OfferResponse extends GenericCollection {
 
 	private String colorCode;
 
-	private List<OfferCategaryType> type;
+	private List<String> type;
 
-	private List<ProductType> productType;
+	private List<String> productType;
 
 	private Amount discount;
 
@@ -95,19 +92,19 @@ public class OfferResponse extends GenericCollection {
 		this.colorCode = colorCode;
 	}
 
-	public List<OfferCategaryType> getType() {
+	public List<String> getType() {
 		return type;
 	}
 
-	public void setType(List<OfferCategaryType> type) {
+	public void setType(List<String> type) {
 		this.type = type;
 	}
 
-	public List<ProductType> getProductType() {
+	public List<String> getProductType() {
 		return productType;
 	}
 
-	public void setProductType(List<ProductType> productType) {
+	public void setProductType(List<String> productType) {
 		this.productType = productType;
 	}
 

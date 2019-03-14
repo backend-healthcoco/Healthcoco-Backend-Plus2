@@ -3,7 +3,9 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -42,26 +44,30 @@ public class ESTrendingAPI {
 	@GET
 	@ApiOperation(value = PathProxy.ESTrendingUrl.SEARCH_OFFERS, notes = PathProxy.ESTrendingUrl.SEARCH_OFFERS)
 	public Response<Offer> searchOffers(@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("discarded") Boolean discarded, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("productId") String productId, @QueryParam("offerType") String offerType,
-			@QueryParam("productType") String productType) {
+			@QueryParam("discarded") @DefaultValue("false") Boolean discarded,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("productId") String productId,
+			@QueryParam("offerType") String offerType, @QueryParam("productType") String productType,
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
+			@QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime,
+			@MatrixParam("days") List<String> days) {
 
 		Response<Offer> response = new Response<Offer>();
 		List<Offer> offers = estrendingService.searchOffer(size, page, discarded, searchTerm, productId, offerType,
-				productType);
-		for (Offer offer : offers) {
-			if (offer != null) {
-				if (offer.getTitleImage() != null) {
-					if (!DPDoctorUtils.anyStringEmpty(offer.getTitleImage().getImageUrl()))
-						offer.getTitleImage().setImageUrl(getFinalImageURL(offer.getTitleImage().getImageUrl()));
+				productType, fromDate, toDate, minTime, maxTime, days);
+		if (offers != null && !offers.isEmpty())
+			for (Offer offer : offers) {
+				if (offer != null) {
+					if (offer.getTitleImage() != null) {
+						if (!DPDoctorUtils.anyStringEmpty(offer.getTitleImage().getImageUrl()))
+							offer.getTitleImage().setImageUrl(getFinalImageURL(offer.getTitleImage().getImageUrl()));
 
-					if (!DPDoctorUtils.anyStringEmpty(offer.getTitleImage().getThumbnailUrl()))
-						offer.getTitleImage()
-								.setThumbnailUrl(getFinalImageURL(offer.getTitleImage().getThumbnailUrl()));
+						if (!DPDoctorUtils.anyStringEmpty(offer.getTitleImage().getThumbnailUrl()))
+							offer.getTitleImage()
+									.setThumbnailUrl(getFinalImageURL(offer.getTitleImage().getThumbnailUrl()));
 
+					}
 				}
 			}
-		}
 		response.setDataList(offers);
 		return response;
 	}
@@ -70,12 +76,15 @@ public class ESTrendingAPI {
 	@GET
 	@ApiOperation(value = PathProxy.ESTrendingUrl.SEARCH_TRENDINGS, notes = PathProxy.ESTrendingUrl.SEARCH_TRENDINGS)
 	public Response<TrendingResponse> searchTrendings(@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("discarded") Boolean discarded, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("trendingType") String trendingType, @QueryParam("resourceType") String resourceType) {
+			@QueryParam("discarded") @DefaultValue("false") Boolean discarded,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("trendingType") String trendingType,
+			@QueryParam("resourceType") String resourceType, @QueryParam("fromDate") String fromDate,
+			@QueryParam("toDate") String toDate, @QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime,
+			@MatrixParam("days") List<String> days) {
 
 		Response<TrendingResponse> response = new Response<TrendingResponse>();
 		List<TrendingResponse> trendings = estrendingService.searchTrendings(size, page, discarded, searchTerm,
-				trendingType, resourceType);
+				trendingType, resourceType, fromDate, toDate, minTime, maxTime, days);
 		response.setDataList(trendings);
 		return response;
 	}

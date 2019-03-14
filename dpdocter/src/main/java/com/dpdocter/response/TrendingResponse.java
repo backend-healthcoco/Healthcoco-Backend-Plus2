@@ -7,15 +7,13 @@ import com.dpdocter.beans.Blog;
 import com.dpdocter.beans.Offer;
 import com.dpdocter.beans.OfferSchedule;
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.OfferCategaryType;
-import com.dpdocter.enums.TrendingEnum;
 
 public class TrendingResponse extends GenericCollection {
 	private String id;
 
-	private List<OfferCategaryType> type;
+	private List<String> type;
 
-	private TrendingEnum resourceType = TrendingEnum.BLOG;
+	private String resourceType = "BLOG";
 
 	private String offerId;
 
@@ -43,20 +41,19 @@ public class TrendingResponse extends GenericCollection {
 		this.id = id;
 	}
 
-	public List<OfferCategaryType> getType() {
+	public List<String> getType() {
 		return type;
 	}
 
-	public void setType(List<OfferCategaryType> type) {
+	public void setType(List<String> type) {
 		this.type = type;
 	}
 
-	
-	public TrendingEnum getResourceType() {
+	public String getResourceType() {
 		return resourceType;
 	}
 
-	public void setResourceType(TrendingEnum resourceType) {
+	public void setResourceType(String resourceType) {
 		this.resourceType = resourceType;
 	}
 

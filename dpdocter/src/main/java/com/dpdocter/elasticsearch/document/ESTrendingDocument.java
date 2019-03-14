@@ -7,21 +7,20 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.MultiField;
 
 import com.dpdocter.beans.OfferSchedule;
-import com.dpdocter.enums.OfferCategaryType;
-import com.dpdocter.enums.TrendingEnum;
 
 @Document(indexName = "trending_in", type = "trendings")
 public class ESTrendingDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
-	private List<OfferCategaryType> type;
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> type;
 
 	@Field(type = FieldType.String)
-	private TrendingEnum resourceType = TrendingEnum.BLOG;
+	private String resourceType = "BLOG";
 
 	@Field(type = FieldType.String)
 	private String offerId;
@@ -55,14 +54,6 @@ public class ESTrendingDocument {
 		this.id = id;
 	}
 
-	public List<OfferCategaryType> getType() {
-		return type;
-	}
-
-	public void setType(List<OfferCategaryType> type) {
-		this.type = type;
-	}
-
 	public Integer getRank() {
 		return rank;
 	}
@@ -81,10 +72,6 @@ public class ESTrendingDocument {
 
 	public Date getToDate() {
 		return toDate;
-	}
-
-	public void setToDate(Date toDate) {
-		this.toDate = toDate;
 	}
 
 	public List<OfferSchedule> getTime() {
@@ -127,12 +114,24 @@ public class ESTrendingDocument {
 		this.blogId = blogId;
 	}
 
-	public TrendingEnum getResourceType() {
+	public List<String> getType() {
+		return type;
+	}
+
+	public void setType(List<String> type) {
+		this.type = type;
+	}
+
+	public String getResourceType() {
 		return resourceType;
 	}
 
-	public void setResourceType(TrendingEnum resourceType) {
+	public void setResourceType(String resourceType) {
 		this.resourceType = resourceType;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
 	}
 
 }

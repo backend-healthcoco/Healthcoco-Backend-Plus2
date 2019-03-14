@@ -1,5 +1,8 @@
 package com.dpdocter.elasticsearch.services.impl;
 
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,9 +89,11 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 	@SuppressWarnings("deprecation")
 	@Override
 	public List<Offer> searchOffer(int size, int page, Boolean discarded, String searchTerm, String productId,
-			String offerType, String productType) {
+			String offerType, String productType, String fromDate, String toDate, int minTime, int maxTime,
+			List<String> days) {
 		List<Offer> response = null;
 		try {
+
 			Offer offer = null;
 			SearchQuery searchQuery = null;
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
@@ -97,20 +102,31 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 				boolQueryBuilder
 						.must(QueryBuilders.matchPhrasePrefixQuery("title", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
 			}
+			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.rangeQuery("toDate").lte(toDate),
+						QueryBuilders.notQuery(QueryBuilders.existsQuery("toDate")),
+						QueryBuilders.termQuery("toDate", null)));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.rangeQuery("fromDate").gte(fromDate),
+						QueryBuilders.notQuery(QueryBuilders.existsQuery("fromDate")),
+						QueryBuilders.termQuery("fromDate", null)));
+			}
 
+			createTimeFilter(boolQueryBuilder, maxTime, minTime, days);
 			if (!DPDoctorUtils.anyStringEmpty(productId)) {
 				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.termsQuery("drugIds", productId),
 						QueryBuilders.termsQuery("treatmentServiceIds", productId),
 						QueryBuilders.termsQuery("nutritionPlanIds", productId),
 						QueryBuilders.termsQuery("subscriptionPlanIds", productId)));
 			}
+
 			if (!DPDoctorUtils.anyStringEmpty(offerType)) {
-				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.termsQuery("type", offerType),
-						QueryBuilders.missingQuery("type")));
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("type", offerType));
 			}
+
 			if (!DPDoctorUtils.anyStringEmpty(productType)) {
-				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.termsQuery("productType", productType),
-						QueryBuilders.missingQuery("productType")));
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("productType", productType));
 			}
 
 			if (size == 0)
@@ -138,7 +154,8 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 	@SuppressWarnings("deprecation")
 	@Override
 	public List<TrendingResponse> searchTrendings(int size, int page, Boolean discarded, String searchTerm,
-			String trendingType, String resourceType) {
+			String trendingType, String resourceType, String fromDate, String toDate, int minTime, int maxTime,
+			List<String> days) {
 		List<TrendingResponse> response = null;
 		try {
 			TrendingResponse trending = null;
@@ -149,13 +166,23 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 				boolQueryBuilder
 						.must(QueryBuilders.matchPhrasePrefixQuery("title", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
 			}
+			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.rangeQuery("toDate").lte(toDate),
+						QueryBuilders.notQuery(QueryBuilders.existsQuery("toDate")),
+						QueryBuilders.termQuery("toDate", null)));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.rangeQuery("fromDate").gte(fromDate),
+						QueryBuilders.notQuery(QueryBuilders.existsQuery("fromDate")),
+						QueryBuilders.termQuery("fromDate", null)));
+			}
 
+			createTimeFilter(boolQueryBuilder, maxTime, minTime, days);
 			if (!DPDoctorUtils.anyStringEmpty(trendingType)) {
-				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.termsQuery("type", trendingType),
-						QueryBuilders.missingQuery("type")));
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("type", trendingType));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(resourceType)) {
-				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.termsQuery("resourceType", resourceType)));
+				boolQueryBuilder.must(QueryBuilders.matchQuery("resourceType", resourceType));
 			}
 
 			if (size == 0)
@@ -214,6 +241,43 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 			return imagePath + imageURL;
 		else
 			return null;
+	}
+
+	@SuppressWarnings("deprecation")
+	private void createTimeFilter(BoolQueryBuilder boolQueryBuilder, int maxTime, int minTime, List<String> days) {
+		if (days != null && !days.isEmpty()) {
+			for (int i = 0; i < days.size(); i++) {
+				days.set(i, days.get(i).toLowerCase());
+			}
+
+			if (maxTime == 0) {
+				maxTime = 1439;
+			}
+			boolQueryBuilder.must(QueryBuilders.nestedQuery("time", boolQuery().must(QueryBuilders.andQuery(
+					nestedQuery("time.workingHours", QueryBuilders.orQuery(
+
+							QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(maxTime),
+
+							QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(minTime).lt(maxTime),
+							QueryBuilders.andQuery(
+									QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(1439),
+									QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(0).lt(maxTime)))),
+					QueryBuilders.termsQuery("time.workingDay", days)))));
+		} else {
+
+			if (maxTime == 0) {
+				maxTime = 1439;
+			}
+			boolQueryBuilder.must(QueryBuilders.nestedQuery("time",
+					boolQuery().must(nestedQuery("time.workingHours", QueryBuilders.orQuery(
+
+							QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(maxTime),
+
+							QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(minTime).lt(maxTime),
+							QueryBuilders.andQuery(
+									QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(1439),
+									QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(0).lt(maxTime)))))));
+		}
 	}
 
 }

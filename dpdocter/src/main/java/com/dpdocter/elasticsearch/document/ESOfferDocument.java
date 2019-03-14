@@ -7,12 +7,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.MultiField;
 
 import com.dpdocter.beans.Amount;
-import com.dpdocter.beans.LocaleImage;
 import com.dpdocter.beans.OfferSchedule;
-import com.dpdocter.enums.OfferCategaryType;
-import com.dpdocter.enums.ProductType;
 import com.dpdocter.response.ImageURLResponse;
 
 @Document(indexName = "offers_in", type = "offers")
@@ -33,11 +31,11 @@ public class ESOfferDocument {
 	@Field(type = FieldType.String)
 	private String colorCode;
 
-	@Field(type = FieldType.String)
-	private List<OfferCategaryType> type;
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> type;
 
-	@Field(type = FieldType.String)
-	private List<ProductType> productType;
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> productType;
 
 	@Field(type = FieldType.Object)
 	private Amount discount;
@@ -66,21 +64,21 @@ public class ESOfferDocument {
 	@Field(type = FieldType.Date)
 	private Integer noOfTime = 0;
 
-	@Field(type = FieldType.String)
+	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> drugIds;
 
-	@Field(type = FieldType.String)
+	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> treatmentServiceIds;
 
-	@Field(type = FieldType.String)
+	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> nutritionPlanIds;
 
-	@Field(type = FieldType.String)
+	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> subscriptionPlanIds;
 
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
-
+	
 	public String getId() {
 		return id;
 	}
@@ -115,26 +113,6 @@ public class ESOfferDocument {
 
 	public String getColorCode() {
 		return colorCode;
-	}
-
-	public void setColorCode(String colorCode) {
-		this.colorCode = colorCode;
-	}
-
-	public List<OfferCategaryType> getType() {
-		return type;
-	}
-
-	public void setType(List<OfferCategaryType> type) {
-		this.type = type;
-	}
-
-	public List<ProductType> getProductType() {
-		return productType;
-	}
-
-	public void setProductType(List<ProductType> productType) {
-		this.productType = productType;
 	}
 
 	public Amount getDiscount() {
@@ -247,6 +225,26 @@ public class ESOfferDocument {
 
 	public void setTitleImage(ImageURLResponse titleImage) {
 		this.titleImage = titleImage;
+	}
+
+	public List<String> getType() {
+		return type;
+	}
+
+	public void setType(List<String> type) {
+		this.type = type;
+	}
+
+	public List<String> getProductType() {
+		return productType;
+	}
+
+	public void setProductType(List<String> productType) {
+		this.productType = productType;
+	}
+
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
 	}
 
 }

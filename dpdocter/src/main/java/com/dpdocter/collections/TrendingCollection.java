@@ -9,8 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.OfferSchedule;
-import com.dpdocter.enums.OfferCategaryType;
-import com.dpdocter.enums.TrendingEnum;
 
 @Document(collection = "trending_cl")
 public class TrendingCollection extends GenericCollection {
@@ -18,9 +16,9 @@ public class TrendingCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private List<OfferCategaryType> type;
+	private List<String> type;
 	@Field
-	private TrendingEnum resourceType = TrendingEnum.BLOG;
+	private String resourceType = "BLOG";
 	@Field
 	private ObjectId offerId;
 	@Field
@@ -44,19 +42,19 @@ public class TrendingCollection extends GenericCollection {
 		this.id = id;
 	}
 
-	public List<OfferCategaryType> getType() {
+	public List<String> getType() {
 		return type;
 	}
 
-	public void setType(List<OfferCategaryType> type) {
+	public void setType(List<String> type) {
 		this.type = type;
 	}
 
-	public TrendingEnum getResourceType() {
+	public String getResourceType() {
 		return resourceType;
 	}
 
-	public void setResourceType(TrendingEnum resourceType) {
+	public void setResourceType(String resourceType) {
 		this.resourceType = resourceType;
 	}
 

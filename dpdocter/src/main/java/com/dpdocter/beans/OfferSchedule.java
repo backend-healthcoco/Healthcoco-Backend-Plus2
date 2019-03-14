@@ -1,7 +1,5 @@
 package com.dpdocter.beans;
 
-import java.util.List;
-
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 

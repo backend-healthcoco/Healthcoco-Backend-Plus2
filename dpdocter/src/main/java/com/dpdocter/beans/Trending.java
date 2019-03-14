@@ -4,15 +4,13 @@ import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.OfferCategaryType;
-import com.dpdocter.enums.TrendingEnum;
 
 public class Trending extends GenericCollection {
 	private String id;
 
-	private List<OfferCategaryType> type;
+	private List<String> type;
 
-	private TrendingEnum resourceType = TrendingEnum.BLOG;
+	private String resourceType = "BLOG";
 
 	private String offerId;
 
@@ -36,23 +34,7 @@ public class Trending extends GenericCollection {
 		this.id = id;
 	}
 
-	public List<OfferCategaryType> getType() {
-		return type;
-	}
-
-	public void setType(List<OfferCategaryType> type) {
-		this.type = type;
-	}
-
 	
-	public TrendingEnum getResourceType() {
-		return resourceType;
-	}
-
-	public void setResourceType(TrendingEnum resourceType) {
-		this.resourceType = resourceType;
-	}
-
 	public String getOfferId() {
 		return offerId;
 	}
@@ -107,6 +89,22 @@ public class Trending extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public List<String> getType() {
+		return type;
+	}
+
+	public void setType(List<String> type) {
+		this.type = type;
+	}
+
+	public String getResourceType() {
+		return resourceType;
+	}
+
+	public void setResourceType(String resourceType) {
+		this.resourceType = resourceType;
 	}
 
 }

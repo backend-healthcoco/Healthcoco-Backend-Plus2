@@ -9,10 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Amount;
-import com.dpdocter.beans.LocaleImage;
 import com.dpdocter.beans.OfferSchedule;
-import com.dpdocter.enums.OfferCategaryType;
-import com.dpdocter.enums.ProductType;
 import com.dpdocter.response.ImageURLResponse;
 
 @Document(collection = "offer_cl")
@@ -29,9 +26,9 @@ public class OfferCollection extends GenericCollection {
 	@Field
 	private String colorCode;
 	@Field
-	private List<OfferCategaryType> type;
+	private List<String> type;
 	@Field
-	private List<ProductType> productType;
+	private List<String> productType;
 	@Field
 	private Amount discount;
 	@Field
@@ -99,19 +96,20 @@ public class OfferCollection extends GenericCollection {
 		this.colorCode = colorCode;
 	}
 
-	public List<OfferCategaryType> getType() {
+	
+	public List<String> getType() {
 		return type;
 	}
 
-	public void setType(List<OfferCategaryType> type) {
+	public void setType(List<String> type) {
 		this.type = type;
 	}
 
-	public List<ProductType> getProductType() {
+	public List<String> getProductType() {
 		return productType;
 	}
 
-	public void setProductType(List<ProductType> productType) {
+	public void setProductType(List<String> productType) {
 		this.productType = productType;
 	}
 
