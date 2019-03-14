@@ -140,8 +140,8 @@ public class MedicineOrderAPI {
 	}
 	
 	@GET
-	@Path(value = PathProxy.OrderMedicineUrls.GET_BY_ID)
-	@ApiOperation(value = PathProxy.OrderMedicineUrls.GET_BY_ID, notes = PathProxy.OrderMedicineUrls.GET_BY_ID)
+	@Path(value = PathProxy.OrderMedicineUrls.UPDATE_STATUS)
+	@ApiOperation(value = PathProxy.OrderMedicineUrls.UPDATE_STATUS, notes = PathProxy.OrderMedicineUrls.UPDATE_STATUS)
 	public Response<MedicineOrder> updateStatus(@PathParam("id") String id , @QueryParam("status") OrderStatus status ) {
 
 		if(DPDoctorUtils.allStringsEmpty(id))

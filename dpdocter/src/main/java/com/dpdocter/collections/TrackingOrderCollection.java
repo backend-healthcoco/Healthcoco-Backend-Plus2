@@ -1,39 +1,40 @@
-package com.dpdocter.beans;
+package com.dpdocter.collections;
 
-import com.dpdocter.collections.GenericCollection;
+import org.bson.types.ObjectId;
+
 import com.dpdocter.enums.OrderStatus;
 
-public class TrackingOrder extends GenericCollection{
+public class TrackingOrderCollection extends GenericCollection{
 
-	private String id;
-	private String orderId;
-	private String productId;
+	private ObjectId id;
+	private ObjectId orderId;
+	private ObjectId productId;
 	private Long timestamp;
 	private String city;
 	private OrderStatus status;
 	private String location;
 
-	public String getId() {
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 
-	public String getOrderId() {
+	public ObjectId getOrderId() {
 		return orderId;
 	}
 
-	public void setOrderId(String orderId) {
+	public void setOrderId(ObjectId orderId) {
 		this.orderId = orderId;
 	}
 
-	public String getProductId() {
+	public ObjectId getProductId() {
 		return productId;
 	}
 
-	public void setProductId(String productId) {
+	public void setProductId(ObjectId productId) {
 		this.productId = productId;
 	}
 
