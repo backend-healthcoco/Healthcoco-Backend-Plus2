@@ -58,6 +58,7 @@ import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.repository.ESServicesRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
+import com.dpdocter.elasticsearch.response.ESDoctorCardResponse;
 import com.dpdocter.elasticsearch.response.ESWEBResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;

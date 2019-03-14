@@ -29,7 +29,6 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.BlogResponse;
 import com.dpdocter.response.ResourcesCountResponse;
 import com.dpdocter.response.SearchDoctorResponse;
-import com.dpdocter.response.SearchLandmarkLocalityResponse;
 import com.dpdocter.services.BlogService;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.SearchService;
@@ -76,10 +75,11 @@ public class SearchApi {
 			@MatrixParam("days") List<String> days, @QueryParam("gender") String gender,
 			@QueryParam("minExperience") int minExperience, @QueryParam("maxExperience") int maxExperience,
 			@QueryParam("service") String service, @QueryParam("locality") String locality,
-			@DefaultValue(value = "false") @QueryParam("otherArea") Boolean otherArea) {
+			@DefaultValue(value = "false") @QueryParam("otherArea") Boolean otherArea,
+			@QueryParam("expertIn") String expertIn) {
 		SearchDoctorResponse doctors = searchService.searchDoctors(page, size, city, location, latitude, longitude,
 				speciality, symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
-				maxExperience, service, locality, otherArea);
+				maxExperience, service, locality, otherArea, expertIn);
 
 		Response<SearchDoctorResponse> response = new Response<SearchDoctorResponse>();
 		response.setData(doctors);

@@ -5,6 +5,7 @@ import java.util.List;
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
+import com.dpdocter.elasticsearch.response.ESDoctorCardResponse;
 import com.dpdocter.elasticsearch.response.ESWEBResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.response.SearchLandmarkLocalityResponse;
@@ -49,5 +50,8 @@ public interface ESAppointmentService {
 
 	List<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(String city, int page, int size,
 			String searchTerm);
+
+	List<ESDoctorCardResponse> getDoctorsShortCard(int page, int size, String city, String location, String latitude,
+			String longitude, String speciality, String searchTerm);
 
 }
