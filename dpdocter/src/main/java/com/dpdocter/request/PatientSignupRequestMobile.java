@@ -1,5 +1,8 @@
 package com.dpdocter.request;
 
+import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.PersonalInformation;
+
 public class PatientSignupRequestMobile {
 	private String name;
 
@@ -7,11 +10,19 @@ public class PatientSignupRequestMobile {
 
 	private String mobileNumber;
 
+	private String firstName;
+
+	private String gender;
+
+	private DOB dob;
+
 	private String internalPromoCode;
 
 	private boolean isNewPatientNeedToBeCreated;
-	
+
 	private String emailAddress;
+	
+	private PersonalInformation personalInformation;
 
 	public String getName() {
 		return name;
@@ -53,13 +64,44 @@ public class PatientSignupRequestMobile {
 		this.internalPromoCode = internalPromoCode;
 	}
 
-	
 	public String getEmailAddress() {
 		return emailAddress;
 	}
 
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public DOB getDob() {
+		return dob;
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
+
+	public PersonalInformation getPersonalInformation() {
+		return personalInformation;
+	}
+
+	public void setPersonalInformation(PersonalInformation personalInformation) {
+		this.personalInformation = personalInformation;
 	}
 
 	@Override
