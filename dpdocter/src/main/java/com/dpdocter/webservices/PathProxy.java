@@ -2098,7 +2098,7 @@ public interface PathProxy {
 		public static final String LIKE_SESSION_QUESTION = "/session/question/{questionId}/like";
 
 	}
-	
+
 	public static final String ORDER_MEDICINE_BASE_URL = BASE_URL + "/order/medicine";
 
 	public interface OrderMedicineUrls {
@@ -2115,12 +2115,11 @@ public interface PathProxy {
 
 	}
 
-
 	public static final String TRENDING_URL = BASE_URL + "/Trending";
 
 	public interface TrendingUrls {
 
-		public static final String GET_TRENDING = "{id}/{userId}/get";
+		public static final String GET_TRENDING = "{id}/get";
 		public static final String GET_OFFER = "/offer/{id}/get";
 
 	}
