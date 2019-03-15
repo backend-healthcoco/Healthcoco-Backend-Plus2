@@ -48,7 +48,7 @@ public class MedicineOrderAPI {
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.OrderMedicineUrls.UPLOAD_PRESCRIPTION, notes = PathProxy.OrderMedicineUrls.UPLOAD_PRESCRIPTION)
 	public Response<ImageURLResponse> saveRecordsImage(@FormDataParam("file") FormDataBodyPart file,
-			@FormDataParam("patientId") FormDataBodyPart patientId) {
+			@FormDataParam("data") FormDataBodyPart patientId) {
 		patientId.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		String patientIdString = patientId.getValueAs(String.class);
 
