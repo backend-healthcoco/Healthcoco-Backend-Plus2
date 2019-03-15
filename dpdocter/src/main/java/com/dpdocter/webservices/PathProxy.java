@@ -2121,7 +2121,7 @@ public interface PathProxy {
 	public interface TrendingUrls {
 
 		public static final String GET_TRENDING = "{id}/{userId}/get";
-		public static final String GET_OFFER = "{id}/get";
+		public static final String GET_OFFER = "/offer/{id}/get";
 
 	}
 

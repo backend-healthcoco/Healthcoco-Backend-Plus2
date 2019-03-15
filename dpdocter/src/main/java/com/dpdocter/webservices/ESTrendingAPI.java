@@ -46,14 +46,11 @@ public class ESTrendingAPI {
 	public Response<Offer> searchOffers(@QueryParam("size") int size, @QueryParam("page") int page,
 			@QueryParam("discarded") @DefaultValue("false") Boolean discarded,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("productId") String productId,
-			@QueryParam("offerType") String offerType, @QueryParam("productType") String productType,
-			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
-			@QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime,
-			@MatrixParam("days") List<String> days) {
+			@QueryParam("offerType") String offerType, @QueryParam("productType") String productType) {
 
 		Response<Offer> response = new Response<Offer>();
 		List<Offer> offers = estrendingService.searchOffer(size, page, discarded, searchTerm, productId, offerType,
-				productType, fromDate, toDate, minTime, maxTime, days);
+				productType);
 		if (offers != null && !offers.isEmpty())
 			for (Offer offer : offers) {
 				if (offer != null) {
@@ -78,13 +75,11 @@ public class ESTrendingAPI {
 	public Response<TrendingResponse> searchTrendings(@QueryParam("size") int size, @QueryParam("page") int page,
 			@QueryParam("discarded") @DefaultValue("false") Boolean discarded,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("trendingType") String trendingType,
-			@QueryParam("resourceType") String resourceType, @QueryParam("fromDate") String fromDate,
-			@QueryParam("toDate") String toDate, @QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime,
-			@MatrixParam("days") List<String> days) {
+			@QueryParam("resourceType") String resourceType) {
 
 		Response<TrendingResponse> response = new Response<TrendingResponse>();
 		List<TrendingResponse> trendings = estrendingService.searchTrendings(size, page, discarded, searchTerm,
-				trendingType, resourceType, fromDate, toDate, minTime, maxTime, days);
+				trendingType, resourceType);
 		response.setDataList(trendings);
 		return response;
 	}

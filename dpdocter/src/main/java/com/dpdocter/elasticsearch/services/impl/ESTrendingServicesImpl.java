@@ -89,8 +89,7 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 	@SuppressWarnings("deprecation")
 	@Override
 	public List<Offer> searchOffer(int size, int page, Boolean discarded, String searchTerm, String productId,
-			String offerType, String productType, String fromDate, String toDate, int minTime, int maxTime,
-			List<String> days) {
+			String offerType, String productType) {
 		List<Offer> response = null;
 		try {
 
@@ -102,18 +101,7 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 				boolQueryBuilder
 						.must(QueryBuilders.matchPhrasePrefixQuery("title", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
 			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.rangeQuery("toDate").lte(toDate),
-						QueryBuilders.notQuery(QueryBuilders.existsQuery("toDate")),
-						QueryBuilders.termQuery("toDate", null)));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.rangeQuery("fromDate").gte(fromDate),
-						QueryBuilders.notQuery(QueryBuilders.existsQuery("fromDate")),
-						QueryBuilders.termQuery("fromDate", null)));
-			}
 
-			createTimeFilter(boolQueryBuilder, maxTime, minTime, days);
 			if (!DPDoctorUtils.anyStringEmpty(productId)) {
 				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.termsQuery("drugIds", productId),
 						QueryBuilders.termsQuery("treatmentServiceIds", productId),
@@ -154,8 +142,7 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 	@SuppressWarnings("deprecation")
 	@Override
 	public List<TrendingResponse> searchTrendings(int size, int page, Boolean discarded, String searchTerm,
-			String trendingType, String resourceType, String fromDate, String toDate, int minTime, int maxTime,
-			List<String> days) {
+			String trendingType, String resourceType) {
 		List<TrendingResponse> response = null;
 		try {
 			TrendingResponse trending = null;
@@ -166,18 +153,7 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 				boolQueryBuilder
 						.must(QueryBuilders.matchPhrasePrefixQuery("title", searchTerm.replaceAll("[^a-zA-Z0-9]", "")));
 			}
-			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.rangeQuery("toDate").lte(toDate),
-						QueryBuilders.notQuery(QueryBuilders.existsQuery("toDate")),
-						QueryBuilders.termQuery("toDate", null)));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.rangeQuery("fromDate").gte(fromDate),
-						QueryBuilders.notQuery(QueryBuilders.existsQuery("fromDate")),
-						QueryBuilders.termQuery("fromDate", null)));
-			}
 
-			createTimeFilter(boolQueryBuilder, maxTime, minTime, days);
 			if (!DPDoctorUtils.anyStringEmpty(trendingType)) {
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("type", trendingType));
 			}

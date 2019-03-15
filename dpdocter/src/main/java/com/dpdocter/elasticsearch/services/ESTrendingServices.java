@@ -16,10 +16,8 @@ public interface ESTrendingServices {
 	public boolean addTrending(ESTrendingDocument request);
 
 	public List<Offer> searchOffer(int size, int page, Boolean discarded, String searchTerm, String productId,
-			String offerType, String productType, String fromDate, String toDate, int minTime, int maxTime,
-			List<String> days);
+			String offerType, String productType);
 
 	public List<TrendingResponse> searchTrendings(int size, int page, Boolean discarded, String searchTerm,
-			String trendingType, String resourceType,String fromDate, String toDate, int minTime, int maxTime,
-			List<String> days);
+			String trendingType, String resourceType);
 }
