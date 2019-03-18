@@ -558,7 +558,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("RI", "SILENT");
 					customValues.put("T", "DW");
 				}
-				
 				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_BABY_ACHIEVEMENTS.getType())) {
 					customValues.put("RI", "SILENT");
 					customValues.put("T", "BA");
