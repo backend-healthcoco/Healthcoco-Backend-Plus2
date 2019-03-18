@@ -41,6 +41,7 @@ import com.dpdocter.collections.UserDeviceCollection;
 import com.dpdocter.collections.VaccineBrandAssociationCollection;
 import com.dpdocter.collections.VaccineCollection;
 import com.dpdocter.elasticsearch.response.GrowthChartGraphResponse;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.VaccineStatus;
 import com.dpdocter.exceptions.BusinessException;
@@ -61,6 +62,7 @@ import com.dpdocter.response.PatientVaccineGroupedResponse;
 import com.dpdocter.response.VaccineBrandAssociationResponse;
 import com.dpdocter.response.VaccineResponse;
 import com.dpdocter.services.PaediatricService;
+import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 
@@ -96,6 +98,10 @@ public class PaediatricServiceImpl implements PaediatricService {
 	@Value(value = "${patient.app.bit.link}")
 	private String patientAppBitLink;
 
+	
+	@Autowired
+	PushNotificationServices pushNotificationServices;
+	
 	@Override
 	@Transactional
 	public GrowthChart addEditGrowthChart(GrowthChart growthChart) {
@@ -113,6 +119,13 @@ public class PaediatricServiceImpl implements PaediatricService {
 				response = new GrowthChart();
 				BeanUtil.map(growthChartCollection, response);
 			}
+			if (growthChart.getDoctorId() != null) {
+			pushNotificationServices.notifyUser(growthChart.getDoctorId(), "Growth chart updated",
+					ComponentType.REFRESH_GROWTH_CHART.getType(), null, null);
+			}
+			pushNotificationServices.notifyUser(growthChart.getPatientId(),
+					"Growth chart updated",
+					ComponentType.REFRESH_GROWTH_CHART.getType(), growthChart.getPatientId(), null);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -212,6 +225,13 @@ public class PaediatricServiceImpl implements PaediatricService {
 				growthChartCollection.setDiscarded(discarded);
 				growthChartRepository.save(growthChartCollection);
 				response = true;
+				if (growthChartCollection.getDoctorId() != null) {
+					pushNotificationServices.notifyUser(growthChartCollection.getDoctorId().toString(),
+							"Growth chart discarded", ComponentType.REFRESH_GROWTH_CHART.getType(), null, null);
+				}
+				pushNotificationServices.notifyUser(growthChartCollection.getPatientId().toString(),
+						"Growth chart discarded",
+						ComponentType.REFRESH_GROWTH_CHART.getType(), growthChartCollection.getPatientId().toString(), null);
 			} else {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
@@ -240,6 +260,12 @@ public class PaediatricServiceImpl implements PaediatricService {
 				response = new VaccineResponse();
 				BeanUtil.map(vaccineCollection, response);
 			}
+			if (request.getDoctorId() != null) {
+				pushNotificationServices.notifyUser(request.getDoctorId(), "Vaccination updated",
+						ComponentType.REFRESH_VACCINATION.getType(), null, null);
+			}
+			pushNotificationServices.notifyUser(request.getPatientId(), "Vaccination updated",
+					ComponentType.REFRESH_VACCINATION.getType(), request.getPatientId(), null);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -919,7 +945,12 @@ public class PaediatricServiceImpl implements PaediatricService {
 				response = new BirthAchievement();
 				 BeanUtil.map(birthAchievementCollection, response);
 			}
-			
+			/*if (birthAchievement.getDoctorId() != null) {
+				pushNotificationServices.notifyUser(request.getDoctorId(), "Growth chart updated",
+						ComponentType.REFRESH_VACCINATION.getType(), null, null);
+			}*/
+			pushNotificationServices.notifyUser(birthAchievement.getPatientId(), "Baby achievement updated",
+					ComponentType.REFRESH_VACCINATION.getType(), birthAchievement.getPatientId(), null);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
