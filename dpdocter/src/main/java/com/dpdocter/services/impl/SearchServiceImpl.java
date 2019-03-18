@@ -304,47 +304,12 @@ public class SearchServiceImpl implements SearchService {
 			for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 				ESDoctorWEbSearch doctorWEbSearch = new ESDoctorWEbSearch();
 				BeanUtil.map(doctorDocument, doctorWEbSearch);
-//				if (doctorDocument.getSpecialities() != null) {
-//					if (doctorDocument.getSpecialities() != null) {
-//						Iterable<ESSpecialityDocument> specialities = esSpecialityRepository.findAll(doctorDocument.getSpecialities());
-//						if(specialities != null) {
-//							doctorWEbSearch.setSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("superSpeciality")));
-//							doctorWEbSearch.setParentSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("speciality")));
-//						}
-//					}
-//				}
-//
-//				if (doctorDocument.getServices() != null) {
-//					Iterable<ESServicesDocument> services = esServicesRepository.findAll(doctorDocument.getServices());
-//					if(services != null) {
-//						doctorWEbSearch.setServices((List<String>)CollectionUtils.collect(services.iterator(), new BeanToPropertyValueTransformer("service")));
-//					}					
-//				}
 				
 				doctorWEbSearch.setSpecialities(doctorDocument.getSpecialitiesValue());
 				doctorWEbSearch.setServices(doctorDocument.getServicesValue());
 				if (doctorWEbSearch.getThumbnailUrl() != null)
 					doctorWEbSearch.setThumbnailUrl(getFinalImageURL(doctorWEbSearch.getThumbnailUrl()));
 
-//				String address = (!DPDoctorUtils.anyStringEmpty(doctorDocument.getStreetAddress())
-//						? doctorDocument.getStreetAddress() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLandmarkDetails())
-//								? doctorDocument.getLandmarkDetails() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLocality())
-//								? doctorDocument.getLocality() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCity()) ? doctorDocument.getCity() + ", "
-//								: "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getState())
-//								? doctorDocument.getState() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCountry())
-//								? doctorDocument.getCountry() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getPostalCode())
-//								? doctorDocument.getPostalCode() : "");
-//
-//				if (address.length()>1 && address.charAt(address.length() - 2) == ',') {
-//					address = address.substring(0, address.length() - 2);
-//				}
-//				doctorWEbSearch.setClinicAddress(address);
 				response.add(doctorWEbSearch);
 			}
 		}
