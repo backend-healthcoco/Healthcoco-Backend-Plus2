@@ -317,7 +317,17 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				}else if (componentType.equalsIgnoreCase(ComponentType.RECEIPT_REFRESH.getType())) {
 					notification.setPi(componentTypeId);
 					notification.setNotificationType(componentType);
-				}else{
+				}else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_BABY_ACHIEVEMENTS.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_GROWTH_CHART.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_VACCINATION.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}
+				else{
 					notification.setNotificationType(componentType);
 				}
 			}
@@ -504,6 +514,19 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
 					customValues.put("RI", "SILENT");
 					customValues.put("T", "DW");
+				}
+				
+				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_BABY_ACHIEVEMENTS.getType())) {
+					customValues.put("RI", "SILENT");
+					customValues.put("T", "BA");
+				}
+				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_GROWTH_CHART.getType())) {
+					customValues.put("RI", "SILENT");
+					customValues.put("T", "GC");
+				}
+				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_VACCINATION.getType())) {
+					customValues.put("RI", "SILENT");
+					customValues.put("T", "VN");
 				}
 //				else if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTION_REFRESH.getType())) {
 //					customValues.put("PI",componentTypeId);
