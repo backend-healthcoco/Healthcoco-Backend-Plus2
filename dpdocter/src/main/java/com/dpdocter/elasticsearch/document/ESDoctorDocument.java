@@ -418,6 +418,25 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 		this.services = services;
 	}
 
+
+	@Override
+	public String toString() {
+		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
+				+ ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", consultationFee=" + consultationFee
+				+ ", revisitConsultationFee=" + revisitConsultationFee + ", workingSchedules=" + workingSchedules
+				+ ", specialities=" + specialities + ", services=" + services + ", parentSpecialities="
+				+ parentSpecialities + ", specialitiesValue=" + specialitiesValue + ", servicesValue=" + servicesValue
+				+ ", experience=" + experience + ", facility=" + facility + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", appointmentSlot=" + appointmentSlot + ", isActive=" + isActive
+				+ ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl="
+				+ coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber="
+				+ registerNumber + ", education=" + education + ", dob=" + dob + ", distance=" + distance + ", userUId="
+				+ userUId + ", isDoctorListed=" + isDoctorListed + ", timeZone=" + timeZone + ", rankingCount="
+				+ rankingCount + ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL
+				+ ", isNutritionist=" + isNutritionist + "]";
+	}
+
 	public List<String> getParentSpecialities() {
 		return parentSpecialities;
 	}
@@ -440,24 +459,6 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	public void setServicesValue(List<String> servicesValue) {
 		this.servicesValue = servicesValue;
-	}
-
-	@Override
-	public String toString() {
-		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
-				+ ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
-				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", consultationFee=" + consultationFee
-				+ ", revisitConsultationFee=" + revisitConsultationFee + ", workingSchedules=" + workingSchedules
-				+ ", specialities=" + specialities + ", services=" + services + ", parentSpecialities="
-				+ parentSpecialities + ", specialitiesValue=" + specialitiesValue + ", servicesValue=" + servicesValue
-				+ ", experience=" + experience + ", facility=" + facility + ", appointmentBookingNumber="
-				+ appointmentBookingNumber + ", appointmentSlot=" + appointmentSlot + ", isActive=" + isActive
-				+ ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl="
-				+ coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber="
-				+ registerNumber + ", education=" + education + ", dob=" + dob + ", distance=" + distance + ", userUId="
-				+ userUId + ", isDoctorListed=" + isDoctorListed + ", timeZone=" + timeZone + ", rankingCount="
-				+ rankingCount + ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL
-				+ ", isNutritionist=" + isNutritionist + "]";
 	}
 
 	@Override
