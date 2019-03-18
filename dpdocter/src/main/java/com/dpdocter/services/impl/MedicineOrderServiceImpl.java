@@ -184,6 +184,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			medicineOrderCollection.setDiscountedPercentage(request.getDiscountedPercentage());
 			medicineOrderCollection.setFinalAmount(request.getFinalAmount());
 			medicineOrderCollection.setDeliveryCharges(request.getDeliveryCharges());
+			medicineOrderCollection.setNotes(request.getNotes());
 			medicineOrderCollection.setPaymentMode(request.getPaymentMode());
 
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);

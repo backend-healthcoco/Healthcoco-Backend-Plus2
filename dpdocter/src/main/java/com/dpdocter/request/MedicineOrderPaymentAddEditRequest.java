@@ -10,6 +10,7 @@ public class MedicineOrderPaymentAddEditRequest {
 	private Float discountedPercentage;
 	private Float finalAmount;
 	private Float deliveryCharges;
+	private String notes;
 	private PaymentMode paymentMode = PaymentMode.COD;
 
 	public String getId() {
@@ -66,6 +67,14 @@ public class MedicineOrderPaymentAddEditRequest {
 
 	public void setPaymentMode(PaymentMode paymentMode) {
 		this.paymentMode = paymentMode;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 
 }

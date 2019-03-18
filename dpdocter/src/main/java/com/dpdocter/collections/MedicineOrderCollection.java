@@ -52,6 +52,8 @@ public class MedicineOrderCollection extends GenericCollection {
 	@Field
 	private Boolean discarded;
 	@Field
+	private String notes;
+	@Field
 	private OrderStatus orderStatus = OrderStatus.PENDING;
 
 	public ObjectId getId() {
@@ -197,7 +199,13 @@ public class MedicineOrderCollection extends GenericCollection {
 	public void setOrderStatus(OrderStatus orderStatus) {
 		this.orderStatus = orderStatus;
 	}
-	
-	
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
 
 }
