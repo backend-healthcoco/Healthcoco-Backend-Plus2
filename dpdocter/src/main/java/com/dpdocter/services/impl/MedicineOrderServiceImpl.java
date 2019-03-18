@@ -77,11 +77,11 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				recordPath = path + File.separator + fileName + createdTime.getTime() + fileExtension;
 				imageURLResponse = fileManager.saveImage(file, recordPath, true);
 				
-				if(imageURLResponse != null)
+				/*if(imageURLResponse != null)
 				{
 					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
 					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl()); 
-				}
+				}*/
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
