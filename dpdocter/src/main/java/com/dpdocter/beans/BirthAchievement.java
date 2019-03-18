@@ -7,6 +7,7 @@ public class BirthAchievement extends GenericCollection {
 
 	private String id;
 	private String patientId;
+	private String doctorId;
 	private String achievement;
 	private Long achievementDate;
 	private Duration duration;
@@ -58,6 +59,14 @@ public class BirthAchievement extends GenericCollection {
 
 	public void setNote(String note) {
 		this.note = note;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
 	}
 
 	@Override

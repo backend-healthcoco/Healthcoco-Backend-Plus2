@@ -909,12 +909,12 @@ public class PaediatricServiceImpl implements PaediatricService{
 				response = new BirthAchievement();
 				 BeanUtil.map(birthAchievementCollection, response);
 			}
-			/*if (birthAchievement.getDoctorId() != null) {
-				pushNotificationServices.notifyUser(request.getDoctorId(), "Growth chart updated",
-						ComponentType.REFRESH_VACCINATION.getType(), null, null);
-			}*/
+			if (birthAchievement.getDoctorId() != null) {
+				pushNotificationServices.notifyUser(birthAchievement.getDoctorId(), "Growth chart updated",
+						ComponentType.REFRESH_BABY_ACHIEVEMENTS.getType(), null, null);
+			}
 			pushNotificationServices.notifyUser(birthAchievement.getPatientId(), "Baby achievement updated",
-					ComponentType.REFRESH_VACCINATION.getType(), birthAchievement.getPatientId(), null);
+					ComponentType.REFRESH_BABY_ACHIEVEMENTS.getType(), birthAchievement.getPatientId(), null);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
