@@ -35,4 +35,6 @@ public interface AdminServices {
 	Boolean updateLocationIdInRole();
 
 	Boolean addServices();
+
+	Boolean updateServicesAndSpecialities();
 }

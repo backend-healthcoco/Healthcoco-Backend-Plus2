@@ -1239,4 +1239,14 @@ public class RegistrationApi {
 		response.setData(registrationService.setDefaultDocter(doctorId, locationId, hospitalId, defaultDoctorId));
 		return response;
 	}
+	
+	@Path(value = "update")
+	@GET
+	public Response<Boolean> update() {
+		
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(registrationService.update());
+		return response;
+	}
 }
