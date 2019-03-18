@@ -98,13 +98,36 @@ public class SearchServiceImpl implements SearchService {
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("city", city));
 				boolQueryBuilderForNearByDoctors.must(QueryBuilders.matchPhrasePrefixQuery("city", city));
 			}
-			
+
+			if (!(DPDoctorUtils.allStringsEmpty(expertIn) || expertIn.equalsIgnoreCase("undefined") || expertIn.equalsIgnoreCase("DOCTOR"))) {
+				
+				if(expertIn.startsWith("doctors-for-")) {
+					service = expertIn.replace("doctors-for-","").replaceAll("-", " ");
+				}
+				else {
+					speciality = expertIn.replaceAll("-", " ");
+				}
+			}
 			
 			if (DPDoctorUtils.allStringsEmpty(speciality) || speciality.equalsIgnoreCase("undefined") || speciality.equalsIgnoreCase("DOCTOR")) {
 				speciality = null;
 			}else {
 				speciality = speciality.replaceAll("-", " ");
-				QueryBuilder specialityQueryBuilder = createSpecialityFilter(speciality);
+				QueryBuilder specialityQueryBuilder = null;
+				
+				if (speciality.equalsIgnoreCase("GYNECOLOGIST")) {
+					speciality = "GYNAECOLOGIST".toLowerCase();
+				}
+				
+				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN") || speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
+					specialityQueryBuilder = QueryBuilders.boolQuery().should(QueryBuilders.termsQuery("specialitiesValue", "GENERAL PHYSICIAN".toLowerCase(), "FAMILY PHYSICIAN".toLowerCase()))
+					.should(QueryBuilders.termsQuery("parentSpecialities", "GENERAL PHYSICIAN".toLowerCase(), "FAMILY PHYSICIAN".toLowerCase())).minimumNumberShouldMatch(1);
+				}else {
+					specialityQueryBuilder = QueryBuilders.boolQuery().should(QueryBuilders.termsQuery("specialitiesValue", speciality.toLowerCase()))
+							.should(QueryBuilders.termsQuery("parentSpecialities", speciality.toLowerCase())).minimumNumberShouldMatch(1);
+				}
+
+						//createSpecialityFilter(speciality);
 				if (specialityQueryBuilder != null) {
 					boolQueryBuilder.must(specialityQueryBuilder);
 					boolQueryBuilderForNearByDoctors.must(specialityQueryBuilder);
@@ -115,30 +138,12 @@ public class SearchServiceImpl implements SearchService {
 				service = null;
 			} else {
 				service = service.replace("doctors-for-","").replaceAll("-", " ");
-				QueryBuilder serviceQueryBuilder = createServiceFilter(service);
+				QueryBuilder serviceQueryBuilder = QueryBuilders.termsQuery("servicesValue", service.toLowerCase());
+						
+						//createServiceFilter(service);
 				if (serviceQueryBuilder != null) {
 					boolQueryBuilder.must(serviceQueryBuilder);
 					boolQueryBuilderForNearByDoctors.must(serviceQueryBuilder);
-				}
-			}
-
-			if (!(DPDoctorUtils.allStringsEmpty(expertIn) || expertIn.equalsIgnoreCase("undefined") || expertIn.equalsIgnoreCase("DOCTOR"))) {
-				
-				if(expertIn.startsWith("doctors-for-")) {
-					service = expertIn.replace("doctors-for-","").replaceAll("-", " ");
-					QueryBuilder serviceQueryBuilder = createServiceFilter(service);
-					if (serviceQueryBuilder != null) {
-						boolQueryBuilder.must(serviceQueryBuilder);
-						boolQueryBuilderForNearByDoctors.must(serviceQueryBuilder);
-					}
-				}
-				else {
-					speciality = expertIn.replaceAll("-", " ");
-					QueryBuilder specialityQueryBuilder = createSpecialityFilter(speciality);
-					if (specialityQueryBuilder != null) {
-						boolQueryBuilder.must(specialityQueryBuilder);
-						boolQueryBuilderForNearByDoctors.must(specialityQueryBuilder);
-					}
 				}
 			}
 			
@@ -299,23 +304,25 @@ public class SearchServiceImpl implements SearchService {
 			for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 				ESDoctorWEbSearch doctorWEbSearch = new ESDoctorWEbSearch();
 				BeanUtil.map(doctorDocument, doctorWEbSearch);
-				if (doctorDocument.getSpecialities() != null) {
-					if (doctorDocument.getSpecialities() != null) {
-						Iterable<ESSpecialityDocument> specialities = esSpecialityRepository.findAll(doctorDocument.getSpecialities());
-						if(specialities != null) {
-							doctorWEbSearch.setSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("superSpeciality")));
-							doctorWEbSearch.setParentSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("speciality")));
-						}
-					}
-				}
-
-				if (doctorDocument.getServices() != null) {
-					Iterable<ESServicesDocument> services = esServicesRepository.findAll(doctorDocument.getServices());
-					if(services != null) {
-						doctorWEbSearch.setServices((List<String>)CollectionUtils.collect(services.iterator(), new BeanToPropertyValueTransformer("service")));
-					}					
-				}
+//				if (doctorDocument.getSpecialities() != null) {
+//					if (doctorDocument.getSpecialities() != null) {
+//						Iterable<ESSpecialityDocument> specialities = esSpecialityRepository.findAll(doctorDocument.getSpecialities());
+//						if(specialities != null) {
+//							doctorWEbSearch.setSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("superSpeciality")));
+//							doctorWEbSearch.setParentSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("speciality")));
+//						}
+//					}
+//				}
+//
+//				if (doctorDocument.getServices() != null) {
+//					Iterable<ESServicesDocument> services = esServicesRepository.findAll(doctorDocument.getServices());
+//					if(services != null) {
+//						doctorWEbSearch.setServices((List<String>)CollectionUtils.collect(services.iterator(), new BeanToPropertyValueTransformer("service")));
+//					}					
+//				}
 				
+				doctorWEbSearch.setSpecialities(doctorDocument.getSpecialitiesValue());
+				doctorWEbSearch.setServices(doctorDocument.getServicesValue());
 				if (doctorWEbSearch.getThumbnailUrl() != null)
 					doctorWEbSearch.setThumbnailUrl(getFinalImageURL(doctorWEbSearch.getThumbnailUrl()));
 

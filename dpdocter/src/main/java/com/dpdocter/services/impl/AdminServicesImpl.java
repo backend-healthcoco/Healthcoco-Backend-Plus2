@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -56,6 +57,7 @@ import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
+import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESEducationInstituteDocument;
 import com.dpdocter.elasticsearch.document.ESEducationQualificationDocument;
@@ -66,9 +68,11 @@ import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProfessionalMembershipDocument;
 import com.dpdocter.elasticsearch.document.ESServicesDocument;
+import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.repository.ESComplaintsRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosesRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
+import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.elasticsearch.repository.ESDrugRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationInstituteRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationQualificationRepository;
@@ -78,6 +82,8 @@ import com.dpdocter.elasticsearch.repository.ESMedicalCouncilRepository;
 import com.dpdocter.elasticsearch.repository.ESObservationsRepository;
 import com.dpdocter.elasticsearch.repository.ESProcedureNoteRepository;
 import com.dpdocter.elasticsearch.repository.ESProfessionalMembershipRepository;
+import com.dpdocter.elasticsearch.repository.ESServicesRepository;
+import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.AppType;
@@ -263,6 +269,15 @@ public class AdminServicesImpl implements AdminServices {
 	
 	@Autowired
 	private ESMasterService esMasterService;
+	
+	@Autowired
+	private ESDoctorRepository esDoctorRepository;
+	
+	@Autowired
+	private ESSpecialityRepository esSpecialityRepository;
+
+	@Autowired
+	private ESServicesRepository esServicesRepository;
 	
 	@Override
 	@Transactional
@@ -919,6 +934,48 @@ public class AdminServicesImpl implements AdminServices {
 	        }
 	        scanner.close();
 		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean updateServicesAndSpecialities() {
+		Boolean response = false;
+		try {
+			Iterator<ESDoctorDocument> doctorDocuments = esDoctorRepository.findAll().iterator();
+			while (doctorDocuments.hasNext()) {
+				ESDoctorDocument doctorDocument = doctorDocuments.next();
+				if (doctorDocument.getSpecialities() != null && !doctorDocument.getSpecialities().isEmpty()) {
+					Iterable<ESSpecialityDocument>  iterableSpecialities = esSpecialityRepository.findAll(doctorDocument.getSpecialities());
+					List<String> specialities = new ArrayList<>();
+					List<String> parentSpecialities = new ArrayList<>();
+					if(iterableSpecialities != null) {
+						for(ESSpecialityDocument esSpecialityDocument : iterableSpecialities) {
+							specialities.add(esSpecialityDocument.getSuperSpeciality().toLowerCase());
+							parentSpecialities.add(esSpecialityDocument.getSpeciality().toLowerCase());
+						}
+						doctorDocument.setSpecialitiesValue(specialities);
+						doctorDocument.setParentSpecialities(parentSpecialities);
+					}
+				}
+			
+
+				if (doctorDocument.getServices() != null  && !doctorDocument.getServices().isEmpty()) {
+					Iterable<ESServicesDocument> iterableServices = esServicesRepository.findAll(doctorDocument.getServices());
+					List<String> services = new ArrayList<>();
+					if(iterableServices != null) {
+						for(ESServicesDocument esServicesDocument : iterableServices) {
+							services.add(esServicesDocument.getService().toLowerCase());
+						}
+						doctorDocument.setServicesValue(services);
+					}					
+				}
+				esDoctorRepository.save(doctorDocument);
+				response = true;
+			}
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return response;

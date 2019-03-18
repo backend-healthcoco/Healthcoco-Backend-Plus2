@@ -4569,41 +4569,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			String newPatientId, String mobileNumber) {
 		Boolean response = false;
 		try {
-			ObjectId doctorObjectId = new ObjectId(doctorId), locationObjectId = new ObjectId(locationId),
-					hospitalObjectId = new ObjectId(hospitalId), patientObjectId = new ObjectId(patientId);
 
-			if (!DPDoctorUtils.anyStringEmpty(newPatientId)) {
-				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
-				patientCollection.setUserId(new ObjectId(newPatientId));
-				patientCollection.setUpdatedTime(new Date());
-				patientCollection = patientRepository.save(patientCollection);
-
-				ESPatientDocument esPatientDocument = esPatientRepository.findOne(patientCollection.getId().toString());
-				esPatientDocument.setUserId(newPatientId);
-				esPatientDocument = esPatientRepository.save(esPatientDocument);
-				response = true;
-			} else if (!DPDoctorUtils.anyStringEmpty(mobileNumber)) {
-				UserCollection userCollection = userRepository.findOne(patientObjectId);
-				if (userCollection != null) {
-					userCollection.setMobileNumber(mobileNumber);
-					userCollection.setUpdatedTime(new Date());
-					userCollection = userRepository.save(userCollection);
-
-					PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-							patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
-					patientCollection.setUpdatedTime(new Date());
-					patientCollection = patientRepository.save(patientCollection);
-
-					ESPatientDocument esPatientDocument = esPatientRepository
-							.findOne(patientCollection.getId().toString());
-					esPatientDocument.setMobileNumber(mobileNumber);
-					esPatientDocument = esPatientRepository.save(esPatientDocument);
-
-					response = true;
-				}
-
-			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4688,20 +4654,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	}
 
-
-	@Override
-	public Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId, String defaultDoctorId) {
-		Boolean response = false;
-		DoctorClinicProfileCollection doctorClinicProfile = doctorClinicProfileRepository
-				.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
-		if (doctorClinicProfile != null) {
-			doctorClinicProfile.setDefaultDoctorId(new ObjectId(defaultDoctorId));
-			doctorClinicProfile = doctorClinicProfileRepository.save(doctorClinicProfile);
-		}
-		response = true;
-
-		return response;
-	}
 
 	/*
 	 * @Async
@@ -4832,4 +4784,46 @@ public class RegistrationServiceImpl implements RegistrationService {
 		vaccineRepository.save(vaccineCollections);
 	}
 
+	@Override
+	public Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId, String defaultDoctorId) {
+		Boolean response = false;
+		DoctorClinicProfileCollection doctorClinicProfile = doctorClinicProfileRepository
+				.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+		if (doctorClinicProfile != null) {
+			doctorClinicProfile.setDefaultDoctorId(new ObjectId(defaultDoctorId));
+			doctorClinicProfile = doctorClinicProfileRepository.save(doctorClinicProfile);
+		}
+		response = true;
+
+		return response;
+	}
+
+
+	@Override
+	public Boolean update() {
+		try {
+			Aggregation aggregation = Aggregation.newAggregation(
+					new CustomAggregationOperation(new BasicDBObject("$redact",
+							new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("$ne",
+													Arrays.asList("$emailAddress", "$userName")))
+															.append("then", "$$KEEP")
+															.append("else", "$$PRUNE"))))).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+			
+			List<UserCollection> users = mongoTemplate
+					.aggregate(aggregation, UserCollection.class, UserCollection.class)
+					.getMappedResults();
+			
+			for(UserCollection userCollection : users) {
+				transnationalService.checkPatient(userCollection.getId());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+	
+	
+	
 }

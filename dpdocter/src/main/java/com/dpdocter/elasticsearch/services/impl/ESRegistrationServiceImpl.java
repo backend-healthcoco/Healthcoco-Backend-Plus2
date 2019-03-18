@@ -39,11 +39,15 @@ import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESLocationDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
+import com.dpdocter.elasticsearch.document.ESServicesDocument;
+import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.repository.ESCollectionBoyRepository;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.repository.ESPatientRepository;
 import com.dpdocter.elasticsearch.repository.ESReferenceRepository;
+import com.dpdocter.elasticsearch.repository.ESServicesRepository;
+import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.response.ESPatientResponse;
 import com.dpdocter.elasticsearch.response.ESPatientResponseDetails;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
@@ -94,6 +98,12 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 	@Autowired
 	private ESReferenceRepository esReferenceRepository;
 
+	@Autowired
+	private ESSpecialityRepository esSpecialityRepository;
+
+	@Autowired
+	private ESServicesRepository esServicesRepository;
+	
 	@Override
 	public boolean addPatient(ESPatientDocument request) {
 		boolean response = false;
@@ -323,6 +333,32 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 			if (request.getLatitude() != null && request.getLongitude() != null)
 				request.setGeoPoint(new GeoPoint(request.getLatitude(), request.getLongitude()));
+			
+			if (doctorDocument.getSpecialities() != null && !doctorDocument.getSpecialities().isEmpty()) {
+				Iterable<ESSpecialityDocument>  iterableSpecialities = esSpecialityRepository.findAll(doctorDocument.getSpecialities());
+				List<String> specialities = new ArrayList<>();
+				List<String> parentSpecialities = new ArrayList<>();
+				if(iterableSpecialities != null) {
+					for(ESSpecialityDocument esSpecialityDocument : iterableSpecialities) {
+						specialities.add(esSpecialityDocument.getSuperSpeciality().toLowerCase());
+						parentSpecialities.add(esSpecialityDocument.getSpeciality().toLowerCase());
+					}
+					doctorDocument.setSpecialitiesValue(specialities);
+					doctorDocument.setParentSpecialities(parentSpecialities);
+				}
+			}
+		
+
+			if (doctorDocument.getServices() != null  && !doctorDocument.getServices().isEmpty()) {
+				Iterable<ESServicesDocument> iterableServices = esServicesRepository.findAll(doctorDocument.getServices());
+				List<String> services = new ArrayList<>();
+				if(iterableServices != null) {
+					for(ESServicesDocument esServicesDocument : iterableServices) {
+						services.add(esServicesDocument.getService().toLowerCase());
+					}
+					doctorDocument.setServicesValue(services);
+				}					
+			}
 			esDoctorRepository.save(request);
 			transnationalService.addResource(new ObjectId(request.getUserId()), Resource.DOCTOR, true);
 			response = true;

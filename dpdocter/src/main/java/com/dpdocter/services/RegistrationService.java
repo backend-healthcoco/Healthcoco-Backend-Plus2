@@ -171,4 +171,6 @@ public interface RegistrationService {
 			String newPatientId, String mobileNumber);
 	
 	Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId,String defaultDoctorId);
+
+	Boolean update();
 }
