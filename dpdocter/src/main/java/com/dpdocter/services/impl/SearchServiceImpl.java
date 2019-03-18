@@ -118,24 +118,60 @@ public class SearchServiceImpl implements SearchService {
 				boolQueryBuilderForNearByDoctors.must(QueryBuilders.matchPhrasePrefixQuery("city", city));
 			}
 
-			if (specialityIdSet != null && !specialityIdSet.isEmpty()) {
-				boolQueryBuilder.must(QueryBuilders.termsQuery("specialities", specialityIdSet));
-				boolQueryBuilderForNearByDoctors.must(QueryBuilders.termsQuery("specialities", specialityIdSet));
+			if (!(DPDoctorUtils.allStringsEmpty(expertIn) || expertIn.equalsIgnoreCase("undefined") || expertIn.equalsIgnoreCase("DOCTOR"))) {
+				
+				if(expertIn.startsWith("doctors-for-")) {
+					service = expertIn.replace("doctors-for-","").replaceAll("-", " ");
+				}
+				else {
+					speciality = expertIn.replaceAll("-", " ");
+				}
+			}
+			
+			if (DPDoctorUtils.allStringsEmpty(speciality) || speciality.equalsIgnoreCase("undefined") || speciality.equalsIgnoreCase("DOCTOR")) {
+				speciality = null;
+			}else {
+				speciality = speciality.replaceAll("-", " ");
+				QueryBuilder specialityQueryBuilder = null;
+				
+				if (speciality.equalsIgnoreCase("GYNECOLOGIST")) {
+					speciality = "GYNAECOLOGIST".toLowerCase();
+				}
+				
+				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN") || speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
+					specialityQueryBuilder = QueryBuilders.boolQuery().should(QueryBuilders.termsQuery("specialitiesValue", "GENERAL PHYSICIAN".toLowerCase(), "FAMILY PHYSICIAN".toLowerCase()))
+					.should(QueryBuilders.termsQuery("parentSpecialities", "GENERAL PHYSICIAN".toLowerCase(), "FAMILY PHYSICIAN".toLowerCase())).minimumNumberShouldMatch(1);
+				}else {
+					specialityQueryBuilder = QueryBuilders.boolQuery().should(QueryBuilders.termsQuery("specialitiesValue", speciality.toLowerCase()))
+							.should(QueryBuilders.termsQuery("parentSpecialities", speciality.toLowerCase())).minimumNumberShouldMatch(1);
+				}
+
+						//createSpecialityFilter(speciality);
+				if (specialityQueryBuilder != null) {
+					boolQueryBuilder.must(specialityQueryBuilder);
+					boolQueryBuilderForNearByDoctors.must(specialityQueryBuilder);
+				}
 			}
 
-			if (specialityQueryBuilder != null) {
-				boolQueryBuilder.must(specialityQueryBuilder);
-				boolQueryBuilderForNearByDoctors.must(specialityQueryBuilder);
+			if (DPDoctorUtils.allStringsEmpty(service) || service.equalsIgnoreCase("undefined") || service.equalsIgnoreCase("DOCTOR")) {
+				service = null;
+			} else {
+				service = service.replace("doctors-for-","").replaceAll("-", " ");
+				QueryBuilder serviceQueryBuilder = QueryBuilders.termsQuery("servicesValue", service.toLowerCase());
+						
+						//createServiceFilter(service);
+				if (serviceQueryBuilder != null) {
+					boolQueryBuilder.must(serviceQueryBuilder);
+					boolQueryBuilderForNearByDoctors.must(serviceQueryBuilder);
+				}
 			}
-
-			if (serviceQueryBuilder != null) {
-				boolQueryBuilder.must(serviceQueryBuilder);
-				boolQueryBuilderForNearByDoctors.must(serviceQueryBuilder);
-			}
-
-			if (facilityQueryBuilder != null) {
-				boolQueryBuilder.must(facilityQueryBuilder);
-				boolQueryBuilderForNearByDoctors.must(facilityQueryBuilder);
+			
+			if (booking != null && calling != null && !(booking && calling)) { 
+				QueryBuilder facilityQueryBuilder = createFacilityBuilder(booking, calling);
+				if (facilityQueryBuilder != null) {
+					boolQueryBuilder.must(facilityQueryBuilder);
+					boolQueryBuilderForNearByDoctors.must(facilityQueryBuilder);
+				}
 			}
 
 			createConsultationFeeFilter(boolQueryBuilder, maxFee, minFee, boolQueryBuilderForNearByDoctors);
@@ -328,43 +364,12 @@ public class SearchServiceImpl implements SearchService {
 			for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 				ESDoctorWEbSearch doctorWEbSearch = new ESDoctorWEbSearch();
 				BeanUtil.map(doctorDocument, doctorWEbSearch);
-				if (doctorDocument.getSpecialities() != null) {
-					specialities = new ArrayList<String>();
-					parentSpecialities = new ArrayList<String>();
-
-					for (String specialityId : doctorDocument.getSpecialities()) {
-						ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
-						if (specialityCollection != null) {
-							specialities.add(specialityCollection.getSuperSpeciality());
-							parentSpecialities.add(specialityCollection.getSpeciality());
-						}
-					}
-					doctorWEbSearch.setParentSpecialities(parentSpecialities);
-					doctorWEbSearch.setSpecialities(specialities);
-				}
-
+				
+				doctorWEbSearch.setSpecialities(doctorDocument.getSpecialitiesValue());
+				doctorWEbSearch.setServices(doctorDocument.getServicesValue());
 				if (doctorWEbSearch.getThumbnailUrl() != null)
 					doctorWEbSearch.setThumbnailUrl(getFinalImageURL(doctorWEbSearch.getThumbnailUrl()));
 
-//				String address = (!DPDoctorUtils.anyStringEmpty(doctorDocument.getStreetAddress())
-//						? doctorDocument.getStreetAddress() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLandmarkDetails())
-//								? doctorDocument.getLandmarkDetails() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLocality())
-//								? doctorDocument.getLocality() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCity()) ? doctorDocument.getCity() + ", "
-//								: "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getState())
-//								? doctorDocument.getState() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCountry())
-//								? doctorDocument.getCountry() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getPostalCode())
-//								? doctorDocument.getPostalCode() : "");
-//
-//				if (address.length()>1 && address.charAt(address.length() - 2) == ',') {
-//					address = address.substring(0, address.length() - 2);
-//				}
-//				doctorWEbSearch.setClinicAddress(address);
 				response.add(doctorWEbSearch);
 			}
 		}

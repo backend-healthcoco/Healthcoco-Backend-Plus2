@@ -33,4 +33,8 @@ public interface AdminServices {
 	Boolean copyClinicalItems(String doctorId, String locationId, List<String> drIds);
 
 	Boolean updateLocationIdInRole();
+
+	Boolean addServices();
+
+	Boolean updateServicesAndSpecialities();
 }

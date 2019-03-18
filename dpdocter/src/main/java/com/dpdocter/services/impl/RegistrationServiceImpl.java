@@ -4696,6 +4696,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 									Update.update("patientId", patientCollection.getUserId()).currentDate("updatedTime"),
 									PatientGroupCollection.class);
 						}
+						response = true;
 					}
 				}
 				pushNotificationServices.notifyUser(doctorId, "Updated Patient Mobile Number.", ComponentType.PATIENT_REFRESH.getType(), null, null);
@@ -5171,6 +5172,31 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}*/
 
 		birthAchievementRepository.save(birthAchievementCollections);
+	}
+
+	@Override
+	public Boolean update() {
+		try {
+			Aggregation aggregation = Aggregation.newAggregation(
+					new CustomAggregationOperation(new BasicDBObject("$redact",
+							new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("$ne",
+													Arrays.asList("$emailAddress", "$userName")))
+															.append("then", "$$KEEP")
+															.append("else", "$$PRUNE"))))).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+			
+			List<UserCollection> users = mongoTemplate
+					.aggregate(aggregation, UserCollection.class, UserCollection.class)
+					.getMappedResults();
+			
+			for(UserCollection userCollection : users) {
+				transnationalService.checkPatient(userCollection.getId());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 	
 	
