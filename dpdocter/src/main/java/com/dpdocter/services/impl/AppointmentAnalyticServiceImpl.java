@@ -247,23 +247,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				}
 
 			}
-			data.setBookedByPatient(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
-
-			criteria = getCriteria(doctorId, locationId, hospitalId).and("fromDate").gte(fromTime).lte(toTime)
-					.and("createdBy").not().regex("Dr. ").and("type").is("APPOINTMENT");
-			if (!DPDoctorUtils.anyStringEmpty(state)) {
-				if (state.toUpperCase().equals(AppointmentState.CANCEL.toString())) {
-					criteria.and("state").is(state);
-				} else if (state.toUpperCase().equalsIgnoreCase("CHECKED_OUT")) {
-					criteria.and("status").is(state.toUpperCase());
-				} else {
-					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
-							new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
-							new Criteria("state").is(AppointmentState.NEW.toString()));
-				}
-
-			}
 			data.setBookedByDoctor(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+
+			data.setBookedByDoctor(data.getTotal() - data.getBookedByPatient());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1399,7 +1385,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 			Aggregation aggregation = null;
 
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.match(criteria),
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 					Aggregation.lookup("user_cl", "patientId", "_id", "patient"), Aggregation.unwind("patient"),
 					Aggregation.lookup("patient_cl", "patientId", "userId", "profile"), Aggregation.unwind("profile"),

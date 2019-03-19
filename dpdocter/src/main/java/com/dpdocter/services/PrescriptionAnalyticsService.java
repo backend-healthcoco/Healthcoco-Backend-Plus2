@@ -19,7 +19,7 @@ public interface PrescriptionAnalyticsService {
 	public List<DoctorPrescriptionItemAnalyticResponse> getPrescriptionItemAnalytic(int page, int size, String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String type, String searchTerm);
 
-	public List<DoctorAnalyticPieChartResponse> getPrescriptionAnalyticForPieChart(String locationId, String hospitalId,
+	public List<DoctorAnalyticPieChartResponse> getPrescriptionAnalyticForPieChart(String doctorId,String locationId, String hospitalId,
 			String fromDate, String toDate);
 
 	public Integer countPrescription(String doctorId, String locationId, String hospitalId, String fromDate,

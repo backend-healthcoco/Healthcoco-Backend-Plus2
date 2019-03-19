@@ -1046,7 +1046,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 	}
 
 	@Override
-	public List<DoctorAnalyticPieChartResponse> getPrescriptionAnalyticForPieChart(String locationId, String hospitalId,
+	public List<DoctorAnalyticPieChartResponse> getPrescriptionAnalyticForPieChart(String doctorId,String locationId, String hospitalId,
 			String fromDate, String toDate) {
 		List<DoctorAnalyticPieChartResponse> response = null;
 		try {
@@ -1082,6 +1082,9 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 			}
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 
 			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",

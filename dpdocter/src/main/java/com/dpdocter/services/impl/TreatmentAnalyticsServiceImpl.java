@@ -602,8 +602,8 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 	}
 
 	@Override
-	public List<DoctorAnalyticPieChartResponse> getTreatmentAnalyticForPieChart(String locationId, String hospitalId,
-			String fromDate, String toDate) {
+	public List<DoctorAnalyticPieChartResponse> getTreatmentAnalyticForPieChart(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate) {
 		List<DoctorAnalyticPieChartResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -640,7 +640,9 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
-
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
 			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", "$_id").append("date", new BasicDBObject("$first", "$fromDate"))
 							.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -655,9 +657,8 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 					Aggregation.unwind("services"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"), group,
 					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", "$doctorId")
-											.append("count", new BasicDBObject("$sum", 1))
-											.append("firstName", new BasicDBObject("$first", "$firstName")))));
+							new BasicDBObject("_id", "$doctorId").append("count", new BasicDBObject("$sum", 1))
+									.append("firstName", new BasicDBObject("$first", "$firstName")))));
 
 			AggregationResults<DoctorAnalyticPieChartResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientTreatmentCollection.class, DoctorAnalyticPieChartResponse.class);

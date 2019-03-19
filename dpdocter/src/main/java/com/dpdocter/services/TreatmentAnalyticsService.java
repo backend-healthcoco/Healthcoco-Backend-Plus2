@@ -9,7 +9,7 @@ import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorTreatmentAnalyticResponse;
 
 public interface TreatmentAnalyticsService {
-		
+
 	public List<AnalyticResponse> getTreatmentAnalyticData(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate, String searchType, String searchTerm);
 
@@ -17,17 +17,18 @@ public interface TreatmentAnalyticsService {
 			String searchTerm);
 
 	List<TreatmentService> getTreatmentServiceAnalytics(String doctorId, String locationId, String hospitalId,
-			String fromDate, String toDate,  int page, int size, String searchTerm);
+			String fromDate, String toDate, int page, int size, String searchTerm);
 
 	List<DoctorTreatmentAnalyticResponse> getTreatmentServiceAnalyticWithStatus(int page, int size, String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm);
 
 	List<TreatmentAnalyticDetail> getTreatmentAnalyticDetail(int page, int size, String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String searchTerm,String status);
+			String hospitalId, String fromDate, String toDate, String searchTerm, String status);
 
-	List<DoctorAnalyticPieChartResponse> getTreatmentAnalyticForPieChart(String locationId, String hospitalId,
-			String fromDate, String toDate);
+	List<DoctorAnalyticPieChartResponse> getTreatmentAnalyticForPieChart(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate);
 
-	Integer countTreatments(String doctorId, String locationId, String hospitalId, String fromDate, String toDate,String searchTerm,String status);
+	Integer countTreatments(String doctorId, String locationId, String hospitalId, String fromDate, String toDate,
+			String searchTerm, String status);
 
 }

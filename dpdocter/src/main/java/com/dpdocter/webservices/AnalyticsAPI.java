@@ -601,7 +601,7 @@ public class AnalyticsAPI {
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_TREATMENT_SERVICE_PIE_CHART, notes = PathProxy.AnalyticsUrls.GET_TREATMENT_SERVICE_PIE_CHART)
 	public Response<DoctorAnalyticPieChartResponse> getTreatmentAnalyticForPieChart(
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,	@QueryParam("doctorId") String doctorId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@QueryParam("searchTerm") String searchTerm) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
@@ -609,11 +609,11 @@ public class AnalyticsAPI {
 		}
 		Response<DoctorAnalyticPieChartResponse> response = new Response<DoctorAnalyticPieChartResponse>();
 		Integer count = 0;
-		count = treatmentAnalyticsService.countTreatments(null, locationId, hospitalId, fromDate, toDate, searchTerm,
+		count = treatmentAnalyticsService.countTreatments(doctorId, locationId, hospitalId, fromDate, toDate, searchTerm,
 				null);
 		List<DoctorAnalyticPieChartResponse> data = null;
 		if (count > 0) {
-			data = treatmentAnalyticsService.getTreatmentAnalyticForPieChart(locationId, hospitalId, fromDate, toDate);
+			data = treatmentAnalyticsService.getTreatmentAnalyticForPieChart(doctorId,locationId, hospitalId, fromDate, toDate);
 		}
 		response.setDataList(data);
 		response.setCount(count);
@@ -626,17 +626,17 @@ public class AnalyticsAPI {
 	public Response<DoctorAnalyticPieChartResponse> getPrescriptionAnalyticForPieChart(
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
-			@QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("doctorId") String doctorId, @QueryParam("searchTerm") String searchTerm) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, " locationId, hospitalId should not be empty");
 		}
 		Response<DoctorAnalyticPieChartResponse> response = new Response<DoctorAnalyticPieChartResponse>();
 		Integer count = 0;
-		count = prescriptionAnalyticService.countPrescription(null, locationId, hospitalId, fromDate, toDate, null);
+		count = prescriptionAnalyticService.countPrescription(doctorId, locationId, hospitalId, fromDate, toDate, null);
 		List<DoctorAnalyticPieChartResponse> data = null;
 		if (count > 0) {
-			data = prescriptionAnalyticService.getPrescriptionAnalyticForPieChart(locationId, hospitalId, fromDate,
-					toDate);
+			data = prescriptionAnalyticService.getPrescriptionAnalyticForPieChart(doctorId, locationId, hospitalId,
+					fromDate, toDate);
 		}
 		response.setDataList(data);
 		response.setCount(count);

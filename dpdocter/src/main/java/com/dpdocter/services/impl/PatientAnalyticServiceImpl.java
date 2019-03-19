@@ -1284,19 +1284,22 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		if (!isVisited) {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("user_cl", "referredBy", "_id", "user"), Aggregation.unwind("user"),
+						Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"), Aggregation.unwind("refer"),
+						Aggregation.lookup("user_cl", "refer.doctorId", "_id", "user"), Aggregation.unwind("user"),
 						projectList, aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
 						Aggregation.skip((page) * size), Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("user_cl", "referredBy", "_id", "user"), Aggregation.unwind("user"),
+						Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"), Aggregation.unwind("refer"),
+						Aggregation.lookup("user_cl", "refer.doctorId", "_id", "user"), Aggregation.unwind("user"),
 						projectList, aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 		} else {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("user_cl", "referredBy", "_id", "user"), Aggregation.unwind("user"),
+						Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"), Aggregation.unwind("refer"),
+						Aggregation.lookup("user_cl", "refer.doctorId", "_id", "user"), Aggregation.unwind("user"),
 						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 						Aggregation.unwind("visit"), Aggregation.match(criteria2),
 
@@ -1313,7 +1316,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("user_cl", "referredBy", "_id", "user"), Aggregation.unwind("user"),
+						Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"), Aggregation.unwind("refer"),
+						Aggregation.lookup("user_cl", "refer.doctorId", "_id", "user"), Aggregation.unwind("user"),
 						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 						Aggregation.unwind("visit"), Aggregation.match(criteria2),
 
