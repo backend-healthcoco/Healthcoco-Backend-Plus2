@@ -1046,8 +1046,8 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 	}
 
 	@Override
-	public List<DoctorAnalyticPieChartResponse> getPrescriptionAnalyticForPieChart(String doctorId,String locationId, String hospitalId,
-			String fromDate, String toDate) {
+	public List<DoctorAnalyticPieChartResponse> getPrescriptionAnalyticForPieChart(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate) {
 		List<DoctorAnalyticPieChartResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -1107,7 +1107,6 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$diagnosticTests").append("preserveNullAndEmptyArrays", true)
 									.append("includeArrayIndex", "arrayIndex1"))),
-
 					Aggregation.lookup("diagnostic_test_cl", "diagnosticTests.testId", "_id", "test"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$test").append("preserveNullAndEmptyArrays", true))),
@@ -1161,6 +1160,9 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 
 			criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
 			criteria.and("discarded").is(false);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			}
