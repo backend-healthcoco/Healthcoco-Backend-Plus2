@@ -103,7 +103,13 @@ public class LoginApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 
 		}
-		List<RegisteredPatientDetails> users = loginService.loginPatient(request);
+		List<RegisteredPatientDetails> users = null;
+		if (!DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
+			users = loginService.loginPatientByOtp(request);
+		} else {
+			users = loginService.loginPatient(request);
+		}
+
 		if (users != null && !users.isEmpty()) {
 			for (RegisteredPatientDetails user : users) {
 				user.setImageUrl(getFinalImageURL(user.getImageUrl()));

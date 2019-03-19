@@ -395,7 +395,7 @@ public class LoginServiceImpl implements LoginService {
 							response = new ArrayList<RegisteredPatientDetails>();
 						response.add(user);
 					}
-				} else if (request.getPassword() != null && request.getPassword().length != 0) {
+				} else {
 					RegisteredPatientDetails user = new RegisteredPatientDetails();
 					char[] salt = userCollection.getSalt();
 					if (salt != null && salt.length > 0) {
@@ -430,39 +430,67 @@ public class LoginServiceImpl implements LoginService {
 						response = new ArrayList<RegisteredPatientDetails>();
 					response.add(user);
 
-				} else if (!DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
-					Boolean verifyOTPResponse = false;
-					if (!verifyOTPResponse) {
-						verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(), request.getOtpNumber());
-						if (!verifyOTPResponse) {
-							logger.warn(loginPatient);
-							throw new BusinessException(ServiceError.InvalidInput, loginPatient);
-						}
-					}
-					RegisteredPatientDetails user = new RegisteredPatientDetails();
-					PatientCollection patientCollection = patientRepository
-							.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
-					if (patientCollection != null) {
-						Patient patient = new Patient();
-						BeanUtil.map(patientCollection, patient);
-						BeanUtil.map(patientCollection, user);
-						patient.setPatientId(patientCollection.getUserId().toString());
-						user.setPatient(patient);
-					}
-					BeanUtil.map(userCollection, user);
-					user.setUserNutritionSubscriptions(addUserNutritionSubscriptionResponse(userCollection));
-					user.setUserId(userCollection.getId().toString());
-
-					if (response == null)
-						response = new ArrayList<RegisteredPatientDetails>();
-					response.add(user);
-
-				}
+				} 
 
 			}
 			if (response == null) {
 				logger.warn(loginPatient);
 				throw new BusinessException(ServiceError.InvalidInput, loginPatient);
+			}
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while login");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while login");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public List<RegisteredPatientDetails> loginPatientByOtp(LoginPatientRequest request) {
+		List<RegisteredPatientDetails> response = null;
+		try {
+			Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber()).and("userState")
+					.is("USERSTATECOMPLETE");
+			Query query = new Query();
+			query.addCriteria(criteria);
+			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
+
+			for (UserCollection userCollection : userCollections) {
+				if (userCollection.getEmailAddress() != null) {
+					if (!DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
+						Boolean verifyOTPResponse = false;
+						if (!verifyOTPResponse) {
+							verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(), request.getOtpNumber());
+							if (!verifyOTPResponse) {
+								logger.warn(loginPatient);
+								throw new BusinessException(ServiceError.InvalidInput, loginPatient);
+							}
+						}
+						RegisteredPatientDetails user = new RegisteredPatientDetails();
+						PatientCollection patientCollection = patientRepository
+								.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
+						if (patientCollection != null) {
+							Patient patient = new Patient();
+							BeanUtil.map(patientCollection, patient);
+							BeanUtil.map(patientCollection, user);
+							patient.setPatientId(patientCollection.getUserId().toString());
+							user.setPatient(patient);
+						}
+						BeanUtil.map(userCollection, user);
+						user.setUserNutritionSubscriptions(addUserNutritionSubscriptionResponse(userCollection));
+						user.setUserId(userCollection.getId().toString());
+
+						if (response == null)
+							response = new ArrayList<RegisteredPatientDetails>();
+						response.add(user);
+
+					}
+
+				}
 			}
 		} catch (BusinessException be) {
 			logger.error(be);
