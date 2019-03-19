@@ -99,7 +99,10 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getId()));
+			if(request.getId() != null)
+			{
+				medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getId()));
+			}
 
 			if (medicineOrderCollection == null) {
 				medicineOrderCollection = new MedicineOrderCollection();
@@ -119,6 +122,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			}
 
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
+			
 			if (medicineOrderCollection != null) {
 				medicineOrder = new MedicineOrder();
 				BeanUtil.map(medicineOrderCollection, medicineOrder);
@@ -140,8 +144,10 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getId()));
-
+			if(request.getId() != null)
+			{
+				medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getId()));
+			}
 			if (medicineOrderCollection == null) {
 				medicineOrderCollection = new MedicineOrderCollection();
 				medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
@@ -172,8 +178,10 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getId()));
-
+			if(request.getId() != null)
+			{
+				medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getId()));
+			}
 			if (medicineOrderCollection == null) {
 				medicineOrderCollection = new MedicineOrderCollection();
 				medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
@@ -209,8 +217,10 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getId()));
-
+			if(request.getId() != null)
+			{
+				medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getId()));
+			}
 			if (medicineOrderCollection == null) {
 				medicineOrderCollection = new MedicineOrderCollection();
 				medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
