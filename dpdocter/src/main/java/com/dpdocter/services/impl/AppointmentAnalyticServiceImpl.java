@@ -249,7 +249,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			}
 			data.setBookedByDoctor(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 
-			data.setBookedByDoctor(data.getTotal() - data.getBookedByPatient());
+			data.setBookedByPatient(data.getTotal() - data.getBookedByDoctor());
 
 		} catch (Exception e) {
 			e.printStackTrace();
