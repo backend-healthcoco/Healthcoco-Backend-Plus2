@@ -2,7 +2,7 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-public class TretmentAnalyticMongoResponse {
+public class TreatmentAnalyticMongoResponse {
 	private int totalTreatmentService;
 	private List<String>totalTreatmentServiceCompleted;
 	private List<String> totalTreatmentServiceProgress;

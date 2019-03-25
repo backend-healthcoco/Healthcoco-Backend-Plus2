@@ -1540,24 +1540,41 @@ public interface PathProxy {
 	public static final String ANALYTICS_BASE_URL = BASE_URL + "/analytics";
 
 	public interface AnalyticsUrls {
-		public static final String GET_PATIENT_ANALYTICS_DATA = "/patient/{doctorId}/{locationId}/{hospitalId}";
-		public static final String GET_MOST_PRESCRIBED_PRESCRIPTION_ITEMS = "/mostPrescribed/{type}/{locationId}/{hospitalId}";
-		public static final String GET_APPOINTMENT_ANALYTICS_DATA = "/appointment";
-		public static final String GET_APPOINTMENT_AVERAGE_TIME_ANALYTICS_DATA = "/appointment/averageTime";
-		public static final String GET_APPOINTMENT_COUNT_ANALYTICS_DATA = "/appointment/count";
+		public static final String GET_PATIENT_ANALYTICS_DATA = "/patient/{locationId}/{hospitalId}";
+		public static final String GET_PATIENT_DETAIL = "/patient/detail/{locationId}/{hospitalId}";
+		public static final String GET_APPOINTMENT_ANALYTICS_DATA = "/appointment/{locationId}/{hospitalId}";
+		public static final String GET_TREATMENTS_ANALYTICS = "/treatments";
+		public static final String GET_TREATMENT_ANALYTICS_DATA = "/treatment/{locationId}/{hospitalId}";
+		public static final String GET_TREATMENT_ANALYTICS_DETAIL = "/treatment/detail/{locationId}/{hospitalId}";
+		public static final String GET_TREATMENT_SERVICE_ANALYTIC = "/doctor/treatmentService";
+		public static final String GET_TREATMENT_SERVICE_PIE_CHART = "/doctor/treatmentService/{locationId}/{hospitalId}";
+		public static final String GET_APPOINTMENT_ANALYTICS_DETAIL = "/appointment/Detail/{locationId}/{hospitalId}";
+		public static final String GET_APPOINTMENT_AVERAGE_TIME_ANALYTICS_DATA = "/appointment/averageTime/{locationId}/{hospitalId}";
+		public static final String GET_APPOINTMENT_PATIENT_GROUP_ANALYTICS_PIE_CHART = "/appointment/patient/group/{locationId}/{hospitalId}";
+		public static final String GET_DOCTOR_APPOINTMENT_ANALYTICS_PIE_CHART = "/appointment/doctor/{locationId}/{hospitalId}";
+		public static final String GET_APPOINTMENT_MAX_TIME_ANALYTICS_DATA = "/appointment/maxtime/{locationId}/{hospitalId}";
 		public static final String GET_INCOME_DETAILS_ANALYTICS_DATA = "/incomeDetails";
 		public static final String GET_INCOME_ANALYTICS_DATA = "/income";
 		public static final String GET_PAYMENT_DETAILS_ANALYTICS_DATA = "/paymentDetails";
 		public static final String GET_PAYMENT_ANALYTICS_DATA = "/payment";
 		public static final String GET_AMOUNT_DUE_ANALYTICS_DATA = "/amountDue";
-		public static final String GET_TREATMENTS_ANALYTICS_DATA = "/treatments";
 		public static final String GET_PATIENT_ANALYTIC = "/doctor/patient";
-		public static final String GET_TREATMENT_ANALYTIC = "/doctor/treatmentService";
+		public static final String GET_PATIENT_COUNT_ANALYTIC = "/count/patient/{locationId}/{hospitalId}";
 		public static final String GET_APPOINTMENT_ANALYTIC = "/doctor/appointment";
 		public static final String GET_PRESCRIPTION_ANALYTIC = "/doctor/prescription";
 		public static final String GET_PRESCRIPTION_ITEM_ANALYTIC = "/doctor/prescription/{type}";
+		public static final String GET_PRESCRIPTION_ANALYTIC_DATA = "/prescription/{locationId}/{hospitalId}";
+		public static final String GET_PRESCRIPTION_ANALYTIC_DETAIL = "/prescription/detail/{locationId}/{hospitalId}";
+		public static final String GET_MOST_PRESCRIBED_PRESCRIPTION_ITEMS = "/mostPrescribed/{type}/{locationId}/{hospitalId}";
+		public static final String GET_DOCTOR_PRESCRIPTION_PIE_CHART = "/doctor/prescription/{locationId}/{hospitalId}";
 		public static final String GET_PATIENT_VISIT_ANALYTIC = "/doctor/visit";
 		public static final String GET_DOCTOR_EXPENSE_ANALYTICS = "/doctor/expense";
+		public static final String GET_INCOME_ANALYTIC_DATA = "/income/{locationId}/{hospitalId}";
+		public static final String GET_PAYMENT_ANALYTIC_DATA = "/payment/{locationId}/{hospitalId}";
+		public static final String GET_SCHEDULED_AND_CHECKOUT_COUNT_ANALYTIC = "appointment/schedule/checkout/{locationId}/{hospitalId}";
+		public static final String GET_BOOKED_AND_CANCELLED_APPOINTMENT_ANALYTIC = "appointment/booked/cancel/{locationId}/{hospitalId}";
+		public static final String GET_BOOKED_BY_APPOINTMENT_ANALYTIC = "appointment/bookedby/{locationId}/{hospitalId}";
+
 	}
 
 	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";
@@ -2035,7 +2052,5 @@ public interface PathProxy {
 		public static final String LIKE_SESSION_QUESTION = "/session/question/{questionId}/like";
 
 	}
-
-	
 
 }

@@ -2,28 +2,57 @@ package com.dpdocter.response;
 
 import java.util.Date;
 
-import com.dpdocter.beans.Discount;
-import com.dpdocter.beans.Tax;
-
 public class InvoiceAnalyticsDataDetailResponse {
 
+	private String id;
+
 	private Date date;
-	
-	private String uniqueInvoiceId; 
-	
-	private String patientName;
-	
+
+	private String uniqueInvoiceId;
+
+	private String localPatientName;
+
+	private String firstName;
+
+	private String doctorName;
+
+	private String mobileNumber;
+
 	private String services;
-	
-	private Double cost;
-	
-	private Double discount;
-	
-	private Double tax;
-	
-	private Double invoiceAmount;
-	
-	private Double balanceAmount;
+
+	private Double cost = 0.0;
+
+	private Double discount = 0.0;
+
+	private Double tax = 0.0;
+
+	private Double invoiceAmount = 0.0;
+
+	private Double balanceAmount = 0.0;
+
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
 	public Date getDate() {
 		return date;
@@ -41,12 +70,12 @@ public class InvoiceAnalyticsDataDetailResponse {
 		this.uniqueInvoiceId = uniqueInvoiceId;
 	}
 
-	public String getPatientName() {
-		return patientName;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
 	public String getServices() {
@@ -97,11 +126,21 @@ public class InvoiceAnalyticsDataDetailResponse {
 		this.balanceAmount = balanceAmount;
 	}
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	@Override
 	public String toString() {
-		return "InvoiceAnalyticsDataDetailResponse [date=" + date + ", uniqueInvoiceId=" + uniqueInvoiceId
-				+ ", patientName=" + patientName + ", services=" + services + ", cost=" + cost + ", discount="
-				+ discount + ", tax=" + tax + ", invoiceAmount=" + invoiceAmount + ", balanceAmount=" + balanceAmount
-				+ "]";
+		return "InvoiceAnalyticsDataDetailResponse [id=" + id + ", date=" + date + ", uniqueInvoiceId="
+				+ uniqueInvoiceId + ", localPatientName=" + localPatientName + ", firstName=" + firstName
+				+ ", doctorName=" + doctorName + ", mobileNumber=" + mobileNumber + ", services=" + services + ", cost="
+				+ cost + ", discount=" + discount + ", tax=" + tax + ", invoiceAmount=" + invoiceAmount
+				+ ", balanceAmount=" + balanceAmount + "]";
 	}
+
 }

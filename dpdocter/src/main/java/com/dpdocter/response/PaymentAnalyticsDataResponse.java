@@ -7,6 +7,7 @@ import com.dpdocter.enums.ModeOfPayment;
 public class PaymentAnalyticsDataResponse {
 
 	private String title;
+	
 	private String doctorName;
 	
 	private Double cash;

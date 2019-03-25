@@ -2,7 +2,7 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-public class TretmentAnalyticMongoResponse {
+public class TreatmentServiceAnalyticResponse {
 	private int totalTreatmentService;
 	private List<String>totalTreatmentServiceCompleted;
 	private List<String> totalTreatmentServiceProgress;
@@ -46,6 +46,14 @@ public class TretmentAnalyticMongoResponse {
 	public void setTreatmentServiceName(String treatmentServiceName) {
 		this.treatmentServiceName = treatmentServiceName;
 	}
-	
 
+	@Override
+	public String toString() {
+		return "TretmentAnalyticMongoResponse [totalTreatmentService=" + totalTreatmentService
+				+ ", totalTreatmentServiceCompleted=" + totalTreatmentServiceCompleted
+				+ ", totalTreatmentServiceProgress=" + totalTreatmentServiceProgress
+				+ ", totalTreatmentServiceNotStarted=" + totalTreatmentServiceNotStarted + ", treatmentServiceName="
+				+ treatmentServiceName + "]";
+	}
+	
 }
