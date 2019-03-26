@@ -165,6 +165,7 @@ public class AnalyticsAPI {
 		}
 		Response<AppointmentAverageTimeAnalyticResponse> response = new Response<AppointmentAverageTimeAnalyticResponse>();
 		response.setDataList(appointmentAnalyticResponse);
+		response.setCount((int) count);
 		return response;
 	}
 
