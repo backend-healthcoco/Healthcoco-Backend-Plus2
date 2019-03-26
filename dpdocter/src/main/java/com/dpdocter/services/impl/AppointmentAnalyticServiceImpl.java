@@ -553,7 +553,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				from = new Date(date);
 				to = new Date();
 			}
-			criteria.and("date").gte(new DateTime(from)).lte(new DateTime(to));
+			criteria.and("fromDate").gte(new DateTime(from)).lte(new DateTime(to));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -572,7 +572,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 											.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
 											.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
-											.append("date", new BasicDBObject("$first", "$date"))));
+											.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+											.append("date", new BasicDBObject("$first", "$fromDate"))));
 
 					break;
 				}
@@ -587,7 +588,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 															new BasicDBObject("$avg", "$waitedFor"))
 													.append("averageEngagedTime",
 															new BasicDBObject("$avg", "$engagedFor"))
-													.append("date", new BasicDBObject("$first", "$date"))));
+													.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+													.append("date", new BasicDBObject("$first", "$fromDate"))));
 
 					break;
 				}
@@ -597,7 +599,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
 									.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
-									.append("date", new BasicDBObject("$first", "$date"))));
+									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+									.append("date", new BasicDBObject("$first", "$fromDate"))));
 
 					break;
 				}
@@ -607,7 +610,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
 									.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
-									.append("date", new BasicDBObject("$first", "$date"))));
+									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+									.append("date", new BasicDBObject("$first", "$fromDate"))));
 
 					break;
 
@@ -621,32 +625,33 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 								new BasicDBObject("locationId", "$locationId").append("hospitalId", "$hospitalId"))
 										.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
 										.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
-										.append("date", new BasicDBObject("$first", "$date"))));
+										.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+										.append("date", new BasicDBObject("$first", "$fromDate"))));
 			}
 
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new ProjectionOperation(Fields.from(Fields.field("date", "$date"),
+						new ProjectionOperation(Fields.from(Fields.field("date", "$fromDate"),Fields.field("fromDate", "$fromDate"),
 								Fields.field("locationId", "$locationId"), Fields.field("hospitalId", "$hospitalId"),
 								Fields.field("waitedFor", "$waitedFor"), Fields.field("engagedFor", "$engagedFor")))
-										.and("date").extractDayOfMonth().as("day").and("date").extractMonth()
-										.as("month").and("date").extractYear().as("year").and("date").extractWeek()
+										.and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth()
+										.as("month").and("fromDate").extractYear().as("year").and("fromDate").extractWeek()
 										.as("week"),
-						aggregationOperation, Aggregation.sort(Direction.ASC, "date"), Aggregation.skip(page * size),
+						aggregationOperation, Aggregation.sort(Direction.ASC, "fromDate"), Aggregation.skip(page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new ProjectionOperation(Fields.from(Fields.field("date", "$date"),
+						new ProjectionOperation(Fields.from(Fields.field("date", "$fromDate"),Fields.field("fromDate", "$fromDate"),
 								Fields.field("locationId", "$locationId"), Fields.field("hospitalId", "$hospitalId"),
 								Fields.field("waitedFor", "$waitedFor"), Fields.field("engagedFor", "$engagedFor")))
-										.and("date").extractDayOfMonth().as("day").and("date").extractMonth()
-										.as("month").and("date").extractYear().as("year").and("date").extractWeek()
+										.and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth()
+										.as("month").and("fromDate").extractYear().as("year").and("fromDate").extractWeek()
 										.as("week"),
-						aggregationOperation, Aggregation.sort(Direction.ASC, "date"));
+						aggregationOperation, Aggregation.sort(Direction.ASC, "fromDate"));
 			}
 			AggregationResults<AppointmentAverageTimeAnalyticResponse> aggregationResults = mongoTemplate
-					.aggregate(aggregation, PatientQueueCollection.class, AppointmentAverageTimeAnalyticResponse.class);
+					.aggregate(aggregation, AppointmentCollection.class, AppointmentAverageTimeAnalyticResponse.class);
 			response = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
