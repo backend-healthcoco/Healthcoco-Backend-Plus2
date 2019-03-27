@@ -18,5 +18,6 @@ public class GeneralTests {
 		SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
 		sdf.format(new Date(Long.parseLong("1520286012812")));
         System.out.println(sdf.format(new Date(Long.parseLong("1520286012812"))));
+
 	}
 }

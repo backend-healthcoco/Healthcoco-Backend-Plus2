@@ -167,7 +167,7 @@ public interface RegistrationService {
 	Response<Object> deletePatient(String doctorId, String locationId, String hospitalId, String patientId,
 			Boolean discarded, Boolean isMobileApp);
 
-	List<PatientShortCard> getDeletedPatient(String doctorId, String locationId, String hospitalId);
+	List<PatientShortCard> getDeletedPatient(String doctorId, String locationId, String hospitalId, int page, int size, String searchTerm, String sortBy);
 
 	Boolean updatePatientNumber(String doctorId, String locationId, String hospitalId, String patientId,
 			String newPatientId, String mobileNumber);

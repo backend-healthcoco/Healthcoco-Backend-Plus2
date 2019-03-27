@@ -36,6 +36,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
+import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -4548,7 +4549,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public List<PatientShortCard> getDeletedPatient(String doctorId, String locationId, String hospitalId) {
+	public List<PatientShortCard> getDeletedPatient(String doctorId, String locationId, String hospitalId, int page, int size, String searchTerm, String sortBy) {
 		List<PatientShortCard> response = null;
 		try {
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
@@ -4561,10 +4562,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			Criteria criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId)
 					.and("hospitalId").is(hospitalObjectId).and("isPatientDiscarded").is(true);
-			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
+			
+			if(!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.and("localPatientName").regex(searchTerm, "i");
+			}
+			SortOperation sortOperation = new SortOperation(new Sort(Direction.DESC, "updatedTime"));
+			
+			if(!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("localPatientName")) {
+				sortOperation = new SortOperation(new Sort(Direction.ASC, "localPatientName"));
+			}
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), sortOperation);
 
-			response = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientShortCard.class)
-					.getMappedResults();
+			if(size>0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), sortOperation, Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			}
+			response = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientShortCard.class).getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4639,7 +4652,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						userCollectionNew.setUpdatedTime(new Date());
 						userCollectionNew = userRepository.save(userCollection);
 
-						PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(patientObjectId, locationObjectId, hospitalObjectId);
 						
 						patientCollection.setUserId(userCollectionNew.getId());
 						patientCollection.setUpdatedTime(new Date());
