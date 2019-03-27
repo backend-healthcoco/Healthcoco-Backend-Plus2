@@ -1577,8 +1577,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 									}										
 								}else {
 									treatment.setFinalCost(0.0);
-							}
-					
+								}
 							
 								if (checkIfNotNullOrNone(line.get(10)))
 									treatment.setNote(line.get(10).replace("'", ""));
