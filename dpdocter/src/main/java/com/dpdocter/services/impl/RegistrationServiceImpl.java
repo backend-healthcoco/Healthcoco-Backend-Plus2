@@ -4428,6 +4428,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 					}
 
 					updatePatientData(locationObjectId, hospitalObjectId, patientObjectId, "isPatientDiscarded", discarded);
+					pushNotificationServices.notifyUser(doctorId, "Patient Deleted.", ComponentType.PATIENT_REFRESH.getType(), null, null);
+
 				}
 				response.setData(true);
 				response.setDataList(patientShortCards);
@@ -4512,6 +4514,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 							Update.update("patientId", patientCollection.getUserId()).currentDate("updatedTime"),
 							PatientGroupCollection.class);
 				}
+				pushNotificationServices.notifyUser(doctorId, "Updated Patient Mobile Number.", ComponentType.PATIENT_REFRESH.getType(), null, null);
+
 			} else if (!DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 				UserCollection userCollection = userRepository.findOne(patientObjectId);
 				
@@ -4571,8 +4575,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						response = true;
 					}
 				}
-				
-
+				pushNotificationServices.notifyUser(doctorId, "Updated Patient Mobile Number.", ComponentType.PATIENT_REFRESH.getType(), null, null);
 			}
 
 		} catch (Exception e) {
