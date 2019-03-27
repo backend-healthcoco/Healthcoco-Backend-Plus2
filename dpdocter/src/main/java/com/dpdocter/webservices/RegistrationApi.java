@@ -1190,13 +1190,15 @@ public class RegistrationApi {
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT, notes = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
 	public Response<PatientShortCard> getDeletedPatient(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("sortBy") String sortBy) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId, hospitalId could not null");
 
 		}
 		Response<PatientShortCard> response = new Response<PatientShortCard>();
-		response.setDataList(registrationService.getDeletedPatient(doctorId, locationId, hospitalId));
+		response.setDataList(registrationService.getDeletedPatient(doctorId, locationId, hospitalId, page, size, searchTerm, sortBy));
 		return response;
 	}
 

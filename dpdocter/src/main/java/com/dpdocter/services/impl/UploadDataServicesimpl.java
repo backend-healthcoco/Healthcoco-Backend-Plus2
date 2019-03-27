@@ -421,6 +421,26 @@ public class UploadDataServicesimpl implements UploadDateService {
 				userRepository.delete(patientCollection.getUserId());
 				patientRepository.delete(patientCollection);
 			}
+			
+			
+//			List<PatientCollection> patientCollections = patientRepository.findByDoctorId(doctorObjectId,
+//					new Date(Long.parseLong("0")), new Sort(Direction.ASC, "createdTime"));
+//			for(PatientCollection patientCollection : patientCollections) {
+//				ESPatientDocument esPatientDocument = esPatientRepository.findOne(patientCollection.getId().toString());
+//				UserCollection user = userRepository.findOne(patientCollection.getUserId());
+//				if(!DPDoctorUtils.anyStringEmpty(user.getMobileNumber()) && user.getMobileNumber().length()==12) {
+//					String mobileNumber = user.getMobileNumber().substring(2, 12);
+//					user.setMobileNumber(mobileNumber);
+//					user = userRepository.save(user);
+//					if(esPatientDocument != null)esPatientDocument.setMobileNumber(mobileNumber);
+//				}
+//				if(!patientCollection.getPNUM().startsWith("P")) {
+//					patientCollection.setPNUM("P"+patientCollection.getPNUM());
+//					patientCollection = patientRepository.save(patientCollection);
+//					if(esPatientDocument != null)esPatientDocument.setPNUM(patientCollection.getPNUM());
+//				}
+//				if(esPatientDocument != null)esPatientRepository.save(esPatientDocument);
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -808,6 +828,9 @@ public class UploadDataServicesimpl implements UploadDateService {
 											break;
 										}
 				       		        }
+						        if (scannerForApp != null) {
+									scannerForApp.close();
+						        }
 							} else {
 								request.setRegistrationDate(new Date().getTime());
 							}
@@ -1483,6 +1506,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								BeanUtil.map(treatmentService, treatment);
 								treatment.setTreatmentServiceId(new ObjectId(treatmentService.getId()));
 
+								double cost = treatment.getCost();
 								if (checkIfNotNullOrNone(line.get(6))) {
 									Quantity quantity = new Quantity();
 									quantity.setType(QuantityEnum.QTY);
@@ -1490,7 +1514,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 									treatment.setQuantity(quantity);
 								}
 
-								treatment.setFinalCost(treatment.getCost());
+								//treatment.setFinalCost();
 
 								if (checkIfNotNullOrNone(line.get(7))) {
 									Discount discount = new Discount();
@@ -1504,12 +1528,12 @@ public class UploadDataServicesimpl implements UploadDateService {
 									discount.setValue(Double.parseDouble(line.get(7).replace("'", "")));
 									treatment.setDiscount(discount);
 
-									if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-										treatment.setFinalCost(treatment.getCost()
-												- (treatment.getCost() * (discount.getValue() / 100)));
-									} else {
-										treatment.setFinalCost(treatment.getCost() - discount.getValue());
-									}
+//									if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
+//										treatment.setFinalCost(treatment.getCost()
+//												- (treatment.getCost() * (discount.getValue() / 100)));
+//									} else {
+//										treatment.setFinalCost(treatment.getCost() - discount.getValue());
+//									}
 
 									if (totalDiscount == null) {
 										if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
@@ -1523,10 +1547,25 @@ public class UploadDataServicesimpl implements UploadDateService {
 										totalDiscount.setValue(totalDiscount.getValue() + discount.getValue());
 									}
 								}
-
-								if (checkIfNotNullOrNone(line.get(9)))
-									treatment.setFinalCost(Double.parseDouble(line.get(9).replace("'", "")));
-
+							
+								
+								if(treatment.getQuantity().getValue() > 0) {
+									
+									cost =  cost * treatment.getQuantity().getValue();
+									
+									if(treatment.getDiscount() != null) {
+										if (treatment.getDiscount().getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
+											treatment.setFinalCost(cost - (cost * (treatment.getDiscount().getValue() / 100)));
+										} else {
+											treatment.setFinalCost(cost - treatment.getDiscount().getValue());
+										}
+									}else {
+										treatment.setFinalCost(cost);
+									}										
+								}else {
+									treatment.setFinalCost(0.0);
+								}
+							
 								if (checkIfNotNullOrNone(line.get(10)))
 									treatment.setNote(line.get(10).replace("'", ""));
 
@@ -2712,19 +2751,18 @@ public class UploadDataServicesimpl implements UploadDateService {
 			long count = mongoTemplate.count(new Query(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)), PatientTreatmentCollection.class);
 			
 			if(count > 0) {
-				float j = count/2000;
-				int i = (int) Math.ceil(j);
-				
-				for(int k = 0; k <= i; k++) {
+//				float j = count/2000;
+//				int i = (int) Math.ceil(j);
+//				
+//				for(int k = 0; k <= i; k++) {
 					List<PatientTreatmentCollection> patientTreatmentCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
-							Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)),
-							Aggregation.skip(k*2000),Aggregation.limit(2000)), PatientTreatmentCollection.class, PatientTreatmentCollection.class).getMappedResults();
+							Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId))), PatientTreatmentCollection.class, PatientTreatmentCollection.class).getMappedResults();
 					if(patientTreatmentCollections != null) {
 						for(PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections) {
 							
 							double totalCost = 0.0;
 							double grandTotal = 0.0;
-							
+							Discount totalDiscount = null;
 							List<Treatment> treatments = patientTreatmentCollection.getTreatments();
 							if(treatments != null && !treatments.isEmpty()) {
 								for(Treatment treatment : treatments) {
@@ -2746,6 +2784,13 @@ public class UploadDataServicesimpl implements UploadDateService {
 												} else {
 													treatment.setFinalCost(cost - treatment.getDiscount().getValue());
 												}
+												if(totalDiscount == null){
+													totalDiscount = new Discount();
+													totalDiscount.setUnit(UnitType.INR);
+													totalDiscount.setValue(0.0);
+												}
+												Double totaldiscountValue = totalDiscount.getValue() + (cost - treatment.getFinalCost());
+												totalDiscount.setValue(totaldiscountValue);
 											}else {
 												treatment.setFinalCost(cost);
 											}										
@@ -2753,13 +2798,13 @@ public class UploadDataServicesimpl implements UploadDateService {
 											treatment.setFinalCost(0.0);
 									}
 									
-									totalCost = totalCost + treatment.getCost();
+									totalCost = totalCost + cost;
 									grandTotal = grandTotal + treatment.getFinalCost();
 								}
 								patientTreatmentCollection.setTreatments(null);	
 								patientTreatmentCollection.setTreatments(treatments);
 						   }
-						   
+						   patientTreatmentCollection.setTotalDiscount(totalDiscount);
 						   patientTreatmentCollection.setTotalCost(totalCost);
 						   patientTreatmentCollection.setGrandTotal(grandTotal);
 						   patientTreatmentCollection.setUpdatedTime(new Date());
@@ -2767,7 +2812,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 						   response = true;
 						}		
 					}
-				}
+//				}
 			}
 		}catch (Exception e) {
 			response = false;
