@@ -24,4 +24,6 @@ public interface LoginService {
 
 	public DoctorLoginPin AddEditLoginPin(DoctorLoginPin request);
 
+	public List<RegisteredPatientDetails> loginPatientByOtp(LoginPatientRequest request);
+
 }
