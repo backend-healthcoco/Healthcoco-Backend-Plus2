@@ -178,4 +178,6 @@ public class AdminAPI {
 		response.setData(adminServices.updateServicesAndSpecialities());
 		return response;
 	}
+	
+	
 }
