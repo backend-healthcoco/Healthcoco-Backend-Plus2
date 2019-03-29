@@ -4566,7 +4566,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if(!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("localPatientName")) {
 				sortOperation = new SortOperation(new Sort(Direction.ASC, "localPatientName"));
 			}
-
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), 
 					Aggregation.lookup("user_cl", "userId", "_id", "user"),
 					Aggregation.unwind("user"),
