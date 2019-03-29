@@ -1552,25 +1552,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 									}
 									discount.setValue(Double.parseDouble(line.get(7).replace("'", "")));
 									treatment.setDiscount(discount);
-
-//									if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-//										treatment.setFinalCost(treatment.getCost()
-//												- (treatment.getCost() * (discount.getValue() / 100)));
-//									} else {
-//										treatment.setFinalCost(treatment.getCost() - discount.getValue());
-//									}
-
-									if (totalDiscount == null) {
-										if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-											totalDiscount = new Discount();
-											totalDiscount.setUnit(UnitType.INR);
-											totalDiscount.setValue(treatment.getCost() * (discount.getValue() / 100));
-										} else {
-											totalDiscount = discount;
-										}
-									} else {
-										totalDiscount.setValue(totalDiscount.getValue() + discount.getValue());
-									}
 								}
 							
 								
@@ -1584,12 +1565,20 @@ public class UploadDataServicesimpl implements UploadDateService {
 										} else {
 											treatment.setFinalCost(cost - treatment.getDiscount().getValue());
 										}
+										if(totalDiscount == null){
+											totalDiscount = new Discount();
+											totalDiscount.setUnit(UnitType.INR);
+											totalDiscount.setValue(0.0);
+										}
+										Double totaldiscountValue = totalDiscount.getValue() + (cost - treatment.getFinalCost());
+										totalDiscount.setValue(totaldiscountValue);
 									}else {
 										treatment.setFinalCost(cost);
 									}										
 								}else {
 									treatment.setFinalCost(0.0);
-								}
+							}
+					
 							
 								if (checkIfNotNullOrNone(line.get(10)))
 									treatment.setNote(line.get(10).replace("'", ""));
@@ -2467,29 +2456,44 @@ public class UploadDataServicesimpl implements UploadDateService {
 									discount.setValue(Double.parseDouble(line.get(8).replace("'", "")));
 									invoiceItem.setDiscount(discount);
 
-									if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-										invoiceItem.setFinalCost(
-												invoiceItem.getCost() - (invoiceItem.getCost() * (discount.getValue() / 100)));
-									} else {
-										invoiceItem.setFinalCost(invoiceItem.getCost() - discount.getValue());
-									}
+									double cost = invoiceItem.getCost();
+//									if(invoiceItem.getQuantity().getValue()>0) {
+//										cost =  cost * invoiceItem.getQuantity().getValue();
+//									}
+//									
+//
+//									if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
+//										invoiceItem.setFinalCost(
+//												cost - (cost * (discount.getValue() / 100)));
+//									} else {
+//										invoiceItem.setFinalCost(cost - discount.getValue());
+//									}
 
-									if (totalDiscount == null) {
-										if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-											totalDiscount = new Discount();
-											totalDiscount.setUnit(UnitType.INR);
-											totalDiscount.setValue(invoiceItem.getCost() * (discount.getValue() / 100));
-										} else {
-											totalDiscount = discount;
-										}
-									} else {
-										double value = 0;
-										if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-											value = invoiceItem.getCost() * (discount.getValue() / 100);
-										} 
+									if(invoiceItem.getQuantity().getValue() > 0) {
 										
-										totalDiscount.setValue(totalDiscount.getValue() + value);
-									}
+										cost =  cost * invoiceItem.getQuantity().getValue();
+										
+										if(invoiceItem.getDiscount() != null) {
+											if (invoiceItem.getDiscount().getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
+												invoiceItem.setFinalCost(cost - (cost * (invoiceItem.getDiscount().getValue() / 100)));
+											} else {
+												invoiceItem.setFinalCost(cost - invoiceItem.getDiscount().getValue());
+											}
+											if(totalDiscount == null){
+												totalDiscount = new Discount();
+												totalDiscount.setUnit(UnitType.INR);
+												totalDiscount.setValue(0.0);
+											}
+											Double totaldiscountValue = totalDiscount.getValue() + (cost - invoiceItem.getFinalCost());
+											totalDiscount.setValue(totaldiscountValue);
+										}else {
+											invoiceItem.setFinalCost(cost);
+										}										
+									}else {
+										invoiceItem.setFinalCost(0.0);
+								}
+									
+									
 								}
 								
 								if (checkIfNotNullOrNone(line.get(16)))
@@ -3183,5 +3187,140 @@ public class UploadDataServicesimpl implements UploadDateService {
 			e.printStackTrace();
 		}
 		return response;
+	}
+
+	@Override
+	public Boolean updateBillingData(String locationId, String hospitalId) {
+		Boolean response = false;
+		try {
+			ObjectId locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			
+			List<DoctorPatientInvoiceCollection> doctorPatientInvoiceCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+							Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId))), DoctorPatientInvoiceCollection.class, DoctorPatientInvoiceCollection.class).getMappedResults();
+			if(doctorPatientInvoiceCollections != null) {
+						for(DoctorPatientInvoiceCollection doctorPatientInvoiceCollection : doctorPatientInvoiceCollections) {
+							if(!doctorPatientInvoiceCollection.getUniqueInvoiceId().startsWith("INV"))
+								doctorPatientInvoiceCollection.setUniqueInvoiceId("INV"+doctorPatientInvoiceCollection.getUniqueInvoiceId());
+							
+							double totalCost = 0.0;
+							double grandTotal = 0.0;
+							Discount totalDiscount = null;
+							List<InvoiceItem> treatments = doctorPatientInvoiceCollection.getInvoiceItems();
+							if(treatments != null && !treatments.isEmpty()) {
+								for(InvoiceItem treatment : treatments) {
+									
+									double cost = treatment.getCost();
+									if(treatment.getQuantity() == null) {
+										Quantity quantity = new Quantity();
+										quantity.setType(QuantityEnum.QTY);
+										quantity.setValue(1);
+										treatment.setQuantity(quantity);
+									}
+									if(treatment.getQuantity().getValue() > 0) {
+											
+											cost =  cost * treatment.getQuantity().getValue();
+											
+											if(treatment.getDiscount() != null) {
+												if (treatment.getDiscount().getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
+													treatment.setFinalCost(cost - (cost * (treatment.getDiscount().getValue() / 100)));
+												} else {
+													treatment.setFinalCost(cost - treatment.getDiscount().getValue());
+												}
+												if(totalDiscount == null){
+													totalDiscount = new Discount();
+													totalDiscount.setUnit(UnitType.INR);
+													totalDiscount.setValue(0.0);
+												}
+												Double totaldiscountValue = totalDiscount.getValue() + (cost - treatment.getFinalCost());
+												totalDiscount.setValue(totaldiscountValue);
+											}else {
+												treatment.setFinalCost(cost);
+											}										
+										}else {
+											treatment.setFinalCost(0.0);
+									}
+									
+									totalCost = totalCost + cost;
+									grandTotal = grandTotal + treatment.getFinalCost();
+								}
+								doctorPatientInvoiceCollection.setInvoiceItems(null);
+								doctorPatientInvoiceCollection.setInvoiceItems(treatments);
+						   }
+							doctorPatientInvoiceCollection.setTotalDiscount(totalDiscount);
+							doctorPatientInvoiceCollection.setTotalCost(totalCost);
+							doctorPatientInvoiceCollection.setGrandTotal(grandTotal);
+							doctorPatientInvoiceCollection.setBalanceAmount(grandTotal);
+							doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+
+							DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository
+									.find(doctorPatientInvoiceCollection.getPatientId(),
+											doctorPatientInvoiceCollection.getDoctorId(),
+											doctorPatientInvoiceCollection.getLocationId(),
+											doctorPatientInvoiceCollection.getHospitalId());
+							doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() + doctorPatientInvoiceCollection.getBalanceAmount());
+							doctorPatientDueAmountCollection = doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
+							
+							DoctorPatientLedgerCollection doctorPatientLedgerCollection = doctorPatientLedgerRepository
+									.findByInvoiceId(doctorPatientInvoiceCollection.getId());
+							doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
+							doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
+						}
+						response = true;
+			}
+			
+			List<DoctorPatientReceiptCollection> doctorPatientReceiptCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId))), DoctorPatientReceiptCollection.class, DoctorPatientReceiptCollection.class).getMappedResults();
+			if(doctorPatientReceiptCollections != null) {
+					for(DoctorPatientReceiptCollection doctorPatientReceiptCollection : doctorPatientReceiptCollections) {
+						if(doctorPatientReceiptCollection.getUniqueInvoiceId() != null && !doctorPatientReceiptCollection.getUniqueInvoiceId().startsWith("INV"))
+							doctorPatientReceiptCollection.setUniqueInvoiceId("INV"+doctorPatientReceiptCollection.getUniqueInvoiceId());
+							
+						if(doctorPatientReceiptCollection.getUniqueReceiptId() != null && !doctorPatientReceiptCollection.getUniqueReceiptId().startsWith("RC"))
+							doctorPatientReceiptCollection.setUniqueReceiptId("RC"+doctorPatientReceiptCollection.getUniqueReceiptId());
+						
+
+						DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = null;
+						if(doctorPatientReceiptCollection.getInvoiceId() != null) {
+							doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findOne(doctorPatientReceiptCollection.getInvoiceId());
+							doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount() - doctorPatientReceiptCollection.getAmountPaid());
+						}
+
+						doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
+
+						if(doctorPatientInvoiceCollection != null) {
+							doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientReceiptCollection.getBalanceAmount());
+							doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+						}
+						
+						
+						DoctorPatientLedgerCollection doctorPatientLedgerCollection = doctorPatientLedgerRepository.findByReceiptId(doctorPatientReceiptCollection.getId());
+						if(doctorPatientLedgerCollection != null) {
+							doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
+							doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
+						}
+						
+						DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository
+								.find(doctorPatientReceiptCollection.getPatientId(),
+										doctorPatientReceiptCollection.getDoctorId(),
+										doctorPatientReceiptCollection.getLocationId(),
+										doctorPatientReceiptCollection.getHospitalId());
+						if(doctorPatientDueAmountCollection != null) {
+							doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - doctorPatientReceiptCollection.getAmountPaid());
+							doctorPatientDueAmountCollection = doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
+						}
+						
+					}
+					response = true;
+		}
+
+	}catch(Exception e) {
+		response = false;
+		e.printStackTrace();
+	}
+	return response;
 	}
 }

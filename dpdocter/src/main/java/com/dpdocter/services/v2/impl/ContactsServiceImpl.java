@@ -240,8 +240,7 @@ public class ContactsServiceImpl implements ContactsService {
 							.append("address", "$address").append("patientId", "$userId")
 							.append("profession", "$profession").append("relations", "$relations")
 							.append("consultantDoctorIds", "$consultantDoctorIds")
-							.append("registrationDate", "$registrationDate").append("relations", "$relations")
-							.append("consultantDoctorIds", "$consultantDoctorIds")
+							.append("doctorId", "$doctorId")
 							.append("registrationDate", "$registrationDate").append("createdTime", "$createdTime")
 							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
 

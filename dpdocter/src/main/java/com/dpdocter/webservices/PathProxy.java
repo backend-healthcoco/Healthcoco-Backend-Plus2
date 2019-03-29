@@ -1671,6 +1671,8 @@ public interface PathProxy {
 
 		public static final String UPDATE_TREATMENT_SERVICES = "/treatment/services/update";
 
+		public static final String UPDATE_BILLING = "/billing/{locationId}/{hospitalId}/update";
+
 	}
 
 	public static final String DOWNLOAD_DATA_BASE_URL = BASE_URL + "/download";

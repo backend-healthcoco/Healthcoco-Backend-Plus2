@@ -220,6 +220,20 @@ public class UploadDataApi {
 		return response;
 	}
 	
+	@Path(value = PathProxy.UploadDataUrls.UPDATE_BILLING)
+	@GET
+	@ApiOperation(value = PathProxy.UploadDataUrls.UPDATE_BILLING, notes = PathProxy.UploadDataUrls.UPDATE_BILLING)
+	public Response<Boolean> updateBillingData(@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(uploadDataService.updateBillingData(locationId, hospitalId));
+		return response;
+	}
+	
 	@Path(value = PathProxy.UploadDataUrls.UPLOAD_IMAGES)
 	@GET
 	@ApiOperation(value = PathProxy.UploadDataUrls.UPLOAD_IMAGES, notes = PathProxy.UploadDataUrls.UPLOAD_IMAGES)

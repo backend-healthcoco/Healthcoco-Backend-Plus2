@@ -4573,7 +4573,23 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if(!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("localPatientName")) {
 				sortOperation = new SortOperation(new Sort(Direction.ASC, "localPatientName"));
 			}
-			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), sortOperation);
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), 
+					Aggregation.lookup("user_cl", "userId", "_id", "user"),
+					Aggregation.unwind("user"),
+					new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("firstName", "$firstName")
+							.append("localPatientName", "$localPatientName")
+							.append("emailAddress", "$emailAddress")
+							.append("imageUrl", "$imageUrl")
+							.append("thumbnailUrl", "$thumbnailUrl")
+							.append("bloodGroup", "$bloodGroup")
+							.append("PID", "$PID")
+							.append("gender", "$gender")
+							.append("mobileNumber", "$user.mobileNumber")
+							.append("secPhoneNumber", "$secPhoneNumber")
+							.append("dob", "$dob")
+							.append("userId", "$userId")
+							.append("PNUM", "$PNUM"))),
+					sortOperation);
 
 			if(size>0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), sortOperation, Aggregation.skip((page) * size),

@@ -323,6 +323,32 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 			if (request.getLatitude() != null && request.getLongitude() != null)
 				request.setGeoPoint(new GeoPoint(request.getLatitude(), request.getLongitude()));
+			
+//			if (request.getSpecialities() != null && !request.getSpecialities().isEmpty()) {
+//				Iterable<ESSpecialityDocument>  iterableSpecialities = esSpecialityRepository.findAll(request.getSpecialities());
+//				List<String> specialities = new ArrayList<>();
+//				List<String> parentSpecialities = new ArrayList<>();
+//				if(iterableSpecialities != null) {
+//					for(ESSpecialityDocument esSpecialityDocument : iterableSpecialities) {
+//						specialities.add(esSpecialityDocument.getSuperSpeciality().toLowerCase());
+//						parentSpecialities.add(esSpecialityDocument.getSpeciality().toLowerCase());
+//					}
+//					request.setSpecialitiesValue(specialities);
+//					request.setParentSpecialities(parentSpecialities);
+//				}
+//			}
+//		
+//
+//			if (request.getServices() != null  && !request.getServices().isEmpty()) {
+//				Iterable<ESServicesDocument> iterableServices = esServicesRepository.findAll(request.getServices());
+//				List<String> services = new ArrayList<>();
+//				if(iterableServices != null) {
+//					for(ESServicesDocument esServicesDocument : iterableServices) {
+//						services.add(esServicesDocument.getService().toLowerCase());
+//					}
+//					request.setServicesValue(services);
+//				}					
+//			}
 			esDoctorRepository.save(request);
 			transnationalService.addResource(new ObjectId(request.getUserId()), Resource.DOCTOR, true);
 			response = true;
