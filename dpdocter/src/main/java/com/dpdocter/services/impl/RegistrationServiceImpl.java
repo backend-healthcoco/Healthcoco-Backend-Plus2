@@ -4484,7 +4484,21 @@ public class RegistrationServiceImpl implements RegistrationService {
 					sortOperation);
 
 			if(size>0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), sortOperation, Aggregation.skip((page) * size),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
+						Aggregation.unwind("user"),
+						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("firstName", "$firstName")
+								.append("localPatientName", "$localPatientName")
+								.append("emailAddress", "$emailAddress")
+								.append("imageUrl", "$imageUrl")
+								.append("thumbnailUrl", "$thumbnailUrl")
+								.append("bloodGroup", "$bloodGroup")
+								.append("PID", "$PID")
+								.append("gender", "$gender")
+								.append("mobileNumber", "$user.mobileNumber")
+								.append("secPhoneNumber", "$secPhoneNumber")
+								.append("dob", "$dob")
+								.append("userId", "$userId")
+								.append("PNUM", "$PNUM"))),sortOperation, Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			}
 			response = mongoTemplate.aggregate(aggregation, PatientCollection.class, PatientShortCard.class).getMappedResults();
