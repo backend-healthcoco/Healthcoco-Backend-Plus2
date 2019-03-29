@@ -41,7 +41,10 @@ public class PatientCard {
 	// @Transient
 	private User user;
 
+	private String doctorId;
+	
 	private String doctorSepecificPatientId;
+	
 	private Boolean isPatientOTPVerified = false;
 
 	public User getUser() {
@@ -164,12 +167,22 @@ public class PatientCard {
 		this.isPatientOTPVerified = isPatientOTPVerified;
 	}
 
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCard [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", localPatientName="
 				+ localPatientName + ", emailAddress=" + emailAddress + ", thumbnailUrl=" + thumbnailUrl + ", PID="
 				+ PID + ", gender=" + gender + ", mobileNumber=" + mobileNumber + ", dob=" + dob + ", colorCode="
-				+ colorCode + ", PNUM=" + PNUM + "]";
+				+ colorCode + ", PNUM=" + PNUM + ", user=" + user + ", doctorId=" + doctorId
+				+ ", doctorSepecificPatientId=" + doctorSepecificPatientId + ", isPatientOTPVerified="
+				+ isPatientOTPVerified + "]";
 	}
 
 }
