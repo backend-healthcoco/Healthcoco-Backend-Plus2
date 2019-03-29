@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldIndex;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.MultiField;
 
@@ -63,13 +64,13 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> services;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
 	private List<String> parentSpecialities;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
 	private List<String> specialitiesValue;//value
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
 	private List<String> servicesValue;//value
 	
 	@Field(type = FieldType.Nested)
