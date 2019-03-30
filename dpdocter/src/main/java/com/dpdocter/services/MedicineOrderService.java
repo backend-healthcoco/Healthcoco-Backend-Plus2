@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.MedicineOrder;
 import com.dpdocter.enums.OrderStatus;
-import com.dpdocter.request.MedicinOrderAddEditAddressRequest;
+import com.dpdocter.request.MedicineOrderAddEditAddressRequest;
 import com.dpdocter.request.MedicineOrderPaymentAddEditRequest;
 import com.dpdocter.request.MedicineOrderPreferenceAddEditRequest;
 import com.dpdocter.request.MedicineOrderRXAddEditRequest;
@@ -17,7 +17,7 @@ public interface MedicineOrderService {
 
 	MedicineOrder addeditRx(MedicineOrderRXAddEditRequest request);
 
-	MedicineOrder addeditAddress(MedicinOrderAddEditAddressRequest request);
+	MedicineOrder addeditAddress(MedicineOrderAddEditAddressRequest request);
 
 	MedicineOrder addeditPayment(MedicineOrderPaymentAddEditRequest request);
 

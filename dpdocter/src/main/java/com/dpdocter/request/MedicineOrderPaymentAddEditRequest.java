@@ -1,5 +1,6 @@
 package com.dpdocter.request;
 
+import com.dpdocter.enums.OrderStatus;
 import com.dpdocter.enums.PaymentMode;
 
 public class MedicineOrderPaymentAddEditRequest {
@@ -12,6 +13,8 @@ public class MedicineOrderPaymentAddEditRequest {
 	private Float deliveryCharges;
 	private String notes;
 	private PaymentMode paymentMode = PaymentMode.COD;
+	private OrderStatus orderStatus;
+	private String callingPreference;
 
 	public String getId() {
 		return id;
@@ -75,6 +78,22 @@ public class MedicineOrderPaymentAddEditRequest {
 
 	public void setNotes(String notes) {
 		this.notes = notes;
+	}
+
+	public OrderStatus getOrderStatus() {
+		return orderStatus;
+	}
+
+	public void setOrderStatus(OrderStatus orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+
+	public String getCallingPreference() {
+		return callingPreference;
+	}
+
+	public void setCallingPreference(String callingPreference) {
+		this.callingPreference = callingPreference;
 	}
 
 }

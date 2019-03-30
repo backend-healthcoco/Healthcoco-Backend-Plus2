@@ -10,29 +10,32 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.Address;
 
 @Document(collection = "user_address_cl")
-public class UserAddressCollection extends GenericCollection{
-	
+public class UserAddressCollection extends GenericCollection {
+
 	@Id
-    private ObjectId id;
+	private ObjectId id;
 
 	@Field
-    private List<ObjectId> userIds;
-	
+	private List<ObjectId> userIds;
+
 	@Field
 	private String fullName;
-	
+
 	@Field
 	private Address address;
-	
+
 	@Field
 	private Boolean discarded = false;
 
 	@Field
 	private String mobileNumber;
-	
+
 	@Field
 	private String homeDeliveryMobileNumber;
-	
+
+	@Field
+	private String type;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -87,6 +90,14 @@ public class UserAddressCollection extends GenericCollection{
 
 	public void setHomeDeliveryMobileNumber(String homeDeliveryMobileNumber) {
 		this.homeDeliveryMobileNumber = homeDeliveryMobileNumber;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	@Override

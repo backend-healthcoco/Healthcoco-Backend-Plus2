@@ -4,24 +4,26 @@ import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class UserAddress extends GenericCollection{
+public class UserAddress extends GenericCollection {
 
 	private String id;
 
-    private List<String> userIds;
-	
-    private String mobileNumber;
-	
+	private List<String> userIds;
+
+	private String mobileNumber;
+
 	private String fullName;
-	
+
 	private Address address;
-	
+
 	private Boolean discarded = false;
 
 	private String formattedAddress;
-	
+
 	private String homeDeliveryMobileNumber;
-	
+
+	private String type;
+
 	public String getId() {
 		return id;
 	}
@@ -84,6 +86,14 @@ public class UserAddress extends GenericCollection{
 
 	public void setHomeDeliveryMobileNumber(String homeDeliveryMobileNumber) {
 		this.homeDeliveryMobileNumber = homeDeliveryMobileNumber;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -18,7 +19,7 @@ import com.dpdocter.beans.MedicineOrder;
 import com.dpdocter.enums.OrderStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.request.MedicinOrderAddEditAddressRequest;
+import com.dpdocter.request.MedicineOrderAddEditAddressRequest;
 import com.dpdocter.request.MedicineOrderPaymentAddEditRequest;
 import com.dpdocter.request.MedicineOrderPreferenceAddEditRequest;
 import com.dpdocter.request.MedicineOrderRXAddEditRequest;
@@ -78,7 +79,7 @@ public class MedicineOrderAPI {
 	@POST
 	@Path(value = PathProxy.OrderMedicineUrls.MEDICINE_ORDER_ADD_EDIT_ADDRESS)
 	@ApiOperation(value = PathProxy.OrderMedicineUrls.MEDICINE_ORDER_ADD_EDIT_ADDRESS, notes = PathProxy.OrderMedicineUrls.MEDICINE_ORDER_ADD_EDIT_ADDRESS)
-	public Response<MedicineOrder> addEditAddress(MedicinOrderAddEditAddressRequest request) {
+	public Response<MedicineOrder> addEditAddress(MedicineOrderAddEditAddressRequest request) {
 
 		if(request == null)
 		{
@@ -176,7 +177,7 @@ public class MedicineOrderAPI {
 	@GET
 	@Path(value = PathProxy.OrderMedicineUrls.PATIENT_GET_LIST)
 	@ApiOperation(value = PathProxy.OrderMedicineUrls.PATIENT_GET_LIST, notes = PathProxy.OrderMedicineUrls.PATIENT_GET_LIST)
-	public Response<MedicineOrder> getPatientOrderList(@PathParam("patientId") String patientId , @QueryParam("updatedTime") String updatedTime ,  @QueryParam("searchTerm") String searchTerm , 
+	public Response<MedicineOrder> getPatientOrderList(@PathParam("patientId") String patientId ,@DefaultValue("0") @QueryParam("updatedTime") String updatedTime ,  @QueryParam("searchTerm") String searchTerm , 
 			@QueryParam("page") int page ,  @QueryParam("size") int size ) {
 
 		if(DPDoctorUtils.allStringsEmpty(patientId))

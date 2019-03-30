@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.MedicineOrderImages;
 import com.dpdocter.beans.MedicineOrderItems;
+import com.dpdocter.beans.UserAddress;
 import com.dpdocter.enums.DeliveryPreferences;
 import com.dpdocter.enums.OrderStatus;
 import com.dpdocter.enums.PaymentMode;
@@ -26,9 +27,9 @@ public class MedicineOrderCollection extends GenericCollection {
 	@Field
 	private ObjectId vendorId;
 	@Field
-	private Address shippingAddress;
+	private UserAddress shippingAddress;
 	@Field
-	private Address billingAddress;
+	private UserAddress billingAddress;
 	@Field
 	private List<MedicineOrderItems> items;
 	@Field
@@ -55,6 +56,10 @@ public class MedicineOrderCollection extends GenericCollection {
 	private String notes;
 	@Field
 	private OrderStatus orderStatus = OrderStatus.PENDING;
+	@Field
+	private Long deliveredByDate;
+	@Field
+	private String callingPreference;
 
 	public ObjectId getId() {
 		return id;
@@ -80,19 +85,19 @@ public class MedicineOrderCollection extends GenericCollection {
 		this.vendorId = vendorId;
 	}
 
-	public Address getShippingAddress() {
+	public UserAddress getShippingAddress() {
 		return shippingAddress;
 	}
 
-	public void setShippingAddress(Address shippingAddress) {
+	public void setShippingAddress(UserAddress shippingAddress) {
 		this.shippingAddress = shippingAddress;
 	}
 
-	public Address getBillingAddress() {
+	public UserAddress getBillingAddress() {
 		return billingAddress;
 	}
 
-	public void setBillingAddress(Address billingAddress) {
+	public void setBillingAddress(UserAddress billingAddress) {
 		this.billingAddress = billingAddress;
 	}
 
@@ -207,5 +212,23 @@ public class MedicineOrderCollection extends GenericCollection {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
+
+	public Long getDeliveredByDate() {
+		return deliveredByDate;
+	}
+
+	public void setDeliveredByDate(Long deliveredByDate) {
+		this.deliveredByDate = deliveredByDate;
+	}
+
+	public String getCallingPreference() {
+		return callingPreference;
+	}
+
+	public void setCallingPreference(String callingPreference) {
+		this.callingPreference = callingPreference;
+	}
+	
+	
 
 }

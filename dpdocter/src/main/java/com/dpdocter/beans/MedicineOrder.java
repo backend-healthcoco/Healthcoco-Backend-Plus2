@@ -12,8 +12,8 @@ public class MedicineOrder extends GenericCollection {
 	private String id;
 	private String patientId;
 	private String vendorId;
-	private Address shippingAddress;
-	private Address billingAddress;
+	private UserAddress shippingAddress;
+	private UserAddress billingAddress;
 	private Vendor vendor;
 	private String uniqueOrderId;
 	private List<MedicineOrderAddEditItems> items;
@@ -27,6 +27,8 @@ public class MedicineOrder extends GenericCollection {
 	private PaymentMode paymentMode = PaymentMode.COD;
 	private DeliveryPreferences deliveryPreference = DeliveryPreferences.ONE_TIME;
 	private Long nextDeliveryDate;
+	private Long deliveredByDate;
+	private String callingPreference;
 	private Boolean discarded = false;
 
 	public String getId() {
@@ -53,19 +55,19 @@ public class MedicineOrder extends GenericCollection {
 		this.vendorId = vendorId;
 	}
 
-	public Address getShippingAddress() {
+	public UserAddress getShippingAddress() {
 		return shippingAddress;
 	}
 
-	public void setShippingAddress(Address shippingAddress) {
+	public void setShippingAddress(UserAddress shippingAddress) {
 		this.shippingAddress = shippingAddress;
 	}
 
-	public Address getBillingAddress() {
+	public UserAddress getBillingAddress() {
 		return billingAddress;
 	}
 
-	public void setBillingAddress(Address billingAddress) {
+	public void setBillingAddress(UserAddress billingAddress) {
 		this.billingAddress = billingAddress;
 	}
 
@@ -179,6 +181,22 @@ public class MedicineOrder extends GenericCollection {
 
 	public void setUniqueOrderId(String uniqueOrderId) {
 		this.uniqueOrderId = uniqueOrderId;
+	}
+
+	public Long getDeliveredByDate() {
+		return deliveredByDate;
+	}
+
+	public void setDeliveredByDate(Long deliveredByDate) {
+		this.deliveredByDate = deliveredByDate;
+	}
+
+	public String getCallingPreference() {
+		return callingPreference;
+	}
+
+	public void setCallingPreference(String callingPreference) {
+		this.callingPreference = callingPreference;
 	}
 
 	@Override

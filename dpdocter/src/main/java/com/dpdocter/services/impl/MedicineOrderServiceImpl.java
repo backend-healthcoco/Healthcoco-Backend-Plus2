@@ -29,7 +29,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.MedicineOrderRepository;
-import com.dpdocter.request.MedicinOrderAddEditAddressRequest;
+import com.dpdocter.request.MedicineOrderAddEditAddressRequest;
 import com.dpdocter.request.MedicineOrderPaymentAddEditRequest;
 import com.dpdocter.request.MedicineOrderPreferenceAddEditRequest;
 import com.dpdocter.request.MedicineOrderRXAddEditRequest;
@@ -69,6 +69,10 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 			Date createdTime = new Date();
 			if (file != null) {
+				if(DPDoctorUtils.anyStringEmpty(patientIdString))
+				{
+					patientIdString = patientIdString.replace("\"", "");
+				}
 				String path = "medorderRX" + File.separator + patientIdString;
 				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
 				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
@@ -138,7 +142,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 	
 	@Override
 	@Transactional
-	public MedicineOrder addeditAddress(MedicinOrderAddEditAddressRequest request) {
+	public MedicineOrder addeditAddress(MedicineOrderAddEditAddressRequest request) {
 		MedicineOrder medicineOrder = null;
 		MedicineOrderCollection medicineOrderCollection = null;
 
