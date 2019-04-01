@@ -24,7 +24,6 @@ import com.dpdocter.beans.DoctorConferenceSession;
 import com.dpdocter.beans.SessionQuestion;
 import com.dpdocter.beans.SessionTopic;
 import com.dpdocter.beans.SpeakerProfile;
-import com.dpdocter.collections.ConfexUserCollection;
 import com.dpdocter.collections.DoctorConferenceAgendaCollection;
 import com.dpdocter.collections.DoctorConferenceCollection;
 import com.dpdocter.collections.DoctorConferenceSessionCollection;
@@ -43,7 +42,6 @@ import com.dpdocter.repository.QuestionRepository;
 import com.dpdocter.repository.SessionTopicRepository;
 import com.dpdocter.repository.SpeakerProfileRepository;
 import com.dpdocter.repository.UserRepository;
-import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.response.OrganizingCommitteeResponse;
 import com.dpdocter.response.SessionDateResponse;
 import com.dpdocter.services.ConferenceService;
@@ -453,6 +451,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 							.append("toDate", new BasicDBObject("$first", "$toDate"))
 							.append("address", new BasicDBObject("$first", "$address"))
+							.append("status", new BasicDBObject("$first", "$status"))
 							.append("discarded", new BasicDBObject("$first", "$discarded"))
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
@@ -473,7 +472,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 								Aggregation.sort(new Sort(Direction.ASC, "fromDate")), Aggregation.skip(page * size),
 								Aggregation.limit(size));
 			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$specialities").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
@@ -514,6 +513,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("commiteeMember", new BasicDBObject("$first", "$commiteeMember"))
 							.append("specialities", new BasicDBObject("$push", "$specialities.superSpeciality"))
 							.append("address", new BasicDBObject("$first", "$address"))
+							.append("status", new BasicDBObject("$first", "$status"))
 							.append("discarded", new BasicDBObject("$first", "$discarded"))
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
@@ -527,7 +527,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 					Fields.field("speakers.speakerId", "$speakers.speakerId"),
 					Fields.field("speakers.firstName", "$speaker.firstName"),
 					Fields.field("speakers.role", "$speakers.role"),
-					Fields.field("speakers.profileImage", "$speaker.profileImage"),
+					Fields.field("speakers.profileImage", "$speaker.profileImage"), Fields.field("status", "$status"),
 					Fields.field("commiteeMember", "$commiteeMember"), Fields.field("createdTime", "$createdTime"),
 					Fields.field("updatedTime", "$updatedTime"), Fields.field("createdBy", "$createdBy")));
 
@@ -541,6 +541,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("speakers", new BasicDBObject("$push", "$speakers"))
 							.append("specialities", new BasicDBObject("$first", "$specialities"))
 							.append("address", new BasicDBObject("$first", "$address"))
+							.append("status", new BasicDBObject("$first", "$status"))
 							.append("discarded", new BasicDBObject("$first", "$discarded"))
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
@@ -926,5 +927,5 @@ public class ConferenceServiceImpl implements ConferenceService {
 		}
 		return response;
 	}
-	
+
 }
