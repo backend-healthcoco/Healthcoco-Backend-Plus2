@@ -24,6 +24,7 @@ import com.dpdocter.beans.DoctorConferenceSession;
 import com.dpdocter.beans.SessionQuestion;
 import com.dpdocter.beans.SessionTopic;
 import com.dpdocter.beans.SpeakerProfile;
+import com.dpdocter.collections.ConfexUserCollection;
 import com.dpdocter.collections.DoctorConferenceAgendaCollection;
 import com.dpdocter.collections.DoctorConferenceCollection;
 import com.dpdocter.collections.DoctorConferenceSessionCollection;
@@ -42,6 +43,7 @@ import com.dpdocter.repository.QuestionRepository;
 import com.dpdocter.repository.SessionTopicRepository;
 import com.dpdocter.repository.SpeakerProfileRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.response.OrganizingCommitteeResponse;
 import com.dpdocter.response.SessionDateResponse;
 import com.dpdocter.services.ConferenceService;
@@ -924,5 +926,5 @@ public class ConferenceServiceImpl implements ConferenceService {
 		}
 		return response;
 	}
-
+	
 }

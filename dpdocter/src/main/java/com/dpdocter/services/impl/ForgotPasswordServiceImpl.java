@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.collections.ConfexUserCollection;
 import com.dpdocter.collections.OAuth2AuthenticationAccessTokenCollection;
 import com.dpdocter.collections.OAuth2AuthenticationRefreshTokenCollection;
 import com.dpdocter.collections.OTPCollection;
@@ -25,6 +26,7 @@ import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.repository.ConfexUserRepository;
 import com.dpdocter.repository.OAuth2AccessTokenRepository;
 import com.dpdocter.repository.OAuth2RefreshTokenRepository;
 import com.dpdocter.repository.OTPRepository;
@@ -55,6 +57,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 	@Autowired
 	private OAuth2AccessTokenRepository oAuth2AccessTokenRepository;
+
+	@Autowired
+	private ConfexUserRepository confexUserRepository;
 
 	@Autowired
 	private MailService mailService;
@@ -179,8 +184,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				}
 				if (request.getMobileNumber() != null && !request.getMobileNumber().isEmpty()) {
 					String OTP = LoginUtils.generateOTP();
-					SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null,
-							OTP + " is your Healthcoco account OTP. Enter this in Healthcoco app to confirm your account.",
+					SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null, OTP
+							+ " is your Healthcoco account OTP. Enter this in Healthcoco app to confirm your account.",
 							request.getMobileNumber(), "OTPVerification");
 					sMSServices.sendSMS(smsTrackDetail, false);
 
@@ -457,4 +462,59 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 	}
+
+	@Override
+	@Transactional
+	public String resetPasswordForConference(ResetPasswordRequest request) {
+
+		try {
+			ConfexUserCollection userCollection = null;
+			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(request.getUserId()));
+			if (tokenCollection == null)
+				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the SMS that we sent you.";
+			else if (tokenCollection.getIsUsed())
+				return "Your password has already been reset.";
+			else {
+				if (!isLinkValid(tokenCollection.getCreatedTime()))
+					return "Your reset password link has expired.";
+				userCollection = confexUserRepository.findOne(tokenCollection.getResourceId());
+				if (userCollection == null) {
+					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the SMS that we sent you.";
+				}
+				if (!(userCollection.getIsVerified())) {
+					return "User is not verified";
+				}
+
+				List<OAuth2AuthenticationRefreshTokenCollection> refreshTokenCollections = oAuth2RefreshTokenRepository
+						.findByclientIdAndUserName("healthco2conference", userCollection.getUserName());
+				if (!refreshTokenCollections.isEmpty() && refreshTokenCollections != null) {
+					oAuth2RefreshTokenRepository.delete(refreshTokenCollections);
+				}
+
+				List<OAuth2AuthenticationAccessTokenCollection> accessTokenCollections = oAuth2AccessTokenRepository
+						.findByClientIdAndUserName("healthco2conference", userCollection.getUserName());
+				if (!accessTokenCollections.isEmpty() && accessTokenCollections != null) {
+					oAuth2AccessTokenRepository.delete(accessTokenCollections);
+				}
+				userCollection.setSalt(DPDoctorUtils.generateSalt());
+				String salt = new String(userCollection.getSalt());
+				char[] sha3Password = request.getPassword();
+				String password = new String(sha3Password);
+				password = passwordEncoder.encodePassword(password, salt);
+				userCollection.setPassword(password.toCharArray());
+				// userCollection.setIsTempPassword(false);
+				confexUserRepository.save(userCollection);
+				tokenCollection.setIsUsed(true);
+				tokenRepository.save(tokenCollection);
+
+				return "You have successfully changed your password.";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+
+	}
+
 }

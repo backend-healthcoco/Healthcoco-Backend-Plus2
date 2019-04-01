@@ -47,5 +47,7 @@ public interface SignUpService {
 	DoctorSignUp doctorSignUp(DoctorSignupRequest request);
 
 	DoctorContactUs welcomeUser(String tokenId);
+	
+	public String verifyConfexAdmin(String tokenId);
 
 }

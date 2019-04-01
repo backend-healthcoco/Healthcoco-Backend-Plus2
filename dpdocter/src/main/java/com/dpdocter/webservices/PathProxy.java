@@ -42,6 +42,8 @@ public interface PathProxy {
 		public static final String WELCOME_USER = "/welcome/{tokenId}";
 
 		public static final String DOCTOR_SIGNUP = "/doctor";
+		
+		public static final String VERIFY_CONFERENCE_USER = "/conference/user/verify/{tokenId}";
 
 	}
 
@@ -394,6 +396,9 @@ public interface PathProxy {
 		public static final String FORGOT_USERNAME = "/forgot-username";
 
 		public static final String RESET_PASSWORD_CB = "/resetPasswordCB";
+		
+		public static final String RESET_PASSWORD_CONFERENCE = "/conference/resetPassword";
+
 	}
 
 	public static final String RECORDS_BASE_URL = BASE_URL + "/records";

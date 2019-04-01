@@ -393,4 +393,18 @@ public class SignUpApi {
 		return response;
 	}
 
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.VERIFY_CONFERENCE_USER)
+	@GET
+	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_CONFERENCE_USER, notes = PathProxy.SignUpUrls.VERIFY_CONFERENCE_USER)
+	public Response<String> verifyConferenUser(@PathParam(value = "tokenId") String tokenId) {
+		if (tokenId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		String string = signUpService.verifyConfexAdmin(tokenId);
+		Response<String> response = new Response<String>();
+		response.setData(string);
+		return response;
+	}
 }
