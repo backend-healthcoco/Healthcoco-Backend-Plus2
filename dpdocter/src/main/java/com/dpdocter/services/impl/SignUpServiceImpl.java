@@ -1186,7 +1186,7 @@ public class SignUpServiceImpl implements SignUpService {
 							+ " Please contact support@healthcoco.com for completing your account verification.";
 				ConfexUserCollection userCollection = confexUserRepository
 						.findOne(tokenCollection.getResourceId());
-				if (doctorClinicProfileRepository == null) {
+				if (userCollection == null) {
 					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification  that we sent you.";
 				}
 				userCollection.setIsVerified(true);
