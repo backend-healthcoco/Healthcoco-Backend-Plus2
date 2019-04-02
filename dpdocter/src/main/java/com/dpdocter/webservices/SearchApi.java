@@ -262,6 +262,22 @@ public class SearchApi {
 		return response;
 	}
 	
+	@Path(value = PathProxy.SearchUrls.GET_LANDMARKS_AND_LOCALITIES)
+	@GET
+	@ApiOperation(value = PathProxy.SearchUrls.GET_LANDMARKS_AND_LOCALITIES, notes = PathProxy.SearchUrls.GET_LANDMARKS_AND_LOCALITIES)
+	public Response<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(@PathParam("city") String city, @QueryParam("page") int page, @QueryParam("size") int size,
+				@QueryParam("searchTerm") String searchTerm) {
+			if (city == null) {
+				logger.warn("Invalid Input");
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			}
+			List<SearchLandmarkLocalityResponse> searchLandmarkLocalityResponses = searchService.getLandmarksAndLocalitiesByCity(city, page, size, searchTerm);
+	
+			Response<SearchLandmarkLocalityResponse> response = new Response<SearchLandmarkLocalityResponse>();
+			response.setDataList(searchLandmarkLocalityResponses);
+			return response;
+		}
+	
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null) {
 			return imagePath + imageURL;
