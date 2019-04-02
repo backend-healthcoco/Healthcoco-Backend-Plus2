@@ -1,6 +1,6 @@
 package com.dpdocter.response;
 
-public class DoctorprescriptionAnalyticResponse {
+public class DoctorPrescriptionAnalyticResponse {
 	
 	private Integer totalPrescription=0;
 	
@@ -21,8 +21,4 @@ public class DoctorprescriptionAnalyticResponse {
 	public void setTotalPrescriptionCreated(Integer totalPrescriptionCreated) {
 		this.totalPrescriptionCreated = totalPrescriptionCreated;
 	}
-
-	
-	
-
 }
