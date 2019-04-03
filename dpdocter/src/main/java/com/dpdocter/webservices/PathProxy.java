@@ -963,6 +963,8 @@ public interface PathProxy {
 		public static final String SEARCH_PATIENT = "searchPatient/{locationId}/{hospitalId}/{searchTerm}";
 
 		public static final String SEARCH_PATIENT_ADV = "searchPatient";
+
+		public static final String SEARCH_DELETED_PATIENT = "/patient/getDeleted/{doctorId}/{locationId}/{hospitalId}";
 	}
 
 	public static final String APPOINTMENT_BASE_URL = BASE_URL + "/appointment";

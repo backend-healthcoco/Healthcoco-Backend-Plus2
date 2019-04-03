@@ -12,6 +12,7 @@ import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.joda.time.DateTime;
@@ -456,4 +457,49 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		}
 		return response;
 	}
+
+	@Override
+	public List<ESPatientDocument> searchDeletedPatient(String doctorId, String locationId, String hospitalId, int page,
+			int size, String searchTerm, String sortBy) {
+		List<ESPatientDocument> response = null;
+		try {
+
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+					.must(QueryBuilders.termQuery("doctorId", doctorId))
+					.must(QueryBuilders.termQuery("locationId", locationId))
+					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
+					.must(QueryBuilders.termQuery("isPatientDiscarded", true));
+					
+			if(!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				boolQueryBuilder.should(QueryBuilders.queryStringQuery("localPatientNameFormatted:" + "*" + searchTerm + "*"))
+						.should(QueryBuilders
+								.matchPhrasePrefixQuery(AdvancedSearchType.MOBILE_NUMBER.getSearchType(), searchTerm)).minimumNumberShouldMatch(1);
+			}
+			SortBuilder sortBuilder = SortBuilders.fieldSort("createdTime").order(SortOrder.DESC);
+					
+			if(!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("localPatientName")) {
+				sortBuilder = SortBuilders.fieldSort("localPatientName").order(SortOrder.ASC);
+			}
+			
+			SearchQuery searchQuery = null;
+			if(size > 0) {
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(sortBuilder)
+						.withPageable(new PageRequest(page, size)).build();
+			}
+			else {
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(sortBuilder).build();
+			}
+			
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPatientDocument.class);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while searching deleted patient");
+		}
+		return response;
+	}
+
 }

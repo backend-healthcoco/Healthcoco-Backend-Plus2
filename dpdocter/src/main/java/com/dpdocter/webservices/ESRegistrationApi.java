@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.elasticsearch.beans.AdvancedSearch;
+import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.response.ESPatientResponseDetails;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.exceptions.BusinessException;
@@ -74,4 +75,22 @@ public class ESRegistrationApi {
 	response.setData(patients);
 	return response;
     }
+    
+    @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_DELETED_PATIENT)
+	@GET
+	@ApiOperation(value = PathProxy.SolrRegistrationUrls.SEARCH_DELETED_PATIENT, notes = PathProxy.SolrRegistrationUrls.SEARCH_DELETED_PATIENT)
+	public Response<ESPatientDocument> searchDeletedPatient(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("sortBy") String sortBy) {
+
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId, hospitalId could not null");
+		}
+
+		Response<ESPatientDocument> response = new Response<ESPatientDocument>();
+		response.setDataList(solrRegistrationService.searchDeletedPatient(doctorId, locationId, hospitalId, page, size, searchTerm, sortBy));
+		return response;
+
+	}
 }
