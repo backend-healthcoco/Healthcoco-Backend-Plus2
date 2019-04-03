@@ -23,20 +23,14 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.stereotype.Service;
 
-import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.collections.LocationCollection;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.beans.AdvancedSearch;
 import com.dpdocter.elasticsearch.beans.AdvancedSearchParameter;
@@ -67,7 +61,6 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.TransactionalManagementService;
-import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -486,7 +479,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 						.should(QueryBuilders
 								.matchPhrasePrefixQuery(AdvancedSearchType.MOBILE_NUMBER.getSearchType(), searchTerm)).minimumNumberShouldMatch(1);
 			}
-			SortBuilder sortBuilder = SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC);
+			SortBuilder sortBuilder = SortBuilders.fieldSort("createdTime").order(SortOrder.DESC);
 					
 			if(!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("localPatientName")) {
 				sortBuilder = SortBuilders.fieldSort("localPatientName").order(SortOrder.ASC);

@@ -39,6 +39,8 @@ public class ESPatientResponse {
 
 	private String motherName;
 
+	private String doctorId;
+
 	public String getId() {
 		return id;
 	}
@@ -159,12 +161,20 @@ public class ESPatientResponse {
 		this.motherName = motherName;
 	}
 
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
 	@Override
 	public String toString() {
 		return "ESPatientResponse [id=" + id + ", userId=" + userId + ", PID=" + PID + ", firstName=" + firstName
 				+ ", localPatientName=" + localPatientName + ", gender=" + gender + ", emailAddress=" + emailAddress
 				+ ", dob=" + dob + ", mobileNumber=" + mobileNumber + ", thumbnailUrl=" + thumbnailUrl + ", colorCode="
-				+ colorCode + ", PNUM=" + PNUM + "]";
+				+ colorCode + ", PNUM=" + PNUM + ", isChild=" + isChild + ", fatherName=" + fatherName + ", motherName="
+				+ motherName + ", doctorId=" + doctorId + "]";
 	}
-
 }
