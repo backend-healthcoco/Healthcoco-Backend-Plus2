@@ -1374,8 +1374,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 					Fields.field("doctorName", "$doctor.firstName"), Fields.field("firstName", "$patient.firstName"),
 					Fields.field("localPatientName", "$patient.localPatientName"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("drugs", "$drug"),
-
-					Fields.field("tests", "$diagnosticTests")));
+					Fields.field("diagnosticTests", "$diagnosticTests")));
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
@@ -1389,14 +1388,37 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 						Aggregation.unwind("patient"), Aggregation.match(criteria), projectList,
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$_id").append("drugs", new BasicDBObject("$push", "$drugs"))
-										.append("tests", new BasicDBObject("$first", "$tests"))
+										.append("diagnosticTests", new BasicDBObject("$first", "$diagnosticTests"))
 										.append("advice", new BasicDBObject("$first", "$advice"))
 										.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
 										.append("firstName", new BasicDBObject("$first", "$firstName"))
 										.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 										.append("doctorName", new BasicDBObject("$first", "$doctorName")))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$diagnosticTests").append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex1"))),
+
+						Aggregation.lookup("diagnostic_test_cl", "diagnosticTests.testId", "_id", "test"),
+
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("_id", "$_id").append("drugs", new BasicDBObject("$first", "$drugs"))
+										.append("diagnosticTests", new BasicDBObject("$push", "$test"))
+										.append("advice", new BasicDBObject("$first", "$advice"))
+										.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
+										.append("firstName", new BasicDBObject("$first", "$firstName"))
+										.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+										.append("doctorName", new BasicDBObject("$first", "$doctorName")))),
+
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$test").append("preserveNullAndEmptyArrays", true))),
+
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip(page * size),
+
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(
@@ -1411,7 +1433,26 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 						Aggregation.unwind("patient"), Aggregation.match(criteria), projectList,
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$_id").append("drugs", new BasicDBObject("$push", "$drugs"))
-										.append("tests", new BasicDBObject("$first", "$tests"))
+										.append("diagnosticTests", new BasicDBObject("$first", "$diagnosticTests"))
+										.append("advice", new BasicDBObject("$first", "$advice"))
+										.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
+										.append("firstName", new BasicDBObject("$first", "$firstName"))
+										.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+										.append("doctorName", new BasicDBObject("$first", "$doctorName")))),
+
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$diagnosticTests").append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex1"))),
+
+						Aggregation.lookup("diagnostic_test_cl", "diagnosticTests.testId", "_id", "test"),
+
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$test").append("preserveNullAndEmptyArrays", true))),
+
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("_id", "$_id").append("drugs", new BasicDBObject("$first", "$drugs"))
+										.append("diagnosticTests", new BasicDBObject("$push", "$test"))
 										.append("advice", new BasicDBObject("$first", "$advice"))
 										.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
 										.append("firstName", new BasicDBObject("$first", "$firstName"))
@@ -1426,25 +1467,6 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 					PrescriptionCollection.class, PrescriptionAnalyticDetail.class);
 			response = aggregationResults.getMappedResults();
 
-			for (PrescriptionAnalyticDetail prescription : response) {
-				if (prescription.getTests() != null && !prescription.getTests().isEmpty()) {
-					List<DiagnosticTest> diagnosticTests = new ArrayList<DiagnosticTest>();
-					for (TestAndRecordData data : prescription.getTests()) {
-						if (data.getTestId() != null) {
-							DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-									.findOne(data.getTestId());
-							DiagnosticTest diagnosticTest = new DiagnosticTest();
-							if (diagnosticTestCollection != null) {
-								BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-								diagnosticTests.add(diagnosticTest);
-							}
-						}
-						prescription.setTests(null);
-						prescription.setDiagnosticTests(diagnosticTests);
-
-					}
-				}
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While getting prescription analytic Detail");

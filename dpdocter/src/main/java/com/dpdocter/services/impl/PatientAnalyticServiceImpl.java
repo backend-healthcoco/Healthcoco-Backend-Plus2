@@ -251,6 +251,9 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			criteria.and("address.city").is(searchTerm);
 		}
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+		}
 
 		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 			criteria = criteria.and("locationId").is(new ObjectId(locationId));
@@ -359,7 +362,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		}
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 			criteria2 = criteria2.and("group.doctorId").is(new ObjectId(doctorId));
-			criteria.and("doctorId").is(new ObjectId(doctorId));
+			
 		}
 		if (!DPDoctorUtils.anyStringEmpty(groupId)) {
 			criteria2 = criteria2.and("patientGroup.groupId").is(new ObjectId(groupId));
@@ -1028,8 +1031,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 					new Criteria("patient.PID").regex(searchTerm, "i"));
 		}
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-			criteria = criteria.and("doctorId").is(new ObjectId(doctorId)).and("patient.doctorId")
-					.is(new ObjectId(doctorId));
+			criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
 		}
 		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 			criteria = criteria.and("locationId").is(new ObjectId(locationId)).and("patient.locationId")
@@ -1082,14 +1084,14 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			long diff = to.getTime() - from.getTime();
 			long diffDays = (diff / (24 * 60 * 60 * 1000));
 			lastdate = new Date(from.getTime() - ((diffDays + 1) * (24 * 60 * 60 * 1000)));
-			criteria = getCriteria(null, locationId, hospitalId);
+			criteria = getCriteria(doctorId, locationId, hospitalId);
 			data.setTotalPatient((int) mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 							Aggregation.sort(Direction.DESC, "createdTime")),
 					PatientCollection.class, PatientCollection.class).getMappedResults().size());
 
-			criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(from).lte(to);
+			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(from).lte(to);
 			data.setTotalNewPatient((int) mongoTemplate.count(new Query(criteria), PatientCollection.class));
 
 			// hike in patient
@@ -1098,7 +1100,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			if (data.getTotalNewPatient() > 0) {
 				// hike in patient
 
-				criteria = getCriteria(null, locationId, hospitalId).and("createdTime").gte(lastdate).lte(from);
+				criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(lastdate).lte(from);
 				total = (int) mongoTemplate.count(new Query(criteria), PatientCollection.class);
 				data.setChangeInTotalPatientInPercent(total);
 
@@ -1181,6 +1183,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		criteria2.and("visit.discarded").is(false);
 		Aggregation aggregation = null;
 		if (!isVisited) {
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			if (size > 0)
 				aggregation = Aggregation
 						.newAggregation(Aggregation.match(criteria), projectList, aggregationOperation,
@@ -1258,8 +1262,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			}
 
 		}
-		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$user._id"),
-				Fields.field("name", "$user.firstName"), Fields.field("count", "$userId")));
+		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$refer.reference"),
+				Fields.field("name", "$refer.reference"), Fields.field("count", "$userId")));
 
 		CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 				new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name")).append("count",
@@ -1282,6 +1286,9 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		criteria2.and("visit.discarded").is(false);
 		Aggregation aggregation = null;
 		if (!isVisited) {
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"), Aggregation.unwind("refer"),
@@ -1304,10 +1311,10 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						Aggregation.unwind("visit"), Aggregation.match(criteria2),
 
 						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$userId").append("user", new BasicDBObject("$first", "$user"))
+								new BasicDBObject("_id", "$_id").append("refer", new BasicDBObject("$first", "$refer"))
 										.append("userId", new BasicDBObject("$first", "$userId")))),
-						new ProjectionOperation(Fields.from(Fields.field("id", "$user._id"),
-								Fields.field("name", "$user.firstName"), Fields.field("count", "$userId"))),
+						new ProjectionOperation(Fields.from(Fields.field("id", "$refer.reference"),
+								Fields.field("name", "$refer.reference"), Fields.field("count", "$userId"))),
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name"))
 										.append("count", new BasicDBObject("$sum", 1)))),
@@ -1322,10 +1329,10 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						Aggregation.unwind("visit"), Aggregation.match(criteria2),
 
 						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$userId").append("user", new BasicDBObject("$first", "$user"))
+								new BasicDBObject("_id", "$_id").append("refer", new BasicDBObject("$first", "$refer"))
 										.append("userId", new BasicDBObject("$first", "$userId")))),
-						new ProjectionOperation(Fields.from(Fields.field("id", "$user._id"),
-								Fields.field("name", "$user.firstName"), Fields.field("count", "$userId"))),
+						new ProjectionOperation(Fields.from(Fields.field("id", "$refer.reference"),
+								Fields.field("name", "$refer.reference"), Fields.field("count", "$userId"))),
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name"))
 										.append("count", new BasicDBObject("$sum", 1)))),
@@ -1395,6 +1402,10 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		criteria3.and("visit.discarded").is(false);
 		Aggregation aggregation = null;
 		if (!isVisited) {
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria2.and("doctorId").is(new ObjectId(doctorId));
+
+			}
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroup"),
