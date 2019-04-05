@@ -251,6 +251,9 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			criteria.and("address.city").is(searchTerm);
 		}
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+		}
 
 		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 			criteria = criteria.and("locationId").is(new ObjectId(locationId));
@@ -1165,6 +1168,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						new BasicDBObject("$sum", 1))));
 
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			criteria.and("doctorId").is(new ObjectId(doctorId));
 			criteria2.and("visit.doctorId").is(new ObjectId(doctorId));
 
 		}
@@ -1258,14 +1262,15 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			}
 
 		}
-		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$user._id"),
-				Fields.field("name", "$user.firstName"), Fields.field("count", "$userId")));
+		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$refer.reference"),
+				Fields.field("name", "$refer.reference"), Fields.field("count", "$userId")));
 
 		CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 				new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name")).append("count",
 						new BasicDBObject("$sum", 1))));
 
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			criteria.and("doctorId").is(new ObjectId(doctorId));
 			criteria2.and("visit.doctorId").is(new ObjectId(doctorId));
 
 		}
@@ -1304,10 +1309,10 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						Aggregation.unwind("visit"), Aggregation.match(criteria2),
 
 						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$userId").append("user", new BasicDBObject("$first", "$user"))
+								new BasicDBObject("_id", "$_id").append("refer", new BasicDBObject("$first", "$refer"))
 										.append("userId", new BasicDBObject("$first", "$userId")))),
-						new ProjectionOperation(Fields.from(Fields.field("id", "$user._id"),
-								Fields.field("name", "$user.firstName"), Fields.field("count", "$userId"))),
+						new ProjectionOperation(Fields.from(Fields.field("id", "$refer.reference"),
+								Fields.field("name", "$refer.reference"), Fields.field("count", "$userId"))),
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name"))
 										.append("count", new BasicDBObject("$sum", 1)))),
@@ -1322,10 +1327,11 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						Aggregation.unwind("visit"), Aggregation.match(criteria2),
 
 						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$userId").append("user", new BasicDBObject("$first", "$user"))
+								new BasicDBObject("_id", "$_id").append("refer", new BasicDBObject("$first", "$refer"))
 										.append("userId", new BasicDBObject("$first", "$userId")))),
-						new ProjectionOperation(Fields.from(Fields.field("id", "$user._id"),
-								Fields.field("name", "$user.firstName"), Fields.field("count", "$userId"))),
+						new ProjectionOperation(Fields.from(Fields.field("id", "$refer.reference"),
+								Fields.field("name", "$refer.reference"), Fields.field("count", "$userId"))),
+
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name"))
 										.append("count", new BasicDBObject("$sum", 1)))),
