@@ -1374,8 +1374,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 					Fields.field("doctorName", "$doctor.firstName"), Fields.field("firstName", "$patient.firstName"),
 					Fields.field("localPatientName", "$patient.localPatientName"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("drugs", "$drug"),
-
-					Fields.field("tests", "$diagnosticTests")));
+					Fields.field("diagnosticTests", "$diagnosticTests")));
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
@@ -1389,7 +1388,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 						Aggregation.unwind("patient"), Aggregation.match(criteria), projectList,
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$_id").append("drugs", new BasicDBObject("$push", "$drugs"))
-										.append("tests", new BasicDBObject("$first", "$tests"))
+										.append("tests", new BasicDBObject("$first", "$diagnosticTests"))
 										.append("advice", new BasicDBObject("$first", "$advice"))
 										.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
 										.append("firstName", new BasicDBObject("$first", "$firstName"))
@@ -1411,7 +1410,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 						Aggregation.unwind("patient"), Aggregation.match(criteria), projectList,
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$_id").append("drugs", new BasicDBObject("$push", "$drugs"))
-										.append("tests", new BasicDBObject("$first", "$tests"))
+										.append("tests", new BasicDBObject("$first", "$diagnosticTests"))
 										.append("advice", new BasicDBObject("$first", "$advice"))
 										.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
 										.append("firstName", new BasicDBObject("$first", "$firstName"))
@@ -1439,11 +1438,13 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 								diagnosticTests.add(diagnosticTest);
 							}
 						}
-						prescription.setTests(null);
-						prescription.setDiagnosticTests(diagnosticTests);
+						
 
 					}
+					
+					prescription.setDiagnosticTests(diagnosticTests);
 				}
+				prescription.setTests(null);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
