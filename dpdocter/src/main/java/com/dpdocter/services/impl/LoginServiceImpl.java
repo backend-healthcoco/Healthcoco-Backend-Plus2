@@ -430,9 +430,10 @@ public class LoginServiceImpl implements LoginService {
 						response = new ArrayList<RegisteredPatientDetails>();
 					response.add(user);
 
-				} 
+				}
 
 			}
+
 			if (response == null) {
 				logger.warn(loginPatient);
 				throw new BusinessException(ServiceError.InvalidInput, loginPatient);
@@ -458,38 +459,47 @@ public class LoginServiceImpl implements LoginService {
 			Query query = new Query();
 			query.addCriteria(criteria);
 			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
-
-			for (UserCollection userCollection : userCollections) {
-				if (userCollection.getEmailAddress() != null) {
-					if (!DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
-						Boolean verifyOTPResponse = false;
-						if (!verifyOTPResponse) {
-							verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(), request.getOtpNumber());
+			if (userCollections != null && !userCollections.isEmpty()) {
+				for (UserCollection userCollection : userCollections) {
+					if (userCollection.getEmailAddress() != null) {
+						if (!DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
+							Boolean verifyOTPResponse = false;
 							if (!verifyOTPResponse) {
-								logger.warn(loginPatient);
-								throw new BusinessException(ServiceError.InvalidInput, loginPatient);
+								verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(),
+										request.getOtpNumber());
+								if (!verifyOTPResponse) {
+									logger.warn(loginPatient);
+									throw new BusinessException(ServiceError.InvalidInput, loginPatient);
+								}
 							}
-						}
-						RegisteredPatientDetails user = new RegisteredPatientDetails();
-						PatientCollection patientCollection = patientRepository
-								.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
-						if (patientCollection != null) {
-							Patient patient = new Patient();
-							BeanUtil.map(patientCollection, patient);
-							BeanUtil.map(patientCollection, user);
-							patient.setPatientId(patientCollection.getUserId().toString());
-							user.setPatient(patient);
-						}
-						BeanUtil.map(userCollection, user);
-						user.setUserNutritionSubscriptions(addUserNutritionSubscriptionResponse(userCollection));
-						user.setUserId(userCollection.getId().toString());
+							RegisteredPatientDetails user = new RegisteredPatientDetails();
+							PatientCollection patientCollection = patientRepository
+									.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null,
+											null);
+							if (patientCollection != null) {
+								Patient patient = new Patient();
+								BeanUtil.map(patientCollection, patient);
+								BeanUtil.map(patientCollection, user);
+								patient.setPatientId(patientCollection.getUserId().toString());
+								user.setPatient(patient);
+							}
+							BeanUtil.map(userCollection, user);
+							user.setUserNutritionSubscriptions(addUserNutritionSubscriptionResponse(userCollection));
+							user.setUserId(userCollection.getId().toString());
 
-						if (response == null)
-							response = new ArrayList<RegisteredPatientDetails>();
-						response.add(user);
+							if (response == null)
+								response = new ArrayList<RegisteredPatientDetails>();
+							response.add(user);
+
+						}
 
 					}
-
+				}
+			} else {
+				Boolean verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(), request.getOtpNumber());
+				if (!verifyOTPResponse) {
+					logger.warn(loginPatient);
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid Mobile Number ");
 				}
 			}
 		} catch (BusinessException be) {
