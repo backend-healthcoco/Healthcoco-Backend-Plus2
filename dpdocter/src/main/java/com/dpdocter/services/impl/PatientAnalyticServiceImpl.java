@@ -362,7 +362,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		}
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 			criteria2 = criteria2.and("group.doctorId").is(new ObjectId(doctorId));
-			
+
 		}
 		if (!DPDoctorUtils.anyStringEmpty(groupId)) {
 			criteria2 = criteria2.and("patientGroup.groupId").is(new ObjectId(groupId));
@@ -1243,7 +1243,6 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		}
 		if (!isVisited) {
 			if (toTime != null && fromTime != null) {
-
 				criteria.and("createdTime").gte(fromTime).lte(toTime);
 			} else if (toTime != null) {
 				criteria.and("createdTime").lte(toTime);
@@ -1266,10 +1265,13 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				Fields.field("name", "$refer.reference"), Fields.field("count", "$userId")));
 
 		CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-				new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name")).append("count",
+				new BasicDBObject("_id", "$name").append("name", new BasicDBObject("$first", "$name")).append("count",
 						new BasicDBObject("$sum", 1))));
 
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			if (!isVisited) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
 			criteria2.and("visit.doctorId").is(new ObjectId(doctorId));
 
 		}
@@ -1286,35 +1288,32 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		criteria2.and("visit.discarded").is(false);
 		Aggregation aggregation = null;
 		if (!isVisited) {
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").is(new ObjectId(doctorId));
-			}
+
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"), Aggregation.unwind("refer"),
-						Aggregation.lookup("user_cl", "refer.doctorId", "_id", "user"), Aggregation.unwind("user"),
 						projectList, aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
 						Aggregation.skip((page) * size), Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"), Aggregation.unwind("refer"),
-						Aggregation.lookup("user_cl", "refer.doctorId", "_id", "user"), Aggregation.unwind("user"),
 						projectList, aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 		} else {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"), Aggregation.unwind("refer"),
-						Aggregation.lookup("user_cl", "refer.doctorId", "_id", "user"), Aggregation.unwind("user"),
 						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 						Aggregation.unwind("visit"), Aggregation.match(criteria2),
 
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$_id").append("refer", new BasicDBObject("$first", "$refer"))
 										.append("userId", new BasicDBObject("$first", "$userId")))),
+					
 						new ProjectionOperation(Fields.from(Fields.field("id", "$refer.reference"),
 								Fields.field("name", "$refer.reference"), Fields.field("count", "$userId"))),
+					
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name"))
 										.append("count", new BasicDBObject("$sum", 1)))),
@@ -1324,17 +1323,18 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"), Aggregation.unwind("refer"),
-						Aggregation.lookup("user_cl", "refer.doctorId", "_id", "user"), Aggregation.unwind("user"),
 						Aggregation.lookup("patient_visit_cl", "userId", "patientId", "visit"),
 						Aggregation.unwind("visit"), Aggregation.match(criteria2),
 
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$_id").append("refer", new BasicDBObject("$first", "$refer"))
 										.append("userId", new BasicDBObject("$first", "$userId")))),
+						
 						new ProjectionOperation(Fields.from(Fields.field("id", "$refer.reference"),
 								Fields.field("name", "$refer.reference"), Fields.field("count", "$userId"))),
+						
 						new CustomAggregationOperation(new BasicDBObject("$group",
-								new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name"))
+								new BasicDBObject("_id", "$name").append("name", new BasicDBObject("$first", "$name"))
 										.append("count", new BasicDBObject("$sum", 1)))),
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());

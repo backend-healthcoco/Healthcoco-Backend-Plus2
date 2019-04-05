@@ -1404,6 +1404,9 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
 
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$test").append("preserveNullAndEmptyArrays", true))),
+
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$_id").append("drugs", new BasicDBObject("$first", "$drugs"))
 										.append("diagnosticTests", new BasicDBObject("$push", "$test"))
@@ -1413,9 +1416,6 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 										.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 										.append("doctorName", new BasicDBObject("$first", "$doctorName")))),
-
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$test").append("preserveNullAndEmptyArrays", true))),
 
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip(page * size),
 
