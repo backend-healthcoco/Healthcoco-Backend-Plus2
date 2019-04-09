@@ -46,6 +46,7 @@ import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
+//Billing analytic 
 @Service
 @Transactional
 public class AnalyticsServiceImpl implements AnalyticsService {
@@ -1512,10 +1513,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("received",
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
 														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
+														.append("dueAmount", new BasicDBObject("$first", "$dueAmount"))
 														.append("patientName",
 																new BasicDBObject("$first", "$patientName"))
 														.append("pid", new BasicDBObject("$first", "$pid")))),
-										Aggregation.skip(page * size), Aggregation.limit(size));
+										Aggregation.sort(Direction.DESC, "dueAmount"), Aggregation.skip(page * size),
+										Aggregation.limit(size));
 					} else {
 						aggregation = Aggregation
 								.newAggregation(Aggregation.match(criteria),
@@ -1560,9 +1563,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("received",
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
 														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
+														.append("dueAmount", new BasicDBObject("$first", "$dueAmount"))
 														.append("patientName",
 																new BasicDBObject("$first", "$patientName"))
-														.append("pid", new BasicDBObject("$first", "$pid")))));
+														.append("pid", new BasicDBObject("$first", "$pid")))),
+										Aggregation.sort(Direction.DESC, "dueAmount"));
 					}
 				} else if (queryType.equalsIgnoreCase("DOCTORS")) {
 					if (size > 0) {
@@ -1612,10 +1617,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("received",
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
 														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
+														.append("dueAmount", new BasicDBObject("$first", "$dueAmount"))
 														.append("doctorName",
 																new BasicDBObject("$first", "$doctorName")))),
-
-										Aggregation.skip(page * size), Aggregation.limit(size));
+										Aggregation.sort(Direction.DESC, "dueAmount"), Aggregation.skip(page * size),
+										Aggregation.limit(size));
 					} else {
 						aggregation = Aggregation
 								.newAggregation(Aggregation.match(criteria),
@@ -1663,8 +1669,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("received",
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
 														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
+														.append("dueAmount", new BasicDBObject("$first", "$dueAmount"))
 														.append("doctorName",
-																new BasicDBObject("$first", "$doctorName")))));
+																new BasicDBObject("$first", "$doctorName")))),
+										Aggregation.sort(Direction.DESC, "dueAmount"));
 					}
 				}
 			} else {
