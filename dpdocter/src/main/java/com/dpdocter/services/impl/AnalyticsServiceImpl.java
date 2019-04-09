@@ -1512,10 +1512,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("received",
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
 														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
+														.append("dueAmount", new BasicDBObject("$first", "$dueAmount"))
 														.append("patientName",
 																new BasicDBObject("$first", "$patientName"))
 														.append("pid", new BasicDBObject("$first", "$pid")))),
-										Aggregation.skip(page * size), Aggregation.limit(size));
+										Aggregation.sort(Direction.DESC, "dueAmount"), Aggregation.skip(page * size),
+										Aggregation.limit(size));
 					} else {
 						aggregation = Aggregation
 								.newAggregation(Aggregation.match(criteria),
@@ -1562,7 +1564,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
 														.append("patientName",
 																new BasicDBObject("$first", "$patientName"))
-														.append("pid", new BasicDBObject("$first", "$pid")))));
+														.append("pid", new BasicDBObject("$first", "$pid"))
+														.append("dueAmount",
+																new BasicDBObject("$first", "$dueAmount")))),
+										Aggregation.sort(Direction.DESC, "dueAmount"));
 					}
 				} else if (queryType.equalsIgnoreCase("DOCTORS")) {
 					if (size > 0) {
@@ -1613,9 +1618,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
 														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
 														.append("doctorName",
-																new BasicDBObject("$first", "$doctorName")))),
-
-										Aggregation.skip(page * size), Aggregation.limit(size));
+																new BasicDBObject("$first", "$doctorName"))
+														.append("dueAmount",
+																new BasicDBObject("$first", "$dueAmount")))),
+										Aggregation.sort(Direction.DESC, "dueAmount"), Aggregation.skip(page * size),
+										Aggregation.limit(size));
 					} else {
 						aggregation = Aggregation
 								.newAggregation(Aggregation.match(criteria),
@@ -1664,7 +1671,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 																new BasicDBObject("$sum", "$receipt.amountPaid"))
 														.append("amountDue", new BasicDBObject("$first", "$dueAmount"))
 														.append("doctorName",
-																new BasicDBObject("$first", "$doctorName")))));
+																new BasicDBObject("$first", "$doctorName"))
+														.append("dueAmount",
+																new BasicDBObject("$first", "$dueAmount")))),
+										Aggregation.sort(Direction.DESC, "dueAmount"));
 					}
 				}
 			} else {
