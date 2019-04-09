@@ -495,18 +495,47 @@ public class LoginServiceImpl implements LoginService {
 
 						}
 
+					} else {
+
+						RegisteredPatientDetails user = new RegisteredPatientDetails();
+						if (!DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
+							Boolean verifyOTPResponse = false;
+							if (!verifyOTPResponse) {
+								verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(),
+										request.getOtpNumber());
+								if (!verifyOTPResponse) {
+									logger.warn(loginPatient);
+									throw new BusinessException(ServiceError.InvalidInput, loginPatient);
+								}
+							}
+							PatientCollection patientCollection = patientRepository
+									.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null,
+											null);
+							if (patientCollection != null) {
+								Patient patient = new Patient();
+								BeanUtil.map(patientCollection, patient);
+								BeanUtil.map(patientCollection, user);
+								patient.setPatientId(patientCollection.getUserId().toString());
+								user.setPatient(patient);
+							}
+							BeanUtil.map(userCollection, user);
+							user.setUserNutritionSubscriptions(addUserNutritionSubscriptionResponse(userCollection));
+							user.setUserId(userCollection.getId().toString());
+
+							if (response == null)
+								response = new ArrayList<RegisteredPatientDetails>();
+							response.add(user);
+
+						}
 					}
 				}
-			}else {
-				boolean verifyOTPResponse 
-					 = otpService.verifyOTP(request.getMobileNumber(),
-							request.getOtpNumber());
+			} else {
+				boolean verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(), request.getOtpNumber());
 				if (!verifyOTPResponse) {
 					logger.warn(loginPatient);
 					throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 				}
-				
-				
+
 			}
 		} catch (BusinessException be) {
 			logger.error(be);
