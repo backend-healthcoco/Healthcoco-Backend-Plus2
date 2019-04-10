@@ -4576,7 +4576,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						userCollectionNew.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
 						userCollectionNew.setMobileNumber(mobileNumber);
 						userCollectionNew.setUpdatedTime(new Date());
-						userCollectionNew = userRepository.save(userCollection);
+						userCollectionNew = userRepository.save(userCollectionNew);
 
 						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(patientObjectId, locationObjectId, hospitalObjectId);
 						
