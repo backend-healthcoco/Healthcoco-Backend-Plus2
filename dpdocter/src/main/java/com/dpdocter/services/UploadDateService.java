@@ -33,4 +33,6 @@ public interface UploadDateService {
 	Boolean updateTreatmentServices();
 
 	Boolean updateBillingData(String locationId, String hospitalId);
+
+	Boolean upploadReports(String doctorId, String locationId, String hospitalId);
 }

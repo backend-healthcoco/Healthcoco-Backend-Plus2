@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,7 @@ import java.util.TimeZone;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -140,6 +142,7 @@ import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.TreatmentServiceUpdateResponse;
+import com.dpdocter.services.FileManager;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PatientVisitService;
@@ -353,6 +356,12 @@ public class UploadDataServicesimpl implements UploadDateService {
 //	
 //	@Autowired
 //	private ElasticsearchTemplate elasticsearchTemplate;
+	
+	@Autowired
+	private PatientVisitService patientTrackService;
+	
+	@Autowired
+	private FileManager fileManager;
 	
 	@Override
 	public Boolean deletePatients(String doctorId, String locationId, String hospitalId) {
@@ -3321,5 +3330,112 @@ public class UploadDataServicesimpl implements UploadDateService {
 		e.printStackTrace();
 	}
 	return response;
+	}
+
+	@Override
+	public Boolean upploadReports(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		try {
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+
+			
+			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			String createdBy = (drCollection.getTitle() != null ? drCollection.getTitle() + " " : "")+ drCollection.getFirstName();
+			
+			LocationCollection locationCollection = locationRepository.findOne(locationObjectId);
+
+			File dir = new File("/home/ubuntu/Reports");
+			File[] directoryListing = dir.listFiles();
+			if (directoryListing != null) {
+			    for (File child : directoryListing) {
+			    	
+			      int indexOfPID = child.getName().indexOf("GDSC");
+			      System.out.println(child.getName());
+			      if(indexOfPID>0) {
+			    	  String[] string = child.getName().substring(indexOfPID).split("_");
+				      String PID = string[0];
+				      
+				      PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
+				    		  locationObjectId, hospitalObjectId, PID);
+						if (patientCollection != null) {
+							 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+							format.setTimeZone(TimeZone.getTimeZone("IST"));
+						    
+							Date createdTime = format.parse(string[1] +" "+string[2]);
+						    RecordsCollection recordsCollection = new RecordsCollection();
+						
+						    recordsCollection.setDoctorId(doctorObjectId);
+						    recordsCollection.setLocationId(locationObjectId);
+						    recordsCollection.setHospitalId(hospitalObjectId);
+						    recordsCollection.setPatientId(patientCollection.getUserId());
+						    recordsCollection.setAdminCreatedTime(createdTime);
+						    recordsCollection.setCreatedTime(createdTime);
+						    recordsCollection.setUpdatedTime(new Date());
+							recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
+							recordsCollection.setCreatedBy(createdBy);
+							recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
+							recordsCollection.setRecordsLabel(FilenameUtils.getBaseName(child.getName()));
+							String path = "records" + File.separator + recordsCollection.getPatientId();
+
+							String recordPath = path + File.separator + child.getName();
+
+							recordsCollection.setRecordsUrl(recordPath);
+							recordsCollection.setRecordsPath(recordPath);
+							
+							
+							//save image
+							BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+							AmazonS3 s3client = new AmazonS3Client(credentials);
+							
+							FileInputStream inputStream =  new FileInputStream(child);
+							byte[] byteArray = IOUtils.toByteArray(inputStream);
+							Long contentLength = Long.valueOf(byteArray.length);
+							inputStream.close();
+							FileInputStream fis = new FileInputStream(child);
+							String contentType = URLConnection.guessContentTypeFromStream(fis);
+							
+							ObjectMetadata metadata = new ObjectMetadata();
+
+							metadata.setContentLength(contentLength);
+							metadata.setContentEncoding(FilenameUtils.getExtension(child.getName()));
+							metadata.setContentType(contentType);
+							metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+
+							s3client.putObject(new PutObjectRequest(bucketName, recordPath, fis, metadata));
+							
+							recordsCollection.setRecordsType("IMAGE");
+							
+							if(FilenameUtils.getExtension(child.getName()).contains("pptx")) {
+								recordsCollection.setRecordsType("PPT");
+						     }else if(FilenameUtils.getExtension(child.getName()).contains("pdf")) {
+									recordsCollection.setRecordsType("PDF");
+						     }
+							
+							recordsCollection = recordsRepository.save(recordsCollection);
+							
+							Records records = new Records();
+							BeanUtil.map(recordsCollection, records);
+							String visitId = patientTrackService.addRecord(records, VisitedFor.REPORTS, null);
+							System.out.println(visitId);
+							fis.close();
+							response = true;
+						}
+			      }else {
+			    	  System.out.println("Patient Id is missing");
+			      }
+			      
+			    }
+			  }
+		}catch(Exception e) {
+			response = false;
+			e.printStackTrace();
+		}	
+		return response;
 	}
 }

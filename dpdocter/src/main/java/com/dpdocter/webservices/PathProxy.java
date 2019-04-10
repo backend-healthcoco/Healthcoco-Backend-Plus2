@@ -1680,6 +1680,8 @@ public interface PathProxy {
 
 		public static final String UPLOAD_IMAGES = "/images/{doctorId}/{locationId}/{hospitalId}/";
 
+		public static final String UPLOAD_REPORTS = "/reports/{doctorId}/{locationId}/{hospitalId}/";
+
 		public static final String UPDATE_TREATMENT_SERVICES = "/treatment/services/update";
 
 		public static final String UPDATE_BILLING = "/billing/{locationId}/{hospitalId}/update";
