@@ -54,6 +54,7 @@ import com.dpdocter.beans.SMSFormat;
 import com.dpdocter.beans.SMSReport;
 import com.dpdocter.beans.SMSTrack;
 import com.dpdocter.beans.UserMobileNumbers;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.SubscriptionDetailCollection;
@@ -62,6 +63,7 @@ import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.SMSTrackRepository;
 import com.dpdocter.repository.SubscriptionDetailRepository;
@@ -136,6 +138,9 @@ public class SMSServicesImpl implements SMSServices {
 
 	@Autowired
 	private SubscriptionDetailRepository subscriptionDetailRepository;
+	
+	@Autowired
+	private LocationRepository locationRepository;
 
 	@Async
 	@Override
@@ -143,13 +148,26 @@ public class SMSServicesImpl implements SMSServices {
 	public Boolean sendSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
 		Boolean response = false;
 		String responseId = null;
+		LocationCollection locationCollection = null;
 		try {
+			if(smsTrackDetail.getLocationId() != null)
+			{
+				locationCollection = locationRepository.findOne(smsTrackDetail.getLocationId());
+			}
+			
 			Message message = new Message();
 			List<SMS> smsList = new ArrayList<SMS>();
 			message.setAuthKey(AUTH_KEY);
 			message.setCountryCode(COUNTRY_CODE);
 			message.setRoute(ROUTE);
-			message.setSenderId(SENDER_ID);
+			if(locationCollection != null && DPDoctorUtils.anyStringEmpty(locationCollection.getSmsCode()))
+			{
+				message.setSenderId(locationCollection.getSmsCode());
+			}
+			else
+			{
+				message.setSenderId(SENDER_ID);
+			}
 			message.setUnicode(UNICODE);
 			Boolean isSMSInAccount = true;
 			UserMobileNumbers userNumber = null;

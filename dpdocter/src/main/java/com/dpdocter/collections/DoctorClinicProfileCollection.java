@@ -438,6 +438,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.defaultDoctorId = defaultDoctorId;
 	}
 
+
 	public Boolean getIsVaccinationModuleOn() {
 		return isVaccinationModuleOn;
 	}
