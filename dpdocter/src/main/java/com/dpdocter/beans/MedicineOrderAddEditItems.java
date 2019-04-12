@@ -5,7 +5,7 @@ public class MedicineOrderAddEditItems {
 	private String itemId;
 	private Integer quantity;
 	private Float amount;
-	private Drug drug;
+	private DrugInfo drug;
 	private Float amountAfterDiscount;
 	private String currency;
 
@@ -33,11 +33,11 @@ public class MedicineOrderAddEditItems {
 		this.amount = amount;
 	}
 
-	public Drug getDrug() {
+	public DrugInfo getDrug() {
 		return drug;
 	}
 
-	public void setDrug(Drug drug) {
+	public void setDrug(DrugInfo drug) {
 		this.drug = drug;
 	}
 

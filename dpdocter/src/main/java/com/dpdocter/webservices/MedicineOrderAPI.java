@@ -15,7 +15,10 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DrugInfo;
 import com.dpdocter.beans.MedicineOrder;
+import com.dpdocter.beans.TrackingOrder;
+import com.dpdocter.beans.UserCart;
 import com.dpdocter.enums.OrderStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -188,6 +191,102 @@ public class MedicineOrderAPI {
 		List<MedicineOrder> medicineOrders = medicineOrderService.getOrderList(patientId, updatedTime, searchTerm, page, size);
 		Response<MedicineOrder> response = new Response<MedicineOrder>();
 		response.setDataList(medicineOrders);
+		return response;
+	}
+	
+	@GET
+	@Path(value = PathProxy.OrderMedicineUrls.GET_DRUG_INFO_LIST)
+	@ApiOperation(value = PathProxy.OrderMedicineUrls.GET_DRUG_INFO_LIST, notes = PathProxy.OrderMedicineUrls.GET_DRUG_INFO_LIST)
+	public Response<DrugInfo> getGetDrugInfoList(@QueryParam("page") int page , @QueryParam("size") int size , @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,@QueryParam("searchTerm") String searchTerm,@QueryParam("discarded") Boolean discarded) {
+		
+		List<DrugInfo> drugInfos = medicineOrderService.getDrugInfo(page, size, updatedTime, searchTerm, discarded);
+		Response<DrugInfo> response = new Response<DrugInfo>();
+		response.setDataList(drugInfos);
+		return response;
+	}
+	
+	@POST
+	@Path(value = PathProxy.OrderMedicineUrls.ADD_EDIT_USER_CART)
+	@ApiOperation(value = PathProxy.OrderMedicineUrls.ADD_EDIT_USER_CART, notes = PathProxy.OrderMedicineUrls.ADD_EDIT_USER_CART)
+	public Response<UserCart> addEditUserCart(UserCart request) {
+
+		if(request == null)
+		{
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+		}
+		
+		UserCart userCart = medicineOrderService.addeditUserCart(request);
+		Response<UserCart> response = new Response<UserCart>();
+		response.setData(userCart);
+		return response;
+	}
+	
+	
+	
+	@GET
+	@Path(value = PathProxy.OrderMedicineUrls.GET_CART_BY_ID)
+	@ApiOperation(value = PathProxy.OrderMedicineUrls.GET_CART_BY_ID, notes = PathProxy.OrderMedicineUrls.GET_CART_BY_ID)
+	public Response<UserCart> getUserCartById(@PathParam("id") String id) {
+
+		if(id == null)
+		{
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+		}
+		
+		UserCart userCart = medicineOrderService.getUserCartById(id);
+		Response<UserCart> response = new Response<UserCart>();
+		response.setData(userCart);
+		return response;
+	}
+	
+	@GET
+	@Path(value = PathProxy.OrderMedicineUrls.GET_CART_BY_USER_ID)
+	@ApiOperation(value = PathProxy.OrderMedicineUrls.GET_CART_BY_USER_ID, notes = PathProxy.OrderMedicineUrls.GET_CART_BY_USER_ID)
+	public Response<UserCart> getUserCartByUserId(@PathParam("id") String id) {
+
+		if(id == null)
+		{
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+		}
+		
+		UserCart userCart = medicineOrderService.getUserCartById(id);
+		Response<UserCart> response = new Response<UserCart>();
+		response.setData(userCart);
+		return response;
+	}
+	
+
+	@POST
+	@Path(value = PathProxy.OrderMedicineUrls.ADD_EDIT_USER_CART)
+	@ApiOperation(value = PathProxy.OrderMedicineUrls.ADD_EDIT_USER_CART, notes = PathProxy.OrderMedicineUrls.ADD_EDIT_USER_CART)
+	public Response<TrackingOrder> addEditTrackingDetails(TrackingOrder request) {
+
+		if(request == null)
+		{
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+		}
+		
+		TrackingOrder trackingOrder = medicineOrderService.addeditTrackingDetails(request);
+		Response<TrackingOrder> response = new Response<TrackingOrder>();
+		response.setData(trackingOrder);
+		return response;
+	}
+	
+	
+
+	@GET
+	@Path(value = PathProxy.OrderMedicineUrls.GET_TRACKING_DETAILS)
+	@ApiOperation(value = PathProxy.OrderMedicineUrls.GET_TRACKING_DETAILS, notes = PathProxy.OrderMedicineUrls.GET_TRACKING_DETAILS)
+	public Response<TrackingOrder> getTrackingDetailsByOrder(@PathParam("orderId") String orderId , @QueryParam("page") int page , @QueryParam("size") int size , @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,@QueryParam("searchTerm") String searchTerm) {
+
+		if(orderId == null)
+		{
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+		}
+		
+		List<TrackingOrder> trackingOrders = medicineOrderService.getTrackingList(orderId, updatedTime, searchTerm, page, size);
+		Response<TrackingOrder> response = new Response<TrackingOrder>();
+		response.setDataList(trackingOrders);
 		return response;
 	}
 	

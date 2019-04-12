@@ -3,7 +3,7 @@ package com.dpdocter.beans;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.OrderStatus;
 
-public class TrackingOrder extends GenericCollection{
+public class TrackingOrder extends GenericCollection {
 
 	private String id;
 	private String orderId;
@@ -12,6 +12,7 @@ public class TrackingOrder extends GenericCollection{
 	private String city;
 	private OrderStatus status;
 	private String location;
+	private String note;
 
 	public String getId() {
 		return id;
@@ -67,6 +68,14 @@ public class TrackingOrder extends GenericCollection{
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 }

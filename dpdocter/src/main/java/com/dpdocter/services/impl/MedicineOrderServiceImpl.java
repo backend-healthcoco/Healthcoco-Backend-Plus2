@@ -14,21 +14,34 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DrugInfo;
 import com.dpdocter.beans.MedicineOrder;
 import com.dpdocter.beans.MedicineOrderAddEditItems;
 import com.dpdocter.beans.MedicineOrderItems;
+import com.dpdocter.beans.TrackingOrder;
+import com.dpdocter.beans.UserCart;
+import com.dpdocter.collections.AdviceCollection;
+import com.dpdocter.collections.DrugInfoCollection;
 import com.dpdocter.collections.MedicineOrderCollection;
+import com.dpdocter.collections.TrackingOrderCollection;
+import com.dpdocter.collections.UserCartCollection;
 import com.dpdocter.enums.OrderStatus;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.MedicineOrderRepository;
+import com.dpdocter.repository.TrackingOrderRepository;
+import com.dpdocter.repository.UserCartRepository;
+import com.dpdocter.repository.UserRecordsRepository;
 import com.dpdocter.request.MedicineOrderAddEditAddressRequest;
 import com.dpdocter.request.MedicineOrderPaymentAddEditRequest;
 import com.dpdocter.request.MedicineOrderPreferenceAddEditRequest;
@@ -41,6 +54,7 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
 
 @Service
 public class MedicineOrderServiceImpl implements MedicineOrderService{
@@ -55,6 +69,12 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 	
 	@Autowired
 	private MongoTemplate mongoTemplate;
+	
+	@Autowired
+	private TrackingOrderRepository trackingOrderRepository;
+	
+	@Autowired
+	private UserCartRepository userCartRepository;
 	
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -385,6 +405,257 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		return orders;
 	}
 	
+	
+
+	@Override
+	@Transactional
+	public UserCart addeditUserCart(UserCart request) {
+		UserCart userCart = null;
+		UserCartCollection userCartCollection = null;
+
+		try {
+
+			if(request.getId() != null)
+			{
+				userCartCollection = userCartRepository.findOne(new ObjectId(request.getId()));
+			}
+
+			if (userCartCollection == null) {
+				userCartCollection = new UserCartCollection();
+				userCartCollection.setCreatedTime(new Date());
+				//medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
+			}
+
+			BeanUtil.map(request, userCartCollection);
+
+			userCartCollection = userCartRepository.save(userCartCollection);
+			
+			if (userCartCollection != null) {
+				userCart = new UserCart();
+				BeanUtil.map(userCartCollection, userCart);
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			logger.error(e);
+		}
+		return userCart;
+	}
+	
+	@Override
+	@Transactional
+	public UserCart getUserCartById(String id ) {
+		UserCart userCart = null;
+		UserCartCollection userCartCollection = null;
+
+		try {
+
+			userCartCollection = userCartRepository.findOne(new ObjectId(id));
+
+			if (userCartCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
+			}
+
+			userCartCollection = userCartRepository.save(userCartCollection);
+			if (userCartCollection != null) {
+				userCart = new UserCart();
+				BeanUtil.map(userCartCollection, userCart);
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			logger.error(e);
+		}
+		return userCart;
+	}
+	
+	
+	@Override
+	@Transactional
+	public UserCart getUserCartByuserId(String id ) {
+		UserCart userCart = null;
+		UserCartCollection userCartCollection = null;
+
+		try {
+
+			userCartCollection = userCartRepository.getByUserId(new ObjectId(id));
+
+			if (userCartCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
+			}
+
+			userCartCollection = userCartRepository.save(userCartCollection);
+			if (userCartCollection != null) {
+				userCart = new UserCart();
+				BeanUtil.map(userCartCollection, userCart);
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			logger.error(e);
+		}
+		return userCart;
+	}
+	
+	
+	@Override
+	@Transactional
+	public UserCart clearCart(String id ) {
+		UserCart userCart = null;
+		UserCartCollection userCartCollection = null;
+
+		try {
+
+			userCartCollection = userCartRepository.findOne(new ObjectId(id));
+
+			if (userCartCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
+			}
+
+			userCartCollection.setDiscountedAmount(null);
+			userCartCollection.setDiscountedPercentage(null);
+			userCartCollection.setFinalAmount(null);
+			userCartCollection.setTotalAmount(null);
+			userCartCollection.setItems(null);
+			userCartCollection.setQuantity(null);
+			userCartCollection.setRxImage(null);
+			
+			userCartCollection = userCartRepository.save(userCartCollection);
+			if (userCartCollection != null) {
+				userCart = new UserCart();
+				BeanUtil.map(userCartCollection, userCart);
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			logger.error(e);
+		}
+		return userCart;
+	}
+	
+	@Override
+	@Transactional
+	public TrackingOrder addeditTrackingDetails(TrackingOrder request) {
+		TrackingOrder trackingOrder = null;
+		TrackingOrderCollection trackingOrderCollection = null;
+
+		try {
+
+			if(request.getId() != null)
+			{
+				trackingOrderCollection = trackingOrderRepository.findOne(new ObjectId(request.getId()));
+			}
+
+			if (trackingOrderCollection == null) {
+				trackingOrderCollection = new TrackingOrderCollection();
+				trackingOrderCollection.setCreatedTime(new Date());
+				//medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
+			}
+
+			BeanUtil.map(request, trackingOrderCollection);
+
+			trackingOrderCollection = trackingOrderRepository.save(trackingOrderCollection);
+			
+			if (trackingOrderCollection != null) {
+				trackingOrder = new TrackingOrder();
+				BeanUtil.map(trackingOrderCollection, trackingOrder);
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			logger.error(e);
+		}
+		return trackingOrder;
+	}
+	
+	@Override
+	@Transactional
+	public List<TrackingOrder> getTrackingList(String orderId , String updatedTime , String searchTerm, int page , int size) {
+		List<TrackingOrder> orders = null;
+		Aggregation aggregation =null;
+		try {
+			//Criteria criteria = new Criteria();
+			
+			long createdTimestamp = Long.parseLong(updatedTime);
+			
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
+			
+			if (!DPDoctorUtils.anyStringEmpty(orderId)) {
+				criteria.and("orderId").is(new ObjectId(orderId));
+			}
+			
+			/*if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
+						new Criteria("longName").regex("^" + searchTerm, "i"));
+			}*/
+			
+			if (size > 0) {
+				aggregation =Aggregation.newAggregation(
+							
+							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+						 Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(
+							
+							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			
+			
+			orders = mongoTemplate.aggregate(
+					aggregation,
+					TrackingOrderCollection.class, TrackingOrder.class).getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+
+		}
+		return orders;
+	}
+	
+	@Override
+	@Transactional
+	public List<DrugInfo> getDrugInfo(int page, int size, String updatedTime,
+			String searchTerm, Boolean discarded) {
+		List<DrugInfo> response = null;
+		try {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+			if (discarded != null)
+				criteria.and("discarded").is(discarded);
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("brandName").regex("^" + searchTerm, "i"),
+						new Criteria("drugType").regex("^" + searchTerm, "i"));
+			}
+			
+			if (size > 0) {
+				aggregation =Aggregation.newAggregation(
+							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+						 Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(
+							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			
+			response = mongoTemplate.aggregate(
+					aggregation,
+					DrugInfoCollection.class, DrugInfo.class).getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Advice");
+		}
+		return response;
+	}
 	
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null) {

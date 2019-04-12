@@ -2121,6 +2121,15 @@ public interface PathProxy {
 		public static final String UPDATE_STATUS = "/updateStatus/{id}";
 		public static final String PATIENT_GET_LIST = "/patient/getList/{patientId}";
 		public static final String GET_BY_ID = "/get/{id}";
+		public static final String ADD_EDIT_USER_CART = "/addEditUserCart";
+		public static final String GET_CART_BY_ID = "/getCart/{id}";
+		public static final String GET_CART_BY_USER_ID = "/getCartByUser/{id}";
+		public static final String ADD_EDIT_TRACKING_DETAILS= "/addEditTrackingDetails";
+		public static final String GET_TRACKING_DETAILS= "/getTrackingDetails/{orderId}";
+		public static final String GET_DRUG_INFO_LIST= "/getDrugInfoList";
+		
+		
+		
 
 	}
 
