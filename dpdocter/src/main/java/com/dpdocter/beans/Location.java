@@ -114,6 +114,8 @@ public class Location {
 
 	private Boolean isPatientWelcomeMessageOn = false;
 
+	private String smsCode;
+
 	public Boolean getIsMobileNumberOptional() {
 		return isMobileNumberOptional;
 	}
@@ -520,6 +522,14 @@ public class Location {
 
 	public void setIsPatientWelcomeMessageOn(Boolean isPatientWelcomeMessageOn) {
 		this.isPatientWelcomeMessageOn = isPatientWelcomeMessageOn;
+	}
+
+	public String getSmsCode() {
+		return smsCode;
+	}
+
+	public void setSmsCode(String smsCode) {
+		this.smsCode = smsCode;
 	}
 
 	@Override

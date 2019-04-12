@@ -158,6 +158,9 @@ public class LocationCollection extends GenericCollection {
 	@Field
 	private Boolean isPatientWelcomeMessageOn = false;
 
+	@Field
+	private String smsCode;
+
 	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;
 	}
@@ -540,6 +543,14 @@ public class LocationCollection extends GenericCollection {
 
 	public void setIsPatientWelcomeMessageOn(Boolean isPatientWelcomeMessageOn) {
 		this.isPatientWelcomeMessageOn = isPatientWelcomeMessageOn;
+	}
+
+	public String getSmsCode() {
+		return smsCode;
+	}
+
+	public void setSmsCode(String smsCode) {
+		this.smsCode = smsCode;
 	}
 
 	@Override

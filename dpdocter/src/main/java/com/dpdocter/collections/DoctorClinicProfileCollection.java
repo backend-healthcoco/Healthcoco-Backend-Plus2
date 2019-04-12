@@ -448,6 +448,8 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.defaultDoctorId = defaultDoctorId;
 	}
 
+	
+	
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", doctorId="
