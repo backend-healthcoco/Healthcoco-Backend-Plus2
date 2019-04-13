@@ -160,7 +160,7 @@ public class SMSServicesImpl implements SMSServices {
 			message.setAuthKey(AUTH_KEY);
 			message.setCountryCode(COUNTRY_CODE);
 			message.setRoute(ROUTE);
-			if(locationCollection != null && DPDoctorUtils.anyStringEmpty(locationCollection.getSmsCode()))
+			if(locationCollection != null && !DPDoctorUtils.anyStringEmpty(locationCollection.getSmsCode()))
 			{
 				message.setSenderId(locationCollection.getSmsCode());
 			}
