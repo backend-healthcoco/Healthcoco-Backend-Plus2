@@ -11,11 +11,11 @@ public class DrugInfo extends GenericCollection {
 	private String packForm;
 	private String packSize;
 	private String companyName;
-	private String GenericContent;
+	private String genericContent;
 	private String category;
 	private String composition;
 	private Double price;
-	private Double pricePerDrug;
+	private String pricePerDrug;
 	private Boolean isPrescriptionRequired;
 	private Boolean discarded;
 
@@ -76,11 +76,11 @@ public class DrugInfo extends GenericCollection {
 	}
 
 	public String getGenericContent() {
-		return GenericContent;
+		return genericContent;
 	}
 
 	public void setGenericContent(String genericContent) {
-		GenericContent = genericContent;
+		this.genericContent = genericContent;
 	}
 
 	public String getCategory() {
@@ -107,11 +107,11 @@ public class DrugInfo extends GenericCollection {
 		this.price = price;
 	}
 
-	public Double getPricePerDrug() {
+	public String getPricePerDrug() {
 		return pricePerDrug;
 	}
 
-	public void setPricePerDrug(Double pricePerDrug) {
+	public void setPricePerDrug(String pricePerDrug) {
 		this.pricePerDrug = pricePerDrug;
 	}
 

@@ -257,8 +257,8 @@ public class MedicineOrderAPI {
 	
 
 	@POST
-	@Path(value = PathProxy.OrderMedicineUrls.ADD_EDIT_USER_CART)
-	@ApiOperation(value = PathProxy.OrderMedicineUrls.ADD_EDIT_USER_CART, notes = PathProxy.OrderMedicineUrls.ADD_EDIT_USER_CART)
+	@Path(value = PathProxy.OrderMedicineUrls.ADD_EDIT_TRACKING_DETAILS)
+	@ApiOperation(value = PathProxy.OrderMedicineUrls.ADD_EDIT_TRACKING_DETAILS, notes = PathProxy.OrderMedicineUrls.ADD_EDIT_TRACKING_DETAILS)
 	public Response<TrackingOrder> addEditTrackingDetails(TrackingOrder request) {
 
 		if(request == null)

@@ -2128,9 +2128,6 @@ public interface PathProxy {
 		public static final String GET_TRACKING_DETAILS= "/getTrackingDetails/{orderId}";
 		public static final String GET_DRUG_INFO_LIST= "/getDrugInfoList";
 		
-		
-		
-
 	}
 
 	public static final String TRENDING_URL = BASE_URL + "/Trending";

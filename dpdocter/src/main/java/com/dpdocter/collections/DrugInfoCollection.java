@@ -23,7 +23,7 @@ public class DrugInfoCollection extends GenericCollection {
 	@Field
 	private String companyName;
 	@Field
-	private String GenericContent;
+	private String genericContent;
 	@Field
 	private String category;
 	@Field
@@ -31,7 +31,7 @@ public class DrugInfoCollection extends GenericCollection {
 	@Field
 	private Double price;
 	@Field
-	private Double pricePerDrug;
+	private String pricePerDrug;
 	@Field
 	private Boolean isPrescriptionRequired;
 	@Field
@@ -94,11 +94,11 @@ public class DrugInfoCollection extends GenericCollection {
 	}
 
 	public String getGenericContent() {
-		return GenericContent;
+		return genericContent;
 	}
 
 	public void setGenericContent(String genericContent) {
-		GenericContent = genericContent;
+		this.genericContent = genericContent;
 	}
 
 	public String getCategory() {
@@ -125,11 +125,11 @@ public class DrugInfoCollection extends GenericCollection {
 		this.price = price;
 	}
 
-	public Double getPricePerDrug() {
+	public String getPricePerDrug() {
 		return pricePerDrug;
 	}
 
-	public void setPricePerDrug(Double pricePerDrug) {
+	public void setPricePerDrug(String pricePerDrug) {
 		this.pricePerDrug = pricePerDrug;
 	}
 

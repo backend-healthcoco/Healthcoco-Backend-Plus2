@@ -627,7 +627,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		try {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			Aggregation aggregation = null;
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+			Criteria criteria = new Criteria();
 			if (discarded != null)
 				criteria.and("discarded").is(discarded);
 
@@ -645,6 +645,8 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				aggregation = Aggregation.newAggregation(
 							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
+			
+			System.out.println(aggregation);
 			
 			response = mongoTemplate.aggregate(
 					aggregation,
