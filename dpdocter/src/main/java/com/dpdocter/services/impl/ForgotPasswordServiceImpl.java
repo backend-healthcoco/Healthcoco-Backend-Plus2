@@ -496,14 +496,23 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				if (!accessTokenCollections.isEmpty() && accessTokenCollections != null) {
 					oAuth2AccessTokenRepository.delete(accessTokenCollections);
 				}
-				userCollection.setSalt(DPDoctorUtils.generateSalt());
-				String salt = new String(userCollection.getSalt());
-				char[] sha3Password = request.getPassword();
-				String password = new String(sha3Password);
-				password = passwordEncoder.encodePassword(password, salt);
-				userCollection.setPassword(password.toCharArray());
-				// userCollection.setIsTempPassword(false);
-				confexUserRepository.save(userCollection);
+				if (userCollection != null) {
+					char[] salt = DPDoctorUtils.generateSalt();
+
+					if (salt != null && salt.length > 0) {
+						char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
+						for (int i = 0; i < request.getPassword().length; i++) {
+							passwordWithSalt[i] = request.getPassword()[i];
+						}
+						for (int i = 0; i < salt.length; i++) {
+							passwordWithSalt[i + request.getPassword().length] = salt[i];
+						}
+						passwordWithSalt = DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt);
+						userCollection.setPassword(passwordWithSalt);
+						userCollection.setSalt(salt);
+					}
+					confexUserRepository.save(userCollection);
+				}
 				tokenCollection.setIsUsed(true);
 				tokenRepository.save(tokenCollection);
 
