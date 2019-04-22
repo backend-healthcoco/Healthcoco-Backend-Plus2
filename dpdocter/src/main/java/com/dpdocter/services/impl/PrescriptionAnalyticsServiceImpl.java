@@ -1083,30 +1083,13 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 
-			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", "$_id").append("date", new BasicDBObject("$first", "$fromDate"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("count", new BasicDBObject("$first", "$doctorId"))
-							.append("firstName", new BasicDBObject("$first", "$doctor.firstName"))));
-
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
-									.append("includeArrayIndex", "arrayIndex1"))),
-					Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new BasicDBObject("$project",
+							new BasicDBObject("doctorId", "$doctorId").append("count", "$doctorId").append("firstName",
+									"$doctor.firstName"))),
 
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$diagnosticTests").append("preserveNullAndEmptyArrays", true)
-									.append("includeArrayIndex", "arrayIndex1"))),
-					Aggregation.lookup("diagnostic_test_cl", "diagnosticTests.testId", "_id", "test"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$test").append("preserveNullAndEmptyArrays", true))),
-					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"), group,
 					new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", "$doctorId").append("count", new BasicDBObject("$sum", 1))
 									.append("firstName", new BasicDBObject("$first", "$firstName")))));
@@ -1130,6 +1113,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 		Integer response = 0;
 		try {
 			Criteria criteria = new Criteria();
+			Criteria criteria2 = new Criteria();
 			DateTime fromTime = null;
 			DateTime toTime = null;
 			Date from = null;
@@ -1166,10 +1150,10 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria.orOperator(new Criteria("patient.firstName").regex(searchTerm, "i"),
+				criteria2.orOperator(new Criteria("patient.firstName").regex(searchTerm, "i"),
 						new Criteria("patient.localPatientName").regex(searchTerm, "i"));
 			}
-			Aggregation aggregation = Aggregation.newAggregation(
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 									.append("includeArrayIndex", "arrayIndex1"))),
@@ -1178,7 +1162,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
-					Aggregation.match(criteria),
+					Aggregation.match(criteria2),
 					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id"))));
 
 			response = mongoTemplate
@@ -1318,13 +1302,13 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 
 	}
 
-
 	@Override
 	public List<PrescriptionAnalyticDetail> getPrescriptionAnalyticDetail(int page, int size, String doctorId,
 			String locationId, String hospitalId, String fromDate, String toDate, String searchTerm) {
 		List<PrescriptionAnalyticDetail> response = null;
 		try {
 			Criteria criteria = null;
+			Criteria criteria2 = new Criteria();
 
 			DateTime fromTime = null;
 			DateTime toTime = null;
@@ -1351,18 +1335,18 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
 					.and("discarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("patient.locationId").is(new ObjectId(locationId));
+				criteria2.and("patient.locationId").is(new ObjectId(locationId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-				criteria.and("patient.hospitalId").is(new ObjectId(hospitalId));
+				criteria2.and("patient.hospitalId").is(new ObjectId(hospitalId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria.and("patient.firstName").regex(searchTerm, "i");
+				criteria2.and("patient.firstName").regex(searchTerm, "i");
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 
-				criteria.orOperator(new Criteria("patient.firstName").regex(searchTerm, "i"),
+				criteria2.orOperator(new Criteria("patient.firstName").regex(searchTerm, "i"),
 						new Criteria("patient.localPatientName").regex(searchTerm, "i"));
 			}
 			Aggregation aggregation = null;
@@ -1373,7 +1357,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 					Fields.field("createdTime", "$createdTime"), Fields.field("drugs", "$drug"),
 					Fields.field("diagnosticTests", "$diagnosticTests")));
 			if (size > 0) {
-				aggregation = Aggregation.newAggregation(
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex1"))),
@@ -1382,7 +1366,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.match(criteria), projectList,
+						Aggregation.unwind("patient"), Aggregation.match(criteria2), projectList,
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$_id").append("drugs", new BasicDBObject("$push", "$drugs"))
 										.append("diagnosticTests", new BasicDBObject("$first", "$diagnosticTests"))
@@ -1418,7 +1402,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 
 						Aggregation.limit(size));
 			} else {
-				aggregation = Aggregation.newAggregation(
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex1"))),
@@ -1427,7 +1411,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.match(criteria), projectList,
+						Aggregation.unwind("patient"), Aggregation.match(criteria2), projectList,
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$_id").append("drugs", new BasicDBObject("$push", "$drugs"))
 										.append("diagnosticTests", new BasicDBObject("$first", "$diagnosticTests"))
