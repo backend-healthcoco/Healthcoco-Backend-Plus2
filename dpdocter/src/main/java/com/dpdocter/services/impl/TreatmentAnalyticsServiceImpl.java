@@ -362,6 +362,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 		List<DoctorTreatmentAnalyticResponse> response = null;
 		try {
 			Criteria criteria = null;
+			Criteria criteriaSecond = new Criteria();
 			DateTime fromTime = null;
 			DateTime toTime = null;
 			Date from = null;
@@ -388,17 +389,17 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 					.and("discarded").is(false);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria.and("totalTreatmentService.name").regex(searchTerm, "i");
+				criteriaSecond.and("totalTreatmentService.name").regex(searchTerm, "i");
 			}
 			Aggregation aggregation = null;
 			if (size > 0) {
 
 				aggregation = Aggregation
-						.newAggregation(Aggregation.unwind("treatments"),
+						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
 								Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id",
 										"totalTreatmentService"),
 
-								Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteria),
+								Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteriaSecond),
 								new CustomAggregationOperation(
 										new BasicDBObject("$group",
 												new BasicDBObject("_id", "$treatments.treatmentServiceId")
@@ -422,11 +423,12 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 				size = 10;
 
 				aggregation = Aggregation
-						.newAggregation(Aggregation.unwind("treatments"),
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.unwind("treatments"),
 								Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id",
 										"totalTreatmentService"),
 
-								Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteria),
+								Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteriaSecond),
 								new CustomAggregationOperation(
 										new BasicDBObject("$group",
 												new BasicDBObject("_id", "$treatments.treatmentServiceId")
@@ -511,6 +513,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 		List<TreatmentAnalyticDetail> response = null;
 		try {
 			Criteria criteria = null;
+			Criteria criteriaSecond = new Criteria();
 			DateTime fromTime = null;
 			DateTime toTime = null;
 			Date from = null;
@@ -536,28 +539,28 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 			criteria = getCriteria(doctorId, locationId, hospitalId).and("createdTime").gte(fromTime).lte(toTime)
 					.and("discarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("patient.locationId").is(new ObjectId(locationId));
+				criteriaSecond.and("patient.locationId").is(new ObjectId(locationId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
-				criteria.and("patient.hospitalId").is(new ObjectId(hospitalId));
+				criteriaSecond.and("patient.hospitalId").is(new ObjectId(hospitalId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria.orOperator(new Criteria("patient.firstName").regex(searchTerm, "i"),
+				criteriaSecond.orOperator(new Criteria("patient.firstName").regex(searchTerm, "i"),
 						new Criteria("patient.localPatientName").regex(searchTerm, "i"));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(status)) {
-				criteria.and("treatments.status").is(status.toUpperCase());
+				criteriaSecond.and("treatments.status").is(status.toUpperCase());
 			}
 			Aggregation aggregation = null;
 			if (size > 0) {
 
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("treatments"),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
 						Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id",
 								"services"),
 						Aggregation.unwind("services"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.match(criteria),
+						Aggregation.unwind("patient"), Aggregation.match(criteriaSecond),
 						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
 								.append("services", new BasicDBObject("$push", "$services"))
 								.append("status", new BasicDBObject("$push", "$treatments.status"))
@@ -570,13 +573,13 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 						Aggregation.limit(size));
 			} else {
 
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("treatments"),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
 						Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id",
 								"services"),
 						Aggregation.unwind("services"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-						Aggregation.unwind("patient"), Aggregation.match(criteria),
+						Aggregation.unwind("patient"), Aggregation.match(criteriaSecond),
 						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
 								.append("services", new BasicDBObject("$push", "$services"))
 								.append("status", new BasicDBObject("$push", "$treatments.status"))
@@ -678,6 +681,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 		Integer response = 0;
 		try {
 			Criteria criteria = new Criteria();
+			Criteria criteriaSecond = new Criteria();
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -691,7 +695,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 
-				criteria.orOperator(new Criteria("patient.firstName").regex(searchTerm, "i"),
+				criteriaSecond.orOperator(new Criteria("patient.firstName").regex(searchTerm, "i"),
 						new Criteria("patient.localPatientName").regex(searchTerm, "i"));
 			}
 			DateTime fromTime = null;
@@ -720,17 +724,17 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 
 			criteria = criteria.and("createdTime").gte(fromTime).lte(toTime);
 			if (!DPDoctorUtils.anyStringEmpty(status)) {
-				criteria.and("treatments.status").is(status.toUpperCase());
+				criteriaSecond.and("treatments.status").is(status.toUpperCase());
 			}
 			criteria.and("discarded").is(false);
 
 			Aggregation aggregation = null;
 
-			aggregation = Aggregation.newAggregation(Aggregation.unwind("treatments"),
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
 					Aggregation.lookup("treatment_services_cl", "$treatments.treatmentServiceId", "_id", "services"),
 					Aggregation.unwind("services"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-					Aggregation.unwind("patient"), Aggregation.match(criteria),
+					Aggregation.unwind("patient"), Aggregation.match(criteriaSecond),
 					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id"))));
 
 			response = mongoTemplate.aggregate(aggregation, PatientTreatmentCollection.class, TreatmentService.class)
@@ -749,6 +753,7 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 		Integer response = 0;
 		try {
 			Criteria criteria = null;
+			Criteria criteriaSecond = new Criteria();
 			DateTime fromTime = null;
 			DateTime toTime = null;
 			Date from = null;
@@ -775,14 +780,14 @@ public class TreatmentAnalyticsServiceImpl implements TreatmentAnalyticsService 
 					.and("discarded").is(false);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria.and("totalTreatmentService.name").regex(searchTerm, "i");
+				criteriaSecond.and("totalTreatmentService.name").regex(searchTerm, "i");
 			}
 			Aggregation aggregation = null;
 
-			aggregation = Aggregation.newAggregation(Aggregation.unwind("treatments"),
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
 					Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 							"totalTreatmentService"),
-					Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteria),
+					Aggregation.unwind("totalTreatmentService"), Aggregation.match(criteriaSecond),
 					new CustomAggregationOperation(
 							new BasicDBObject("$group", new BasicDBObject("_id", "$treatments.treatmentServiceId"))));
 
