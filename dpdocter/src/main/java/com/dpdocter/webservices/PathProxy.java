@@ -222,6 +222,8 @@ public interface PathProxy {
 
 		public static final String SET_DEFAULT_DOCTOR_IN_LIST = "set/default/{doctorId}/{locationId}/{hospitalId}/doctor";
 
+		public static final String CHECK_IF_PNUM_EXIST = "/checkIfPnumExist/{locationId}/{hospitalId}/{PNUM}";
+
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";

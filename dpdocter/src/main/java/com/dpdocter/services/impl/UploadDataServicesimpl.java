@@ -2572,7 +2572,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 				csvLine = scanner.nextLine();
 	            List<String> line = CSVUtils.parseLine(csvLine);
 				if (lineCount > 0) {
-					if (!DPDoctorUtils.anyStringEmpty(line.get(1), line.get(6))) {
+					if (!DPDoctorUtils.anyStringEmpty(line.get(1))) {
 						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
 								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));
 						if (patientCollection != null) {
@@ -2598,7 +2598,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								doctorPatientReceiptCollection.setCreatedTime(createdTime);
 								doctorPatientReceiptCollection.setUpdatedTime(createdTime);
 								doctorPatientReceiptCollection.setAdminCreatedTime(createdTime);
-								doctorPatientReceiptCollection.setUniqueInvoiceId(line.get(6).replace("'", ""));
+								
 								doctorPatientReceiptCollection.setCreatedBy(
 										(drCollection.getTitle() != null ? drCollection.getTitle() + " " : "")
 												+ drCollection.getFirstName());
@@ -2616,6 +2616,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 							
 							DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = null;
 							if (line.get(14).equalsIgnoreCase("'1'")) {
+								doctorPatientReceiptCollection.setUniqueInvoiceId(line.get(6).replace("'", ""));
 								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find(line.get(6).replace("'", ""), locationObjectId, hospitalObjectId);
 								doctorPatientReceiptCollection.setDiscarded(true);
 								doctorPatientReceiptCollection.setAmountPaid(Double.parseDouble(line.get(5).replace("'", "")));
@@ -2627,6 +2628,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 							}else {
 								
 								if(checkIfNotNullOrNone(line.get(6))) {
+									doctorPatientReceiptCollection.setUniqueInvoiceId(line.get(6).replace("'", ""));
 									doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find(line.get(6).replace("'", ""), locationObjectId, hospitalObjectId);
 									if(doctorPatientInvoiceCollection == null)save = false;
 									else {

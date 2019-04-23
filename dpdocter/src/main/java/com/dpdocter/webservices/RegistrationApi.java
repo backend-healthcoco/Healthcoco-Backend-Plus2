@@ -1251,4 +1251,23 @@ public class RegistrationApi {
 		response.setData(registrationService.update());
 		return response;
 	}
+	
+	@Path(value = PathProxy.RegistrationUrls.CHECK_IF_PNUM_EXIST)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.CHECK_IF_PNUM_EXIST, notes = PathProxy.RegistrationUrls.CHECK_IF_PNUM_EXIST)
+	public Response<Boolean> checkIfPNUMExist(@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("PNUM") String PNUM) {
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "LocationId, hospitalId could not null");
+
+		}
+
+		if (DPDoctorUtils.allStringsEmpty(PNUM)) {
+			throw new BusinessException(ServiceError.InvalidInput, "PNUM cannot be null");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(registrationService.checkIfPNUMExist(locationId, hospitalId, PNUM));
+		return response;
+	}
 }

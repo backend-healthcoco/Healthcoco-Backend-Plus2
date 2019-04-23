@@ -1,8 +1,10 @@
 package com.dpdocter.request;
 
 import java.util.Date;
+import java.util.List;
 
 import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
@@ -71,6 +73,8 @@ public class AppointmentRequest {
 	private Integer age;
 
 	private Boolean isChild = false;
+
+	private List<Fields> treatmentFields;
 
 	public String getAppointmentId() {
 		return appointmentId;
@@ -280,21 +284,6 @@ public class AppointmentRequest {
 		this.category = category;
 	}
 
-	@Override
-	public String toString() {
-		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", explanation="
-				+ explanation + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + ", time=" + time + ", fromDate=" + fromDate + ", toDate=" + toDate
-				+ ", createdBy=" + createdBy + ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail="
-				+ notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail="
-				+ notifyDoctorByEmail + ", cancelledBy=" + cancelledBy + ", localPatientName=" + localPatientName
-				+ ", mobileNumber=" + mobileNumber + ", visitId=" + visitId + ", status=" + status + ", waitedFor="
-				+ waitedFor + ", engagedFor=" + engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt
-				+ ", checkedOutAt=" + checkedOutAt + ", category=" + category + ", cancelledByProfile="
-				+ cancelledByProfile + ", gender=" + gender + ", dob=" + dob + ", age=" + age + ", isChild=" + isChild
-				+ "]";
-	}
-
 	public String getCancelledByProfile() {
 		return cancelledByProfile;
 	}
@@ -333,6 +322,29 @@ public class AppointmentRequest {
 
 	public void setIsChild(Boolean isChild) {
 		this.isChild = isChild;
+	}
+
+	public List<Fields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<Fields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
+	
+	@Override
+	public String toString() {
+		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", explanation="
+				+ explanation + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", patientId=" + patientId + ", time=" + time + ", fromDate=" + fromDate + ", toDate=" + toDate
+				+ ", createdBy=" + createdBy + ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail="
+				+ notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail="
+				+ notifyDoctorByEmail + ", cancelledBy=" + cancelledBy + ", localPatientName=" + localPatientName
+				+ ", mobileNumber=" + mobileNumber + ", visitId=" + visitId + ", status=" + status + ", waitedFor="
+				+ waitedFor + ", engagedFor=" + engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt
+				+ ", checkedOutAt=" + checkedOutAt + ", category=" + category + ", cancelledByProfile="
+				+ cancelledByProfile + ", gender=" + gender + ", dob=" + dob + ", age=" + age + ", isChild=" + isChild
+				+ ", treatmentFields=" + treatmentFields + "]";
 	}
 
 }

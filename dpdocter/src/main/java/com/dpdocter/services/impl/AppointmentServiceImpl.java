@@ -732,6 +732,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					appointmentCollection.setNotifyPatientByEmail(request.getNotifyPatientByEmail());
 					appointmentCollection.setNotifyPatientBySms(request.getNotifyPatientByEmail());
 					appointmentCollection.setUpdatedTime(new Date());
+					appointmentCollection.setTreatmentFields(request.getTreatmentFields());
 					appointmentCollection = appointmentRepository.save(appointmentCollection);
 
 					if (updateVisit && !DPDoctorUtils.anyStringEmpty(appointmentCollection.getVisitId())) {
@@ -2017,7 +2018,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.append("fromDate", "$fromDate").append("toDate", "$toDate")
 							.append("appointmentId", "$appointmentId").append("subject", "$subject")
 							.append("explanation", "$explanation").append("type", "$type")
-							.append("isCalenderBlocked", "$isCalenderBlocked")
+							.append("isCalenderBlocked", "$isCalenderBlocked").append("treatmentFields", "$treatmentFields")
 							.append("isFeedbackAvailable", "$isFeedbackAvailable").append("isAllDayEvent", "$isAllDayEvent")
 							.append("doctorName",
 									new BasicDBObject("$concat", Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
@@ -2067,6 +2068,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.append("explanation", new BasicDBObject("$first", "$explanation"))
 							.append("type", new BasicDBObject("$first", "$type"))
 							.append("isCalenderBlocked", new BasicDBObject("$first", "$isCalenderBlocked"))
+							.append("treatmentFields", new BasicDBObject("$first", "$treatmentFields"))
 							.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
 							.append("isAllDayEvent", new BasicDBObject("$first", "$isAllDayEvent"))
 							.append("doctorName", new BasicDBObject("$first", "$doctorName"))
@@ -2603,9 +2605,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public Event addEvent(final EventRequest request) {
+	public Event addEvent(final EventRequest request, Boolean forAllDoctors) {
 		Event response = null;
 		try {
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
@@ -2620,10 +2623,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 			AppointmentCollection appointmentCollection = null;
 
 			List<ObjectId> doctorIds = new ArrayList<ObjectId>();
-			if (request.getDoctorIds() != null && !request.getDoctorIds().isEmpty()) {
+			if(forAllDoctors) {
+				List<DoctorClinicProfileCollection> doctors = doctorClinicProfileRepository.findByLocationId(locationObjectId, true);
+				doctorIds = (List<ObjectId>) CollectionUtils.collect(doctors, new BeanToPropertyValueTransformer("doctorId"));
+			}
+			else if (request.getDoctorIds() != null && !request.getDoctorIds().isEmpty()) {
 				for (String doctorId : request.getDoctorIds())
 					doctorIds.add(new ObjectId(doctorId));
-
 			}
 			List<AppointmentCollection> appointmentCollections = mongoTemplate
 					.aggregate(
@@ -2739,13 +2745,26 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public Event updateEvent(EventRequest request) {
+	public Event updateEvent(EventRequest request, Boolean forAllDoctors) {
 		Event response = null;
 		try {
+			
 			AppointmentCollection appointmentCollection = appointmentRepository.findOne(new ObjectId(request.getId()));
 			if (appointmentCollection != null) {
+				
+				List<ObjectId> doctorIds = new ArrayList<ObjectId>();
+				if(forAllDoctors) {
+					List<DoctorClinicProfileCollection> doctors = doctorClinicProfileRepository.findByLocationId(appointmentCollection.getLocationId(), true);
+					doctorIds = (List<ObjectId>) CollectionUtils.collect(doctors, new BeanToPropertyValueTransformer("doctorId"));
+				}
+				else if (request.getDoctorIds() != null && !request.getDoctorIds().isEmpty()) {
+					for (String doctorId : request.getDoctorIds())
+						doctorIds.add(new ObjectId(doctorId));
+				}
+				
 				AppointmentCollection appointmentCollectionToCheck = null;
 				if (request.getState().equals(AppointmentState.RESCHEDULE)) {
 					appointmentCollectionToCheck = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(

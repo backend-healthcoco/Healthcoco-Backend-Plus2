@@ -62,9 +62,9 @@ public interface AppointmentService {
 
 	Appointment updateAppointment(AppointmentRequest request, Boolean updateVisit, Boolean isStatusChange);
 
-	Event addEvent(EventRequest request);
+	Event addEvent(EventRequest request, Boolean forAllDoctors);
 
-	Event updateEvent(EventRequest request);
+	Event updateEvent(EventRequest request, Boolean forAllDoctors);
 
 	Boolean sendReminderToPatient(String appointmentId);
 

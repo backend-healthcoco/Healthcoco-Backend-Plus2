@@ -128,11 +128,6 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		List<ESPatientResponse> patientsResponse = null;
 		ESPatientResponseDetails patientResponseDetails = null;
 		try {
-			AdvancedSearchType advancedSearchTypeForPID = AdvancedSearchType.PID;
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
-			if(locationCollection != null && locationCollection.getIsPidHasDate()!= null) {
-				if(!locationCollection.getIsPidHasDate())advancedSearchTypeForPID = AdvancedSearchType.PNUM;
-			}
 			searchTerm = searchTerm.toLowerCase();
 			String patientName = searchTerm.replaceAll("[^a-zA-Z0-9]", "");
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
@@ -147,7 +142,9 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.MOBILE_NUMBER.getSearchType(), searchTerm)
 							.boost(1.2f))
-					.should(QueryBuilders.matchPhrasePrefixQuery(advancedSearchTypeForPID.getSearchType(), searchTerm)
+					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchTerm)
+							.boost(1.0f))
+					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PNUM.getSearchType(), searchTerm)
 							.boost(1.0f))
 					.minimumNumberShouldMatch(1);
 			if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
@@ -301,13 +298,16 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 							builder = QueryBuilders.termsQuery(searchType, referenceIds);
 						}
 					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.PID.getSearchType())){
-						AdvancedSearchType advancedSearchTypeForPID = AdvancedSearchType.PID;
+//						AdvancedSearchType advancedSearchTypeForPID = AdvancedSearchType.PID;
 						
-						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
-						if(locationCollection != null && locationCollection.getIsPidHasDate()!= null) {
-							if(!locationCollection.getIsPidHasDate())advancedSearchTypeForPID = AdvancedSearchType.PNUM;
-						}
-						builder = QueryBuilders.matchPhrasePrefixQuery(advancedSearchTypeForPID.getSearchType(), searchValue);
+//						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+//						if(locationCollection != null && locationCollection.getIsPidHasDate()!= null) {
+//							if(!locationCollection.getIsPidHasDate())advancedSearchTypeForPID = AdvancedSearchType.PNUM;
+//						}
+						builder = QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchValue);
+					 }else if (searchType.equalsIgnoreCase(AdvancedSearchType.PNUM.getSearchType())){
+							builder = QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PNUM.getSearchType(), searchValue);
+
 				     }else {
 						builder = QueryBuilders.matchPhrasePrefixQuery(searchType, searchValue);
 					}

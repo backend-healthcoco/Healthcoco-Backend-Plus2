@@ -175,4 +175,6 @@ public interface RegistrationService {
 	Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId,String defaultDoctorId);
 
 	Boolean update();
+
+	Boolean checkIfPNUMExist(String locationId, String hospitalId, String pNUM);
 }

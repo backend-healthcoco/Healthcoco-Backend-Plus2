@@ -567,15 +567,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			patientCollection.setCreatedTime(createdTime);
 			Map<String, String> generatedId = patientIdGenerator(request.getLocationId(), request.getHospitalId(),
-					patientCollection.getRegistrationDate());
-			if (DPDoctorUtils.anyStringEmpty(request.getPID())) {
-				patientCollection.setPID(generatedId.get("PID"));
-			}
-
-			if (DPDoctorUtils.anyStringEmpty(request.getPNUM())) {
-				patientCollection.setPNUM(generatedId.get("PNUM"));
-			}
-
+					patientCollection.getRegistrationDate(), request.getPID(), request.getPNUM());
+			patientCollection.setPID(generatedId.get("PID"));
+			patientCollection.setPNUM(generatedId.get("PNUM"));
+			
 			// if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(request.getRole())){
 			List<ObjectId> consultantDoctorIds = new ArrayList<ObjectId>();
 			consultantDoctorIds.add(new ObjectId(request.getDoctorId()));
@@ -920,12 +915,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 			} else {
 				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(userObjectId,
 						locationObjectId, hospitalObjectId);
-				String PID = null, PNUM = null;
+				String PID = request.getPID(), PNUM = request.getPID();
 				if (patientCollection != null) {
 					ObjectId patientId = patientCollection.getId();
 					ObjectId patientDoctorId = patientCollection.getDoctorId();
-					PID = patientCollection.getPID();
-					PNUM = patientCollection.getPNUM();
+					if (DPDoctorUtils.anyStringEmpty(request.getPID())) PID = patientCollection.getPID();
+					if (DPDoctorUtils.anyStringEmpty(request.getPNUM())) PNUM = patientCollection.getPNUM();
 
 					request.setRegistrationDate(patientCollection.getRegistrationDate());
 					BeanUtil.map(request, patientCollection);
@@ -946,23 +941,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCollection.setNotes(request.getNotes());
 
 				Map<String, String> generatedId = patientIdGenerator(request.getLocationId(), request.getHospitalId(),
-						patientCollection.getRegistrationDate());
+						patientCollection.getRegistrationDate(), PID, PNUM);
 
-				if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
-					patientCollection.setPID(request.getPID());
-				} else if (!DPDoctorUtils.anyStringEmpty(PID)) {
-					patientCollection.setPID(PID);
-				} else {
-					patientCollection.setPID(generatedId.get("PID"));
-				}
-
-				if (!DPDoctorUtils.anyStringEmpty(request.getPNUM())) {
-					patientCollection.setPNUM(request.getPNUM());
-				} else if (!DPDoctorUtils.anyStringEmpty(PNUM)) {
-					patientCollection.setPNUM(PNUM);
-				} else {
-					patientCollection.setPNUM(generatedId.get("PNUM"));
-				}
+				patientCollection.setPID(generatedId.get("PID"));
+				patientCollection.setPNUM(generatedId.get("PNUM"));
+				
 
 				if (!DPDoctorUtils.anyStringEmpty(request.getProfession())) {
 					patientCollection.setProfession(request.getProfession());
@@ -1599,64 +1582,74 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return response;
 	}
 
-	private Map<String, String> patientIdGenerator(String locationId, String hospitalId, Long registrationDate) {
+	private Map<String, String> patientIdGenerator(String locationId, String hospitalId, Long registrationDate, String PID, String PNUM) {
 		Map<String, String> generatedId = new HashMap<String, String>();
 		try {
 
-			ObjectId locationObjectId = null, hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
+			if(DPDoctorUtils.anyStringEmpty(PID, PNUM)) {
+				ObjectId locationObjectId = null, hospitalObjectId = null;
+				if (!DPDoctorUtils.anyStringEmpty(locationId))
+					locationObjectId = new ObjectId(locationId);
+				if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+					hospitalObjectId = new ObjectId(hospitalId);
 
-			LocationCollection location = locationRepository.findOne(locationObjectId);
-			if (location == null) {
-				logger.warn("Invalid Location Id");
-				throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
-			}
+				LocationCollection location = locationRepository.findOne(locationObjectId);
+				if (location == null) {
+					logger.warn("Invalid Location Id");
+					throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
+				}
 
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			localCalendar.setTime(new Date(registrationDate));
-			int currentDay = localCalendar.get(Calendar.DATE);
-			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			int currentYear = localCalendar.get(Calendar.YEAR);
+				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+				if (registrationDate != null) {
+					localCalendar.setTime(new Date(registrationDate));
+				} else {
+					localCalendar.setTime(new Date());
+				}
 
-			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			Long startTimeinMillis = start.getMillis();
-			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			Long endTimeinMillis = end.getMillis();
-			Integer patientSize = patientRepository.findTodaysRegisteredPatient(locationObjectId, hospitalObjectId,
-					startTimeinMillis, endTimeinMillis);
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
 
-			if (patientSize == null)
-				patientSize = 0;
+				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				Long startTimeinMillis = start.getMillis();
+				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				Long endTimeinMillis = end.getMillis();
+				Integer patientSize = patientRepository.findTodaysRegisteredPatient(locationObjectId, hospitalObjectId,
+						startTimeinMillis, endTimeinMillis);
 
-			String patientInitial = location.getPatientInitial();
+				if (patientSize == null)
+					patientSize = 0;
 
-			String PID = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
+				String patientInitial = location.getPatientInitial();
+
+				if(DPDoctorUtils.anyStringEmpty(PID)) {
+					PID = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
 					+ DPDoctorUtils.getPrefixedNumber(currentMonth) + DPDoctorUtils.getPrefixedNumber(currentYear % 100)
 					+ DPDoctorUtils.getPrefixedNumber(patientSize + 1);
+				}
 
-			int patientCounter = location.getPatientCounter();
-			PatientCollection patientCollection = patientRepository.findLastRegisteredPatientWithPNUM(locationObjectId,
-					hospitalObjectId, new Sort(Direction.DESC, "createdTime"));
-			if (patientCollection != null) {
-				String lastRegisterdPatientPNUM = patientCollection.getPNUM().replaceAll("[a-zA-Z]", "");
-				Integer lastRegisterdPatientPNUMCount = 0;
-				if (lastRegisterdPatientPNUM != null)
-					lastRegisterdPatientPNUMCount = Integer.parseInt(lastRegisterdPatientPNUM);
-
-				if (lastRegisterdPatientPNUMCount < patientCounter) {
-					patientSize = patientCounter;
-				} else {
-					patientSize = lastRegisterdPatientPNUMCount + 1;
+				if(DPDoctorUtils.anyStringEmpty(PNUM)) {
+					int patientCounter = location.getPatientCounter();
+					PatientCollection patientCollection = patientRepository.findLastRegisteredPatientWithPNUM(locationObjectId,
+							hospitalObjectId, new Sort(Direction.DESC, "createdTime"));
+					if (patientCollection != null) {
+						String lastRegisterdPatientPNUM = patientCollection.getPNUM().replaceAll("[a-zA-Z\\s\\W_]", "");
+						Integer lastRegisterdPatientPNUMCount = 0;
+						if (!DPDoctorUtils.anyStringEmpty(lastRegisterdPatientPNUM))
+							lastRegisterdPatientPNUMCount = Integer.parseInt(lastRegisterdPatientPNUM);
+			
+						if (lastRegisterdPatientPNUMCount < patientCounter) {
+							patientSize = patientCounter;
+						} else {
+							patientSize = lastRegisterdPatientPNUMCount + 1;
+						}
+					}
+					PNUM = patientInitial + patientSize;
 				}
 			}
-
-			String PNUM = patientInitial + patientSize;
-
+			
 			generatedId.put("PID", PID);
 			generatedId.put("PNUM", PNUM);
 		} catch (BusinessException e) {
@@ -5032,6 +5025,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 			e.printStackTrace();
 		}
 		return true;
+	}
+
+	@Override
+	public Boolean checkIfPNUMExist(String locationId, String hospitalId, String pNUM) {
+		Boolean response = false;
+		try {
+			PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(new ObjectId(locationId), new ObjectId(hospitalId), pNUM);
+			if (patientCollection != null) {
+				response = true;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
 	}
 	
 	
