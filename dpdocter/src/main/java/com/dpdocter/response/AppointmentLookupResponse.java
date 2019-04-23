@@ -1,7 +1,9 @@
 package com.dpdocter.response;
 
 import java.util.Date;
+import java.util.List;
 
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.User;
@@ -87,6 +89,8 @@ public class AppointmentLookupResponse extends GenericCollection {
     
     private String localPatientName;
     
+	private List<Fields> treatmentFields;
+
 	public String getId() {
 		return id;
 	}
@@ -383,6 +387,14 @@ public class AppointmentLookupResponse extends GenericCollection {
 		this.localPatientName = localPatientName;
 	}
 
+	public List<Fields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<Fields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentLookupResponse [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -397,6 +409,7 @@ public class AppointmentLookupResponse extends GenericCollection {
 				+ patientCard + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor
 				+ ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt
 				+ ", count=" + count + ", category=" + category + ", cancelledByProfile=" + cancelledByProfile
-				+ ", localPatientName=" + localPatientName + "]";
+				+ ", localPatientName=" + localPatientName + ", treatmentFields=" + treatmentFields + "]";
 	}
+
 }

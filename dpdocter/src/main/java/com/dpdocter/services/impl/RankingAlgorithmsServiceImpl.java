@@ -478,8 +478,10 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 					clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
 					
 					ESDoctorDocument doctorDocument = esDoctorRepository.findByUserIdAndLocationId(detailResponse.getDoctorId(), detailResponse.getLocationId());
-					doctorDocument.setRankingCount(clinicProfileCollection.getRankingCount());
-					esDoctorRepository.save(doctorDocument);
+					if(doctorDocument != null) {
+						doctorDocument.setRankingCount(clinicProfileCollection.getRankingCount());
+						esDoctorRepository.save(doctorDocument);
+					}
 				}
 			}		
 		} catch (Exception e) {

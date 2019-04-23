@@ -324,7 +324,8 @@ public class AppointmentApi {
 	@Path(value = PathProxy.AppointmentUrls.ADD_EDIT_EVENT)
 	@POST
 	@ApiOperation(value = PathProxy.AppointmentUrls.ADD_EDIT_EVENT, notes = PathProxy.AppointmentUrls.ADD_EDIT_EVENT)
-	public Response<Event> addEditEvent(EventRequest request) throws MessagingException {
+	public Response<Event> addEditEvent(EventRequest request, 
+			@DefaultValue(value = "false") @QueryParam(value = "ALL") Boolean forAllDoctors) throws MessagingException {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
 			logger.warn("Invalid Input");
 			mailService.sendExceptionMail("Invalid input :: Doctor Id ,Location Id  cannot be empty");
@@ -332,9 +333,9 @@ public class AppointmentApi {
 		}
 		Event event = null;
 		if (request.getId() == null)
-			event = appointmentService.addEvent(request);
+			event = appointmentService.addEvent(request, forAllDoctors);
 		else
-			event = appointmentService.updateEvent(request);
+			event = appointmentService.updateEvent(request, forAllDoctors);
 
 		Response<Event> response = new Response<Event>();
 		response.setData(event);

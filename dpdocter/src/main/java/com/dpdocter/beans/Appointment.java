@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import java.util.Date;
+import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
@@ -93,6 +94,8 @@ public class Appointment extends GenericCollection {
     
 	private String localPatientName;
 	
+	private List<Fields> treatmentFields;
+
 	public String getId() {
 		return id;
 	}
@@ -421,6 +424,14 @@ public class Appointment extends GenericCollection {
 		this.registeredPatientDetails = registeredPatientDetails;
 	}
 
+	public List<Fields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<Fields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
+
 	@Override
 	public String toString() {
 		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
@@ -437,6 +448,6 @@ public class Appointment extends GenericCollection {
 				+ registeredPatientDetails + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt="
 				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", count=" + count
 				+ ", category=" + category + ", cancelledByProfile=" + cancelledByProfile + ", localPatientName="
-				+ localPatientName + "]";
+				+ localPatientName + ", treatmentFields=" + treatmentFields + "]";
 	}
 }
