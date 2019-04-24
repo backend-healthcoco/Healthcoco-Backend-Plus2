@@ -1,4 +1,4 @@
-package com.dpdocter.services.v2.impl;
+ package com.dpdocter.services.v2.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1505,9 +1505,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					response = new ArrayList<Appointment>();
 
 				for (AppointmentLookupResponse collection : appointmentLookupResponses) {
-					ObjectId doctorObjectId = new ObjectId(collection.getDoctorId());
-					ObjectId locationObjectId = new ObjectId(collection.getLocationId());
-					ObjectId hospitalObjectId = new ObjectId(collection.getHospitalId());
 					Appointment appointment = new Appointment();
 					PatientCard patientCard = null;
 					if (collection.getType().getType().equals(AppointmentType.APPOINTMENT.getType())) {
@@ -1526,57 +1523,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 					BeanUtil.map(collection, appointment);
 					appointment.setPatient(patientCard);
-
-					// -----------------------------------------
-
-			/*		if (isRegisteredPatientRequired == true && patientCard != null) {
-						RegisteredPatientDetails registeredPatientDetail = new RegisteredPatientDetails();
-						if (patientCard.getUser() != null) {
-							BeanUtil.map(patientCard.getUser(), registeredPatientDetail);
-							if (patientCard.getUser().getId() != null) {
-								registeredPatientDetail.setUserId(patientCard.getUser().getId().toString());
-							}
-						}
-
-						Patient patient = new Patient();
-						BeanUtil.map(patientCard, patient);
-						patient.setPatientId(patientCard.getUser().getId().toString());
-						ObjectId referredBy = null;
-						if (patientCard.getReferredBy() != null) {
-							referredBy = new ObjectId(patientCard.getReferredBy());
-						}
-
-						patientCard.setReferredBy(null);
-						BeanUtil.map(patientCard, registeredPatientDetail);
-
-						registeredPatientDetail.setPatient(patient);
-						//registeredPatientDetail.setAddress(patientCard.getAddress());
-
-						//registeredPatientDetail.setDoctorId(patientCard.getDoctorId().toString());
-						//registeredPatientDetail.setLocationId(patientCard.getLocationId().toString());
-						//registeredPatientDetail.setHospitalId(patientCard.getHospitalId().toString());
-						//registeredPatientDetail.setCreatedTime(patientCard.getCreatedTime());
-						//registeredPatientDetail.setPID(patientCard.getPID());
-						//registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
-
-						if (patientCard.getDob() != null) {
-							registeredPatientDetail.setDob(patientCard.getDob());
-						}
-
-						Reference reference = new Reference();
-						if (referredBy != null) {
-							ReferencesCollection referencesCollection = referenceRepository.findOne(referredBy);
-							if (referencesCollection != null)
-								BeanUtil.map(referencesCollection, reference);
-						}
-						registeredPatientDetail.setReferredBy(reference);
-						registeredPatientDetail.setColorCode(patientCard.getUser().getColorCode());
-						appointment.setRegisteredPatientDetails(registeredPatientDetail);
-						appointment.setPatient(null);
-					}*/
-
-					// -----------------------------------------
-
+					appointment.setLocalPatientName(patientCard.getLocalPatientName());
 					if (collection.getDoctor() != null) {
 						appointment.setDoctorName(
 								collection.getDoctor().getTitle() + " " + collection.getDoctor().getFirstName());
