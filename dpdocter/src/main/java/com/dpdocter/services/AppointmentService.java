@@ -111,12 +111,12 @@ public interface AppointmentService {
 			Boolean showPatientGroups);
 
 	List<Event> getEvents(String locationId, List<String> doctorId, String from, String to, int page, int size,
-			String updatedTime, String sortBy, String fromTime, String toTime);
+			String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked);
 
 	Event getEventById(String eventId);
 
 	List<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page, int size,
-			String updatedTime, String sortBy, String fromTime, String toTime);
+			String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked);
 
 	NutritionAppointment deleteNutritionAppointment(String appointmentId, Boolean discarded);
 

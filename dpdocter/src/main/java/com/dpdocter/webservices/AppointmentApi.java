@@ -662,17 +662,18 @@ public class AppointmentApi {
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "sortBy") String sortBy, @QueryParam(value = "fromTime") String fromTime,
 			@QueryParam(value = "toTime") String toTime,
-			@DefaultValue(value = "false") @QueryParam(value = "byMonth") Boolean byMonth) {
+			@DefaultValue(value = "false") @QueryParam(value = "byMonth") Boolean byMonth,
+			@DefaultValue(value = "false") @QueryParam(value = "isCalenderBlocked") Boolean isCalenderBlocked) {
 
 		List<Event> events = null;
 
 		if (byMonth)
 			events = appointmentService.getEventsByMonth(locationId, doctorId, from, to, page, size, updatedTime,
-					sortBy, fromTime, toTime);
+					sortBy, fromTime, toTime, isCalenderBlocked);
 
 		else
 			events = appointmentService.getEvents(locationId, doctorId, from, to, page, size, updatedTime, sortBy,
-					fromTime, toTime);
+					fromTime, toTime, isCalenderBlocked);
 		Response<Event> response = new Response<Event>();
 		response.setDataList(events);
 		return response;

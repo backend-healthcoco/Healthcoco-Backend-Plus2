@@ -4721,7 +4721,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	public List<Event> getEvents(String locationId, List<String> doctorId, String from, String to, int page, int size,
-			String updatedTime, String sortBy, String fromTime, String toTime) {
+			String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked) {
 		List<Event> response = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -4738,6 +4738,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 				criteria.and("doctorIds").in(doctorObjectIds);
 			}
 
+			if(isCalenderBlocked) {
+				criteria.and("isCalenderBlocked").is(true);
+			}
+			
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
@@ -4958,7 +4962,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	public List<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page,
-			int size, String updatedTime, String sortBy, String fromTime, String toTime) {
+			int size, String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked) {
 		List<Event> response = null;
 		try {
 
@@ -4980,6 +4984,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 				criteria.and("doctorIds").in(doctorObjectIds);
 			}
 
+			if(isCalenderBlocked) {
+				criteria.and("isCalenderBlocked").is(true);
+			}
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 			if (!DPDoctorUtils.anyStringEmpty(from))

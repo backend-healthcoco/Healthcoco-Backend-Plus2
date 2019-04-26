@@ -915,7 +915,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			} else {
 				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(userObjectId,
 						locationObjectId, hospitalObjectId);
-				String PID = request.getPID(), PNUM = request.getPID();
+				String PID = request.getPID(), PNUM = request.getPNUM();
 				if (patientCollection != null) {
 					ObjectId patientId = patientCollection.getId();
 					ObjectId patientDoctorId = patientCollection.getDoctorId();
