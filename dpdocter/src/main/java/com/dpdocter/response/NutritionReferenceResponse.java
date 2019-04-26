@@ -2,7 +2,9 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.PatientShortCard;
+import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.GoalStatus;
 import com.dpdocter.enums.RegularityStatus;
@@ -22,6 +24,10 @@ public class NutritionReferenceResponse extends GenericCollection {
 	private PatientShortCard patient;
 	private String regularityStatus = RegularityStatus.NO_ACTION.getType();
 	private String goalStatus = GoalStatus.REFERRED.getType();
+	private String localPatientName;
+	private String mobileNumber;
+	private NutritionPlan nutritionPlan;
+	private SubscriptionNutritionPlan subscriptionPlan;
 
 	public String getId() {
 		return id;
@@ -125,6 +131,38 @@ public class NutritionReferenceResponse extends GenericCollection {
 
 	public void setGoalStatus(String goalStatus) {
 		this.goalStatus = goalStatus;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public NutritionPlan getNutritionPlan() {
+		return nutritionPlan;
+	}
+
+	public void setNutritionPlan(NutritionPlan nutritionPlan) {
+		this.nutritionPlan = nutritionPlan;
+	}
+
+	public SubscriptionNutritionPlan getSubscriptionPlan() {
+		return subscriptionPlan;
+	}
+
+	public void setSubscriptionPlan(SubscriptionNutritionPlan subscriptionPlan) {
+		this.subscriptionPlan = subscriptionPlan;
+	}
+
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
 	}
 
 	@Override

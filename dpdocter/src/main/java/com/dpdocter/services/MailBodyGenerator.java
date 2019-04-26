@@ -65,4 +65,8 @@ public interface MailBodyGenerator {
 
 	String generateActivationEmailBody(String fName, String tokenId, String templatePath, String doctorName,
 			String clinicName, String addedBy) throws Exception;
+
+	public String nutritionReferenceEmailBody(String patientName, String mobileNumber, String birthDate,
+			String profession, String gender, String address, String city, String pinCode, String doctorName,
+			String planName, String subplan,String templatePath) throws Exception;
 }

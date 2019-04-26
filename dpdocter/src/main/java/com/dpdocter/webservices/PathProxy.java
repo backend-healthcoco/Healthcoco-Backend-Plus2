@@ -42,7 +42,7 @@ public interface PathProxy {
 		public static final String WELCOME_USER = "/welcome/{tokenId}";
 
 		public static final String DOCTOR_SIGNUP = "/doctor";
-		
+
 		public static final String VERIFY_CONFERENCE_USER = "/conference/user/verify/{tokenId}";
 
 	}
@@ -398,7 +398,7 @@ public interface PathProxy {
 		public static final String FORGOT_USERNAME = "/forgot-username";
 
 		public static final String RESET_PASSWORD_CB = "/resetPasswordCB";
-		
+
 		public static final String RESET_PASSWORD_CONFERENCE = "/conference/resetPassword";
 
 	}
@@ -1860,9 +1860,6 @@ public interface PathProxy {
 
 	public interface NutritionUrl {
 
-		public static final String ADD_EDIT_NUTRITION_REFERENCE = "/addEditNutritionReference";
-		public static final String GET_NUTRITION_REFERENCES = "/getNutritionReferences";
-		public static final String GET_NUTRITION_ANALYTICS = "/getNutritionAnalytics";
 		public static final String GET_ALL_PLAN_CATEGORY = "/getAllCategory";
 		public static final String GET_NUTRITION_PLAN = "/getPlan";
 		public static final String GET_NUTRITION_PLAN_CATEGORY = "/getPlanByCategory";
@@ -2126,10 +2123,10 @@ public interface PathProxy {
 		public static final String ADD_EDIT_USER_CART = "/addEditUserCart";
 		public static final String GET_CART_BY_ID = "/getCart/{id}";
 		public static final String GET_CART_BY_USER_ID = "/getCartByUser/{id}";
-		public static final String ADD_EDIT_TRACKING_DETAILS= "/addEditTrackingDetails";
-		public static final String GET_TRACKING_DETAILS= "/getTrackingDetails/{orderId}";
-		public static final String GET_DRUG_INFO_LIST= "/getDrugInfoList";
-		
+		public static final String ADD_EDIT_TRACKING_DETAILS = "/addEditTrackingDetails";
+		public static final String GET_TRACKING_DETAILS = "/getTrackingDetails/{orderId}";
+		public static final String GET_DRUG_INFO_LIST = "/getDrugInfoList";
+
 	}
 
 	public static final String TRENDING_URL = BASE_URL + "/Trending";
@@ -2149,4 +2146,13 @@ public interface PathProxy {
 		public static final String SEARCH_TRENDINGS = "/search";
 	}
 
+	public static final String NUTRITION_REFERENCE_BASE_URL = BASE_URL + "/nutritionReference";
+
+	public interface NutritionReferenceUrl {
+		public static final String ADD_EDIT_NUTRITION_REFERENCE = "/addEdit";
+		public static final String GET_NUTRITION_REFERENCES = "/get";
+		public static final String GET_NUTRITION_ANALYTICS = "/getNutritionAnalytics";
+		public static final String GRT_NUTRITION_REFERNCE = "/{id}/get";
+		public static final String CHANGE_REFERENCE_STATUS = "/change/{id}/status";
+	}
 }

@@ -4,27 +4,16 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import com.dpdocter.beans.NutritionGoalAnalytics;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.UserNutritionSubscription;
 import com.dpdocter.enums.NutritionPlanType;
-import com.dpdocter.request.AddEditNutritionReferenceRequest;
 import com.dpdocter.request.NutritionPlanRequest;
 import com.dpdocter.response.NutritionPlanResponse;
 import com.dpdocter.response.NutritionPlanWithCategoryResponse;
-import com.dpdocter.response.NutritionReferenceResponse;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
 
 public interface NutritionService {
-
-	NutritionReferenceResponse addEditNutritionReference(AddEditNutritionReferenceRequest request);
-
-	List<NutritionReferenceResponse> getNutritionReferenceList(String doctorId, String locationId, String role,
-			int page, int size);
-
-	NutritionGoalAnalytics getGoalAnalytics(String doctorId, String locationId, String role, Long fromDate,
-			Long toDate);
 
 	public List<NutritionPlanType> getPlanType();
 

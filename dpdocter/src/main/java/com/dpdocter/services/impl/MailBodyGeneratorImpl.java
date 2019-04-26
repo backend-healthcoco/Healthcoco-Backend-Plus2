@@ -21,7 +21,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
 	@Value(value = "${verify.link}")
 	private String link;
-	
+
 	@Value(value = "${welcome.link}")
 	private String welcomeLink;
 
@@ -61,7 +61,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Override
 	@Transactional
 	public String generateActivationEmailBody(String fName, String tokenId, String templatePath, String doctorName,
-			String clinicName , String addedBy) throws Exception {
+			String clinicName, String addedBy) throws Exception {
 
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("fName", fName);
@@ -80,7 +80,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 		return text;
 	}
-	
+
 	@Override
 	@Transactional
 	public String doctorWelcomeEmailBody(String fName, String tokenId, String templatePath, String doctorName,
@@ -98,7 +98,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("twitterLink", twitterLink);
 		model.put("linkedInLink", linkedInLink);
 		model.put("googlePlusLink", googlePlusLink);
-	//	model.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
+		// model.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 		return text;
 	}
@@ -318,8 +318,8 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		return text;
 	}
 
-	public String generatePaymentEmailBody(String orderId, String planName, String amount, String patientName,String time,
-			String templatePath) {
+	public String generatePaymentEmailBody(String orderId, String planName, String amount, String patientName,
+			String time, String templatePath) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("orderId", orderId);
 		model.put("planName", planName);
@@ -417,6 +417,29 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		}
 		return text;
 
+	}
+
+	@Override
+	@Transactional
+	public String nutritionReferenceEmailBody(String patientName, String mobileNumber, String birthDate,
+			String profession, String gender, String address, String city, String pinCode, String doctorName,
+			String planName, String subplan,String templatePath) throws Exception {
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("patientName", patientName);
+		model.put("doctorName", doctorName);
+		model.put("mobileNumber", mobileNumber);
+		model.put("birthDate", birthDate);
+		model.put("profession", profession);
+		model.put("gender", gender);
+		model.put("address", address);
+		model.put("city", city);
+		model.put("pinCode", pinCode);
+		model.put("planName", planName);
+		model.put("subplan", subplan);
+		// model.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
+		@SuppressWarnings("deprecation")
+		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		return text;
 	}
 
 }

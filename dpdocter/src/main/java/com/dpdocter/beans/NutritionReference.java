@@ -1,13 +1,13 @@
-package com.dpdocter.request;
+package com.dpdocter.beans;
 
 import java.util.List;
 
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.GoalStatus;
-import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.enums.RegularityStatus;
 import com.dpdocter.response.ImageURLResponse;
 
-public class AddEditNutritionReferenceRequest {
+public class NutritionReference extends GenericCollection {
 
 	private String id;
 	private String doctorId;
@@ -16,14 +16,13 @@ public class AddEditNutritionReferenceRequest {
 	private String patientId;
 	private String details;
 	private Integer durationInMonths;
-	private NutritionPlanType type;
-	private String nutritionPlanId;
-	private String subscriptionPlanId;
 	private List<ImageURLResponse> reports;
 	private String regularityStatus = RegularityStatus.NO_ACTION.getType();
 	private String goalStatus = GoalStatus.REFERRED.getType();
 	private String localPatientName;
 	private String mobileNumber;
+	private NutritionPlan nutritionPlan;
+	private SubscriptionNutritionPlan subscriptionPlan;
 
 	public String getId() {
 		return id;
@@ -105,14 +104,6 @@ public class AddEditNutritionReferenceRequest {
 		this.goalStatus = goalStatus;
 	}
 
-	public String getLocalPatientName() {
-		return localPatientName;
-	}
-
-	public void setLocalPatientName(String localPatientName) {
-		this.localPatientName = localPatientName;
-	}
-
 	public String getMobileNumber() {
 		return mobileNumber;
 	}
@@ -121,28 +112,28 @@ public class AddEditNutritionReferenceRequest {
 		this.mobileNumber = mobileNumber;
 	}
 
-	public NutritionPlanType getType() {
-		return type;
+	public NutritionPlan getNutritionPlan() {
+		return nutritionPlan;
 	}
 
-	public void setType(NutritionPlanType type) {
-		this.type = type;
+	public void setNutritionPlan(NutritionPlan nutritionPlan) {
+		this.nutritionPlan = nutritionPlan;
 	}
 
-	public String getNutritionPlanId() {
-		return nutritionPlanId;
+	public SubscriptionNutritionPlan getSubscriptionPlan() {
+		return subscriptionPlan;
 	}
 
-	public void setNutritionPlanId(String nutritionPlanId) {
-		this.nutritionPlanId = nutritionPlanId;
+	public void setSubscriptionPlan(SubscriptionNutritionPlan subscriptionPlan) {
+		this.subscriptionPlan = subscriptionPlan;
 	}
 
-	public String getSubscriptionPlanId() {
-		return subscriptionPlanId;
+	public String getLocalPatientName() {
+		return localPatientName;
 	}
 
-	public void setSubscriptionPlanId(String subscriptionPlanId) {
-		this.subscriptionPlanId = subscriptionPlanId;
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
 	}
 
 }
