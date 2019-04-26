@@ -20,12 +20,7 @@ public class NutritionGoalStatusStampingCollection extends GenericCollection {
 	private ObjectId patientId;
 	@Field
 	private String goalStatus;
-	@Field
-	private ObjectId referredDoctorId;
-	@Field
-	private ObjectId referredLocationId;
-	@Field
-	private ObjectId referredHospitalId;
+
 	@Field
 	private Boolean isPatientDiscarded = false;
 	public ObjectId getId() {
@@ -76,30 +71,7 @@ public class NutritionGoalStatusStampingCollection extends GenericCollection {
 		this.goalStatus = goalStatus;
 	}
 
-	public ObjectId getReferredDoctorId() {
-		return referredDoctorId;
-	}
-
-	public void setReferredDoctorId(ObjectId referredDoctorId) {
-		this.referredDoctorId = referredDoctorId;
-	}
-
-	public ObjectId getReferredLocationId() {
-		return referredLocationId;
-	}
-
-	public void setReferredLocationId(ObjectId referredLocationId) {
-		this.referredLocationId = referredLocationId;
-	}
-
-	public ObjectId getReferredHospitalId() {
-		return referredHospitalId;
-	}
-
-	public void setReferredHospitalId(ObjectId referredHospitalId) {
-		this.referredHospitalId = referredHospitalId;
-	}
-
+	
 	public Boolean getIsPatientDiscarded() {
 		return isPatientDiscarded;
 	}
@@ -108,11 +80,5 @@ public class NutritionGoalStatusStampingCollection extends GenericCollection {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
-	@Override
-	public String toString() {
-		return "NutritionGoalStatusStampingCollection [id=" + id + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", goalStatus=" + goalStatus
-				+ ", referredDoctorId=" + referredDoctorId + ", referredLocationId=" + referredLocationId
-				+ ", referredHospitalId=" + referredHospitalId + ", isPatientDiscarded=" + isPatientDiscarded + "]";
-	}
+	
 }

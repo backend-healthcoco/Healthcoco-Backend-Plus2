@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.GoalStatus;
+import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.enums.RegularityStatus;
 import com.dpdocter.response.ImageURLResponse;
 
@@ -29,6 +30,12 @@ public class NutritionReferenceCollection extends GenericCollection {
 	@Field
 	private Integer durationInMonths;
 	@Field
+	private NutritionPlanType type;
+	@Field
+	private ObjectId nutritionPlanId;
+	@Field
+	private ObjectId subscriptionPlanId;
+	@Field
 	private List<ImageURLResponse> reports;
 	@Field
 	private String regularityStatus = RegularityStatus.NO_ACTION.getType();
@@ -42,6 +49,11 @@ public class NutritionReferenceCollection extends GenericCollection {
 	private ObjectId referredHospitalId;
 	@Field
 	private Boolean isPatientDiscarded = false;
+	@Field
+	private String mobileNumber;
+	@Field 
+	private String localPatientName;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -152,6 +164,46 @@ public class NutritionReferenceCollection extends GenericCollection {
 
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	public NutritionPlanType getType() {
+		return type;
+	}
+
+	public void setType(NutritionPlanType type) {
+		this.type = type;
+	}
+
+	public ObjectId getNutritionPlanId() {
+		return nutritionPlanId;
+	}
+
+	public void setNutritionPlanId(ObjectId nutritionPlanId) {
+		this.nutritionPlanId = nutritionPlanId;
+	}
+
+	public ObjectId getSubscriptionPlanId() {
+		return subscriptionPlanId;
+	}
+
+	public void setSubscriptionPlanId(ObjectId subscriptionPlanId) {
+		this.subscriptionPlanId = subscriptionPlanId;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
 	}
 
 	@Override
