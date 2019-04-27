@@ -20,8 +20,8 @@ public class AddEditNutritionReferenceRequest {
 	private String nutritionPlanId;
 	private String subscriptionPlanId;
 	private List<ImageURLResponse> reports;
-	private String regularityStatus = RegularityStatus.NO_ACTION.getType();
-	private String goalStatus = GoalStatus.REFERRED.getType();
+	private RegularityStatus regularityStatus = RegularityStatus.NO_ACTION;
+	private GoalStatus goalStatus = GoalStatus.REFERRED;
 	private String localPatientName;
 	private String mobileNumber;
 
@@ -89,19 +89,19 @@ public class AddEditNutritionReferenceRequest {
 		this.reports = reports;
 	}
 
-	public String getRegularityStatus() {
+	public RegularityStatus getRegularityStatus() {
 		return regularityStatus;
 	}
 
-	public void setRegularityStatus(String regularityStatus) {
+	public void setRegularityStatus(RegularityStatus regularityStatus) {
 		this.regularityStatus = regularityStatus;
 	}
 
-	public String getGoalStatus() {
+	public GoalStatus getGoalStatus() {
 		return goalStatus;
 	}
 
-	public void setGoalStatus(String goalStatus) {
+	public void setGoalStatus(GoalStatus goalStatus) {
 		this.goalStatus = goalStatus;
 	}
 

@@ -38,20 +38,15 @@ public class NutritionReferenceCollection extends GenericCollection {
 	@Field
 	private List<ImageURLResponse> reports;
 	@Field
-	private String regularityStatus = RegularityStatus.NO_ACTION.getType();
+	private RegularityStatus regularityStatus = RegularityStatus.NO_ACTION;
 	@Field
-	private String goalStatus = GoalStatus.REFERRED.getType();
-	@Field
-	private ObjectId referredDoctorId;
-	@Field
-	private ObjectId referredLocationId;
-	@Field
-	private ObjectId referredHospitalId;
+	private GoalStatus goalStatus = GoalStatus.REFERRED;
+
 	@Field
 	private Boolean isPatientDiscarded = false;
 	@Field
 	private String mobileNumber;
-	@Field 
+	@Field
 	private String localPatientName;
 
 	public ObjectId getId() {
@@ -118,46 +113,6 @@ public class NutritionReferenceCollection extends GenericCollection {
 		this.reports = reports;
 	}
 
-	public String getRegularityStatus() {
-		return regularityStatus;
-	}
-
-	public void setRegularityStatus(String regularityStatus) {
-		this.regularityStatus = regularityStatus;
-	}
-
-	public String getGoalStatus() {
-		return goalStatus;
-	}
-
-	public void setGoalStatus(String goalStatus) {
-		this.goalStatus = goalStatus;
-	}
-
-	public ObjectId getReferredDoctorId() {
-		return referredDoctorId;
-	}
-
-	public void setReferredDoctorId(ObjectId referredDoctorId) {
-		this.referredDoctorId = referredDoctorId;
-	}
-
-	public ObjectId getReferredLocationId() {
-		return referredLocationId;
-	}
-
-	public void setReferredLocationId(ObjectId referredLocationId) {
-		this.referredLocationId = referredLocationId;
-	}
-
-	public ObjectId getReferredHospitalId() {
-		return referredHospitalId;
-	}
-
-	public void setReferredHospitalId(ObjectId referredHospitalId) {
-		this.referredHospitalId = referredHospitalId;
-	}
-
 	public Boolean getIsPatientDiscarded() {
 		return isPatientDiscarded;
 	}
@@ -206,14 +161,20 @@ public class NutritionReferenceCollection extends GenericCollection {
 		this.localPatientName = localPatientName;
 	}
 
-	@Override
-	public String toString() {
-		return "NutritionReferenceCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", details=" + details
-				+ ", durationInMonths=" + durationInMonths + ", reports=" + reports + ", regularityStatus="
-				+ regularityStatus + ", goalStatus=" + goalStatus + ", referredDoctorId=" + referredDoctorId
-				+ ", referredLocationId=" + referredLocationId + ", referredHospitalId=" + referredHospitalId
-				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
+	public RegularityStatus getRegularityStatus() {
+		return regularityStatus;
+	}
+
+	public void setRegularityStatus(RegularityStatus regularityStatus) {
+		this.regularityStatus = regularityStatus;
+	}
+
+	public GoalStatus getGoalStatus() {
+		return goalStatus;
+	}
+
+	public void setGoalStatus(GoalStatus goalStatus) {
+		this.goalStatus = goalStatus;
 	}
 
 }
