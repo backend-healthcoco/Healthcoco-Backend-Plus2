@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.enums.GoalStatus;
+
 @Document(collection = "nutrition_goal_status_stamping_cl")
 public class NutritionGoalStatusStampingCollection extends GenericCollection {
 
@@ -19,10 +21,10 @@ public class NutritionGoalStatusStampingCollection extends GenericCollection {
 	@Field
 	private ObjectId patientId;
 	@Field
-	private String goalStatus;
-
+	private GoalStatus goalStatus;
 	@Field
 	private Boolean isPatientDiscarded = false;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -63,15 +65,14 @@ public class NutritionGoalStatusStampingCollection extends GenericCollection {
 		this.patientId = patientId;
 	}
 
-	public String getGoalStatus() {
+	public GoalStatus getGoalStatus() {
 		return goalStatus;
 	}
 
-	public void setGoalStatus(String goalStatus) {
+	public void setGoalStatus(GoalStatus goalStatus) {
 		this.goalStatus = goalStatus;
 	}
 
-	
 	public Boolean getIsPatientDiscarded() {
 		return isPatientDiscarded;
 	}
@@ -80,5 +81,4 @@ public class NutritionGoalStatusStampingCollection extends GenericCollection {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
-	
 }

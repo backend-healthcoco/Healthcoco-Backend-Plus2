@@ -28,6 +28,7 @@ import com.dpdocter.collections.NutritionReferenceCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.GoalStatus;
+import com.dpdocter.enums.RegularityStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -132,7 +133,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 				}
 				nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository
 						.getByPatientDoctorLocationHospitalandStatus(patientId, doctorId, locationId, hospitalId,
-								nutritionReferenceCollection.getGoalStatus());
+								nutritionReferenceCollection.getGoalStatus().getType());
 
 				if (nutritionGoalStatusStampingCollection != null) {
 					nutritionGoalStatusStampingCollection.setGoalStatus(nutritionReferenceCollection.getGoalStatus());
@@ -371,16 +372,16 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 				nutritionReferenceCollection = nutritionReferenceRepository.findOne(new ObjectId(id));
 				if (nutritionReferenceCollection != null) {
 					if (!DPDoctorUtils.anyStringEmpty(regularityStatus)) {
-						nutritionReferenceCollection.setRegularityStatus(regularityStatus);
+						nutritionReferenceCollection.setRegularityStatus(RegularityStatus.valueOf(regularityStatus));
 					}
 					if (!DPDoctorUtils.anyStringEmpty(goalStatus)) {
-						nutritionReferenceCollection.setGoalStatus(goalStatus);
+						nutritionReferenceCollection.setGoalStatus(GoalStatus.valueOf(goalStatus));
 						NutritionGoalStatusStampingCollection nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository
 								.getByPatientDoctorLocationHospitalandStatus(
 										nutritionReferenceCollection.getPatientId(),
-										nutritionReferenceCollection.getReferredDoctorId(),
-										nutritionReferenceCollection.getReferredLocationId(),
-										nutritionReferenceCollection.getReferredHospitalId(), goalStatus);
+										nutritionReferenceCollection.getDoctorId(),
+										nutritionReferenceCollection.getLocationId(),
+										nutritionReferenceCollection.getHospitalId(), goalStatus);
 
 						if (nutritionGoalStatusStampingCollection != null) {
 							nutritionGoalStatusStampingCollection.setUpdatedTime(new Date());
@@ -396,11 +397,11 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 									.setHospitalId(nutritionReferenceCollection.getHospitalId());
 							nutritionGoalStatusStampingCollection
 									.setPatientId(nutritionReferenceCollection.getPatientId());
-							nutritionGoalStatusStampingCollection.setGoalStatus(goalStatus);
+							nutritionGoalStatusStampingCollection.setGoalStatus(GoalStatus.valueOf(goalStatus));
 							nutritionGoalStatusStampingCollection.setCreatedTime(new Date());
 							nutritionGoalStatusStampingCollection.setUpdatedTime(new Date());
 							UserCollection userCollection = userRepository
-									.findOne(nutritionReferenceCollection.getReferredDoctorId());
+									.findOne(nutritionReferenceCollection.getDoctorId());
 							nutritionGoalStatusStampingCollection.setCreatedBy(userCollection.getCreatedBy());
 							nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository
 									.save(nutritionGoalStatusStampingCollection);
