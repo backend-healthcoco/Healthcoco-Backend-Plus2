@@ -117,6 +117,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 			}
 			if (nutritionReferenceCollection == null) {
 				nutritionReferenceCollection = new NutritionReferenceCollection();
+				nutritionReferenceCollection.setCreatedTime(new Date());
 			}
 			BeanUtil.map(request, nutritionReferenceCollection);
 			nutritionReferenceCollection.setPatientId(patientId);
