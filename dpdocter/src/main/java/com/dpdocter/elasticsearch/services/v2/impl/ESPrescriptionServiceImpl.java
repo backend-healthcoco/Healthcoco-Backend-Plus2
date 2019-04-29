@@ -318,7 +318,6 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	private List<ESDrugDocument> addStockToDrug(List<ESDrugDocument> drugs) {
-		System.out.println("drugs :: " + drugs);
 		if (drugs != null) {
 			for (ESDrugDocument drug : drugs) {
 				if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getId())) {
