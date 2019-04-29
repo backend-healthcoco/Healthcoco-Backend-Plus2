@@ -100,6 +100,7 @@ import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.EyePrescriptionRepository;
 import com.dpdocter.repository.HistoryRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
@@ -216,6 +217,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
+
+	@Autowired
+	private PatientRepository patientRepository;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -3440,22 +3444,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 							Aggregation.unwind("location"),
-							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-							new CustomAggregationOperation(new BasicDBObject(
-									"$unwind",
-									new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
-									new BasicDBObject("if",
-											new BasicDBObject("$eq",
-													Arrays.asList("$patient.locationId", "$locationId")))
-															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
-
 							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
 							Aggregation.unwind("patientUser")),
 					PatientVisitCollection.class, PatientVisitLookupResponse.class).getUniqueMappedResult();
 
 			if (patientVisitLookupResponse != null) {
-				PatientCollection patient = patientVisitLookupResponse.getPatient();
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patientVisitLookupResponse.getPatientId(), patientVisitLookupResponse.getLocationId(),
+						patientVisitLookupResponse.getHospitalId());
 				UserCollection user = patientVisitLookupResponse.getPatientUser();
 
 				if (showPH || showPLH || showFH || showDA) {
