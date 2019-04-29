@@ -289,7 +289,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 								Aggregation.lookup("subscription_nutrition_plan_cl", "subscriptionPlanId", "_id",
 										"subscriptionPlan"),
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$nutritionPlan")
+										new BasicDBObject("path", "$subscriptionPlan")
 												.append("preserveNullAndEmptyArrays", true)
 												.append("includeArrayIndex", "arrayIndex1"))),
 								Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
@@ -306,7 +306,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 								Aggregation.lookup("subscription_nutrition_plan_cl", "subscriptionPlanId", "_id",
 										"subscriptionPlan"),
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$nutritionPlan")
+										new BasicDBObject("path", "$subscriptionPlan")
 												.append("preserveNullAndEmptyArrays", true)
 												.append("includeArrayIndex", "arrayIndex1"))),
 								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
@@ -433,7 +433,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 								Aggregation.lookup("subscription_nutrition_plan_cl", "subscriptionPlanId", "_id",
 										"subscriptionPlan"),
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$nutritionPlan")
+										new BasicDBObject("path", "$subscriptionPlan")
 												.append("preserveNullAndEmptyArrays", true)
 												.append("includeArrayIndex", "arrayIndex1")))),
 						NutritionReferenceCollection.class, NutritionReferenceCollection.class).getUniqueMappedResult();
