@@ -737,17 +737,17 @@ public class AnalyticsAPI {
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@QueryParam("type") String type, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("isVisited") boolean isVisited, @QueryParam("city") String city) {
+			@QueryParam("isVisited") boolean isVisited) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId, type)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					" locationId, hospitalId ,searchType should not be empty");
 		}
 		Response<AnalyticCountResponse> response = new Response<AnalyticCountResponse>();
 		Integer count = patientAnalyticService.getPatientCountAnalytic(0, page, doctorId, locationId, hospitalId,
-				fromDate, toDate, type, searchTerm, city, isVisited).size();
+				fromDate, toDate, type, searchTerm,  isVisited).size();
 		if (count > 0) {
 			List<AnalyticCountResponse> data = patientAnalyticService.getPatientCountAnalytic(size, page, doctorId,
-					locationId, hospitalId, fromDate, toDate, type, searchTerm, city, isVisited);
+					locationId, hospitalId, fromDate, toDate, type, searchTerm,  isVisited);
 			response.setDataList(data);
 		}
 		response.setCount(count);

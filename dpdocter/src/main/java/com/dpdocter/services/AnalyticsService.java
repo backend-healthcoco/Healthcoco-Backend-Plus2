@@ -53,5 +53,6 @@ public interface AnalyticsService {
 
 	public Integer countAmountDueAnalyticsData(String doctorId, String locationId, String hospitalId, String fromDate,
 			String toDate, String queryType, String searchType);
+	
 
 }

@@ -882,7 +882,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			}
 
 			case CITY_WISE: {
-				response = getPatientDetailCount(from, to, criteria, city, doctorId, locationId, hospitalId,
+				response = getPatientDetailCount(from, to, criteria, searchTerm, doctorId, locationId, hospitalId,
 						searchTerm);
 				break;
 			}
@@ -891,7 +891,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				if (DPDoctorUtils.allStringsEmpty(groupId)) {
 					throw new BusinessException(ServiceError.InvalidInput, "groupId should not be empty");
 				}
-				response = getGroupPatientDetailCount(from, to, criteria, city, doctorId, locationId, hospitalId,
+				response = getGroupPatientDetailCount(from, to, criteria, searchTerm, doctorId, locationId, hospitalId,
 						groupId, searchTerm);
 				break;
 			}
@@ -1131,12 +1131,12 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 	}
 
 	private List<AnalyticCountResponse> getPatientCountByCitiWise(int size, int page, Date fromTime, Date toTime,
-			String doctorId, String locationId, String hospitalId, String city, boolean isVisited) {
+			String doctorId, String locationId, String hospitalId, String searchTerm, boolean isVisited) {
 		Criteria criteria = new Criteria();
 		Criteria criteria2 = new Criteria();
 
-		if (!DPDoctorUtils.anyStringEmpty(city)) {
-			criteria.and("address.city").is(city);
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			criteria.orOperator(new Criteria("address.city").regex(searchTerm, "i"));
 		}
 		if (!isVisited) {
 			if (toTime != null && fromTime != null) {
@@ -1234,12 +1234,13 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 	}
 
 	private List<AnalyticCountResponse> getPatientCountByReference(int size, int page, Date fromTime, Date toTime,
-			String doctorId, String locationId, String hospitalId, String city, boolean isVisited) {
+			String doctorId, String locationId, String hospitalId, String searchTerm, boolean isVisited) {
 		Criteria criteria = new Criteria();
 		Criteria criteria2 = new Criteria();
+		Criteria criteria3 = new Criteria();
 
-		if (!DPDoctorUtils.anyStringEmpty(city)) {
-			criteria.and("address.city").is(city);
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			criteria2.orOperator(new Criteria("group.name").regex(searchTerm, "i"));
 		}
 		if (!isVisited) {
 			if (toTime != null && fromTime != null) {
@@ -1290,15 +1291,19 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		if (!isVisited) {
 
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"), Aggregation.unwind("refer"),
-						projectList, aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
-						Aggregation.skip((page) * size), Aggregation.limit(size))
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"),
+								Aggregation.unwind("refer"), Aggregation.match(criteria3), projectList,
+								aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
+								Aggregation.skip((page) * size), Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"), Aggregation.unwind("refer"),
-						projectList, aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"),
+								Aggregation.unwind("refer"), Aggregation.match(criteria3), projectList,
+								aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 		} else {
 			if (size > 0)
@@ -1310,10 +1315,10 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$_id").append("refer", new BasicDBObject("$first", "$refer"))
 										.append("userId", new BasicDBObject("$first", "$userId")))),
-					
+
 						new ProjectionOperation(Fields.from(Fields.field("id", "$refer.reference"),
 								Fields.field("name", "$refer.reference"), Fields.field("count", "$userId"))),
-					
+
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name"))
 										.append("count", new BasicDBObject("$sum", 1)))),
@@ -1329,10 +1334,10 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$_id").append("refer", new BasicDBObject("$first", "$refer"))
 										.append("userId", new BasicDBObject("$first", "$userId")))),
-						
+
 						new ProjectionOperation(Fields.from(Fields.field("id", "$refer.reference"),
 								Fields.field("name", "$refer.reference"), Fields.field("count", "$userId"))),
-						
+
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$name").append("name", new BasicDBObject("$first", "$name"))
 										.append("count", new BasicDBObject("$sum", 1)))),
@@ -1346,14 +1351,11 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 	}
 
 	private List<AnalyticCountResponse> getPatientCountByGroup(int size, int page, Date fromTime, Date toTime,
-			String doctorId, String locationId, String hospitalId, String city, boolean isVisited) {
+			String doctorId, String locationId, String hospitalId, String searchTerm, boolean isVisited) {
 		Criteria criteria = new Criteria();
 		Criteria criteria2 = new Criteria();
 		Criteria criteria3 = new Criteria();
 
-		if (!DPDoctorUtils.anyStringEmpty(city)) {
-			criteria.and("address.city").is(city);
-		}
 		if (!isVisited) {
 			if (toTime != null && fromTime != null) {
 
@@ -1374,6 +1376,10 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 				criteria3.and("visit.createdTime").gte(fromTime);
 			}
 
+		}
+
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			criteria2.orOperator(new Criteria("refer.reference").regex(searchTerm, "i"));
 		}
 		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$group._id"),
 				Fields.field("name", "$group.name"), Fields.field("count", "$userId")));
@@ -1496,8 +1502,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 	@Override
 	public List<AnalyticCountResponse> getPatientCountAnalytic(int size, int page, String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchTerm, String city,
-			boolean isVisited) {
+			String hospitalId, String fromDate, String toDate, String queryType, String searchTerm, boolean isVisited) {
 		List<AnalyticCountResponse> response = null;
 
 		try {
@@ -1505,6 +1510,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			Date to = null;
 
 			long date = 0l;
+
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
@@ -1522,20 +1528,20 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 			if (queryType.equalsIgnoreCase("CITY_WISE")) {
 
-				response = getPatientCountByCitiWise(size, page, from, to, doctorId, locationId, hospitalId, city,
+				response = getPatientCountByCitiWise(size, page, from, to, doctorId, locationId, hospitalId, searchTerm,
 						isVisited);
 
 			}
 
 			else if (queryType.equalsIgnoreCase("GROUP_WISE")) {
 
-				response = getPatientCountByGroup(size, page, from, to, doctorId, locationId, hospitalId, city,
+				response = getPatientCountByGroup(size, page, from, to, doctorId, locationId, hospitalId, searchTerm,
 						isVisited);
 
 			} else if (queryType.equalsIgnoreCase("REFERRED_BY")) {
 
-				response = getPatientCountByReference(size, page, from, to, doctorId, locationId, hospitalId, city,
-						isVisited);
+				response = getPatientCountByReference(size, page, from, to, doctorId, locationId, hospitalId,
+						searchTerm, isVisited);
 
 			}
 

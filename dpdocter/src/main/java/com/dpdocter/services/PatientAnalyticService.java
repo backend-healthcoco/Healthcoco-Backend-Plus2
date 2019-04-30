@@ -18,9 +18,10 @@ public interface PatientAnalyticService {
 	public List<PatientAnalyticData> getPatientData(int page, int size, String doctorId, String locationId,
 			String hospitalId, String groupId, String fromDate, String toDate, String queryType, String searchTerm,
 			String city);
+
 	public DoctorPatientAnalyticResponse getPatientAnalytic(String doctorId, String locationId, String hospitalId,
 			String fromDate, String toDate);
+
 	public List<AnalyticCountResponse> getPatientCountAnalytic(int size, int page, String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String queryType, String searchTerm, String city,
-			boolean isVisited);
+			String hospitalId, String fromDate, String toDate, String queryType, String searchTerm, boolean isVisited);
 }
