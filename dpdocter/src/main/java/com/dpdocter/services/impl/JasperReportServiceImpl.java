@@ -105,9 +105,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		JasperReportResponse jasperReportResponse = null;
 		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 		AmazonS3 s3client = new AmazonS3Client(credentials);
-
+		MongoDbConnection mongoConnection = null;
 		try {
-			MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
+			mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
 			parameters.put("REPORT_CONNECTION", mongoConnection);
 			parameters.put("SUBREPORT_DIR", JASPER_TEMPLATES_RESOURCE);
 
@@ -133,10 +133,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 					jasperReportResponse.getFileSystemResource().getFile());
 			putObjectRequest.setMetadata(metadata);
 			s3client.putObject(putObjectRequest);
+			if (mongoConnection != null)
+				mongoConnection.close();
 			return jasperReportResponse;
 		} catch (JRException e) {
 			e.printStackTrace();
 			logger.error(e);
+			if (mongoConnection != null)
+				mongoConnection.close();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 	}
