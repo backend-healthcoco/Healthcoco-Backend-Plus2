@@ -51,7 +51,7 @@ public class MedicineOrderCollection extends GenericCollection {
 	@Field
 	private Long nextDeliveryDate;
 	@Field
-	private Boolean discarded;
+	private Boolean discarded = false;
 	@Field
 	private String notes;
 	@Field
@@ -60,6 +60,8 @@ public class MedicineOrderCollection extends GenericCollection {
 	private Long deliveredByDate;
 	@Field
 	private String callingPreference;
+	@Field
+	private Float cashHandlingCharges;
 
 	public ObjectId getId() {
 		return id;
@@ -228,7 +230,13 @@ public class MedicineOrderCollection extends GenericCollection {
 	public void setCallingPreference(String callingPreference) {
 		this.callingPreference = callingPreference;
 	}
-	
-	
+
+	public Float getCashHandlingCharges() {
+		return cashHandlingCharges;
+	}
+
+	public void setCashHandlingCharges(Float cashHandlingCharges) {
+		this.cashHandlingCharges = cashHandlingCharges;
+	}
 
 }

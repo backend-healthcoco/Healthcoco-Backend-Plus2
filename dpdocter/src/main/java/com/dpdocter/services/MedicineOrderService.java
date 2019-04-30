@@ -32,7 +32,7 @@ public interface MedicineOrderService {
 
 	MedicineOrder getOrderById(String id);
 
-	List<MedicineOrder> getOrderList(String patientId, String updatedTime, String searchTerm, int page, int size);
+	//List<MedicineOrder> getOrderList(String patientId, String updatedTime, String searchTerm, int page, int size);
 
 	UserCart addeditUserCart(UserCart request);
 
@@ -47,5 +47,8 @@ public interface MedicineOrderService {
 	List<TrackingOrder> getTrackingList(String orderId, String updatedTime, String searchTerm, int page, int size);
 
 	List<DrugInfo> getDrugInfo(int page, int size, String updatedTime, String searchTerm, Boolean discarded);
+
+	List<MedicineOrder> getOrderList(String patientId, String updatedTime, String searchTerm, int page, int size,
+			List<String> status);
 
 }

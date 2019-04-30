@@ -218,7 +218,10 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			medicineOrderCollection.setDeliveryCharges(request.getDeliveryCharges());
 			medicineOrderCollection.setNotes(request.getNotes());
 			medicineOrderCollection.setPaymentMode(request.getPaymentMode());
-
+			medicineOrderCollection.setCashHandlingCharges(request.getCashHandlingCharges());
+			medicineOrderCollection.setCallingPreference(request.getCallingPreference());
+			medicineOrderCollection.setOrderStatus(request.getOrderStatus());
+			
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
 			if (medicineOrderCollection != null) {
 				medicineOrder = new MedicineOrder();
@@ -355,7 +358,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 	
 	@Override
 	@Transactional
-	public List<MedicineOrder> getOrderList(String patientId , String updatedTime , String searchTerm, int page , int size) {
+	public List<MedicineOrder> getOrderList(String patientId , String updatedTime , String searchTerm, int page , int size , List<String> status) {
 		List<MedicineOrder> orders = null;
 		Aggregation aggregation =null;
 		try {
@@ -367,6 +370,11 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				criteria.and("patientId").is(new ObjectId(patientId));
+			}
+			
+			if(status != null && !status.isEmpty())
+			{
+				criteria.and("orderStatus").in(status);
 			}
 			
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
@@ -392,7 +400,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
 			
-			
+			System.out.println( "Aggregation :: " + aggregation);
 			orders = mongoTemplate.aggregate(
 					aggregation,
 					MedicineOrderCollection.class, MedicineOrder.class).getMappedResults();
@@ -427,7 +435,13 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			}
 
 			BeanUtil.map(request, userCartCollection);
-
+			/*List<MedicineOrderItems> orderItems = new ArrayList<>();
+			for (MedicineOrderAddEditItems items : request.getItems()) {
+				MedicineOrderItems medicineOrderItems  =  new MedicineOrderItems();
+				BeanUtil.map(items, medicineOrderItems);
+				orderItems.add(medicineOrderItems);
+			}*/
+			userCartCollection.setItems(request.getItems());
 			userCartCollection = userCartRepository.save(userCartCollection);
 			
 			if (userCartCollection != null) {

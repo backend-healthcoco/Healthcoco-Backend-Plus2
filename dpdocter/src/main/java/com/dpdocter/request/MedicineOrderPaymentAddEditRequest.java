@@ -11,6 +11,7 @@ public class MedicineOrderPaymentAddEditRequest {
 	private Float discountedPercentage;
 	private Float finalAmount;
 	private Float deliveryCharges;
+	private Float cashHandlingCharges;
 	private String notes;
 	private PaymentMode paymentMode = PaymentMode.COD;
 	private OrderStatus orderStatus;
@@ -94,6 +95,14 @@ public class MedicineOrderPaymentAddEditRequest {
 
 	public void setCallingPreference(String callingPreference) {
 		this.callingPreference = callingPreference;
+	}
+
+	public Float getCashHandlingCharges() {
+		return cashHandlingCharges;
+	}
+
+	public void setCashHandlingCharges(Float cashHandlingCharges) {
+		this.cashHandlingCharges = cashHandlingCharges;
 	}
 
 }

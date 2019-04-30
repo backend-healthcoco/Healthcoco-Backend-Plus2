@@ -30,6 +30,7 @@ public class MedicineOrder extends GenericCollection {
 	private Long deliveredByDate;
 	private String callingPreference;
 	private Boolean discarded = false;
+	private Long cancellationDate;
 
 	public String getId() {
 		return id;
@@ -199,14 +200,24 @@ public class MedicineOrder extends GenericCollection {
 		this.callingPreference = callingPreference;
 	}
 
+	public Long getCancellationDate() {
+		return cancellationDate;
+	}
+
+	public void setCancellationDate(Long cancellationDate) {
+		this.cancellationDate = cancellationDate;
+	}
+
 	@Override
 	public String toString() {
 		return "MedicineOrder [id=" + id + ", patientId=" + patientId + ", vendorId=" + vendorId + ", shippingAddress="
-				+ shippingAddress + ", billingAddress=" + billingAddress + ", vendor=" + vendor + ", items=" + items
-				+ ", rxImage=" + rxImage + ", totalAmount=" + totalAmount + ", discountedAmount=" + discountedAmount
-				+ ", discountedPercentage=" + discountedPercentage + ", finalAmount=" + finalAmount
-				+ ", deliveryCharges=" + deliveryCharges + ", paymentMode=" + paymentMode + ", deliveryPreference="
-				+ deliveryPreference + ", nextDeliveryDate=" + nextDeliveryDate + ", discarded=" + discarded + "]";
+				+ shippingAddress + ", billingAddress=" + billingAddress + ", vendor=" + vendor + ", uniqueOrderId="
+				+ uniqueOrderId + ", items=" + items + ", rxImage=" + rxImage + ", totalAmount=" + totalAmount
+				+ ", discountedAmount=" + discountedAmount + ", discountedPercentage=" + discountedPercentage
+				+ ", finalAmount=" + finalAmount + ", deliveryCharges=" + deliveryCharges + ", orderStatus="
+				+ orderStatus + ", paymentMode=" + paymentMode + ", deliveryPreference=" + deliveryPreference
+				+ ", nextDeliveryDate=" + nextDeliveryDate + ", deliveredByDate=" + deliveredByDate
+				+ ", callingPreference=" + callingPreference + ", discarded=" + discarded + "]";
 	}
 
 }

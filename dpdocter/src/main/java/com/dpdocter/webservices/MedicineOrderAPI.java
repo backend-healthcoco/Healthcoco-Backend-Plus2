@@ -3,8 +3,10 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -180,15 +182,18 @@ public class MedicineOrderAPI {
 	@GET
 	@Path(value = PathProxy.OrderMedicineUrls.PATIENT_GET_LIST)
 	@ApiOperation(value = PathProxy.OrderMedicineUrls.PATIENT_GET_LIST, notes = PathProxy.OrderMedicineUrls.PATIENT_GET_LIST)
-	public Response<MedicineOrder> getPatientOrderList(@PathParam("patientId") String patientId ,@DefaultValue("0") @QueryParam("updatedTime") String updatedTime ,  @QueryParam("searchTerm") String searchTerm , 
-			@QueryParam("page") int page ,  @QueryParam("size") int size ) {
+	public Response<MedicineOrder> getPatientOrderList(@PathParam(value = "patientId") String patientId ,@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime ,  @QueryParam(value = "searchTerm") String searchTerm , 
+			@QueryParam(value = "page") int page ,  @QueryParam(value = "size") int size , @MatrixParam(value = "status") List<String> status ) {
 
 		if(DPDoctorUtils.allStringsEmpty(patientId))
 		{
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid input. Id cannot be null");
 		}
 		
-		List<MedicineOrder> medicineOrders = medicineOrderService.getOrderList(patientId, updatedTime, searchTerm, page, size);
+		
+		System.out.println(status);
+		
+		List<MedicineOrder> medicineOrders = medicineOrderService.getOrderList(patientId, updatedTime, searchTerm, page, size, status);
 		Response<MedicineOrder> response = new Response<MedicineOrder>();
 		response.setDataList(medicineOrders);
 		return response;
@@ -249,7 +254,7 @@ public class MedicineOrderAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
 		}
 		
-		UserCart userCart = medicineOrderService.getUserCartById(id);
+		UserCart userCart = medicineOrderService.getUserCartByuserId(id);
 		Response<UserCart> response = new Response<UserCart>();
 		response.setData(userCart);
 		return response;
@@ -290,5 +295,19 @@ public class MedicineOrderAPI {
 		return response;
 	}
 	
-	
+	@DELETE
+	@Path(value = PathProxy.OrderMedicineUrls.CLEAR_CART)
+	@ApiOperation(value = PathProxy.OrderMedicineUrls.CLEAR_CART, notes = PathProxy.OrderMedicineUrls.CLEAR_CART)
+	public Response<UserCart> clearCart(@PathParam("id") String id) {
+
+		if(id == null)
+		{
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+		}
+		
+		UserCart userCart = medicineOrderService.clearCart(id);
+		Response<UserCart> response = new Response<UserCart>();
+		response.setData(userCart);
+		return response;
+	}
 }

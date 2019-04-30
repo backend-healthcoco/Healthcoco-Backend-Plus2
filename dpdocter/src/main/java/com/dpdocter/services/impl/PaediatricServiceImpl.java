@@ -165,7 +165,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp));
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
