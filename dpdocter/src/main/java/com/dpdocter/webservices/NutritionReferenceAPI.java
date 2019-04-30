@@ -46,7 +46,7 @@ public class NutritionReferenceAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber(), request.getLocalPatientName(),
-				request.getDoctorId(), request.getPatientId(), request.getLocationId())) {
+				request.getDoctorId(), request.getPatientId(), request.getLocationId(), request.getHospitalId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"mobileNumber,localPatientName,doctorId,PatientId should not empty or null ");
@@ -64,13 +64,14 @@ public class NutritionReferenceAPI {
 	@ApiOperation(value = PathProxy.NutritionReferenceUrl.GET_NUTRITION_REFERENCES)
 	public Response<NutritionReferenceResponse> getNutritionReference(@QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm,@QueryParam("updatedTime") String updatedTime) {
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("updatedTime") String updatedTime) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<NutritionReferenceResponse> response = new Response<NutritionReferenceResponse>();
-		response.setDataList(nutritionReferenceService.getNutritionReferenceList(doctorId, locationId, page, size,searchTerm,updatedTime));
+		response.setDataList(nutritionReferenceService.getNutritionReferenceList(doctorId, locationId, page, size,
+				searchTerm, updatedTime));
 		return response;
 	}
 
