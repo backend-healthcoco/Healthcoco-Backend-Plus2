@@ -549,11 +549,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$P{vitalSigns}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaints}", "$P{presentComplaint}", fieldWidth, false, 0,
 				false);
-		addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{pastHistory}", fieldWidth, false, 0, false);
-
-		addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{PH}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{PriorConsultations}", "$P{priorConsultations}", fieldWidth, false, 0,
-				false);
 
 		if (showTitle) {
 			band = new JRDesignBand();
@@ -572,53 +567,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
-		addItems(jasperDesign, columnWidth, "$P{PCNose}", "$P{pcNose}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{PCOralCavity}", "$P{pcOralCavity}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{PCThroat}", "$P{pcThroat}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{PCEars}", "$P{pcEars}", fieldWidth, false, 0, false);
-
-		band = new JRDesignBand();
-		band.setHeight(20);
-		band.setPrintWhenExpression(new JRDesignExpression(
-				"!$P{generalHistoryDrugs}.equals( null ) && ! $P{generalHistoryDrugs} .isEmpty() || !$P{generalHistoryMedicine}.equals( null ) && ! $P{generalHistoryMedicine} .isEmpty()"
-						+ "|| !$P{generalHistoryAllergies}.equals( null ) && ! $P{generalHistoryAllergies} .isEmpty() || !$P{generalHistorySurgical}.equals( null ) && ! $P{generalHistorySurgical} .isEmpty()"));
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{GeneralHistoryTitle}"));
-		jrDesignTextField.setX(1);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(20);
-		jrDesignTextField.setWidth(columnWidth);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-		jrDesignTextField.setBold(true);
-		jrDesignTextField.setUnderline(true);
-		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setFontSize(new Float(contentFontSize));
-		band.addElement(jrDesignTextField);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
-		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryMedicine}", "$P{generalHistoryMedicine}", fieldWidth,
-				false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{GeneralHistorySurgical}", "$P{generalHistorySurgical}", fieldWidth,
-				false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryDrugs}", "$P{generalHistoryDrugs}", fieldWidth, false, 0,
-				false);
-
-		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryAllergies}", "$P{generalHistoryAllergies}", fieldWidth,
-				false, 0, false);
-
-		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryOccupation}", "$P{personalHistoryOccupation}",
-				fieldWidth, false, 0, false);
-		band = new JRDesignBand();
-		band.setHeight(2);
-		jrDesignLine = new JRDesignLine();
-		jrDesignLine.setX(0);
-		jrDesignLine.setY(0);
-		jrDesignLine.setHeight(1);
-		jrDesignLine.setWidth(columnWidth);
-		band.addElement(jrDesignLine);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		addItems(jasperDesign, columnWidth, "$P{FamilyHistoryTitle}", "$P{familyHistory}", fieldWidth, false, 0, false);
-
+		addItems(jasperDesign, columnWidth, "$P{PCNose}", "$P{pcNose}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PCThroat}", "$P{pcThroat}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PCOralCavity}", "$P{pcOralCavity}", fieldWidth, false, 0, false);
 
 		band = new JRDesignBand();
 		band.setHeight(20);
@@ -646,14 +598,52 @@ public class JasperReportServiceImpl implements JasperReportService {
 				false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{PersonalHistorySmoking}", "$P{personalHistorySmoking}", fieldWidth,
 				false, 0, false);
-
 		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryDiet}", "$P{personalHistoryDiet}", fieldWidth, false, 0,
 				false);
 		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryOccupation}", "$P{personalHistoryOccupation}",
 				fieldWidth, false, 0, false);
-
+		band = new JRDesignBand();
+		band.setHeight(2);
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(0);
+		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth);
+		band.addElement(jrDesignLine);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		addItems(jasperDesign, columnWidth, "$P{FamilyHistoryTitle}", "$P{familyHistory}", fieldWidth, false, 0, false);
 
+		band = new JRDesignBand();
+		band.setHeight(20);
+		band.setPrintWhenExpression(new JRDesignExpression(
+				"!$P{generalHistoryDrugs}.equals( null ) && ! $P{generalHistoryDrugs} .isEmpty() || !$P{generalHistoryMedicine}.equals( null ) && ! $P{generalHistoryMedicine} .isEmpty()"
+						+ "|| !$P{generalHistoryAllergies}.equals( null ) && ! $P{generalHistoryAllergies} .isEmpty() || !$P{generalHistorySurgical}.equals( null ) && ! $P{generalHistorySurgical} .isEmpty()"));
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{GeneralHistoryTitle}"));
+		jrDesignTextField.setX(1);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(20);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setUnderline(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryMedicine}", "$P{generalHistoryMedicine}", fieldWidth,
+				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{GeneralHistorySurgical}", "$P{generalHistorySurgical}", fieldWidth,
+				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryDrugs}", "$P{generalHistoryDrugs}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryAllergies}", "$P{generalHistoryAllergies}", fieldWidth,
+				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{PH}", fieldWidth, false, 0, false);
+
+		addItems(jasperDesign, columnWidth, "$P{PriorConsultations}", "$P{priorConsultations}", fieldWidth, false, 0,
+				false);
 
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$P{complaints}", fieldWidth, false, 0, false);
 
@@ -686,13 +676,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
 
+		addItems(jasperDesign, columnWidth, "$P{EarsExam}", "$P{earsExam}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{NoseExam}", "$P{noseExam}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{OralCavityThroatExam}", "$P{oralCavityThroatExam}", fieldWidth, false,
 				0, false);
 		addItems(jasperDesign, columnWidth, "$P{IndirectLarygoscopyExam}", "$P{indirectLarygoscopyExam}", fieldWidth,
 				false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{NeckExam}", "$P{neckExam}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{EarsExam}", "$P{earsExam}", fieldWidth, false, 0, false);
+
 		band = new JRDesignBand();
 		band.setHeight(2);
 		jrDesignLine = new JRDesignLine();
@@ -702,7 +693,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine.setWidth(columnWidth);
 		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
+
 		addItems(jasperDesign, columnWidth, "$P{SystemExam}", "$P{systemExam}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{NoOfChildren}", "$P{noOfChildren}", fieldWidth, false, 0, false);
 		addLMPAndEDD(jasperDesign, columnWidth, fieldWidth, 0, "$P{LMP}", "$P{lmp}", "$P{EDD}", "$P{edd}");
@@ -726,12 +717,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{Observations}", "$P{observations}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{PainScale}", "$P{painScale}", fieldWidth, false, 0, false);
+
 		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$P{procedureNote}", fieldWidth, false, 0, false);
+
+		addItems(jasperDesign, columnWidth, "$P{Investigations}", "$P{investigations}", fieldWidth, false, 0, false);
+
+		
+		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$P{diagnosis}", fieldWidth, false, 0, true);
+		
 		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$P{provisionalDiagnosis}", fieldWidth, false,
 				0, false);
 
-		addItems(jasperDesign, columnWidth, "$P{Investigations}", "$P{investigations}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$P{diagnosis}", fieldWidth, false, 0, true);
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$P{notes}", fieldWidth, false, 0, false);
 
 		JRDesignDatasetRun dsr = new JRDesignDatasetRun();
@@ -1171,14 +1167,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		// add clinical notes items
 		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$F{vitalSigns}", fieldWidth, false, 0, false);
-
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaints}", "$F{presentComplaint}", fieldWidth, false, 0,
 				false);
 
-		addItems(jasperDesign, columnWidth, "$P{PastHistory}", "$F{pastHistory}", fieldWidth, false, 0, false);
-
-		addItems(jasperDesign, columnWidth, "$P{PriorConsultations}", "$F{priorConsultations}", fieldWidth, false, 0,
-				false);
 		if (showTitle) {
 
 			band = new JRDesignBand();
@@ -1197,11 +1188,50 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
-		addItems(jasperDesign, columnWidth, "$P{PCNose}", "$F{pcNose}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{PCOralCavity}", "$F{pcOralCavity}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{PCThroat}", "$F{pcThroat}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{PCEars}", "$F{pcEars}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PCNose}", "$F{pcNose}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PCThroat}", "$F{pcThroat}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PCOralCavity}", "$F{pcOralCavity}", fieldWidth, false, 0, false);
+		band = new JRDesignBand();
+		band.setHeight(20);
+		band.setPrintWhenExpression(new JRDesignExpression(
+				"(!$F{personalHistoryAlcohol}.equals( null ) && ! $F{personalHistoryAlcohol} .isEmpty()) || (!$F{personalHistoryTobacco}.equals( null ) && ! $F{personalHistoryTobacco} .isEmpty())"
+						+ "|| (!$F{personalHistorySmoking}.equals( null ) && ! $F{personalHistorySmoking} .isEmpty()) || (!$F{personalHistoryDiet}.equals( null ) && ! $F{personalHistoryDiet} .isEmpty())"
+						+ "|| (!$F{personalHistoryOccupation}.equals( null ) && ! $F{personalHistoryOccupation} .isEmpty())"));
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{PersonalHistoryTitle}"));
+		jrDesignTextField.setX(1);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(20);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setUnderline(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
+		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryTobacco}", "$F{personalHistoryTobacco}", fieldWidth,
+				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryAlcohol}", "$F{personalHistoryAlcohol}", fieldWidth,
+				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PersonalHistorySmoking}", "$F{personalHistorySmoking}", fieldWidth,
+				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryDiet}", "$F{personalHistoryDiet}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryOccupation}", "$F{personalHistoryOccupation}",
+				fieldWidth, false, 0, false);
+		band = new JRDesignBand();
+		band.setHeight(2);
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(0);
+		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth);
+		band.addElement(jrDesignLine);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		addItems(jasperDesign, columnWidth, "$P{FamilyHistory}", "$F{familyHistory}", fieldWidth, false, 0, false);
 
 		band = new JRDesignBand();
 		band.setHeight(20);
@@ -1231,56 +1261,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryDrugs}", "$F{generalHistoryDrugs}", fieldWidth, false, 0,
 				false);
 
-		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryOccupation}", "$F{personalHistoryOccupation}",
-				fieldWidth, false, 0, false);
-		band = new JRDesignBand();
-		band.setHeight(2);
-		jrDesignLine = new JRDesignLine();
-		jrDesignLine.setX(0);
-		jrDesignLine.setY(0);
-		jrDesignLine.setHeight(1);
-		jrDesignLine.setWidth(columnWidth);
-		band.addElement(jrDesignLine);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		addItems(jasperDesign, columnWidth, "$P{FamilyHistory}", "$F{familyHistory}", fieldWidth, false, 0, false);
-
-
 		addItems(jasperDesign, columnWidth, "$P{GeneralHistoryAllergies}", "$F{generalHistoryAllergies}", fieldWidth,
 				false, 0, false);
-		band = new JRDesignBand();
-		band.setHeight(20);
-		band.setPrintWhenExpression(new JRDesignExpression(
-				"(!$F{personalHistoryAlcohol}.equals( null ) && ! $F{personalHistoryAlcohol} .isEmpty()) || (!$F{personalHistoryTobacco}.equals( null ) && ! $F{personalHistoryTobacco} .isEmpty())"
-						+ "|| (!$F{personalHistorySmoking}.equals( null ) && ! $F{personalHistorySmoking} .isEmpty()) || (!$F{personalHistoryDiet}.equals( null ) && ! $F{personalHistoryDiet} .isEmpty())"
-						+ "|| (!$F{personalHistoryOccupation}.equals( null ) && ! $F{personalHistoryOccupation} .isEmpty())"));
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{PersonalHistoryTitle}"));
-		jrDesignTextField.setX(1);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(20);
-		jrDesignTextField.setWidth(columnWidth);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-		jrDesignTextField.setBold(true);
-		jrDesignTextField.setUnderline(true);
-		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setFontSize(new Float(contentFontSize));
-		band.addElement(jrDesignTextField);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
-		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryTobacco}", "$F{personalHistoryTobacco}", fieldWidth,
-				false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryAlcohol}", "$F{personalHistoryAlcohol}", fieldWidth,
-				false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{PersonalHistorySmoking}", "$F{personalHistorySmoking}", fieldWidth,
-				false, 0, false);
-
-		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryDiet}", "$F{personalHistoryDiet}", fieldWidth, false, 0,
+		addItems(jasperDesign, columnWidth, "$P{PastHistory}", "$F{pastHistory}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PriorConsultations}", "$F{priorConsultations}", fieldWidth, false, 0,
 				false);
-		addItems(jasperDesign, columnWidth, "$P{PersonalHistoryOccupation}", "$F{personalHistoryOccupation}",
-				fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{FamilyHistory}", "$F{familyHistory}", fieldWidth, false, 0, false);
-
-
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$F{complaints}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaintHistory}", "$F{presentComplaintHistory}", fieldWidth,
@@ -1311,14 +1296,13 @@ public class JasperReportServiceImpl implements JasperReportService {
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
 
+		addItems(jasperDesign, columnWidth, "$P{EarsExam}", "$F{earsExam}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{NoseExam}", "$F{noseExam}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{OralCavityThroatExam}", "$F{oralCavityThroatExam}", fieldWidth, false,
 				0, false);
 		addItems(jasperDesign, columnWidth, "$P{IndirectLarygoscopyExam}", "$F{indirectLarygoscopyExam}", fieldWidth,
 				false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{NeckExam}", "$F{neckExam}", fieldWidth, false, 0, false);
-
-		addItems(jasperDesign, columnWidth, "$P{EarsExam}", "$F{earsExam}", fieldWidth, false, 0, false);
 
 		band = new JRDesignBand();
 		band.setHeight(2);
@@ -1362,6 +1346,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$F{provisionalDiagnosis}", fieldWidth, false,
 				0, false);
+
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$F{notes}", fieldWidth, false, 0, false);
 
 		band = new JRDesignBand();
