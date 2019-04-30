@@ -17,8 +17,8 @@ public class NutritionReference extends GenericCollection {
 	private String details;
 	private Integer durationInMonths;
 	private List<ImageURLResponse> reports;
-	private String regularityStatus = RegularityStatus.NO_ACTION.getType();
-	private String goalStatus = GoalStatus.REFERRED.getType();
+	private RegularityStatus regularityStatus = RegularityStatus.NO_ACTION;
+	private GoalStatus goalStatus = GoalStatus.REFERRED;
 	private String localPatientName;
 	private String mobileNumber;
 	private NutritionPlan nutritionPlan;
@@ -88,19 +88,21 @@ public class NutritionReference extends GenericCollection {
 		this.reports = reports;
 	}
 
-	public String getRegularityStatus() {
+
+
+	public RegularityStatus getRegularityStatus() {
 		return regularityStatus;
 	}
 
-	public void setRegularityStatus(String regularityStatus) {
+	public void setRegularityStatus(RegularityStatus regularityStatus) {
 		this.regularityStatus = regularityStatus;
 	}
 
-	public String getGoalStatus() {
+	public GoalStatus getGoalStatus() {
 		return goalStatus;
 	}
 
-	public void setGoalStatus(String goalStatus) {
+	public void setGoalStatus(GoalStatus goalStatus) {
 		this.goalStatus = goalStatus;
 	}
 
