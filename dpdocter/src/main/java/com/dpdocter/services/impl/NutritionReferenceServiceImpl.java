@@ -109,31 +109,35 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 				planName = "", subPlan = "";
 		NutritionPlan nutritionPlan = null;
 		try {
-			ObjectId doctorId = new ObjectId(request.getDoctorId()), locationId = new ObjectId(request.getLocationId()),
-					hospitalId = new ObjectId(request.getHospitalId()), patientId = null;
-			response = null;
+			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			if (userCollection == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "doctor not found");
+			}
+
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				nutritionReferenceCollection = nutritionReferenceRepository.findOne(new ObjectId(request.getId()));
 			}
 			if (nutritionReferenceCollection == null) {
 				nutritionReferenceCollection = new NutritionReferenceCollection();
 				nutritionReferenceCollection.setCreatedTime(new Date());
+				nutritionReferenceCollection
+						.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 			}
 			BeanUtil.map(request, nutritionReferenceCollection);
-			nutritionReferenceCollection.setPatientId(patientId);
 			nutritionReferenceCollection.setReports(request.getReports());
 			nutritionReferenceCollection = nutritionReferenceRepository.save(nutritionReferenceCollection);
 			if (nutritionReferenceCollection != null) {
 				response = new NutritionReferenceResponse();
 				BeanUtil.map(nutritionReferenceCollection, response);
 				NutritionGoalStatusStampingCollection nutritionGoalStatusStampingCollection = null;
-				UserCollection userCollection = null;
-				if (response.getDoctorId() != null) {
-					userCollection = userRepository.findOne(new ObjectId(response.getDoctorId()));
-					response.setDoctorName(userCollection.getTitle() + " " + userCollection.getFirstName());
-				}
+
+				response.setDoctorName(userCollection.getTitle() + " " + userCollection.getFirstName());
+
 				nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository
-						.getByPatientDoctorLocationHospitalandStatus(patientId, doctorId, locationId, hospitalId,
+						.getByPatientDoctorLocationHospitalandStatus(nutritionReferenceCollection.getPatientId(),
+								nutritionReferenceCollection.getDoctorId(),
+								nutritionReferenceCollection.getLocationId(),
+								nutritionReferenceCollection.getHospitalId(),
 								nutritionReferenceCollection.getGoalStatus().getType());
 
 				if (nutritionGoalStatusStampingCollection != null) {
@@ -148,7 +152,8 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 					nutritionGoalStatusStampingCollection.setPatientId(nutritionReferenceCollection.getPatientId());
 					nutritionGoalStatusStampingCollection.setGoalStatus(nutritionReferenceCollection.getGoalStatus());
 					if (userCollection != null) {
-						nutritionGoalStatusStampingCollection.setCreatedBy(userCollection.getFirstName());
+						nutritionGoalStatusStampingCollection
+								.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 					}
 					nutritionGoalStatusStampingCollection.setCreatedTime(new Date());
 					nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository
@@ -159,10 +164,6 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 							.findOne(new ObjectId(response.getLocationId()));
 					response.setLocationName(locationCollection.getLocationName());
 				}
-				if (response.getDoctorId() != null) {
-					userCollection = userRepository.findOne(new ObjectId(response.getDoctorId()));
-					response.setDoctorName(userCollection.getFirstName());
-				}
 
 				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
 						new ObjectId(response.getPatientId()), new ObjectId(response.getLocationId()),
@@ -171,6 +172,10 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 					PatientShortCard patientCard = new PatientShortCard();
 					BeanUtil.map(patientCollection, patientCard);
 					response.setPatient(patientCard);
+				} else {
+
+					throw new BusinessException(ServiceError.InvalidInput, "patient not found");
+
 				}
 				if (!DPDoctorUtils.anyStringEmpty(nutritionReferenceCollection.getNutritionPlanId())) {
 					planCollection = nutritionPlanRepository.findOne(nutritionReferenceCollection.getNutritionPlanId());
@@ -197,7 +202,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 					}
 
 				}
-				if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 					if (patientCollection != null) {
 						if (patientCollection.getAddress() != null) {
 
@@ -247,6 +252,8 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 
 		Exception e) {
 			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while adding nutrition reference" + e.getMessage());
 		}
 		return response;
 
@@ -334,7 +341,8 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting nutrition refference " + e.getMessage());
 		}
 		return nutritionReferenceResponses;
 	}
@@ -358,8 +366,9 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 			nutritionGoalAnalytics.setMetGoalCount(
 					getGoalStatusCount(doctorId, locationId, GoalStatus.MET_GOALS.getType(), fromDate, toDate));
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting nutrition goal status " + e.getMessage());
 		}
 		return nutritionGoalAnalytics;
 	}
@@ -412,8 +421,9 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while Change nutrition goal status " + e.getMessage());
 		}
 		return response;
 	}
@@ -464,7 +474,8 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			// TODO: handle exception
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting nutrition reference " + e.getMessage());
 		}
 		return response;
 	}
@@ -500,7 +511,9 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 			query.addCriteria(criteria);
 			count = mongoOperations.count(query, NutritionGoalStatusStampingCollection.class);
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting nutrition goal status " + e.getMessage());
 		}
 		return count;
 	}
