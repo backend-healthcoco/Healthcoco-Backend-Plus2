@@ -112,7 +112,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			parameters.put("SUBREPORT_DIR", JASPER_TEMPLATES_RESOURCE);
 
 			if (!DPDoctorUtils.anyStringEmpty(fileName)) {
-				fileName = fileName.replaceAll("[^a-zA-Z0-9]", "");
+				pdfName = pdfName.replaceAll("[^a-zA-Z0-9]", "");
 			}
 			JasperDesign design = createDesign(parameters, pageSize, contentFontSize, topMargin + 45, bottonMargin,
 					leftMargin + 28, rightMargin + 28, componentType, fileName);
