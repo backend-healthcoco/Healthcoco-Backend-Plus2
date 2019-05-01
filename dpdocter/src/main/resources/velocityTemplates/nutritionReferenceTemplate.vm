@@ -2,7 +2,7 @@
 <body>
 	Hello Healthcoco Team,
 	<br>
-	<br> ${doctorName} has recommended nutrition Plan to {patientName}. Following are the details :
+	<br> ${doctorName} has recommended nutrition Plan to ${patientName}. Following are the details :
 	<br> Nutrition Plan name : ${planName}
 	<br> Subscription Plan name : ${subplan}
 	<br> Name : ${patientName}

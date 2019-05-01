@@ -239,11 +239,13 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 										+ "/" + patientCollection.getDob().getYears()
 								: "";
 					}
-					nutritionReferenceMailsubject.replace("{patient}", request.getLocalPatientName())
-							.replace("{doctor}", "Dr. " + response.getDoctorName());
+					nutritionReferenceMailsubject = nutritionReferenceMailsubject
+							.replace("{patient}", request.getLocalPatientName())
+							.replace("{doctor}", response.getDoctorName());
 					String body = mailBodyGenerator.nutritionReferenceEmailBody(request.getLocalPatientName(),
 							request.getMobileNumber(), birthDate, profession, gender, address, city, pinCode,
-							doctorName, planName, subPlan, "nutritionReferenceTemplate.vm");
+							userCollection.getTitle() + " " + userCollection.getFirstName(), planName, subPlan,
+							"nutritionReferenceTemplate.vm");
 					mailService.sendEmail(mailTo, nutritionReferenceMailsubject, body, null);
 
 				}
