@@ -574,6 +574,15 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(2);
+		band.setPrintWhenExpression(
+				new JRDesignExpression("(!$P{vitalSigns}.equals( null ) && !$P{vitalSigns}.isEmpty())"
+						+ "||(!$P{presentComplaint}.equals( null ) && !$P{presentComplaint}.isEmpty())"
+						+ "||(!$P{indicationOfUSG}.equals( null ) && !$P{indicationOfUSG}.isEmpty())"
+						+ "||(!$P{pcEars}.equals( null ) && !$P{pcEars}.isEmpty())"
+						+ "||(!$P{pcNose}.equals( null ) && !$P{pcNose}.isEmpty())"
+						+ "||(!$P{pcThroat}.equals( null ) && !$P{pcThroat}.isEmpty())"
+						+ "||(!$P{pcOralCavity}.equals( null ) && !$P{pcOralCavity}.isEmpty())"));
+
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
@@ -585,8 +594,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(20);
 		band.setPrintWhenExpression(new JRDesignExpression(
-				"(!$P{personalHistoryAlcohol}.equals( null ) && ! $P{personalHistoryAlcohol} .isEmpty()) || (!$P{personalHistoryTobacco}.equals( null ) && ! $P{personalHistoryTobacco} .isEmpty())"
-						+ "|| (!$P{personalHistorySmoking}.equals( null ) && ! $P{personalHistorySmoking} .isEmpty()) || (!$P{personalHistoryDiet}.equals( null ) && ! $P{personalHistoryDiet} .isEmpty())"
+				"(!$P{personalHistoryAlcohol}.equals( null ) && ! $P{personalHistoryAlcohol} .isEmpty())"
+						+ " || (!$P{personalHistoryTobacco}.equals( null ) && ! $P{personalHistoryTobacco} .isEmpty())"
+						+ "|| (!$P{personalHistorySmoking}.equals( null ) && ! $P{personalHistorySmoking} .isEmpty()) "
+						+ "|| (!$P{personalHistoryDiet}.equals( null ) && ! $P{personalHistoryDiet} .isEmpty())"
 						+ "|| (!$P{personalHistoryOccupation}.equals( null ) && ! $P{personalHistoryOccupation} .isEmpty())"));
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{PersonalHistoryTitle}"));
@@ -614,6 +625,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 				fieldWidth, false, 0, false);
 		band = new JRDesignBand();
 		band.setHeight(2);
+		band.setPrintWhenExpression(new JRDesignExpression(
+				"(!$P{personalHistoryAlcohol}.equals( null ) && ! $P{personalHistoryAlcohol} .isEmpty()) || (!$P{personalHistoryTobacco}.equals( null ) && ! $P{personalHistoryTobacco} .isEmpty())"
+						+ "|| (!$P{personalHistorySmoking}.equals( null ) && ! $P{personalHistorySmoking} .isEmpty()) || (!$P{personalHistoryDiet}.equals( null ) && ! $P{personalHistoryDiet} .isEmpty())"
+						+ "|| (!$P{personalHistoryOccupation}.equals( null ) && ! $P{personalHistoryOccupation} .isEmpty())"));
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
@@ -626,8 +641,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(20);
 		band.setPrintWhenExpression(new JRDesignExpression(
-				"!$P{generalHistoryDrugs}.equals( null ) && ! $P{generalHistoryDrugs} .isEmpty() || !$P{generalHistoryMedicine}.equals( null ) && ! $P{generalHistoryMedicine} .isEmpty()"
-						+ "|| !$P{generalHistoryAllergies}.equals( null ) && ! $P{generalHistoryAllergies} .isEmpty() || !$P{generalHistorySurgical}.equals( null ) && ! $P{generalHistorySurgical} .isEmpty()"));
+				"(!$P{generalHistoryDrugs}.equals( null ) && ! $P{generalHistoryDrugs}.isEmpty()) || (!$P{generalHistoryMedicine}.equals( null ) && ! $P{generalHistoryMedicine}.isEmpty())"
+						+ "|| (!$P{generalHistoryAllergies}.equals( null ) && ! $P{generalHistoryAllergies}.isEmpty()) || (!$P{generalHistorySurgical}.equals( null ) && ! $P{generalHistorySurgical}.isEmpty())"));
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{GeneralHistoryTitle}"));
 		jrDesignTextField.setX(1);
@@ -652,6 +667,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 				false, 0, false);
 		band = new JRDesignBand();
 		band.setHeight(2);
+		band.setPrintWhenExpression(new JRDesignExpression(
+				"!$P{generalHistoryDrugs}.equals( null ) && ! $P{generalHistoryDrugs} .isEmpty() || !$P{generalHistoryMedicine}.equals( null ) && ! $P{generalHistoryMedicine} .isEmpty()"
+						+ "|| !$P{generalHistoryAllergies}.equals( null ) && ! $P{generalHistoryAllergies} .isEmpty() || !$P{generalHistorySurgical}.equals( null ) && ! $P{generalHistorySurgical} .isEmpty()"));
+
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
@@ -705,6 +724,19 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(2);
+		band.setPrintWhenExpression(new JRDesignExpression("(!$P{PH}.equals( null ) && ! $P{PH}.isEmpty())"
+				+ "||(!$P{priorConsultations}.equals( null ) && ! $P{priorConsultations}.isEmpty())"
+				+ "||(!$P{complaints}.equals( null ) && ! $P{complaints}.isEmpty())"
+				+ "||(!$P{presentComplaintHistory}.equals( null ) && ! $P{presentComplaintHistory}.isEmpty())"
+				+ "||(!$P{menstrualHistory}.equals( null ) && ! $P{menstrualHistory}.isEmpty())"
+				+ "||(!$P{obstetricHistory}.equals( null ) && ! $P{obstetricHistory}.isEmpty())"
+				+ "||(!$P{generalExam}.equals( null ) && ! $P{generalExam}.isEmpty())"
+				+ "||(!$P{earsExam}.equals( null ) && ! $P{earsExam}.isEmpty())"
+				+ "||(!$P{neckExam}.equals( null ) && ! $P{neckExam}.isEmpty())"
+				+ "||(!$P{indirectLarygoscopyExam}.equals( null ) && ! $P{indirectLarygoscopyExam}.isEmpty())"
+				+ "||(!$P{oralCavityThroatExam}.equals( null ) && ! $P{oralCavityThroatExam}.isEmpty())"
+				+ " ||(!$P{noseExam}.equals( null ) && ! $P{noseExam}.isEmpty())"));
+
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
@@ -1213,6 +1245,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(2);
+		band.setPrintWhenExpression(
+				new JRDesignExpression("(!F{vitalSigns}.equals( null ) && !$F{vitalSigns}.isEmpty())"
+						+ "||(!$F{presentComplaint}.equals( null ) && !$F{presentComplaint}.isEmpty())"
+						+ "||(!$F{indicationOfUSG}.equals( null ) && !$F{indicationOfUSG}.isEmpty())"
+						+ "||(!$F{pcEars}.equals( null ) && !$F{pcEars}.isEmpty())"
+						+ "||(!$F{pcNose}.equals( null ) && !$F{pcNose}.isEmpty())"
+						+ "||(!$F{pcThroat}.equals( null ) && !$F{pcThroat}.isEmpty())"
+						+ "||(!$F{pcOralCavity}.equals( null ) && !$F{pcOralCavity}.isEmpty())"));
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
@@ -1254,6 +1294,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(2);
+		band.setPrintWhenExpression(new JRDesignExpression(
+				"(!$F{personalHistoryAlcohol}.equals( null ) && ! $F{personalHistoryAlcohol} .isEmpty()) || (!$F{personalHistoryTobacco}.equals( null ) && ! $F{personalHistoryTobacco} .isEmpty())"
+						+ "|| (!$F{personalHistorySmoking}.equals( null ) && ! $F{personalHistorySmoking} .isEmpty()) || (!$F{personalHistoryDiet}.equals( null ) && ! $F{personalHistoryDiet} .isEmpty())"
+						+ "|| (!$F{personalHistoryOccupation}.equals( null ) && ! $F{personalHistoryOccupation} .isEmpty())"));
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
@@ -1297,6 +1341,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(2);
+		band.setPrintWhenExpression(new JRDesignExpression(
+				"!$F{generalHistoryDrugs}.equals( null ) && ! $F{generalHistoryDrugs} .isEmpty() || !$F{generalHistoryMedicine}.equals( null ) && ! $F{generalHistoryMedicine} .isEmpty()"
+						+ "|| !$F{generalHistoryAllergies}.equals( null ) && ! $F{generalHistoryAllergies} .isEmpty() || !$F{generalHistorySurgical}.equals( null ) && ! $F{generalHistorySurgical} .isEmpty()"));
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
@@ -1348,6 +1395,19 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(2);
+		band.setPrintWhenExpression(
+				new JRDesignExpression("!$F{pastHistory}.equals( null ) && ! $F{pastHistory} .isEmpty() "
+						+ "|| !$F{priorConsultations}.equals( null ) && ! $F{priorConsultations} .isEmpty()"
+						+ "|| !$F{complaints}.equals( null ) && ! $F{complaints} .isEmpty() "
+						+ "|| !$F{presentComplaintHistory}.equals( null ) && ! $F{presentComplaintHistory} .isEmpty()"
+						+ "|| !$F{menstrualHistory}.equals( null ) && ! $F{menstrualHistory} .isEmpty()"
+						+ "|| !$F{obstetricHistory}.equals( null ) && ! $F{obstetricHistory} .isEmpty() "
+						+ "|| !$F{generalExam}.equals( null ) && ! $F{generalExam} .isEmpty()"
+						+ "|| !$F{earsExam}.equals( null ) && ! $F{earsExam} .isEmpty()"
+						+ "|| !$F{noseExam}.equals( null ) && ! $F{noseExam} .isEmpty() "
+						+ "|| !$F{oralCavityThroatExam}.equals( null ) && ! $F{oralCavityThroatExam} .isEmpty() "
+						+ "|| !$F{indirectLarygoscopyExam}.equals( null ) && ! $F{indirectLarygoscopyExam} .isEmpty() "
+						+ "|| !$F{neckExam}.equals( null ) && ! $F{neckExam} .isEmpty()"));
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
