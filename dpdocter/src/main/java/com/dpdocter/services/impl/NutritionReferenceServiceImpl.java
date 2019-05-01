@@ -433,10 +433,9 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 	@Override
 	public NutritionReferenceResponse getNutritionReferenceById(String id) {
 		NutritionReferenceResponse response = null;
-		NutritionReferenceCollection nutritionReferenceCollection = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
-				nutritionReferenceCollection = mongoTemplate.aggregate(
+				response = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(id))),
 								Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "nutritionPlan"),
 								new CustomAggregationOperation(new BasicDBObject("$unwind",
@@ -449,10 +448,8 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 										new BasicDBObject("path", "$subscriptionPlan")
 												.append("preserveNullAndEmptyArrays", true)
 												.append("includeArrayIndex", "arrayIndex1")))),
-						NutritionReferenceCollection.class, NutritionReferenceCollection.class).getUniqueMappedResult();
-				if (nutritionReferenceCollection != null) {
-					response = new NutritionReferenceResponse();
-					BeanUtil.map(nutritionReferenceCollection, response);
+						NutritionReferenceCollection.class, NutritionReferenceResponse.class).getUniqueMappedResult();
+				if (response != null) {
 					LocationCollection locationCollection = locationRepository
 							.findOne(new ObjectId(response.getHospitalId()));
 					if (locationCollection != null) {
@@ -472,6 +469,22 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 						BeanUtil.map(patientCollection, patientCard);
 						response.setPatient(patientCard);
 					}
+
+					if (response.getNutritionPlan() != null) {
+						if (!DPDoctorUtils.anyStringEmpty(response.getNutritionPlan().getPlanImage())) {
+							response.getNutritionPlan()
+									.setPlanImage(getFinalImageURL(response.getNutritionPlan().getPlanImage()));
+						}
+						if (!DPDoctorUtils.anyStringEmpty(response.getNutritionPlan().getBannerImage())) {
+							response.getNutritionPlan()
+									.setBannerImage(getFinalImageURL(response.getNutritionPlan().getBannerImage()));
+						}
+					}
+					if (response.getSubscriptionPlan() != null) {
+						response.getSubscriptionPlan().setBackgroundImage(
+								getFinalImageURL(response.getSubscriptionPlan().getBackgroundImage()));
+					}
+
 				}
 			}
 		} catch (Exception e) {
