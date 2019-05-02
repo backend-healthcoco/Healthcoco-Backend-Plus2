@@ -1240,7 +1240,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		Criteria criteria3 = new Criteria();
 
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-			criteria2.orOperator(new Criteria("group.name").regex(searchTerm, "i"));
+			criteria2.orOperator(new Criteria("refer.reference").regex(searchTerm, "i"));
 		}
 		if (!isVisited) {
 			if (toTime != null && fromTime != null) {
@@ -1379,7 +1379,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 		}
 
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-			criteria2.orOperator(new Criteria("refer.reference").regex(searchTerm, "i"));
+			criteria2.orOperator(new Criteria("group.name").regex(searchTerm, "i"));
 		}
 		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$group._id"),
 				Fields.field("name", "$group.name"), Fields.field("count", "$userId")));
