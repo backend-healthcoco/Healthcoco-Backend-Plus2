@@ -1243,8 +1243,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(2);
 		band.setPrintWhenExpression(
-				new JRDesignExpression(" !$F{presentComplaint} .equals( null ) && !$F{presentComplaint} .isEmpty() "
-						+ "|| !$F{pcEars}.equals( null ) && !$F{pcEars}.isEmpty() "
+				new JRDesignExpression(" !$F{pcEars}.equals( null ) && !$F{pcEars}.isEmpty() "
 						+ "|| !$F{pcNose}.equals( null ) && !$F{pcNose}.isEmpty() "
 						+ "|| !$F{pcThroat}.equals( null ) && !$F{pcThroat} .isEmpty()"
 						+ "|| !$F{pcOralCavity}.equals( null ) && !$F{pcOralCavity} .isEmpty() "));
