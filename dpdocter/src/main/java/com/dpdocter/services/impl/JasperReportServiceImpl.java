@@ -573,14 +573,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(2);
-		band.setPrintWhenExpression(
-				new JRDesignExpression("(!$P{vitalSigns}.equals( null ) && !$P{vitalSigns}.isEmpty())"
-						+ "||(!$P{presentComplaint}.equals( null ) && !$P{presentComplaint}.isEmpty())"
-						+ "||(!$P{indicationOfUSG}.equals( null ) && !$P{indicationOfUSG}.isEmpty())"
-						+ "||(!$P{pcEars}.equals( null ) && !$P{pcEars}.isEmpty())"
-						+ "||(!$P{pcNose}.equals( null ) && !$P{pcNose}.isEmpty())"
-						+ "||(!$P{pcThroat}.equals( null ) && !$P{pcThroat}.isEmpty())"
-						+ "||(!$P{pcOralCavity}.equals( null ) && !$P{pcOralCavity}.isEmpty())"));
+		band.setPrintWhenExpression(new JRDesignExpression("(!$P{pcEars}.equals( null ) && !$P{pcEars}.isEmpty())"
+				+ "||(!$P{pcNose}.equals( null ) && !$P{pcNose}.isEmpty())"
+				+ "||(!$P{pcThroat}.equals( null ) && !$P{pcThroat}.isEmpty())"
+				+ "||(!$P{pcOralCavity}.equals( null ) && !$P{pcOralCavity}.isEmpty())"));
 
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
