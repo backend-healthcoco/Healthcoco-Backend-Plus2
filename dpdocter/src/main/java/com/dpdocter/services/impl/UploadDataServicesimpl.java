@@ -2239,6 +2239,20 @@ public class UploadDataServicesimpl implements UploadDateService {
 									}else {
 										clinicalNotesCollection.setInvestigation(clinicalNotesCollection.getInvestigation() + ", " +description);
 									}
+								}else if(type.equalsIgnoreCase("notes")) {
+									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNote())) {
+										clinicalNotesCollection.setNote(description);
+									}else {
+										clinicalNotesCollection.setNote(clinicalNotesCollection.getNote() + ", " +description);
+									}
+								}else if(type.equalsIgnoreCase("comments")) {
+									if(clinicalNotesCollection.getComments() != null && !clinicalNotesCollection.getComments().isEmpty()) {
+										clinicalNotesCollection.getComments().add(description);
+									}else {
+										List<String> comments = new ArrayList<>();
+										comments.add(description);
+										clinicalNotesCollection.setComments(comments);
+									}
 								}
 									
 								System.out.println(line.get(0)+".."+line.get(1));

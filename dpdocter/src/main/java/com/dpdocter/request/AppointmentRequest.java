@@ -76,6 +76,8 @@ public class AppointmentRequest {
 
 	private List<Fields> treatmentFields;
 
+	private String PNUM;
+
 	public String getAppointmentId() {
 		return appointmentId;
 	}
@@ -331,7 +333,15 @@ public class AppointmentRequest {
 	public void setTreatmentFields(List<Fields> treatmentFields) {
 		this.treatmentFields = treatmentFields;
 	}
-	
+
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", explanation="
@@ -344,7 +354,7 @@ public class AppointmentRequest {
 				+ waitedFor + ", engagedFor=" + engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt
 				+ ", checkedOutAt=" + checkedOutAt + ", category=" + category + ", cancelledByProfile="
 				+ cancelledByProfile + ", gender=" + gender + ", dob=" + dob + ", age=" + age + ", isChild=" + isChild
-				+ ", treatmentFields=" + treatmentFields + "]";
+				+ ", treatmentFields=" + treatmentFields + ", PNUM=" + PNUM + "]";
 	}
-
+	
 }
