@@ -5154,7 +5154,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 			birthAchievementCollections = new ArrayList<>();
 			List<MasterBabyAchievementCollection> babyAchievementCollections = masterBabyAchievementRepository
 					.findAll();
-			System.out.println(babyAchievementCollections);
 			for (MasterBabyAchievementCollection masterBabyAchievementCollection : babyAchievementCollections) {
 				BirthAchievementCollection birthAchievementCollection = new BirthAchievementCollection();
 				birthAchievementCollection.setPatientId(new ObjectId(request.getUserId()));
