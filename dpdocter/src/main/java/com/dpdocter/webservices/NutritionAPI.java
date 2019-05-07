@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.AssessmentPersonalDetail;
+import com.dpdocter.beans.NutritionGoalAnalytics;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.NutritionRecord;
 import com.dpdocter.beans.PatientAssesentmentHistoryRequest;
@@ -31,15 +32,18 @@ import com.dpdocter.beans.UserNutritionSubscription;
 import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.AddEditNutritionReferenceRequest;
 import com.dpdocter.request.DoctorLabReportUploadRequest;
 import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.request.NutritionPlanRequest;
 import com.dpdocter.response.AssessmentFormHistoryResponse;
 import com.dpdocter.response.NutritionPlanResponse;
 import com.dpdocter.response.NutritionPlanWithCategoryResponse;
+import com.dpdocter.response.NutritionReferenceResponse;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.services.AssessmentFormService;
 import com.dpdocter.services.NutritionRecordService;
+import com.dpdocter.services.NutritionReferenceService;
 import com.dpdocter.services.NutritionService;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
@@ -66,6 +70,63 @@ public class NutritionAPI {
 
 	@Autowired
 	private AssessmentFormService AssessmentFormService;
+
+	@Autowired
+	private NutritionReferenceService nutritionReferenceService;
+
+	@POST
+	@Path(PathProxy.NutritionUrl.ADD_EDIT_NUTRITION_REFERENCE)
+	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_NUTRITION_REFERENCE)
+	public Response<NutritionReferenceResponse> addEditNutritionResponse(AddEditNutritionReferenceRequest request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber(), request.getLocalPatientName(),
+				request.getDoctorId(), request.getPatientId(), request.getLocationId(), request.getHospitalId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"mobileNumber,localPatientName,doctorId,PatientId should not empty or null ");
+		}
+		Response<NutritionReferenceResponse> response = new Response<>();
+		NutritionReferenceResponse nutritionReferenceResponse = null;
+
+		nutritionReferenceResponse = nutritionReferenceService.addEditNutritionReference(request);
+		response.setData(nutritionReferenceResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.NutritionUrl.GET_NUTRITION_REFERENCES)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_REFERENCES)
+	public Response<NutritionReferenceResponse> getNutritionReference(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("updatedTime") String updatedTime) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<NutritionReferenceResponse> response = new Response<NutritionReferenceResponse>();
+		response.setDataList(nutritionReferenceService.getNutritionReferenceList(doctorId, locationId, page, size,
+				searchTerm, updatedTime));
+		return response;
+	}
+
+	@Path(value = PathProxy.NutritionUrl.GET_NUTRITION_ANALYTICS)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_ANALYTICS)
+	public Response<NutritionGoalAnalytics> getNutritionAnalytics(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @DefaultValue("0") @QueryParam("fromDate") Long fromDate,
+			@DefaultValue("0") @QueryParam("toDate") Long toDate) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<NutritionGoalAnalytics> response = new Response<NutritionGoalAnalytics>();
+		response.setData(nutritionReferenceService.getGoalAnalytics(doctorId, locationId, fromDate, toDate));
+		return response;
+	}
+
 
 	@Value(value = "${image.path}")
 	private String imagePath;

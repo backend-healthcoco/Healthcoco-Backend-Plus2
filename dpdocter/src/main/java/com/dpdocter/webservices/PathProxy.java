@@ -1825,7 +1825,9 @@ public interface PathProxy {
 	public static final String NUTRITION_BASE_URL = BASE_URL + "/nutrition";
 
 	public interface NutritionUrl {
-
+		public static final String ADD_EDIT_NUTRITION_REFERENCE = "/addEditNutritionReference";
+		public static final String GET_NUTRITION_REFERENCES = "/getNutritionReferences";
+		public static final String GET_NUTRITION_ANALYTICS = "/getNutritionAnalytics";
 		public static final String GET_ALL_PLAN_CATEGORY = "/getAllCategory";
 		public static final String GET_NUTRITION_PLAN = "/getPlan";
 		public static final String GET_NUTRITION_PLAN_CATEGORY = "/getPlanByCategory";
