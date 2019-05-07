@@ -1,5 +1,7 @@
 package com.dpdocter.collections;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,6 +18,12 @@ public class ServicesCollection extends GenericCollection {
     @Field
     private Boolean toShow = true;
 
+    @Field
+    private List<String> specialities;
+    
+    @Field
+    private List<ObjectId> specialityIds;
+    
     public ObjectId getId() {
 	return id;
     }
@@ -40,9 +48,25 @@ public class ServicesCollection extends GenericCollection {
 		this.toShow = toShow;
 	}
 
-	@Override
-	public String toString() {
-		return "ServicesCollection [id=" + id + ", service=" + service + ", toShow=" + toShow + "]";
+	public List<String> getSpecialities() {
+		return specialities;
 	}
 
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
+	public List<ObjectId> getSpecialityIds() {
+		return specialityIds;
+	}
+
+	public void setSpecialityIds(List<ObjectId> specialityIds) {
+		this.specialityIds = specialityIds;
+	}
+
+	@Override
+	public String toString() {
+		return "ServicesCollection [id=" + id + ", service=" + service + ", toShow=" + toShow + ", specialities="
+				+ specialities + ", specialityIds=" + specialityIds + "]";
+	}
 }

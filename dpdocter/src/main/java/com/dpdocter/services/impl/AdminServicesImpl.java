@@ -10,7 +10,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,7 @@ import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.ContactUsCollection;
 import com.dpdocter.collections.DiagnosisCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
+import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EducationInstituteCollection;
 import com.dpdocter.collections.EducationQualificationCollection;
@@ -52,6 +56,7 @@ import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.ResumeCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.ServicesCollection;
+import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
@@ -95,6 +100,7 @@ import com.dpdocter.repository.AppLinkDetailsRepository;
 import com.dpdocter.repository.CityRepository;
 import com.dpdocter.repository.ContactUsRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
+import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.EducationInstituteRepository;
 import com.dpdocter.repository.EducationQualificationRepository;
@@ -107,6 +113,7 @@ import com.dpdocter.repository.ProcedureNoteRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.ResumeRepository;
 import com.dpdocter.repository.ServicesRepository;
+import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
@@ -268,6 +275,9 @@ public class AdminServicesImpl implements AdminServices {
 	ServicesRepository servicesRepository;
 	
 	@Autowired
+	SpecialityRepository specialityRepository;
+	
+	@Autowired
 	private ESMasterService esMasterService;
 	
 	@Autowired
@@ -278,6 +288,12 @@ public class AdminServicesImpl implements AdminServices {
 
 	@Autowired
 	private ESServicesRepository esServicesRepository;
+	
+	@Autowired
+	private DoctorRepository doctorRepository;
+	
+	@Autowired
+	private TransactionalManagementService transnationalService;
 	
 	@Override
 	@Transactional
@@ -906,6 +922,7 @@ public class AdminServicesImpl implements AdminServices {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean addServices() {
 		Boolean response = false;
@@ -922,6 +939,22 @@ public class AdminServicesImpl implements AdminServices {
 	        		servicesCollection.setCreatedBy("ADMIN");
 	        		servicesCollection.setService(line.get(0));
 	        		servicesCollection.setToShow(true);
+	        		
+	        		if(line.size()>1) {
+	        			if(!DPDoctorUtils.anyStringEmpty(line.get(1))) {
+	        				String[] specialities = line.get(1).split("\\+");
+	        				List<SpecialityCollection> specialityCollections = specialityRepository.find(specialities);
+	        				List<ObjectId> specialityIds = (List<ObjectId>) CollectionUtils.collect(specialityCollections,
+	    							new BeanToPropertyValueTransformer("id"));
+	        				
+	        				List<String> specialitiesList = (List<String>) CollectionUtils.collect(specialityCollections,
+	    							new BeanToPropertyValueTransformer("superSpeciality"));
+	        				
+	        				servicesCollection.setSpecialities(specialitiesList);
+	        				servicesCollection.setSpecialityIds(specialityIds);
+	        			}
+	        		}
+	        		
 	        		servicesCollection = servicesRepository.save(servicesCollection);
 	        		
 	        		if (servicesCollection != null) {
@@ -976,6 +1009,26 @@ public class AdminServicesImpl implements AdminServices {
 			}
 		}
 		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Boolean addServicesOfSpecialities() {
+		Boolean response = false;
+		try {
+			List<DoctorCollection> doctorCollections = doctorRepository.findAll();
+			for(DoctorCollection doctorCollection : doctorCollections) {
+				List<ServicesCollection> servicesCollections = servicesRepository.findbySpeciality(doctorCollection.getSpecialities());
+				Set<ObjectId> services = (Set<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
+				if(doctorCollection.getServices()!= null)doctorCollection.getServices().addAll(services);
+				else doctorCollection.setServices(services);
+				transnationalService.checkDoctor(doctorCollection.getUserId(), null);
+			}
+			
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		return response;

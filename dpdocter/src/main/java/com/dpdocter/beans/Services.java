@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
@@ -11,6 +13,10 @@ public class Services extends GenericCollection {
 
     private Boolean toShow = true;
 
+    private List<String> specialities;
+    
+    private List<String> specialityIds;
+    
     public String getId() {
 	return id;
     }
@@ -35,9 +41,25 @@ public class Services extends GenericCollection {
 		this.toShow = toShow;
 	}
 
-	@Override
-	public String toString() {
-		return "Services [id=" + id + ", service=" + service + ", toShow=" + toShow + "]";
+	public List<String> getSpecialities() {
+		return specialities;
 	}
 
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
+
+	public List<String> getSpecialityIds() {
+		return specialityIds;
+	}
+
+	public void setSpecialityIds(List<String> specialityIds) {
+		this.specialityIds = specialityIds;
+	}
+
+	@Override
+	public String toString() {
+		return "Services [id=" + id + ", service=" + service + ", toShow=" + toShow + ", specialities=" + specialities
+				+ ", specialityIds=" + specialityIds + "]";
+	}
 }

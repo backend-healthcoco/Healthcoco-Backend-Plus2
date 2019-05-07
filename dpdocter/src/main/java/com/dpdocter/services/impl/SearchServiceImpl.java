@@ -303,7 +303,6 @@ public class SearchServiceImpl implements SearchService {
 		return response;
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<ESDoctorWEbSearch> formatDoctorData(List<ESDoctorDocument> esDoctorDocuments, String latitude,
 			String longitude) {
 		List<ESDoctorWEbSearch> response = new ArrayList<ESDoctorWEbSearch>();
@@ -314,7 +313,9 @@ public class SearchServiceImpl implements SearchService {
 				BeanUtil.map(doctorDocument, doctorWEbSearch);
 				
 				doctorWEbSearch.setSpecialities(doctorDocument.getSpecialitiesValue());
-				doctorWEbSearch.setServices(doctorDocument.getServicesValue());
+				if(doctorDocument.getServicesValue() != null && !doctorDocument.getServicesValue().isEmpty() && doctorDocument.getServicesValue().size()>3) {
+					doctorWEbSearch.setServices(doctorDocument.getServicesValue().subList(0, 3));
+				}else doctorWEbSearch.setServices(doctorDocument.getServicesValue());
 				if (doctorWEbSearch.getThumbnailUrl() != null)
 					doctorWEbSearch.setThumbnailUrl(getFinalImageURL(doctorWEbSearch.getThumbnailUrl()));
 

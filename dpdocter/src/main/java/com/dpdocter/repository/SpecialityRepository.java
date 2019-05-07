@@ -22,6 +22,9 @@ public interface SpecialityRepository extends MongoRepository<SpecialityCollecti
     @Query("{'superSpeciality': {'$in': ?0}}")
 	List<SpecialityCollection> findBySuperSpeciality(List<String> speciality);
 
+    @Query("{'$or': [{'speciality': {'$in': ?0}}, {'superSpeciality': {'$in': ?0}}]}")
+	List<SpecialityCollection> find(String[] specialities);
+
 //    @Query("{'id': {'$in': ?0}}")
 //	List<SpecialityCollection> findById(List<ObjectId> specialities);
 
