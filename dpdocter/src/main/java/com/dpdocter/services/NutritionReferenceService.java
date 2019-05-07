@@ -11,8 +11,8 @@ public interface NutritionReferenceService {
 
 	NutritionReferenceResponse addEditNutritionReference(AddEditNutritionReferenceRequest request);
 
-	List<NutritionReference> getNutritionReferenceList(String doctorId, String locationId, int page, int size,
-			String searchTerm, String updatedTime);
+	List<NutritionReference> getNutritionReferenceList(int page, int size, String doctorId, String locationId,
+			String hospitalId, String patientId, String searchTerm, String updatedTime);
 
 	NutritionGoalAnalytics getGoalAnalytics(String doctorId, String locationId, Long fromDate, Long toDate);
 
