@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -279,6 +280,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		return medicalCouncils;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	public DoctorSpecialityAddEditRequest addEditSpeciality(DoctorSpecialityAddEditRequest request) {
@@ -292,13 +294,22 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
 					List<SpecialityCollection> specialityCollections = specialityRepository
 							.findBySuperSpeciality(request.getSpeciality());
-					@SuppressWarnings("unchecked")
 					Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections,
 							new BeanToPropertyValueTransformer("id"));
 					if (specialityIds != null && !specialityIds.isEmpty()) {
 						doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
-						if (oldSpecialities != null && !oldSpecialities.isEmpty())
+						if (oldSpecialities != null && !oldSpecialities.isEmpty()) {
 							removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
+							List<ServicesCollection> servicesCollections = servicesRepository.findbySpeciality(oldSpecialities);
+							Set<ObjectId> services = (Set<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
+							if(doctorCollection.getServices()!= null)doctorCollection.getServices().removeAll(services);
+						}
+						if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+							List<ServicesCollection> servicesCollections = servicesRepository.findbySpeciality(doctorCollection.getSpecialities());
+							Set<ObjectId> services = (Set<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
+							if(doctorCollection.getServices()!= null)doctorCollection.getServices().addAll(services);
+							else doctorCollection.setServices(services);
+						}
 					} else {
 						doctorCollection.setSpecialities(null);
 						assignDefaultUIPermissions(request.getDoctorId());
@@ -1102,8 +1113,18 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 							doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
 							specialitiesresponse.addAll(specialities);
 							parentSpecialitiesresponse.addAll(parentSpecialities);
-							if (oldSpecialities != null && !oldSpecialities.isEmpty())
+							if (oldSpecialities != null && !oldSpecialities.isEmpty()) {
 								removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
+								List<ServicesCollection> servicesCollections = servicesRepository.findbySpeciality(oldSpecialities);
+								Set<ObjectId> services = (Set<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
+								if(doctorCollection.getServices()!= null)doctorCollection.getServices().removeAll(services);
+						}
+						if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+							List<ServicesCollection> servicesCollections = servicesRepository.findbySpeciality(doctorCollection.getSpecialities());
+							Set<ObjectId> services = (Set<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
+							if(doctorCollection.getServices()!= null)doctorCollection.getServices().addAll(services);
+							else doctorCollection.setServices(services);
+						}
 						} else {
 							doctorCollection.setSpecialities(null);
 							assignDefaultUIPermissions(request.getDoctorId());
@@ -1654,10 +1675,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					List<ServicesCollection> servicesCollections = servicesRepository
 							.findbyService(request.getServices());
 					@SuppressWarnings("unchecked")
-					Collection<ObjectId> serviceIds = CollectionUtils.collect(servicesCollections,
+					Set<ObjectId> serviceIds = (Set<ObjectId>) CollectionUtils.collect(servicesCollections,
 							new BeanToPropertyValueTransformer("id"));
 					if (serviceIds != null && !serviceIds.isEmpty()) {
-						doctorCollection.setServices(new ArrayList<>(serviceIds));
+						doctorCollection.setServices(serviceIds);
 					} else {
 						doctorCollection.setServices(null);
 					}

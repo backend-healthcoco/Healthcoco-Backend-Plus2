@@ -178,4 +178,14 @@ public class AdminAPI {
 		response.setData(adminServices.updateServicesAndSpecialities());
 		return response;
 	}
+	
+	@Path(value = PathProxy.AdminUrls.ADD_SERVICES_OF_SPECIALITIES_IN_DOCTORS)
+	@GET
+	@ApiOperation(value = PathProxy.AdminUrls.ADD_SERVICES_OF_SPECIALITIES_IN_DOCTORS, notes = PathProxy.AdminUrls.ADD_SERVICES_OF_SPECIALITIES_IN_DOCTORS)
+	public Response<Boolean> addServicesOfSpecialities() {
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(adminServices.addServicesOfSpecialities());
+		return response;
+	}
 }

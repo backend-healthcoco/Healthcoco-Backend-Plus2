@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -39,7 +40,7 @@ public class DoctorCollection extends GenericCollection {
 	private List<ObjectId> specialities;
 
 	@Indexed
-	private List<ObjectId> services;
+	private Set<ObjectId> services;
 
 	@Field
 	private List<Achievement> achievements;
@@ -267,11 +268,11 @@ public class DoctorCollection extends GenericCollection {
 		this.slugUrl = slugUrl;
 	}
 
-	public List<ObjectId> getServices() {
+	public Set<ObjectId> getServices() {
 		return services;
 	}
 
-	public void setServices(List<ObjectId> services) {
+	public void setServices(Set<ObjectId> services) {
 		this.services = services;
 	}
 

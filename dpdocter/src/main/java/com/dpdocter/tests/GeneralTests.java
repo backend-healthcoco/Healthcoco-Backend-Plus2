@@ -1,6 +1,8 @@
 package com.dpdocter.tests;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -57,6 +59,21 @@ public class GeneralTests {
 		
 		System.out.println(slugUrl.replaceAll("-*-","-"));
 //		System.out.println(Pattern.compile(slugUrl).matcher(slugUrl).replaceAll("-*-"));
+		
+		List<String> ne = new ArrayList<String>();
+		ne.add("a");
+		ne.add("b");
+		ne.add("c");
+		ne.add("d");
+//		ne.add("e");
+//		ne.add("f");
+//		ne.add("g");
+		
+		if(ne.size()>3) {
+			System.out.println("yes");
+			List<String> e = ne.subList(0, 3);
+			System.out.println(e);
+		}
 		
 	}
 }

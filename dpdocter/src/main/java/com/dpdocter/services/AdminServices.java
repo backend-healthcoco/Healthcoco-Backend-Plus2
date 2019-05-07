@@ -37,4 +37,6 @@ public interface AdminServices {
 	Boolean addServices();
 
 	Boolean updateServicesAndSpecialities();
+
+	Boolean addServicesOfSpecialities();
 }

@@ -13,5 +13,8 @@ public interface ServicesRepository extends MongoRepository<ServicesCollection, 
 	@Query("{'service' : {$in : ?0}}")
 	List<ServicesCollection> findbyService(List<String> services);
 
+	@Query("{'specialityIds' : {$in : ?0}}")
+	List<ServicesCollection> findbySpeciality(List<ObjectId> oldSpecialities);
+
   
 }
