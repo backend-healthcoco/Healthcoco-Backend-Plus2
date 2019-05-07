@@ -62,16 +62,17 @@ public class NutritionReferenceAPI {
 	@Path(value = PathProxy.NutritionReferenceUrl.GET_NUTRITION_REFERENCES)
 	@GET
 	@ApiOperation(value = PathProxy.NutritionReferenceUrl.GET_NUTRITION_REFERENCES)
-	public Response<NutritionReferenceResponse> getNutritionReference(@QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<NutritionReferenceResponse> getNutritionReference(@QueryParam("patientId") String patientId,
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId, @QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("updatedTime") String updatedTime) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<NutritionReferenceResponse> response = new Response<NutritionReferenceResponse>();
-		response.setDataList(nutritionReferenceService.getNutritionReferenceList(doctorId, locationId, page, size,
-				searchTerm, updatedTime));
+		response.setDataList(nutritionReferenceService.getNutritionReferenceList(page, size, doctorId, locationId,
+				hospitalId, patientId, searchTerm, updatedTime));
 		return response;
 	}
 

@@ -263,16 +263,16 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 
 	@Override
 	@Transactional
-	public List<NutritionReference> getNutritionReferenceList(String doctorId, String locationId, int page, int size,
-			String searchTerm, String updatedtime) {
+	public List<NutritionReference> getNutritionReferenceList(int page, int size, String doctorId, String locationId,
+			String hospitalId, String patientId, String searchTerm, String updatedTime) {
 		List<NutritionReference> nutritionReferenceResponses = null;
 
 		try {
 			Criteria criteria = new Criteria();
 
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 
-				criteria.and("doctorId").is(new ObjectId(doctorId));
+				criteria.and("patientId").is(new ObjectId(patientId));
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
@@ -280,9 +280,14 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 				criteria.and("locationId").is(new ObjectId(locationId));
 
 			}
-			if (!DPDoctorUtils.anyStringEmpty(updatedtime)) {
 
-				criteria.and("createdTime").is(new Date(Long.parseLong(updatedtime)));
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(updatedTime)) {
+
+				criteria.and("createdTime").is(new Date(Long.parseLong(updatedTime)));
 
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
