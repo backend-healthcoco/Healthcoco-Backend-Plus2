@@ -92,5 +92,4 @@ public class ServicesCollection extends GenericCollection {
 				+ ", toShow=" + toShow + ", specialities=" + specialities + ", formattedSpecialities="
 				+ formattedSpecialities + ", specialityIds=" + specialityIds + "]";
 	}
-
 }

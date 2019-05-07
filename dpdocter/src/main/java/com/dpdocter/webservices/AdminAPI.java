@@ -208,4 +208,5 @@ public class AdminAPI {
 		response.setData(adminServices.addSymptomsDiseasesCondition());
 		return response;
 	}
+
 }

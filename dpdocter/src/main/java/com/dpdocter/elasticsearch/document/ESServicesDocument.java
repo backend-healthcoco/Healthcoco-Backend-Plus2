@@ -94,6 +94,6 @@ public class ESServicesDocument {
 		return "ESServicesDocument [id=" + id + ", service=" + service + ", formattedService=" + formattedService
 				+ ", updatedTime=" + updatedTime + ", specialities=" + specialities + ", formattedSpecialities="
 				+ formattedSpecialities + ", specialityIds=" + specialityIds + "]";
-	}
 
+	}
 }
