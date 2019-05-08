@@ -9,6 +9,7 @@ import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.AppointmentWaitTime;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.MedicationEffectType;
 
@@ -46,6 +47,9 @@ public class PatientFeedbackResponse extends GenericCollection {
 	private String appointmentId;
 	private String prescriptionId;
 	private List<QuestionAnswers> questionAnswers;
+	private Boolean printPdfProvided = false;
+	private List<String> services;
+	private AppointmentWaitTime appointmentTiming;
 
 	public String getId() {
 		return id;
@@ -287,6 +291,30 @@ public class PatientFeedbackResponse extends GenericCollection {
 
 	public void setQuestionAnswers(List<QuestionAnswers> questionAnswers) {
 		this.questionAnswers = questionAnswers;
+	}
+
+	public Boolean getPrintPdfProvided() {
+		return printPdfProvided;
+	}
+
+	public void setPrintPdfProvided(Boolean printPdfProvided) {
+		this.printPdfProvided = printPdfProvided;
+	}
+
+	public List<String> getServices() {
+		return services;
+	}
+
+	public void setServices(List<String> services) {
+		this.services = services;
+	}
+
+	public AppointmentWaitTime getAppointmentTiming() {
+		return appointmentTiming;
+	}
+
+	public void setAppointmentTiming(AppointmentWaitTime appointmentTiming) {
+		this.appointmentTiming = appointmentTiming;
 	}
 
 	@Override

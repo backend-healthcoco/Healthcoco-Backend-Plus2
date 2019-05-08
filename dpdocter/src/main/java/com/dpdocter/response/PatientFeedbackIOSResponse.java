@@ -1,122 +1,103 @@
-package com.dpdocter.collections;
+package com.dpdocter.response;
 
 import java.util.List;
-import java.util.Set;
-
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.enums.AppointmentWaitTime;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.MedicationEffectType;
 
-@Document(collection = "patient_feedback_cl")
-public class PatientFeedbackCollection extends GenericCollection {
+public class PatientFeedbackIOSResponse {
 
-	@Id
-	private ObjectId id;
-	@Field
-	private ObjectId locationId;
-	@Field
-	private ObjectId doctorId;
-	@Field
-	private ObjectId patientId;
-	@Field
-	private ObjectId hospitalId;
-	@Field
-	private ObjectId localeId;
-	@Field
-	private Boolean isRecommended;
-	@Field
-	private Boolean isAppointmentStartedOnTime;
-	@Field
-	private Integer howLateWasAppointmentInMinutes;
-	@Field
-	private Float overallExperience;
-	@Field
+	private String id;
+	private String locationId;
+	private String doctorId;
+	private String patientId;
+	private String hospitalId;
+	private String localeId;
+	private String appointmentId;
+	private String prescriptionId;
+	private Boolean isRecommended = false;
+	private Boolean isAppointmentStartedOnTime = false;
+	private Integer howLateWasAppointmentInMinutes = 0;
+	private Float overallExperience = 0.0F;
 	private String reasonOfVisit;
-	@Field
 	private String experience;
-	@Field
 	private String reply;
-	@Field
-	private Boolean isAnonymous;
-	@Field
+	private Boolean isAnonymous = false;
 	private Boolean isApproved = false;
-	@Field
 	private String adminUpdatedExperience;
-	@Field
 	private Boolean isDiscarded = false;
-	@Field
 	private Boolean isMedicationOnTime;
-	@Field
-	private MedicationEffectType medicationEffectType; // how patient feeling after taking medicine
-	@Field
-	private FeedbackType feedbackType;
-	@Field
-	private ObjectId appointmentId;
-	@Field
-	private ObjectId prescriptionId;
-	@Field
 	private List<QuestionAnswers> questionAnswers;
-	@Field
-	private Boolean isPatientDiscarded = false;
-	@Field
+	private MedicationEffectType medicationEffectType;
+	private FeedbackType feedbackType;
 	private Boolean printPdfProvided = false;
-	@Field
-	private Set<ObjectId> services;
-	@Field
+	private List<String> services;
 	private AppointmentWaitTime appointmentTiming;
 
-	public ObjectId getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(ObjectId id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
-	public ObjectId getLocationId() {
+	public String getLocationId() {
 		return locationId;
 	}
 
-	public void setLocationId(ObjectId locationId) {
+	public void setLocationId(String locationId) {
 		this.locationId = locationId;
 	}
 
-	public ObjectId getDoctorId() {
+	public String getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(ObjectId doctorId) {
+	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
 
-	public ObjectId getPatientId() {
+	public String getPatientId() {
 		return patientId;
 	}
 
-	public void setPatientId(ObjectId patientId) {
+	public void setPatientId(String patientId) {
 		this.patientId = patientId;
 	}
 
-	public ObjectId getHospitalId() {
+	public String getHospitalId() {
 		return hospitalId;
 	}
 
-	public void setHospitalId(ObjectId hospitalId) {
+	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
 	}
 
-	public ObjectId getLocaleId() {
+	public String getLocaleId() {
 		return localeId;
 	}
 
-	public void setLocaleId(ObjectId localeId) {
+	public void setLocaleId(String localeId) {
 		this.localeId = localeId;
+	}
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
 	}
 
 	public Boolean getIsRecommended() {
@@ -215,6 +196,14 @@ public class PatientFeedbackCollection extends GenericCollection {
 		this.isMedicationOnTime = isMedicationOnTime;
 	}
 
+	public List<QuestionAnswers> getQuestionAnswers() {
+		return questionAnswers;
+	}
+
+	public void setQuestionAnswers(List<QuestionAnswers> questionAnswers) {
+		this.questionAnswers = questionAnswers;
+	}
+
 	public MedicationEffectType getMedicationEffectType() {
 		return medicationEffectType;
 	}
@@ -231,38 +220,6 @@ public class PatientFeedbackCollection extends GenericCollection {
 		this.feedbackType = feedbackType;
 	}
 
-	public ObjectId getAppointmentId() {
-		return appointmentId;
-	}
-
-	public void setAppointmentId(ObjectId appointmentId) {
-		this.appointmentId = appointmentId;
-	}
-
-	public ObjectId getPrescriptionId() {
-		return prescriptionId;
-	}
-
-	public void setPrescriptionId(ObjectId prescriptionId) {
-		this.prescriptionId = prescriptionId;
-	}
-
-	public List<QuestionAnswers> getQuestionAnswers() {
-		return questionAnswers;
-	}
-
-	public void setQuestionAnswers(List<QuestionAnswers> questionAnswers) {
-		this.questionAnswers = questionAnswers;
-	}
-
-	public Boolean getIsPatientDiscarded() {
-		return isPatientDiscarded;
-	}
-
-	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
-		this.isPatientDiscarded = isPatientDiscarded;
-	}
-
 	public Boolean getPrintPdfProvided() {
 		return printPdfProvided;
 	}
@@ -271,11 +228,11 @@ public class PatientFeedbackCollection extends GenericCollection {
 		this.printPdfProvided = printPdfProvided;
 	}
 
-	public Set<ObjectId> getServices() {
+	public List<String> getServices() {
 		return services;
 	}
 
-	public void setServices(Set<ObjectId> services) {
+	public void setServices(List<String> services) {
 		this.services = services;
 	}
 
@@ -289,16 +246,17 @@ public class PatientFeedbackCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "PatientFeedbackCollection [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId
+		return "PatientFeedbackIOSResponse [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId
 				+ ", patientId=" + patientId + ", hospitalId=" + hospitalId + ", localeId=" + localeId
-				+ ", isRecommended=" + isRecommended + ", isAppointmentStartedOnTime=" + isAppointmentStartedOnTime
+				+ ", appointmentId=" + appointmentId + ", prescriptionId=" + prescriptionId + ", isRecommended="
+				+ isRecommended + ", isAppointmentStartedOnTime=" + isAppointmentStartedOnTime
 				+ ", howLateWasAppointmentInMinutes=" + howLateWasAppointmentInMinutes + ", overallExperience="
 				+ overallExperience + ", reasonOfVisit=" + reasonOfVisit + ", experience=" + experience + ", reply="
 				+ reply + ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved + ", adminUpdatedExperience="
 				+ adminUpdatedExperience + ", isDiscarded=" + isDiscarded + ", isMedicationOnTime=" + isMedicationOnTime
-				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType
-				+ ", appointmentId=" + appointmentId + ", prescriptionId=" + prescriptionId + ", questionAnswers="
-				+ questionAnswers + ", isPatientDiscarded=" + isPatientDiscarded + "]";
+				+ ", questionAnswers=" + questionAnswers + ", medicationEffectType=" + medicationEffectType
+				+ ", feedbackType=" + feedbackType + ", printPdfProvided=" + printPdfProvided + ", services=" + services
+				+ ", time=" + appointmentTiming + "]";
 	}
 
 }

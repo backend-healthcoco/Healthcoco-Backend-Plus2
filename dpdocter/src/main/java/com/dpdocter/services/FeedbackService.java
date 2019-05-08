@@ -14,6 +14,7 @@ import com.dpdocter.request.PatientFeedbackRequest;
 import com.dpdocter.request.PharmacyFeedbackRequest;
 import com.dpdocter.request.PrescriptionFeedbackRequest;
 import com.dpdocter.response.DailyImprovementFeedbackResponse;
+import com.dpdocter.response.PatientFeedbackIOSResponse;
 import com.dpdocter.response.PatientFeedbackResponse;
 
 public interface FeedbackService {
@@ -30,7 +31,8 @@ public interface FeedbackService {
 
 	List<PharmacyFeedback> getPharmacyFeedbackList(FeedbackGetRequest request);
 
-	//DailyImprovementFeedback addEditDailyImprovementFeedback(DailyImprovementFeedback feedback);
+	// DailyImprovementFeedback
+	// addEditDailyImprovementFeedback(DailyImprovementFeedback feedback);
 
 	PatientFeedback addEditPatientFeedback(PatientFeedbackRequest feedback);
 
@@ -43,4 +45,10 @@ public interface FeedbackService {
 
 	DailyImprovementFeedback addEditDailyImprovementFeedback(DailyImprovementFeedbackRequest feedback);
 
+	public List<PatientFeedbackIOSResponse> getPatientFeedbackList(int size, int page, String patientId,
+			String doctorId, String localeId, String locationId, String hospitalId, String type, List<String> services,
+			Boolean discarded, Boolean isApproved);
+
+	public Integer countPatientFeedbackList(String patientId, String doctorId, String localeId, String locationId,
+			String hospitalId, String type, List<String> services, Boolean discarded, Boolean isApproved);
 }

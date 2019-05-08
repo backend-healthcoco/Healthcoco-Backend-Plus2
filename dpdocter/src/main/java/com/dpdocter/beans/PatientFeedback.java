@@ -1,8 +1,10 @@
 package com.dpdocter.beans;
 
 import java.util.List;
+import java.util.Set;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.AppointmentWaitTime;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.MedicationEffectType;
 
@@ -32,6 +34,9 @@ public class PatientFeedback extends GenericCollection {
 	private String appointmentId;
 	private String prescriptionId;
 	private List<QuestionAnswers> questionAnswers;
+	private Boolean printPdfProvided = false;
+	private Set<String> services;
+	private AppointmentWaitTime appointmentTiming;
 
 	public String getId() {
 		return id;
@@ -215,6 +220,30 @@ public class PatientFeedback extends GenericCollection {
 
 	public void setQuestionAnswers(List<QuestionAnswers> questionAnswers) {
 		this.questionAnswers = questionAnswers;
+	}
+
+	public Boolean getPrintPdfProvided() {
+		return printPdfProvided;
+	}
+
+	public void setPrintPdfProvided(Boolean printPdfProvided) {
+		this.printPdfProvided = printPdfProvided;
+	}
+
+	public Set<String> getServices() {
+		return services;
+	}
+
+	public void setServices(Set<String> services) {
+		this.services = services;
+	}
+
+	public AppointmentWaitTime getAppointmentTiming() {
+		return appointmentTiming;
+	}
+
+	public void setAppointmentTiming(AppointmentWaitTime appointmentTiming) {
+		this.appointmentTiming = appointmentTiming;
 	}
 
 	@Override

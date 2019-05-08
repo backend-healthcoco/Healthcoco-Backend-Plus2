@@ -1449,6 +1449,7 @@ public interface PathProxy {
 		public static final String GET_PHARMACY_FEEDBACK = "/getPharmacyFeedback";
 		public static final String GET_DAILY_IMPROVEMENT_FEEDBACK = "/getDailyImprovementFeedback";
 		public static final String GET_PATIENT_FEEDBACK = "/getPatientFeedback";
+		public static final String GET_PATIENT_FEEDBACK_FOR_MOBILE = "/getPatientFeedbackForMobile";
 
 		public static final String ADD_PATIENT_FEEDBACK_REPLY = "/addPatientFeedbackReply";
 		public static final String APPROVE_PATIENT_FEEDBACK = "/approvePatientFeedback";
