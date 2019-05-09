@@ -1372,7 +1372,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 					.getMappedResults();
 			if (patientCollectionResponses != null && !patientCollectionResponses.isEmpty())
 				patientCard = patientCollectionResponses.get(0);
-			System.out.println(patientCard.getImageUrl());
 			if (patientCard != null && patientCard.getUser() != null) {
 				Reference reference = null;
 				if (patientCard.getReference() != null) {
@@ -4506,9 +4505,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Boolean updatePatientNumber(String doctorId, String locationId, String hospitalId, String patientId,
+	public RegisteredPatientDetails updatePatientNumber(String doctorId, String locationId, String hospitalId, String patientId,
 			String newPatientId, String mobileNumber) {
-		Boolean response = false;
+		RegisteredPatientDetails response = null;
 		try {
 			ObjectId doctorObjectId = new ObjectId(doctorId), locationObjectId = new ObjectId(locationId),
 					hospitalObjectId = new ObjectId(hospitalId), patientObjectId = new ObjectId(patientId);
@@ -4559,7 +4558,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 							esPatientDocument.setMobileNumber(mobileNumber);
 							esPatientDocument = esPatientRepository.save(esPatientDocument);
 
-							response = true;
+							setPatientDetailsResponse(userCollection, patientCollection, response);
 						}
 					}else {
 						UserCollection userCollectionNew = new UserCollection();
@@ -4602,7 +4601,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 									Update.update("patientId", patientCollection.getUserId()).currentDate("updatedTime"),
 									PatientGroupCollection.class);
 						}
-						response = true;
+						setPatientDetailsResponse(userCollection, patientCollection, response);
 					}
 				}
 				pushNotificationServices.notifyUser(doctorId, "Updated Patient Mobile Number.", ComponentType.PATIENT_REFRESH.getType(), null, null);
@@ -4614,6 +4613,59 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new BusinessException(ServiceError.Unknown, "Error while updating patient number");
 		}
 		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void setPatientDetailsResponse(UserCollection userCollection, PatientCollection patientCollection, RegisteredPatientDetails registeredPatientDetails) {
+		BeanUtil.map(userCollection, registeredPatientDetails);
+		registeredPatientDetails.setImageUrl(getFinalImageURL(patientCollection.getImageUrl()));
+		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(patientCollection.getThumbnailUrl()));
+		registeredPatientDetails.setUserId(userCollection.getId().toString());
+		
+		
+		Patient patient = new Patient();
+		BeanUtil.map(patientCollection, patient);
+		registeredPatientDetails.setBackendPatientId(patientCollection.getId().toString());
+		patient.setPatientId(userCollection.getId().toString());
+		
+		registeredPatientDetails.setPatient(patient);
+		registeredPatientDetails.setLocalPatientName(patient.getLocalPatientName());
+		registeredPatientDetails.setDob(patientCollection.getDob());
+		registeredPatientDetails.setGender(patientCollection.getGender());
+		registeredPatientDetails.setPID(patientCollection.getPID());
+		registeredPatientDetails.setPNUM(patientCollection.getPNUM());
+		registeredPatientDetails.setConsultantDoctorIds(patient.getConsultantDoctorIds());
+		registeredPatientDetails.setIsChild(patientCollection.getIsChild());
+		if (!DPDoctorUtils.anyStringEmpty(patientCollection.getDoctorId()))
+			registeredPatientDetails.setDoctorId(patientCollection.getDoctorId().toString());
+		if (!DPDoctorUtils.anyStringEmpty(patientCollection.getLocationId()))
+			registeredPatientDetails.setLocationId(patientCollection.getLocationId().toString());
+		if (!DPDoctorUtils.anyStringEmpty(patientCollection.getHospitalId()))
+			registeredPatientDetails.setHospitalId(patientCollection.getHospitalId().toString());
+		registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
+		
+		
+		if (patientCollection.getReferredBy() != null) {
+			ReferencesCollection referencesCollection = referrenceRepository.findOne(patientCollection.getReferredBy());
+			
+			if (referencesCollection != null) {
+				Reference reference = new Reference();
+				BeanUtil.map(referencesCollection, reference);
+				registeredPatientDetails.setReferredBy(reference);
+			}
+		}
+		
+		registeredPatientDetails.setAddress(patientCollection.getAddress());
+		
+		List<PatientGroupCollection> groupCollections = patientGroupRepository.findByPatientId(patientCollection.getUserId());
+		if(groupCollections != null && !groupCollections.isEmpty()) {
+			
+			List<ObjectId> groupObjectIds = (List<ObjectId>) CollectionUtils.collect(groupCollections, new BeanToPropertyValueTransformer("groupId"));
+			List<Group> groups = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(groupObjectIds).and("locationId").is(patientCollection.getLocationId()))),
+					GroupCollection.class, Group.class).getMappedResults();
+			registeredPatientDetails.setGroups(groups);
+		}	
 	}
 
 	private void updatePatientData(ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId, String fieldName, Object fieldValue) {
