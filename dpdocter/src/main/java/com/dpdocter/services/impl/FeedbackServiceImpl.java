@@ -627,7 +627,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 				criteria.and("services.service").in(services);
 			}
 			if (discarded != null) {
-				criteria.and("discarded").is(discarded);
+				criteria.and("isDiscarded").is(discarded);
 			}
 			if (isApproved != null) {
 				criteria.and("isApproved").is(isApproved);
@@ -733,7 +733,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 				criteria.and("services.service").in(services);
 			}
 			if (discarded != null) {
-				criteria.and("discarded").is(discarded);
+				criteria.and("isDiscarded").is(discarded);
 			}
 			if (isApproved != null) {
 				criteria.and("isApproved").is(isApproved);
