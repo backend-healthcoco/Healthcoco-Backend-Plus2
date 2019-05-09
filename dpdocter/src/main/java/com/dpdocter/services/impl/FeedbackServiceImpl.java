@@ -730,7 +730,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 				criteria.and("patientId").is(new ObjectId(patientId));
 			}
 			if (services != null && !services.isEmpty()) {
-				criteria.and("services").in(services);
+				criteria.and("services.service").in(services);
 			}
 			if (discarded != null) {
 				criteria.and("discarded").is(discarded);
@@ -742,6 +742,9 @@ public class FeedbackServiceImpl implements FeedbackService {
 					new BasicDBObject("$group", new BasicDBObject("_id", "$_id")));
 
 			aggregation = Aggregation.newAggregation(
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$services").append("preserveNullAndEmptyArrays", true))),
+					Aggregation.lookup("services_cl", "services", "_id", "services"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$services").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.match(criteria), aggregationOperation);
