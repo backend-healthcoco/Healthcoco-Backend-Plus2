@@ -169,7 +169,7 @@ public interface RegistrationService {
 
 	List<PatientShortCard> getDeletedPatient(String doctorId, String locationId, String hospitalId, int page, int size, String searchTerm, String sortBy);
 
-	Boolean updatePatientNumber(String doctorId, String locationId, String hospitalId, String patientId,
+	RegisteredPatientDetails updatePatientNumber(String doctorId, String locationId, String hospitalId, String patientId,
 			String newPatientId, String mobileNumber);
 	
 	Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId,String defaultDoctorId);
