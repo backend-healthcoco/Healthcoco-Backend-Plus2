@@ -115,7 +115,6 @@ import com.dpdocter.repository.AppointmentBookedSlotRepository;
 import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.AppointmentWorkFlowRepository;
 import com.dpdocter.repository.CityRepository;
-import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.CustomAppointmentRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
@@ -123,10 +122,8 @@ import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NutritionAppointmentRepository;
 import com.dpdocter.repository.PatientQueueRepository;
 import com.dpdocter.repository.PatientRepository;
-import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.RecommendationsRepository;
-import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SMSFormatRepository;
@@ -157,7 +154,6 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
-import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
@@ -585,6 +581,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 						BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
 						doctorClinicProfile.setLocationId(doctorClinicProfileCollection.getLocationId());
 						doctorClinicProfile.setDoctorId(doctorClinicProfileCollection.getDoctorId());
+						doctorClinicProfile.setIsPidHasDate(location.getIsPidHasDate());
+						doctorClinicProfile.setPatientInitial(location.getPatientInitial());
+						doctorClinicProfile.setPatientCounter(location.getPatientCounter());
+						
 						ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 								Fields.field("role", "$role.role"), Fields.field("locationId", "$locationId"),
 								Fields.field("hospitalId", "$hospitalId")));
