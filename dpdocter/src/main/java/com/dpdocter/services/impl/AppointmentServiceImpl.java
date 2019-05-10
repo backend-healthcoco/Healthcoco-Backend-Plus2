@@ -582,6 +582,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 						BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
 						doctorClinicProfile.setLocationId(doctorClinicProfileCollection.getLocationId());
 						doctorClinicProfile.setDoctorId(doctorClinicProfileCollection.getDoctorId());
+						doctorClinicProfile.setIsPidHasDate(location.getIsPidHasDate());
+						doctorClinicProfile.setPatientInitial(location.getPatientInitial());
+						doctorClinicProfile.setPatientCounter(location.getPatientCounter());
+						
 						ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 								Fields.field("role", "$role.role"), Fields.field("locationId", "$locationId"),
 								Fields.field("hospitalId", "$hospitalId")));
