@@ -755,7 +755,7 @@ public class ContactsServiceImpl implements ContactsService {
 					registeredPatientDetail.setCreatedTime(patientCard.getCreatedTime());
 					registeredPatientDetail.setPID(patientCard.getPID());
 					registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
-
+					registeredPatientDetail.setBackendPatientId(patientCard.getId());
 					if (patientCard.getDob() != null) {
 						registeredPatientDetail.setDob(patientCard.getDob());
 					}
