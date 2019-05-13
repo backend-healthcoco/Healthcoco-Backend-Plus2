@@ -98,10 +98,8 @@ public class AppointmentApi {
 			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime ,@DefaultValue("false") @QueryParam("isRegisteredPatientRequired") Boolean isRegisteredPatientRequired,
 			@DefaultValue(value = "false") @QueryParam(value = "isWeb") Boolean isWeb) {
 
-		List<Appointment> appointment = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
+		Response<Appointment> response = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
 				page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb);
-		Response<Appointment> response = new Response<Appointment>();
-		response.setDataList(appointment);
 		return response;
 	}
 

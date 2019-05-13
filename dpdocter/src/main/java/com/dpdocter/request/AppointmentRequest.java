@@ -78,6 +78,8 @@ public class AppointmentRequest {
 
 	private String PNUM;
 
+	private Boolean isCreatedByPatient = false;
+
 	public String getAppointmentId() {
 		return appointmentId;
 	}
@@ -342,6 +344,14 @@ public class AppointmentRequest {
 		PNUM = pNUM;
 	}
 
+	public Boolean getIsCreatedByPatient() {
+		return isCreatedByPatient;
+	}
+
+	public void setIsCreatedByPatient(Boolean isCreatedByPatient) {
+		this.isCreatedByPatient = isCreatedByPatient;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", explanation="
@@ -354,7 +364,7 @@ public class AppointmentRequest {
 				+ waitedFor + ", engagedFor=" + engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt
 				+ ", checkedOutAt=" + checkedOutAt + ", category=" + category + ", cancelledByProfile="
 				+ cancelledByProfile + ", gender=" + gender + ", dob=" + dob + ", age=" + age + ", isChild=" + isChild
-				+ ", treatmentFields=" + treatmentFields + ", PNUM=" + PNUM + "]";
-	}
-	
+				+ ", treatmentFields=" + treatmentFields + ", PNUM=" + PNUM + ", isCreatedByPatient="
+				+ isCreatedByPatient + "]";
+	}	
 }

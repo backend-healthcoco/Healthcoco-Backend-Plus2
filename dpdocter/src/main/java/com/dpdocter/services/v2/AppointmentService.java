@@ -16,7 +16,7 @@ import common.util.web.Response;
 public interface AppointmentService {
 
 	
-	List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
+	Response<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
 			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb);
 

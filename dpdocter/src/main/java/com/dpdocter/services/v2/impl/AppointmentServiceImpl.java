@@ -1366,15 +1366,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	@Transactional
-	public List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
+	public Response<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
 			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb) {
-		List<Appointment> response = null;
+		Response<Appointment> response = null;
+		List<Appointment> appointments = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 
 			Criteria criteria = new Criteria("type").is(AppointmentType.APPOINTMENT.getType()).and("updatedTime")
-					.gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").is(false);
+					.gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").ne(true);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -1426,7 +1427,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			SortOperation sortOperation = Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"));
 
 			if (!DPDoctorUtils.anyStringEmpty(status)) {
-				if (status.equalsIgnoreCase(QueueStatus.WAITING.toString())) {
+				if (status.equalsIgnoreCase(QueueStatus.SCHEDULED.toString())) {
+					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "time.fromTime"));
+				}else if (status.equalsIgnoreCase(QueueStatus.WAITING.toString())) {
 					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "checkedInAt"));
 				} else if (status.equalsIgnoreCase(QueueStatus.ENGAGED.toString())) {
 					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "engagedAt"));
@@ -1437,135 +1440,142 @@ public class AppointmentServiceImpl implements AppointmentService {
 				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
 			}
 
-			if (isWeb)
-				response = getAppointmentsForWeb(criteria, sortOperation, page, size, response,
-						appointmentLookupResponses);
-			else {
-				if (size > 0) {
-					appointmentLookupResponses = mongoTemplate.aggregate(
-							Aggregation
-									.newAggregation(Aggregation.match(criteria),
-											Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-											Aggregation.unwind("doctor"),
-											Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-											Aggregation.unwind("location"),
+			Integer count = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
+			if(count != null && count > 0) {
+				response = new Response<>();
+				response.setCount(count);
+				
+				if (isWeb)
+					appointments = getAppointmentsForWeb(criteria, sortOperation, page, size, appointments,
+							appointmentLookupResponses);
+				else {
+					if (size > 0) {
+						appointmentLookupResponses = mongoTemplate.aggregate(
+								Aggregation
+										.newAggregation(Aggregation.match(criteria),
+												Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+												Aggregation.unwind("doctor"),
+												Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+												Aggregation.unwind("location"),
 
-											Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-											new CustomAggregationOperation(new BasicDBObject(
-													"$unwind",
-													new BasicDBObject(
-															"path", "$patientCard").append("preserveNullAndEmptyArrays",
-																	true))),
-											new CustomAggregationOperation(
-													new BasicDBObject("$redact",
-															new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$patientCard.locationId",
-																					"$locationId")))
-																							.append("then", "$$KEEP")
-																							.append("else",
-																									"$$PRUNE")))),
+												Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+												new CustomAggregationOperation(new BasicDBObject(
+														"$unwind",
+														new BasicDBObject(
+																"path", "$patientCard").append("preserveNullAndEmptyArrays",
+																		true))),
+												new CustomAggregationOperation(
+														new BasicDBObject("$redact",
+																new BasicDBObject("$cond",
+																		new BasicDBObject("if", new BasicDBObject("$eq",
+																				Arrays.asList("$patientCard.locationId",
+																						"$locationId")))
+																								.append("then", "$$KEEP")
+																								.append("else",
+																										"$$PRUNE")))),
 
-											Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
-											Aggregation.unwind("patientCard.user"), sortOperation,
-											Aggregation.skip((page) * size), Aggregation.limit(size))
-									.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
-							AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
-				} else {
-					appointmentLookupResponses = mongoTemplate.aggregate(
-							Aggregation
-									.newAggregation(Aggregation.match(criteria),
-											Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-											Aggregation.unwind("doctor"),
-											Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-											Aggregation.unwind("location"),
-											Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-											new CustomAggregationOperation(new BasicDBObject(
-													"$unwind",
-													new BasicDBObject(
-															"path", "$patientCard").append("preserveNullAndEmptyArrays",
-																	true))),
-											new CustomAggregationOperation(
-													new BasicDBObject("$redact",
-															new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$patientCard.locationId",
-																					"$locationId")))
-																							.append("then", "$$KEEP")
-																							.append("else",
-																									"$$PRUNE")))),
+												Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
+												Aggregation.unwind("patientCard.user"), sortOperation,
+												Aggregation.skip((page) * size), Aggregation.limit(size))
+										.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
+								AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
+					} else {
+						appointmentLookupResponses = mongoTemplate.aggregate(
+								Aggregation
+										.newAggregation(Aggregation.match(criteria),
+												Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+												Aggregation.unwind("doctor"),
+												Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+												Aggregation.unwind("location"),
+												Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+												new CustomAggregationOperation(new BasicDBObject(
+														"$unwind",
+														new BasicDBObject(
+																"path", "$patientCard").append("preserveNullAndEmptyArrays",
+																		true))),
+												new CustomAggregationOperation(
+														new BasicDBObject("$redact",
+																new BasicDBObject("$cond",
+																		new BasicDBObject("if", new BasicDBObject("$eq",
+																				Arrays.asList("$patientCard.locationId",
+																						"$locationId")))
+																								.append("then", "$$KEEP")
+																								.append("else",
+																										"$$PRUNE")))),
 
-											Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
-											Aggregation.unwind("patientCard.user"), sortOperation)
-									.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
-							AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
-				}
+												Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
+												Aggregation.unwind("patientCard.user"), sortOperation)
+										.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
+								AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
+					}
 
-				if (appointmentLookupResponses != null && !appointmentLookupResponses.isEmpty()) {
-					response = new ArrayList<Appointment>();
+					if (appointmentLookupResponses != null && !appointmentLookupResponses.isEmpty()) {
+						appointments = new ArrayList<Appointment>();
 
-				for (AppointmentLookupResponse collection : appointmentLookupResponses) {
-					Appointment appointment = new Appointment();
-					PatientCard patientCard = null;
-					if (collection.getType().getType().equals(AppointmentType.APPOINTMENT.getType())) {
-						patientCard = collection.getPatientCard();
-						if (patientCard != null) {
-							patientCard.setId(patientCard.getUserId());
+					for (AppointmentLookupResponse collection : appointmentLookupResponses) {
+						Appointment appointment = new Appointment();
+						PatientCard patientCard = null;
+						if (collection.getType().getType().equals(AppointmentType.APPOINTMENT.getType())) {
+							patientCard = collection.getPatientCard();
+							if (patientCard != null) {
+								patientCard.setId(patientCard.getUserId());
 
-							if (patientCard.getUser() != null) {
-								patientCard.setColorCode(patientCard.getUser().getColorCode());
-								patientCard.setMobileNumber(patientCard.getUser().getMobileNumber());
+								if (patientCard.getUser() != null) {
+									patientCard.setColorCode(patientCard.getUser().getColorCode());
+									patientCard.setMobileNumber(patientCard.getUser().getMobileNumber());
+								}
+								//patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+								patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
+
 							}
-							//patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
-							patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
+						}
+						BeanUtil.map(collection, appointment);
+						appointment.setPatient(patientCard);
+						appointment.setLocalPatientName(patientCard.getLocalPatientName());
+						if (collection.getDoctor() != null) {
+							appointment.setDoctorName(
+									collection.getDoctor().getTitle() + " " + collection.getDoctor().getFirstName());
+						}
+							if (collection.getLocation() != null) {
+								appointment.setLocationName(collection.getLocation().getLocationName());
+								appointment.setClinicNumber(collection.getLocation().getClinicNumber());
 
+								String address = (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getStreetAddress())
+										? collection.getLocation().getStreetAddress() + ", "
+										: "")
+										+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getLandmarkDetails())
+												? collection.getLocation().getLandmarkDetails() + ", "
+												: "")
+										+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getLocality())
+												? collection.getLocation().getLocality() + ", "
+												: "")
+										+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getCity())
+												? collection.getLocation().getCity() + ", "
+												: "")
+										+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getState())
+												? collection.getLocation().getState() + ", "
+												: "")
+										+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getCountry())
+												? collection.getLocation().getCountry() + ", "
+												: "")
+										+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getPostalCode())
+												? collection.getLocation().getPostalCode()
+												: "");
+
+								if (address.charAt(address.length() - 2) == ',') {
+									address = address.substring(0, address.length() - 2);
+								}
+
+								appointment.setClinicAddress(address);
+								appointment.setLatitude(collection.getLocation().getLatitude());
+								appointment.setLongitude(collection.getLocation().getLongitude());
+							}
+							appointments.add(appointment);
 						}
 					}
-					BeanUtil.map(collection, appointment);
-					appointment.setPatient(patientCard);
-					appointment.setLocalPatientName(patientCard.getLocalPatientName());
-					if (collection.getDoctor() != null) {
-						appointment.setDoctorName(
-								collection.getDoctor().getTitle() + " " + collection.getDoctor().getFirstName());
-					}
-						if (collection.getLocation() != null) {
-							appointment.setLocationName(collection.getLocation().getLocationName());
-							appointment.setClinicNumber(collection.getLocation().getClinicNumber());
-
-							String address = (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getStreetAddress())
-									? collection.getLocation().getStreetAddress() + ", "
-									: "")
-									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getLandmarkDetails())
-											? collection.getLocation().getLandmarkDetails() + ", "
-											: "")
-									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getLocality())
-											? collection.getLocation().getLocality() + ", "
-											: "")
-									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getCity())
-											? collection.getLocation().getCity() + ", "
-											: "")
-									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getState())
-											? collection.getLocation().getState() + ", "
-											: "")
-									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getCountry())
-											? collection.getLocation().getCountry() + ", "
-											: "")
-									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getPostalCode())
-											? collection.getLocation().getPostalCode()
-											: "");
-
-							if (address.charAt(address.length() - 2) == ',') {
-								address = address.substring(0, address.length() - 2);
-							}
-
-							appointment.setClinicAddress(address);
-							appointment.setLatitude(collection.getLocation().getLatitude());
-							appointment.setLongitude(collection.getLocation().getLongitude());
-						}
-						response.add(appointment);
-					}
 				}
-			}
+				response.setDataList(appointments);
+			}				
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
