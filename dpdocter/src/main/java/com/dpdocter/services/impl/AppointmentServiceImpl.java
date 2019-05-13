@@ -1811,9 +1811,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 				} else if (status.equalsIgnoreCase(QueueStatus.CHECKED_OUT.toString())) {
 					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "checkedOutAt"));
 				}
-			} else if (!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("updatedTime")) {
+			} else if(!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("startTime")){
+				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "time.fromTime"));
+			}
+			else if (!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("updatedTime")) {
 				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
 			}
+			
 
 			if (isWeb)
 				response = getAppointmentsForWeb(criteria, sortOperation, page, size, appointmentLookupResponses);

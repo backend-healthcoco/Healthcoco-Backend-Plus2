@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import com.dpdocter.collections.BirthAchievementCollection;
-import com.dpdocter.collections.VaccineCollection;
 
 public interface BirthAchievementRepository extends MongoRepository<BirthAchievementCollection, ObjectId>{
 

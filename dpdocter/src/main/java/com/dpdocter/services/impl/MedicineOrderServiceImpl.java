@@ -14,13 +14,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DrugInfo;
 import com.dpdocter.beans.MedicineOrder;
@@ -28,7 +25,6 @@ import com.dpdocter.beans.MedicineOrderAddEditItems;
 import com.dpdocter.beans.MedicineOrderItems;
 import com.dpdocter.beans.TrackingOrder;
 import com.dpdocter.beans.UserCart;
-import com.dpdocter.collections.AdviceCollection;
 import com.dpdocter.collections.DrugInfoCollection;
 import com.dpdocter.collections.MedicineOrderCollection;
 import com.dpdocter.collections.TrackingOrderCollection;
@@ -41,11 +37,11 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.MedicineOrderRepository;
 import com.dpdocter.repository.TrackingOrderRepository;
 import com.dpdocter.repository.UserCartRepository;
-import com.dpdocter.repository.UserRecordsRepository;
 import com.dpdocter.request.MedicineOrderAddEditAddressRequest;
 import com.dpdocter.request.MedicineOrderPaymentAddEditRequest;
 import com.dpdocter.request.MedicineOrderPreferenceAddEditRequest;
 import com.dpdocter.request.MedicineOrderRXAddEditRequest;
+import com.dpdocter.request.UpdateOrderStatusRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.MedicineOrderService;
@@ -54,7 +50,6 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
-import common.util.web.Response;
 
 @Service
 public class MedicineOrderServiceImpl implements MedicineOrderService{
@@ -302,6 +297,39 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 	
 	@Override
 	@Transactional
+	public MedicineOrder updateStatus(UpdateOrderStatusRequest request ) {
+		MedicineOrder medicineOrder = null;
+		MedicineOrderCollection medicineOrderCollection = null;
+
+		try {
+
+			medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getOrderId()));
+
+			if (medicineOrderCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
+			}
+
+			medicineOrderCollection.setOrderStatus(request.getStatus());
+
+			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
+			
+			if (medicineOrderCollection != null) {
+				medicineOrder = new MedicineOrder();
+				BeanUtil.map(medicineOrderCollection, medicineOrder);
+			}
+			
+			addeditTrackingDetails(request.getTrackingOrder());
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			logger.error(e);
+		}
+		return medicineOrder;
+	}
+	
+	@Override
+	@Transactional
 	public MedicineOrder getOrderById(String id ) {
 		MedicineOrder medicineOrder = null;
 		MedicineOrderCollection medicineOrderCollection = null;
@@ -400,7 +428,6 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
 			
-			System.out.println( "Aggregation :: " + aggregation);
 			orders = mongoTemplate.aggregate(
 					aggregation,
 					MedicineOrderCollection.class, MedicineOrder.class).getMappedResults();
@@ -436,7 +463,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 			BeanUtil.map(request, userCartCollection);
 			/*List<MedicineOrderItems> orderItems = new ArrayList<>();
-			for (MedicineOrderAddEditItems items : request.getItems()) {
+			for(MedicineOrderAddEditItems items : request.getItems()) {
 				MedicineOrderItems medicineOrderItems  =  new MedicineOrderItems();
 				BeanUtil.map(items, medicineOrderItems);
 				orderItems.add(medicineOrderItems);
@@ -652,15 +679,14 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			
 			if (size > 0) {
 				aggregation =Aggregation.newAggregation(
-							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
-						 Aggregation.skip((page) * size),
-						Aggregation.limit(size));
+				Aggregation.match(criteria),Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+				Aggregation.skip((page) * size),Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(
-							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+				Aggregation.match(criteria),Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
 			
-			System.out.println(aggregation);
+			//System.out.println(aggregation);
 			
 			response = mongoTemplate.aggregate(
 					aggregation,

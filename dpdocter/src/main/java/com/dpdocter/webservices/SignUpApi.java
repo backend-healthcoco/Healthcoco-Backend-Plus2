@@ -363,12 +363,14 @@ public class SignUpApi {
 					doctorSignUp.getUser().setThumbnailUrl(getFinalImageURL(doctorSignUp.getUser().getThumbnailUrl()));
 				}
 			}
+			
 			if (doctorSignUp.getHospital() != null) {
 				if (doctorSignUp.getHospital().getHospitalImageUrl() != null) {
 					doctorSignUp.getHospital()
 							.setHospitalImageUrl(getFinalImageURL(doctorSignUp.getHospital().getHospitalImageUrl()));
 				}
 			}
+			
 			transnationalService.checkDoctor(new ObjectId(doctorSignUp.getUser().getId()), null);
 
 		}

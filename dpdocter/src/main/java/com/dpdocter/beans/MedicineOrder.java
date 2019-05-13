@@ -12,6 +12,8 @@ public class MedicineOrder extends GenericCollection {
 	private String id;
 	private String patientId;
 	private String vendorId;
+	private String collectionBoyId;
+	private CollectionBoy collectionBoy;
 	private UserAddress shippingAddress;
 	private UserAddress billingAddress;
 	private Vendor vendor;
@@ -206,6 +208,22 @@ public class MedicineOrder extends GenericCollection {
 
 	public void setCancellationDate(Long cancellationDate) {
 		this.cancellationDate = cancellationDate;
+	}
+
+	public String getCollectionBoyId() {
+		return collectionBoyId;
+	}
+
+	public void setCollectionBoyId(String collectionBoyId) {
+		this.collectionBoyId = collectionBoyId;
+	}
+
+	public CollectionBoy getCollectionBoy() {
+		return collectionBoy;
+	}
+
+	public void setCollectionBoy(CollectionBoy collectionBoy) {
+		this.collectionBoy = collectionBoy;
 	}
 
 	@Override

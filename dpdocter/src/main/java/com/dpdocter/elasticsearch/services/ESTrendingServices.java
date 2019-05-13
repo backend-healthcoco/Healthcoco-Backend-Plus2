@@ -2,9 +2,6 @@ package com.dpdocter.elasticsearch.services;
 
 import java.util.List;
 
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.QueryParam;
-
 import com.dpdocter.beans.Offer;
 import com.dpdocter.elasticsearch.document.ESOfferDocument;
 import com.dpdocter.elasticsearch.document.ESTrendingDocument;

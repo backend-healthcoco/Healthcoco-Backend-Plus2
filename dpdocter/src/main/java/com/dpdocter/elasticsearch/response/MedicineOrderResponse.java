@@ -3,10 +3,6 @@ package com.dpdocter.elasticsearch.response;
 import java.util.List;
 
 import com.dpdocter.beans.MedicineOrderAddEditItems;
-import com.dpdocter.beans.MedicineOrderImages;
-import com.dpdocter.beans.UserAddress;
-import com.dpdocter.beans.Vendor;
-import com.dpdocter.enums.DeliveryPreferences;
 import com.dpdocter.enums.OrderStatus;
 import com.dpdocter.enums.PaymentMode;
 

@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.Address;
+import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.MedicineOrderImages;
 import com.dpdocter.beans.MedicineOrderItems;
 import com.dpdocter.beans.UserAddress;
@@ -22,6 +22,10 @@ public class MedicineOrderCollection extends GenericCollection {
 	private ObjectId id;
 	@Field
 	private ObjectId patientId;
+	@Field
+	private ObjectId collectionBoyId;
+	@Field
+	private CollectionBoy collectionBoy;
 	@Field
 	private String uniqueOrderId;
 	@Field
@@ -237,6 +241,22 @@ public class MedicineOrderCollection extends GenericCollection {
 
 	public void setCashHandlingCharges(Float cashHandlingCharges) {
 		this.cashHandlingCharges = cashHandlingCharges;
+	}
+
+	public ObjectId getCollectionBoyId() {
+		return collectionBoyId;
+	}
+
+	public void setCollectionBoyId(ObjectId collectionBoyId) {
+		this.collectionBoyId = collectionBoyId;
+	}
+
+	public CollectionBoy getCollectionBoy() {
+		return collectionBoy;
+	}
+
+	public void setCollectionBoy(CollectionBoy collectionBoy) {
+		this.collectionBoy = collectionBoy;
 	}
 
 }

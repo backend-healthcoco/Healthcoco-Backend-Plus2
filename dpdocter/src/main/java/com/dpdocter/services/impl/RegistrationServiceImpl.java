@@ -1702,7 +1702,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 					locationCollection.setUpdatedTime(new Date());
 					if (isPidHasDate != null) {
 						locationCollection.setIsPidHasDate(isPidHasDate);
-
+						
+						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(locationId));
+						if(doctorClinicProfileCollections != null)
+						{
+							for(DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections)
+							{
+								doctorClinicProfileCollection.setIsPidHasDate(isPidHasDate);
+								doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+							}
+						}
 						List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
 								.findByLocationId(new ObjectId(locationId));
 						if (printSettingsCollections != null) {

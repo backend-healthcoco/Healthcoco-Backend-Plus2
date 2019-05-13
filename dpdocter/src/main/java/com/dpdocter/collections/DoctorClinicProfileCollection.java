@@ -136,6 +136,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private ObjectId defaultDoctorId;
 
+	@Field
+	private Boolean isPidHasDate = true;
+
 	public Boolean getIsNutritionist() {
 		return isNutritionist;
 	}
@@ -448,8 +451,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.defaultDoctorId = defaultDoctorId;
 	}
 
-	
-	
+	public Boolean getIsPidHasDate() {
+		return isPidHasDate;
+	}
+
+	public void setIsPidHasDate(Boolean isPidHasDate) {
+		this.isPidHasDate = isPidHasDate;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", doctorId="
