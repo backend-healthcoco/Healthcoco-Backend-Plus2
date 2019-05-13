@@ -97,6 +97,8 @@ public class Appointment extends GenericCollection {
 	
 	private List<Fields> treatmentFields;
 
+	private Boolean isCreatedByPatient = false;
+
 	public String getId() {
 		return id;
 	}
@@ -433,6 +435,14 @@ public class Appointment extends GenericCollection {
 		this.treatmentFields = treatmentFields;
 	}
 
+	public Boolean getIsCreatedByPatient() {
+		return isCreatedByPatient;
+	}
+
+	public void setIsCreatedByPatient(Boolean isCreatedByPatient) {
+		this.isCreatedByPatient = isCreatedByPatient;
+	}
+
 	@Override
 	public String toString() {
 		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
@@ -449,7 +459,8 @@ public class Appointment extends GenericCollection {
 				+ registeredPatientDetails + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt="
 				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", count=" + count
 				+ ", category=" + category + ", cancelledByProfile=" + cancelledByProfile + ", localPatientName="
-				+ localPatientName + ", treatmentFields=" + treatmentFields + "]";
+				+ localPatientName + ", treatmentFields=" + treatmentFields + ", isCreatedByPatient="
+				+ isCreatedByPatient + "]";
 	}
 
 }

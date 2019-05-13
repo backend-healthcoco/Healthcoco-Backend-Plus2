@@ -1008,6 +1008,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					appointmentCollection.setState(AppointmentState.CONFIRM);
 					appointmentCollection.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 				} else {
+					appointmentCollection.setIsCreatedByPatient(true);
 					if (patientCard != null)
 						appointmentCollection.setCreatedBy(patientCard.getLocalPatientName());
 					else
@@ -1747,7 +1748,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
 			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb) {
 		Response<Appointment> response = null;
-//		List<Appointment> response = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 
@@ -2039,6 +2039,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.append("cancelledByProfile", "$cancelledByProfile")
 							.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
 							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
+							.append("isCreatedByPatient", "$isCreatedByPatient")
 							.append("patient._id", "$patientCard.userId").append("patient.userId", "$patientCard.userId")
 							.append("patient.localPatientName", "$patientCard.localPatientName")
 							.append("patient.PID", "$patientCard.PID").append("patient.PNUM", "$patientCard.PNUM")
@@ -2096,6 +2097,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+							.append("isCreatedByPatient", new BasicDBObject("$first", "$isCreatedByPatient"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 							.append("patient", new BasicDBObject("$first", "$patient"))));
 
@@ -3415,8 +3417,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			String to) {
 		LocationWithPatientQueueDetails response = null;
 		try {
-			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("state")
-					.ne(AppointmentState.CANCEL.getState()).and("isPatientDiscarded").ne(true);
+			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId))
+					.and("type").is(AppointmentType.APPOINTMENT.getType())
+					.and("state").ne(AppointmentState.CANCEL.getState()).and("isPatientDiscarded").ne(true);
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
@@ -4726,9 +4729,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public List<Event> getEvents(String locationId, List<String> doctorId, String from, String to, int page, int size,
-			String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked) {
-		List<Event> response = null;
+	public Response<Event> getEvents(String locationId, List<String> doctorId, String from, String to, int page, int size,
+			String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked, String state) {
+		Response<Event> response = null;
+		List<Event> events = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 
@@ -4744,6 +4748,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 				criteria.and("doctorIds").in(doctorObjectIds);
 			}
 
+			if (!DPDoctorUtils.anyStringEmpty(state))
+				criteria.and("state").is(state.toUpperCase());
+			
 			if(isCalenderBlocked) {
 				criteria.and("isCalenderBlocked").is(true);
 			}
@@ -4785,105 +4792,80 @@ public class AppointmentServiceImpl implements AppointmentService {
 				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
 			}
 
-			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project",
-					new BasicDBObject("id", "$_id").append("state", "$state").append("subject", "$subject")
-							.append("explanation", "$explanation").append("locationId", "$locationId")
-							.append("doctorId", "$doctorId").append("time", "$time")
-							.append("isCalenderBlocked", "$isCalenderBlocked").append("fromDate", "$fromDate")
-							.append("toDate", "$toDate").append("isAllDayEvent", "$isAllDayEvent")
-							.append("isRescheduled", "$isRescheduled").append("doctorIds", "$doctorIds")
-							.append("doctors.id", "$doctor._id").append("doctors.firstName", "$doctor.firstName")
-							.append("hospitalId", "$hospitalId").append("patientId", "$patientId")
-							.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
-							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
+			Integer count = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
+			if(count != null && count > 0) {
+				response = new Response<>();
+				response.setCount(count);
+				
+				CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project",
+						new BasicDBObject("id", "$_id").append("state", "$state").append("subject", "$subject")
+								.append("explanation", "$explanation").append("locationId", "$locationId")
+								.append("doctorId", "$doctorId").append("time", "$time")
+								.append("isCalenderBlocked", "$isCalenderBlocked").append("fromDate", "$fromDate")
+								.append("toDate", "$toDate").append("isAllDayEvent", "$isAllDayEvent")
+								.append("isRescheduled", "$isRescheduled").append("doctorIds", "$doctorIds")
+								.append("doctors.id", "$doctor._id").append("doctors.firstName", "$doctor.firstName")
+								.append("hospitalId", "$hospitalId").append("patientId", "$patientId")
+								.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
+								.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
 
-			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("id", "$_id").append("state", new BasicDBObject("$first", "$state"))
-							.append("subject", new BasicDBObject("$first", "$subject"))
-							.append("explanation", new BasicDBObject("$first", "$explanation"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("time", new BasicDBObject("$first", "$time"))
-							.append("isCalenderBlocked", new BasicDBObject("$first", "$isCalenderBlocked"))
-							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-							.append("toDate", new BasicDBObject("$first", "$toDate"))
-							.append("isAllDayEvent", new BasicDBObject("$first", "$isAllDayEvent"))
-							.append("isRescheduled", new BasicDBObject("$first", "$isRescheduled"))
-							.append("doctorIds", new BasicDBObject("$push", "$doctorIds"))
-							.append("doctors", new BasicDBObject("$push", "$doctors"))
-							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-							.append("patientId", new BasicDBObject("$first", "$patientId"))
-							.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
+				CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
+						new BasicDBObject("id", "$_id").append("state", new BasicDBObject("$first", "$state"))
+								.append("subject", new BasicDBObject("$first", "$subject"))
+								.append("explanation", new BasicDBObject("$first", "$explanation"))
+								.append("locationId", new BasicDBObject("$first", "$locationId"))
+								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+								.append("time", new BasicDBObject("$first", "$time"))
+								.append("isCalenderBlocked", new BasicDBObject("$first", "$isCalenderBlocked"))
+								.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+								.append("toDate", new BasicDBObject("$first", "$toDate"))
+								.append("isAllDayEvent", new BasicDBObject("$first", "$isAllDayEvent"))
+								.append("isRescheduled", new BasicDBObject("$first", "$isRescheduled"))
+								.append("doctorIds", new BasicDBObject("$push", "$doctorIds"))
+								.append("doctors", new BasicDBObject("$push", "$doctors"))
+								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+								.append("patientId", new BasicDBObject("$first", "$patientId"))
+								.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
+								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+								.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
-			if (size > 0) {
-				response = mongoTemplate.aggregate(
-						Aggregation.newAggregation(Aggregation.match(criteria),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$doctorIds")
-												.append("preserveNullAndEmptyArrays", true))),
-								Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
-												true))),
-
-								// Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-								// new CustomAggregationOperation(new BasicDBObject("$unwind",
-								// new BasicDBObject("path",
-								// "$patientCard").append("preserveNullAndEmptyArrays",
-								// true))),
-								// new CustomAggregationOperation(new BasicDBObject("$redact",
-								// new BasicDBObject("$cond",
-								// new BasicDBObject("if", new BasicDBObject("$ne",
-								// Arrays.asList("$patientCard", null)))
-								// .append("then", new BasicDBObject("$cond",
-								// new BasicDBObject("if", new BasicDBObject("$eq",
-								// Arrays.asList("$patientCard.locationId",
-								// "$locationId"))).append("then", "$$KEEP")
-								// .append("else", "$$PRUNE")))
-								// .append("else", "$$KEEP")))),
-								project, group, sortOperation, Aggregation.skip((page) * size),
-								Aggregation.limit(size)),
-						AppointmentCollection.class, Event.class).getMappedResults();
-			} else {
-				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
-						Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
-
-						// Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-						// new CustomAggregationOperation(new BasicDBObject("$unwind",
-						// new BasicDBObject("path",
-						// "$patientCard").append("preserveNullAndEmptyArrays",
-						// true))),
-						// new CustomAggregationOperation(new BasicDBObject("$redact",
-						// new BasicDBObject("$cond",
-						// new BasicDBObject("if", new BasicDBObject("$ne",
-						// Arrays.asList("$patientCard", null)))
-						// .append("then", new BasicDBObject("$cond",
-						// new BasicDBObject("if", new BasicDBObject("$eq",
-						// Arrays.asList("$patientCard.locationId",
-						// "$locationId"))).append("then", "$$KEEP")
-						// .append("else", "$$PRUNE")))
-						// .append("else", "$$KEEP")))),
+				if (size > 0) {
+					events = mongoTemplate.aggregate(
+							Aggregation.newAggregation(Aggregation.match(criteria),
+									new CustomAggregationOperation(new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$doctorIds")
+													.append("preserveNullAndEmptyArrays", true))),
+									Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
+									new CustomAggregationOperation(new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
+													true))),
+							project, group, sortOperation, Aggregation.skip((page) * size),
+									Aggregation.limit(size)),
+							AppointmentCollection.class, Event.class).getMappedResults();
+				} else {
+					events = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
+							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 						project, group, sortOperation), AppointmentCollection.class, Event.class).getMappedResults();
-
-			}
-			if (response != null) {
-				for (Event event : response) {
-					if (!DPDoctorUtils.anyStringEmpty(event.getPatientId())) {
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-								new ObjectId(event.getPatientId()), new ObjectId(locationId),
-								new ObjectId(event.getHospitalId()));
-						if (patientCollection != null)
-							event.setLocalPatientName(patientCollection.getLocalPatientName());
+				}
+				if (events != null) {
+					for (Event event : events) {
+						if (!DPDoctorUtils.anyStringEmpty(event.getPatientId())) {
+							PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+									new ObjectId(event.getPatientId()), new ObjectId(locationId),
+									new ObjectId(event.getHospitalId()));
+							if (patientCollection != null)
+								event.setLocalPatientName(patientCollection.getLocalPatientName());
+						}
 					}
 				}
+				response.setDataList(events);
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -4967,9 +4949,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public List<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page,
-			int size, String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked) {
-		List<Event> response = null;
+	public Response<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page,
+			int size, String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked, String state) {
+		Response<Event> response = null;
+		List<Event> events = null;
 		try {
 
 			if (DPDoctorUtils.allStringsEmpty(from, to)) {
@@ -4990,6 +4973,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 				criteria.and("doctorIds").in(doctorObjectIds);
 			}
 
+			if (!DPDoctorUtils.anyStringEmpty(state))
+				criteria.and("state").is(state.toUpperCase());
+			
 			if(isCalenderBlocked) {
 				criteria.and("isCalenderBlocked").is(true);
 			}
@@ -5014,143 +5000,116 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("updatedTime")) {
 				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
 			}
+			Integer count = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
+			if(count != null && count > 0) {
+				response = new Response<>();
+				response.setCount(count);
+				ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"),
+						Fields.field("toDate", "$toDate"), Fields.field("type", "$type"), Fields.field("state", "$state"),
+						Fields.field("subject", "$subject"), Fields.field("explanation", "$explanation"),
+						Fields.field("locationId", "$locationId"), Fields.field("doctorId", "$doctorId"),
+						Fields.field("time", "$time"), Fields.field("isCalenderBlocked", "$isCalenderBlocked"),
+						Fields.field("isAllDayEvent", "$isAllDayEvent"), Fields.field("isRescheduled", "$isRescheduled"),
+						Fields.field("doctorIds", "$doctorIds"), Fields.field("hospitalId", "$hospitalId"),
+						Fields.field("patientId", "$patientId"), Fields.field("adminCreatedTime", "$adminCreatedTime"),
+						Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+						Fields.field("createdBy", "$createdBy")));
 
-			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"),
-					Fields.field("toDate", "$toDate"), Fields.field("type", "$type"), Fields.field("state", "$state"),
-					Fields.field("subject", "$subject"), Fields.field("explanation", "$explanation"),
-					Fields.field("locationId", "$locationId"), Fields.field("doctorId", "$doctorId"),
-					Fields.field("time", "$time"), Fields.field("isCalenderBlocked", "$isCalenderBlocked"),
-					Fields.field("isAllDayEvent", "$isAllDayEvent"), Fields.field("isRescheduled", "$isRescheduled"),
-					Fields.field("doctorIds", "$doctorIds"), Fields.field("hospitalId", "$hospitalId"),
-					Fields.field("patientId", "$patientId"), Fields.field("adminCreatedTime", "$adminCreatedTime"),
-					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
-					Fields.field("createdBy", "$createdBy")));
+				CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project",
+						new BasicDBObject("state", "$state").append("fromDateMonth", "$fromDateMonth")
+								.append("fromDateYear", "$fromDateYear").append("toDateMonth", "$toDateMonth")
+								.append("toDateYear", "$toDateYear").append("subject", "$subject")
+								.append("explanation", "$explanation").append("locationId", "$locationId")
+								.append("doctorId", "$doctorId").append("time", "$time")
+								.append("isCalenderBlocked", "$isCalenderBlocked").append("fromDate", "$fromDate")
+								.append("toDate", "$toDate").append("isAllDayEvent", "$isAllDayEvent")
+								.append("isRescheduled", "$isRescheduled").append("doctorIds", "$doctorIds")
+								.append("doctors.id", "$doctor._id").append("doctors.firstName", "$doctor.firstName")
+								.append("hospitalId", "$hospitalId").append("patientId", "$patientId")
+								.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
+								.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
+								.append("patientCard", "$patientCard")));
 
-			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project",
-					new BasicDBObject("state", "$state").append("fromDateMonth", "$fromDateMonth")
-							.append("fromDateYear", "$fromDateYear").append("toDateMonth", "$toDateMonth")
-							.append("toDateYear", "$toDateYear").append("subject", "$subject")
-							.append("explanation", "$explanation").append("locationId", "$locationId")
-							.append("doctorId", "$doctorId").append("time", "$time")
-							.append("isCalenderBlocked", "$isCalenderBlocked").append("fromDate", "$fromDate")
-							.append("toDate", "$toDate").append("isAllDayEvent", "$isAllDayEvent")
-							.append("isRescheduled", "$isRescheduled").append("doctorIds", "$doctorIds")
-							.append("doctors.id", "$doctor._id").append("doctors.firstName", "$doctor.firstName")
-							.append("hospitalId", "$hospitalId").append("patientId", "$patientId")
-							.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
-							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
-							.append("patientCard", "$patientCard")));
+				CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
+						new BasicDBObject("_id", "$_id")
+								.append("fromDateMonth", new BasicDBObject("$first", "$fromDateMonth"))
+								.append("fromDateYear", new BasicDBObject("$first", "$fromDateYear"))
+								.append("toDateMonth", new BasicDBObject("$first", "$toDateMonth"))
+								.append("toDateYear", new BasicDBObject("$first", "$toDateYear"))
+								.append("state", new BasicDBObject("$first", "$state"))
+								.append("subject", new BasicDBObject("$first", "$subject"))
+								.append("explanation", new BasicDBObject("$first", "$explanation"))
+								.append("locationId", new BasicDBObject("$first", "$locationId"))
+								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+								.append("time", new BasicDBObject("$first", "$time"))
+								.append("isCalenderBlocked", new BasicDBObject("$first", "$isCalenderBlocked"))
+								.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+								.append("toDate", new BasicDBObject("$first", "$toDate"))
+								.append("isAllDayEvent", new BasicDBObject("$first", "$isAllDayEvent"))
+								.append("isRescheduled", new BasicDBObject("$first", "$isRescheduled"))
+								.append("doctorIds", new BasicDBObject("$push", "$doctorIds"))
+								.append("doctors", new BasicDBObject("$push", "$doctors"))
+								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+								.append("patientId", new BasicDBObject("$first", "$patientId"))
+								.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
+								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+								.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+								.append("patientCard", new BasicDBObject("$first", "$patientCard"))));
 
-			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", "$_id")
-							.append("fromDateMonth", new BasicDBObject("$first", "$fromDateMonth"))
-							.append("fromDateYear", new BasicDBObject("$first", "$fromDateYear"))
-							.append("toDateMonth", new BasicDBObject("$first", "$toDateMonth"))
-							.append("toDateYear", new BasicDBObject("$first", "$toDateYear"))
-							.append("state", new BasicDBObject("$first", "$state"))
-							.append("subject", new BasicDBObject("$first", "$subject"))
-							.append("explanation", new BasicDBObject("$first", "$explanation"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("time", new BasicDBObject("$first", "$time"))
-							.append("isCalenderBlocked", new BasicDBObject("$first", "$isCalenderBlocked"))
-							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-							.append("toDate", new BasicDBObject("$first", "$toDate"))
-							.append("isAllDayEvent", new BasicDBObject("$first", "$isAllDayEvent"))
-							.append("isRescheduled", new BasicDBObject("$first", "$isRescheduled"))
-							.append("doctorIds", new BasicDBObject("$push", "$doctorIds"))
-							.append("doctors", new BasicDBObject("$push", "$doctors"))
-							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-							.append("patientId", new BasicDBObject("$first", "$patientId"))
-							.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
-							.append("patientCard", new BasicDBObject("$first", "$patientCard"))));
+				if (size > 0) {
+					events = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria), projectList
 
-			if (size > 0) {
-				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria), projectList
+							.and("fromDate").extractMonth().as("fromDateMonth").and("fromDate").extractYear()
+							.as("fromDateYear").and("toDate").extractMonth().as("toDateMonth").and("toDate").extractYear()
+							.as("toDateYear"),
 
-						.and("fromDate").extractMonth().as("fromDateMonth").and("fromDate").extractYear()
-						.as("fromDateYear").and("toDate").extractMonth().as("toDateMonth").and("toDate").extractYear()
-						.as("toDateYear"),
+							new CustomAggregationOperation(new BasicDBObject("$match",
+									new BasicDBObject("$or", Arrays.asList(
+											new BasicDBObject("fromDateMonth", dateMonth).append("fromDateYear", dateYear),
+											new BasicDBObject("toDateMonth", dateMonth).append("toDateYear", dateYear))))),
 
-						new CustomAggregationOperation(new BasicDBObject("$match",
-								new BasicDBObject("$or", Arrays.asList(
-										new BasicDBObject("fromDateMonth", dateMonth).append("fromDateYear", dateYear),
-										new BasicDBObject("toDateMonth", dateMonth).append("toDateYear", dateYear))))),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
+							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
+							project, group, sortOperation, Aggregation.skip((page) * size), Aggregation.limit(size)),
+							AppointmentCollection.class, Event.class).getMappedResults();
+				} else {
+					events = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria), projectList
 
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
-						Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
+							.and("fromDate").extractMonth().as("fromDateMonth").and("fromDate").extractYear()
+							.as("fromDateYear").and("toDate").extractMonth().as("toDateMonth").and("toDate").extractYear()
+							.as("toDateYear"),
 
-						// Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-						// new CustomAggregationOperation(new BasicDBObject("$unwind",
-						// new BasicDBObject("path",
-						// "$patientCard").append("preserveNullAndEmptyArrays",
-						// true))),
-						// new CustomAggregationOperation(new BasicDBObject("$redact",
-						// new BasicDBObject("$cond",
-						// new BasicDBObject("if", new BasicDBObject("$ne",
-						// Arrays.asList("$patientCard", null)))
-						// .append("then", new BasicDBObject("$cond",
-						// new BasicDBObject("if", new BasicDBObject("$eq",
-						// Arrays.asList("$patientCard.locationId",
-						// "$locationId"))).append("then", "$$KEEP")
-						// .append("else", "$$PRUNE")))
-						// .append("else", "$$KEEP")))),
-						project, group, sortOperation, Aggregation.skip((page) * size), Aggregation.limit(size)),
-						AppointmentCollection.class, Event.class).getMappedResults();
-			} else {
-				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria), projectList
+							new CustomAggregationOperation(new BasicDBObject("$match",
+									new BasicDBObject("$or", Arrays.asList(
+											new BasicDBObject("fromDateMonth", dateMonth).append("fromDateYear", dateYear),
+											new BasicDBObject("toDateMonth", dateMonth).append("toDateYear", dateYear))))),
 
-						.and("fromDate").extractMonth().as("fromDateMonth").and("fromDate").extractYear()
-						.as("fromDateYear").and("toDate").extractMonth().as("toDateMonth").and("toDate").extractYear()
-						.as("toDateYear"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
+							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
+							project, group, sortOperation), "appointment_cl", Event.class).getMappedResults();
 
-						new CustomAggregationOperation(new BasicDBObject("$match",
-								new BasicDBObject("$or", Arrays.asList(
-										new BasicDBObject("fromDateMonth", dateMonth).append("fromDateYear", dateYear),
-										new BasicDBObject("toDateMonth", dateMonth).append("toDateYear", dateYear))))),
-
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
-						Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
-
-						// Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-						// new CustomAggregationOperation(new BasicDBObject("$unwind",
-						// new BasicDBObject("path",
-						// "$patientCard").append("preserveNullAndEmptyArrays",
-						// true))),
-						// new CustomAggregationOperation(new BasicDBObject("$redact",
-						// new BasicDBObject("$cond",
-						// new BasicDBObject("if", new BasicDBObject("$or", Arrays.asList(new
-						// BasicDBObject("$ne", Arrays.asList("$patientCard", null)),
-						// new BasicDBObject("$patientCard", new BasicDBObject("$exists", true)))))
-						// .append("then", new BasicDBObject("$cond",
-						// new BasicDBObject("if", new BasicDBObject("$eq",
-						// Arrays.asList("$patientCard.locationId",
-						// "$locationId"))).append("then", "$$KEEP")
-						// .append("else", "$$PRUNE")))
-						// .append("else", "$$KEEP")))),
-						project, group, sortOperation), "appointment_cl", Event.class).getMappedResults();
-
-			}
-			if (response != null) {
-				for (Event event : response) {
-					if (!DPDoctorUtils.anyStringEmpty(event.getPatientId())) {
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-								new ObjectId(event.getPatientId()), new ObjectId(locationId),
-								new ObjectId(event.getHospitalId()));
-						if (patientCollection != null)
-							event.setLocalPatientName(patientCollection.getLocalPatientName());
+				}
+				if (events != null) {
+					for (Event event : events) {
+						if (!DPDoctorUtils.anyStringEmpty(event.getPatientId())) {
+							PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+									new ObjectId(event.getPatientId()), new ObjectId(locationId),
+									new ObjectId(event.getHospitalId()));
+							if (patientCollection != null)
+								event.setLocalPatientName(patientCollection.getLocalPatientName());
+						}
 					}
 				}
+				response.setDataList(events);
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());

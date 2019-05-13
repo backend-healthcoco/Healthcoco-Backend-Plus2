@@ -127,6 +127,9 @@ public class AppointmentCollection extends GenericCollection {
 	@Field
 	private List<Fields> treatmentFields;
 
+	@Field
+	private Boolean isCreatedByPatient = false;
+
 	public String getCancelledByProfile() {
 		return cancelledByProfile;
 	}
@@ -407,6 +410,14 @@ public class AppointmentCollection extends GenericCollection {
 		this.treatmentFields = treatmentFields;
 	}
 
+	public Boolean getIsCreatedByPatient() {
+		return isCreatedByPatient;
+	}
+
+	public void setIsCreatedByPatient(Boolean isCreatedByPatient) {
+		this.isCreatedByPatient = isCreatedByPatient;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentCollection [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -419,9 +430,8 @@ public class AppointmentCollection extends GenericCollection {
 				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId
 				+ ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt="
 				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", category="
-				+ category + ", cancelledByProfile=" + cancelledByProfile + ", localPatientName=" + localPatientName
-				+ ", isPatientDiscarded=" + isPatientDiscarded + ", doctorIds=" + doctorIds + ", treatmentFields="
-				+ treatmentFields + "]";
+				+ category + ", isPatientDiscarded=" + isPatientDiscarded + ", cancelledByProfile=" + cancelledByProfile
+				+ ", localPatientName=" + localPatientName + ", doctorIds=" + doctorIds + ", treatmentFields="
+				+ treatmentFields + ", isCreatedByPatient=" + isCreatedByPatient + "]";
 	}
-
 }
