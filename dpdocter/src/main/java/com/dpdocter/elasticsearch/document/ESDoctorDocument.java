@@ -73,6 +73,15 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
 	private List<String> servicesValue;//value
 	
+	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	private List<String> formattedParentSpecialities;
+
+	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	private List<String> formattedSpecialitiesValue;//value
+
+	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	private List<String> formattedServicesValue;//value
+	
 	@Field(type = FieldType.Nested)
 	private DoctorExperience experience;
 
@@ -135,6 +144,12 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@Field(type = FieldType.Boolean)
 	private Boolean isNutritionist = false;
 
+	@Field(type = FieldType.String)
+	private String mrCode;
+
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> divisionIds;
+	
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;
 	}
@@ -418,25 +433,6 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 		this.services = services;
 	}
 
-
-	@Override
-	public String toString() {
-		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
-				+ ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
-				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", consultationFee=" + consultationFee
-				+ ", revisitConsultationFee=" + revisitConsultationFee + ", workingSchedules=" + workingSchedules
-				+ ", specialities=" + specialities + ", services=" + services + ", parentSpecialities="
-				+ parentSpecialities + ", specialitiesValue=" + specialitiesValue + ", servicesValue=" + servicesValue
-				+ ", experience=" + experience + ", facility=" + facility + ", appointmentBookingNumber="
-				+ appointmentBookingNumber + ", appointmentSlot=" + appointmentSlot + ", isActive=" + isActive
-				+ ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl="
-				+ coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber="
-				+ registerNumber + ", education=" + education + ", dob=" + dob + ", distance=" + distance + ", userUId="
-				+ userUId + ", isDoctorListed=" + isDoctorListed + ", timeZone=" + timeZone + ", rankingCount="
-				+ rankingCount + ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL
-				+ ", isNutritionist=" + isNutritionist + "]";
-	}
-
 	public List<String> getParentSpecialities() {
 		return parentSpecialities;
 	}
@@ -461,11 +457,28 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 		this.servicesValue = servicesValue;
 	}
 
-	@Override
-	public int compareTo(ESDoctorDocument o) {
-		if(this.rankingCount < o.rankingCount)return 0;
-		else if(this.rankingCount < o.rankingCount)return -1;
-		else return 1;
+	public List<String> getFormattedParentSpecialities() {
+		return formattedParentSpecialities;
+	}
+
+	public void setFormattedParentSpecialities(List<String> formattedParentSpecialities) {
+		this.formattedParentSpecialities = formattedParentSpecialities;
+	}
+
+	public List<String> getFormattedSpecialitiesValue() {
+		return formattedSpecialitiesValue;
+	}
+
+	public void setFormattedSpecialitiesValue(List<String> formattedSpecialitiesValue) {
+		this.formattedSpecialitiesValue = formattedSpecialitiesValue;
+	}
+
+	public List<String> getFormattedServicesValue() {
+		return formattedServicesValue;
+	}
+
+	public void setFormattedServicesValue(List<String> formattedServicesValue) {
+		this.formattedServicesValue = formattedServicesValue;
 	}
 
 	public Boolean getIsNutritionist() {
@@ -474,5 +487,48 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	public void setIsNutritionist(Boolean isNutritionist) {
 		this.isNutritionist = isNutritionist;
+	}
+
+	public String getMrCode() {
+		return mrCode;
+	}
+
+	public void setMrCode(String mrCode) {
+		this.mrCode = mrCode;
+	}
+
+	public List<String> getDivisionIds() {
+		return divisionIds;
+	}
+
+	public void setDivisionIds(List<String> divisionIds) {
+		this.divisionIds = divisionIds;
+	}
+
+	@Override
+	public int compareTo(ESDoctorDocument o) {
+		if(this.rankingCount < o.rankingCount)return 0;
+		else if(this.rankingCount < o.rankingCount)return -1;
+		else return 1;
+	}
+	
+	@Override
+	public String toString() {
+		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
+				+ ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", consultationFee=" + consultationFee
+				+ ", revisitConsultationFee=" + revisitConsultationFee + ", workingSchedules=" + workingSchedules
+				+ ", specialities=" + specialities + ", services=" + services + ", parentSpecialities="
+				+ parentSpecialities + ", specialitiesValue=" + specialitiesValue + ", servicesValue=" + servicesValue
+				+ ", formattedParentSpecialities=" + formattedParentSpecialities + ", formattedSpecialitiesValue="
+				+ formattedSpecialitiesValue + ", formattedServicesValue=" + formattedServicesValue + ", experience="
+				+ experience + ", facility=" + facility + ", appointmentBookingNumber=" + appointmentBookingNumber
+				+ ", appointmentSlot=" + appointmentSlot + ", isActive=" + isActive + ", isVerified=" + isVerified
+				+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
+				+ ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber=" + registerNumber
+				+ ", education=" + education + ", dob=" + dob + ", distance=" + distance + ", userUId=" + userUId
+				+ ", isDoctorListed=" + isDoctorListed + ", timeZone=" + timeZone + ", rankingCount=" + rankingCount
+				+ ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL
+				+ ", isNutritionist=" + isNutritionist + ", mrCode=" + mrCode + ", divisionIds=" + divisionIds + "]";
 	}
 }
