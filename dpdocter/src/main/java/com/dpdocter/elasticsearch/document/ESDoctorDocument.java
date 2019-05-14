@@ -15,6 +15,7 @@ import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;
+import com.dpdocter.beans.DoctorRegistrationDetail;
 import com.dpdocter.beans.Education;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
@@ -117,6 +118,12 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	@Field(type = FieldType.Nested)
 	private List<Education> education;
+	
+	@Field(type = FieldType.Nested)
+	private List<DoctorRegistrationDetail> registrationDetails;
+	
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> professionalMemberships;
 
 	@Field(type = FieldType.Nested)
 	private DOB dob;
@@ -140,7 +147,16 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	private Integer noOfRecommenations = 0;
 
 	private String doctorSlugURL;
+	
+	@Field(type = FieldType.Boolean)
+	private Boolean isNutritionist = false;
 
+	@Field(type = FieldType.String)
+	private String mrCode;
+
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> divisionIds;
+	
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;
 	}
@@ -471,6 +487,46 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	public void setFormattedServicesValue(List<String> formattedServicesValue) {
 		this.formattedServicesValue = formattedServicesValue;
 	}
+	
+	public List<DoctorRegistrationDetail> getRegistrationDetails() {
+		return registrationDetails;
+	}
+
+	public void setRegistrationDetails(List<DoctorRegistrationDetail> registrationDetails) {
+		this.registrationDetails = registrationDetails;
+	}
+
+	public List<String> getProfessionalMemberships() {
+		return professionalMemberships;
+	}
+
+	public void setProfessionalMemberships(List<String> professionalMemberships) {
+		this.professionalMemberships = professionalMemberships;
+	}
+
+	public Boolean getIsNutritionist() {
+		return isNutritionist;
+	}
+
+	public void setIsNutritionist(Boolean isNutritionist) {
+		this.isNutritionist = isNutritionist;
+	}
+
+	public String getMrCode() {
+		return mrCode;
+	}
+
+	public void setMrCode(String mrCode) {
+		this.mrCode = mrCode;
+	}
+
+	public List<String> getDivisionIds() {
+		return divisionIds;
+	}
+
+	public void setDivisionIds(List<String> divisionIds) {
+		this.divisionIds = divisionIds;
+	}
 
 	@Override
 	public int compareTo(ESDoctorDocument o) {
@@ -493,8 +549,11 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 				+ ", appointmentSlot=" + appointmentSlot + ", isActive=" + isActive + ", isVerified=" + isVerified
 				+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
 				+ ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber=" + registerNumber
-				+ ", education=" + education + ", dob=" + dob + ", distance=" + distance + ", userUId=" + userUId
-				+ ", isDoctorListed=" + isDoctorListed + ", timeZone=" + timeZone + ", rankingCount=" + rankingCount
-				+ ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL+ "]";
+				+ ", education=" + education + ", registrationDetails=" + registrationDetails
+				+ ", professionalMemberships=" + professionalMemberships + ", dob=" + dob + ", distance=" + distance
+				+ ", userUId=" + userUId + ", isDoctorListed=" + isDoctorListed + ", timeZone=" + timeZone
+				+ ", rankingCount=" + rankingCount + ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL="
+				+ doctorSlugURL + ", isNutritionist=" + isNutritionist + ", mrCode=" + mrCode + ", divisionIds="
+				+ divisionIds + "]";
 	}
 }

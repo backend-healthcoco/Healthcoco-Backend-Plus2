@@ -111,4 +111,10 @@ public interface ESDoctorRepository extends ElasticsearchRepository<ESDoctorDocu
 	List<ESDoctorDocument> findByLocationLocationName(String location, String searchTerm, Boolean isLocationListed,
 			Pageable pageRequest);
 
+	@Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"userId\": \"?0\"}},{\"match\": {\"isDoctorListed\": \"?1\"}}]}}")
+	List<ESDoctorDocument> findbySlugUrl(String doctorSlugURL, boolean isDoctorListed);
+
+	@Query("{\"bool\": {\"must\": [{\"match\": {\"userUId\": \"?0\"}},{\"match\": {\"isDoctorListed\": \"?1\"}}]}}")
+	List<ESDoctorDocument> findbyUserUId(String userUId, boolean isDoctorListed);
+
 }
