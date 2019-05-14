@@ -1241,6 +1241,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			criteria2.orOperator(new Criteria("refer.reference").regex(searchTerm, "i"));
+			criteria3.orOperator(new Criteria("refer.reference").regex(searchTerm, "i"));
 		}
 		if (!isVisited) {
 			if (toTime != null && fromTime != null) {
