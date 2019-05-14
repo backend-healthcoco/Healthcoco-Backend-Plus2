@@ -73,6 +73,15 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
 	private List<String> servicesValue;//value
 	
+	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	private List<String> formattedParentSpecialities;
+
+	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	private List<String> formattedSpecialitiesValue;//value
+
+	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	private List<String> formattedServicesValue;//value
+	
 	@Field(type = FieldType.Nested)
 	private DoctorExperience experience;
 
@@ -439,6 +448,37 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 		this.servicesValue = servicesValue;
 	}
 
+	public List<String> getFormattedParentSpecialities() {
+		return formattedParentSpecialities;
+	}
+
+	public void setFormattedParentSpecialities(List<String> formattedParentSpecialities) {
+		this.formattedParentSpecialities = formattedParentSpecialities;
+	}
+
+	public List<String> getFormattedSpecialitiesValue() {
+		return formattedSpecialitiesValue;
+	}
+
+	public void setFormattedSpecialitiesValue(List<String> formattedSpecialitiesValue) {
+		this.formattedSpecialitiesValue = formattedSpecialitiesValue;
+	}
+
+	public List<String> getFormattedServicesValue() {
+		return formattedServicesValue;
+	}
+
+	public void setFormattedServicesValue(List<String> formattedServicesValue) {
+		this.formattedServicesValue = formattedServicesValue;
+	}
+
+	@Override
+	public int compareTo(ESDoctorDocument o) {
+		if(this.rankingCount < o.rankingCount)return 0;
+		else if(this.rankingCount < o.rankingCount)return -1;
+		else return 1;
+	}
+
 	@Override
 	public String toString() {
 		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
@@ -447,20 +487,14 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 				+ ", revisitConsultationFee=" + revisitConsultationFee + ", workingSchedules=" + workingSchedules
 				+ ", specialities=" + specialities + ", services=" + services + ", parentSpecialities="
 				+ parentSpecialities + ", specialitiesValue=" + specialitiesValue + ", servicesValue=" + servicesValue
-				+ ", experience=" + experience + ", facility=" + facility + ", appointmentBookingNumber="
-				+ appointmentBookingNumber + ", appointmentSlot=" + appointmentSlot + ", isActive=" + isActive
-				+ ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl="
-				+ coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber="
-				+ registerNumber + ", education=" + education + ", dob=" + dob + ", distance=" + distance + ", userUId="
-				+ userUId + ", isDoctorListed=" + isDoctorListed + ", timeZone=" + timeZone + ", rankingCount="
-				+ rankingCount + ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL
-				+ "]";
-	}
-
-	@Override
-	public int compareTo(ESDoctorDocument o) {
-		if(this.rankingCount < o.rankingCount)return 0;
-		else if(this.rankingCount < o.rankingCount)return -1;
-		else return 1;
+				+ ", formattedParentSpecialities=" + formattedParentSpecialities + ", formattedSpecialitiesValue="
+				+ formattedSpecialitiesValue + ", formattedServicesValue=" + formattedServicesValue + ", experience="
+				+ experience + ", facility=" + facility + ", appointmentBookingNumber=" + appointmentBookingNumber
+				+ ", appointmentSlot=" + appointmentSlot + ", isActive=" + isActive + ", isVerified=" + isVerified
+				+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
+				+ ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber=" + registerNumber
+				+ ", education=" + education + ", dob=" + dob + ", distance=" + distance + ", userUId=" + userUId
+				+ ", isDoctorListed=" + isDoctorListed + ", timeZone=" + timeZone + ", rankingCount=" + rankingCount
+				+ ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL+ "]";
 	}
 }

@@ -19,6 +19,12 @@ public class ESSpecialityDocument {
     private String superSpeciality;
 
     @Field(type = FieldType.String)
+    private String formattedSpeciality;
+
+    @Field(type = FieldType.String)
+    private String formattedSuperSpeciality;
+    
+    @Field(type = FieldType.String)
     private String code;
     
     @Field(type = FieldType.Date)
@@ -64,9 +70,26 @@ public class ESSpecialityDocument {
 		this.updatedTime = updatedTime;
 	}
 
+	public String getFormattedSpeciality() {
+		return formattedSpeciality;
+	}
+
+	public void setFormattedSpeciality(String formattedSpeciality) {
+		this.formattedSpeciality = formattedSpeciality;
+	}
+
+	public String getFormattedSuperSpeciality() {
+		return formattedSuperSpeciality;
+	}
+
+	public void setFormattedSuperSpeciality(String formattedSuperSpeciality) {
+		this.formattedSuperSpeciality = formattedSuperSpeciality;
+	}
+
 	@Override
 	public String toString() {
-		return "ESSpecialityDocument [id=" + id + ", speciality=" + speciality + ", superSpeciality="
-				+ superSpeciality + ", code=" + code + ", updatedTime=" + updatedTime + "]";
+		return "ESSpecialityDocument [id=" + id + ", speciality=" + speciality + ", superSpeciality=" + superSpeciality
+				+ ", formattedSpeciality=" + formattedSpeciality + ", formattedSuperSpeciality="
+				+ formattedSuperSpeciality + ", code=" + code + ", updatedTime=" + updatedTime + "]";
 	}
 }

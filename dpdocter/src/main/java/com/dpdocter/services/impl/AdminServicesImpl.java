@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
@@ -1021,11 +1022,18 @@ public class AdminServicesImpl implements AdminServices {
 		try {
 			List<DoctorCollection> doctorCollections = doctorRepository.findAll();
 			for(DoctorCollection doctorCollection : doctorCollections) {
-				List<ServicesCollection> servicesCollections = servicesRepository.findbySpeciality(doctorCollection.getSpecialities());
-				Set<ObjectId> services = (Set<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
-				if(doctorCollection.getServices()!= null)doctorCollection.getServices().addAll(services);
-				else doctorCollection.setServices(services);
-				transnationalService.checkDoctor(doctorCollection.getUserId(), null);
+				if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+					List<ServicesCollection> servicesCollections = servicesRepository.findbySpeciality(doctorCollection.getSpecialities());
+					List<ObjectId> services = (List<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
+					
+					Set<ObjectId> servicesIds = new HashSet<>(services);
+				//	if(doctorCollection.getServices()!= null)doctorCollection.getServices().addAll(services);
+				//	else
+					doctorCollection.setServices(servicesIds);
+					doctorCollection = doctorRepository.save(doctorCollection);
+					transnationalService.checkDoctor(doctorCollection.getUserId(), null);
+				}
+				
 			}
 			
 		}catch (Exception e) {

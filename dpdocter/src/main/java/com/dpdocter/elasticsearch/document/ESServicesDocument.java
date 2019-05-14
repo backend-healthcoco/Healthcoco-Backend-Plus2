@@ -18,11 +18,17 @@ public class ESServicesDocument {
     @Field(type = FieldType.String)
     private String service;
     
+    @Field(type = FieldType.String)
+    private String formattedService;
+    
     @Field(type = FieldType.Date)
     private Date updatedTime = new Date();
 
 	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
     private List<String> specialities;
+    
+	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+    private List<String> formattedSpecialities;
     
 	@MultiField(mainField = @Field(type = FieldType.String))
     private List<String> specialityIds;
@@ -67,9 +73,27 @@ public class ESServicesDocument {
 		this.specialityIds = specialityIds;
 	}
 
+	public String getFormattedService() {
+		return formattedService;
+	}
+
+	public void setFormattedService(String formattedService) {
+		this.formattedService = formattedService;
+	}
+
+	public List<String> getFormattedSpecialities() {
+		return formattedSpecialities;
+	}
+
+	public void setFormattedSpecialities(List<String> formattedSpecialities) {
+		this.formattedSpecialities = formattedSpecialities;
+	}
+
 	@Override
 	public String toString() {
-		return "ESServicesDocument [id=" + id + ", service=" + service + ", updatedTime=" + updatedTime
-				+ ", specialities=" + specialities + ", specialityIds=" + specialityIds + "]";
+		return "ESServicesDocument [id=" + id + ", service=" + service + ", formattedService=" + formattedService
+				+ ", updatedTime=" + updatedTime + ", specialities=" + specialities + ", formattedSpecialities="
+				+ formattedSpecialities + ", specialityIds=" + specialityIds + "]";
 	}
+
 }
