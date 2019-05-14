@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,8 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -233,6 +236,7 @@ import com.dpdocter.repository.PresentingComplaintNosesRepository;
 import com.dpdocter.repository.PresentingComplaintOralCavityRepository;
 import com.dpdocter.repository.PresentingComplaintThroatRepository;
 import com.dpdocter.repository.ProcedureNoteRepository;
+import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.ProvisionalDiagnosisRepository;
 import com.dpdocter.repository.RecipeRepository;
 import com.dpdocter.repository.ReferenceRepository;
@@ -512,7 +516,11 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Value("${send.sms}")
 	private Boolean sendSMS;
 
+	@Autowired
+	private ProfessionalMembershipRepository professionalMembershipRepository;
+	
 	@Scheduled(cron = "00 00 3 * * *", zone = "IST")
+//	@Scheduled(fixedDelay = 1800)
 	@Override
 	@Transactional
 	public void checkResources() {
@@ -1764,6 +1772,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	public void checkDoctor(ObjectId resourceId, ObjectId locationId) {
@@ -1845,6 +1854,16 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					if (locationCollection != null)
 						doctorDocument.setLocationId(locationCollection.getId().toString());
 
+					if (doctorCollection.getProfessionalMemberships() != null
+							&& !doctorCollection.getProfessionalMemberships().isEmpty()) {
+						List<String> professionalMemberships = (List<String>) CollectionUtils.collect(
+								(Collection<?>) professionalMembershipRepository
+										.findAll(doctorCollection.getProfessionalMemberships()),
+								new BeanToPropertyValueTransformer("membership"));
+						doctorDocument.setProfessionalMemberships(professionalMemberships);
+					}
+
+					
 					esRegistrationService.addDoctor(doctorDocument);
 				}
 			}

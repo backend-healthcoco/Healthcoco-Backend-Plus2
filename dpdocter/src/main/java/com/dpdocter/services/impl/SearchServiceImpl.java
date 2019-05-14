@@ -5,14 +5,13 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -22,6 +21,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
@@ -29,24 +29,26 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.Feedback;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
-import com.dpdocter.elasticsearch.document.ESServicesDocument;
-import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.repository.ESCityRepository;
-import com.dpdocter.elasticsearch.repository.ESServicesRepository;
-import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
+import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.response.DoctorClinicProfileBySlugUrlResponse;
+import com.dpdocter.response.DoctorProfileBySlugUrlResponse;
 import com.dpdocter.response.ResourcesCountResponse;
 import com.dpdocter.response.SearchDoctorResponse;
 import com.dpdocter.response.SearchLandmarkLocalityResponse;
@@ -58,15 +60,18 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class SearchServiceImpl implements SearchService {
 
-	@Autowired
-	private ESSpecialityRepository esSpecialityRepository;
-
-	@Autowired
-	private ESServicesRepository esServicesRepository;
+//	@Autowired
+//	private ESSpecialityRepository esSpecialityRepository;
+//
+//	@Autowired
+//	private ESServicesRepository esServicesRepository;
 
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
 
+	@Autowired
+	private ESDoctorRepository esDoctorRepository;
+	
 	@Autowired
 	private ESCityRepository esCityRepository;
 	
@@ -325,51 +330,51 @@ public class SearchServiceImpl implements SearchService {
 		return response;
 	}
 	
-	@SuppressWarnings("unchecked")
-	private QueryBuilder createServiceFilter(String service) {
-		QueryBuilder queryBuilder = null;
-			List<ESServicesDocument> esServicesDocuments = esServicesRepository.findByQueryAnnotation(service);
-			
-			if (esServicesDocuments != null) {
-				Collection<String> serviceIds = CollectionUtils.collect(esServicesDocuments,
-						new BeanToPropertyValueTransformer("id"));
-				if (serviceIds == null)
-					serviceIds = CollectionUtils.EMPTY_COLLECTION;
-				queryBuilder = QueryBuilders.termsQuery("services", serviceIds);
-			}
-		return queryBuilder;
-	}
-
-	@SuppressWarnings("unchecked")
-	private QueryBuilder createSpecialityFilter(String speciality) {
-		QueryBuilder queryBuilder = null;
-			if (speciality.equalsIgnoreCase("GYNECOLOGIST")) {
-				speciality = "GYNAECOLOGIST";
-			}else if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")) {
-				speciality = "FAMILY PHYSICIAN";
-			} else if (speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
-				speciality = "GENERAL PHYSICIAN";
-			}
-			List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository.findByQueryAnnotation(speciality);
-			
-			List<ESSpecialityDocument> esSpecialityDocuments2 = new LinkedList<ESSpecialityDocument>(esSpecialityDocuments);
-
-//			if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN") || speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
-//
-//				esSpecialityDocuments = esSpecialityRepository.findByQueryAnnotation(speciality);
-//				for (ESSpecialityDocument esSpecialityDocument : esSpecialityDocuments) {
-//					if (esSpecialityDocument != null) {
-//						esSpecialityDocuments2.add(esSpecialityDocuments2.size(), esSpecialityDocument);
-//					}
-//				}
+//	@SuppressWarnings("unchecked")
+//	private QueryBuilder createServiceFilter(String service) {
+//		QueryBuilder queryBuilder = null;
+//			List<ESServicesDocument> esServicesDocuments = esServicesRepository.findByQueryAnnotation(service);
+//			
+//			if (esServicesDocuments != null) {
+//				Collection<String> serviceIds = CollectionUtils.collect(esServicesDocuments,
+//						new BeanToPropertyValueTransformer("id"));
+//				if (serviceIds == null)
+//					serviceIds = CollectionUtils.EMPTY_COLLECTION;
+//				queryBuilder = QueryBuilders.termsQuery("services", serviceIds);
 //			}
-			if (esSpecialityDocuments2 != null) {
-				Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments2, new BeanToPropertyValueTransformer("id"));
-				if (specialityIds == null)specialityIds = CollectionUtils.EMPTY_COLLECTION;
-				queryBuilder = QueryBuilders.termsQuery("specialities", specialityIds);
-			}
-		return queryBuilder;
-	}
+//		return queryBuilder;
+//	}
+//
+//	@SuppressWarnings("unchecked")
+//	private QueryBuilder createSpecialityFilter(String speciality) {
+//		QueryBuilder queryBuilder = null;
+//			if (speciality.equalsIgnoreCase("GYNECOLOGIST")) {
+//				speciality = "GYNAECOLOGIST";
+//			}else if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")) {
+//				speciality = "FAMILY PHYSICIAN";
+//			} else if (speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
+//				speciality = "GENERAL PHYSICIAN";
+//			}
+//			List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository.findByQueryAnnotation(speciality);
+//			
+//			List<ESSpecialityDocument> esSpecialityDocuments2 = new LinkedList<ESSpecialityDocument>(esSpecialityDocuments);
+//
+////			if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN") || speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
+////
+////				esSpecialityDocuments = esSpecialityRepository.findByQueryAnnotation(speciality);
+////				for (ESSpecialityDocument esSpecialityDocument : esSpecialityDocuments) {
+////					if (esSpecialityDocument != null) {
+////						esSpecialityDocuments2.add(esSpecialityDocuments2.size(), esSpecialityDocument);
+////					}
+////				}
+////			}
+//			if (esSpecialityDocuments2 != null) {
+//				Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments2, new BeanToPropertyValueTransformer("id"));
+//				if (specialityIds == null)specialityIds = CollectionUtils.EMPTY_COLLECTION;
+//				queryBuilder = QueryBuilders.termsQuery("specialities", specialityIds);
+//			}
+//		return queryBuilder;
+//	}
 
 	private QueryBuilder createFacilityBuilder(Boolean booking, Boolean calling) {
 		QueryBuilder queryBuilder = null;
@@ -721,5 +726,87 @@ public class SearchServiceImpl implements SearchService {
 			throw new BusinessException(ServiceError.Unknown,"Error While searching landmak and localities : " + e.getMessage());
 		}
 		return response;
+	}
+
+	@Override
+	public DoctorProfileBySlugUrlResponse getDoctorProfileBySlugUrl(String userUId, String slugURL) {
+		DoctorProfileBySlugUrlResponse doctorProfile = null;
+		List<DoctorClinicProfileBySlugUrlResponse> clinicProfile = new ArrayList<DoctorClinicProfileBySlugUrlResponse>();
+		try {
+			
+			List<ESDoctorDocument> doctorDocuments = esDoctorRepository.findbySlugUrl(slugURL, true);
+			if(doctorDocuments == null || doctorDocuments.isEmpty()) {
+				doctorDocuments = esDoctorRepository.findbyUserUId(userUId, true);;
+			}
+			
+			if(doctorDocuments == null || doctorDocuments.isEmpty()) return null;
+				
+			for (ESDoctorDocument doctorDocument : doctorDocuments) {
+				
+				if(doctorProfile == null) {
+					doctorProfile = new DoctorProfileBySlugUrlResponse();
+					BeanUtil.map(doctorDocument, doctorProfile);
+					doctorProfile.setDoctorId(doctorDocument.getUserId());
+					doctorProfile.setSpecialities(doctorDocument.getSpecialitiesValue());
+					doctorProfile.setParentSpecialities(doctorDocument.getParentSpecialities());
+					doctorProfile.setServices(doctorDocument.getServicesValue());
+				}
+							
+				DoctorClinicProfileBySlugUrlResponse doctorClinic = new DoctorClinicProfileBySlugUrlResponse();
+				BeanUtil.map(doctorDocument, doctorClinic);
+				String address = (!DPDoctorUtils.anyStringEmpty(doctorDocument.getStreetAddress())
+						? doctorDocument.getStreetAddress() + ", "
+						: "")
+						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLandmarkDetails())
+								? doctorDocument.getLandmarkDetails() + ", "
+								: "")
+						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLocality())
+								? doctorDocument.getLocality() + ", "
+								: "")
+						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCity())
+								? doctorDocument.getCity() + ", "
+								: "")
+						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getState())
+								? doctorDocument.getState() + ", "
+								: "")
+						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCountry())
+								? doctorDocument.getCountry() + ", "
+								: "")
+						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getPostalCode())
+								? doctorDocument.getPostalCode()
+								: "");
+
+				if (address.charAt(address.length() - 2) == ',') {
+					address = address.substring(0, address.length() - 2);
+				}
+
+				doctorClinic.setClinicAddress(address);
+				doctorClinic.setDoctorId(doctorDocument.getUserId());
+				org.springframework.data.mongodb.core.query.Criteria criteria = new org.springframework.data.mongodb.core.query.Criteria("doctorId")
+						.is(new ObjectId(doctorDocument.getUserId()))
+						.and("locationId").is(new ObjectId(doctorDocument.getLocationId()))
+						.and("hospitalId").is(new ObjectId(doctorDocument.getHospitalId()));
+				
+				List<Feedback> feedbacks = mongoTemplate
+						.aggregate(
+								Aggregation.newAggregation(Aggregation.match(criteria.and("isVisible").is(true)),
+										Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+										Aggregation.skip((0) * 5), Aggregation.limit(5)),
+								FeedbackCollection.class, Feedback.class)
+						.getMappedResults();
+				doctorClinic.setFeedbacks(feedbacks);
+				doctorClinic.setNoOfFeedbacks((int) mongoTemplate.count(new Query(criteria), FeedbackCollection.class));
+				
+				clinicProfile.add(doctorClinic);	
+			}	
+			doctorProfile.setClinicProfile(clinicProfile);
+			
+			} catch (BusinessException be) {
+				throw be;
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new BusinessException(ServiceError.Unknown, "Error Getting Doctor Profile by userUId");
+			}
+			return doctorProfile;
 	}
 }

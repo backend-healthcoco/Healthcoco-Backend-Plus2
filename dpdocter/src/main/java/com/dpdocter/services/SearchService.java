@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.response.DoctorProfileBySlugUrlResponse;
 import com.dpdocter.response.ResourcesCountResponse;
 import com.dpdocter.response.SearchDoctorResponse;
 import com.dpdocter.response.SearchLandmarkLocalityResponse;
@@ -16,5 +17,7 @@ public interface SearchService {
 	List<ResourcesCountResponse> getResourcesCountByCity(String city, List<String> type);
 
 	List<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(String city, int page, int size, String searchTerm);
+
+	DoctorProfileBySlugUrlResponse getDoctorProfileBySlugUrl(String userUId, String slugURL);
 
 }
