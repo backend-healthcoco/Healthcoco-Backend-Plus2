@@ -27,6 +27,8 @@ import com.dpdocter.enums.PackageType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.BlogResponse;
+import com.dpdocter.response.DoctorClinicProfileBySlugUrlResponse;
+import com.dpdocter.response.DoctorProfileBySlugUrlResponse;
 import com.dpdocter.response.ResourcesCountResponse;
 import com.dpdocter.response.SearchDoctorResponse;
 import com.dpdocter.services.BlogService;
@@ -212,13 +214,14 @@ public class SearchApi {
 	@Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL)
-	public Response<DoctorProfile> getDoctorProfile(@PathParam("slugURL") String slugURL,
+	public Response<DoctorProfileBySlugUrlResponse> getDoctorProfileBySlugUrl(@PathParam("slugURL") String slugURL,
 			@PathParam("userUId") String userUId) {
 		if (DPDoctorUtils.anyStringEmpty(userUId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
-		DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(userUId);
+		
+		DoctorProfileBySlugUrlResponse doctorProfile = searchService.getDoctorProfileBySlugUrl(userUId, slugURL);
 		if (doctorProfile != null) {
 			if (doctorProfile.getImageUrl() != null) {
 				doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));
@@ -226,28 +229,14 @@ public class SearchApi {
 			if (doctorProfile.getThumbnailUrl() != null) {
 				doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getThumbnailUrl()));
 			}
-			if (doctorProfile.getCoverImageUrl() != null) {
-				doctorProfile.setCoverImageUrl(getFinalImageURL(doctorProfile.getCoverImageUrl()));
-			}
-			if (doctorProfile.getCoverThumbnailImageUrl() != null) {
-				doctorProfile.setCoverThumbnailImageUrl(getFinalImageURL(doctorProfile.getCoverThumbnailImageUrl()));
-			}
+			
 			if (doctorProfile.getClinicProfile() != null & !doctorProfile.getClinicProfile().isEmpty()) {
-				for (DoctorClinicProfile clinicProfile : doctorProfile.getClinicProfile()) {
+				for (DoctorClinicProfileBySlugUrlResponse clinicProfile : doctorProfile.getClinicProfile()) {
 					if (clinicProfile.getImages() != null) {
-						for (ClinicImage clinicImage : clinicProfile.getImages()) {
-							if (clinicImage.getImageUrl() != null)
-								clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
-							if (clinicImage.getThumbnailUrl() != null)
-								clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
+						for (String clinicImage : clinicProfile.getImages()) {
+							if (clinicImage != null)
+								clinicImage = getFinalImageURL(clinicImage);
 						}
-					}
-					if (clinicProfile.getLogoUrl() != null) {
-						clinicProfile.setLogoUrl(getFinalImageURL(clinicProfile.getLogoUrl()));
-					}
-
-					if (clinicProfile.getLogoThumbnailUrl() != null) {
-						clinicProfile.setLogoThumbnailUrl(getFinalImageURL(clinicProfile.getLogoThumbnailUrl()));
 					}
 				}
 			}
@@ -256,7 +245,7 @@ public class SearchApi {
 			doctorProfileService.updateDoctorProfileViews(doctorProfile.getDoctorId());
 
 		}
-		Response<DoctorProfile> response = new Response<DoctorProfile>();
+		Response<DoctorProfileBySlugUrlResponse> response = new Response<DoctorProfileBySlugUrlResponse>();
 		response.setData(doctorProfile);
 		return response;
 	}

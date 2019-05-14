@@ -3,6 +3,7 @@ package com.dpdocter.elasticsearch.document;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -15,6 +16,7 @@ import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;
+import com.dpdocter.beans.DoctorRegistrationDetail;
 import com.dpdocter.beans.Education;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
@@ -117,6 +119,12 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	@Field(type = FieldType.Nested)
 	private List<Education> education;
+	
+	@Field(type = FieldType.Nested)
+	private List<DoctorRegistrationDetail> registrationDetails;
+	
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> professionalMemberships;
 
 	@Field(type = FieldType.Nested)
 	private DOB dob;
@@ -517,6 +525,22 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 			return 1;
 	}
 
+	public List<DoctorRegistrationDetail> getRegistrationDetails() {
+		return registrationDetails;
+	}
+
+	public void setRegistrationDetails(List<DoctorRegistrationDetail> registrationDetails) {
+		this.registrationDetails = registrationDetails;
+	}
+
+	public List<String> getProfessionalMemberships() {
+		return professionalMemberships;
+	}
+
+	public void setProfessionalMemberships(List<String> professionalMemberships) {
+		this.professionalMemberships = professionalMemberships;
+	}
+
 	@Override
 	public String toString() {
 		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
@@ -531,9 +555,11 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 				+ ", appointmentSlot=" + appointmentSlot + ", isActive=" + isActive + ", isVerified=" + isVerified
 				+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
 				+ ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber=" + registerNumber
-				+ ", education=" + education + ", dob=" + dob + ", distance=" + distance + ", userUId=" + userUId
-				+ ", isDoctorListed=" + isDoctorListed + ", timeZone=" + timeZone + ", rankingCount=" + rankingCount
-				+ ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL=" + doctorSlugURL
-				+ ", isNutritionist=" + isNutritionist + ", mrCode=" + mrCode + ", divisionIds=" + divisionIds + "]";
+				+ ", education=" + education + ", registrationDetails=" + registrationDetails
+				+ ", professionalMemberships=" + professionalMemberships + ", dob=" + dob + ", distance=" + distance
+				+ ", userUId=" + userUId + ", isDoctorListed=" + isDoctorListed + ", timeZone=" + timeZone
+				+ ", rankingCount=" + rankingCount + ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL="
+				+ doctorSlugURL + ", isNutritionist=" + isNutritionist + ", mrCode=" + mrCode + ", divisionIds="
+				+ divisionIds + "]";
 	}
 }
