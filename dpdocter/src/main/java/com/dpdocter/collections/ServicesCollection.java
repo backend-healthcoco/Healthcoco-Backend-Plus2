@@ -16,10 +16,16 @@ public class ServicesCollection extends GenericCollection {
     private String service;
 
     @Field
+    private String formattedService;
+    
+    @Field
     private Boolean toShow = true;
 
     @Field
     private List<String> specialities;
+    
+    @Field
+    private List<String> formattedSpecialities;
     
     @Field
     private List<ObjectId> specialityIds;
@@ -64,9 +70,27 @@ public class ServicesCollection extends GenericCollection {
 		this.specialityIds = specialityIds;
 	}
 
+	public String getFormattedService() {
+		return formattedService;
+	}
+
+	public void setFormattedService(String formattedService) {
+		this.formattedService = formattedService;
+	}
+
+	public List<String> getFormattedSpecialities() {
+		return formattedSpecialities;
+	}
+
+	public void setFormattedSpecialities(List<String> formattedSpecialities) {
+		this.formattedSpecialities = formattedSpecialities;
+	}
+
 	@Override
 	public String toString() {
-		return "ServicesCollection [id=" + id + ", service=" + service + ", toShow=" + toShow + ", specialities="
-				+ specialities + ", specialityIds=" + specialityIds + "]";
+		return "ServicesCollection [id=" + id + ", service=" + service + ", formattedService=" + formattedService
+				+ ", toShow=" + toShow + ", specialities=" + specialities + ", formattedSpecialities="
+				+ formattedSpecialities + ", specialityIds=" + specialityIds + "]";
 	}
+
 }

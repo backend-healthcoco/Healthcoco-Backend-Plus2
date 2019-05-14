@@ -17,6 +17,12 @@ public class SpecialityCollection extends GenericCollection {
     private String superSpeciality;
 
     @Field
+    private String formattedSpeciality;
+
+    @Field
+    private String formattedSuperSpeciality;
+    
+    @Field
     private Boolean toShow = true;
 
     public ObjectId getId() {
@@ -51,10 +57,27 @@ public class SpecialityCollection extends GenericCollection {
 		this.toShow = toShow;
 	}
 
+	public String getFormattedSpeciality() {
+		return formattedSpeciality;
+	}
+
+	public void setFormattedSpeciality(String formattedSpeciality) {
+		this.formattedSpeciality = formattedSpeciality;
+	}
+
+	public String getFormattedSuperSpeciality() {
+		return formattedSuperSpeciality;
+	}
+
+	public void setFormattedSuperSpeciality(String formattedSuperSpeciality) {
+		this.formattedSuperSpeciality = formattedSuperSpeciality;
+	}
+
 	@Override
 	public String toString() {
 		return "SpecialityCollection [id=" + id + ", speciality=" + speciality + ", superSpeciality=" + superSpeciality
-				+ ", toShow=" + toShow + "]";
+				+ ", formattedSpeciality=" + formattedSpeciality + ", formattedSuperSpeciality="
+				+ formattedSuperSpeciality + ", toShow=" + toShow + "]";
 	}
 
 }
