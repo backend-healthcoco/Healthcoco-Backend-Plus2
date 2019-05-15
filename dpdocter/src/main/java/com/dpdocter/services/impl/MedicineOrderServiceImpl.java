@@ -41,6 +41,7 @@ import com.dpdocter.request.MedicineOrderAddEditAddressRequest;
 import com.dpdocter.request.MedicineOrderPaymentAddEditRequest;
 import com.dpdocter.request.MedicineOrderPreferenceAddEditRequest;
 import com.dpdocter.request.MedicineOrderRXAddEditRequest;
+import com.dpdocter.request.MedicineOrderRxImageRequest;
 import com.dpdocter.request.UpdateOrderStatusRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
@@ -139,6 +140,42 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				}
 				medicineOrderCollection.setItems(items);
 			}
+			medicineOrderCollection.setIsPrescriptionRequired(request.getIsPrescriptionRequired());
+
+			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
+			
+			if (medicineOrderCollection != null) {
+				medicineOrder = new MedicineOrder();
+				BeanUtil.map(medicineOrderCollection, medicineOrder);
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			logger.error(e);
+		}
+		return medicineOrder;
+	}
+	
+	@Override
+	@Transactional
+	public MedicineOrder addeditRxImage(MedicineOrderRxImageRequest request) {
+		MedicineOrder medicineOrder = null;
+		MedicineOrderCollection medicineOrderCollection = null;
+
+		try {
+
+			if(request.getId() != null)
+			{
+				medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getId()));
+			}
+
+			if (medicineOrderCollection == null) {
+				medicineOrderCollection = new MedicineOrderCollection();
+				medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
+			}
+
+			medicineOrderCollection.setRxImage(request.getRxImage());
 
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
 			
@@ -216,6 +253,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			medicineOrderCollection.setCashHandlingCharges(request.getCashHandlingCharges());
 			medicineOrderCollection.setCallingPreference(request.getCallingPreference());
 			medicineOrderCollection.setOrderStatus(request.getOrderStatus());
+			medicineOrderCollection.setIsPrescriptionRequired(request.getIsPrescriptionRequired());
 			
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
 			if (medicineOrderCollection != null) {

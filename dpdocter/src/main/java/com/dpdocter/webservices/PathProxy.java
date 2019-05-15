@@ -2136,6 +2136,7 @@ public interface PathProxy {
 		public static final String GET_TRACKING_DETAILS= "/getTrackingDetails/{orderId}";
 		public static final String GET_DRUG_INFO_LIST= "/getDrugInfoList";
 		public static final String CLEAR_CART = "/clearCart/{id}";
+		public static final String MEDICINE_ORDER_ADD_EDIT_RX_IMAGE = "/addEditRxImage";
 		
 	}
 

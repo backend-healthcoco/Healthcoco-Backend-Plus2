@@ -33,6 +33,7 @@ public class MedicineOrder extends GenericCollection {
 	private String callingPreference;
 	private Boolean discarded = false;
 	private Long cancellationDate;
+	private Boolean isPrescriptionRequired;
 
 	public String getId() {
 		return id;
@@ -224,6 +225,14 @@ public class MedicineOrder extends GenericCollection {
 
 	public void setCollectionBoy(CollectionBoy collectionBoy) {
 		this.collectionBoy = collectionBoy;
+	}
+
+	public Boolean getIsPrescriptionRequired() {
+		return isPrescriptionRequired;
+	}
+
+	public void setIsPrescriptionRequired(Boolean isPrescriptionRequired) {
+		this.isPrescriptionRequired = isPrescriptionRequired;
 	}
 
 	@Override

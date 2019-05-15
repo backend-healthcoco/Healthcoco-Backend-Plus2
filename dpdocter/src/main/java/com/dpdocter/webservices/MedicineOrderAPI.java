@@ -28,6 +28,7 @@ import com.dpdocter.request.MedicineOrderAddEditAddressRequest;
 import com.dpdocter.request.MedicineOrderPaymentAddEditRequest;
 import com.dpdocter.request.MedicineOrderPreferenceAddEditRequest;
 import com.dpdocter.request.MedicineOrderRXAddEditRequest;
+import com.dpdocter.request.MedicineOrderRxImageRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.MedicineOrderService;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -80,6 +81,23 @@ public class MedicineOrderAPI {
 		response.setData(medicineOrder);
 		return response;
 	}
+	
+	@POST
+	@Path(value = PathProxy.OrderMedicineUrls.MEDICINE_ORDER_ADD_EDIT_RX_IMAGE)
+	@ApiOperation(value = PathProxy.OrderMedicineUrls.MEDICINE_ORDER_ADD_EDIT_RX_IMAGE, notes = PathProxy.OrderMedicineUrls.MEDICINE_ORDER_ADD_EDIT_RX_IMAGE)
+	public Response<MedicineOrder> addEditRXImage(MedicineOrderRxImageRequest request) {
+
+		if(request == null)
+		{
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+		}
+		
+		MedicineOrder medicineOrder = medicineOrderService.addeditRxImage(request);
+		Response<MedicineOrder> response = new Response<MedicineOrder>();
+		response.setData(medicineOrder);
+		return response;
+	}
+	
 	
 	@POST
 	@Path(value = PathProxy.OrderMedicineUrls.MEDICINE_ORDER_ADD_EDIT_ADDRESS)

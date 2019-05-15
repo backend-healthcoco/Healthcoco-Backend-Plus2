@@ -16,6 +16,7 @@ public class MedicineOrderPaymentAddEditRequest {
 	private PaymentMode paymentMode = PaymentMode.COD;
 	private OrderStatus orderStatus;
 	private String callingPreference;
+	private Boolean isPrescriptionRequired;
 
 	public String getId() {
 		return id;
@@ -103,6 +104,14 @@ public class MedicineOrderPaymentAddEditRequest {
 
 	public void setCashHandlingCharges(Float cashHandlingCharges) {
 		this.cashHandlingCharges = cashHandlingCharges;
+	}
+
+	public Boolean getIsPrescriptionRequired() {
+		return isPrescriptionRequired;
+	}
+
+	public void setIsPrescriptionRequired(Boolean isPrescriptionRequired) {
+		this.isPrescriptionRequired = isPrescriptionRequired;
 	}
 
 }

@@ -11,6 +11,7 @@ import com.dpdocter.request.MedicineOrderAddEditAddressRequest;
 import com.dpdocter.request.MedicineOrderPaymentAddEditRequest;
 import com.dpdocter.request.MedicineOrderPreferenceAddEditRequest;
 import com.dpdocter.request.MedicineOrderRXAddEditRequest;
+import com.dpdocter.request.MedicineOrderRxImageRequest;
 import com.dpdocter.request.UpdateOrderStatusRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -53,5 +54,7 @@ public interface MedicineOrderService {
 			List<String> status);
 
 	MedicineOrder updateStatus(UpdateOrderStatusRequest request);
+
+	MedicineOrder addeditRxImage(MedicineOrderRxImageRequest request);
 
 }
