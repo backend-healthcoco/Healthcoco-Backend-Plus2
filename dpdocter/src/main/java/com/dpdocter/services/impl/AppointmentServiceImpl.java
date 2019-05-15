@@ -1939,6 +1939,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							if (collection.getType().getType().equals(AppointmentType.APPOINTMENT.getType())) {
 								patientCard = collection.getPatientCard();
 								if (patientCard != null) {
+									patientCard.setBackendPatientId(patientCard.getId());
 									patientCard.setId(patientCard.getUserId());
 
 									if (patientCard.getUser() != null) {

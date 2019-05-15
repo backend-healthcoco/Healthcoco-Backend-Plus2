@@ -75,6 +75,8 @@ public class Patient {
 
 	private String motherName;
 
+	private String backendPatientId;
+
 	public String getLocalPatientName() {
 		return localPatientName;
 	}
@@ -346,21 +348,29 @@ public class Patient {
 	public void setMotherName(String motherName) {
 		this.motherName = motherName;
 	}
+	
+	public String getBackendPatientId() {
+		return backendPatientId;
+	}
+
+	public void setBackendPatientId(String backendPatientId) {
+		this.backendPatientId = backendPatientId;
+	}
 
 	@Override
 	public String toString() {
 		return "Patient [firstName=" + firstName + ", localPatientName=" + localPatientName + ", patientId=" + patientId
 				+ ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations=" + relations
-				+ ", emailAddress=" + emailAddress + ", doctorId=" + doctorId + ", addressId=" + addressId
-				+ ", secMobile=" + secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
-				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName="
-				+ insuranceName + ", notes=" + notes + ", isDataAvailableWithOtherDoctor="
-				+ isDataAvailableWithOtherDoctor + ", isPatientOTPVerified=" + isPatientOTPVerified + ", address="
-				+ address + ", PID=" + PID + ", gender=" + gender + ", dob=" + dob + ", consultantDoctorIds="
-				+ consultantDoctorIds + ", medicalQuestionAnswers=" + medicalQuestionAnswers
+				+ ", emailAddress=" + emailAddress + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId="
+				+ adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId
+				+ ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes
+				+ ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor + ", isPatientOTPVerified="
+				+ isPatientOTPVerified + ", address=" + address + ", PID=" + PID + ", gender=" + gender + ", dob=" + dob
+				+ ", consultantDoctorIds=" + consultantDoctorIds + ", medicalQuestionAnswers=" + medicalQuestionAnswers
 				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", personalInformation="
 				+ personalInformation + ", registrationDate=" + registrationDate + ", isPatientDiscarded="
-				+ isPatientDiscarded + ", PNUM=" + PNUM + "]";
+				+ isPatientDiscarded + ", PNUM=" + PNUM + ", isChild=" + isChild + ", fatherName=" + fatherName
+				+ ", motherName=" + motherName + ", backendPatientId=" + backendPatientId + "]";
 	}
-
 }

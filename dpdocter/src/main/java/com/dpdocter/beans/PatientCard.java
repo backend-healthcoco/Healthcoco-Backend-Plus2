@@ -96,6 +96,8 @@ public class PatientCard extends GenericCollection {
 	private String fatherName;
 
 	private String motherName;
+		
+	private String backendPatientId;
 
 	public PatientCollection getPatient() {
 		return patient;
@@ -530,6 +532,14 @@ public class PatientCard extends GenericCollection {
 	public void setMotherName(String motherName) {
 		this.motherName = motherName;
 	}
+	
+	public String getBackendPatientId() {
+		return backendPatientId;
+	}
+
+	public void setBackendPatientId(String backendPatientId) {
+		this.backendPatientId = backendPatientId;
+	}
 
 	@Override
 	public String toString() {
@@ -547,10 +557,10 @@ public class PatientCard extends GenericCollection {
 				+ ", consultantDoctorIds=" + consultantDoctorIds + ", registrationDate=" + registrationDate
 				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
 				+ lifestyleQuestionAnswers + ", personalInformation=" + personalInformation + ", PNUM=" + PNUM
-				+ ", isPatientDiscarded=" + isPatientDiscarded + ", addressId=" + addressId + ", secMobile=" + secMobile
-				+ ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId="
-				+ drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes="
-				+ notes + "]";
+				+ ", patient=" + patient + ", isChild=" + isChild + ", fatherName=" + fatherName + ", motherName="
+				+ motherName + ", backendPatientId=" + backendPatientId + ", isPatientDiscarded=" + isPatientDiscarded
+				+ ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
+				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
+				+ insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes + "]";
 	}
-
 }

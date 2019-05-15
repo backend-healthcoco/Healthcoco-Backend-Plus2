@@ -30,6 +30,8 @@ public class PatientShortCard {
 	
 	private String PNUM;
 	
+	private String backendPatientId;
+
 	public String getFirstName() {
 		return firstName;
 	}
@@ -142,12 +144,20 @@ public class PatientShortCard {
 		PNUM = pNUM;
 	}
 
+	public String getBackendPatientId() {
+		return backendPatientId;
+	}
+
+	public void setBackendPatientId(String backendPatientId) {
+		this.backendPatientId = backendPatientId;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientShortCard [firstName=" + firstName + ", localPatientName=" + localPatientName + ", userName="
 				+ userName + ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", thumbnailUrl="
 				+ thumbnailUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender=" + gender
 				+ ", mobileNumber=" + mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", userId="
-				+ userId + ", PNUM=" + PNUM + "]";
+				+ userId + ", PNUM=" + PNUM + ", backendPatientId=" + backendPatientId + "]";
 	}
 }
