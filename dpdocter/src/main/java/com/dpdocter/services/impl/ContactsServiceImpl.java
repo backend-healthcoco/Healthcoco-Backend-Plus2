@@ -734,6 +734,7 @@ public class ContactsServiceImpl implements ContactsService {
 						patient.setIsDataAvailableWithOtherDoctor(true);
 					patient.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId,
 							patientCard.getUser().getId().toString()));
+					patient.setBackendPatientId(patientCard.getId());
 					registeredPatientDetail.setPatient(patient);
 					registeredPatientDetail.setAddress(patientCard.getAddress());
 

@@ -675,6 +675,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						if (patientCollection != null) {
 							PatientShortCard patientShortCard = new PatientShortCard();
 							BeanUtil.map(patientCollection, patientShortCard);
+							patientShortCard.setBackendPatientId(patientCollection.getId().toString());
 							dentalImagingResponse.setPatient(patientShortCard);
 
 							UserCollection userCollection = userRepository
