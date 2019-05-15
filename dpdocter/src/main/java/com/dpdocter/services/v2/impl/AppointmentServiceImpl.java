@@ -1608,6 +1608,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.append("cancelledByProfile", "$cancelledByProfile")
 						.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
 						.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
+						.append("isCreatedByPatient", "$isCreatedByPatient")
 						.append("patient._id", "$patientCard.userId").append("patient.userId", "$patientCard.userId")
 						.append("patient.localPatientName", "$patientCard.localPatientName")
 						.append("patient.PID", "$patientCard.PID")
@@ -1665,6 +1666,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+						.append("isCreatedByPatient", new BasicDBObject("$first", "$isCreatedByPatient"))
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 						.append("patient", new BasicDBObject("$first", "$patient"))));
 
