@@ -94,7 +94,9 @@ public class Appointment extends GenericCollection {
 	private String cancelledByProfile;
     
 	private String localPatientName;
-	
+
+	private Boolean isCreatedByPatient = false;
+
 	public String getId() {
 		return id;
 	}
@@ -415,13 +417,13 @@ public class Appointment extends GenericCollection {
 		this.localPatientName = localPatientName;
 	}
 
-	/*public RegisteredPatientDetails getRegisteredPatientDetails() {
-		return registeredPatientDetails;
+	public Boolean getIsCreatedByPatient() {
+		return isCreatedByPatient;
 	}
 
-	public void setRegisteredPatientDetails(RegisteredPatientDetails registeredPatientDetails) {
-		this.registeredPatientDetails = registeredPatientDetails;
-	}*/
+	public void setIsCreatedByPatient(Boolean isCreatedByPatient) {
+		this.isCreatedByPatient = isCreatedByPatient;
+	}
 
 	@Override
 	public String toString() {
@@ -435,10 +437,19 @@ public class Appointment extends GenericCollection {
 				+ clinicNumber + ", latitude=" + latitude + ", longitude=" + longitude + ", cancelledBy=" + cancelledBy
 				+ ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail
 				+ ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail
-				+ ", visitId=" + visitId + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt="
-				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", count=" + count
-				+ ", category=" + category + ", cancelledByProfile=" + cancelledByProfile + ", localPatientName="
-				+ localPatientName + "]";
+				+ ", visitId=" + visitId + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor="
+				+ engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt="
+				+ checkedOutAt + ", count=" + count + ", category=" + category + ", cancelledByProfile="
+				+ cancelledByProfile + ", localPatientName=" + localPatientName + ", isCreatedByPatient="
+				+ isCreatedByPatient + "]";
 	}
+
+	/*public RegisteredPatientDetails getRegisteredPatientDetails() {
+		return registeredPatientDetails;
+	}
+
+	public void setRegisteredPatientDetails(RegisteredPatientDetails registeredPatientDetails) {
+		this.registeredPatientDetails = registeredPatientDetails;
+	}*/
 
 }
