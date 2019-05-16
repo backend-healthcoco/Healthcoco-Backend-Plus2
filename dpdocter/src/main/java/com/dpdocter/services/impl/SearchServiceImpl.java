@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
-import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
@@ -174,13 +172,11 @@ public class SearchServiceImpl implements SearchService {
 				symptomDiseaseCondition = symptomDiseaseCondition.replace("treatments-for-","").replaceAll("-", " ");
 				
 				List<ESSymptomDiseaseConditionDocument> documents = esSymptomDiseaseConditionRepository.findByQueryAnnotation(symptomDiseaseCondition);
-				System.out.println(documents);
 				if(documents != null && !documents.isEmpty()) {
 					List<String> specialities = new ArrayList<>();
 					for(ESSymptomDiseaseConditionDocument document : documents) {
 						if(document.getSpecialities()!= null)specialities.addAll(document.getSpecialities());
 					}
-					System.out.println(specialities);
 					if(specialities != null && !specialities.isEmpty()) {
 						List<String> lowerStringSpecialities = new ArrayList<String>();
 						for(String lowerStringSpeciality : specialities)lowerStringSpecialities.add(lowerStringSpeciality.toLowerCase());
