@@ -12,6 +12,8 @@ import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.elasticsearch.document.ESDiseasesDocument;
 import com.dpdocter.elasticsearch.document.ESServicesDocument;
+import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
+import com.dpdocter.elasticsearch.document.ESSymptomDiseaseConditionDocument;
 import com.dpdocter.response.DiseaseListResponse;
 
 public interface ESMasterService {
@@ -41,4 +43,8 @@ public interface ESMasterService {
     void addEditDisease(ESDiseasesDocument esDiseasesDocument);
 
 	void addEditServices(ESServicesDocument esServicesDocument);
+
+	void addEditSpecialities(ESSpecialityDocument esSpecialityDocument);
+
+	void addEditSymptomDiseaseConditionDocument(ESSymptomDiseaseConditionDocument esSymptomDiseaseConditionDocument);
 }

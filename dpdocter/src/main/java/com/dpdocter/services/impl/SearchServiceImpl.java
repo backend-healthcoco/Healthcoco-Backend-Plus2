@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
-import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
@@ -38,9 +36,9 @@ import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
-import com.dpdocter.elasticsearch.document.ESServicesDocument;
-import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
+import com.dpdocter.elasticsearch.document.ESSymptomDiseaseConditionDocument;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
+import com.dpdocter.elasticsearch.repository.ESSymptomDiseaseConditionRepository;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -75,11 +73,15 @@ public class SearchServiceImpl implements SearchService {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
+	@Autowired
+	ESSymptomDiseaseConditionRepository esSymptomDiseaseConditionRepository;
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	public SearchDoctorResponse searchDoctors(int page, int size, String city, String location, String latitude,
 			String longitude, String speciality, String symptom, Boolean booking, Boolean calling, int minFee,
 			int maxFee, int minTime, int maxTime, List<String> days, String gender, int minExperience,
-			int maxExperience, String service, String locality, Boolean otherArea, String expertIn) {
+			int maxExperience, String service, String locality, Boolean otherArea, String expertIn, String symptomDiseaseCondition) {
 		List<ESDoctorDocument> esDoctorDocuments = null;
 		List<ESDoctorDocument> nearByDoctors = null;
 		SearchDoctorResponse response = null;
@@ -110,6 +112,8 @@ public class SearchServiceImpl implements SearchService {
 				
 				if(expertIn.startsWith("doctors-for-")) {
 					service = expertIn.replace("doctors-for-","").replaceAll("-", " ");
+				}else if(expertIn.startsWith("treatments-for-")) {
+					symptomDiseaseCondition = expertIn.replace("treatments-for-","").replaceAll("-", " ");
 				}
 				else {
 					speciality = expertIn.replaceAll("-", " ");
@@ -211,6 +215,34 @@ public class SearchServiceImpl implements SearchService {
 					boolQueryBuilder.must(serviceQueryBuilder);
 					boolQueryBuilderForNearByDoctors.must(serviceQueryBuilder);
 				}
+			}
+			
+			if (DPDoctorUtils.allStringsEmpty(symptomDiseaseCondition) || symptomDiseaseCondition.equalsIgnoreCase("undefined") || symptomDiseaseCondition.equalsIgnoreCase("DOCTOR")) {
+				symptomDiseaseCondition = null;
+			} else {
+				symptomDiseaseCondition = symptomDiseaseCondition.replace("treatments-for-","").replaceAll("-", " ");
+				
+				List<ESSymptomDiseaseConditionDocument> documents = esSymptomDiseaseConditionRepository.findByQueryAnnotation(symptomDiseaseCondition);
+				System.out.println(documents);
+				if(documents != null && !documents.isEmpty()) {
+					List<String> specialities = new ArrayList<>();
+					for(ESSymptomDiseaseConditionDocument document : documents) {
+						if(document.getSpecialities()!= null)specialities.addAll(document.getSpecialities());
+					}
+					System.out.println(specialities);
+					if(specialities != null && !specialities.isEmpty()) {
+						List<String> lowerStringSpecialities = new ArrayList<String>();
+						for(String lowerStringSpeciality : specialities)lowerStringSpecialities.add(lowerStringSpeciality.toLowerCase());
+						
+						QueryBuilder symptomDiseaseConditionBuilder = QueryBuilders.boolQuery()
+								.should(QueryBuilders.termsQuery("specialitiesValue", lowerStringSpecialities))
+								.should(QueryBuilders.termsQuery("parentSpecialities", lowerStringSpecialities)).minimumNumberShouldMatch(1);
+						
+						boolQueryBuilder.must(symptomDiseaseConditionBuilder);
+						boolQueryBuilderForNearByDoctors.must(symptomDiseaseConditionBuilder);
+					}
+				}
+		
 			}
 			
 			if (booking != null && calling != null && !(booking && calling)) { 
@@ -349,6 +381,16 @@ public class SearchServiceImpl implements SearchService {
 					
 					
 					response.setMetaData(unformattedService + " in ");
+				} else if (!DPDoctorUtils.anyStringEmpty(symptomDiseaseCondition) && !symptomDiseaseCondition.equalsIgnoreCase("NAGPUR")) {
+					
+					String unformattedSymptomDiseaseCondition = "Treatments for "+StringUtils.capitalize(symptomDiseaseCondition);
+					response.setUnformattedSymptomDiseaseCondition(unformattedSymptomDiseaseCondition);
+					
+					unformattedSymptomDiseaseCondition = "treatments-for-"+unformattedSymptomDiseaseCondition.toLowerCase().replaceAll(" ", "-");
+					response.setSymptomDiseaseCondition(unformattedSymptomDiseaseCondition);
+					
+					
+					response.setMetaData(unformattedSymptomDiseaseCondition + " in ");
 				} else {
 					response.setMetaData("Doctors in ");
 				}

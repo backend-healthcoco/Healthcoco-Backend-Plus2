@@ -41,6 +41,7 @@ import com.dpdocter.elasticsearch.document.ESProfessionalMembershipDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.document.ESServicesDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
+import com.dpdocter.elasticsearch.document.ESSymptomDiseaseConditionDocument;
 import com.dpdocter.elasticsearch.repository.ESCityRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
 import com.dpdocter.elasticsearch.repository.ESDiseaseRepository;
@@ -54,6 +55,7 @@ import com.dpdocter.elasticsearch.repository.ESProfessionalMembershipRepository;
 import com.dpdocter.elasticsearch.repository.ESReferenceRepository;
 import com.dpdocter.elasticsearch.repository.ESServicesRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
+import com.dpdocter.elasticsearch.repository.ESSymptomDiseaseConditionRepository;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.Resource;
@@ -126,6 +128,9 @@ public class ESMasterServiceImpl implements ESMasterService {
     
     @Autowired
 	ESServicesRepository esServicesRepository;
+    
+    @Autowired
+	ESSymptomDiseaseConditionRepository esSymptomDiseaseConditionRepository;;
     
     @Override
     public List<Reference> searchReference(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
@@ -540,6 +545,30 @@ public class ESMasterServiceImpl implements ESMasterService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error while adding  ES data service " + e.getMessage());
+		}
+	}
+
+	@Override
+	public void addEditSpecialities(ESSpecialityDocument esSpecialityDocument) {
+		try {
+			esSpecialityRepository.save(esSpecialityDocument);
+			transactionalManagementService.addResource(new ObjectId(esSpecialityDocument.getId()), Resource.SPECIALITY,
+					true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while adding  ES data speciality " + e.getMessage());
+		}
+	}
+
+	@Override
+	public void addEditSymptomDiseaseConditionDocument(ESSymptomDiseaseConditionDocument esSymptomDiseaseConditionDocument) {
+		try {
+			esSymptomDiseaseConditionRepository.save(esSymptomDiseaseConditionDocument);
+			transactionalManagementService.addResource(new ObjectId(esSymptomDiseaseConditionDocument.getId()), Resource.SYMPTOM_DISEASE_CONDITION,
+					true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while adding  ES data Symptom Disease Condition " + e.getMessage());
 		}
 	}
 

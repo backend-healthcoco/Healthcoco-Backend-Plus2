@@ -1207,6 +1207,10 @@ public interface PathProxy {
 
 		public static final String ADD_SERVICES_OF_SPECIALITIES_IN_DOCTORS = "/addServicesOfSpeciality";
 
+		public static final String ADD_SPECIALITIES = "/specialities/add";
+
+		public static final String ADD_SYMPTOMS_DISEASES_CONDITION = "/symptomsDiseasesCondition/add";
+
 	}
 
 	public static final String PUSH_NOTIFICATION_BASE_URL = BASE_URL + "/notification";
