@@ -49,6 +49,7 @@ import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.document.ESLocationDocument;
 import com.dpdocter.elasticsearch.document.ESServicesDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
+import com.dpdocter.elasticsearch.document.ESSymptomDiseaseConditionDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.repository.ESCityRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
@@ -57,6 +58,7 @@ import com.dpdocter.elasticsearch.repository.ESLandmarkLocalityRepository;
 import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.repository.ESServicesRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
+import com.dpdocter.elasticsearch.repository.ESSymptomDiseaseConditionRepository;
 import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
 import com.dpdocter.elasticsearch.response.ESDoctorCardResponse;
 import com.dpdocter.elasticsearch.response.ESWEBResponse;
@@ -104,6 +106,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	private ESServicesRepository esServicesRepository;
 
 	@Autowired
+	private ESSymptomDiseaseConditionRepository esSymptomDiseaseConditionRepository;
+	
+	@Autowired
 	TransportClient transportClient;
 
 	@Autowired
@@ -121,9 +126,10 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			response = new ArrayList<AppointmentSearchResponse>();
 
 			response = searchSpeciality(response, searchTerm);
-			// response = searchSymptons(response, searchTerm);
+			// response = searchSymptoms(response, searchTerm);
 			response = searchTests(response, searchTerm);
 			response = searchService(response, searchTerm);
+			response = searchSymptomDiseaseCondition(response, searchTerm);
 			response = searchDoctors(response, city, location, latitude, longitude, searchTerm);
 			response = searchLocations(response, city, location, latitude, longitude, searchTerm);
 			response = searchPharmacy(response, city, location, latitude, longitude, searchTerm);
@@ -452,6 +458,42 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		return response;
 	}
 
+	private List<AppointmentSearchResponse> searchSymptomDiseaseCondition(List<AppointmentSearchResponse> response,
+			String searchTerm) {
+		if (response.size() < 50) {
+			List<ESSymptomDiseaseConditionDocument> symptomDiseaseConditionDocuments = esSymptomDiseaseConditionRepository.findByQueryAnnotation(searchTerm);
+			Set<String> esSymptomDiseaseConditionSet = null;
+			if (symptomDiseaseConditionDocuments != null) {
+				esSymptomDiseaseConditionSet = new HashSet<String>();
+				for (ESSymptomDiseaseConditionDocument esSymptomDiseaseConditionDocument : symptomDiseaseConditionDocuments) {
+					if (esSymptomDiseaseConditionSet.size() >= 50)
+						break;
+					esSymptomDiseaseConditionSet.add(esSymptomDiseaseConditionDocument.getName());
+
+					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
+					appointmentSearchResponse.setResponse(esSymptomDiseaseConditionDocument.getName());
+					
+					if(esSymptomDiseaseConditionDocument.getType() != null) {
+						if(esSymptomDiseaseConditionDocument.getType().equalsIgnoreCase("SYMPTOM"))
+							appointmentSearchResponse.setResponseType(AppointmentResponseType.SYMPTOM);
+						else if(esSymptomDiseaseConditionDocument.getType().equalsIgnoreCase("DISEASE"))
+							appointmentSearchResponse.setResponseType(AppointmentResponseType.DISEASE);
+						else if(esSymptomDiseaseConditionDocument.getType().equalsIgnoreCase("CONDITION"))
+							appointmentSearchResponse.setResponseType(AppointmentResponseType.CONDITION);
+
+					}
+					String slugUrl = esSymptomDiseaseConditionDocument.getName().toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-");
+					
+					slugUrl = slugUrl.replaceAll("-*-","-");					
+					appointmentSearchResponse.setSlugUrl("treatments-for-"+slugUrl);
+					response.add(appointmentSearchResponse);
+				}
+			}
+		}
+
+		return response;
+	}
+	
 	private List<AppointmentSearchResponse> searchTests(List<AppointmentSearchResponse> response, String searchTerm) {
 		if (response.size() < 50) {
 			List<ESDiagnosticTestDocument> diagnosticTestDocuments = esDiagnosticTestRepository
@@ -477,7 +519,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	}
 
 	// private List<AppointmentSearchResponse>
-	// searchSymptons(List<AppointmentSearchResponse> response,
+	// searchSymptoms(List<AppointmentSearchResponse> response,
 	// String searchTerm) {
 	// if (response.size() < 50) {
 	// List<ESComplaintsDocument> complaintsDocuments =

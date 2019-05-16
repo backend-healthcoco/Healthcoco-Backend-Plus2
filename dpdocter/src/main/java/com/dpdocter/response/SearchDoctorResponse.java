@@ -19,7 +19,10 @@ public class SearchDoctorResponse {
 	private String unformattedSpeciality;
 	private String service;
 	private String unformattedService;
-	
+	private String symptomDiseaseCondition;
+	private String unformattedSymptomDiseaseCondition;
+
+
 	public String getLocality() {
 		return locality;
 	}
@@ -100,12 +103,28 @@ public class SearchDoctorResponse {
 		this.unformattedService = unformattedService;
 	}
 
+	public String getSymptomDiseaseCondition() {
+		return symptomDiseaseCondition;
+	}
+
+	public void setSymptomDiseaseCondition(String symptomDiseaseCondition) {
+		this.symptomDiseaseCondition = symptomDiseaseCondition;
+	}
+
+	public String getUnformattedSymptomDiseaseCondition() {
+		return unformattedSymptomDiseaseCondition;
+	}
+
+	public void setUnformattedSymptomDiseaseCondition(String unformattedSymptomDiseaseCondition) {
+		this.unformattedSymptomDiseaseCondition = unformattedSymptomDiseaseCondition;
+	}
+
 	@Override
 	public String toString() {
 		return "SearchDoctorResponse [doctors=" + doctors + ", nearByDoctors=" + nearByDoctors + ", metaData="
 				+ metaData + ", speciality=" + speciality + ", count=" + count + ", city=" + city + ", locality="
 				+ locality + ", unformattedSpeciality=" + unformattedSpeciality + ", service=" + service
-				+ ", unformattedService=" + unformattedService + "]";
+				+ ", unformattedService=" + unformattedService + ", symptomDiseaseCondition=" + symptomDiseaseCondition
+				+ ", unformattedSymptomDiseaseCondition=" + unformattedSymptomDiseaseCondition + "]";
 	}
-
 }

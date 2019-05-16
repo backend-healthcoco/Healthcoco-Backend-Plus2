@@ -188,4 +188,24 @@ public class AdminAPI {
 		response.setData(adminServices.addServicesOfSpecialities());
 		return response;
 	}
+	
+	@Path(value = PathProxy.AdminUrls.ADD_SPECIALITIES)
+	@GET
+	@ApiOperation(value = PathProxy.AdminUrls.ADD_SPECIALITIES, notes = PathProxy.AdminUrls.ADD_SPECIALITIES)
+	public Response<Boolean> addSpecialities() {
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(adminServices.addSpecialities());
+		return response;
+	}
+	
+	@Path(value = PathProxy.AdminUrls.ADD_SYMPTOMS_DISEASES_CONDITION)
+	@GET
+	@ApiOperation(value = PathProxy.AdminUrls.ADD_SYMPTOMS_DISEASES_CONDITION, notes = PathProxy.AdminUrls.ADD_SYMPTOMS_DISEASES_CONDITION)
+	public Response<Boolean> addSymptomsDiseasesCondition() {
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(adminServices.addSymptomsDiseasesCondition());
+		return response;
+	}
 }
