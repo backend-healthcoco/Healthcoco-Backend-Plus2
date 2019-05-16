@@ -100,6 +100,8 @@ import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.ServicesCollection;
+import com.dpdocter.collections.SpecialityCollection;
+import com.dpdocter.collections.SymptomDiseaseConditionCollection;
 import com.dpdocter.collections.SystemExamCollection;
 import com.dpdocter.collections.TransactionalCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
@@ -157,6 +159,8 @@ import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESRecipeDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.document.ESServicesDocument;
+import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
+import com.dpdocter.elasticsearch.document.ESSymptomDiseaseConditionDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
@@ -243,6 +247,8 @@ import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SMSTrackRepository;
 import com.dpdocter.repository.ServicesRepository;
+import com.dpdocter.repository.SpecialityRepository;
+import com.dpdocter.repository.SymptomDiseaseConditionRepository;
 import com.dpdocter.repository.SystemExamRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.TreatmentServicesCostRepository;
@@ -519,6 +525,12 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Autowired
 	private ProfessionalMembershipRepository professionalMembershipRepository;
 	
+	@Autowired
+	SpecialityRepository specialityRepository;
+	
+	@Autowired
+	SymptomDiseaseConditionRepository symptomDiseaseConditionRepository;
+	
 	@Scheduled(cron = "00 00 3 * * *", zone = "IST")
 //	@Scheduled(fixedDelay = 1800)
 	@Override
@@ -709,6 +721,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							break;
 						case SERVICE:checkService(transactionalCollection.getResourceId());
 							break;
+						case SPECIALITY:checkSpeciality(transactionalCollection.getResourceId());
+						break;
+						case SYMPTOM_DISEASE_CONDITION:checkSymptomsDiseasesCondition(transactionalCollection.getResourceId());
+						break;
 						default:
 							break;
 						}
@@ -1450,6 +1466,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		appLinkDetailsRepository.save(appLinkDetailsCollections);
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	@Scheduled(cron = "0 0/30 12 * * SUN", zone = "IST")
 	@Override
 	@Transactional
@@ -2535,6 +2552,34 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ESServicesDocument esServicesDocument = new ESServicesDocument();
 				BeanUtil.map(services, esServicesDocument);
 				esMasterService.addEditServices(esServicesDocument);
+			}
+		}catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e);
+			}
+	}
+	
+	private void checkSpeciality(ObjectId resourceId) {
+		try {
+			SpecialityCollection specialityCollection = specialityRepository.findOne(resourceId);
+			if (specialityCollection != null) {
+				ESSpecialityDocument esSpecialityDocument = new ESSpecialityDocument();
+				BeanUtil.map(specialityCollection, esSpecialityDocument);
+				esMasterService.addEditSpecialities(esSpecialityDocument);
+			}
+		}catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e);
+			}
+	}
+	
+	private void checkSymptomsDiseasesCondition(ObjectId resourceId) {
+		try {
+			SymptomDiseaseConditionCollection symptomDiseaseConditionCollection = symptomDiseaseConditionRepository.findOne(resourceId);
+			if (symptomDiseaseConditionCollection != null) {
+				ESSymptomDiseaseConditionDocument esSymptomDiseaseConditionDocument = new ESSymptomDiseaseConditionDocument();
+				BeanUtil.map(symptomDiseaseConditionCollection, esSymptomDiseaseConditionDocument);
+				esMasterService.addEditSymptomDiseaseConditionDocument(esSymptomDiseaseConditionDocument);
 			}
 		}catch (Exception e) {
 				e.printStackTrace();

@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -306,9 +307,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						}
 						if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 							List<ServicesCollection> servicesCollections = servicesRepository.findbySpeciality(doctorCollection.getSpecialities());
-							Set<ObjectId> services = (Set<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
+							List<ObjectId> services = (List<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
+							Set<ObjectId> serviceIds = new HashSet<>(services);
+							
 							if(doctorCollection.getServices()!= null)doctorCollection.getServices().addAll(services);
-							else doctorCollection.setServices(services);
+							else doctorCollection.setServices(serviceIds);
 						}
 					} else {
 						doctorCollection.setSpecialities(null);
@@ -1122,7 +1125,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						}
 						if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 							List<ServicesCollection> servicesCollections = servicesRepository.findbySpeciality(doctorCollection.getSpecialities());
-							Set<ObjectId> services = (Set<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
+							List<ObjectId> servicesIds = (List<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
+							Set<ObjectId> services = new HashSet<>(servicesIds);
 							if(doctorCollection.getServices()!= null)doctorCollection.getServices().addAll(services);
 							else doctorCollection.setServices(services);
 						}
@@ -1676,10 +1680,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					List<ServicesCollection> servicesCollections = servicesRepository
 							.findbyService(request.getServices());
 					@SuppressWarnings("unchecked")
-					Set<ObjectId> serviceIds = (Set<ObjectId>) CollectionUtils.collect(servicesCollections,
+					List<ObjectId> serviceIds = (List<ObjectId>) CollectionUtils.collect(servicesCollections,
 							new BeanToPropertyValueTransformer("id"));
-					if (serviceIds != null && !serviceIds.isEmpty()) {
-						doctorCollection.setServices(serviceIds);
+					
+					Set<ObjectId> services = new HashSet<>(serviceIds);
+					if (services != null && !services.isEmpty()) {
+						doctorCollection.setServices(services);
 					} else {
 						doctorCollection.setServices(null);
 					}

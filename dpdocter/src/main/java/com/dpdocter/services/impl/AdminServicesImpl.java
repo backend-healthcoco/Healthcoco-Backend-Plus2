@@ -31,6 +31,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.CustomAggregationOperation;
@@ -58,6 +59,7 @@ import com.dpdocter.collections.ResumeCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.ServicesCollection;
 import com.dpdocter.collections.SpecialityCollection;
+import com.dpdocter.collections.SymptomDiseaseConditionCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
@@ -75,6 +77,7 @@ import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProfessionalMembershipDocument;
 import com.dpdocter.elasticsearch.document.ESServicesDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
+import com.dpdocter.elasticsearch.document.ESSymptomDiseaseConditionDocument;
 import com.dpdocter.elasticsearch.repository.ESComplaintsRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosesRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
@@ -90,6 +93,7 @@ import com.dpdocter.elasticsearch.repository.ESProcedureNoteRepository;
 import com.dpdocter.elasticsearch.repository.ESProfessionalMembershipRepository;
 import com.dpdocter.elasticsearch.repository.ESServicesRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
+import com.dpdocter.elasticsearch.repository.ESSymptomDiseaseConditionRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.AppType;
@@ -115,6 +119,7 @@ import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.ResumeRepository;
 import com.dpdocter.repository.ServicesRepository;
 import com.dpdocter.repository.SpecialityRepository;
+import com.dpdocter.repository.SymptomDiseaseConditionRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
@@ -295,6 +300,12 @@ public class AdminServicesImpl implements AdminServices {
 	
 	@Autowired
 	private TransactionalManagementService transnationalService;
+	
+	@Autowired
+	SymptomDiseaseConditionRepository symptomDiseaseConditionRepository;
+	
+	@Autowired
+	ESSymptomDiseaseConditionRepository esSymptomDiseaseConditionRepository;
 	
 	@Override
 	@Transactional
@@ -1027,8 +1038,6 @@ public class AdminServicesImpl implements AdminServices {
 					List<ObjectId> services = (List<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
 					
 					Set<ObjectId> servicesIds = new HashSet<>(services);
-				//	if(doctorCollection.getServices()!= null)doctorCollection.getServices().addAll(services);
-				//	else
 					doctorCollection.setServices(servicesIds);
 					doctorCollection = doctorRepository.save(doctorCollection);
 					transnationalService.checkDoctor(doctorCollection.getUserId(), null);
@@ -1037,6 +1046,96 @@ public class AdminServicesImpl implements AdminServices {
 			}
 			
 		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean addSpecialities() {
+		Boolean response = false;
+		
+		try {
+			Scanner scanner = new Scanner(new File("/home/ubuntu/Specialities.csv"));
+	        while (scanner.hasNext()) {
+	        		String csvLine = scanner.nextLine();
+	        		List<String> line = CSVUtils.parseLine(csvLine);
+	        		SpecialityCollection specialityCollection = new SpecialityCollection();
+	        		specialityCollection.setAdminCreatedTime(new Date());
+	        		specialityCollection.setCreatedTime(new Date());
+	        		specialityCollection.setUpdatedTime(new Date());
+	        		specialityCollection.setCreatedBy("ADMIN");
+	        		specialityCollection.setSpeciality(line.get(0));
+
+	        		specialityCollection.setToShow(true);
+	        		
+	        		if(line.size()>1) {
+		        		specialityCollection.setSuperSpeciality(line.get(1));
+	        		}
+	        		
+	        		specialityCollection = specialityRepository.save(specialityCollection);
+	        		
+	        		if (specialityCollection != null) {
+	        			transactionalManagementService.addResource(specialityCollection.getId(), Resource.SPECIALITY,
+	        					false);
+	    				ESSpecialityDocument esSpecialityDocument = new ESSpecialityDocument();
+	    				BeanUtil.map(specialityCollection, esSpecialityDocument);
+	    				esMasterService.addEditSpecialities(esSpecialityDocument);
+	    			}
+	        }
+	        scanner.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Boolean addSymptomsDiseasesCondition() {
+		Boolean response = false;
+		
+		try {
+			Scanner scanner = new Scanner(new File("/home/ubuntu/Symptoms.csv"));
+	        while (scanner.hasNext()) {
+	        		String csvLine = scanner.nextLine();
+	        		List<String> line = CSVUtils.parseLine(csvLine);
+	        		SymptomDiseaseConditionCollection symptomDiseaseConditionCollection = new SymptomDiseaseConditionCollection();
+	        		symptomDiseaseConditionCollection.setAdminCreatedTime(new Date());
+	        		symptomDiseaseConditionCollection.setCreatedTime(new Date());
+	        		symptomDiseaseConditionCollection.setUpdatedTime(new Date());
+	        		symptomDiseaseConditionCollection.setCreatedBy("ADMIN");
+	        		symptomDiseaseConditionCollection.setName(StringUtils.capitalize(line.get(0).replaceAll("\"", "").trim()));
+	        		symptomDiseaseConditionCollection.setType(line.get(1).toUpperCase().replaceAll("\"", "").trim());
+	        		symptomDiseaseConditionCollection.setToShow(true);
+	        		
+	        		if(line.size()>2) {
+	        			if(!DPDoctorUtils.anyStringEmpty(line.get(2))) {
+	        				String[] specialities = line.get(2).replaceAll("\"", "").trim().split("\\+");
+	        				List<SpecialityCollection> specialityCollections = specialityRepository.find(specialities);
+	        				List<ObjectId> specialityIds = (List<ObjectId>) CollectionUtils.collect(specialityCollections,
+	    							new BeanToPropertyValueTransformer("id"));
+	        				
+	        				List<String> specialitiesList = (List<String>) CollectionUtils.collect(specialityCollections,
+	    							new BeanToPropertyValueTransformer("superSpeciality"));
+	        				
+	        				symptomDiseaseConditionCollection.setSpecialities(specialitiesList);
+	        				symptomDiseaseConditionCollection.setSpecialityIds(specialityIds);
+	        			}
+	        		}
+	        		
+	        		symptomDiseaseConditionCollection = symptomDiseaseConditionRepository.save(symptomDiseaseConditionCollection);
+	        		
+	        		if (symptomDiseaseConditionCollection != null) {
+	        			transactionalManagementService.addResource(symptomDiseaseConditionCollection.getId(), Resource.SYMPTOM_DISEASE_CONDITION,
+	        					false);
+	    				ESSymptomDiseaseConditionDocument esSymptomDiseaseConditionDocument = new ESSymptomDiseaseConditionDocument();
+	    				BeanUtil.map(symptomDiseaseConditionCollection, esSymptomDiseaseConditionDocument);
+	    				esMasterService.addEditSymptomDiseaseConditionDocument(esSymptomDiseaseConditionDocument);
+	    			}
+	        }
+	        scanner.close();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return response;

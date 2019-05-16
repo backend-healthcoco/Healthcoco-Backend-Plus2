@@ -39,4 +39,8 @@ public interface AdminServices {
 	Boolean updateServicesAndSpecialities();
 
 	Boolean addServicesOfSpecialities();
+
+	Boolean addSpecialities();
+
+	Boolean addSymptomsDiseasesCondition();
 }
