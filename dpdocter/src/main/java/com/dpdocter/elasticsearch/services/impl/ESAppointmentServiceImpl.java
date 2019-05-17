@@ -448,7 +448,10 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					appointmentSearchResponse.setResponseType(AppointmentResponseType.SERVICE);
 					String slugUrl = serviceName.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-");
 					
-					slugUrl = slugUrl.replaceAll("-*-","-");					
+					slugUrl = slugUrl.replaceAll("-*-","-");	
+					if(slugUrl.endsWith("-")) {
+						slugUrl = slugUrl.substring(0, slugUrl.length()-1);
+					}
 					appointmentSearchResponse.setSlugUrl("doctors-for-"+slugUrl);
 					response.add(appointmentSearchResponse);
 				}
@@ -484,7 +487,10 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					}
 					String slugUrl = esSymptomDiseaseConditionDocument.getName().toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-");
 					
-					slugUrl = slugUrl.replaceAll("-*-","-");					
+					slugUrl = slugUrl.replaceAll("-*-","-");
+					if(slugUrl.endsWith("-")) {
+						slugUrl = slugUrl.substring(0, slugUrl.length()-1);
+					}
 					appointmentSearchResponse.setSlugUrl("treatments-for-"+slugUrl);
 					response.add(appointmentSearchResponse);
 				}
