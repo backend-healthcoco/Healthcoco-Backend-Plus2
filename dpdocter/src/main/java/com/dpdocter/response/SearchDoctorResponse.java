@@ -16,6 +16,8 @@ public class SearchDoctorResponse {
 	private Integer count = 0;
 	private String city;
 	private String locality;
+	private String slugCity;
+	private String slugLocality;
 	private String unformattedSpeciality;
 	private String service;
 	private String unformattedService;
@@ -119,12 +121,29 @@ public class SearchDoctorResponse {
 		this.unformattedSymptomDiseaseCondition = unformattedSymptomDiseaseCondition;
 	}
 
+	public String getSlugCity() {
+		return slugCity;
+	}
+
+	public void setSlugCity(String slugCity) {
+		this.slugCity = slugCity;
+	}
+
+	public String getSlugLocality() {
+		return slugLocality;
+	}
+
+	public void setSlugLocality(String slugLocality) {
+		this.slugLocality = slugLocality;
+	}
+
 	@Override
 	public String toString() {
 		return "SearchDoctorResponse [doctors=" + doctors + ", nearByDoctors=" + nearByDoctors + ", metaData="
 				+ metaData + ", speciality=" + speciality + ", count=" + count + ", city=" + city + ", locality="
-				+ locality + ", unformattedSpeciality=" + unformattedSpeciality + ", service=" + service
-				+ ", unformattedService=" + unformattedService + ", symptomDiseaseCondition=" + symptomDiseaseCondition
-				+ ", unformattedSymptomDiseaseCondition=" + unformattedSymptomDiseaseCondition + "]";
+				+ locality + ", slugCity=" + slugCity + ", slugLocality=" + slugLocality + ", unformattedSpeciality="
+				+ unformattedSpeciality + ", service=" + service + ", unformattedService=" + unformattedService
+				+ ", symptomDiseaseCondition=" + symptomDiseaseCondition + ", unformattedSymptomDiseaseCondition="
+				+ unformattedSymptomDiseaseCondition + "]";
 	}
 }
