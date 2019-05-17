@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.WordUtils;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
@@ -76,7 +77,6 @@ public class SearchServiceImpl implements SearchService {
 	@Autowired
 	ESSymptomDiseaseConditionRepository esSymptomDiseaseConditionRepository;
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public SearchDoctorResponse searchDoctors(int page, int size, String city, String location, String latitude,
 			String longitude, String speciality, String symptom, Boolean booking, Boolean calling, int minFee,
@@ -98,6 +98,8 @@ public class SearchServiceImpl implements SearchService {
 					.must(QueryBuilders.matchQuery("isClinic", true));
 
 			if (!DPDoctorUtils.anyStringEmpty(city)) {
+				city = city.replaceAll("-", " ");
+				city = WordUtils.capitalizeFully(city);
 				long cityCount = elasticsearchTemplate.count(new CriteriaQuery(new Criteria("city").is(city).and("isActivated").is(true)),
 						ESCityDocument.class);
 
@@ -287,12 +289,14 @@ public class SearchServiceImpl implements SearchService {
 
 					response.setMetaData(response.getMetaData() + StringUtils.capitalize(locality) + ", ");
 					response.setLocality(StringUtils.capitalize(locality));
+					response.setSlugLocality(locality.toLowerCase().replaceAll(" ", "-"));
 				}
 				if (DPDoctorUtils.anyStringEmpty(city)) {
 					city = "Nagpur";
 				}
 				response.setMetaData(response.getMetaData() + StringUtils.capitalize(city));
 				response.setCity(StringUtils.capitalize(city));
+				response.setSlugCity(city.toLowerCase().replaceAll(" ", "-"));
 				response.setCount(count);
 
 				if (esDoctorDocuments != null) {
@@ -312,10 +316,11 @@ public class SearchServiceImpl implements SearchService {
 				
 				} else if (!DPDoctorUtils.anyStringEmpty(service) && !service.equalsIgnoreCase("NAGPUR")) {
 					
-					String unformattedService = "Doctor for "+StringUtils.capitalize(service);
+					String unformattedService = "Doctors for "+StringUtils.capitalize(service);
+					
 					response.setUnformattedService(unformattedService);
 					
-					service = "doctor-for-"+service.toLowerCase().replaceAll(" ", "-");
+					service = "doctors-for-"+service.toLowerCase().replaceAll(" ", "-");
 					response.setService(service);
 					
 					
@@ -323,10 +328,11 @@ public class SearchServiceImpl implements SearchService {
 				} else if (!DPDoctorUtils.anyStringEmpty(symptomDiseaseCondition) && !symptomDiseaseCondition.equalsIgnoreCase("NAGPUR")) {
 					
 					String unformattedSymptomDiseaseCondition = "Treatments for "+StringUtils.capitalize(symptomDiseaseCondition);
+					
 					response.setUnformattedSymptomDiseaseCondition(unformattedSymptomDiseaseCondition);
 					
-					unformattedSymptomDiseaseCondition = "treatments-for-"+unformattedSymptomDiseaseCondition.toLowerCase().replaceAll(" ", "-");
-					response.setSymptomDiseaseCondition(unformattedSymptomDiseaseCondition);
+					symptomDiseaseCondition = "treatments-for-"+unformattedSymptomDiseaseCondition.toLowerCase().replaceAll(" ", "-");
+					response.setSymptomDiseaseCondition(symptomDiseaseCondition);
 					
 					
 					response.setMetaData(unformattedSymptomDiseaseCondition + " in ");
