@@ -1205,7 +1205,7 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER, notes = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER)
-	public Response<RegisteredPatientDetails> updatePatientNumber(@PathParam("doctorId") String doctorId,
+	public Response<Boolean> updatePatientNumber(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@PathParam("oldPatientId") String patientId, @QueryParam("newPatientId") String newPatientId,
 			@QueryParam("mobileNumber") String mobileNumber) {
@@ -1220,7 +1220,7 @@ public class RegistrationApi {
 
 		}
 
-		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
+		Response<Boolean> response = new Response<Boolean>();
 		response.setData(registrationService.updatePatientNumber(doctorId, locationId, hospitalId, patientId,
 				newPatientId, mobileNumber));
 		return response;
