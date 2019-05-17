@@ -4601,9 +4601,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public RegisteredPatientDetails updatePatientNumber(String doctorId, String locationId, String hospitalId, String patientId,
+	public Boolean updatePatientNumber(String doctorId, String locationId, String hospitalId, String patientId,
 			String newPatientId, String mobileNumber) {
-		RegisteredPatientDetails response = null;
+		Boolean response = null;
 		try {
 			ObjectId doctorObjectId = new ObjectId(doctorId), locationObjectId = new ObjectId(locationId), 
 					hospitalObjectId = new ObjectId(hospitalId), patientObjectId = new ObjectId(patientId);
@@ -4633,7 +4633,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 							PatientGroupCollection.class);
 				}
 				pushNotificationServices.notifyUser(doctorId, "Updated Patient Mobile Number.", ComponentType.PATIENT_REFRESH.getType(), null, null);
-
+				response = true;
 			} else if (!DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 				UserCollection userCollection = userRepository.findOne(patientObjectId);
 				
@@ -4654,7 +4654,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 							esPatientDocument.setMobileNumber(mobileNumber);
 							esPatientDocument = esPatientRepository.save(esPatientDocument);
 
-							setPatientDetailsResponse(userCollection, patientCollection, response);
+						//	setPatientDetailsResponse(userCollection, patientCollection, response);
 						}
 					}else {
 						UserCollection userCollectionNew = new UserCollection();
@@ -4697,10 +4697,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 									Update.update("patientId", patientCollection.getUserId()).currentDate("updatedTime"),
 									PatientGroupCollection.class);
 						}
-						setPatientDetailsResponse(userCollection, patientCollection, response);
+						//setPatientDetailsResponse(userCollection, patientCollection, response);
 					}
+					response = true;
+					pushNotificationServices.notifyUser(doctorId, "Updated Patient Mobile Number.", ComponentType.PATIENT_REFRESH.getType(), null, null);
 				}
-				pushNotificationServices.notifyUser(doctorId, "Updated Patient Mobile Number.", ComponentType.PATIENT_REFRESH.getType(), null, null);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4712,6 +4713,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@SuppressWarnings("unchecked")
 	private void setPatientDetailsResponse(UserCollection userCollection, PatientCollection patientCollection, RegisteredPatientDetails registeredPatientDetails) {
+		if(registeredPatientDetails == null)registeredPatientDetails = new RegisteredPatientDetails();
 		BeanUtil.map(userCollection, registeredPatientDetails);
 		registeredPatientDetails.setImageUrl(getFinalImageURL(patientCollection.getImageUrl()));
 		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(patientCollection.getThumbnailUrl()));
