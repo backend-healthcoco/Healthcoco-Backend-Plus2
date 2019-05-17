@@ -1369,7 +1369,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Response<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
 			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb) {
-		Response<Appointment> response = null;
+		Response<Appointment> response = new Response<Appointment>();
 		List<Appointment> appointments = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -1442,7 +1442,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			Integer count = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
 			if(count != null && count > 0) {
-				response = new Response<>();
 				response.setCount(count);
 				
 				if (isWeb)
