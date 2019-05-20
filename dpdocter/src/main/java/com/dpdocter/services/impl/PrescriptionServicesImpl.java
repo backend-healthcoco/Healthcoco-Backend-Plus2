@@ -6260,8 +6260,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					String[] fields = line.split(cvsSplitBy);
 					if (fields.length > 3 && !DPDoctorUtils.anyStringEmpty(fields[3])) {
 						String reason = fields[3];
-						System.out.println(reason);
-
 						if (reason.equalsIgnoreCase("SPELLING MISTAKE")) {
 							updateSpellingOfGenericCodes(fields[0], fields[2]);
 						} else if (reason.equalsIgnoreCase("REPEAT")) {
@@ -7244,7 +7242,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 
 		if (drugCollection != null) {
-			System.out.println(drugCollection.getDrugCode());
 			Integer count = Integer.parseInt(drugCollection.getDrugCode().toUpperCase().replace(drugCode, "")) + 1;
 			if (count < 1000) {
 				drugCode = drugCode + String.format("%04d", count);
@@ -7354,7 +7351,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						}
 					}
 				}
-				System.out.println(prescriptionCollections.size()+" prescriptions are updated.");
 				response = true;
 			}
 		} catch (Exception e) {

@@ -1105,12 +1105,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
 				if (state.toUpperCase().equalsIgnoreCase(AppointmentState.CANCEL.getState())) {
 					criteria2.and("appointment.state").is(state);
-					System.out.println(state);
 				} else if (state.toUpperCase().equalsIgnoreCase("CHECKED_OUT")) {
 					criteria2.and("appointment.status").is(state.toUpperCase());
-					System.out.println(state);
 				} else {
-					System.out.println(state);
 					criteria2.orOperator(new Criteria("appointment.state").is(AppointmentState.CONFIRM.getState()),
 							new Criteria("appointment.state").is(AppointmentState.RESCHEDULE.getState()),
 							new Criteria("appointment.state").is(AppointmentState.NEW.getState()));
@@ -1161,12 +1158,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
 				if (state.toUpperCase().equalsIgnoreCase(AppointmentState.CANCEL.getState())) {
 					criteria.and("state").is(state);
-					System.out.println(state);
 				} else if (state.toUpperCase().equalsIgnoreCase("CHECKED_OUT")) {
 					criteria.and("status").is(state.toUpperCase());
-					System.out.println(state);
 				} else {
-					System.out.println(state);
 					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.getState()),
 							new Criteria("state").is(AppointmentState.RESCHEDULE.getState()),
 							new Criteria("state").is(AppointmentState.NEW.getState()));
@@ -1263,12 +1257,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
 				if (state.toUpperCase().equalsIgnoreCase(AppointmentState.CANCEL.getState())) {
 					criteria.and("state").is(state);
-					System.out.println(state);
 				} else if (state.toUpperCase().equalsIgnoreCase("CHECKED_OUT")) {
 					criteria.and("status").is(state.toUpperCase());
-					System.out.println(state);
 				} else {
-					System.out.println(state);
 					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.getState()),
 							new Criteria("state").is(AppointmentState.RESCHEDULE.getState()),
 							new Criteria("state").is(AppointmentState.NEW.getState()));
@@ -1367,12 +1358,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			if (!DPDoctorUtils.anyStringEmpty(state)) {
 				if (state.toUpperCase().equalsIgnoreCase(AppointmentState.CANCEL.getState())) {
 					criteria.and("state").is(state);
-					System.out.println(state);
 				} else if (state.toUpperCase().equalsIgnoreCase("CHECKED_OUT")) {
 					criteria.and("status").is(state.toUpperCase());
-					System.out.println(state);
 				} else {
-					System.out.println(state);
 					criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.getState()),
 							new Criteria("state").is(AppointmentState.RESCHEDULE.getState()),
 							new Criteria("state").is(AppointmentState.NEW.getState()));

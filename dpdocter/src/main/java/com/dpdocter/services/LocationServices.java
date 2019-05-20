@@ -5,10 +5,11 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.CollectionBoy;
+import com.dpdocter.beans.CollectionBoyLabAssociation;
+import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
-import com.dpdocter.beans.LabTestSample;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardLabAssociation;
@@ -18,15 +19,11 @@ import com.dpdocter.request.AddEditCustomWorkRequest;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.request.DynamicCollectionBoyAllocationRequest;
 import com.dpdocter.response.CollectionBoyResponse;
-import com.dpdocter.response.DentalLabPickupResponse;
 import com.dpdocter.response.DynamicCollectionBoyAllocationResponse;
 import com.dpdocter.response.LabTestGroupResponse;
-import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.PatientLabTestSampleReportResponse;
 import com.dpdocter.response.RateCardTestAssociationByLBResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
-import com.dpdocter.beans.CollectionBoyLabAssociation;
-import com.dpdocter.beans.DentalWork;
 
 public interface LocationServices {
 	public List<GeocodedLocation> geocodeLocation(String address);

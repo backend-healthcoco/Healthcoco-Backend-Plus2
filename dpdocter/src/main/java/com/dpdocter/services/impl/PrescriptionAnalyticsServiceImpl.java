@@ -1,6 +1,5 @@
 package com.dpdocter.services.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,14 +23,11 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.PrescriptionAnalyticDetail;
-import com.dpdocter.beans.TestAndRecordData;
-import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.enums.PrescriptionItems;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.DiagnosticTestsAnalyticsData;

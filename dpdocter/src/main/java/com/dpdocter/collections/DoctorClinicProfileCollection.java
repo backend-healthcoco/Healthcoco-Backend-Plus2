@@ -12,8 +12,8 @@ import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.enums.DoctorFacility;
-import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.LabType;
+import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.RegularCheckUpTypeEnum;
 
 @Document(collection = "doctor_clinic_profile_cl")

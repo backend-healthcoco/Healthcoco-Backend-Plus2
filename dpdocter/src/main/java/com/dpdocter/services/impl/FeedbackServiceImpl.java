@@ -19,7 +19,6 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DailyImprovementFeedback;
 import com.dpdocter.beans.DailyPatientFeedback;
 import com.dpdocter.beans.Duration;
-import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientFeedback;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.PharmacyFeedback;

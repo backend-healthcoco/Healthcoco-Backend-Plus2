@@ -30,7 +30,6 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
-import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.beans.AdvancedSearch;
 import com.dpdocter.elasticsearch.beans.AdvancedSearchParameter;

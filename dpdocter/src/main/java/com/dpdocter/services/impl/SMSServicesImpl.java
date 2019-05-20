@@ -818,7 +818,6 @@ public class SMSServicesImpl implements SMSServices {
 		StringBuffer response = new StringBuffer();
 		try {
 			String url = "https://2factor.in/API/V1/"+tfactorAuthKey+"/SMS/"+mobileNumber+"/"+otp+"/OTP";
-			//System.out.println(url);
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			// optional default is POST
@@ -859,7 +858,6 @@ public class SMSServicesImpl implements SMSServices {
 		String url =  "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + "93114AV2rXJuxL56001692" + "&mobiles="
 				+ "9766914900" + "&message=" + UriUtils.encode(text, "UTF-8") + "&sender="
 				+ "HTCOCO" + "&route=" + "4" + "&country=" + "91"+ "&unicode="+"1";
-		System.out.println(url);
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		// optional default is POST

@@ -624,12 +624,10 @@ public class PaediatricServiceImpl implements PaediatricService {
 							.and("dueDate").extractYear().as("year").and("dueDate").extractWeek().as("week"),
 					aggregationOperation);
 
-			 //System.out.println(aggregation);
 			AggregationResults<BabyVaccineReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					VaccineCollection.class, BabyVaccineReminderResponse.class);
 			response = aggregationResults.getMappedResults();
 
-			//System.out.println(response);
 			for (BabyVaccineReminderResponse vaccineReminderResponse : response) {
 
 				if (vaccineReminderResponse.getMobileNumber() != null) {
@@ -650,15 +648,7 @@ public class PaediatricServiceImpl implements PaediatricService {
 								+ (vaccineReminderResponse.getLocationName() != ""
 										? ", " + vaccineReminderResponse.getLocationName() : "")
 								+ ((vaccineReminderResponse.getClinicNumber() != "" || vaccineReminderResponse.getClinicNumber() != null )
-										? ", " + vaccineReminderResponse.getClinicNumber() : "")
-								+ " on " + dateTime + ". Download Healthcoco App- " + patientAppBitLink;
-					/*	
-						System.err.println("----------------");
-						System.out.println("Message :: " + message);
-						System.err.println("----------------");
-						System.out.println("Mobile number :: " + vaccineReminderResponse.getMobileNumber());
-						System.err.println("----------------");*/
-						
+										? ", " + vaccineReminderResponse.getClinicNumber() : "");
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 						smsTrackDetail.setType("Vaccination_SMS");
@@ -681,10 +671,7 @@ public class PaediatricServiceImpl implements PaediatricService {
 				}
 
 			}
-
-			// System.out.println(" response :: " + response);
-		} catch (Exception e) {
-			// TODO: handle exception
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -738,14 +725,11 @@ public class PaediatricServiceImpl implements PaediatricService {
 							.and("dueDate").extractYear().as("year").and("dueDate").extractWeek().as("week"),
 					aggregationOperation);
 
-			//System.out.println(aggregation);
 			
 			AggregationResults<BabyVaccineReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					VaccineCollection.class, BabyVaccineReminderResponse.class);
 			response = aggregationResults.getMappedResults();
 
-			//System.out.println(response);
-			
 			for (BabyVaccineReminderResponse vaccineReminderResponse : response) {
 
 				if (vaccineReminderResponse.getMobileNumber() != null) {
@@ -769,13 +753,6 @@ public class PaediatricServiceImpl implements PaediatricService {
 							+ ((vaccineReminderResponse.getClinicNumber() != "" || vaccineReminderResponse.getClinicNumber() != null )
 									? ", " + vaccineReminderResponse.getClinicNumber() : "")
 							+ " on " + dateTime + ". Download Healthcoco App- " + patientAppBitLink;
-					/*
-					System.err.println("----------------");
-					System.out.println("Message :: " + message);
-					System.err.println("----------------");
-					System.out.println("Mobile :: " + vaccineReminderResponse.getMobileNumber());
-					System.err.println("----------------");
-					*/
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 					smsTrackDetail.setType("Vaccination_SMS");
@@ -797,8 +774,6 @@ public class PaediatricServiceImpl implements PaediatricService {
 				}
 
 			}
-
-			// System.out.println(" response :: " + response);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -813,7 +788,6 @@ public class PaediatricServiceImpl implements PaediatricService {
 	 * @Transactional
 	 * 
 	 * @Override public void sendBabyVaccineReminder() {
-	 * System.out.println("IN baby vaccine reminder scheduler");
 	 * List<BabyVaccineReminderResponse> response = null;
 	 * 
 	 * Aggregation aggregation = null; AggregationOperation aggregationOperation
@@ -851,13 +825,11 @@ public class PaediatricServiceImpl implements PaediatricService {
 	 * .as("month").and("dueDate").extractYear().as("year").and("dueDate").
 	 * extractWeek() .as("week"), aggregationOperation);
 	 * 
-	 * //System.out.println(aggregation);
 	 * AggregationResults<BabyVaccineReminderResponse> aggregationResults =
 	 * mongoTemplate.aggregate(aggregation, VaccineCollection.class,
 	 * BabyVaccineReminderResponse.class); response =
 	 * aggregationResults.getMappedResults();
 	 * 
-	 * //System.out.println(" response :: " + response); } catch (Exception e) {
 	 * // TODO: handle exception e.printStackTrace(); }
 	 * 
 	 * }

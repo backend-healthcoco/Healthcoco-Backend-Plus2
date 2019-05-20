@@ -1349,8 +1349,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			patientRegistrationRequest.setDoctorId(request.getDoctorId());
 			patientRegistrationRequest.setLocationId(request.getLocationId());
 			patientRegistrationRequest.setHospitalId(request.getHospitalId());
-			// System.out.println("Patient registration request in imaging service:: " +
-			// patientRegistrationRequest);
 			RegisteredPatientDetails patientDetails = null;
 			patientDetails = registrationService.registerNewPatient(patientRegistrationRequest);
 			if (patientDetails != null) {
@@ -1372,8 +1370,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				patientRegistrationRequest.setUserId(request.getPatientId());
 				patientRegistrationRequest.setLocationId(request.getLocationId());
 				patientRegistrationRequest.setHospitalId(request.getHospitalId());
-				// System.out.println("Patient registration request in imaging service:: " +
-				// patientRegistrationRequest);
 				RegisteredPatientDetails patientDetails = registrationService
 						.registerExistingPatient(patientRegistrationRequest, null);
 				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
@@ -2570,13 +2566,10 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		MailResponse mailResponse = null;
 		Boolean response = false;
 		try {
-			// System.out.println(id);
 			mailResponse = createReportMailData(id);
-			// System.out.println(mailResponse);
 			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(),
 					mailResponse.getClinicName(), mailResponse.getPatientName(), mailResponse.getMailAttachments(),
 					"dentalImagingRecordEmailTemplate.vm");
-			// System.out.println(body);
 			response = mailService.sendEmailMultiAttach(emailAddress, mailResponse.getClinicName()
 					+ " sent you dental imaging reports for your patient " + mailResponse.getPatientName() + ".", body,
 					mailResponse.getMailAttachments());
@@ -2753,7 +2746,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			System.out.println(aggregation);
 			AggregationResults<DentalImagingResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalImagingCollection.class, DentalImagingResponse.class);
 

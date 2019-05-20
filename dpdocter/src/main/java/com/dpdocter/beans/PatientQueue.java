@@ -3,7 +3,6 @@ package com.dpdocter.beans;
 import java.util.Date;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.QueueStatus;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)

@@ -1,7 +1,5 @@
 package com.dpdocter.services;
 
-import java.util.List;
-
 import com.dpdocter.beans.DeliveryReports;
 import com.dpdocter.beans.IPDReports;
 import com.dpdocter.beans.OPDReports;

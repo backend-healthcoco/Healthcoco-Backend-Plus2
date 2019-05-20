@@ -2954,9 +2954,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						{
 							timeDiff = appointmentLookupResponse.getTime().getToTime()
 									- appointmentLookupResponse.getTime().getFromTime();
-							System.out.println("Time diff :: " + timeDiff);
 							addMillis = TimeUnit.MINUTES.toMillis(timeDiff);
-							System.out.println("Add millis :: " + addMillis);
 						}
 
 						String toDateTime = _12HourSDF.format(_24HourToDt) + ", "

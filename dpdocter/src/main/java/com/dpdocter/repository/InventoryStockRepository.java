@@ -6,7 +6,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-import com.dpdocter.collections.InventoryItemCollection;
 import com.dpdocter.collections.InventoryStockCollection;
 
 public interface InventoryStockRepository extends MongoRepository<InventoryStockCollection, ObjectId>{

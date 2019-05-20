@@ -294,7 +294,6 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 						drugAddEditRequest.setExplanation(item.getInstructions());
 						drugCollection.setExplanation(item.getInstructions());
 					}
-					// System.out.println(item.getInstructions());
 					drugAddEditRequest.setDirection(item.getDirection());
 					drugAddEditRequest.setDuration(item.getDuration());
 					drugAddEditRequest.setDosage(item.getDosage());

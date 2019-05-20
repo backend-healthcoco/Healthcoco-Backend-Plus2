@@ -184,7 +184,6 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					request.getUploadedByHospitalId());
 			for (RecordsFile file : request.getRecordsFiles()) {
 				if (file.getPdfInImgs() != null && labPrintSetting != null) {
-					System.out.println("enter in record file for header  footer print");
 					file.setRecordsUrl(createJasperReport(labPrintSetting, file.getPdfInImgs()));
 				}
 				file.setRecordsUrl(file.getRecordsUrl().replace(imagePath, ""));

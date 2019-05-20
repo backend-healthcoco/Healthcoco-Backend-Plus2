@@ -1,7 +1,5 @@
 package com.dpdocter.request;
 
-import common.util.web.JacksonUtil;
-
 public class DentalLabPickupChangeStatusRequest {
 
 	private String dentalLabPickupId;

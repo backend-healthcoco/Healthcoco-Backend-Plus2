@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -2338,8 +2339,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 				throw new BusinessException(ServiceError.NoRecord, role);
 			}
 
-			System.out.println("Doctor register request :: " + request);
-
 			UserCollection userCollection = userRepository.findByUserNameAndEmailAddress(request.getEmailAddress(),
 					request.getEmailAddress());
 
@@ -4601,7 +4600,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Boolean updatePatientNumber(String doctorId, String locationId, String hospitalId, String patientId,
+	public Boolean updatePatientNumber(final String doctorId, String locationId, String hospitalId, String patientId,
 			String newPatientId, String mobileNumber) {
 		Boolean response = null;
 		try {
@@ -4632,7 +4631,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 							Update.update("patientId", patientCollection.getUserId()).currentDate("updatedTime"),
 							PatientGroupCollection.class);
 				}
-				pushNotificationServices.notifyUser(doctorId, "Updated Patient Mobile Number.", ComponentType.PATIENT_REFRESH.getType(), null, null);
+				response = true;
+				Executors.newSingleThreadExecutor().execute(new Runnable() {
+					@Override
+					public void run() {
+						pushNotificationServices.notifyUser(doctorId, "Updated Patient Mobile Number.", ComponentType.PATIENT_REFRESH.getType(), null, null);
+					}
+				});
 				response = true;
 			} else if (!DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 				UserCollection userCollection = userRepository.findOne(patientObjectId);
@@ -4700,7 +4705,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 						//setPatientDetailsResponse(userCollection, patientCollection, response);
 					}
 					response = true;
-					pushNotificationServices.notifyUser(doctorId, "Updated Patient Mobile Number.", ComponentType.PATIENT_REFRESH.getType(), null, null);
+					Executors.newSingleThreadExecutor().execute(new Runnable() {
+						@Override
+						public void run() {
+							pushNotificationServices.notifyUser(doctorId, "Updated Patient Mobile Number.", ComponentType.PATIENT_REFRESH.getType(), null, null);
+						}
+						});
 				}
 			}
 		} catch (Exception e) {
@@ -5156,12 +5166,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			calendar.set(request.getDob().getYears(), request.getDob().getMonths() -1 , request.getDob().getDays(), 0, 0);
 		}
 
-		//System.out.println("Request :: " + request);
-		//System.out.println("Date :: " + calendar);
-		
-		//System.out.println("User Collection :: " + userCollection);
 		vaccineCollections = vaccineRepository.findBypatientId(new ObjectId(request.getUserId()));
-		//System.out.println("Vaccine Collection :: " + vaccineCollections);
 		if (vaccineCollections == null || vaccineCollections.isEmpty()) {
 			vaccineCollections = new ArrayList<>();
 			List<MasterBabyImmunizationCollection> babyImmunizationCollections = masterBabyImmunizationRepository
@@ -5181,8 +5186,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 				dueDate = dueDate.plusWeeks(masterBabyImmunizationCollection.getPeriodTime());
 				vaccineCollection.setDueDate(dueDate.toDate());
 				vaccineCollection.setCreatedTime(new Date());
-
-				//System.out.println("Under Loop New Single Vaccine :: " +vaccineCollection);
 				vaccineCollections.add(vaccineCollection);
 			}
 		}

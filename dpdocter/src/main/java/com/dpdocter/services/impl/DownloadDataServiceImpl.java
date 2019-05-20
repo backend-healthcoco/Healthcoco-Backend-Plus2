@@ -265,6 +265,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 		
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public Boolean downloadClinicalItems(String doctorId, String locationId, String hospitalId) {
 		Boolean response = false;
@@ -307,7 +308,6 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId))), ObservationCollection.class, ObservationCollection.class).getMappedResults();
 			
 			if(observationCollections != null && !observationCollections.isEmpty()) {
-				System.out.println(observationCollections.size());
 				fileWriter = new FileWriter("/home/ubuntu/Observations.csv");
 				fileWriter.append("Observations");
 			    fileWriter.append(NEW_LINE_SEPARATOR);
@@ -328,7 +328,6 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId))), InvestigationCollection.class, InvestigationCollection.class).getMappedResults();
 			
 			if(investigationCollections != null && !investigationCollections.isEmpty()) {
-				System.out.println(investigationCollections.size());
 				fileWriter = new FileWriter("/home/ubuntu/Investigation.csv");
 				fileWriter.append("Investigations");
 			    fileWriter.append(NEW_LINE_SEPARATOR);
@@ -369,7 +368,6 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId))), NotesCollection.class, NotesCollection.class).getMappedResults();
 			
 			if(notesCollections != null && !notesCollections.isEmpty()) {
-				System.out.println(notesCollections.size());
 				fileWriter = new FileWriter("/home/ubuntu/Notes.csv");
 				fileWriter.append("Notes");
 			    fileWriter.append(NEW_LINE_SEPARATOR);

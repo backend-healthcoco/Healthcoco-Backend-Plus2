@@ -14,8 +14,6 @@ import com.dpdocter.beans.Hospital;
 import com.dpdocter.collections.DentalImagingInvoiceResponse;
 import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
-import com.dpdocter.request.DentalLabDoctorRegistrationRequest;
-import com.dpdocter.request.DoctorLabReportsAddRequest;
 import com.dpdocter.response.DentalImagingDataResponse;
 import com.dpdocter.response.DentalImagingLocationResponse;
 import com.dpdocter.response.DentalImagingLocationServiceAssociationLookupResponse;
@@ -24,9 +22,6 @@ import com.dpdocter.response.DentalImagingVisitAnalyticsResponse;
 import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
 import com.dpdocter.response.PatientAnalyticResponse;
 import com.dpdocter.response.PatientDentalImagignVisitAnalyticsResponse;
-import com.dpdocter.response.ServiceLocationResponse;
-
-import common.util.web.Response;
 
 public interface DentalImagingService {
 
