@@ -3,7 +3,6 @@ package com.dpdocter.response;
 import java.util.List;
 
 import com.dpdocter.beans.AppointmentSlot;
-import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.enums.DoctorFacility;

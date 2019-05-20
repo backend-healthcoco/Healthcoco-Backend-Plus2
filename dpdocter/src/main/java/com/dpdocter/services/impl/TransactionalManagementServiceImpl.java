@@ -1197,10 +1197,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						.aggregate(aggregation, UserRoleCollection.class, LocationAdminAppointmentLookupResponse.class)
 						.getMappedResults();
 
-				System.out.println(aggregationResults.size());
 				Map<String, LocationAdminAppointmentLookupResponse> locationDetailsMap = new HashMap<String, LocationAdminAppointmentLookupResponse>();
 				if (aggregationResults != null && !aggregationResults.isEmpty()) {
-					System.out.println("get response");
 					SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 					SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
 
@@ -1257,11 +1255,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 								+ response.getTotalAppointments() + " appointments scheduled today.\n"
 								+ response.getMessage() + ".\nHave a Healthy and Happy day!!";
 
-						System.out.println(response.getUserId().toString() + response.getLocationAdminName() + ".."
-								+ response.getLocationAdminEmailAddress() + ".."
-								+ response.getLocationAdminMobileNumber());
-						System.out.println(response.getUserDevices() != null);
-						System.out.println(message);
 //							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 //							smsTrackDetail.setDoctorId(response.getUserId());
 //							smsTrackDetail.setType("APPOINTMENT");
@@ -1288,7 +1281,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					}
 
 				} else {
-					System.out.println("null response");
 				}
 			}
 //			}

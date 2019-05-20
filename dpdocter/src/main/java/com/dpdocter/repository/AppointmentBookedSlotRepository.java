@@ -12,7 +12,7 @@ import com.dpdocter.collections.AppointmentBookedSlotCollection;
 
 public interface AppointmentBookedSlotRepository extends MongoRepository<AppointmentBookedSlotCollection, ObjectId> {
 
-	@Query("{'doctorId': ?0, 'locationId': ?1, 'fromDate': {'$gte':?2}, 'toDate': {'$lte':?3}, 'isPatientDiscarded': { '$ne' : true} }")
+	@Query("{'$or': [{'doctorId':  ?0}, {'doctorIds': ?0}], 'locationId': ?1, 'fromDate': {'$gte':?2}, 'toDate': {'$lte':?3}, 'isPatientDiscarded': { '$ne' : true} }")
 	List<AppointmentBookedSlotCollection> findByDoctorLocationId(ObjectId doctorId, ObjectId locationId, DateTime start,
 			DateTime end, Sort sort);
 

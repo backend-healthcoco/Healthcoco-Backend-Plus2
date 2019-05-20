@@ -2554,11 +2554,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		Boolean response = false;
 		try {
 			mailResponse = createReportMailData(id);
-			// System.out.println(mailResponse);
 			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(),
 					mailResponse.getClinicName(), mailResponse.getPatientName(), mailResponse.getMailAttachments(),
 					"dentalImagingRecordEmailTemplate.vm");
-			// System.out.println(body);
 			response = mailService.sendEmailMultiAttach(emailAddress, mailResponse.getClinicName()
 					+ " sent you dental imaging reports for your patient " + mailResponse.getPatientName() + ".", body,
 					mailResponse.getMailAttachments());
@@ -2734,7 +2732,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			System.out.println(aggregation);
 			AggregationResults<DentalImagingResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalImagingCollection.class, DentalImagingResponse.class);
 

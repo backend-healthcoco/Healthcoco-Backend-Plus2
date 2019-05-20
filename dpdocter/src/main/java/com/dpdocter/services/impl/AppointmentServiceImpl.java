@@ -2895,6 +2895,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								clinicContactNum = locationCollection.getClinicNumber() != null
 										? locationCollection.getClinicNumber()
 										: "";
+										
 						sendMsg(SMSFormatType.APPOINTMENT_REMINDER.getType(), "APPOINTMENT_REMINDER_TO_PATIENT",
 								appointmentLookupResponse.getDoctorId().toString(),
 								appointmentLookupResponse.getLocationId().toString(),

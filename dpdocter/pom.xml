@@ -58,6 +58,9 @@
 		</profile>
 		<profile>
 			<id>qa</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>

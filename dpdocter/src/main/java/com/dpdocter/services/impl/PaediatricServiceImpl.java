@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -632,58 +633,53 @@ public class PaediatricServiceImpl implements PaediatricService{
 							.as("month").and("dueDate").extractYear().as("year").and("dueDate").extractWeek()
 							.as("week"),
 					aggregationOperation);
-			
-			//System.out.println(aggregation);
-			AggregationResults<BabyVaccineReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+		AggregationResults<BabyVaccineReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					VaccineCollection.class, BabyVaccineReminderResponse.class);
 			response = aggregationResults.getMappedResults();
-			
-			
+
 			for (BabyVaccineReminderResponse vaccineReminderResponse : response) {
 
 				if (vaccineReminderResponse.getMobileNumber() != null) {
 
-					String vaccineNames = "";
-					String dateTime = "";
+						String vaccineNames = "";
+						String dateTime = "";
+						List<String> vaccineList = new ArrayList<>();
+						for (Vaccine vaccine : vaccineReminderResponse.getVaccines()) {
+							vaccineList.add(vaccine.getName());
+						}
+						vaccineNames = StringUtils.join(vaccineList, ",");
 
-					for (Vaccine vaccine : vaccineReminderResponse.getVaccines()) {
-						vaccineNames = vaccine.getName() + " ";
-					}
+						//dateTime = formatter.print(vaccineReminderResponse.getVaccines().get(0).getDueDate().getTime());
+						dateTime = formatter.print(new DateTime());
 
-					dateTime = formatter.print(vaccineReminderResponse.getVaccines().get(0).getDueDate().getTime());
+						String message = "Your vaccination for " + vaccineNames + " is due with "
+								+ vaccineReminderResponse.getDoctorName()
+								+ (vaccineReminderResponse.getLocationName() != ""
+										? ", " + vaccineReminderResponse.getLocationName() : "")
+								+ ((vaccineReminderResponse.getClinicNumber() != "" || vaccineReminderResponse.getClinicNumber() != null )
+										? ", " + vaccineReminderResponse.getClinicNumber() : "");
+						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
-					String message = "Your vaccination for " + vaccineNames + " is due with "
-							+ vaccineReminderResponse.getDoctorName()
-							+ (vaccineReminderResponse.getLocationName() != ""
-									? ", " + vaccineReminderResponse.getLocationName() : "")
-							+ (vaccineReminderResponse.getClinicNumber() != ""
-									? ", " + vaccineReminderResponse.getClinicNumber() : "")
-							+ " @ " + dateTime + ". Download Healthcoco App- " + patientAppBitLink;
-					
-					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+						smsTrackDetail.setType("Vaccination_SMS");
+						SMSDetail smsDetail = new SMSDetail();
+						SMS sms = new SMS();
+						sms.setSmsText(message);
 
-					smsTrackDetail.setType("Vaccination_SMS");
-					SMSDetail smsDetail = new SMSDetail();
-					SMS sms = new SMS();
-					sms.setSmsText(message);
+						
+						SMSAddress smsAddress = new SMSAddress();
+						smsAddress.setRecipient(vaccineReminderResponse.getMobileNumber());
+						sms.setSmsAddress(smsAddress);
 
-					SMSAddress smsAddress = new SMSAddress();
-					smsAddress.setRecipient(vaccineReminderResponse.getMobileNumber());
-					sms.setSmsAddress(smsAddress);
-
-					smsDetail.setSms(sms);
-					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-					smsDetails.add(smsDetail);
-					smsTrackDetail.setSmsDetails(smsDetails);
-					smsServices.sendSMS(smsTrackDetail, true);
+						smsDetail.setSms(sms);
+						smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+						smsDetails.add(smsDetail);
+						smsTrackDetail.setSmsDetails(smsDetails);
+						smsServices.sendSMS(smsTrackDetail, true);
+		
 				}
-
 			}
-			
-			//System.out.println(" response :: " + response);
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 	}
@@ -735,14 +731,9 @@ public class PaediatricServiceImpl implements PaediatricService{
 							.as("month").and("dueDate").extractYear().as("year").and("dueDate").extractWeek()
 							.as("week"),
 					aggregationOperation);
-			
-			//System.out.println(aggregation);
 			AggregationResults<BabyVaccineReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					VaccineCollection.class, BabyVaccineReminderResponse.class);
 			response = aggregationResults.getMappedResults();
-			
-			
-			
 			for (BabyVaccineReminderResponse vaccineReminderResponse : response) {
 
 				if (vaccineReminderResponse.getMobileNumber() != null) {
@@ -762,8 +753,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 									? ", " + vaccineReminderResponse.getLocationName() : "")
 							+ (vaccineReminderResponse.getClinicNumber() != ""
 									? ", " + vaccineReminderResponse.getClinicNumber() : "")
-							+ " @ " + dateTime + ". Download Healthcoco App- " + patientAppBitLink;
-					;
+							+ " on " + dateTime + ". Download Healthcoco App- " + patientAppBitLink;
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 					smsTrackDetail.setType("Vaccination_SMS");
@@ -784,9 +774,6 @@ public class PaediatricServiceImpl implements PaediatricService{
 				}
 
 			}
-			
-			
-			//System.out.println(" response :: " + response);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -803,10 +790,66 @@ public class PaediatricServiceImpl implements PaediatricService{
 		System.out.println("IN baby vaccine reminder scheduler");
 		List<BabyVaccineReminderResponse> response = null;
 
+<<<<<<< HEAD
 		Aggregation aggregation = null;
 		AggregationOperation aggregationOperation = null;
 		
 		Criteria criteria = new Criteria("dueDate").gte(DPDoctorUtils.getStartTime(new Date())).lte(DPDoctorUtils.getEndTime(new Date()));
+=======
+	/*
+	 * @Scheduled(cron = "0 30 6 * * ?", zone = "IST") >>>>>>> a4614e5...
+	 * HAPPY-833 patient app changes in paeda moodule //@Scheduled(fixedDelay =
+	 * 15000)
+	 * 
+	 * @Transactional
+	 * 
+	 * @Override public void sendBabyVaccineReminder() {
+	 * List<BabyVaccineReminderResponse> response = null;
+	 * 
+	 * Aggregation aggregation = null; AggregationOperation aggregationOperation
+	 * = null;
+	 * 
+	 * Criteria criteria = new
+	 * Criteria("dueDate").gte(DPDoctorUtils.getStartTime(new
+	 * Date())).lte(DPDoctorUtils.getEndTime(new Date()));
+	 * 
+	 * try { ProjectionOperation projectList = new ProjectionOperation(
+	 * Fields.from(Fields.field("patientName", "$patient.firstName"),
+	 * Fields.field("doctorName", "$doctor.firstName"),
+	 * Fields.field("locationName", "$location.locationName"),
+	 * Fields.field("vaccines", "$vaccines")));
+	 * 
+	 * aggregationOperation = new CustomAggregationOperation(new
+	 * BasicDBObject("$group", new BasicDBObject("_id", new BasicDBObject("day",
+	 * "$day").append("month", "$month").append("year", "$year")
+	 * .append("patientId", "$patientId")) .append("doctorName", new
+	 * BasicDBObject("$first", "$doctorName")) .append("locationName", new
+	 * BasicDBObject("$first", "$locationName")) .append("patientName", new
+	 * BasicDBObject("$first", "$patientName")) .append("vaccines", new
+	 * BasicDBObject("$push", "$vaccines"))));
+	 * 
+	 * 
+	 * aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl",
+	 * "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+	 * Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
+	 * Aggregation.unwind("patient"), Aggregation.lookup("location_cl",
+	 * "locationId", "_id", "location"), Aggregation.unwind("location"),
+	 * Aggregation.lookup("vaccine_cl", "_id", "_id", "vaccines"),
+	 * Aggregation.unwind("vaccines"), Aggregation.match(criteria),
+	 * projectList.and("dueDate").extractDayOfMonth().as("day").and("dueDate").
+	 * extractMonth()
+	 * .as("month").and("dueDate").extractYear().as("year").and("dueDate").
+	 * extractWeek() .as("week"), aggregationOperation);
+	 * 
+	 * AggregationResults<BabyVaccineReminderResponse> aggregationResults =
+	 * mongoTemplate.aggregate(aggregation, VaccineCollection.class,
+	 * BabyVaccineReminderResponse.class); response =
+	 * aggregationResults.getMappedResults();
+	 * 
+	 * // TODO: handle exception e.printStackTrace(); }
+	 * 
+	 * }
+	 * 
 
 		try {
 			ProjectionOperation projectList = new ProjectionOperation(

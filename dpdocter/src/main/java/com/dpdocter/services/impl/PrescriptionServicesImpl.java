@@ -6191,8 +6191,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					String[] fields = line.split(cvsSplitBy);
 					if (fields.length > 3 && !DPDoctorUtils.anyStringEmpty(fields[3])) {
 						String reason = fields[3];
-						System.out.println(reason);
-
 						if (reason.equalsIgnoreCase("SPELLING MISTAKE")) {
 							updateSpellingOfGenericCodes(fields[0], fields[2]);
 						} else if (reason.equalsIgnoreCase("REPEAT")) {
@@ -7276,7 +7274,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						patientCollection.setIsNutritionActive(true);
 					}
 				}
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
