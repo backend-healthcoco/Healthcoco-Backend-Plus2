@@ -1,7 +1,6 @@
 package com.dpdocter.request;
 
 import java.util.List;
-import java.util.Set;
 
 import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.enums.AppointmentWaitTime;
