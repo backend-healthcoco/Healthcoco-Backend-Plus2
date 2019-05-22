@@ -2774,18 +2774,50 @@ public class AppointmentServiceImpl implements AppointmentService {
 						doctorIds.add(new ObjectId(doctorId));
 				}
 				
-				AppointmentCollection appointmentCollectionToCheck = null;
-				if (request.getState().equals(AppointmentState.RESCHEDULE)) {
-					appointmentCollectionToCheck = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(
-							appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(),
-							request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(),
-							request.getToDate(), AppointmentState.CANCEL.getState());
-					if (appointmentCollectionToCheck != null)
-						if (!request.getIsCalenderBlocked())
-							appointmentCollectionToCheck = null;
-				}
+				if (request.getState().equals(AppointmentState.RESCHEDULE) && request.getIsCalenderBlocked()) {
+					List<AppointmentCollection> appointmentCollections = mongoTemplate
+					.aggregate(
+							Aggregation
+									.newAggregation(
+											Aggregation
+													.match(new Criteria("locationId")
+															.is(new ObjectId(request.getLocationId()))
+															.andOperator(
+																	new Criteria().orOperator(
+																			new Criteria("doctorId")
+																					.is(new ObjectId(
+																							request.getDoctorId())),
+																			new Criteria("doctorIds")
+																					.is(new ObjectId(
+																							request.getDoctorId()))
+																					.and("isCalenderBlocked")
+																					.is(true)),
+																	new Criteria().orOperator(
+																			new Criteria("time.fromTime")
+																					.lte(request.getTime()
+																							.getFromTime())
+																					.and("time.toTime")
+																					.gt(request.getTime()
+																							.getToTime()),
+																			new Criteria("time.fromTime")
+																					.lt(request.getTime()
+																							.getFromTime())
+																					.and("time.toTime")
+																					.gte(request.getTime()
+																							.getToTime())))
+															.and("fromDate").is(request.getFromDate()).and("toDate")
+															.is(request.getToDate()).and("state")
+															.is("id").ne(new ObjectId(request.getId()))
+															.ne(AppointmentState.CANCEL.getState()))),
 
-				if (appointmentCollectionToCheck == null) {
+							AppointmentCollection.class, AppointmentCollection.class)
+					.getMappedResults();
+					if (appointmentCollections != null && !appointmentCollections.isEmpty()) {
+						logger.error(timeSlotIsBooked);
+						throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
+					}
+			}
+
 					AppointmentWorkFlowCollection appointmentWorkFlowCollection = new AppointmentWorkFlowCollection();
 					BeanUtil.map(appointmentCollection, appointmentWorkFlowCollection);
 					appointmentWorkFlowRepository.save(appointmentWorkFlowCollection);
@@ -2827,10 +2859,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					appointmentCollection = appointmentRepository.save(appointmentCollection);
 					response = new Event();
 					BeanUtil.map(appointmentCollection, response);
-				} else {
-					logger.error(timeSlotIsBooked);
-					throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
-				}
+				
 			} else {
 				logger.error("Incorrect Id");
 				throw new BusinessException(ServiceError.InvalidInput, "Incorrect Id");
