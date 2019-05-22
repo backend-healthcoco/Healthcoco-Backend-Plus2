@@ -2820,7 +2820,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 						doctorIds.add(new ObjectId(doctorId));
 				}
 				
-				AppointmentCollection appointmentCollectionToCheck = null;
 				if (request.getState().equals(AppointmentState.RESCHEDULE) && request.getIsCalenderBlocked()) {
 						List<AppointmentCollection> appointmentCollections = mongoTemplate
 						.aggregate(
@@ -2829,6 +2828,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 												Aggregation
 														.match(new Criteria("locationId")
 																.is(new ObjectId(request.getLocationId()))
+																.and("id").ne(new ObjectId(request.getId()))
 																.andOperator(
 																		new Criteria().orOperator(
 																				new Criteria("doctorId")
@@ -2852,9 +2852,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 																						.and("time.toTime")
 																						.gte(request.getTime()
 																								.getToTime())))
-																.and("fromDate").is(request.getFromDate()).and("toDate")
-																.is(request.getToDate()).and("state")
-																.is("id").ne(new ObjectId(request.getId()))
+																.and("fromDate").gte(request.getFromDate())
+																.and("toDate").lte(request.getToDate())
+																.and("state")
 																.ne(AppointmentState.CANCEL.getState()))),
 
 								AppointmentCollection.class, AppointmentCollection.class)
