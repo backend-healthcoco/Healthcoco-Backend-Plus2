@@ -2782,14 +2782,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 											Aggregation
 													.match(new Criteria("locationId")
 															.is(new ObjectId(request.getLocationId()))
+															.and("id").ne(new ObjectId(request.getId()))
 															.andOperator(
 																	new Criteria().orOperator(
 																			new Criteria("doctorId")
 																					.is(new ObjectId(
 																							request.getDoctorId())),
 																			new Criteria("doctorIds")
-																					.is(new ObjectId(
-																							request.getDoctorId()))
+																					.in(doctorIds)
 																					.and("isCalenderBlocked")
 																					.is(true)),
 																	new Criteria().orOperator(
@@ -2805,10 +2805,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 																					.and("time.toTime")
 																					.gte(request.getTime()
 																							.getToTime())))
-															.and("fromDate").is(request.getFromDate()).and("toDate")
-															.is(request.getToDate()).and("state")
-															.is("id").ne(new ObjectId(request.getId()))
-															.ne(AppointmentState.CANCEL.getState()))),
+															.and("fromDate").gte(request.getFromDate())
+															.and("toDate").lte(request.getToDate())
+															.and("state").ne(AppointmentState.CANCEL.getState()))),
 
 							AppointmentCollection.class, AppointmentCollection.class)
 					.getMappedResults();
@@ -2835,6 +2834,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						appointmentCollection.setTime(request.getTime());
 						appointmentCollection.setIsCalenderBlocked(request.getIsCalenderBlocked());
 						appointmentCollection.setExplanation(request.getExplanation());
+						appointmentCollection.setDoctorIds(doctorIds);
 						if (request.getState().equals(AppointmentState.RESCHEDULE)) {
 							appointmentCollection.setIsRescheduled(true);
 							appointmentCollection.setState(AppointmentState.CONFIRM);
