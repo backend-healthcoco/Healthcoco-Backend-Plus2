@@ -31,7 +31,6 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -394,7 +393,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	private EchoRepository echoRepository;
 
 	@Autowired
-
 	private ProcedureNoteRepository procedureNoteRepository;
 
 	@Autowired
@@ -499,7 +497,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Autowired
 	SymptomDiseaseConditionRepository symptomDiseaseConditionRepository;
 	
-	@Scheduled(cron = "00 00 3 * * *", zone = "IST")
+	//@Scheduled(cron = "00 00 3 * * *", zone = "IST")
 	@Override
 	@Transactional
 	public void checkResources() {
@@ -1382,12 +1380,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		appLinkDetailsRepository.save(appLinkDetailsCollections);
 	}
 
-<<<<<<< HEAD
 	//@Scheduled(cron = "0 0/30 12 * * SUN", zone = "IST")
-=======
-	@SuppressWarnings("incomplete-switch")
-	@Scheduled(cron = "0 0/30 12 * * SUN", zone = "IST")
->>>>>>> a0d4d3ee1... HAPPY-4465 Backend : Dpdocter : Web search : Added symptom, disease,
 	@Override
 	@Transactional
 	public void updateActivePrescription() {
