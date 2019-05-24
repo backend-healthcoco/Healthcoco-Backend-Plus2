@@ -642,7 +642,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Appointment updateAppointment(final AppointmentRequest request, Boolean updateVisit,
 			Boolean isStatusChange) {
 		Appointment response = null;
-		
 		try {
 			AppointmentLookupResponse appointmentLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
 					Aggregation.match(new Criteria("appointmentId").is(request.getAppointmentId())),
@@ -749,8 +748,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
 					String _24HourTime = String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60,
 							appointmentCollection.getTime().getFromTime() % 60);
-					String _24HourToTime = String.format("%02d:%02d", appointmentCollection.getTime().getToTime() / 60,
-							appointmentCollection.getTime().getToTime() % 60);;
 					SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 					SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
 					if (clinicProfileCollection != null) {
@@ -764,24 +761,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 
 					Date _24HourDt = _24HourSDF.parse(_24HourTime);
-					Date _24HourToDt = _24HourSDF.parse(_24HourToTime);
 
 					final String patientName = (patientCard != null && patientCard.getLocalPatientName() != null)
 							? patientCard.getLocalPatientName().split(" ")[0]
-							: (request.getLocalPatientName() != null ? request.getLocalPatientName().split(" ")[0] : "");
+							: (request.getLocalPatientName() != null ? request.getLocalPatientName().split(" ")[0]
+									: "");
 					final String appointmentId = appointmentCollection.getAppointmentId();
 					final String dateTime = _12HourSDF.format(_24HourDt) + ", "
 							+ sdf.format(appointmentCollection.getFromDate());
-					
-					final String toDateTime = _12HourSDF.format(_24HourToDt) + ", "
-							+ sdf.format(appointmentCollection.getFromDate());
+
 					final String clinicName = appointmentLookupResponse.getLocation().getLocationName();
 					final String clinicContactNum = appointmentLookupResponse.getLocation().getClinicNumber() != null
 							? appointmentLookupResponse.getLocation().getClinicNumber()
 							: "";
 
-				
-							
 					// sendSMS after appointment is saved
 					final String id = appointmentCollection.getId().toString(),
 							patientEmailAddress = patientCard != null ? patientCard.getEmailAddress() : null,
@@ -797,7 +790,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						public void run() {
 							try {
 								sendAppointmentEmailSmsNotification(false, request, id, appointmentId, doctorName,
-										patientName, dateTime,toDateTime, clinicName, clinicContactNum, patientEmailAddress,
+										patientName, dateTime, clinicName, clinicContactNum, patientEmailAddress,
 										patientMobileNumber, doctorEmailAddress, doctorMobileNumber, facility);
 							} catch (MessagingException e) {
 								e.printStackTrace();
@@ -882,7 +875,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					response.setLatitude(appointmentLookupResponse.getLocation().getLatitude());
 					response.setLongitude(appointmentLookupResponse.getLocation().getLongitude());
 				}
-
 				List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 						.findByLocationId(new ObjectId(request.getLocationId()));
 				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
@@ -904,7 +896,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Appointment addAppointment(final AppointmentRequest request, Boolean isFormattedResponseRequired) {
 		Appointment response = null;
-		
 		DoctorClinicProfileCollection clinicProfileCollection = null;
 		try {
 
@@ -929,7 +920,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					patientCard = patientCards.get(0);
 				request.setLocalPatientName(patientCard.getLocalPatientName());
 			}
-
 			AppointmentCollection appointmentCollection = null;
 
 			if (request.getCreatedBy().equals(AppointmentCreatedBy.PATIENT)) {
@@ -969,13 +959,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 								AppointmentCollection.class, AppointmentCollection.class)
 						.getMappedResults();
-
-				// appointmentRepository.findAppointmentbyUserLocationIdTimeDate(
-				// new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
-				// request.getTime().getFromTime(), request.getTime().getToTime(),
-				// request.getFromDate(),
-				// request.getToDate(), AppointmentState.CANCEL.getState());
-
 				if (appointmentCollections != null && !appointmentCollections.isEmpty()) {
 					logger.error(timeSlotIsBooked);
 					throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
@@ -996,8 +979,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				String _24HourTime = String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60,
 						appointmentCollection.getTime().getFromTime() % 60);
-				String _24HourToTime = String.format("%02d:%02d", appointmentCollection.getTime().getToTime() / 60,
-						appointmentCollection.getTime().getToTime() % 60);;
 				SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 				SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
 				if (clinicProfileCollection != null) {
@@ -1011,7 +992,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 
 				Date _24HourDt = _24HourSDF.parse(_24HourTime);
-				Date _24HourToDt = _24HourSDF.parse(_24HourToTime);
 
 				final String patientName = (patientCard != null && patientCard.getLocalPatientName() != null)
 						? patientCard.getLocalPatientName().split(" ")[0]
@@ -1019,10 +999,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				final String appointmentId = appointmentCollection.getAppointmentId();
 				final String dateTime = _12HourSDF.format(_24HourDt) + ", "
 						+ sdf.format(appointmentCollection.getFromDate());
-				
-				final String toDateTime = _12HourSDF.format(_24HourToDt) + ", "
-						+ sdf.format(appointmentCollection.getFromDate());
-				
 				final String doctorName = userCollection.getTitle() + " " + userCollection.getFirstName();
 				final String clinicName = locationCollection.getLocationName(),
 						clinicContactNum = locationCollection.getClinicNumber() != null
@@ -1077,7 +1053,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					public void run() {
 						try {
 							sendAppointmentEmailSmsNotification(true, request, id, appointmentId, doctorName,
-									patientName, dateTime,toDateTime, clinicName, clinicContactNum, patientEmailAddress,
+									patientName, dateTime, clinicName, clinicContactNum, patientEmailAddress,
 									patientMobileNumber, doctorEmailAddress, doctorMobileNumber, facility);
 						} catch (MessagingException e) {
 							e.printStackTrace();
@@ -1143,7 +1119,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 							response.setLongitude(locationCollection.getLongitude());
 						}
 					}
-
 					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 							.findByLocationId(locationId);
 					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
@@ -1225,7 +1200,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	private void sendAppointmentEmailSmsNotification(Boolean isAddAppointment, AppointmentRequest request,
 			String appointmentCollectionId, String appointmentId, String doctorName, String patientName,
-			String dateTime, String toDateTime, String clinicName, String clinicContactNum, String patientEmailAddress,
+			String dateTime, String clinicName, String clinicContactNum, String patientEmailAddress,
 			String patientMobileNumber, String doctorEmailAddress, String doctorMobileNumber,
 			DoctorFacility doctorFacility) throws MessagingException {
 
@@ -1247,7 +1222,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()) {
 					sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
 							request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
-							appointmentId, dateTime, toDateTime,doctorName, clinicName, clinicContactNum);
+							appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
 				}
 				sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
 						patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
@@ -1261,7 +1236,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						&& !DPDoctorUtils.anyStringEmpty(patientMobileNumber)) {
 					sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 							request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-							request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime, toDateTime,
+							request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
 							doctorName, clinicName, clinicContactNum);
 				}
 				if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
@@ -1275,11 +1250,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 							"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress);
 					sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
 							request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
-							appointmentId, dateTime,toDateTime, doctorName, clinicName, clinicContactNum);
+							appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,toDateTime,
+								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
 								doctorName, clinicName, clinicContactNum);
 					sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
 							patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
@@ -1293,11 +1268,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 							doctorEmailAddress);
 					sendMsg(null, "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR", request.getDoctorId(),
 							request.getLocationId(), request.getHospitalId(), request.getDoctorId(), doctorMobileNumber,
-							patientName, appointmentId, dateTime,toDateTime, doctorName, clinicName, clinicContactNum);
+							patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(), "TENTATIVE_APPOINTMENT_TO_PATIENT",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,toDateTime,
+								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
 								doctorName, clinicName, clinicContactNum);
 					sendPushNotification("CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR", request.getDoctorId(),
 							doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
@@ -1318,7 +1293,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					if (request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()) {
 						sendMsg(null, "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", request.getDoctorId(),
 								request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
-								doctorMobileNumber, patientName, appointmentId, dateTime,toDateTime, doctorName, clinicName,
+								doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
 								clinicContactNum);
 					}
 
@@ -1335,7 +1310,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							&& !DPDoctorUtils.anyStringEmpty(patientMobileNumber)) {
 						sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(), "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,toDateTime,
+								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
 								doctorName, clinicName, clinicContactNum);
 					}
 
@@ -1347,13 +1322,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 					if (request.getState().getState().equals(AppointmentState.CANCEL.getState())) {
 						sendMsg(null, "CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT", request.getDoctorId(),
 								request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
-								doctorMobileNumber, patientName, appointmentId, dateTime,toDateTime, doctorName, clinicName,
+								doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
 								clinicContactNum);
 						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(),
 									"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getPatientId(),
-									patientMobileNumber, patientName, appointmentId, dateTime,toDateTime, doctorName, clinicName,
+									patientMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
 									clinicContactNum);
 
 						sendPushNotification("CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT", request.getDoctorId(),
@@ -1380,12 +1355,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 						if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
 							sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
-									doctorMobileNumber, patientName, appointmentId, dateTime, toDateTime,doctorName, clinicName,
+									doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
 									clinicContactNum);
 						else
 							sendMsg(null, "RESCHEDULE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
-									doctorMobileNumber, patientName, appointmentId, dateTime, toDateTime,doctorName, clinicName,
+									doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
 									clinicContactNum);
 					}
 
@@ -1406,26 +1381,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 				if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()) {
 					if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
-					{
 						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,toDateTime,
+									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
 									doctorName, clinicName, clinicContactNum);
 						else if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(), "RESCHEDULE_APPOINTMENT_TO_PATIENT",
 									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,toDateTime,
-									doctorName, clinicName, clinicContactNum);
-					}
-					else if (request.getState().getState().equals(AppointmentState.RESCHEDULE.getState())) {
-						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber)) {
-							sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(), "RESCHEDULE_APPOINTMENT_TO_PATIENT",
-									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-									toDateTime, doctorName, clinicName, clinicContactNum);
-						}
-					}
+									doctorName, clinicName, clinicContactNum);
 				}
 
 				if (request.getState().getState().equals(AppointmentState.CONFIRM.getState())
@@ -1631,10 +1596,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	private void sendMsg(String formatType, String type, String doctorId, String locationId, String hospitalId,
-			String userId, String mobileNumber, String patientName, String appointmentId, String dateTime, String toDateTime,
+			String userId, String mobileNumber, String patientName, String appointmentId, String dateTime,
 			String doctorName, String clinicName, String clinicContactNum) {
 		SMSFormatCollection smsFormatCollection = null;
-		String time = "@ " + dateTime;
 		if (formatType != null) {
 			smsFormatCollection = sMSFormatRepository.find(new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId), formatType);
@@ -1673,46 +1637,34 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (!smsFormatCollection.getContent().equals(SMSContent.CLINIC_CONTACT_NUMBER.getContent())
 						|| clinicContactNum == null)
 					clinicContactNum = "";
-				
-				if (!smsFormatCollection.getContent().equals(SMSContent.SLOT_SMS.getContent())
-						|| clinicContactNum == null)
-				{
-					time = "between " + dateTime + " - " + toDateTime;
-				}
-				else
-				{
-					time = "@ " + dateTime;
-				}
-					
-					
 			}
 		}
 		String text = "";
 		switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
 			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
-					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed " + time
+					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ " + dateTime
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
 		}
 			break;
 
 		case "CONFIRMED_APPOINTMENT_TO_DOCTOR": {
-			text = "Healthcoco! Your appointment with " + patientName + " has been scheduled " + time
+			text = "Healthcoco! Your appointment with " + patientName + " has been scheduled @ " + dateTime
 					+ (clinicName != "" ? " at " + clinicName : "") + ".";
 			smsDetail.setUserName(doctorName);
 		}
 			break;
 
 		case "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR": {
-			text = "Healthcoco! You have an appointment request from " + patientName + " "+ time + " at "
+			text = "Healthcoco! You have an appointment request from " + patientName + " for " + dateTime + " at "
 					+ clinicName + ".";
 			smsDetail.setUserName(doctorName);
 		}
 			break;
 
 		case "TENTATIVE_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointmen " + time + " with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
+			text = "Your appointmen @ " + dateTime + " with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "")
 					+ " has been sent for confirmation. Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
@@ -1720,14 +1672,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR": {
-			text = "Your appointment" + " with " + patientName + " " + time + " at " + clinicName
+			text = "Your appointment" + " with " + patientName + " for " + dateTime + " at " + clinicName
 					+ " has been cancelled as per your request.";
 			smsDetail.setUserName(doctorName);
 		}
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR": {
-			text = "Your appointment " + time + " has been cancelled by " + doctorName
+			text = "Your appointment @ " + dateTime + " has been cancelled by " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "")
 					+ ". Request you to book again. Download Healthcoco App- " + patientAppBitLink;
@@ -1736,21 +1688,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT": {
-			text = "Healthcoco! Your appointment" + " with " + patientName + " " + time + " at " + clinicName
+			text = "Healthcoco! Your appointment" + " with " + patientName + " @ " + dateTime + " at " + clinicName
 					+ ", has been cancelled by patient.";
 			smsDetail.setUserName(doctorName);
 		}
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT": {
-			text = "Your appointment " + time + " with " + doctorName
+			text = "Your appointment for " + dateTime + " with " + doctorName
 					+ " has been cancelled as per your request. Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
 		}
 			break;
 
 		case "APPOINTMENT_REMINDER_TO_PATIENT": {
-			text = "You have an appointment " + time + " with " + doctorName
+			text = "You have an appointment @ " + dateTime + " with " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ". Download Healthcoco App- "
 					+ patientAppBitLink;
@@ -1760,14 +1712,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT": {
 			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
-					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been rescheduled " + time
+					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been rescheduled @ " + dateTime
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
 		}
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_DOCTOR": {
-			text = "Your appointment with " + patientName + " has been rescheduled " + time + " at " + clinicName
+			text = "Your appointment with " + patientName + " has been rescheduled to " + dateTime + " at " + clinicName
 					+ ".";
 			smsDetail.setUserName(doctorName);
 		}
@@ -1860,9 +1812,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 				} else if (status.equalsIgnoreCase(QueueStatus.CHECKED_OUT.toString())) {
 					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "checkedOutAt"));
 				}
-			} else if (!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("updatedTime")) {
+			} else if(!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("startTime")){
+				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "time.fromTime"));
+			}
+			else if (!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("updatedTime")) {
 				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
 			}
+			
 
 			if (isWeb)
 				response = getAppointmentsForWeb(criteria, sortOperation, page, size, appointmentLookupResponses);
@@ -2210,7 +2166,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 	}
 
-	
 	@Override
 	@Transactional
 	public Response<Object> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
@@ -2219,7 +2174,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		List<Appointment> appointments = null;
 		List<AppointmentLookupResponse> appointmentLookupResponses = null;
 		try {
-
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 			Criteria criteria = new Criteria("type").is(AppointmentType.APPOINTMENT.getType()).and("updatedTime")
 					.gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").is(false);
@@ -2352,7 +2306,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 							Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
 							Aggregation.unwind("hospital")), LocationCollection.class, Location.class)
 					.getUniqueMappedResult();
-
 			if (location == null) {
 				return null;
 			} else {
@@ -2402,7 +2355,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				response.setLocation(location);
 				response.setHospital(location.getHospital());
 				response.setId(locationId);
-
 				Criteria criteria2 = new Criteria("locationId").is(new ObjectId(location.getId()));
 
 				Criteria criteriaForActive = new Criteria();
@@ -2457,6 +2409,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 				}
 				response.setDoctors(doctors);
+				response.setId(locationId);
 				response.setNoOfLabTest(
 						(int) mongoTemplate.count(
 								new Query(new Criteria("locationId").is(new ObjectId(location.getId()))
@@ -2589,9 +2542,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 								.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
 						DateTime end = new DateTime(yearOfDate, monthOfDate, dayOfDate, 23, 59, 59, DateTimeZone
 								.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
-						List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
-								.findByDoctorLocationId(doctorObjectId, locationObjectId, start, end,
-										new Sort(Direction.ASC, "time.fromTime"));
+						
+						List<AppointmentBookedSlotCollection> bookedSlots = mongoTemplate.aggregate(
+								Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)
+										.andOperator(
+												new Criteria().orOperator(new Criteria("doctorId").is(doctorObjectId), new Criteria("doctorIds").is(doctorObjectId)),										
+										new Criteria().orOperator(new Criteria("fromDate").lte(new Date(start.getMillis())).and("toDate").gte(new Date(start.getMillis())),
+																	new Criteria("fromDate").lte(new Date(end.getMillis())).and("toDate").gte(new Date(end.getMillis()))))
+										.and("isPatientDiscarded").ne(true)),
+										Aggregation.sort(new Sort(Direction.ASC, "time.fromTime"))), 
+								AppointmentBookedSlotCollection.class, AppointmentBookedSlotCollection.class).getMappedResults();
+								
+//								appointmentBookedSlotRepository
+//								.findByDoctorLocationId(doctorObjectId, locationObjectId, start, end,
+//										new Sort(Direction.ASC, "time.fromTime"));
 						int i = 0;
 						for (WorkingHours hours : workingHours) {
 							startTime = hours.getFromTime();
@@ -2653,7 +2617,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 					response.setSlots(slotResponse);
 				}
 			}
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting time slots");
 		}
@@ -2821,50 +2787,47 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 				
 				if (request.getState().equals(AppointmentState.RESCHEDULE) && request.getIsCalenderBlocked()) {
-						List<AppointmentCollection> appointmentCollections = mongoTemplate
-						.aggregate(
-								Aggregation
-										.newAggregation(
-												Aggregation
-														.match(new Criteria("locationId")
-																.is(new ObjectId(request.getLocationId()))
-																.and("id").ne(new ObjectId(request.getId()))
-																.andOperator(
-																		new Criteria().orOperator(
-																				new Criteria("doctorId")
-																						.is(new ObjectId(
-																								request.getDoctorId())),
-																				new Criteria("doctorIds")
-																						.is(new ObjectId(
-																								request.getDoctorId()))
-																						.and("isCalenderBlocked")
-																						.is(true)),
-																		new Criteria().orOperator(
-																				new Criteria("time.fromTime")
-																						.lte(request.getTime()
-																								.getFromTime())
-																						.and("time.toTime")
-																						.gt(request.getTime()
-																								.getToTime()),
-																				new Criteria("time.fromTime")
-																						.lt(request.getTime()
-																								.getFromTime())
-																						.and("time.toTime")
-																						.gte(request.getTime()
-																								.getToTime())))
-																.and("fromDate").gte(request.getFromDate())
-																.and("toDate").lte(request.getToDate())
-																.and("state")
-																.ne(AppointmentState.CANCEL.getState()))),
+					List<AppointmentCollection> appointmentCollections = mongoTemplate
+					.aggregate(
+							Aggregation
+									.newAggregation(
+											Aggregation
+													.match(new Criteria("locationId")
+															.is(new ObjectId(request.getLocationId()))
+															.and("id").ne(new ObjectId(request.getId()))
+															.andOperator(
+																	new Criteria().orOperator(
+																			new Criteria("doctorId")
+																					.is(new ObjectId(
+																							request.getDoctorId())),
+																			new Criteria("doctorIds")
+																					.in(doctorIds)
+																					.and("isCalenderBlocked")
+																					.is(true)),
+																	new Criteria().orOperator(
+																			new Criteria("time.fromTime")
+																					.lte(request.getTime()
+																							.getFromTime())
+																					.and("time.toTime")
+																					.gt(request.getTime()
+																							.getToTime()),
+																			new Criteria("time.fromTime")
+																					.lt(request.getTime()
+																							.getFromTime())
+																					.and("time.toTime")
+																					.gte(request.getTime()
+																							.getToTime())))
+															.and("fromDate").gte(request.getFromDate())
+															.and("toDate").lte(request.getToDate())
+															.and("state").ne(AppointmentState.CANCEL.getState()))),
 
-								AppointmentCollection.class, AppointmentCollection.class)
-						.getMappedResults();
-						if (appointmentCollections != null && !appointmentCollections.isEmpty()) {
-							logger.error(timeSlotIsBooked);
-							throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
-						}
-				}
-				
+							AppointmentCollection.class, AppointmentCollection.class)
+					.getMappedResults();
+					if (appointmentCollections != null && !appointmentCollections.isEmpty()) {
+						logger.error(timeSlotIsBooked);
+						throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
+					}
+			}
 
 					AppointmentWorkFlowCollection appointmentWorkFlowCollection = new AppointmentWorkFlowCollection();
 					BeanUtil.map(appointmentCollection, appointmentWorkFlowCollection);
@@ -2883,6 +2846,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 						appointmentCollection.setTime(request.getTime());
 						appointmentCollection.setIsCalenderBlocked(request.getIsCalenderBlocked());
 						appointmentCollection.setExplanation(request.getExplanation());
+						appointmentCollection.setDoctorIds(doctorIds);
+						appointmentCollection.setSubject(request.getSubject());
+						appointmentCollection.setIsAllDayEvent(request.getIsAllDayEvent());
+						
 						if (request.getState().equals(AppointmentState.RESCHEDULE)) {
 							appointmentCollection.setIsRescheduled(true);
 							appointmentCollection.setState(AppointmentState.CONFIRM);
@@ -2891,6 +2858,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 							if (request.getIsCalenderBlocked()) {
 								if (bookedSlotCollection != null) {
+									bookedSlotCollection.setDoctorIds(appointmentCollection.getDoctorIds());
 									bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
 									bookedSlotCollection.setToDate(appointmentCollection.getToDate());
 									bookedSlotCollection.setTime(appointmentCollection.getTime());
@@ -2923,8 +2891,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Boolean sendReminderToPatient(String appointmentId) {
 		Boolean response = false;
-		Integer timeDiff = 0;
-		Long addMillis = 0l;
 		try {
 			AppointmentLookupResponse appointmentLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
 					Aggregation.match(new Criteria("appointmentId").is(appointmentId)),
@@ -2953,10 +2919,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 						String _24HourTime = String.format("%02d:%02d",
 								appointmentLookupResponse.getTime().getFromTime() / 60,
 								appointmentLookupResponse.getTime().getFromTime() % 60);
-
-						String _24HourToTime = String.format("%02d:%02d",
-								appointmentLookupResponse.getTime().getToTime() / 60,
-								appointmentLookupResponse.getTime().getToTime() % 60);
 						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
 						if (clinicProfileCollection != null) {
@@ -2968,10 +2930,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 							_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 							_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 						}
-						
 
 						Date _24HourDt = _24HourSDF.parse(_24HourTime);
-						Date _24HourToDt = _24HourSDF.parse(_24HourToTime);
 						String patientName = patientCollection.getLocalPatientName(),
 								dateTime = _12HourSDF.format(_24HourDt) + ", "
 										+ sdf.format(appointmentLookupResponse.getFromDate()),
@@ -2981,21 +2941,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 										? locationCollection.getClinicNumber()
 										: "";
 										
-						if(appointmentLookupResponse.getTime() != null)
-						{
-							timeDiff = appointmentLookupResponse.getTime().getToTime()
-									- appointmentLookupResponse.getTime().getFromTime();
-							addMillis = TimeUnit.MINUTES.toMillis(timeDiff);
-						}
-
-						String toDateTime = _12HourSDF.format(_24HourToDt) + ", "
-								+ sdf.format(new Date(appointmentLookupResponse.getFromDate().getTime() + addMillis));				
 						sendMsg(SMSFormatType.APPOINTMENT_REMINDER.getType(), "APPOINTMENT_REMINDER_TO_PATIENT",
 								appointmentLookupResponse.getDoctorId().toString(),
 								appointmentLookupResponse.getLocationId().toString(),
 								appointmentLookupResponse.getHospitalId().toString(),
 								appointmentLookupResponse.getPatientId().toString(), patient.getMobileNumber(),
-								patientName, appointmentId, dateTime,toDateTime, doctorName, clinicName, clinicContactNum);
+								patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
 						response = true;
 					}
 				}
@@ -3299,6 +3250,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public  Integer getMinutesOfDay(Date date) {
 		DateTime dateTime = new DateTime(new Date(), DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
 		Integer currentMinute = dateTime.getMinuteOfDay();
 		return currentMinute;
 	}
@@ -3654,7 +3606,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					Criteria criteria2 = new Criteria("type").is(AppointmentType.APPOINTMENT.getType()).and("doctorId")
 							.is(userCollection.getId()).and("locationId").is(new ObjectId(locationId))
 							.and("isPatientDiscarded").is(false);
-
 					if (!DPDoctorUtils.anyStringEmpty(from)) {
 						localCalendar.setTime(new Date(Long.parseLong(from)));
 						int currentDay = localCalendar.get(Calendar.DATE);
@@ -3725,7 +3676,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			} else if (status.equalsIgnoreCase(QueueStatus.WAITING.name())) {
 				appointmentCollection.setCheckedInAt(new Date(System.currentTimeMillis()).getTime());
 			} else if (status.equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
-				appointmentCollection.setEngagedAt(new Date().getTime());
+				appointmentCollection.setEngagedAt(new Date(System.currentTimeMillis()).getTime());
 				appointmentCollection
 						.setWaitedFor(appointmentCollection.getEngagedAt() - appointmentCollection.getCheckedInAt());
 			} else if (status.equalsIgnoreCase(QueueStatus.CHECKED_OUT.name())) {
@@ -4390,7 +4341,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			jasperReportResponse = jasperReportService.createPDF(ComponentType.PATIENT_CARD, parameters,
 					dentalWorksFormA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 					Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
-
 			if (jasperReportResponse != null)
 				response = getFinalImageURL(jasperReportResponse.getPath());
 			if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -4962,6 +4912,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 				response.setDataList(events);
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -5153,7 +5104,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 								.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 								.append("patientCard", new BasicDBObject("$first", "$patientCard"))));
 
-
 				if (size > 0) {
 					events = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria), projectList
 
@@ -5206,14 +5156,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 				response.setDataList(events);
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
-	
-	
 
 	@Override
 	public Boolean addEditNutritionAppointment(NutritionAppointment request) {
@@ -5347,7 +5296,5 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 		return response;
 	}
-
-	
 
 }
