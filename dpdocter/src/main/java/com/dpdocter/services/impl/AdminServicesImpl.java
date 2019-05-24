@@ -955,13 +955,16 @@ public class AdminServicesImpl implements AdminServices {
 	        		if(line.size()>1) {
 	        			if(!DPDoctorUtils.anyStringEmpty(line.get(1))) {
 	        				String[] specialities = line.get(1).split("\\+");
-	        				List<SpecialityCollection> specialityCollections = specialityRepository.find(specialities);
-	        				List<ObjectId> specialityIds = (List<ObjectId>) CollectionUtils.collect(specialityCollections,
-	    							new BeanToPropertyValueTransformer("id"));
 	        				
-	        				List<String> specialitiesList = (List<String>) CollectionUtils.collect(specialityCollections,
-	    							new BeanToPropertyValueTransformer("superSpeciality"));
-	        				
+	        				List<ObjectId> specialityIds = new ArrayList<ObjectId>();
+	        				List<String> specialitiesList = new ArrayList<String>();
+	        				for(String speciality: specialities) {
+	        					List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository.findByQueryAnnotation(speciality);
+	        					for(ESSpecialityDocument esSpecialityDocument : esSpecialityDocuments) {
+	        						specialityIds.add(new ObjectId(esSpecialityDocument.getId()));
+	        						specialitiesList.add(esSpecialityDocument.getSuperSpeciality());
+	        					}
+	        				}
 	        				servicesCollection.setSpecialities(specialitiesList);
 	        				servicesCollection.setSpecialityIds(specialityIds);
 	        			}

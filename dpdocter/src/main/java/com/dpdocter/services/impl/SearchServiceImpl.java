@@ -130,15 +130,15 @@ public class SearchServiceImpl implements SearchService {
 				
 				if (speciality.equalsIgnoreCase("GYNECOLOGIST")) {
 					speciality = "GYNAECOLOGIST".toLowerCase();
+				}else if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")) {
+					speciality = "FAMILY PHYSICIAN";
+				} else if (speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
+					speciality = "GENERAL PHYSICIAN";
 				}
 				
-				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN") || speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
-					specialityQueryBuilder = QueryBuilders.boolQuery().should(QueryBuilders.termsQuery("specialitiesValue", "GENERAL PHYSICIAN".toLowerCase(), "FAMILY PHYSICIAN".toLowerCase()))
-					.should(QueryBuilders.termsQuery("parentSpecialities", "GENERAL PHYSICIAN".toLowerCase(), "FAMILY PHYSICIAN".toLowerCase())).minimumNumberShouldMatch(1);
-				}else {
-					specialityQueryBuilder = QueryBuilders.boolQuery().should(QueryBuilders.termsQuery("specialitiesValue", speciality.toLowerCase()))
-							.should(QueryBuilders.termsQuery("parentSpecialities", speciality.toLowerCase())).minimumNumberShouldMatch(1);
-				}
+				specialityQueryBuilder = QueryBuilders.boolQuery().should(QueryBuilders.matchPhrasePrefixQuery("specialitiesValue", speciality+"*"))
+							.should(QueryBuilders.matchPhrasePrefixQuery("parentSpecialities", speciality+"*")).minimumNumberShouldMatch(1);
+				
 
 						//createSpecialityFilter(speciality);
 				if (specialityQueryBuilder != null) {
@@ -151,7 +151,7 @@ public class SearchServiceImpl implements SearchService {
 				service = null;
 			} else {
 				service = service.replace("doctors-for-","").replaceAll("-", " ");
-				QueryBuilder serviceQueryBuilder = QueryBuilders.termsQuery("servicesValue", service.toLowerCase());
+				QueryBuilder serviceQueryBuilder = QueryBuilders.matchPhrasePrefixQuery("servicesValue", service+"*");
 						
 						//createServiceFilter(service);
 				if (serviceQueryBuilder != null) {

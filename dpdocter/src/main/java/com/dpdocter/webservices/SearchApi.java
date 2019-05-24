@@ -1,5 +1,6 @@
 package com.dpdocter.webservices;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -234,10 +235,13 @@ public class SearchApi {
 			if (doctorProfile.getClinicProfile() != null & !doctorProfile.getClinicProfile().isEmpty()) {
 				for (DoctorClinicProfileBySlugUrlResponse clinicProfile : doctorProfile.getClinicProfile()) {
 					if (clinicProfile.getImages() != null) {
+						List<String> images = new ArrayList<String>();
 						for (String clinicImage : clinicProfile.getImages()) {
 							if (clinicImage != null)
 								clinicImage = getFinalImageURL(clinicImage);
+							images.add(clinicImage);
 						}
+						clinicProfile.setImages(images);
 					}
 				}
 			}
