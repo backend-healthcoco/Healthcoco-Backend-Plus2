@@ -51,4 +51,7 @@ public interface ESAppointmentService {
 	List<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(String city, int page, int size,
 			String searchTerm);
 
+	List<ESDoctorCardResponse> getDoctorsShortCard(int page, int size, String city, String location, String latitude,
+			String longitude, String speciality, String searchTerm);
+
 }

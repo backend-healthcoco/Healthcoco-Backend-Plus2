@@ -11,7 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -522,7 +521,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				}
 			}
 		}
-
 		return response;
 	}
 
@@ -798,13 +796,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				 * null || esComplaintsDocuments.isEmpty()) { return null; } Set<String>
 				 * locationIds = new HashSet<>(CollectionUtils.collect(esComplaintsDocuments,
 				 * new BeanToPropertyValueTransformer("locationId"))); Set<String> doctorIds =
-				 * new HashSet<>( CollectionUtils.collect(esComplaintsDocuments, new =======
-				 * <<<<<<< HEAD if (!DPDoctorUtils.anyStringEmpty(symptom)) {
-				 * List<ESComplaintsDocument> esComplaintsDocuments =
-				 * esComplaintsRepository.findByComplaint(symptom); if (esComplaintsDocuments ==
-				 * null || esComplaintsDocuments.isEmpty()) { return null; } Set<String>
-				 * locationIds = new HashSet<>(CollectionUtils.collect(esComplaintsDocuments,
-				 * new BeanToPropertyValueTransformer("locationId"))); Set<String> doctorIds =
 				 * new HashSet<>( CollectionUtils.collect(esComplaintsDocuments, new
 				 * BeanToPropertyValueTransformer("doctorId")));
 				 * 
@@ -818,16 +809,14 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				 * null || esComplaintsDocuments.isEmpty()) { return null; } Set<String>
 				 * locationIds = new HashSet<>(CollectionUtils.collect(esComplaintsDocuments,
 				 * new BeanToPropertyValueTransformer("locationId"))); Set<String> doctorIds =
-				 * new HashSet<>( CollectionUtils.collect(esComplaintsDocuments, new >>>>>>>
-				 * 8875f98e... HAPPY-3429 Adding Locality field in Doctorlist API
+				 * new HashSet<>( CollectionUtils.collect(esComplaintsDocuments, new
 				 * BeanToPropertyValueTransformer("doctorId")));
 				 * 
 				 * locationIds.remove(null); doctorIds.remove(null); if ((locationIds == null ||
 				 * locationIds.isEmpty()) && (doctorIds == null || doctorIds.isEmpty())) {
 				 * return null; } boolQueryBuilder.must(QueryBuilders.termsQuery("userId",
 				 * doctorIds)) .must(QueryBuilders.termsQuery("locationId", locationIds)); }
-				 * <<<<<<< HEAD ======= >>>>>>> e5408604ee47a0585cf6f3af38163a2902fe3750 >>>>>>>
-				 * 8875f98e... HAPPY-3429 Adding Locality field in Doctorlist API
+				 * >>>>>>> e5408604ee47a0585cf6f3af38163a2902fe3750
 				 */
 
 				if (specialityQueryBuilder != null)
@@ -904,7 +893,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 													QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
 															.gt(0).lt(minTime)))),
 									QueryBuilders.termsQuery("workingSchedules.workingDay", days)))));
-
 		} else {
 
 			if (maxTime == 0) {
@@ -1069,15 +1057,10 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 								ESLabTestDocument.class);
 				}
 			}
-			/*
-			 * if (esLabTestDocuments == null || esLabTestDocuments.isEmpty()) { return
-			 * null; }
-			 */
 			List<ESLocationDocument> esLocationDocuments = null;
 			Collection<String> locationIds = null;
 
 			if (esLabTestDocuments != null && !esLabTestDocuments.isEmpty()) {
-
 				locationIds = CollectionUtils.collect(esLabTestDocuments,
 						new BeanToPropertyValueTransformer("locationId"));
 			}
@@ -1490,8 +1473,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			}
 			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
 				doctorResponse.setSpeciality(speciality.replace(" ", "-"));
+
 				doctorResponse.setMetaData(StringUtils.capitalize(speciality) + "s in ");
-			}else {
+			} else {
 				doctorResponse.setMetaData("Doctors in ");
 				doctorResponse.setSpeciality("ALL Specialities");
 
@@ -1600,6 +1584,119 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		return response;
 	}
 
+	@SuppressWarnings({ "unchecked" })
+	@Override
+	public List<ESDoctorCardResponse> getDoctorsShortCard(int page, int size, String city, String location,
+			String latitude, String longitude, String speciality, String searchTerm) {
+		List<ESDoctorDocument> esDoctorDocuments = null;
+		List<ESDoctorCardResponse> esDoctorCardResponses = null;
+		try {
+
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.matchQuery("isClinic", true));
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("firstName", searchTerm));
+			}
+			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
+				city.trim().replace("-", " ");
+				ESCityDocument esCityDocument = esCityRepository.findByName(city);
+				if (esCityDocument != null) {
+					latitude = esCityDocument.getLatitude() + "";
+					longitude = esCityDocument.getLongitude() + "";
+				}
+			}
+			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+				if (speciality.equalsIgnoreCase("GYNECOLOGIST")) {
+					speciality = "GYNAECOLOGIST";
+				}
+				List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
+						.findByQueryAnnotation(speciality);
+				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")) {
+					speciality = "FAMILY PHYSICIAN";
+				} else if (speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
+					speciality = "GENERAL PHYSICIAN";
+				}
+				List<ESSpecialityDocument> esSpecialityDocuments2 = new LinkedList<ESSpecialityDocument>(
+						esSpecialityDocuments);
+
+				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")
+						|| speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
+
+					esSpecialityDocuments = esSpecialityRepository.findByQueryAnnotation(speciality);
+					for (ESSpecialityDocument esSpecialityDocument : esSpecialityDocuments) {
+						if (esSpecialityDocument != null) {
+							esSpecialityDocuments2.add(esSpecialityDocuments2.size(), esSpecialityDocument);
+						}
+					}
+				}
+				if (esSpecialityDocuments2 != null) {
+					Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments2,
+							new BeanToPropertyValueTransformer("id"));
+					if (specialityIds == null)
+						specialityIds = CollectionUtils.EMPTY_COLLECTION;
+					boolQueryBuilder.must(QueryBuilders.termsQuery("specialities", specialityIds));
+				}
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(location)) {
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locationName", location));
+			}
+
+			if (latitude != null && longitude != null)
+				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+						.lon(Double.parseDouble(longitude)).distance("30km"));
+
+			SearchQuery searchQuery = null;
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						// .withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+						.withSort(SortBuilders.geoDistanceSort("geoPoint")
+								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
+								.unit(DistanceUnit.KILOMETERS))
+						.withPageable(new PageRequest(page, size)).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						// .withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+						.withSort(SortBuilders.geoDistanceSort("geoPoint")
+								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
+								.unit(DistanceUnit.KILOMETERS))
+						.build();
+
+			esDoctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
+
+			if (esDoctorDocuments != null) {
+				esDoctorCardResponses = new ArrayList<ESDoctorCardResponse>();
+				// Collections.sort(esDoctorDocuments);
+				List<String> specialities = null;
+				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
+
+					if (doctorDocument.getSpecialities() != null) {
+						specialities = new ArrayList<String>();
+						for (String specialityId : doctorDocument.getSpecialities()) {
+							ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
+							if (specialityCollection != null) {
+								specialities.add(specialityCollection.getSuperSpeciality());
+
+							}
+						}
+						doctorDocument.setSpecialities(specialities);
+					}
+
+					ESDoctorCardResponse doctorCardResponse = new ESDoctorCardResponse();
+					BeanUtil.map(doctorDocument, doctorCardResponse);
+					esDoctorCardResponses.add(doctorCardResponse);
+
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error While Getting Doctor Details From ES : " + e.getMessage());
+		}
+		return esDoctorCardResponses;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<SearchLandmarkLocalityResponse> getLandmarksAndLocalitiesByCity(String city, int page, int size, String searchTerm) {
@@ -1628,15 +1725,12 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					boolQueryBuilder.should(QueryBuilders.matchPhrasePrefixQuery("locality", searchTerm)).should(QueryBuilders.matchPhrasePrefixQuery("landmark", searchTerm)).minimumNumberShouldMatch(1);
 				}
 				
-//				if() {
-//					size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESLandmarkLocalityDocument.class);	
-//				}
 				size = size - response.size();
 				SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size)).build();
 				
 				List<ESLandmarkLocalityDocument> esLandmarkLocalityDocuments = elasticsearchTemplate.queryForList(searchQuery, ESLandmarkLocalityDocument.class);
 				if(esLandmarkLocalityDocuments != null) {
-					response = new ArrayList<SearchLandmarkLocalityResponse>();
+					//response = new ArrayList<SearchLandmarkLocalityResponse>();
 					
 					for(ESLandmarkLocalityDocument document : esLandmarkLocalityDocuments) {
 						searchLandmarkLocalityResponse = new SearchLandmarkLocalityResponse();
@@ -1654,7 +1748,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						String slugUrl = searchLandmarkLocalityResponse.getName().toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-");
 						
 						slugUrl = slugUrl.replaceAll("-*-","-");	
-						
+						searchLandmarkLocalityResponse.setName(searchLandmarkLocalityResponse.getName()+", "+searchLandmarkLocalityResponse.getCity());
+						searchLandmarkLocalityResponse.setResponseType("LOCALITY");
 						searchLandmarkLocalityResponse.setSlugUrl(slugUrl);
 						response.add(searchLandmarkLocalityResponse);
 					}

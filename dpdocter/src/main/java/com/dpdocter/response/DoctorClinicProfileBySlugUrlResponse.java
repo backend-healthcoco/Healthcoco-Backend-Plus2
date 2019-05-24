@@ -3,9 +3,9 @@ package com.dpdocter.response;
 import java.util.List;
 
 import com.dpdocter.beans.AppointmentSlot;
-import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.Feedback;
+import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.enums.DoctorFacility;
 
 public class DoctorClinicProfileBySlugUrlResponse {
@@ -37,6 +37,10 @@ public class DoctorClinicProfileBySlugUrlResponse {
 	private AppointmentSlot appointmentSlot;
 
 	private DoctorFacility facility;
+
+	private List<String> appointmentBookingNumber;
+
+	private List<WorkingSchedule> workingSchedules;
 
 	private List<String> images;
 
@@ -220,13 +224,30 @@ public class DoctorClinicProfileBySlugUrlResponse {
 		this.doctorSlugURL = doctorSlugURL;
 	}
 
+	public List<String> getAppointmentBookingNumber() {
+		return appointmentBookingNumber;
+	}
+
+	public void setAppointmentBookingNumber(List<String> appointmentBookingNumber) {
+		this.appointmentBookingNumber = appointmentBookingNumber;
+	}
+
+	public List<WorkingSchedule> getWorkingSchedules() {
+		return workingSchedules;
+	}
+
+	public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
+		this.workingSchedules = workingSchedules;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileBySlugUrlResponse [id=" + id + ", doctorId=" + doctorId + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + ", clinicAddress=" + clinicAddress + ", locationName="
 				+ locationName + ", country=" + country + ", city=" + city + ", postalCode=" + postalCode
 				+ ", latitude=" + latitude + ", longitude=" + longitude + ", consultationFee=" + consultationFee
-				+ ", appointmentSlot=" + appointmentSlot + ", facility=" + facility + ", images=" + images
+				+ ", appointmentSlot=" + appointmentSlot + ", facility=" + facility + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", workingSchedules=" + workingSchedules + ", images=" + images
 				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locality="
 				+ locality + ", feedbacks=" + feedbacks + ", noOfFeedbacks=" + noOfFeedbacks + ", doctorSlugURL="
 				+ doctorSlugURL + "]";
