@@ -2546,8 +2546,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 						List<AppointmentBookedSlotCollection> bookedSlots = mongoTemplate.aggregate(
 								Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)
 										.andOperator(
-												new Criteria().orOperator(new Criteria("doctorId").is(doctorObjectId), new Criteria("doctorIds").is(doctorObjectId)),										
-										new Criteria().orOperator(new Criteria("fromDate").lte(new Date(start.getMillis())).and("toDate").gte(new Date(start.getMillis())),
+												new Criteria().orOperator(new Criteria("doctorId").is(doctorObjectId), new Criteria("doctorIds").in(Arrays.asList(doctorObjectId))),										
+										new Criteria().orOperator(new Criteria("fromDate").gte(new Date(start.getMillis())).and("toDate").lte(new Date(end.getMillis())),
+												new Criteria("fromDate").lte(new Date(start.getMillis())).and("toDate").gte(new Date(start.getMillis())),
 																	new Criteria("fromDate").lte(new Date(end.getMillis())).and("toDate").gte(new Date(end.getMillis()))))
 										.and("isPatientDiscarded").ne(true)),
 										Aggregation.sort(new Sort(Direction.ASC, "time.fromTime"))), 
@@ -2652,43 +2653,98 @@ public class AppointmentServiceImpl implements AppointmentService {
 				for (String doctorId : request.getDoctorIds())
 					doctorIds.add(new ObjectId(doctorId));
 			}
-			List<AppointmentCollection> appointmentCollections = mongoTemplate
-					.aggregate(
+			
+			Aggregation aggregation = Aggregation
+					.newAggregation(
 							Aggregation
-									.newAggregation(
-											Aggregation
-													.match(new Criteria(
-															"locationId")
-																	.is(new ObjectId(request.getLocationId()))
-																	.orOperator(
-																			new Criteria("doctorId").in(doctorIds)
-																					.and("time.fromTime")
-																					.lte(request.getTime()
-																							.getFromTime())
-																					.and("time.toTime")
-																					.gt(request.getTime().getToTime()),
-																			new Criteria("doctorIds").is(doctorIds)
-																					.and("isCalenderBlocked").is(true)
-																					.and("time.fromTime")
-																					.lte(request.getTime()
-																							.getFromTime())
-																					.and("time.toTime")
-																					.gt(request.getTime().getToTime()),
-																			new Criteria("doctorId")
-																					.in(doctorIds).and("time.fromTime")
-																					.lt(request.getTime().getFromTime())
-																					.and("time.toTime")
-																					.gte(request.getTime().getToTime()),
-																			new Criteria("doctorIds").is(doctorIds)
-																					.and("isCalenderBlocked").is(true)
-																					.and("time.fromTime")
-																					.lt(request.getTime().getFromTime())
-																					.and("time.toTime")
-																					.gte(request.getTime().getToTime()))
-
-																	.and("fromDate").is(request.getFromDate())
-																	.and("toDate").is(request.getToDate()).and("state")
-																	.ne(AppointmentState.CANCEL.getState()))),
+									.match(new Criteria("locationId")
+											.is(new ObjectId(request.getLocationId()))
+											.andOperator(
+													new Criteria().orOperator(
+															new Criteria("doctorId")
+																	.is(new ObjectId(
+																			request.getDoctorId())),
+															new Criteria("doctorIds")
+																	.in(doctorIds)
+																	.and("isCalenderBlocked")
+																	.is(true)),
+													new Criteria().orOperator(
+															new Criteria("time.fromTime")															
+																	.lte(request.getTime()
+																			.getFromTime())
+																	.and("time.toTime")
+																	.gte(request.getTime()
+																			.getToTime()),
+															new Criteria("time.fromTime")
+																	.lte(request.getTime()
+																			.getFromTime())
+																	.and("time.toTime")
+																	.gte(request.getTime()
+																			.getFromTime()),
+																	new Criteria("time.fromTime")
+																	.lte(request.getTime()
+																			.getToTime())
+																	.and("time.toTime")
+																	.gte(request.getTime()
+																			.getToTime())		),
+//													new Criteria().orOperator(
+//															new Criteria("time.fromTime")
+//																	.lte(request.getTime()
+//																			.getFromTime())
+//																	.and("time.toTime")
+//																	.gte(request.getTime()
+//																			.getToTime()),
+//															new Criteria("time.fromTime")
+//																	.lte(request.getTime()
+//																			.getFromTime())
+//																	.and("time.toTime")
+//																	.gte(request.getTime()
+//																			.getToTime())),
+													new Criteria().orOperator(new Criteria("fromDate").gte(request.getFromDate()).and("toDate").lte(request.getToDate()),
+															new Criteria("fromDate").lte(request.getFromDate()).and("toDate").gte(request.getFromDate()),
+																				new Criteria("fromDate").lte(request.getToDate()).and("toDate").gte(request.getToDate()))
+													)
+//											.and("fromDate").gte(request.getFromDate())
+//											.and("toDate").lte(request.getToDate())
+											.and("state").ne(AppointmentState.CANCEL.getState())));
+			
+			List<AppointmentCollection> appointmentCollections = mongoTemplate
+					.aggregate(aggregation,
+//							Aggregation
+//									.newAggregation(
+//											Aggregation
+//													.match(new Criteria(
+//															"locationId")
+//																	.is(new ObjectId(request.getLocationId()))
+//																	.orOperator(
+//																			new Criteria("doctorId").in(doctorIds)
+//																					.and("time.fromTime")
+//																					.lte(request.getTime()
+//																							.getFromTime())
+//																					.and("time.toTime")
+//																					.gt(request.getTime().getToTime()),
+//																			new Criteria("doctorIds").is(doctorIds)
+//																					.and("isCalenderBlocked").is(true)
+//																					.and("time.fromTime")
+//																					.lte(request.getTime()
+//																							.getFromTime())
+//																					.and("time.toTime")
+//																					.gt(request.getTime().getToTime()),
+//																			new Criteria("doctorId")
+//																					.in(doctorIds).and("time.fromTime")
+//																					.lt(request.getTime().getFromTime())
+//																					.and("time.toTime")
+//																					.gte(request.getTime().getToTime()),
+//																			new Criteria("doctorIds").is(doctorIds)
+//																					.and("isCalenderBlocked").is(true)
+//																					.and("time.fromTime")
+//																					.lt(request.getTime().getFromTime())
+//																					.and("time.toTime")
+//																					.gte(request.getTime().getToTime()))
+//
+//																	.and("fromDate").is(request.getFromDate())
+//																	.and("toDate").is(request.getToDate()).and("state")
+//																	.ne(AppointmentState.CANCEL.getState()))),
 							AppointmentCollection.class, AppointmentCollection.class)
 					.getMappedResults();
 			if (userCollection != null) {
@@ -2731,7 +2787,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						bookedSlotCollection.setLocationId(locationObjectId);
 						bookedSlotCollection.setHospitalId(hospitalObjectId);
 						bookedSlotCollection.setDoctorIds(appointmentCollection.getDoctorIds());
-						appointmentBookedSlotRepository.save(bookedSlotCollection);
+						bookedSlotCollection = appointmentBookedSlotRepository.save(bookedSlotCollection);
 					}
 
 					final String createdBy = appointmentCollection.getCreatedBy(),
@@ -2787,48 +2843,61 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 				
 				if (request.getState().equals(AppointmentState.RESCHEDULE) && request.getIsCalenderBlocked()) {
+					
+					Aggregation aggregation = Aggregation
+							.newAggregation(
+									Aggregation
+											.match(new Criteria("locationId")
+													.is(new ObjectId(request.getLocationId()))
+													.and("id").ne(new ObjectId(request.getId()))
+													.andOperator(
+															new Criteria().orOperator(
+																	new Criteria("doctorId")
+																			.is(new ObjectId(
+																					request.getDoctorId())),
+																	new Criteria("doctorIds")
+																			.in(doctorIds)
+																			.and("isCalenderBlocked")
+																			.is(true)),
+															new Criteria().orOperator(
+																	new Criteria("time.fromTime")															
+																			.lte(request.getTime()
+																					.getFromTime())
+																			.and("time.toTime")
+																			.gte(request.getTime()
+																					.getToTime()),
+																	new Criteria("time.fromTime")
+																			.lte(request.getTime()
+																					.getFromTime())
+																			.and("time.toTime")
+																			.gte(request.getTime()
+																					.getFromTime()),
+																			new Criteria("time.fromTime")
+																			.lte(request.getTime()
+																					.getToTime())
+																			.and("time.toTime")
+																			.gte(request.getTime()
+																					.getToTime())		),
+															new Criteria().orOperator(new Criteria("fromDate").gte(request.getFromDate()).and("toDate").lte(request.getToDate()),
+																	new Criteria("fromDate").lte(request.getFromDate()).and("toDate").gte(request.getFromDate()),
+																						new Criteria("fromDate").lte(request.getToDate()).and("toDate").gte(request.getToDate()))
+															)
+//													.and("fromDate").gte(request.getFromDate())
+//													.and("toDate").lte(request.getToDate())
+													.and("state").ne(AppointmentState.CANCEL.getState())));
 					List<AppointmentCollection> appointmentCollections = mongoTemplate
-					.aggregate(
-							Aggregation
-									.newAggregation(
-											Aggregation
-													.match(new Criteria("locationId")
-															.is(new ObjectId(request.getLocationId()))
-															.and("id").ne(new ObjectId(request.getId()))
-															.andOperator(
-																	new Criteria().orOperator(
-																			new Criteria("doctorId")
-																					.is(new ObjectId(
-																							request.getDoctorId())),
-																			new Criteria("doctorIds")
-																					.in(doctorIds)
-																					.and("isCalenderBlocked")
-																					.is(true)),
-																	new Criteria().orOperator(
-																			new Criteria("time.fromTime")
-																					.lte(request.getTime()
-																							.getFromTime())
-																					.and("time.toTime")
-																					.gt(request.getTime()
-																							.getToTime()),
-																			new Criteria("time.fromTime")
-																					.lt(request.getTime()
-																							.getFromTime())
-																					.and("time.toTime")
-																					.gte(request.getTime()
-																							.getToTime())))
-															.and("fromDate").gte(request.getFromDate())
-															.and("toDate").lte(request.getToDate())
-															.and("state").ne(AppointmentState.CANCEL.getState()))),
+					.aggregate(aggregation, AppointmentCollection.class, AppointmentCollection.class).getMappedResults();
+					System.out.println(aggregation);
+					System.out.println(aggregation.toString());
 
-							AppointmentCollection.class, AppointmentCollection.class)
-					.getMappedResults();
 					if (appointmentCollections != null && !appointmentCollections.isEmpty()) {
+						System.out.println("throw");
+
 						logger.error(timeSlotIsBooked);
 						throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
 					}
 			}
-
+System.out.println("adding");
 					AppointmentWorkFlowCollection appointmentWorkFlowCollection = new AppointmentWorkFlowCollection();
 					BeanUtil.map(appointmentCollection, appointmentWorkFlowCollection);
 					appointmentWorkFlowRepository.save(appointmentWorkFlowCollection);
@@ -2851,24 +2920,29 @@ public class AppointmentServiceImpl implements AppointmentService {
 						appointmentCollection.setIsAllDayEvent(request.getIsAllDayEvent());
 						
 						if (request.getState().equals(AppointmentState.RESCHEDULE)) {
+							System.out.println(request.getState());
 							appointmentCollection.setIsRescheduled(true);
 							appointmentCollection.setState(AppointmentState.CONFIRM);
-							AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
-									.findByAppointmentId(appointmentCollection.getAppointmentId());
+						}
+						
+						AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
+								.findByAppointmentId(appointmentCollection.getAppointmentId());
 
-							if (request.getIsCalenderBlocked()) {
-								if (bookedSlotCollection != null) {
-									bookedSlotCollection.setDoctorIds(appointmentCollection.getDoctorIds());
-									bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
-									bookedSlotCollection.setToDate(appointmentCollection.getToDate());
-									bookedSlotCollection.setTime(appointmentCollection.getTime());
-									bookedSlotCollection.setUpdatedTime(new Date());
-									appointmentBookedSlotRepository.save(bookedSlotCollection);
-								}
-							} else {
-								if (bookedSlotCollection != null)
-									appointmentBookedSlotRepository.delete(bookedSlotCollection);
+						if (request.getIsCalenderBlocked()) {
+							if (bookedSlotCollection != null) {
+								bookedSlotCollection.setIsAllDayEvent(request.getIsAllDayEvent());
+								bookedSlotCollection.setDoctorIds(doctorIds);
+								bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
+								bookedSlotCollection.setToDate(appointmentCollection.getToDate());
+								bookedSlotCollection.setTime(appointmentCollection.getTime());
+								bookedSlotCollection.setUpdatedTime(new Date());
+								System.out.println(bookedSlotCollection);
+
+								bookedSlotCollection = appointmentBookedSlotRepository.save(bookedSlotCollection);
 							}
+						} else {
+							if (bookedSlotCollection != null)
+								appointmentBookedSlotRepository.delete(bookedSlotCollection);
 						}
 					}
 					appointmentCollection.setUpdatedTime(new Date());
