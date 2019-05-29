@@ -26,7 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.Group;
-import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.Reference;
+import com.dpdocter.beans.v2.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.v2.DoctorContactsResponse;
 import com.dpdocter.beans.v2.PatientCard;
@@ -35,6 +37,7 @@ import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
@@ -592,158 +595,7 @@ public class ContactsServiceImpl implements ContactsService {
 		return response;
 	}
 
-	@Override
-	@Transactional
-	public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId,
-			String hospitalId, String updatedTime, boolean discarded, String role, int page, int size,
-			String searchTerm) {
-		/*List<RegisteredPatientDetails> registeredPatientDetails = null;
-		List<PatientCard> patientCards = null;
-		List<Group> groups = null;
-		Aggregation aggregation = null;
-		List<Boolean> discards = new ArrayList<Boolean>();
-		discards.add(false);
-
-		try {
-			if (discarded)
-				discards.add(true);
-			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				doctorObjectId = new ObjectId(doctorId);
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("discarded")
-					.in(discards);
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
-					criteria.and("consultantDoctorIds").is(doctorObjectId);
-				} else
-					criteria.and("doctorId").is(doctorObjectId);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-			}
-			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria.orOperator(new Criteria("user.mobileNumber").regex("^" + searchTerm, "i"),
-						new Criteria("localPatientName").regex("^" + searchTerm, "i"));
-			}
-			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
-						Aggregation.unwind("user"), Aggregation.match(criteria),
-						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
-						Aggregation.sort(Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
-			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
-						Aggregation.sort(Direction.DESC, "createdTime"));
-
-			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
-					PatientCollection.class, PatientCard.class);
-			patientCards = aggregationResults.getMappedResults();
-
-			if (!patientCards.isEmpty()) {
-				registeredPatientDetails = new ArrayList<RegisteredPatientDetails>();
-				for (PatientCard patientCard : patientCards) {
-
-					@SuppressWarnings("unchecked")
-					Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
-							new BeanToPropertyValueTransformer("groupId"));
-					//patientCard.setPatientGroupCollections(null);
-					RegisteredPatientDetails registeredPatientDetail = new RegisteredPatientDetails();
-					if (patientCard.getUser() != null) {
-						BeanUtil.map(patientCard.getUser(), registeredPatientDetail);
-						if (patientCard.getUser().getId() != null) {
-							registeredPatientDetail.setUserId(patientCard.getUser().getId().toString());
-						}
-					}
-
-					Patient patient = new Patient();
-					BeanUtil.map(patientCard, patient);
-					patient.setPatientId(patientCard.getUser().getId().toString());
-					ObjectId referredBy = null;
-					if (patientCard.getReferredBy() != null) {
-						referredBy = new ObjectId(patientCard.getReferredBy());
-					}
-
-					patientCard.setReferredBy(null);
-					BeanUtil.map(patientCard, registeredPatientDetail);
-
-					Integer prescriptionCount = 0, clinicalNotesCount = 0, recordsCount = 0;
-					if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
-						prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorObjectId,
-								new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
-						clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(
-								doctorObjectId, new ObjectId(patientCard.getUser().getId()), hospitalObjectId,
-								locationObjectId);
-						recordsCount = recordsRepository.getRecordsForOtherDoctors(
-								new ObjectId(patientCard.getDoctorId()), new ObjectId(patientCard.getUser().getId()),
-								new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
-					} else {
-						prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(
-								new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
-						clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(
-								new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
-						recordsCount = recordsRepository.getRecordsForOtherLocations(
-								new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
-					}
-
-					if ((prescriptionCount != null && prescriptionCount > 0)
-							|| (clinicalNotesCount != null && clinicalNotesCount > 0)
-							|| (recordsCount != null && recordsCount > 0))
-						patient.setIsDataAvailableWithOtherDoctor(true);
-					patient.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId,
-							patientCard.getUser().getId().toString()));
-					registeredPatientDetail.setPatient(patient);
-					registeredPatientDetail.setAddress(patientCard.getAddress());
-
-					Criteria groupCriteria = new Criteria("id").in(groupIds).and("discarded").is(false);
-
-					if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-						groupCriteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-					}
-					if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-						groupCriteria.and("doctorId").is(doctorObjectId);
-					}
-					groups = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(groupCriteria)),
-							GroupCollection.class, Group.class).getMappedResults();
-					registeredPatientDetail.setGroups(groups);
-
-					registeredPatientDetail.setDoctorId(patientCard.getDoctorId().toString());
-					registeredPatientDetail.setLocationId(patientCard.getLocationId().toString());
-					registeredPatientDetail.setHospitalId(patientCard.getHospitalId().toString());
-					registeredPatientDetail.setCreatedTime(patientCard.getCreatedTime());
-					registeredPatientDetail.setPID(patientCard.getPID());
-					registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
-
-					if (patientCard.getDob() != null) {
-						registeredPatientDetail.setDob(patientCard.getDob());
-					}
-
-					Reference reference = new Reference();
-					if (referredBy != null) {
-						ReferencesCollection referencesCollection = referenceRepository.findOne(referredBy);
-						if (referencesCollection != null)
-							BeanUtil.map(referencesCollection, reference);
-					}
-					registeredPatientDetail.setReferredBy(reference);
-					registeredPatientDetail.setColorCode(patientCard.getUser().getColorCode());
-					registeredPatientDetails.add(registeredPatientDetail);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}*/
-		//return registeredPatientDetails;
-		return null;
-	}
-
+	
 	@Override
 	@Transactional
 	public Integer getDoctorContactsHandheldCount(String doctorId, String locationId, String hospitalId,
@@ -927,4 +779,107 @@ public class ContactsServiceImpl implements ContactsService {
 		}
 		return status;
 	}
+	
+	@Override
+	@Transactional
+	public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId,
+			String hospitalId, String updatedTime, boolean discarded, String role, int page, int size,
+			String searchTerm) {
+		List<RegisteredPatientDetails> registeredPatientDetails = null;
+		List<PatientCard> patientCards = null;
+		List<Group> groups = null;
+		Aggregation aggregation = null;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
+		List<String> groupIdList  = null;
+
+		try {
+			if (discarded)
+				discards.add(true);
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("discarded")
+					.in(discards);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
+					criteria.and("consultantDoctorIds").is(doctorObjectId);
+				} else
+					criteria.and("doctorId").is(doctorObjectId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("user.mobileNumber").regex("^" + searchTerm, "i"),
+						new Criteria("localPatientName").regex("^" + searchTerm, "i"));
+			}
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
+						Aggregation.unwind("user"), Aggregation.match(criteria),
+						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
+						Aggregation.sort(Direction.DESC, "updatedTime"), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
+						Aggregation.sort(Direction.DESC, "updatedTime"));
+
+			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PatientCollection.class, PatientCard.class);
+			patientCards = aggregationResults.getMappedResults();
+
+			if (!patientCards.isEmpty()) {
+				registeredPatientDetails = new ArrayList<RegisteredPatientDetails>();
+				for (PatientCard patientCard : patientCards) {
+
+					Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
+							new BeanToPropertyValueTransformer("groupId"));
+					patientCard.setPatientGroupCollections(null);
+					
+					
+					RegisteredPatientDetails registeredPatientDetail = new RegisteredPatientDetails();
+					if (patientCard.getUser() != null) {
+						BeanUtil.map(patientCard.getUser(), registeredPatientDetail);
+						if (patientCard.getUser().getId() != null) {
+							registeredPatientDetail.setUserId(patientCard.getUser().getId().toString());
+						}
+					}
+
+	
+					BeanUtil.map(patientCard, registeredPatientDetail);
+					registeredPatientDetail.setBackendPatientId(patientCard.getId());
+					registeredPatientDetail.setDoctorId(patientCard.getDoctorId().toString());
+					registeredPatientDetail.setLocationId(patientCard.getLocationId().toString());
+					registeredPatientDetail.setHospitalId(patientCard.getHospitalId().toString());
+					registeredPatientDetail.setCreatedTime(patientCard.getCreatedTime());
+					registeredPatientDetail.setPID(patientCard.getPID());
+					registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
+					registeredPatientDetail.setBackendPatientId(patientCard.getId());
+					registeredPatientDetail.setColorCode(patientCard.getUser().getColorCode());
+					if(groupIds != null)
+					{
+						groupIdList = new ArrayList<>();
+						for (ObjectId groupId : groupIds) {
+							groupIdList.add(String.valueOf(groupId));
+						}
+					}
+					registeredPatientDetail.setGroupIds(groupIdList);
+					registeredPatientDetails.add(registeredPatientDetail);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return registeredPatientDetails;
+	}
+
 }

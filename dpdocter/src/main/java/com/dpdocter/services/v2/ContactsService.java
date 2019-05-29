@@ -6,7 +6,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.Group;
-import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.beans.v2.RegisteredPatientDetails;
 import com.dpdocter.beans.v2.DoctorContactsResponse;
 import com.dpdocter.request.BulkSMSRequest;
 import com.dpdocter.request.ExportRequest;

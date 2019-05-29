@@ -632,14 +632,13 @@ public class ContactsServiceImpl implements ContactsService {
 	@Transactional
 	public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId,
 			String hospitalId, String updatedTime, boolean discarded, String role, int page, int size,
-			String searchTerm) {
+			String searchTerm , String userId) {
 		List<RegisteredPatientDetails> registeredPatientDetails = null;
 		List<PatientCard> patientCards = null;
 		List<Group> groups = null;
 		Aggregation aggregation = null;
 		List<Boolean> discards = new ArrayList<Boolean>();
 		discards.add(false);
-
 		try {
 			if (discarded)
 				discards.add(true);
@@ -662,6 +661,9 @@ public class ContactsServiceImpl implements ContactsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
 			}
+			if (!DPDoctorUtils.anyStringEmpty(userId)) {
+				criteria.and("userId").is(new ObjectId(userId));
+			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria.orOperator(new Criteria("user.mobileNumber").regex("^" + searchTerm, "i"),
 						new Criteria("localPatientName").regex("^" + searchTerm, "i"));
@@ -677,7 +679,7 @@ public class ContactsServiceImpl implements ContactsService {
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
 						Aggregation.sort(Direction.DESC, "updatedTime"));
-
+			
 			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientCollection.class, PatientCard.class);
 			patientCards = aggregationResults.getMappedResults();
@@ -750,9 +752,9 @@ public class ContactsServiceImpl implements ContactsService {
 							GroupCollection.class, Group.class).getMappedResults();
 					registeredPatientDetail.setGroups(groups);
 
-					registeredPatientDetail.setDoctorId(patientCard.getDoctorId().toString());
-					registeredPatientDetail.setLocationId(patientCard.getLocationId().toString());
-					registeredPatientDetail.setHospitalId(patientCard.getHospitalId().toString());
+					registeredPatientDetail.setDoctorId(String.valueOf(patientCard.getDoctorId()));
+					registeredPatientDetail.setLocationId(String.valueOf(patientCard.getLocationId()));
+					registeredPatientDetail.setHospitalId(String.valueOf(patientCard.getHospitalId()));
 					registeredPatientDetail.setCreatedTime(patientCard.getCreatedTime());
 					registeredPatientDetail.setPID(patientCard.getPID());
 					registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());

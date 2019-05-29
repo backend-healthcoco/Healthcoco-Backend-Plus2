@@ -1,9 +1,13 @@
 package com.dpdocter.beans.v2;
 
+import java.util.List;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.User;
+import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.collections.PatientGroupCollection;
 
 /*Expected Structure: 
 id,thumbnailurl, localPatientName, firstName, Pid,Pnum,userId, 
@@ -12,7 +16,7 @@ dob,gender,mobilenumber,colorCode
 */
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 
-public class PatientCard {
+public class PatientCard extends GenericCollection {
 
 	private String id;
 
@@ -42,10 +46,16 @@ public class PatientCard {
 	private User user;
 
 	private String doctorId;
-	
+
 	private String doctorSepecificPatientId;
-	
+
 	private Boolean isPatientOTPVerified = false;
+
+	private String locationId;
+
+	private String hospitalId;
+
+	private List<PatientGroupCollection> patientGroupCollections;
 
 	public User getUser() {
 		return user;
@@ -173,6 +183,30 @@ public class PatientCard {
 
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public List<PatientGroupCollection> getPatientGroupCollections() {
+		return patientGroupCollections;
+	}
+
+	public void setPatientGroupCollections(List<PatientGroupCollection> patientGroupCollections) {
+		this.patientGroupCollections = patientGroupCollections;
 	}
 
 	@Override

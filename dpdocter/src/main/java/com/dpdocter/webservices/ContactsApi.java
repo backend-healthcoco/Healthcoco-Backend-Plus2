@@ -137,10 +137,10 @@ public class ContactsApi {
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam("role") String role,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,@QueryParam("userId") String userId) {
 
 		List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId,
-				locationId, hospitalId, updatedTime, discarded, role, page, size, searchTerm);
+				locationId, hospitalId, updatedTime, discarded, role, page, size, searchTerm,userId);
 		if (registeredPatientDetails != null && !registeredPatientDetails.isEmpty()) {
 			for (RegisteredPatientDetails registeredPatientDetail : registeredPatientDetails) {
 				registeredPatientDetail.setImageUrl(getFinalImageURL(registeredPatientDetail.getImageUrl()));

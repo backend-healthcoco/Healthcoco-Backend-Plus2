@@ -50,10 +50,13 @@ public interface ContactsService {
 
 	Boolean sendSMSToGroup(BulkSMSRequest request);
 
-	List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId,
-			String updatedTime, boolean discarded, String role, int page, int size, String searchTerm);
+	/*List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId,
+			String updatedTime, boolean discarded, String role, int page, int size, String searchTerm);*/
 
 	Integer getDoctorContactsHandheldCount(String doctorId, String locationId, String hospitalId, boolean discarded,
 			String role, String searchTerm);
+
+	List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId,
+			String updatedTime, boolean discarded, String role, int page, int size, String searchTerm, String userId);
 
 }
