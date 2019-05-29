@@ -86,6 +86,7 @@ public class ProcedureAPI {
 				hospitalId, locationId, patientId, searchTerm, from, to, discarded, page, size, type);
 		Response<ProcedureSheetResponse> response = new Response<ProcedureSheetResponse>();
 		response.setDataList(procedureSheetResponses);
+		response.setCount(procedureSheetService.getProcedureSheetListCount(doctorId, hospitalId, locationId, patientId, searchTerm, from, to, discarded, type));
 		return response;
 	}
 
@@ -148,6 +149,7 @@ public class ProcedureAPI {
 						size, type);
 		Response<ProcedureSheetStructureResponse> response = new Response<ProcedureSheetStructureResponse>();
 		response.setDataList(procedureSheetResponses);
+		response.setCount(procedureSheetService.getProcedureSheetStructureListCount(doctorId, hospitalId, locationId, searchTerm, from, to, discarded, type));
 		return response;
 	}
 

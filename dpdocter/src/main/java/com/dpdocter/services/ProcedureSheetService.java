@@ -35,4 +35,12 @@ public interface ProcedureSheetService {
 
 	public String downloadProcedureSheet(String id);
 
+	Integer getProcedureSheetListCount(String doctorId, String hospitalId, String locationId, String patientId,
+			String searchTerm, Long from, Long to, Boolean discarded, String type);
+
+	Integer getProcedureSheetStructureListCount(String doctorId, String hospitalId, String locationId,
+			String searchTerm, Long from, Long to, Boolean discarded, String type);
+
+	
+
 }

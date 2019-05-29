@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -155,8 +156,8 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				response.setProcedureSheetFields(procedureSheetFields);
 				response.setProcedureConsentForm(procedureConsentForm);
 				response.setDiagrams(procedureSheetCollection.getDiagrams());
-				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						procedureSheetCollection.getPatientId(), procedureSheetCollection.getDoctorId(),
+
+				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(procedureSheetCollection.getPatientId(),
 						procedureSheetCollection.getLocationId(), procedureSheetCollection.getHospitalId());
 				if (patientCollection != null) {
 					PatientShortCard patientShortCard = new PatientShortCard();
@@ -185,15 +186,28 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
 			if (procedureSheetCollection != null) {
-
+				
 				response = new ProcedureSheetResponse();
 				procedureSheetFields = procedureSheetCollection.getProcedureSheetFields();
+				
 				procedureSheetCollection.setProcedureSheetFields(null);
-				BeanUtil.map(procedureSheetCollection, response);
+				//BeanUtil.map(procedureSheetCollection, response);
+				response.setId(String.valueOf(procedureSheetCollection.getId()));
+				response.setDoctorId(String.valueOf(procedureSheetCollection.getDoctorId()));
+				response.setLocationId(String.valueOf(procedureSheetCollection.getLocationId()));
+				response.setHospitalId(String.valueOf(procedureSheetCollection.getHospitalId()));
+				response.setPatientId(String.valueOf(procedureSheetCollection.getPatientId()));
+				response.setProcedureSheetStructureId(String.valueOf(procedureSheetCollection.getProcedureSheetStructureId()));
+				response.setProcedureName(procedureSheetCollection.getProcedureName());
+				response.setProcedureConsentForm(procedureSheetCollection.getProcedureConsentForm());
+				response.setDiscarded(procedureSheetCollection.getDiscarded());
+				response.setCreatedTime(procedureSheetCollection.getCreatedTime());
+				response.setUpdatedTime(procedureSheetCollection.getUpdatedTime());
+				response.setCreatedBy(procedureSheetCollection.getCreatedBy());
 				response.setProcedureSheetFields(procedureSheetFields);
 				response.setDiagrams(procedureSheetCollection.getDiagrams());
-				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						procedureSheetCollection.getPatientId(), procedureSheetCollection.getDoctorId(),
+
+				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(procedureSheetCollection.getPatientId(),
 						procedureSheetCollection.getLocationId(), procedureSheetCollection.getHospitalId());
 				if (patientCollection != null) {
 					PatientShortCard patientShortCard = new PatientShortCard();
@@ -267,6 +281,51 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		return responses;
 
 	}
+	
+	
+	@Override
+	@Transactional
+	public Integer getProcedureSheetListCount(String doctorId, String hospitalId, String locationId,
+			String patientId, String searchTerm, Long from, Long to, Boolean discarded,
+			String type) {
+		Integer count = 0;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria.and("patientId").is(new ObjectId(patientId));
+			}
+			if (to != null) {
+				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
+			} else {
+				criteria.and("updatedTime").gte(new Date(from));
+			}
+			if (discarded != null) {
+				criteria.and("discarded").is(discarded);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(type)) {
+				criteria.and("type").is(type);
+			}
+
+			count = (int) mongoTemplate.count(new Query(criteria), ProcedureSheetCollection.class);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		return count;
+
+	}
 
 	@Override
 	@Transactional
@@ -284,8 +343,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			if (procedureSheetCollection != null) {
 				response = new ProcedureSheetResponse();
 				BeanUtil.map(procedureSheetCollection, response);
-				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						procedureSheetCollection.getPatientId(), procedureSheetCollection.getDoctorId(),
+				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(procedureSheetCollection.getPatientId(),
 						procedureSheetCollection.getLocationId(), procedureSheetCollection.getHospitalId());
 				if (patientCollection != null) {
 					PatientShortCard patientShortCard = new PatientShortCard();
@@ -508,6 +566,47 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		}
 
 		return responses;
+
+	}
+	
+	
+	@Override
+	@Transactional
+	public Integer getProcedureSheetStructureListCount(String doctorId, String hospitalId,
+			String locationId, String searchTerm, Long from, Long to, Boolean discarded, 
+			String type) {
+		Integer count = 0;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (to != null) {
+				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
+			} else {
+				criteria.and("updatedTime").gte(new Date(from));
+			}
+			if (discarded != null) {
+				criteria.and("discarded").is(discarded);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(type)) {
+				criteria.and("type").is(new ObjectId(type));
+			}
+			count = (int) mongoTemplate.count(new Query(criteria), ProcedureSheetStructureCollection.class);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		return count;
 
 	}
 
