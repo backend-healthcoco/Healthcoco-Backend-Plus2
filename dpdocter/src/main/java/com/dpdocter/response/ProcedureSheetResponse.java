@@ -17,7 +17,7 @@ public class ProcedureSheetResponse extends GenericCollection {
 	private String locationId;
 	private String hospitalId;
 	private String patientId;
-	private ObjectId procedureSheetStructureId;
+	private String procedureSheetStructureId;
 	private String procedureName;
 	private ProcedureConsentForm procedureConsentForm;
 	private List<ImageURLResponse> diagrams;
@@ -113,11 +113,11 @@ public class ProcedureSheetResponse extends GenericCollection {
 		this.procedureName = procedureName;
 	}
 
-	public ObjectId getProcedureSheetStructureId() {
+	public String getProcedureSheetStructureId() {
 		return procedureSheetStructureId;
 	}
 
-	public void setProcedureSheetStructureId(ObjectId procedureSheetStructureId) {
+	public void setProcedureSheetStructureId(String procedureSheetStructureId) {
 		this.procedureSheetStructureId = procedureSheetStructureId;
 	}
 
