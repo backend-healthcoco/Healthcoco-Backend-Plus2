@@ -1090,6 +1090,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				if (!DPDoctorUtils.anyStringEmpty(request.getGender())) {
 					doctorCollection.setGender(request.getGender());
 				}
+				
+				if (!DPDoctorUtils.anyStringEmpty(request.getFreshchatRestoreId())) {
+					doctorCollection.setFreshchatRestoreId(request.getFreshchatRestoreId());
+				}
 				doctorCollection.setDob(request.getDob());
 
 				response = new DoctorMultipleDataAddEditResponse();

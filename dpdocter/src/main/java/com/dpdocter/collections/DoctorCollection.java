@@ -99,6 +99,9 @@ public class DoctorCollection extends GenericCollection {
 	@Field
 	private String deviceType;
 
+	@Field
+	private String freshchatRestoreId;
+
 	public Boolean getIsPrescriptionSMS() {
 		return isPrescriptionSMS;
 	}
@@ -315,6 +318,14 @@ public class DoctorCollection extends GenericCollection {
 
 	public void setDeviceType(String deviceType) {
 		this.deviceType = deviceType;
+	}
+
+	public String getFreshchatRestoreId() {
+		return freshchatRestoreId;
+	}
+
+	public void setFreshchatRestoreId(String freshchatRestoreId) {
+		this.freshchatRestoreId = freshchatRestoreId;
 	}
 
 	@Override

@@ -8,80 +8,82 @@ import com.dpdocter.beans.DoctorExperience;
 public class DoctorMultipleDataAddEditResponse {
 
 	private String id;
-	
-    private String doctorId;
 
-    private String title;
+	private String doctorId;
 
-    private String firstName;
+	private String title;
 
-    private DoctorExperience experience;
+	private String firstName;
 
-    private List<String> specialities;
-    
-    private List<String> parentSpecialities;
+	private DoctorExperience experience;
 
-    private String imageUrl;
+	private List<String> specialities;
 
-    private String thumbnailUrl;
+	private List<String> parentSpecialities;
 
-    private String coverImageUrl;
+	private String imageUrl;
 
-    private String coverThumbnailImageUrl;
+	private String thumbnailUrl;
 
-    private String profileImageUrl;
+	private String coverImageUrl;
 
-    private String thumbnailProfileImageUrl;
+	private String coverThumbnailImageUrl;
 
-    private String thumbnailCoverImageUrl;
-    
-    private String gender;
-    
-    private DOB dob;
+	private String profileImageUrl;
 
-    private String colorCode;
+	private String thumbnailProfileImageUrl;
 
-    private String userUId;
+	private String thumbnailCoverImageUrl;
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	private String gender;
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	private DOB dob;
 
-    public String getTitle() {
-	return title;
-    }
+	private String colorCode;
 
-    public void setTitle(String title) {
-	this.title = title;
-    }
+	private String userUId;
 
-    public String getFirstName() {
-	return firstName;
-    }
+	private String freshchatRestoreId;
 
-    public void setFirstName(String firstName) {
-	this.firstName = firstName;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public DoctorExperience getExperience() {
-	return experience;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setExperience(DoctorExperience experience) {
-	this.experience = experience;
-    }
+	public String getTitle() {
+		return title;
+	}
 
-    public List<String> getSpecialities() {
-	return specialities;
-    }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-    public void setSpecialities(List<String> specialities) {
-	this.specialities = specialities;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public DoctorExperience getExperience() {
+		return experience;
+	}
+
+	public void setExperience(DoctorExperience experience) {
+		this.experience = experience;
+	}
+
+	public List<String> getSpecialities() {
+		return specialities;
+	}
+
+	public void setSpecialities(List<String> specialities) {
+		this.specialities = specialities;
+	}
 
 	public String getId() {
 		return id;
@@ -177,6 +179,14 @@ public class DoctorMultipleDataAddEditResponse {
 
 	public void setUserUId(String userUId) {
 		this.userUId = userUId;
+	}
+
+	public String getFreshchatRestoreId() {
+		return freshchatRestoreId;
+	}
+
+	public void setFreshchatRestoreId(String freshchatRestoreId) {
+		this.freshchatRestoreId = freshchatRestoreId;
 	}
 
 	@Override

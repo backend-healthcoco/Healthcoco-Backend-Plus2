@@ -20,7 +20,7 @@ public class DoctorProfile extends GenericCollection {
 	private String firstName;
 
 	private String emailAddress;
-	
+
 	private String countryCode;
 
 	private String mobileNumber;
@@ -82,6 +82,8 @@ public class DoctorProfile extends GenericCollection {
 	private boolean isPrescriptionSMS = true;
 
 	private String drugTypePlacement = "PREFIX";
+
+	private String freshchatRestoreId;
 
 	public String getId() {
 		return id;
@@ -377,6 +379,14 @@ public class DoctorProfile extends GenericCollection {
 
 	public void setDrugTypePlacement(String drugTypePlacement) {
 		this.drugTypePlacement = drugTypePlacement;
+	}
+
+	public String getFreshchatRestoreId() {
+		return freshchatRestoreId;
+	}
+
+	public void setFreshchatRestoreId(String freshchatRestoreId) {
+		this.freshchatRestoreId = freshchatRestoreId;
 	}
 
 	@Override
