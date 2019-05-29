@@ -1,12 +1,17 @@
 package com.dpdocter.request;
 
 import com.dpdocter.beans.UserAddress;
+import com.dpdocter.enums.DeliveryPreferences;
+import com.dpdocter.enums.PaymentMode;
 
 public class MedicineOrderAddEditAddressRequest {
 
 	private String id;
 	private UserAddress shippingAddress;
 	private UserAddress billingAddress;
+	private DeliveryPreferences deliveryPreference = DeliveryPreferences.ONE_TIME;
+	private Long nextDeliveryDate;
+	private PaymentMode paymentMode = PaymentMode.COD;
 
 	public String getId() {
 		return id;
@@ -32,5 +37,28 @@ public class MedicineOrderAddEditAddressRequest {
 		this.billingAddress = billingAddress;
 	}
 
-	
+	public DeliveryPreferences getDeliveryPreference() {
+		return deliveryPreference;
+	}
+
+	public void setDeliveryPreference(DeliveryPreferences deliveryPreference) {
+		this.deliveryPreference = deliveryPreference;
+	}
+
+	public Long getNextDeliveryDate() {
+		return nextDeliveryDate;
+	}
+
+	public void setNextDeliveryDate(Long nextDeliveryDate) {
+		this.nextDeliveryDate = nextDeliveryDate;
+	}
+
+	public PaymentMode getPaymentMode() {
+		return paymentMode;
+	}
+
+	public void setPaymentMode(PaymentMode paymentMode) {
+		this.paymentMode = paymentMode;
+	}
+
 }

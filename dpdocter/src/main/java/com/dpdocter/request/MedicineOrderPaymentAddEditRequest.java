@@ -13,7 +13,6 @@ public class MedicineOrderPaymentAddEditRequest {
 	private Float deliveryCharges;
 	private Float cashHandlingCharges;
 	private String notes;
-	private PaymentMode paymentMode = PaymentMode.COD;
 	private OrderStatus orderStatus;
 	private String callingPreference;
 	private Boolean isPrescriptionRequired;
@@ -64,14 +63,6 @@ public class MedicineOrderPaymentAddEditRequest {
 
 	public void setDeliveryCharges(Float deliveryCharges) {
 		this.deliveryCharges = deliveryCharges;
-	}
-
-	public PaymentMode getPaymentMode() {
-		return paymentMode;
-	}
-
-	public void setPaymentMode(PaymentMode paymentMode) {
-		this.paymentMode = paymentMode;
 	}
 
 	public String getNotes() {

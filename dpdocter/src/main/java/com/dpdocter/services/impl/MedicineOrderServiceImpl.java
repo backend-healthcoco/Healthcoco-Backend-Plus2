@@ -127,6 +127,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			if (medicineOrderCollection == null) {
 				medicineOrderCollection = new MedicineOrderCollection();
 				medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
+				medicineOrderCollection.setCreatedTime(new Date());
 			}
 
 			medicineOrderCollection.setPatientId(new ObjectId(request.getPatientId()));
@@ -211,6 +212,9 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 			medicineOrderCollection.setShippingAddress(request.getShippingAddress());
 			medicineOrderCollection.setBillingAddress(request.getBillingAddress());
+			medicineOrderCollection.setDeliveryPreference(request.getDeliveryPreference());
+			medicineOrderCollection.setNextDeliveryDate(request.getNextDeliveryDate());
+			medicineOrderCollection.setPaymentMode(request.getPaymentMode());
 			
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
 			if (medicineOrderCollection != null) {
@@ -249,7 +253,6 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			medicineOrderCollection.setFinalAmount(request.getFinalAmount());
 			medicineOrderCollection.setDeliveryCharges(request.getDeliveryCharges());
 			medicineOrderCollection.setNotes(request.getNotes());
-			medicineOrderCollection.setPaymentMode(request.getPaymentMode());
 			medicineOrderCollection.setCashHandlingCharges(request.getCashHandlingCharges());
 			medicineOrderCollection.setCallingPreference(request.getCallingPreference());
 			medicineOrderCollection.setOrderStatus(request.getOrderStatus());
