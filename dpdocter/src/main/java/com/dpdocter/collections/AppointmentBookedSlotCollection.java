@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.enums.AppointmentType;
 
 @Document(collection = "appointment_booked_slot_cl")
 @CompoundIndexes({
@@ -51,6 +52,9 @@ public class AppointmentBookedSlotCollection extends GenericCollection {
     
     @Field
     private List<ObjectId> doctorIds;
+    
+    @Field
+	private AppointmentType type = AppointmentType.APPOINTMENT;
     
 	public ObjectId getId() {
 		return id;
@@ -140,12 +144,20 @@ public class AppointmentBookedSlotCollection extends GenericCollection {
 		this.doctorIds = doctorIds;
 	}
 
+	public AppointmentType getType() {
+		return type;
+	}
+
+	public void setType(AppointmentType type) {
+		this.type = type;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentBookedSlotCollection [id=" + id + ", appointmentId=" + appointmentId + ", doctorId="
 				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", time=" + time
 				+ ", fromDate=" + fromDate + ", toDate=" + toDate + ", isAllDayEvent=" + isAllDayEvent
-				+ ", isPatientDiscarded=" + isPatientDiscarded + ", doctorIds=" + doctorIds + "]";
+				+ ", isPatientDiscarded=" + isPatientDiscarded + ", doctorIds=" + doctorIds + ", type=" + type + "]";
 	}
 
 }

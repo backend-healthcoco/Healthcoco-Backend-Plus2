@@ -137,4 +137,6 @@ public interface AppointmentService {
 
 	Boolean addEditNutritionAppointment(NutritionAppointment request);
 
+	Boolean update();
+
 }

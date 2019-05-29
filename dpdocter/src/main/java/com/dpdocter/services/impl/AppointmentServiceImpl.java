@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
 
@@ -2546,7 +2545,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 						List<AppointmentBookedSlotCollection> bookedSlots = mongoTemplate.aggregate(
 								Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)
 										.andOperator(
-												new Criteria().orOperator(new Criteria("doctorId").is(doctorObjectId), new Criteria("doctorIds").in(Arrays.asList(doctorObjectId))),										
+												new Criteria().orOperator(new Criteria("doctorId").is(doctorObjectId).and("type").is(AppointmentType.APPOINTMENT.name()), 
+														new Criteria("doctorIds").in(Arrays.asList(doctorObjectId)).and("type").is(AppointmentType.EVENT.name())),										
 										new Criteria().orOperator(new Criteria("fromDate").gte(new Date(start.getMillis())).and("toDate").lte(new Date(end.getMillis())),
 												new Criteria("fromDate").lte(new Date(start.getMillis())).and("toDate").gte(new Date(start.getMillis())),
 																	new Criteria("fromDate").lte(new Date(end.getMillis())).and("toDate").gte(new Date(end.getMillis()))))
@@ -2822,7 +2822,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	public Event updateEvent(EventRequest request, Boolean forAllDoctors) {
@@ -2833,11 +2832,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (appointmentCollection != null) {
 				
 				List<ObjectId> doctorIds = new ArrayList<ObjectId>();
-				if(forAllDoctors) {
-					List<DoctorClinicProfileCollection> doctors = doctorClinicProfileRepository.findByLocationId(appointmentCollection.getLocationId(), true);
-					doctorIds = (List<ObjectId>) CollectionUtils.collect(doctors, new BeanToPropertyValueTransformer("doctorId"));
-				}
-				else if (request.getDoctorIds() != null && !request.getDoctorIds().isEmpty()) {
+				if (request.getDoctorIds() != null && !request.getDoctorIds().isEmpty()) {
 					for (String doctorId : request.getDoctorIds())
 						doctorIds.add(new ObjectId(doctorId));
 				}
@@ -2887,17 +2882,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 													.and("state").ne(AppointmentState.CANCEL.getState())));
 					List<AppointmentCollection> appointmentCollections = mongoTemplate
 					.aggregate(aggregation, AppointmentCollection.class, AppointmentCollection.class).getMappedResults();
-					System.out.println(aggregation);
-					System.out.println(aggregation.toString());
-
+System.out.println(appointmentCollections);
 					if (appointmentCollections != null && !appointmentCollections.isEmpty()) {
-						System.out.println("throw");
-
 						logger.error(timeSlotIsBooked);
 						throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
 					}
 			}
-System.out.println("adding");
 					AppointmentWorkFlowCollection appointmentWorkFlowCollection = new AppointmentWorkFlowCollection();
 					BeanUtil.map(appointmentCollection, appointmentWorkFlowCollection);
 					appointmentWorkFlowRepository.save(appointmentWorkFlowCollection);
@@ -2920,7 +2910,6 @@ System.out.println("adding");
 						appointmentCollection.setIsAllDayEvent(request.getIsAllDayEvent());
 						
 						if (request.getState().equals(AppointmentState.RESCHEDULE)) {
-							System.out.println(request.getState());
 							appointmentCollection.setIsRescheduled(true);
 							appointmentCollection.setState(AppointmentState.CONFIRM);
 						}
@@ -2929,17 +2918,18 @@ System.out.println("adding");
 								.findByAppointmentId(appointmentCollection.getAppointmentId());
 
 						if (request.getIsCalenderBlocked()) {
-							if (bookedSlotCollection != null) {
-								bookedSlotCollection.setIsAllDayEvent(request.getIsAllDayEvent());
-								bookedSlotCollection.setDoctorIds(doctorIds);
-								bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
-								bookedSlotCollection.setToDate(appointmentCollection.getToDate());
-								bookedSlotCollection.setTime(appointmentCollection.getTime());
-								bookedSlotCollection.setUpdatedTime(new Date());
-								System.out.println(bookedSlotCollection);
-
-								bookedSlotCollection = appointmentBookedSlotRepository.save(bookedSlotCollection);
+							if (bookedSlotCollection == null) {
+								bookedSlotCollection = new AppointmentBookedSlotCollection();
+								BeanUtil.map(appointmentCollection, bookedSlotCollection);
+								bookedSlotCollection.setId(null);
 							}
+							bookedSlotCollection.setIsAllDayEvent(request.getIsAllDayEvent());
+							bookedSlotCollection.setDoctorIds(doctorIds);
+							bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
+							bookedSlotCollection.setToDate(appointmentCollection.getToDate());
+							bookedSlotCollection.setTime(appointmentCollection.getTime());
+							bookedSlotCollection.setUpdatedTime(new Date());
+							bookedSlotCollection = appointmentBookedSlotRepository.save(bookedSlotCollection);							
 						} else {
 							if (bookedSlotCollection != null)
 								appointmentBookedSlotRepository.delete(bookedSlotCollection);
@@ -5369,6 +5359,19 @@ System.out.println("adding");
 
 		}
 		return response;
+	}
+
+	@Override
+	public Boolean update() {
+		List<AppointmentBookedSlotCollection> appointmentBookedSlotCollections = appointmentBookedSlotRepository.findAll();
+		for(AppointmentBookedSlotCollection appointmentBookedSlotCollection : appointmentBookedSlotCollections) {
+			AppointmentCollection appointmentCollection = appointmentRepository.findByAppointmentId(appointmentBookedSlotCollection.getAppointmentId());
+			if(appointmentCollection != null) {
+				appointmentBookedSlotCollection.setType(appointmentCollection.getType());
+				appointmentBookedSlotCollection = appointmentBookedSlotRepository.save(appointmentBookedSlotCollection);
+			}
+		}
+		return true;
 	}
 
 }

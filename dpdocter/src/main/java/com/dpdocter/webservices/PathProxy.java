@@ -1042,6 +1042,8 @@ public interface PathProxy {
 		public static final String GET_EVENT_BY_ID = "/event/{eventId}";
 
 		public static final String ADD_NUTRITION_APPOINTMENT = "/nutrition/add";
+
+		public static final String UPDATE_BOOKED_SLOT = "/update";
 	}
 
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";

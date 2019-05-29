@@ -464,7 +464,7 @@ public class LoginServiceImpl implements LoginService {
 			if (userCollections != null && !userCollections.isEmpty()) {
 				for (UserCollection userCollection : userCollections) {
 					if (userCollection.getEmailAddress() != null) {
-						if (!DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
+						if(!userCollection.getEmailAddress().equalsIgnoreCase(userCollection.getUserName()) && !DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
 							Boolean verifyOTPResponse = false;
 							if (!verifyOTPResponse) {
 								verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(),

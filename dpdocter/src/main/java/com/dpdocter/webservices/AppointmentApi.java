@@ -710,4 +710,12 @@ public class AppointmentApi {
 		response.setData(appointmentService.addEditNutritionAppointment(request));
 		return response;
 	}
+	
+	@Path(value = PathProxy.AppointmentUrls.UPDATE_BOOKED_SLOT)
+	@GET
+	public Response<Boolean> update() {
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(appointmentService.update());
+		return response;
+	}
 }

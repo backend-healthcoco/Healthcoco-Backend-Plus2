@@ -21,7 +21,7 @@ public class ESServicesDocument {
     @Field(type = FieldType.String)
     private String formattedService;
     
-    @Field(type = FieldType.Date)
+    @Field(type = FieldType.Date)//change index
     private Date updatedTime = new Date();
 
 	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
