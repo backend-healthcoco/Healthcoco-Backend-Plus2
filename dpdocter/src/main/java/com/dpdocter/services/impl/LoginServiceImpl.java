@@ -456,8 +456,7 @@ public class LoginServiceImpl implements LoginService {
 	public List<RegisteredPatientDetails> loginPatientByOtp(LoginPatientRequest request) {
 		List<RegisteredPatientDetails> response = null;
 		try {
-			Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber()).and("userState")
-					.is("USERSTATECOMPLETE");
+			Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber()).and("userState").is("USERSTATECOMPLETE");
 			Query query = new Query();
 			query.addCriteria(criteria);
 			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
