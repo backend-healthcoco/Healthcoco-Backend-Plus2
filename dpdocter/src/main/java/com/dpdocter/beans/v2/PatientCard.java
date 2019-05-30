@@ -9,11 +9,6 @@ import com.dpdocter.beans.User;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 
-/*Expected Structure: 
-id,thumbnailurl, localPatientName, firstName, Pid,Pnum,userId, 
-dob,gender,mobilenumber,colorCode
-
-*/
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 
 public class PatientCard extends GenericCollection {
@@ -56,6 +51,8 @@ public class PatientCard extends GenericCollection {
 	private String hospitalId;
 
 	private List<PatientGroupCollection> patientGroupCollections;
+
+	private Boolean isPatientDiscarded = false;
 
 	public User getUser() {
 		return user;
@@ -207,6 +204,14 @@ public class PatientCard extends GenericCollection {
 
 	public void setPatientGroupCollections(List<PatientGroupCollection> patientGroupCollections) {
 		this.patientGroupCollections = patientGroupCollections;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
 	@Override
