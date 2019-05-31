@@ -2346,7 +2346,11 @@ public class HistoryServicesImpl implements HistoryServices {
 				if (clinicalNotes != null)
 					for (ClinicalNotes clinicalNote : clinicalNotes) {
 						HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
-						BeanUtil.map(clinicalNote, historyDetailsResponse);
+					//	BeanUtil.map(clinicalNote, historyDetailsResponse);
+						historyDetailsResponse.setDoctorId(clinicalNote.getDoctorId());
+						historyDetailsResponse.setLocationId(clinicalNote.getLocationId());
+						historyDetailsResponse.setLocationId(clinicalNote.getHospitalId());
+						historyDetailsResponse.setPatientId(clinicalNote.getPatientId());
 						GeneralData generalData = new GeneralData();
 						generalData.setData(clinicalNote);
 						generalData.setDataType(HistoryFilter.CLINICAL_NOTES);
@@ -2950,4 +2954,6 @@ public class HistoryServicesImpl implements HistoryServices {
 		}
 		return meter;
 	}
+	
+	
 }

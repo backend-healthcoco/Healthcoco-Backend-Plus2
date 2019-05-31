@@ -852,7 +852,6 @@ public class ContactsServiceImpl implements ContactsService {
 						}
 					}
 
-	
 					BeanUtil.map(patientCard, registeredPatientDetail);
 					registeredPatientDetail.setBackendPatientId(patientCard.getId());
 					registeredPatientDetail.setDoctorId(patientCard.getDoctorId().toString());
