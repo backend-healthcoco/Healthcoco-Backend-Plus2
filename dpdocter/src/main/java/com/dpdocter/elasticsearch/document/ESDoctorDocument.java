@@ -21,7 +21,7 @@ import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
 
 @Document(indexName = "doctors_in", type = "doctors")
-public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoctorDocument> {
+public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoctorDocument>{
 
 	@Id
 	private String id;
@@ -65,13 +65,13 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> services;
 
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> parentSpecialities;
 
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> specialitiesValue;//value
 
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> servicesValue;//value
 	
 	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
@@ -141,14 +141,13 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	private String timeZone = "IST";
 
 	@Field(type = FieldType.Long)
-	private long rankingCount = 0;
+	private long rankingCount = 1000;
 
 	@Field(type = FieldType.Integer)
 	private Integer noOfRecommenations = 0;
 
-	@Field(type = FieldType.String)
 	private String doctorSlugURL;
-
+	
 	@Field(type = FieldType.Boolean)
 	private Boolean isNutritionist = false;
 
@@ -157,7 +156,7 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> divisionIds;
-
+	
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;
 	}
@@ -441,31 +440,6 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 		this.services = services;
 	}
 
-	public Boolean getIsNutritionist() {
-		return isNutritionist;
-	}
-
-	public void setIsNutritionist(Boolean isNutritionist) {
-		this.isNutritionist = isNutritionist;
-	}
-
-	public String getMrCode() {
-		return mrCode;
-	}
-
-	public void setMrCode(String mrCode) {
-		this.mrCode = mrCode;
-	}
-
-	public List<String> getDivisionIds() {
-		return divisionIds;
-	}
-
-	public void setDivisionIds(List<String> divisionIds) {
-		this.divisionIds = divisionIds;
-	}
-
-
 	public List<String> getParentSpecialities() {
 		return parentSpecialities;
 	}
@@ -513,17 +487,7 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	public void setFormattedServicesValue(List<String> formattedServicesValue) {
 		this.formattedServicesValue = formattedServicesValue;
 	}
-
-	@Override
-	public int compareTo(ESDoctorDocument o) {
-		if (this.rankingCount < o.rankingCount)
-			return 0;
-		else if (this.rankingCount < o.rankingCount)
-			return -1;
-		else
-			return 1;
-	}
-
+	
 	public List<DoctorRegistrationDetail> getRegistrationDetails() {
 		return registrationDetails;
 	}
@@ -538,6 +502,37 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	public void setProfessionalMemberships(List<String> professionalMemberships) {
 		this.professionalMemberships = professionalMemberships;
+	}
+
+	public Boolean getIsNutritionist() {
+		return isNutritionist;
+	}
+
+	public void setIsNutritionist(Boolean isNutritionist) {
+		this.isNutritionist = isNutritionist;
+	}
+
+	public String getMrCode() {
+		return mrCode;
+	}
+
+	public void setMrCode(String mrCode) {
+		this.mrCode = mrCode;
+	}
+
+	public List<String> getDivisionIds() {
+		return divisionIds;
+	}
+
+	public void setDivisionIds(List<String> divisionIds) {
+		this.divisionIds = divisionIds;
+	}
+
+	@Override
+	public int compareTo(ESDoctorDocument o) {
+		if(this.rankingCount < o.rankingCount)return 0;
+		else if(this.rankingCount < o.rankingCount)return -1;
+		else return 1;
 	}
 
 	@Override
