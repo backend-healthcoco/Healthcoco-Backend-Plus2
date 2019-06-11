@@ -12,6 +12,9 @@ public class MedicineOrder extends GenericCollection {
 	private String id;
 	private String patientId;
 	private String vendorId;
+	private String patientName;
+	private String mobileNumber;
+	private String emailAddress;
 	private String collectionBoyId;
 	private CollectionBoy collectionBoy;
 	private UserAddress shippingAddress;
@@ -233,6 +236,30 @@ public class MedicineOrder extends GenericCollection {
 
 	public void setIsPrescriptionRequired(Boolean isPrescriptionRequired) {
 		this.isPrescriptionRequired = isPrescriptionRequired;
+	}
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 	@Override

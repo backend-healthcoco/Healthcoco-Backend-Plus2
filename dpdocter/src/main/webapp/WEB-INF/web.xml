@@ -14,11 +14,14 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
+	 <listener>
+		<listener-class>se.jiderhamn.classloader.leak.prevention.ClassLoaderLeakPreventor</listener-class>
+	</listener>
+	
 	<servlet>
 		<servlet-name>jersey-serlvet</servlet-name>
 		<servlet-class>
-			com.sun.jersey.spi.spring.container.servlet.SpringServlet
-		</servlet-class>
+			com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
 		<init-param>
 			<param-name>com.sun.jersey.config.property.packages</param-name>
 			<param-value>com.dpdocter.webservices;com.dpdocter.beans;</param-value>
@@ -81,5 +84,6 @@
 			<param-value>Authorization,Access-Control-Allow-Origin,Access-Control-Allow-Credentials</param-value>
 		</init-param>
 	</filter>
+
 
 </web-app>

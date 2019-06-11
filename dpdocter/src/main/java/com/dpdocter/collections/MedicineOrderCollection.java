@@ -23,6 +23,12 @@ public class MedicineOrderCollection extends GenericCollection {
 	@Field
 	private ObjectId patientId;
 	@Field
+	private String patientName;
+	@Field
+	private String mobileNumber;
+	@Field
+	private String emailAddress;
+	@Field
 	private ObjectId collectionBoyId;
 	@Field
 	private CollectionBoy collectionBoy;
@@ -267,6 +273,30 @@ public class MedicineOrderCollection extends GenericCollection {
 
 	public void setIsPrescriptionRequired(Boolean isPrescriptionRequired) {
 		this.isPrescriptionRequired = isPrescriptionRequired;
+	}
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 }

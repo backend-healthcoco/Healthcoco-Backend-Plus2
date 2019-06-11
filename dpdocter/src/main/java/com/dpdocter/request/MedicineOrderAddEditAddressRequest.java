@@ -9,6 +9,9 @@ public class MedicineOrderAddEditAddressRequest {
 	private String id;
 	private UserAddress shippingAddress;
 	private UserAddress billingAddress;
+	private String patientName;
+	private String mobileNumber;
+	private String emailAddress;
 	private DeliveryPreferences deliveryPreference = DeliveryPreferences.ONE_TIME;
 	private Long nextDeliveryDate;
 	private PaymentMode paymentMode = PaymentMode.COD;
@@ -59,6 +62,30 @@ public class MedicineOrderAddEditAddressRequest {
 
 	public void setPaymentMode(PaymentMode paymentMode) {
 		this.paymentMode = paymentMode;
+	}
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 }

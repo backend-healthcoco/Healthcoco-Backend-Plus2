@@ -327,6 +327,30 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					notification.setPi(componentTypeId);
 					notification.setNotificationType(componentType);
 				}
+				else if (componentType.equalsIgnoreCase(ComponentType.ORDER_CONFIRMED.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}
+				else if (componentType.equalsIgnoreCase(ComponentType.ORDER_DELIVERED.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}
+				else if (componentType.equalsIgnoreCase(ComponentType.ORDER_DISPATCHED.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}else if (componentType.equalsIgnoreCase(ComponentType.ORDER_OUT_FOR_DELIVERY.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}else if (componentType.equalsIgnoreCase(ComponentType.ORDER_PACKED.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}else if (componentType.equalsIgnoreCase(ComponentType.ORDER_PICKED_UP.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}else if (componentType.equalsIgnoreCase(ComponentType.ORDER_PLACED.getType())) {
+					notification.setPi(componentTypeId);
+					notification.setNotificationType(componentType);
+				}
 				else{
 					notification.setNotificationType(componentType);
 				}

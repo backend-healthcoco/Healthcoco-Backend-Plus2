@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>dpdocter</groupId>
@@ -287,6 +286,7 @@
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
+
 		<!-- for OAuth 2.0 -->
 		<dependency>
 			<groupId>org.springframework.security.oauth</groupId>
@@ -883,6 +883,14 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-aop -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework</groupId> -->
+		<!-- <artifactId>spring-aop</artifactId> -->
+		<!-- <version>4.3.5.RELEASE</version> -->
+		<!-- </dependency> -->
+
+
+		<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
@@ -1034,6 +1042,20 @@
 			<artifactId>poi</artifactId>
 			<version>3.17</version>
 		</dependency>
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>4.1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/se.jiderhamn/classloader-leak-prevention -->
+		<dependency>
+			<groupId>se.jiderhamn</groupId>
+			<artifactId>classloader-leak-prevention</artifactId>
+			<version>1.15.4</version>
+		</dependency>
+
+
 	</dependencies>
 	<build>
 		<testResources>
@@ -1050,11 +1072,11 @@
 
 
 		<plugins>
-	<plugin>
-						<groupId>org.apache.tomcat.maven</groupId>
-						<artifactId>tomcat7-maven-plugin</artifactId>
-						<version>2.2</version>
-					</plugin>
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+			</plugin>
 			<!-- <plugin> -->
 			<!-- <groupId>org.apache.maven.plugins</groupId> -->
 			<!-- <artifactId>maven-install-plugin</artifactId> -->

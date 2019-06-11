@@ -253,6 +253,12 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			if (!DPDoctorUtils.anyStringEmpty(type)) {
 				criteria.and("type").is(type);
 			}
+			if(!DPDoctorUtils.anyStringEmpty(searchTerm))
+			{
+				criteria = criteria.orOperator(new Criteria("procedureName").regex("^" + searchTerm, "i"),
+						new Criteria("procedureName").regex("^" + searchTerm),
+						new Criteria("procedureName").regex(searchTerm + ".*"));
+			}
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -541,6 +547,12 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			}
 			if (!DPDoctorUtils.anyStringEmpty(type)) {
 				criteria.and("type").is(new ObjectId(type));
+			}
+			if(!DPDoctorUtils.anyStringEmpty(searchTerm))
+			{
+				criteria = criteria.orOperator(new Criteria("procedureName").regex("^" + searchTerm, "i"),
+						new Criteria("procedureName").regex("^" + searchTerm),
+						new Criteria("procedureName").regex(searchTerm + ".*"));
 			}
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),

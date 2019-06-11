@@ -1,11 +1,15 @@
 package com.dpdocter.request;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.dpdocter.beans.ProcedureConsentForm;
 import com.dpdocter.beans.ProcedureSheetField;
 import com.dpdocter.response.ImageURLResponse;
+
+import common.util.web.JacksonUtil;
 
 public class AddEditProcedureSheetRequest {
 
@@ -124,6 +128,27 @@ public class AddEditProcedureSheetRequest {
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", procedureConsentForm="
 				+ procedureConsentForm + ", diagrams=" + diagrams + ", procedureSheetFields=" + procedureSheetFields
 				+ ", discarded=" + discarded + "]";
+	}
+	
+	public static void main(String[] args) {
+		
+		List<Map<String, ProcedureSheetField>> list = new ArrayList<Map<String, ProcedureSheetField>>();
+		Map<String, ProcedureSheetField> map = new HashMap<String, ProcedureSheetField>();
+
+		ProcedureSheetField field = new ProcedureSheetField();
+		field.setSequenceNo(1);
+		field.setValue("Test");
+		
+		map.put("abc", field);
+		
+		list.add(map);
+		
+		System.out.println(JacksonUtil.obj2Json(list));
+		// it's wrong JSONObject json = new JSONObject(list);
+		// if u use list to add data u must be use JSONArray
+
+		
+		
 	}
 
 }

@@ -23,13 +23,21 @@ import com.dpdocter.beans.DrugInfo;
 import com.dpdocter.beans.MedicineOrder;
 import com.dpdocter.beans.MedicineOrderAddEditItems;
 import com.dpdocter.beans.MedicineOrderItems;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.TrackingOrder;
 import com.dpdocter.beans.UserCart;
 import com.dpdocter.collections.DrugInfoCollection;
 import com.dpdocter.collections.MedicineOrderCollection;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TrackingOrderCollection;
 import com.dpdocter.collections.UserCartCollection;
+import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.OrderStatus;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -46,6 +54,8 @@ import com.dpdocter.request.UpdateOrderStatusRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.MedicineOrderService;
+import com.dpdocter.services.PushNotificationServices;
+import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -74,6 +84,28 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 	
 	@Value(value = "${image.path}")
 	private String imagePath;
+	
+	@Value(value = "${medicine.order.placed.message}")
+	private String ORDER_PLACED_MESSAGE;
+	@Value(value = "${medicine.order.confirmed.message}")
+	private String ORDER_CONFIRMED_MESSAGE;
+	@Value(value = "${medicine.order.dispatched.message}")
+	private String ORDER_DISPATCHED_MESSAGE;
+	@Value(value = "${medicine.order.picked.message}")
+	private String ORDER_PICKED_MESSAGE;
+	@Value(value = "${medicine.order.out.of.delivery.message}")
+	private String ORDER_OUT_OF_DELIVERY_MESSAGE;
+	@Value(value = "${medicine.order.delivered.message}")
+	private String ORDER_DELIVERED_MESSAGE;
+	@Value(value = "${medicine.order.packed.message}")
+	private String ORDER_PACKED_MESSAGE;
+	
+	
+	@Autowired
+	private SMSServices smsServices;
+	
+	@Autowired
+	private PushNotificationServices pushNotificationServices;
 
 	
 	@Override
@@ -215,7 +247,9 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			medicineOrderCollection.setDeliveryPreference(request.getDeliveryPreference());
 			medicineOrderCollection.setNextDeliveryDate(request.getNextDeliveryDate());
 			medicineOrderCollection.setPaymentMode(request.getPaymentMode());
-			
+			medicineOrderCollection.setPatientName(request.getPatientName());
+			medicineOrderCollection.setMobileNumber(request.getMobileNumber());
+			medicineOrderCollection.setEmailAddress(request.getEmailAddress());
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
 			if (medicineOrderCollection != null) {
 				medicineOrder = new MedicineOrder();
@@ -311,7 +345,8 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 	public MedicineOrder updateStatus(String id, OrderStatus status ) {
 		MedicineOrder medicineOrder = null;
 		MedicineOrderCollection medicineOrderCollection = null;
-
+		String message = "";
+		TrackingOrder trackingOrder = null;
 		try {
 
 			medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(id));
@@ -321,6 +356,95 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			}
 
 			medicineOrderCollection.setOrderStatus(status);
+			switch (status) {
+			case PLACED:
+				message = ORDER_PLACED_MESSAGE;
+				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message,
+						ComponentType.ORDER_PLACED.getType(), id, null);
+				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()),
+						medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
+				trackingOrder = new TrackingOrder();
+				trackingOrder.setOrderId(id);
+				trackingOrder.setNote(message);
+				trackingOrder.setStatus(status);
+				trackingOrder.setTimestamp(System.currentTimeMillis());
+				addeditTrackingDetails(trackingOrder);
+				break;
+				
+			case CONFIRMED:
+				message = ORDER_CONFIRMED_MESSAGE;
+				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message, ComponentType.ORDER_CONFIRMED.getType(), id, null);
+				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()), medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
+				trackingOrder = new TrackingOrder();
+				trackingOrder.setOrderId(id);
+				trackingOrder.setNote(message);
+				trackingOrder.setStatus(status);
+				trackingOrder.setTimestamp(System.currentTimeMillis());
+				addeditTrackingDetails(trackingOrder);
+				break;
+
+				
+			case PACKED:
+				message = ORDER_PACKED_MESSAGE;
+				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message, ComponentType.ORDER_PACKED.getType(), id, null);
+				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()), medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
+				trackingOrder = new TrackingOrder();
+				trackingOrder.setOrderId(id);
+				trackingOrder.setNote(message);
+				trackingOrder.setStatus(status);
+				trackingOrder.setTimestamp(System.currentTimeMillis());
+				addeditTrackingDetails(trackingOrder);
+				break;
+
+				
+			case DISPATCHED:
+				message = ORDER_DISPATCHED_MESSAGE;
+				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message, ComponentType.ORDER_DISPATCHED.getType(), id, null);
+				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()), medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
+				trackingOrder = new TrackingOrder();
+				trackingOrder.setOrderId(id);
+				trackingOrder.setNote(message);
+				trackingOrder.setStatus(status);
+				trackingOrder.setTimestamp(System.currentTimeMillis());
+				addeditTrackingDetails(trackingOrder);
+				break;
+
+				
+			case OUT_FOR_DELIVERY:
+				message = ORDER_OUT_OF_DELIVERY_MESSAGE;
+				if(medicineOrderCollection.getCollectionBoy() != null)
+				{
+					message = message.replace("{deliveryBoy}", medicineOrderCollection.getCollectionBoy().getName());
+				}
+				else{
+					message = message.replace("{deliveryBoy}", "our representative");
+				}
+				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message, ComponentType.ORDER_OUT_FOR_DELIVERY.getType(), id, null);
+				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()), medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
+				trackingOrder = new TrackingOrder();
+				trackingOrder.setOrderId(id);
+				trackingOrder.setNote(message);
+				trackingOrder.setStatus(status);
+				trackingOrder.setTimestamp(System.currentTimeMillis());
+				addeditTrackingDetails(trackingOrder);
+				break;
+				
+			case DELIVERED:
+				message = ORDER_DELIVERED_MESSAGE;
+				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message, ComponentType.ORDER_OUT_FOR_DELIVERY.getType(), id, null);
+				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()), medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
+				trackingOrder = new TrackingOrder();
+				trackingOrder.setOrderId(id);
+				trackingOrder.setNote(message);
+				trackingOrder.setStatus(status);
+				trackingOrder.setTimestamp(System.currentTimeMillis());
+				addeditTrackingDetails(trackingOrder);
+				break;
+
+
+			default:
+				break;
+			}
 
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
 			if (medicineOrderCollection != null) {
@@ -745,6 +869,35 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			return imagePath + imageURL;
 		} else
 			return null;
+	}
+	
+	private void sendStatusChangeMessage(String patientId , String patientName, String mobileNumber , String message) {
+		try {
+			
+			if (mobileNumber != null) {
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				
+				smsTrackDetail.setType("APP_LINK_THROUGH_PRESCRIPTION");
+				SMSDetail smsDetail = new SMSDetail();
+				smsDetail.setUserId(new ObjectId(patientId));
+				SMS sms = new SMS();
+				smsDetail.setUserName(patientName);
+
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(mobileNumber);
+				sms.setSmsAddress(smsAddress);
+
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				smsServices.sendSMS(smsTrackDetail, true);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 	
 }

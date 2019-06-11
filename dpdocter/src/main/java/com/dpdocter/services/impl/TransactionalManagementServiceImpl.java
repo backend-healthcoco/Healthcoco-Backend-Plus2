@@ -794,6 +794,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							response.setMessage(response.getMessage() + ", " + patientCollection.getLocalPatientName()
 									+ "(" + _12HourSDF.format(_24HourDt) + ")");
 							response.setNoOfAppointments(response.getNoOfAppointments() + 1);
+							response.setLocationId(appointmentDoctorReminderResponse.getLocationId());
 							doctorAppointmentSMSResponseMap
 									.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
 						} else {
@@ -802,6 +803,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							response.setMessage(
 									patientCollection.getLocalPatientName() + "(" + _12HourSDF.format(_24HourDt) + ")");
 							response.setNoOfAppointments(1);
+							response.setLocationId(appointmentDoctorReminderResponse.getLocationId());
 							response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
 							doctorAppointmentSMSResponseMap
 									.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
@@ -816,6 +818,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							+ ".\nHave a Healthy and Happy day!!";
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 					smsTrackDetail.setDoctorId(userCollection.getId());
+					smsTrackDetail.setLocationId(response.getLocationId());
 					smsTrackDetail.setType("APPOINTMENT");
 					SMSDetail smsDetail = new SMSDetail();
 					smsDetail.setUserId(userCollection.getId());
