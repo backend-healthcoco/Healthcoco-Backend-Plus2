@@ -25,6 +25,9 @@ public class ESSpecialityDocument {
     private String formattedSuperSpeciality;
     
     @Field(type = FieldType.String)
+    private String metaTitle;
+    
+    @Field(type = FieldType.String)
     private String code;
     
     @Field(type = FieldType.Date)
@@ -86,10 +89,19 @@ public class ESSpecialityDocument {
 		this.formattedSuperSpeciality = formattedSuperSpeciality;
 	}
 
+	public String getMetaTitle() {
+		return metaTitle;
+	}
+
+	public void setMetaTitle(String metaTitle) {
+		this.metaTitle = metaTitle;
+	}
+
 	@Override
 	public String toString() {
 		return "ESSpecialityDocument [id=" + id + ", speciality=" + speciality + ", superSpeciality=" + superSpeciality
 				+ ", formattedSpeciality=" + formattedSpeciality + ", formattedSuperSpeciality="
-				+ formattedSuperSpeciality + ", code=" + code + ", updatedTime=" + updatedTime + "]";
+				+ formattedSuperSpeciality + ", metaTitle=" + metaTitle + ", code=" + code + ", updatedTime="
+				+ updatedTime + "]";
 	}
 }

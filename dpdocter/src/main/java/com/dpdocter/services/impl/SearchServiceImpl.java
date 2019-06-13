@@ -13,6 +13,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.script.Script;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,10 +129,6 @@ public class SearchServiceImpl implements SearchService {
 				speciality = speciality.replaceAll("-", " ");
 				QueryBuilder specialityQueryBuilder = null;
 				
-				if (speciality.equalsIgnoreCase("GYNECOLOGIST")) {
-					speciality = "GYNAECOLOGIST".toLowerCase();
-				}
-				
 				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN") || speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
 					specialityQueryBuilder = QueryBuilders.boolQuery().should(QueryBuilders.termsQuery("specialitiesValue", "GENERAL PHYSICIAN".toLowerCase(), "FAMILY PHYSICIAN".toLowerCase()))
 					.should(QueryBuilders.termsQuery("parentSpecialities", "GENERAL PHYSICIAN".toLowerCase(), "FAMILY PHYSICIAN".toLowerCase())).minimumNumberShouldMatch(1);
@@ -225,11 +222,11 @@ public class SearchServiceImpl implements SearchService {
 					if (!otherArea) {
 						if (size > 0)
 							searchQuery = new NativeSearchQueryBuilder()
-									.withQuery(boolQueryBuilder.must(QueryBuilders
-											.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality")
-											.type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
-									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
-									.withPageable(new PageRequest(page, size)).build();
+							.withQuery(boolQueryBuilder)
+							.withSort(SortBuilders.scriptSort(
+									new Script("doc['locality'].value == '"+locality+"' ? 1 : 0"), "number").order(SortOrder.DESC))
+							.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+							.withPageable(new PageRequest(page, size)).build();
 						else
 							searchQuery = new NativeSearchQueryBuilder()
 									.withQuery(boolQueryBuilder.must(QueryBuilders
