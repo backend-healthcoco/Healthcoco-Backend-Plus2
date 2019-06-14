@@ -24,6 +24,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.Branch;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
@@ -32,6 +33,7 @@ import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
+import com.dpdocter.collections.BranchCollection;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
@@ -44,6 +46,7 @@ import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.BranchRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
@@ -117,12 +120,21 @@ public class ContactsServiceImpl implements ContactsService {
 	@Autowired
 	private SMSServices smsServices;
 
+	@Autowired
+	private BranchRepository branchRepository;
+
 	@Value(value = "${Contacts.checkIfGroupIsExistWithSameName}")
 	private String checkIfGroupIsExistWithSameName;
 
+	@Value(value = "${Contacts.checkIfBranchIsExistWithSameName}")
+	private String checkIfBranchIsExistWithSameName;
+	
 	@Value(value = "${Contacts.GroupNotFound}")
 	private String groupNotFound;
 
+	@Value(value = "${Contacts.BranchNotFound}")
+	private String branchNotFound;
+	
 	/**
 	 * This method returns all unblocked or blocked patients (based on param
 	 * blocked) of specified doctor.
@@ -378,7 +390,7 @@ public class ContactsServiceImpl implements ContactsService {
 			} else {
 				GroupCollection oldGroupCollection = groupRepository.findOne(groupCollection.getId());
 				groupCollection.setCreatedTime(oldGroupCollection.getCreatedTime());
-				groupCollection.setCreatedBy(groupCollection.getCreatedBy());
+				groupCollection.setCreatedBy(oldGroupCollection.getCreatedBy());
 				groupCollection.setDiscarded(oldGroupCollection.getDiscarded());
 			}
 			groupCollection = groupRepository.save(groupCollection);
@@ -964,5 +976,167 @@ public class ContactsServiceImpl implements ContactsService {
 			e.printStackTrace();
 		}
 		return status;
+	}
+
+	@Override
+	public Branch addEditBranch(Branch branch) {
+		try {
+			checkIfBranchIsExistWithSameName(branch);
+			BranchCollection branchCollection = new BranchCollection();
+			BeanUtil.map(branch, branchCollection);
+			if (DPDoctorUtils.allStringsEmpty(branchCollection.getId())) {
+				branchCollection.setCreatedTime(new Date());
+				UserCollection userCollection = userRepository.findOne(branchCollection.getDoctorId());
+				if (userCollection != null) {
+					branchCollection
+							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+									+ userCollection.getFirstName());
+				}
+			} else {
+				BranchCollection oldBranchCollection = branchRepository.findOne(branchCollection.getId());
+				branchCollection.setCreatedTime(oldBranchCollection.getCreatedTime());
+				branchCollection.setCreatedBy(oldBranchCollection.getCreatedBy());
+				branchCollection.setDiscarded(oldBranchCollection.getDiscarded());
+			}
+			branchCollection = branchRepository.save(branchCollection);
+			BeanUtil.map(branchCollection, branch);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return branch;
+	}
+
+	private void checkIfBranchIsExistWithSameName(Branch branch) {
+		int size = 0;
+		try {
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(branch.getDoctorId()))
+				doctorObjectId = new ObjectId(branch.getDoctorId());
+			if (!DPDoctorUtils.anyStringEmpty(branch.getLocationId()))
+				locationObjectId = new ObjectId(branch.getLocationId());
+			if (!DPDoctorUtils.anyStringEmpty(branch.getHospitalId()))
+				hospitalObjectId = new ObjectId(branch.getHospitalId());
+
+			Criteria criteria = new Criteria("name").is(branch.getName()).and("doctorId").is(doctorObjectId)
+					.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("discarded")
+					.is(false);
+
+			if (!DPDoctorUtils.anyStringEmpty(branch.getId())) {
+				criteria.and("id").ne(new ObjectId(branch.getId()));
+			}
+			size = (int) mongoTemplate.count(new Query(criteria), BranchCollection.class);
+			if (size > 0) {
+				logger.error(checkIfBranchIsExistWithSameName);
+				throw new BusinessException(ServiceError.NotAcceptable, checkIfBranchIsExistWithSameName);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
+
+	@Override
+	public Branch deleteBranch(String branchId, Boolean discarded) {
+		Branch response = null;
+		BranchCollection branchCollection = null;
+		try {
+			branchCollection = branchRepository.findOne(new ObjectId(branchId));
+			if (branchCollection != null) {
+				branchCollection.setDiscarded(discarded);
+				branchCollection.setUpdatedTime(new Date());
+				branchCollection = branchRepository.save(branchCollection);
+				
+				response = new Branch();
+				BeanUtil.map(branchCollection, response);
+			} else {
+				logger.error(branchNotFound);
+				throw new BusinessException(ServiceError.NotFound, branchNotFound);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Branch");
+		}
+		return response;
+	}
+
+	@Override
+	public Branch getBranchById(String branchId) {
+		Branch response = null;
+		BranchCollection branchCollection = null;
+		try {
+			branchCollection = branchRepository.findOne(new ObjectId(branchId));
+			if (branchCollection != null) {
+				response = new Branch();
+				BeanUtil.map(branchCollection, response);
+			} else {
+				logger.error(branchNotFound);
+				throw new BusinessException(ServiceError.NotFound, branchNotFound);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Branch");
+		}
+		return response;
+	}
+
+	@Override
+	public Response<Object> getBranches(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String searchTerm) {
+		Response<Object> response =  new Response<Object>();
+		List<Branch> branches = null;
+
+		try {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			Aggregation aggregation = null;
+			
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			if (createdTimeStamp > 0) {
+				criteria.and("updatedTime").gte(new Date(createdTimeStamp));
+			}
+			if (!discarded) {
+				criteria.and("discarded").is(discarded);
+			}
+			if(!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.and("name").regex("^" + searchTerm, "i");
+			}
+			Integer count = (int)mongoTemplate.count(new Query(criteria), BranchCollection.class);
+			if(count>0) {
+				response = new Response<Object>();
+				response.setCount(count);
+				if (size > 0) {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+							Aggregation.limit(size));
+
+				} else {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+				}
+				branches = mongoTemplate.aggregate(aggregation, BranchCollection.class, Branch.class).getMappedResults();
+				response.setDataList(branches);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
 	}
 }

@@ -112,6 +112,9 @@ public class AppointmentCollection extends GenericCollection {
 	private String category;
 
 	@Field
+	private String branch;
+	
+	@Field
 	private Boolean isPatientDiscarded = false;
 
 	@Field
@@ -418,6 +421,14 @@ public class AppointmentCollection extends GenericCollection {
 		this.isCreatedByPatient = isCreatedByPatient;
 	}
 
+	public String getBranch() {
+		return branch;
+	}
+
+	public void setBranch(String branch) {
+		this.branch = branch;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentCollection [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -430,8 +441,9 @@ public class AppointmentCollection extends GenericCollection {
 				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId
 				+ ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt="
 				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", category="
-				+ category + ", isPatientDiscarded=" + isPatientDiscarded + ", cancelledByProfile=" + cancelledByProfile
-				+ ", localPatientName=" + localPatientName + ", doctorIds=" + doctorIds + ", treatmentFields="
-				+ treatmentFields + ", isCreatedByPatient=" + isCreatedByPatient + "]";
+				+ category + ", branch=" + branch + ", isPatientDiscarded=" + isPatientDiscarded
+				+ ", cancelledByProfile=" + cancelledByProfile + ", localPatientName=" + localPatientName
+				+ ", doctorIds=" + doctorIds + ", treatmentFields=" + treatmentFields + ", isCreatedByPatient="
+				+ isCreatedByPatient + "]";
 	}
 }

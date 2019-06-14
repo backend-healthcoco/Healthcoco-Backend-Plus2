@@ -64,6 +64,8 @@ public class AppointmentRequest {
 
 	private String category;
 
+	private String branch;
+
 	private String cancelledByProfile;
 
 	private String gender;
@@ -352,6 +354,14 @@ public class AppointmentRequest {
 		this.isCreatedByPatient = isCreatedByPatient;
 	}
 
+	public String getBranch() {
+		return branch;
+	}
+
+	public void setBranch(String branch) {
+		this.branch = branch;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", explanation="
@@ -362,9 +372,10 @@ public class AppointmentRequest {
 				+ notifyDoctorByEmail + ", cancelledBy=" + cancelledBy + ", localPatientName=" + localPatientName
 				+ ", mobileNumber=" + mobileNumber + ", visitId=" + visitId + ", status=" + status + ", waitedFor="
 				+ waitedFor + ", engagedFor=" + engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt
-				+ ", checkedOutAt=" + checkedOutAt + ", category=" + category + ", cancelledByProfile="
-				+ cancelledByProfile + ", gender=" + gender + ", dob=" + dob + ", age=" + age + ", isChild=" + isChild
-				+ ", treatmentFields=" + treatmentFields + ", PNUM=" + PNUM + ", isCreatedByPatient="
-				+ isCreatedByPatient + "]";
-	}	
+				+ ", checkedOutAt=" + checkedOutAt + ", category=" + category + ", branch=" + branch
+				+ ", cancelledByProfile=" + cancelledByProfile + ", gender=" + gender + ", dob=" + dob + ", age=" + age
+				+ ", isChild=" + isChild + ", treatmentFields=" + treatmentFields + ", PNUM=" + PNUM
+				+ ", isCreatedByPatient=" + isCreatedByPatient + "]";
+	}
+
 }

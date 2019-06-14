@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.Branch;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
@@ -268,7 +269,7 @@ public class ContactsApi {
 				discarded);
 		return response;
 	}
-
+	
 	@Path(value = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT)
 	@POST
 	@ApiOperation(value = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT, notes = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT)
@@ -306,4 +307,63 @@ public class ContactsApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.ContactsUrls.ADD_BRANCH)
+	@POST
+	@ApiOperation(value = PathProxy.ContactsUrls.ADD_BRANCH, notes = PathProxy.ContactsUrls.ADD_BRANCH)
+	public Response<Branch> addEditBranch(Branch branch) {
+		if (branch == null || DPDoctorUtils.anyStringEmpty(branch.getDoctorId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Branch branchResponse = contactsService.addEditBranch(branch);
+		Response<Branch> response = new Response<Branch>();
+		response.setData(branchResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.ContactsUrls.GET_BRANCH_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.ContactsUrls.GET_BRANCH_BY_ID, notes = PathProxy.ContactsUrls.GET_BRANCH_BY_ID)
+	public Response<Branch> getBranchById(@PathParam("branchId") String branchId) {
+		if (DPDoctorUtils.anyStringEmpty(branchId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Branch branchResponse = contactsService.getBranchById(branchId);
+		Response<Branch> response = new Response<Branch>();
+		response.setData(branchResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.ContactsUrls.DELETE_BRANCH)
+	@DELETE
+	@ApiOperation(value = PathProxy.ContactsUrls.DELETE_BRANCH, notes = PathProxy.ContactsUrls.DELETE_BRANCH)
+	public Response<Branch> deleteBranch(@PathParam("branchId") String branchId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(branchId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Branch branchResponse = contactsService.deleteBranch(branchId, discarded);
+		Response<Branch> response = new Response<Branch>();
+		response.setData(branchResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.ContactsUrls.GET_BRANCHES)
+	@GET
+	@ApiOperation(value = PathProxy.ContactsUrls.GET_BRANCHES, notes = PathProxy.ContactsUrls.GET_BRANCHES)
+	public Response<Object> getBranches(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded, @QueryParam("searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(locationId)&&DPDoctorUtils.anyStringEmpty(doctorId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Object> response = contactsService.getBranches(page, size, doctorId, locationId, hospitalId, updatedTime,
+				discarded, searchTerm);
+		return response;
+	}
 }

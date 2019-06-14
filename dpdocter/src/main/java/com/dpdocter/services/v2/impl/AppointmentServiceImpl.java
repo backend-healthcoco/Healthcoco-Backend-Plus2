@@ -358,6 +358,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 									appointmentCollection.getLocationId());
 
 					appointmentCollection.setCategory(request.getCategory());
+					appointmentCollection.setBranch(request.getBranch());
 					appointmentCollection.setExplanation(request.getExplanation());
 					appointmentCollection.setNotifyDoctorByEmail(request.getNotifyDoctorByEmail());
 					appointmentCollection.setNotifyDoctorBySms(request.getNotifyDoctorBySms());
@@ -1604,6 +1605,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.append("engagedFor", "$engagedFor").append("engagedAt", "$engagedAt")
 						.append("checkedInAt", "$checkedInAt").append("checkedOutAt", "$checkedOutAt")
 						.append("count", "$count").append("category", "$category")
+						.append("branch", "$branch")
 						.append("cancelledByProfile", "$cancelledByProfile")
 						.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
 						.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
@@ -1661,6 +1663,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.append("checkedOutAt", new BasicDBObject("$first", "$checkedOutAt"))
 						.append("count", new BasicDBObject("$first", "$count"))
 						.append("category", new BasicDBObject("$first", "$category"))
+						.append("branch", new BasicDBObject("$first", "$branch"))
 						.append("cancelledByProfile", new BasicDBObject("$first", "$cancelledByProfile"))
 						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
