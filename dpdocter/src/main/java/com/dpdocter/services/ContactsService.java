@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.beans.Branch;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.RegisteredPatientDetails;
@@ -57,5 +58,14 @@ public interface ContactsService {
 
 	List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId,
 			String updatedTime, boolean discarded, String role, int page, int size, String searchTerm, String userId);
+
+	Branch addEditBranch(Branch branch);
+
+	Branch deleteBranch(String branchId, Boolean discarded);
+
+	Branch getBranchById(String branchId);
+
+	Response<Object> getBranches(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String searchTerm);
 
 }

@@ -91,6 +91,14 @@ public interface PathProxy {
 
 		public static final String SEND_SMS_TO_GROUP = "/group/sms";
 
+		public static final String ADD_BRANCH = "/branch/add";
+
+		public static final String GET_BRANCH_BY_ID = "/branch/{branchId}/get";
+
+		public static final String DELETE_BRANCH = "/branch/{branchId}/delete";
+
+		public static final String GET_BRANCHES = "/branch/search";
+
 	}
 
 	public static final String REGISTRATION_BASE_URL = BASE_URL + "/register";
