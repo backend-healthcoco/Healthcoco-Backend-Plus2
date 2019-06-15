@@ -737,6 +737,7 @@ public class SignUpServiceImpl implements SignUpService {
 						userCollection.setSalt(salt);
 						userCollection.setPassword(password);
 						userCollection.setSignedUp(true);
+						userCollection.setColorCode(request.getCountryCode());
 						userRepository.save(userCollection);
 
 						PatientCollection patientCollection = patientRepository
@@ -1184,15 +1185,13 @@ public class SignUpServiceImpl implements SignUpService {
 				if (!forgotPasswordService.isLinkValid(tokenCollection.getCreatedTime()))
 					return "We were unable to verify your Healthcoco+ account."
 							+ " Please contact support@healthcoco.com for completing your account verification.";
-				ConfexUserCollection userCollection = confexUserRepository
-						.findOne(tokenCollection.getResourceId());
+				ConfexUserCollection userCollection = confexUserRepository.findOne(tokenCollection.getResourceId());
 				if (userCollection == null) {
 					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification  that we sent you.";
 				}
 				userCollection.setIsVerified(true);
 				confexUserRepository.save(userCollection);
 
-				
 				tokenCollection.setIsUsed(true);
 				tokenRepository.save(tokenCollection);
 				return "You have successfully verified your Account."
@@ -1211,6 +1210,5 @@ public class SignUpServiceImpl implements SignUpService {
 		}
 
 	}
-	
-	
+
 }

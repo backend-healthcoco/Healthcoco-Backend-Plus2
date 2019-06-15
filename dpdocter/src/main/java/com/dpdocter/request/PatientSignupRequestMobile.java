@@ -4,6 +4,9 @@ import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.PersonalInformation;
 
 public class PatientSignupRequestMobile {
+
+	private String countryCode = "+91";
+
 	private String name;
 
 	private char[] password;
@@ -21,7 +24,7 @@ public class PatientSignupRequestMobile {
 	private boolean isNewPatientNeedToBeCreated;
 
 	private String emailAddress;
-	
+
 	private PersonalInformation personalInformation;
 
 	public String getName() {
@@ -102,6 +105,14 @@ public class PatientSignupRequestMobile {
 
 	public void setPersonalInformation(PersonalInformation personalInformation) {
 		this.personalInformation = personalInformation;
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 	@Override
