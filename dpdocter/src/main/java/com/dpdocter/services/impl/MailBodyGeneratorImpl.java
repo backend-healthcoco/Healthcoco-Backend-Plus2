@@ -267,12 +267,13 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Override
 	@Transactional
 	public String generateAppointmentEmailBody(String doctorName, String patientName, String dateTime,
-			String clinicName, String templatePath) {
+			String clinicName, String templatePath, String branch) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("doctorName", doctorName);
 		model.put("patientName", patientName);
 		model.put("dateTime", dateTime);
 		model.put("clinicName", clinicName);
+		model.put("branch", branch);
 		model.put("imageURL", imagePath + "templatesImage");
 		model.put("contactUsEmail", contactUsEmail);
 		model.put("fbLink", fbLink);

@@ -25,7 +25,7 @@ public interface MailBodyGenerator {
 			String doctorName);
 
 	String generateAppointmentEmailBody(String doctorName, String patientName, String dateTime, String clinicName,
-			String templatePath);
+			String templatePath, String branch);
 
 	String generateEmailBody(String userName, String resumeType, String templatePath) throws Exception;
 
