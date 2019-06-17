@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.Query;
 import com.dpdocter.collections.WaterCounterSettingCollection;
 
 public interface WaterCounterSettingRepository extends MongoRepository<WaterCounterSettingCollection, ObjectId>{
-	@Query("{'userId' : ?0,'discarded' : false }")
+	@Query("{'userId' : ?0}")
 	public WaterCounterSettingCollection findByuserId(ObjectId userId);
 
 }
