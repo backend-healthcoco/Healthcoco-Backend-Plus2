@@ -19,7 +19,7 @@
 
         <div>
          <p style="color:#2c3335;font-size:15px;">Hello ${doctorName},<br><br>
-         Your appointment with ${patientName} scheduled on ${dateTime} at ${clinicName} has been cancelled by the patient.
+         Your appointment with ${patientName} scheduled on ${dateTime} at ${clinicName}${branch} has been cancelled by the patient.
          We regret the inconvenience caused.<br><br>For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >${contactUsEmail}</a>
           <br><br>Stay Healthy and Happy,<br>Team Healthcoco.
          </p>
