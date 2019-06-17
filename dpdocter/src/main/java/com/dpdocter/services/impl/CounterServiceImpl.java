@@ -95,8 +95,10 @@ public class CounterServiceImpl implements CounterService {
 			}
 
 			counterCollection = waterCounterRepository.save(counterCollection);
-			response = new WaterCounter();
-			BeanUtil.map(counterCollection, response);
+			if (counterCollection != null) {
+				response = new WaterCounter();
+				BeanUtil.map(counterCollection, response);
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -159,8 +161,10 @@ public class CounterServiceImpl implements CounterService {
 		WaterCounter response = null;
 		try {
 			WaterCounterCollection counterCollection = waterCounterRepository.findOne(new ObjectId(counterId));
-			response = new WaterCounter();
-			BeanUtil.map(counterCollection, response);
+			if (counterCollection != null) {
+				response = new WaterCounter();
+				BeanUtil.map(counterCollection, response);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + "Error while getting Water counter : " + e.getCause().getMessage());
@@ -233,8 +237,10 @@ public class CounterServiceImpl implements CounterService {
 		try {
 			WaterCounterSettingCollection counterSettingCollection = waterCounterSettingRepository
 					.findByuserId(new ObjectId(userId));
-			response = new WaterCounterSetting();
-			BeanUtil.map(counterSettingCollection, response);
+			if (counterSettingCollection != null) {
+				response = new WaterCounterSetting();
+				BeanUtil.map(counterSettingCollection, response);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + "Error while getting Water counter setting : " + e.getCause().getMessage());
@@ -282,8 +288,11 @@ public class CounterServiceImpl implements CounterService {
 		try {
 			WeightCounterSettingCollection trackerSettingCollection = weightCounterSettingRepository
 					.findByuserId(new ObjectId(userId));
-			response = new WeightCounterSetting();
-			BeanUtil.map(trackerSettingCollection, response);
+
+			if (trackerSettingCollection != null) {
+				response = new WeightCounterSetting();
+				BeanUtil.map(trackerSettingCollection, response);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + "Error while getting Weight counter setting : " + e.getCause().getMessage());
@@ -382,8 +391,10 @@ public class CounterServiceImpl implements CounterService {
 		try {
 
 			WeightCounterCollection counterCollection = weightCounterRepository.findOne(new ObjectId(counterId));
-			response = new WeightCounter();
-			BeanUtil.map(counterCollection, response);
+			if (counterCollection != null) {
+				response = new WeightCounter();
+				BeanUtil.map(counterCollection, response);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + "Error while getting Weight Counter : " + e.getCause().getMessage());
@@ -508,8 +519,10 @@ public class CounterServiceImpl implements CounterService {
 		try {
 
 			MealCounterCollection counterCollection = mealCounterRepository.findOne(new ObjectId(counterId));
-			response = new MealCounter();
-			BeanUtil.map(counterCollection, response);
+			if (counterCollection != null) {
+				response = new MealCounter();
+				BeanUtil.map(counterCollection, response);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + "Error while getting Meal Counter : " + e.getCause().getMessage());
@@ -635,8 +648,10 @@ public class CounterServiceImpl implements CounterService {
 		try {
 
 			ExerciseCounterCollection counterCollection = exerciseCounterRepository.findOne(new ObjectId(counterId));
-			response = new ExerciseCounter();
-			BeanUtil.map(counterCollection, response);
+			if (counterCollection != null) {
+				response = new ExerciseCounter();
+				BeanUtil.map(counterCollection, response);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + "Error while getting Exercise Counter : " + e.getCause().getMessage());
@@ -762,8 +777,10 @@ public class CounterServiceImpl implements CounterService {
 		try {
 
 			CaloriesCounterCollection counterCollection = caloriesCounterRepository.findOne(new ObjectId(counterId));
-			response = new CaloriesCounter();
-			BeanUtil.map(counterCollection, response);
+			if (counterCollection != null) {
+				response = new CaloriesCounter();
+				BeanUtil.map(counterCollection, response);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + "Error while getting Calorie Counter : " + e.getCause().getMessage());
