@@ -82,7 +82,9 @@ public class AppointmentLookupResponse extends GenericCollection {
     private Integer count; 
     
     private String category;
-    
+
+    private String branch;
+
     private String cancelledByProfile;
     
     private String localPatientName;
@@ -393,6 +395,14 @@ public class AppointmentLookupResponse extends GenericCollection {
 		this.isCreatedByPatient = isCreatedByPatient;
 	}
 
+	public String getBranch() {
+		return branch;
+	}
+
+	public void setBranch(String branch) {
+		this.branch = branch;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentLookupResponse [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -406,8 +416,8 @@ public class AppointmentLookupResponse extends GenericCollection {
 				+ ", doctor=" + doctor + ", location=" + location + ", patient=" + patient + ", patientCard="
 				+ patientCard + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor
 				+ ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt
-				+ ", count=" + count + ", category=" + category + ", cancelledByProfile=" + cancelledByProfile
-				+ ", localPatientName=" + localPatientName + ", isCreatedByPatient=" + isCreatedByPatient + "]";
+				+ ", count=" + count + ", category=" + category + ", branch=" + branch + ", cancelledByProfile="
+				+ cancelledByProfile + ", localPatientName=" + localPatientName + ", isCreatedByPatient="
+				+ isCreatedByPatient + "]";
 	}
-
 }
