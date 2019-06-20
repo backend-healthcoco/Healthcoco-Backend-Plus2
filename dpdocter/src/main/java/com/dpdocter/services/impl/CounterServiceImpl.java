@@ -472,7 +472,10 @@ public class CounterServiceImpl implements CounterService {
 			String mealTime) {
 		List<MealCounter> response = null;
 		try {
-			Criteria criteria = new Criteria("discarded").is(false).and("mealTime").is(mealTime.toUpperCase());
+			Criteria criteria = new Criteria("discarded").is(false);
+			if(!DPDoctorUtils.anyStringEmpty(mealTime)) {
+			criteria.and("mealTime").is(mealTime.toUpperCase());
+			}
 			Date from = null;
 			Date to = null;
 			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
