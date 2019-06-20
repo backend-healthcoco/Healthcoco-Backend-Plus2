@@ -58,6 +58,9 @@ public class DoctorLocation {
 	@Field(type = FieldType.String)
 	private String locality;
 
+	@Field(type = FieldType.Integer)
+	private String localitySort;
+	
 	@Field(type = FieldType.String)
 	private String clinicNumber;
 

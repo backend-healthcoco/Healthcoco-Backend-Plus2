@@ -955,16 +955,13 @@ public class AdminServicesImpl implements AdminServices {
 	        		if(line.size()>1) {
 	        			if(!DPDoctorUtils.anyStringEmpty(line.get(1))) {
 	        				String[] specialities = line.get(1).split("\\+");
+	        				List<SpecialityCollection> specialityCollections = specialityRepository.find(specialities);
+	        				List<ObjectId> specialityIds = (List<ObjectId>) CollectionUtils.collect(specialityCollections,
+	    							new BeanToPropertyValueTransformer("id"));
 	        				
-	        				List<ObjectId> specialityIds = new ArrayList<ObjectId>();
-	        				List<String> specialitiesList = new ArrayList<String>();
-	        				for(String speciality: specialities) {
-	        					List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository.findByQueryAnnotation(speciality);
-	        					for(ESSpecialityDocument esSpecialityDocument : esSpecialityDocuments) {
-	        						specialityIds.add(new ObjectId(esSpecialityDocument.getId()));
-	        						specialitiesList.add(esSpecialityDocument.getSuperSpeciality());
-	        					}
-	        				}
+	        				List<String> specialitiesList = (List<String>) CollectionUtils.collect(specialityCollections,
+	    							new BeanToPropertyValueTransformer("superSpeciality"));
+	        				
 	        				servicesCollection.setSpecialities(specialitiesList);
 	        				servicesCollection.setSpecialityIds(specialityIds);
 	        			}
@@ -1063,18 +1060,21 @@ public class AdminServicesImpl implements AdminServices {
 	        while (scanner.hasNext()) {
 	        		String csvLine = scanner.nextLine();
 	        		List<String> line = CSVUtils.parseLine(csvLine);
-	        		SpecialityCollection specialityCollection = new SpecialityCollection();
-	        		specialityCollection.setAdminCreatedTime(new Date());
-	        		specialityCollection.setCreatedTime(new Date());
-	        		specialityCollection.setUpdatedTime(new Date());
-	        		specialityCollection.setCreatedBy("ADMIN");
-	        		specialityCollection.setSpeciality(line.get(0));
-
-	        		specialityCollection.setToShow(true);
 	        		
-	        		if(line.size()>1) {
-		        		specialityCollection.setSuperSpeciality(line.get(1));
+	        		SpecialityCollection specialityCollection = null;
+	        		System.out.println(line.get(3));
+	        		if(!(line.get(3) == "null" || DPDoctorUtils.anyStringEmpty(line.get(3))))specialityCollection = specialityRepository.findOne(new ObjectId(line.get(3)));
+	        		if(specialityCollection == null) {
+	        			specialityCollection = new SpecialityCollection();
+	        			specialityCollection.setAdminCreatedTime(new Date());
+		        		specialityCollection.setCreatedTime(new Date());
+		        		specialityCollection.setCreatedBy("ADMIN");
 	        		}
+	        		specialityCollection.setUpdatedTime(new Date());
+	        		specialityCollection.setSpeciality(line.get(0));
+	        		specialityCollection.setSuperSpeciality(line.get(1));
+	        		specialityCollection.setMetaTitle(line.get(2));
+	        		specialityCollection.setToShow(true);
 	        		
 	        		specialityCollection = specialityRepository.save(specialityCollection);
 	        		
@@ -1143,4 +1143,11 @@ public class AdminServicesImpl implements AdminServices {
 		}
 		return response;
 	}
+
+	@Override
+	public Boolean updateDoctors() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

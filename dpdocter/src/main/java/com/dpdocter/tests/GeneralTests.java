@@ -29,7 +29,7 @@ public class GeneralTests {
 //            System.out.println(String.format("%02d:%02d", cal / 60, cal % 60));
 //        }
         
-		String service = "-abc-";
+		String service = "-abc  -";
 		String slugUrl = service.toLowerCase().trim().replaceAll("[^a-zA-Z0-9-]", "-");
 		
 //		int countOfCharoccurence = Strings.countOccurrencesOf(slugUrl, "--");

@@ -25,6 +25,9 @@ public class SpecialityCollection extends GenericCollection {
     @Field
     private Boolean toShow = true;
 
+    @Field
+    private String metaTitle;
+    
     public ObjectId getId() {
 	return id;
     }
@@ -73,11 +76,18 @@ public class SpecialityCollection extends GenericCollection {
 		this.formattedSuperSpeciality = formattedSuperSpeciality;
 	}
 
+	public String getMetaTitle() {
+		return metaTitle;
+	}
+
+	public void setMetaTitle(String metaTitle) {
+		this.metaTitle = metaTitle;
+	}
+
 	@Override
 	public String toString() {
 		return "SpecialityCollection [id=" + id + ", speciality=" + speciality + ", superSpeciality=" + superSpeciality
 				+ ", formattedSpeciality=" + formattedSpeciality + ", formattedSuperSpeciality="
-				+ formattedSuperSpeciality + ", toShow=" + toShow + "]";
+				+ formattedSuperSpeciality + ", toShow=" + toShow + ", metaTitle=" + metaTitle + "]";
 	}
-
 }

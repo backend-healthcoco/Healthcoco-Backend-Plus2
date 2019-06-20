@@ -209,4 +209,13 @@ public class AdminAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.AdminUrls.UPDATE_DOCTOR)
+	@GET
+	@ApiOperation(value = PathProxy.AdminUrls.UPDATE_DOCTOR, notes = PathProxy.AdminUrls.UPDATE_DOCTOR)
+	public Response<Boolean> updateDoctors() {
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(adminServices.updateDoctors());
+		return response;
+	}
 }

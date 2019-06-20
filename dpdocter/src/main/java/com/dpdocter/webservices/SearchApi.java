@@ -32,7 +32,6 @@ import com.dpdocter.response.DoctorClinicProfileBySlugUrlResponse;
 import com.dpdocter.response.DoctorProfileBySlugUrlResponse;
 import com.dpdocter.response.ResourcesCountResponse;
 import com.dpdocter.response.SearchDoctorResponse;
-import com.dpdocter.response.SearchLandmarkLocalityResponse;
 import com.dpdocter.services.BlogService;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.SearchService;

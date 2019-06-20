@@ -498,6 +498,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	SymptomDiseaseConditionRepository symptomDiseaseConditionRepository;
 	
 	//@Scheduled(cron = "00 00 3 * * *", zone = "IST")
+//	@Scheduled(fixedDelay = 1800)
 	@Override
 	@Transactional
 	public void checkResources() {

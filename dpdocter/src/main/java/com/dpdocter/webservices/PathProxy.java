@@ -1211,6 +1211,8 @@ public interface PathProxy {
 
 		public static final String ADD_SYMPTOMS_DISEASES_CONDITION = "/symptomsDiseasesCondition/add";
 
+		public static final String UPDATE_DOCTOR = "/updateDoctors";
+
 	}
 
 	public static final String PUSH_NOTIFICATION_BASE_URL = BASE_URL + "/notification";

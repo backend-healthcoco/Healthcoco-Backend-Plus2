@@ -35,4 +35,7 @@ public interface ESLandmarkLocalityRepository extends ElasticsearchRepository<ES
 //    @Query("!geofilt sfield='geoLocation'  pt=?0,?1 d=10")
 //    List<ESLandmarkLocalityDocument> findByLandmarkANDLocality(double latitude, double longitude);
 
+   
+    @Query("{\"bool\": {\"should\": [{\"match_phrase_prefix\": {\"landmark\": \"?0*\"}},{\"match_phrase_prefix\": {\"locality\": \"?0*\"}}], \"minimum_should_match\": 1}}")
+    List<ESLandmarkLocalityDocument> findByQueryAnnotation(String searchTerm);
 }

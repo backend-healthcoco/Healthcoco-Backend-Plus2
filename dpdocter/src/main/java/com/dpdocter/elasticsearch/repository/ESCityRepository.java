@@ -2,7 +2,6 @@ package com.dpdocter.elasticsearch.repository;
 
 import java.util.List;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
@@ -19,6 +18,9 @@ public interface ESCityRepository extends ElasticsearchRepository<ESCityDocument
 //    @Query("isActivated:true AND !geofilt sfield='geoLocation'  pt=?0,?1 d=10")
 //    List<ESCityDocument> findByQueryAnnotation(double latitude, double longitude);
 //
-	@Query("{\"bool\": {\"must\": [{\"prefix\": {\"city\": \"?0\"}}]}}")
+	@Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0\"}}]}}")
     ESCityDocument findByName(String city);
+	
+	@Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0\"}}, {\"match\": {\"isActivated\": \"?1\"}}]}}")
+    ESCityDocument findByNameAndActivated(String city, Boolean isActivated);
 }
