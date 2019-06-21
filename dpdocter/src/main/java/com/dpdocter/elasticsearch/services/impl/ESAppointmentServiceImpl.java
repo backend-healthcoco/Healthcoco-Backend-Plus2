@@ -1760,8 +1760,4 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		}
 		return response;
 	}
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74

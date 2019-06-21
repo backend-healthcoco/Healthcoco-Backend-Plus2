@@ -175,20 +175,6 @@ public class SMSServicesAPI {
 
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT)
-    @GET
-    @ApiOperation(value = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT, notes = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT)
-    public Response<Boolean> sendPromotionalSMSToPatient() {
-    	
-	Boolean send = transactionalManagementService.sendPromotionalSMSToPatient();
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(send);
-	return response;
-    }
-
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SMSUrls.SEND_BULK_SMS)
     @GET
     @ApiOperation(value = PathProxy.SMSUrls.SEND_BULK_SMS, notes = PathProxy.SMSUrls.SEND_BULK_SMS)

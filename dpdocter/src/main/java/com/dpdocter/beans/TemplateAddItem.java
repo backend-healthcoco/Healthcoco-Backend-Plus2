@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import com.dpdocter.beans.v2.GenericCode;
-
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class TemplateAddItem {
 	private String drugId;

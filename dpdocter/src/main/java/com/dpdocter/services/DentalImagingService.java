@@ -104,7 +104,4 @@ public interface DentalImagingService {
 
 	Integer countHospitalAssociatedDoctor(String hospitalId, String searchTerm);
 
-	Integer countHospitalAssociatedDoctor(String hospitalId,String searchTerm);
-
-
 }

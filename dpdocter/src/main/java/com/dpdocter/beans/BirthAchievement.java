@@ -1,6 +1,5 @@
 package com.dpdocter.beans;
 
-import com.dpdocter.beans.v2.Duration;
 import com.dpdocter.collections.GenericCollection;
 
 public class BirthAchievement extends GenericCollection {

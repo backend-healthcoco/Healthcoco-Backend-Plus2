@@ -1048,9 +1048,9 @@ public class PaediatricServiceImpl implements PaediatricService{
 	}
 
 	@Override
-	public void updateOldPatientData() {
+	public Boolean updateOldPatientData() {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 	

@@ -6,10 +6,6 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
-<<<<<<< HEAD
-import org.springframework.data.elasticsearch.annotations.FieldIndex;
-=======
->>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.MultiField;
 

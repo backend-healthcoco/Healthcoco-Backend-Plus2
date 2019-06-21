@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.v2.Duration;
+import com.dpdocter.beans.Duration;
 
 @Document(collection = "birth_achievement_cl")
 public class BirthAchievementCollection extends GenericCollection {

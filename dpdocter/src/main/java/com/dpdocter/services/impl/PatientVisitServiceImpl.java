@@ -2837,7 +2837,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						showTitle = true;
 					}
 					parameters.put("showExamTitle", showTitle);
->>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
+
 
 						if (!isCustomPDF || showUSG) {
 							clinicalNotesJasperDetails.setIndicationOfUSG(clinicalNotesCollection.getIndicationOfUSG());

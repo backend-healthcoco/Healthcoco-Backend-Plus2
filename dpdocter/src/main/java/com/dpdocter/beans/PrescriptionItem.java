@@ -5,8 +5,6 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Transient;
 
-import com.dpdocter.beans.v2.GenericCode;
-
 public class PrescriptionItem {
 	private ObjectId drugId;
 

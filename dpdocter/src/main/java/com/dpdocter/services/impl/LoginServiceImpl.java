@@ -198,17 +198,9 @@ public class LoginServiceImpl implements LoginService {
 									DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 							.getMappedResults();
 					if (doctorClinicProfileLookupResponses == null || doctorClinicProfileLookupResponses.isEmpty()) {
-<<<<<<< HEAD
-
-						logger.warn("None of your clinic is active");
-						// user.setUserState(UserState.NOTACTIVATED);
-						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active");
-
-=======
 						logger.warn("None of your clinic is active or you don't have login access");
 						throw new BusinessException(ServiceError.NotAuthorized,
 								"None of your clinic is active or you don't have login access");
->>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 					}
 					if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
 						List<Hospital> hospitals = new ArrayList<Hospital>();
@@ -224,12 +216,8 @@ public class LoginServiceImpl implements LoginService {
 									getFinalImageURL(locationAndAccessControl.getLogoThumbnailUrl()));
 							locationAndAccessControl
 									.setImages(getFinalClinicImages(locationAndAccessControl.getImages()));
-<<<<<<< HEAD
-							locationAndAccessControl.setIsVaccinationModuleOn(doctorClinicProfileLookupResponse.getIsVaccinationModuleOn());
-=======
 							locationAndAccessControl.setIsVaccinationModuleOn(
 									doctorClinicProfileLookupResponse.getIsVaccinationModuleOn());
->>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 							List<Role> roles = null;
 
 							Boolean isStaff = false;
@@ -297,15 +285,8 @@ public class LoginServiceImpl implements LoginService {
 									hospital.setHospitalUId(hospitalCollection.getHospitalUId());
 									hospitals.add(hospital);
 								} else {
-<<<<<<< HEAD
-
 									Hospital hospital = checkHospitalId
 											.get(locationCollection.getHospitalId().toString());
-
-=======
-									Hospital hospital = checkHospitalId
-											.get(locationCollection.getHospitalId().toString());
->>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 									hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 									hospital.setHospitalUId(hospitalCollection.getHospitalUId());
 									checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
@@ -683,25 +664,6 @@ public class LoginServiceImpl implements LoginService {
 
 		DoctorLoginPinCollection olddoctorLoginPinCollection = null;
 
-<<<<<<< HEAD
-			if (userRoleLookupResponses != null && !userRoleLookupResponses.isEmpty())
-				response = true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error occured while checking is Location Admin");
-			throw new BusinessException(ServiceError.Unknown, "Error occured while checking is Location Admin");
-		}
-		return response;
-	}
-
-	@Override
-	public DoctorLoginPin AddEditLoginPin(DoctorLoginPin request) {
-		DoctorLoginPin response = null;
-
-		DoctorLoginPinCollection olddoctorLoginPinCollection = null;
-
-=======
->>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 		try {
 			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
 			if (doctor == null) {

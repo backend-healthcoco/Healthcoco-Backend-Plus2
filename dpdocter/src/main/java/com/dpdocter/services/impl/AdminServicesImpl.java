@@ -1143,10 +1143,4 @@ public class AdminServicesImpl implements AdminServices {
 		}
 		return response;
 	}
-
-	@Override
-	public void updateDoctors() {
-		// TODO Auto-generated method stub
-	}
-	
 }

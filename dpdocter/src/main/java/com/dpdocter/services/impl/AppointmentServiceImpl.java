@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
 

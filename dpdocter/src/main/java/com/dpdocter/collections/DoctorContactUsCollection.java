@@ -41,8 +41,6 @@ public class DoctorContactUsCollection extends GenericCollection {
 	@Field
 	private String mrCode;
 	@Field
-	private String mrCode;
-	@Field
 	private String city;
 	@Field
 	private String deviceType;

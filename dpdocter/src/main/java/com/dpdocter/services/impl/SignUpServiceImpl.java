@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -85,7 +84,6 @@ import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.response.CollectionBoyResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.PateientSignUpCheckResponse;
-import com.dpdocter.response.PharmaLicenseResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.ForgotPasswordService;

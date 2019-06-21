@@ -11,8 +11,6 @@ import org.xml.sax.SAXException;
 
 import com.lowagie.text.DocumentException;
 
-import common.util.web.DPDoctorUtils;
-
 public class GeneralTests {
 
 	public static void main(String args[]) throws SAXException, IOException, DocumentException, ParserConfigurationException {

@@ -1962,7 +1962,7 @@ public interface PathProxy {
 		public static final String VERIFY_OTP_MOBILE = "/{mobileNumber}/{otpNumber}/verify";
 
 	}
-	
+
 	public static final String Lab_PRINT_BASE_URL = BASE_URL + "/labPrint";
 
 	public interface LabPrintUrls {
@@ -1970,7 +1970,10 @@ public interface PathProxy {
 		public static final String GET_Lab_PRINT_SETTING = "/setting/{locationId}/{hospitalId}/get";
 		public static final String ADD_EDIT_LAB_PRINT_HEADER = "/header/addEdit";
 		public static final String ADD_EDIT_LAB_PRINT_FOOTER = "/footer/addEdit";
-
+		public static final String ADD_EDIT_LAB_DOCUMENT = "/document/addEdit";
+		public static final String GET_LAB_DOCUMENTS = "/document/get";
+		public static final String GET_LAB_DOCUMENT = "/document/{documentId}/view";
+		public static final String DELETE_LAB_DOCUMENT = "/document/{documentId}/delete";
 	}
 
 	public static final String PROCEDURE_BASE_URL = BASE_URL + "/procedure";
@@ -1997,30 +2000,6 @@ public interface PathProxy {
 		public static final String SEARCH_RECIPES = "search";
 		public static final String SEARCH_EXERCISE = "exercise/search";
 		public static final String SEARCH_RECIPES_FOR_USER_APP = "user/app/search";
-	}
-
-	public static final String ORDER_MEDICINE_BASE_URL = BASE_URL + "/order/medicine";
-
-	public interface OrderMedicineUrls {
-
-		public static final String UPLOAD_PRESCRIPTION = "/upload/prescription";
-		public static final String MEDICINE_ORDER_ADD_EDIT_RX = "/addEditRx";
-		public static final String MEDICINE_ORDER_ADD_EDIT_ADDRESS = "/addEditAddress";
-		public static final String MEDICINE_ORDER_ADD_EDIT_PAYMENT = "/addEditPayment";
-		public static final String MEDICINE_ORDER_ADD_EDIT_PREFERENCE = "/addEditPreference";
-		public static final String DISCARD_MEDICINE_ORDER = "/discard/{id}";
-		public static final String UPDATE_STATUS = "/updateStatus/{id}";
-		public static final String PATIENT_GET_LIST = "/patient/getList/{patientId}";
-		public static final String GET_BY_ID = "/get/{id}";
-		public static final String ADD_EDIT_USER_CART = "/addEditUserCart";
-		public static final String GET_CART_BY_ID = "/getCart/{id}";
-		public static final String GET_CART_BY_USER_ID = "/getCartByUser/{id}";
-		public static final String ADD_EDIT_TRACKING_DETAILS= "/addEditTrackingDetails";
-		public static final String GET_TRACKING_DETAILS= "/getTrackingDetails/{orderId}";
-		public static final String GET_DRUG_INFO_LIST= "/getDrugInfoList";
-		public static final String CLEAR_CART = "/clearCart/{id}";
-		public static final String MEDICINE_ORDER_ADD_EDIT_RX_IMAGE = "/addEditRxImage";
-		
 	}
 
 	public static final String RECIPE_BASE_URL = BASE_URL + "/recipe";
@@ -2054,6 +2033,8 @@ public interface PathProxy {
 		public static final String GET_DIET_PLANS = "get";
 		public static final String DELETE_DIET_PLAN = "{planId}/delete";
 		public static final String GET_DIET_PLAN = "{planId}/get";
+		public static final String DOWNLOAD_DIET_PLAN = "{planId}/download";
+		public static final String SEND_DIET_PLAN_EMAIL = "{planId}/sendEmail";
 	}
 
 	public static final String COUNTER_BASE_URL = BASE_URL + "/counter";
@@ -2103,12 +2084,24 @@ public interface PathProxy {
 		public static final String ADD_EDIT_VACCINE = "vaccine/addEdit";
 		public static final String GET_VACCINE_BY_ID = "vaccine/get/{id}";
 		public static final String GET_VACCINES = "vaccine/getList";
+		public static final String GET_GROUPED_VACCINES = "groupedVaccine/getList";
 		public static final String GET_MASTER_VACCINES = "vaccine/getMasterList";
 		public static final String GET_VACCINE_BRAND_ASSOCIATION = "vaccine/getBrands";
 		public static final String GET_MULTIPLE_VACCINE_BRAND_ASSOCIATION = "vaccine/getMultipleBrands";
 		public static final String ADD_EDIT_MULTIPLE_VACCINE = "vaccine/addEditMultiple";
 		public static final String ADD_EDIT_MULTIPLE_VACCINE_STATUS = "vaccine/addEditMultipleStatus";
-		public static final String UPDATE_OLD_DATA = "/updateOldData";
+		public static final String ADD_EDIT_ACHIEVEMENT = "achievement/addEdit";
+		public static final String GET_ACHIEVEMENT_BY_ID = "achievement/get/{id}";
+		public static final String GET_ACHIEVEMENTS = "achievement/getList/{patientId}";
+		public static final String UPDATE_VACCINATION_CHART = "vaccine/updateChart/{patientId}/{vaccineStartDate}";
+		public static final String GET_GROWTH_CHARTS_GRAPH = "growthChartGraph/getList";
+	}
+
+	public static final String SOLR_BILLING_BASE_URL = BASE_URL + "/solr/billing";
+
+	public interface SolrBillingUrls {
+		public static final String SEARCH_EXPENSE_TYPES = "searchExpenceTypes/{range}";
+
 	}
 
 	public static final String CONFERENCE_URL = BASE_URL + "/conference";
@@ -2133,12 +2126,36 @@ public interface PathProxy {
 
 	}
 
+	public static final String ORDER_MEDICINE_BASE_URL = BASE_URL + "/order/medicine";
+
+	public interface OrderMedicineUrls {
+
+		public static final String UPLOAD_PRESCRIPTION = "/upload/prescription";
+		public static final String MEDICINE_ORDER_ADD_EDIT_RX = "/addEditRx";
+		public static final String MEDICINE_ORDER_ADD_EDIT_ADDRESS = "/addEditAddress";
+		public static final String MEDICINE_ORDER_ADD_EDIT_PAYMENT = "/addEditPayment";
+		public static final String MEDICINE_ORDER_ADD_EDIT_PREFERENCE = "/addEditPreference";
+		public static final String DISCARD_MEDICINE_ORDER = "/discard/{id}";
+		public static final String UPDATE_STATUS = "/updateStatus/{id}";
+		public static final String PATIENT_GET_LIST = "/patient/getList/{patientId}";
+		public static final String GET_BY_ID = "/get/{id}";
+		public static final String ADD_EDIT_USER_CART = "/addEditUserCart";
+		public static final String GET_CART_BY_ID = "/getCart/{id}";
+		public static final String GET_CART_BY_USER_ID = "/getCartByUser/{id}";
+		public static final String ADD_EDIT_TRACKING_DETAILS= "/addEditTrackingDetails";
+		public static final String GET_TRACKING_DETAILS= "/getTrackingDetails/{orderId}";
+		public static final String GET_DRUG_INFO_LIST= "/getDrugInfoList";
+		public static final String CLEAR_CART = "/clearCart/{id}";
+		public static final String MEDICINE_ORDER_ADD_EDIT_RX_IMAGE = "/addEditRxImage";
+		
+	}
+
 	public static final String TRENDING_URL = BASE_URL + "/Trending";
 
 	public interface TrendingUrls {
 
-		public static final String GET_TRENDING = "{id}/{userId}/get";
-		public static final String GET_OFFER = "{id}/get";
+		public static final String GET_TRENDING = "{id}/get";
+		public static final String GET_OFFER = "/offer/{id}/get";
 
 	}
 
@@ -2150,4 +2167,13 @@ public interface PathProxy {
 		public static final String SEARCH_TRENDINGS = "/search";
 	}
 
+	public static final String NUTRITION_REFERENCE_BASE_URL = BASE_URL + "/nutritionReference";
+
+	public interface NutritionReferenceUrl {
+		public static final String ADD_EDIT_NUTRITION_REFERENCE = "/addEdit";
+		public static final String GET_NUTRITION_REFERENCES = "/get";
+		public static final String GET_NUTRITION_ANALYTICS = "/getNutritionAnalytics";
+		public static final String GRT_NUTRITION_REFERNCE = "/{id}/get";
+		public static final String CHANGE_REFERENCE_STATUS = "/change/{id}/status";
+	}
 }

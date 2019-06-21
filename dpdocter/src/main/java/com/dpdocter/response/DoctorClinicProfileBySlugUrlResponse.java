@@ -5,10 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.Feedback;
-<<<<<<< HEAD
 import com.dpdocter.beans.WorkingSchedule;
-=======
->>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 import com.dpdocter.enums.DoctorFacility;
 
 public class DoctorClinicProfileBySlugUrlResponse {
