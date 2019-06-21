@@ -56,13 +56,19 @@ public class DrugCollection extends GenericCollection {
 	private String companyName;
 
 	@Field
-	private String packSize;
-
-	@Field
 	private long companyRankingCount = 0;
 
 	@Field
+	private String packSize;
+
+	@Field
 	private String packForm;
+
+	@Field
+	private List<ObjectId> gcStrengthIds;
+
+	@Field
+	private Integer drugQuantity;
 
 	@Field
 	private String prizePerPack;
@@ -150,6 +156,14 @@ public class DrugCollection extends GenericCollection {
 
 	public void setStrength(Strength strength) {
 		this.strength = strength;
+	}
+
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
 	}
 
 	public ObjectId getDoctorId() {
@@ -256,20 +270,20 @@ public class DrugCollection extends GenericCollection {
 		this.categories = categories;
 	}
 
-	public List<GenericCode> getGenericNames() {
-		return genericNames;
-	}
-
-	public void setGenericNames(List<GenericCode> genericNames) {
-		this.genericNames = genericNames;
-	}
-
 	public long getRankingCount() {
 		return rankingCount;
 	}
 
 	public void setRankingCount(long rankingCount) {
 		this.rankingCount = rankingCount;
+	}
+
+	public List<ObjectId> getGcStrengthIds() {
+		return gcStrengthIds;
+	}
+
+	public void setGcStrengthIds(List<ObjectId> gcStrengthIds) {
+		this.gcStrengthIds = gcStrengthIds;
 	}
 
 	public String getPackForm() {
@@ -312,14 +326,6 @@ public class DrugCollection extends GenericCollection {
 		this.unsafeWith = unsafeWith;
 	}
 
-	public Long getTotalStock() {
-		return totalStock;
-	}
-
-	public void setTotalStock(Long totalStock) {
-		this.totalStock = totalStock;
-	}
-
 	public Long getInventoryQuantity() {
 		return inventoryQuantity;
 	}
@@ -328,12 +334,28 @@ public class DrugCollection extends GenericCollection {
 		this.inventoryQuantity = inventoryQuantity;
 	}
 
+	public Long getTotalStock() {
+		return totalStock;
+	}
+
+	public void setTotalStock(Long totalStock) {
+		this.totalStock = totalStock;
+	}
+
 	public long getCompanyRankingCount() {
 		return companyRankingCount;
 	}
 
 	public void setCompanyRankingCount(long companyRankingCount) {
 		this.companyRankingCount = companyRankingCount;
+	}
+
+	public Integer getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(Integer drugQuantity) {
+		this.drugQuantity = drugQuantity;
 	}
 
 	public String getDrugTypePlacement() {
@@ -357,12 +379,12 @@ public class DrugCollection extends GenericCollection {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
 				+ explanation + ", strength=" + strength + ", genericNames=" + genericNames + ", doctorId=" + doctorId
 				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded=" + discarded
-				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize
-				+ ", companyRankingCount=" + companyRankingCount + ", packForm=" + packForm + ", prizePerPack="
-				+ prizePerPack + ", MRP=" + MRP + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
-				+ dosageTime + ", direction=" + direction + ", categories=" + categories + ", rankingCount="
-				+ rankingCount + ", inventoryQuantity=" + inventoryQuantity + ", specialities=" + specialities
-				+ ", rxRequired=" + rxRequired + ", unsafeWith=" + unsafeWith + ", totalStock=" + totalStock + "]";
+				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", companyRankingCount="
+				+ companyRankingCount + ", packSize=" + packSize + ", packForm=" + packForm + ", gcStrengthIds="
+				+ gcStrengthIds + ", drugQuantity=" + drugQuantity + ", prizePerPack=" + prizePerPack + ", MRP=" + MRP
+				+ ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction="
+				+ direction + ", categories=" + categories + ", rankingCount=" + rankingCount + ", inventoryQuantity="
+				+ inventoryQuantity + ", specialities=" + specialities + ", rxRequired=" + rxRequired + ", unsafeWith="
+				+ unsafeWith + ", totalStock=" + totalStock + "]";
 	}
-
 }

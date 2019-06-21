@@ -49,6 +49,10 @@ public class RegisterDoctorResponse {
     
     private String colorCode;
     
+    private Boolean hasLoginAccess = true;
+	
+	private Boolean hasBillingAccess = true;
+	
     public String getUserId() {
 	return userId;
     }
@@ -209,6 +213,22 @@ public class RegisterDoctorResponse {
 		this.colorCode = colorCode;
 	}
 
+	public Boolean getHasLoginAccess() {
+		return hasLoginAccess;
+	}
+
+	public void setHasLoginAccess(Boolean hasLoginAccess) {
+		this.hasLoginAccess = hasLoginAccess;
+	}
+
+	public Boolean getHasBillingAccess() {
+		return hasBillingAccess;
+	}
+
+	public void setHasBillingAccess(Boolean hasBillingAccess) {
+		this.hasBillingAccess = hasBillingAccess;
+	}
+
 	@Override
 	public String toString() {
 		return "RegisterDoctorResponse [title=" + title + ", userId=" + userId + ", firstName=" + firstName
@@ -217,7 +237,6 @@ public class RegisterDoctorResponse {
 				+ ", gender=" + gender + ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl
 				+ ", specialization=" + specialization + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", registerNumber=" + registerNumber + ", role=" + role + ", userState=" + userState + ", colorCode="
-				+ colorCode + "]";
+				+ colorCode + ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + "]";
 	}
-
 }

@@ -1,0 +1,17 @@
+<html>
+<body>
+	Hello Healthcoco Team,
+	<br>
+	<br> ${doctorName} has recommended nutrition Plan to ${patientName}. Following are the details :
+	<br> Nutrition Plan name : ${planName}
+	<br> Subscription Plan name : ${subplan}
+	<br> Name : ${patientName}
+	<br> Gender : ${gender}
+	<br> Mobile number : ${mobileNumber}
+	<br> Profession :${profession}
+	<br> DOB : ${birthDate}
+	<br> Address : ${address}
+	<br> City : ${city}
+	<br> PinCode : ${pinCode}
+</body>
+</html>

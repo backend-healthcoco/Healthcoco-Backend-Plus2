@@ -1,15 +1,19 @@
 package com.dpdocter.request;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.Discount;
-import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.Fields;
+import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.TreatmentService;
-import com.dpdocter.enums.PatientTreatmentStatus;
 
 public class TreatmentRequest {
 
+	private String doctorId;
+	
+	private Date treatmentDate;
+	
 	private TreatmentService treatmentService;
 	
 	private String treatmentServiceId;
@@ -110,11 +114,28 @@ public class TreatmentRequest {
 		this.treatmentFields = treatmentFields;
 	}
 
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public Date getTreatmentDate() {
+		return treatmentDate;
+	}
+
+	public void setTreatmentDate(Date treatmentDate) {
+		this.treatmentDate = treatmentDate;
+	}
+
 	@Override
 	public String toString() {
-		return "TreatmentRequest [treatmentService=" + treatmentService + ", treatmentServiceId=" + treatmentServiceId
-				+ ", status=" + status + ", cost=" + cost + ", note=" + note + ", discount=" + discount + ", finalCost="
-				+ finalCost + ", quantity=" + quantity + ", treatmentServices=" + treatmentServices
-				+ ", treatmentFields=" + treatmentFields + "]";
+		return "TreatmentRequest [doctorId=" + doctorId + ", treatmentDate=" + treatmentDate + ", treatmentService="
+				+ treatmentService + ", treatmentServiceId=" + treatmentServiceId + ", status=" + status + ", cost="
+				+ cost + ", note=" + note + ", discount=" + discount + ", finalCost=" + finalCost + ", quantity="
+				+ quantity + ", treatmentServices=" + treatmentServices + ", treatmentFields=" + treatmentFields + "]";
 	}
+
 }

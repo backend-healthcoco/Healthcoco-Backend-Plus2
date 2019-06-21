@@ -12,10 +12,12 @@ public class TemplateAddEditRequest {
 	private String doctorId;
 
 	private String locationId;
-
+	
 	private String hospitalId;
 
 	private List<TemplateAddItem> items;
+
+	private Boolean discarded = false;
 
 	private Boolean isDefault = false;
 
@@ -65,6 +67,14 @@ public class TemplateAddEditRequest {
 
 	public void setItems(List<TemplateAddItem> items) {
 		this.items = items;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 	public Boolean getIsDefault() {

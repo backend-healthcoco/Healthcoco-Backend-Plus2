@@ -45,6 +45,8 @@ public class GrowthChartCollection extends GenericCollection {
 	private String bmd;
 	@Field
 	private Boolean discarded = false;
+	@Field
+	private Boolean isPatientDiscarded = false;
 
 	public ObjectId getId() {
 		return id;
@@ -180,6 +182,24 @@ public class GrowthChartCollection extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "GrowthChartCollection [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", height=" + height + ", weight="
+				+ weight + ", bmi=" + bmi + ", skullCircumference=" + skullCircumference + ", progress=" + progress
+				+ ", age=" + age + ", temperature=" + temperature + ", bloodPressure=" + bloodPressure
+				+ ", bloodSugarF=" + bloodSugarF + ", bloodSugarPP=" + bloodSugarPP + ", bmd=" + bmd + ", discarded="
+				+ discarded + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

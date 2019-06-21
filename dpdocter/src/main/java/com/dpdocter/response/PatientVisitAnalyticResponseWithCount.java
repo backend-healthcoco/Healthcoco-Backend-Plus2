@@ -4,15 +4,15 @@ import java.util.List;
 
 public class PatientVisitAnalyticResponseWithCount {
 
-	private List<PatientAnalyticResponse> responses;
+	private List<AnalyticResponse> responses;
 
 	private Integer totalCost = 0;
 
-	public List<PatientAnalyticResponse> getResponses() {
+	public List<AnalyticResponse> getResponses() {
 		return responses;
 	}
 
-	public void setResponses(List<PatientAnalyticResponse> responses) {
+	public void setResponses(List<AnalyticResponse> responses) {
 		this.responses = responses;
 	}
 

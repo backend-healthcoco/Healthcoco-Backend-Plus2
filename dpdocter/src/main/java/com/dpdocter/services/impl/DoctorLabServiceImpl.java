@@ -184,7 +184,6 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					request.getUploadedByHospitalId());
 			for (RecordsFile file : request.getRecordsFiles()) {
 				if (file.getPdfInImgs() != null && labPrintSetting != null) {
-					System.out.println("enter in record file for header  footer print");
 					file.setRecordsUrl(createJasperReport(labPrintSetting, file.getPdfInImgs()));
 				}
 				file.setRecordsUrl(file.getRecordsUrl().replace(imagePath, ""));
@@ -500,8 +499,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
-						Aggregation.unwind("uploadedByDoctor"),
-						Aggregation.unwind("uploadedByLocation"), Aggregation.match(criteria), projectList,
+						Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
+						Aggregation.match(criteria), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			}

@@ -1,7 +1,5 @@
 package com.dpdocter.webservices;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -13,7 +11,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
@@ -47,7 +44,6 @@ import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
-import com.dpdocter.elasticsearch.repository.ESOralCavityThroatExaminationRepository;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -66,9 +62,6 @@ public class ESClinicalNotesApi {
 
 	private static Logger logger = Logger.getLogger(ESClinicalNotesApi.class.getName());
 
-	@Value(value = "${image.path}")
-	private String imagePath;
-
 	@Autowired
 	private ESClinicalNotesService esClinicalNotesService;
 
@@ -85,10 +78,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESComplaintsDocument> complaints = esClinicalNotesService.searchComplaints(range, page, size, doctorId,
+		Response<ESComplaintsDocument> response = esClinicalNotesService.searchComplaints(range, page, size, doctorId,
 				locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESComplaintsDocument> response = new Response<ESComplaintsDocument>();
-		response.setDataList(complaints);
 		return response;
 	}
 
@@ -105,10 +96,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESDiagnosesDocument> diagnoses = esClinicalNotesService.searchDiagnoses(range, page, size, doctorId,
+		Response<ESDiagnosesDocument> response = esClinicalNotesService.searchDiagnoses(range, page, size, doctorId,
 				locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESDiagnosesDocument> response = new Response<ESDiagnosesDocument>();
-		response.setDataList(diagnoses);
 		return response;
 	}
 
@@ -125,10 +114,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESNotesDocument> notes = esClinicalNotesService.searchNotes(range, page, size, doctorId, locationId,
+		Response<ESNotesDocument> response = esClinicalNotesService.searchNotes(range, page, size, doctorId, locationId,
 				hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESNotesDocument> response = new Response<ESNotesDocument>();
-		response.setDataList(notes);
 		return response;
 	}
 
@@ -145,11 +132,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESDiagramsDocument> diagrams = esClinicalNotesService.searchDiagrams(range, page, size, doctorId,
+		Response<ESDiagramsDocument> response = esClinicalNotesService.searchDiagrams(range, page, size, doctorId,
 				locationId, hospitalId, updatedTime, discarded, searchTerm);
-		diagrams = getFinalDiagrams(diagrams);
-		Response<ESDiagramsDocument> response = new Response<ESDiagramsDocument>();
-		response.setDataList(diagrams);
 		return response;
 	}
 
@@ -185,10 +169,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESInvestigationsDocument> investigations = esClinicalNotesService.searchInvestigations(range, page, size,
+		Response<ESInvestigationsDocument> response = esClinicalNotesService.searchInvestigations(range, page, size,
 				doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESInvestigationsDocument> response = new Response<ESInvestigationsDocument>();
-		response.setDataList(investigations);
 		return response;
 	}
 
@@ -205,27 +187,9 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESObservationsDocument> observations = esClinicalNotesService.searchObservations(range, page, size,
+		Response<ESObservationsDocument> response = esClinicalNotesService.searchObservations(range, page, size,
 				doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESObservationsDocument> response = new Response<ESObservationsDocument>();
-		response.setDataList(observations);
 		return response;
-	}
-
-	private List<ESDiagramsDocument> getFinalDiagrams(List<ESDiagramsDocument> diagrams) {
-		for (ESDiagramsDocument diagram : diagrams) {
-			if (diagram.getDiagramUrl() != null) {
-				diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
-			}
-		}
-		return diagrams;
-	}
-
-	private String getFinalImageURL(String imageURL) {
-		if (imageURL != null) {
-			return imagePath + imageURL;
-		} else
-			return null;
 	}
 
 	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PRESENT_COMPLAINT)
@@ -241,10 +205,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESPresentComplaintDocument> presentComplaints = esClinicalNotesService.searchPresentComplaints(range, page,
+		Response<ESPresentComplaintDocument> response = esClinicalNotesService.searchPresentComplaints(range, page,
 				size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESPresentComplaintDocument> response = new Response<ESPresentComplaintDocument>();
-		response.setDataList(presentComplaints);
 		return response;
 	}
 
@@ -261,11 +223,9 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESPresentComplaintHistoryDocument> presentComplaintHistories = esClinicalNotesService
+		Response<ESPresentComplaintHistoryDocument> response = esClinicalNotesService
 				.searchPresentComplaintsHistory(range, page, size, doctorId, locationId, hospitalId, updatedTime,
 						discarded, searchTerm);
-		Response<ESPresentComplaintHistoryDocument> response = new Response<ESPresentComplaintHistoryDocument>();
-		response.setDataList(presentComplaintHistories);
 		return response;
 	}
 
@@ -282,10 +242,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESProvisionalDiagnosisDocument> provisionalDiagnosis = esClinicalNotesService.searchProvisionalDiagnosis(
+		Response<ESProvisionalDiagnosisDocument> response = esClinicalNotesService.searchProvisionalDiagnosis(
 				range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESProvisionalDiagnosisDocument> response = new Response<ESProvisionalDiagnosisDocument>();
-		response.setDataList(provisionalDiagnosis);
 		return response;
 	}
 
@@ -302,10 +260,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESGeneralExamDocument> generalExams = esClinicalNotesService.searchGeneralExam(range, page, size, doctorId,
+		Response<ESGeneralExamDocument> response = esClinicalNotesService.searchGeneralExam(range, page, size, doctorId,
 				locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESGeneralExamDocument> response = new Response<ESGeneralExamDocument>();
-		response.setDataList(generalExams);
 		return response;
 	}
 
@@ -322,10 +278,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESSystemExamDocument> systemExams = esClinicalNotesService.searchSystemExam(range, page, size, doctorId,
+		Response<ESSystemExamDocument> response = esClinicalNotesService.searchSystemExam(range, page, size, doctorId,
 				locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESSystemExamDocument> response = new Response<ESSystemExamDocument>();
-		response.setDataList(systemExams);
 		return response;
 	}
 
@@ -342,10 +296,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESMenstrualHistoryDocument> menstrualHistories = esClinicalNotesService.searchMenstrualHistory(range, page,
+		Response<ESMenstrualHistoryDocument> response = esClinicalNotesService.searchMenstrualHistory(range, page,
 				size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESMenstrualHistoryDocument> response = new Response<ESMenstrualHistoryDocument>();
-		response.setDataList(menstrualHistories);
 		return response;
 	}
 
@@ -362,10 +314,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESObstetricHistoryDocument> obstetricHistories = esClinicalNotesService.searchObstetricHistory(range, page,
+		Response<ESObstetricHistoryDocument> response = esClinicalNotesService.searchObstetricHistory(range, page,
 				size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESObstetricHistoryDocument> response = new Response<ESObstetricHistoryDocument>();
-		response.setDataList(obstetricHistories);
 		return response;
 	}
 
@@ -382,10 +332,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESIndicationOfUSGDocument> esIndicationOfUSGs = esClinicalNotesService.searchIndicationOfUSG(range, page,
+		Response<ESIndicationOfUSGDocument> response = esClinicalNotesService.searchIndicationOfUSG(range, page,
 				size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESIndicationOfUSGDocument> response = new Response<ESIndicationOfUSGDocument>();
-		response.setDataList(esIndicationOfUSGs);
 		return response;
 	}
 
@@ -402,10 +350,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESPADocument> espaDocuments = esClinicalNotesService.searchPA(range, page, size, doctorId, locationId,
+		Response<ESPADocument> response = esClinicalNotesService.searchPA(range, page, size, doctorId, locationId,
 				hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESPADocument> response = new Response<ESPADocument>();
-		response.setDataList(espaDocuments);
 		return response;
 	}
 
@@ -422,10 +368,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESPVDocument> espvDocuments = esClinicalNotesService.searchPV(range, page, size, doctorId, locationId,
+		Response<ESPVDocument> response = esClinicalNotesService.searchPV(range, page, size, doctorId, locationId,
 				hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESPVDocument> response = new Response<ESPVDocument>();
-		response.setDataList(espvDocuments);
 		return response;
 	}
 
@@ -442,10 +386,8 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESPSDocument> espsDocuments = esClinicalNotesService.searchPS(range, page, size, doctorId, locationId,
+		Response<ESPSDocument> response = esClinicalNotesService.searchPS(range, page, size, doctorId, locationId,
 				hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESPSDocument> response = new Response<ESPSDocument>();
-		response.setDataList(espsDocuments);
 		return response;
 	}
 	
@@ -462,9 +404,7 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESXRayDetailsDocument> esxRayDetailsDocuments = esClinicalNotesService.searchXRayDetails(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESXRayDetailsDocument> response = new Response<ESXRayDetailsDocument>();
-		response.setDataList(esxRayDetailsDocuments);
+		Response<ESXRayDetailsDocument> response = esClinicalNotesService.searchXRayDetails(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		return response;
 	}
 	
@@ -481,9 +421,7 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESECGDetailsDocument> esecgDetailsDocuments = esClinicalNotesService.searchECGDetails(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESECGDetailsDocument> response = new Response<ESECGDetailsDocument>();
-		response.setDataList(esecgDetailsDocuments);
+		Response<ESECGDetailsDocument> response = esClinicalNotesService.searchECGDetails(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		return response;
 	}
 	
@@ -500,9 +438,7 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESEchoDocument> esEchoDocuments = esClinicalNotesService.searchEcho(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESEchoDocument> response = new Response<ESEchoDocument>();
-		response.setDataList(esEchoDocuments);
+		Response<ESEchoDocument> response = esClinicalNotesService.searchEcho(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		return response;
 	}
 	
@@ -519,9 +455,7 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESHolterDocument> espsDocuments = esClinicalNotesService.searchHolter(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESHolterDocument> response = new Response<ESHolterDocument>();
-		response.setDataList(espsDocuments);
+		Response<ESHolterDocument> response = esClinicalNotesService.searchHolter(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		return response;
 	}
 	
@@ -538,9 +472,7 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESProcedureNoteDocument> esProcedureNoteDocuments = esClinicalNotesService.searchProcedureNote(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESProcedureNoteDocument> response = new Response<ESProcedureNoteDocument>();
-		response.setDataList(esProcedureNoteDocuments);
+		Response<ESProcedureNoteDocument> response = esClinicalNotesService.searchProcedureNote(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		return response;
 	}
 	
@@ -557,9 +489,7 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESPresentingComplaintNoseDocument> esPresentingComplaintNoseDocuments = esClinicalNotesService.searchPCNose(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESPresentingComplaintNoseDocument> response = new Response<ESPresentingComplaintNoseDocument>();
-		response.setDataList(esPresentingComplaintNoseDocuments);
+		Response<ESPresentingComplaintNoseDocument> response = esClinicalNotesService.searchPCNose(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		return response;
 	}
 	
@@ -576,9 +506,7 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESPresentingComplaintEarsDocument> ePresentingComplaintEarsDocuments = esClinicalNotesService.searchPCEars(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESPresentingComplaintEarsDocument> response = new Response<ESPresentingComplaintEarsDocument>();
-		response.setDataList(ePresentingComplaintEarsDocuments);
+		Response<ESPresentingComplaintEarsDocument> response = esClinicalNotesService.searchPCEars(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		return response;
 	}
 	
@@ -595,9 +523,7 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESPresentingComplaintThroatDocument> esPresentingComplaintThroatDocuments = esClinicalNotesService.searchPCThroat(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESPresentingComplaintThroatDocument> response = new Response<ESPresentingComplaintThroatDocument>();
-		response.setDataList(esPresentingComplaintThroatDocuments);
+		Response<ESPresentingComplaintThroatDocument> response = esClinicalNotesService.searchPCThroat(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		return response;
 	}
 	
@@ -614,9 +540,7 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESPresentingComplaintOralCavityDocument> esPresentingComplaintThroatDocuments = esClinicalNotesService.searchPCOralCavity(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESPresentingComplaintOralCavityDocument> response = new Response<ESPresentingComplaintOralCavityDocument>();
-		response.setDataList(esPresentingComplaintThroatDocuments);
+		Response<ESPresentingComplaintOralCavityDocument> response = esClinicalNotesService.searchPCOralCavity(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		return response;
 	}
 	
@@ -633,9 +557,7 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESNoseExaminationDocument> esNoseExaminationDocuments = esClinicalNotesService.searchNoseExam(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESNoseExaminationDocument> response = new Response<ESNoseExaminationDocument>();
-		response.setDataList(esNoseExaminationDocuments);
+		Response<ESNoseExaminationDocument> response = esClinicalNotesService.searchNoseExam(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		return response;
 	}
 	
@@ -652,9 +574,7 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESNeckExaminationDocument> esNeckExaminationDocuments = esClinicalNotesService.searchNeckExam(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESNeckExaminationDocument> response = new Response<ESNeckExaminationDocument>();
-		response.setDataList(esNeckExaminationDocuments);
+		Response<ESNeckExaminationDocument> response = esClinicalNotesService.searchNeckExam(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		return response;
 	}
 	
@@ -671,9 +591,7 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESEarsExaminationDocument> esEarsExaminationDocuments = esClinicalNotesService.searchEarsExam(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESEarsExaminationDocument> response = new Response<ESEarsExaminationDocument>();
-		response.setDataList(esEarsExaminationDocuments);
+		Response<ESEarsExaminationDocument> response = esClinicalNotesService.searchEarsExam(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		return response;
 	}
 	
@@ -691,9 +609,7 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESOralCavityAndThroatExaminationDocument> esOralCavityAndThroatExaminationDocuments = esClinicalNotesService.searchOralCavityThroatExam(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESOralCavityAndThroatExaminationDocument> response = new Response<ESOralCavityAndThroatExaminationDocument>();
-		response.setDataList(esOralCavityAndThroatExaminationDocuments);
+		Response<ESOralCavityAndThroatExaminationDocument> response = esClinicalNotesService.searchOralCavityThroatExam(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		return response;
 	}
 	
@@ -710,9 +626,7 @@ public class ESClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<ESIndirectLarygoscopyExaminationDocument> esIndirectLarygoscopyExaminationDocuments = esClinicalNotesService.searchIndirectLarygoscopyExam(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESIndirectLarygoscopyExaminationDocument> response = new Response<ESIndirectLarygoscopyExaminationDocument>();
-		response.setDataList(esIndirectLarygoscopyExaminationDocuments);
+		Response<ESIndirectLarygoscopyExaminationDocument> response = esClinicalNotesService.searchIndirectLarygoscopyExam(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		return response;
 	}
 

@@ -547,10 +547,9 @@ public class PatientCard extends GenericCollection {
 				+ ", consultantDoctorIds=" + consultantDoctorIds + ", registrationDate=" + registrationDate
 				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
 				+ lifestyleQuestionAnswers + ", personalInformation=" + personalInformation + ", PNUM=" + PNUM
-				+ ", isPatientDiscarded=" + isPatientDiscarded + ", addressId=" + addressId + ", secMobile=" + secMobile
-				+ ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId="
-				+ drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes="
-				+ notes + "]";
+				+ ", patient=" + patient + ", isPatientDiscarded="
+				+ isPatientDiscarded + ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId="
+				+ adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId
+				+ ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes + "]";
 	}
-
 }

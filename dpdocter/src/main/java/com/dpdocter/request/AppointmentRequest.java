@@ -1,8 +1,10 @@
 package com.dpdocter.request;
 
 import java.util.Date;
+import java.util.List;
 
 import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
@@ -62,6 +64,8 @@ public class AppointmentRequest {
 
 	private String category;
 
+	private String branch;
+
 	private String cancelledByProfile;
 
 	private String gender;
@@ -71,6 +75,12 @@ public class AppointmentRequest {
 	private Integer age;
 
 	private Boolean isChild = false;
+
+	private List<Fields> treatmentFields;
+
+	private String PNUM;
+
+	private Boolean isCreatedByPatient = false;
 
 	public String getAppointmentId() {
 		return appointmentId;
@@ -280,6 +290,38 @@ public class AppointmentRequest {
 		this.category = category;
 	}
 
+	public List<Fields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<Fields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
+
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
+	public Boolean getIsCreatedByPatient() {
+		return isCreatedByPatient;
+	}
+
+	public void setIsCreatedByPatient(Boolean isCreatedByPatient) {
+		this.isCreatedByPatient = isCreatedByPatient;
+	}
+
+	public String getBranch() {
+		return branch;
+	}
+
+	public void setBranch(String branch) {
+		this.branch = branch;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", explanation="
@@ -290,17 +332,10 @@ public class AppointmentRequest {
 				+ notifyDoctorByEmail + ", cancelledBy=" + cancelledBy + ", localPatientName=" + localPatientName
 				+ ", mobileNumber=" + mobileNumber + ", visitId=" + visitId + ", status=" + status + ", waitedFor="
 				+ waitedFor + ", engagedFor=" + engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt
-				+ ", checkedOutAt=" + checkedOutAt + ", category=" + category + ", cancelledByProfile="
-				+ cancelledByProfile + ", gender=" + gender + ", dob=" + dob + ", age=" + age + ", isChild=" + isChild
-				+ "]";
-	}
-
-	public String getCancelledByProfile() {
-		return cancelledByProfile;
-	}
-
-	public void setCancelledByProfile(String cancelledByProfile) {
-		this.cancelledByProfile = cancelledByProfile;
+				+ ", checkedOutAt=" + checkedOutAt + ", category=" + category + ", branch=" + branch
+				+ ", cancelledByProfile=" + cancelledByProfile + ", gender=" + gender + ", dob=" + dob + ", age=" + age
+				+ ", isChild=" + isChild + ", treatmentFields=" + treatmentFields + ", PNUM=" + PNUM
+				+ ", isCreatedByPatient=" + isCreatedByPatient + "]";
 	}
 
 	public String getGender() {

@@ -26,6 +26,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
+import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -299,7 +300,7 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
 				recordsCollection.setRecordsPath(recordPath);
 				if (DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))
-					recordsCollection.setRecordsLabel(recordLable);
+					recordsCollection.setRecordsLabel(request.getFileDetails().getFileName());
 			}
 			recordsCollection.setCreatedTime(createdTime);
 			recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
@@ -374,7 +375,6 @@ public class RecordsServiceImpl implements RecordsService {
 				}
 			}
 			if (!DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState()) && recordsCollection
-
 					.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())
 					&& recordsCollection.getShareWithPatient()) {
 				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
@@ -584,7 +584,6 @@ public class RecordsServiceImpl implements RecordsService {
 
 				Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("patientId")
 						.is(patientObjectId).and("isPatientDiscarded").ne(true);
-				;
 				if (!request.getDiscarded())
 					criteria.and("discarded").is(request.getDiscarded());
 
@@ -811,8 +810,6 @@ public class RecordsServiceImpl implements RecordsService {
 	public List<Records> getRecordsByIds(List<ObjectId> recordIds, ObjectId visitId) {
 		List<Records> records = null;
 		try {
-			// List<RecordsCollection> recordsCollections =
-			// recordsRepository.findAll(recordIds);
 			Criteria criteria = new Criteria("id").in(recordIds).and("isPatientDiscarded").ne(true);
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
@@ -852,7 +849,6 @@ public class RecordsServiceImpl implements RecordsService {
 			ObjectId hospitalObjectId, boolean isOTPVerified) {
 		Integer recordCount = 0;
 		try {
-
 			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId)
 					.and("isPatientDiscarded").ne(true);
 			if (!isOTPVerified) {
@@ -1212,7 +1208,7 @@ public class RecordsServiceImpl implements RecordsService {
 	@Override
 	@Transactional
 	public Response<Object> getRecordsByPatientId(String patientId, int page, int size, String updatedTime,
-			Boolean discarded, Boolean isDoctorApp) {
+			Boolean discarded, Boolean isDoctorApp, String sortBy) {
 		Response<Object> response = new Response<Object>();
 		List<Records> records = null;
 		List<RecordsLookupResponse> recordsLookupResponses = null;
@@ -1227,32 +1223,38 @@ public class RecordsServiceImpl implements RecordsService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
 
+			SortOperation sortOperation = Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime"));
+			if(!DPDoctorUtils.anyStringEmpty(sortBy)) {
+				if(sortBy.equalsIgnoreCase("updatedTime")) {
+				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
+			}
+			}
 			if (isDoctorApp) {
 				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong))
 						.and("isPatientDiscarded").ne(true);
 
 				if (!DPDoctorUtils.anyStringEmpty(patientObjectId))
 					criteria.and("patientId").is(patientObjectId);
-					
 				if (!discarded)
 					criteria.and("discarded").is(discarded);
 
 				long count = mongoTemplate.count(new Query(criteria), RecordsCollection.class);
 				if (count > 0) {
 					response.setData(count);
+					response.setCount((int)count);
 					Aggregation aggregation = null;
 
 					if (size > 0)
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
 								Aggregation.unwind("patientVisit"),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+								sortOperation,
 								Aggregation.skip((page) * size), Aggregation.limit(size));
 					else
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
 								Aggregation.unwind("patientVisit"),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+								sortOperation);
 
 					AggregationResults<RecordsLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 							RecordsCollection.class, RecordsLookupResponse.class);
@@ -1271,25 +1273,25 @@ public class RecordsServiceImpl implements RecordsService {
 				long count = mongoTemplate.count(new Query(criteria), RecordsCollection.class);
 				if (count > 0) {
 					response.setData(count);
+					response.setCount((int)count);
 					Aggregation aggregation = null;
 
 					if (size > 0)
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
 								Aggregation.unwind("patientVisit"),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+								sortOperation,
 								Aggregation.skip((page) * size), Aggregation.limit(size));
 					else
 						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
 								Aggregation.unwind("patientVisit"),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+								sortOperation);
 
 					AggregationResults<RecordsLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 							RecordsCollection.class, RecordsLookupResponse.class);
 					recordsLookupResponses = aggregationResults.getMappedResults();
 				}
-
 			}
 			if (recordsLookupResponses != null && !recordsLookupResponses.isEmpty()) {
 				records = new ArrayList<Records>();
@@ -1410,7 +1412,6 @@ public class RecordsServiceImpl implements RecordsService {
 
 				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
 				esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
-
 			} else if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
 
 				List<PatientCard> patientCards = mongoTemplate.aggregate(
@@ -1688,6 +1689,21 @@ public class RecordsServiceImpl implements RecordsService {
 				if (request.getRecordsFiles() != null && !request.getRecordsFiles().isEmpty()) {
 					UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
 							.findByUserId(new ObjectId(request.getPatientId()));
+
+					if (userAllowanceDetailsCollection == null) {
+						userAllowanceDetailsCollection = new UserAllowanceDetailsCollection();
+						Aggregation aggregation = Aggregation.newAggregation(Aggregation
+								.match(new Criteria("userName").regex("^" + userCollection.getMobileNumber(), "i")
+										.and("userState").is("USERSTATECOMPLETE")));
+
+						List<UserCollection> userCollections = mongoTemplate
+								.aggregate(aggregation, UserCollection.class, UserCollection.class).getMappedResults();
+						@SuppressWarnings("unchecked")
+						Collection<ObjectId> userIds = CollectionUtils.collect(userCollections,
+								new BeanToPropertyValueTransformer("id"));
+						userAllowanceDetailsCollection.setUserIds(new ArrayList<>(userIds));
+					}
+
 					if (oldRecord != null) {
 						for (RecordsFile file : oldRecord.getRecordsFiles()) {
 
@@ -1713,7 +1729,8 @@ public class RecordsServiceImpl implements RecordsService {
 						}
 
 					}
-					userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
+					userAllowanceDetailsCollection = userAllowanceDetailsRepository
+							.save(userAllowanceDetailsCollection);
 					request.setUploadedBy(RoleEnum.PATIENT);
 				}
 			}
@@ -1798,6 +1815,9 @@ public class RecordsServiceImpl implements RecordsService {
 
 			ObjectId patientObjectId = null;
 			ObjectId doctorObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				patientObjectId = new ObjectId(patientId);
+			}
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 
@@ -1808,7 +1828,7 @@ public class RecordsServiceImpl implements RecordsService {
 				criteria = criteria.orOperator(new Criteria("patientId").is(patientObjectId),
 						new Criteria("shareWith").is(patientObjectId));
 			}
-			if (!DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
+			if (!DPDoctorUtils.allStringsEmpty(doctorId, hospitalId, locationId)) {
 				doctorObjectId = new ObjectId(doctorId);
 				criteria.and("doctorId").is(doctorObjectId).and("locationId").is(new ObjectId(locationId))
 						.and("hospitalId").is(new ObjectId(hospitalId));

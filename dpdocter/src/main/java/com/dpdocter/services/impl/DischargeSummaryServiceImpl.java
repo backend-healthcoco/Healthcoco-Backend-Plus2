@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.mail.MessagingException;
+
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -32,6 +34,7 @@ import com.dpdocter.beans.BabyNote;
 import com.dpdocter.beans.Cement;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.DefaultPrintSettings;
+import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.FlowSheetJasperBean;
@@ -47,6 +50,7 @@ import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.collections.BabyNoteCollection;
 import com.dpdocter.collections.CementCollection;
+import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DrugCollection;
@@ -95,6 +99,7 @@ import com.dpdocter.request.DoctorLabReportUploadRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.FlowsheetResponse;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
@@ -245,6 +250,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					oldDischargeSummaryCollection.setUniqueEmrId(
 							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 				}
+
 				if (dischargeSummaryCollection.getCreatedTime() == null) {
 					dischargeSummaryCollection.setCreatedTime(oldDischargeSummaryCollection.getCreatedTime());
 				}
@@ -253,6 +259,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummaryCollection.setDiscarded(oldDischargeSummaryCollection.getDiscarded());
 				dischargeSummaryCollection.setUniqueEmrId(oldDischargeSummaryCollection.getUniqueEmrId());
 				dischargeSummaryCollection.setIsPatientDiscarded(oldDischargeSummaryCollection.getIsPatientDiscarded());
+				dischargeSummaryCollection.setUpdatedTime(new Date());
 			}
 			if (dischargeSummary.getPrescriptions() != null) {
 				PrescriptionAddEditRequest request = new PrescriptionAddEditRequest();
@@ -572,6 +579,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		return response;
 	}
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+	}
+
 
 	@Override
 	public String downloadFlowSheet(String id, Boolean byFlowsheetId) {
@@ -1158,13 +1172,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 		return response;
 
-	}
-
-	private String getFinalImageURL(String imageURL) {
-		if (imageURL != null) {
-			return imagePath + imageURL;
-		} else
-			return null;
 	}
 
 	@Override
@@ -2628,7 +2635,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
 			}
 			flowsheetCollection.setDischargeSummaryId(dischargeSummaryCollection.getId());
-
 			flowsheetCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 			flowsheetCollection.setLocationId(new ObjectId(request.getLocationId()));
 			flowsheetCollection.setHospitalId(new ObjectId(request.getHospitalId()));
@@ -2639,9 +2645,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				response = new FlowsheetResponse();
 				BeanUtil.map(flowsheetCollection, response);
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
@@ -2700,7 +2706,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		FlowsheetResponse response = null;
 		FlowsheetCollection flowsheetCollection = null;
 		try {
-
 			if (DPDoctorUtils.anyStringEmpty(id)) {
 				throw new BusinessException(ServiceError.InvalidInput, "Id is null");
 			}
@@ -2800,7 +2805,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	private JasperReportResponse createJasperForFlowSheet(FlowsheetCollection flowsheetCollection,
-
 			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException, ParseException {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
@@ -2956,6 +2960,68 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 		return response;
 
+	}
+
+	@Override
+	@Transactional
+	public Diagram addEditDiagram(Diagram diagram) {
+		try {
+			if (diagram.getDiagram() != null) {
+				String path = "dischargeSummary" + File.separator + "diagrams";
+				diagram.getDiagram().setFileName(diagram.getDiagram().getFileName() + new Date().getTime());
+				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(diagram.getDiagram(), path,
+						false);
+				diagram.setDiagramUrl(imageURLResponse.getImageUrl());
+
+			}
+			DiagramsCollection diagramsCollection = new DiagramsCollection();
+			BeanUtil.map(diagram, diagramsCollection);
+			if (DPDoctorUtils.allStringsEmpty(diagram.getDoctorId()))
+				diagramsCollection.setDoctorId(null);
+			if (DPDoctorUtils.allStringsEmpty(diagram.getLocationId()))
+				diagramsCollection.setLocationId(null);
+			if (DPDoctorUtils.allStringsEmpty(diagram.getHospitalId()))
+				diagramsCollection.setHospitalId(null);
+
+			if (DPDoctorUtils.anyStringEmpty(diagramsCollection.getId())) {
+				diagramsCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(diagramsCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(diagramsCollection.getDoctorId());
+					if (userCollection != null) {
+						diagramsCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					diagramsCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				DiagramsCollection oldDiagramsCollection = diagramsRepository.findOne(diagramsCollection.getId());
+				diagramsCollection.setCreatedBy(oldDiagramsCollection.getCreatedBy());
+				diagramsCollection.setCreatedTime(oldDiagramsCollection.getCreatedTime());
+				diagramsCollection.setDiscarded(oldDiagramsCollection.getDiscarded());
+				if (diagram.getDiagram() == null) {
+					diagramsCollection.setDiagramUrl(oldDiagramsCollection.getDiagramUrl());
+					diagramsCollection.setFileExtension(oldDiagramsCollection.getFileExtension());
+				}
+			}
+			diagramsCollection = diagramsRepository.save(diagramsCollection);
+			BeanUtil.map(diagramsCollection, diagram);
+			diagram.setDiagram(null);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing diagram",
+						e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return diagram;
 	}
 
 	@Override

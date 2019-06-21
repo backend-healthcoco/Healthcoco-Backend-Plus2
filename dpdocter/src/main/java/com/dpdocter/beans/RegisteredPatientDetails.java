@@ -336,4 +336,5 @@ public class RegisteredPatientDetails extends GenericCollection {
 				+ ", userNutritionSubscriptions=" + userNutritionSubscriptions + ", isChild=" + isChild
 				+ ", fatherName=" + fatherName + ", motherName=" + motherName + "]";
 	}
+
 }

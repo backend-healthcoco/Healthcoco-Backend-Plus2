@@ -14,7 +14,6 @@ import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.Location;
-import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
@@ -42,9 +41,6 @@ public interface RegistrationService {
 	RegisteredPatientDetails registerNewPatient(PatientRegistrationRequest request);
 
 	RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request, List<String> infoType);
-
-	List<RegisteredPatientDetails> getUsersByPhoneNumber(String phoneNumber, String doctorId, String locationId,
-			String hospitalId, String role);
 
 	RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId,
 			String hospitalId);
@@ -83,10 +79,6 @@ public interface RegistrationService {
 	Boolean deleteClinicImage(String locationId, int counter);
 
 	Boolean checktDoctorExistByEmailAddress(String emailAddress);
-
-	RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request);
-
-	RegisterDoctorResponse registerExisitingUser(DoctorRegisterRequest request);
 
 	Role addRole(Role request);
 
@@ -162,15 +154,12 @@ public interface RegistrationService {
 
 	UserAddress deleteUserAddress(String addressId, String userId, String mobileNumber, Boolean discarded);
 
-	Boolean deletePatient(String doctorId, String locationId, String hospitalId, String patientId,
-			Boolean discarded);
-
-	List<PatientShortCard> getDeletedPatient(String doctorId, String locationId, String hospitalId);
-
 	Boolean updatePatientNumber(String doctorId, String locationId, String hospitalId, String patientId,
 			String newPatientId, String mobileNumber);
 	
 	Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId,String defaultDoctorId);
 
 	Boolean update();
+
+	Boolean checkIfPNUMExist(String locationId, String hospitalId, String pNUM);
 }

@@ -115,7 +115,11 @@ public class DoctorClinicProfile {
 
 	private Boolean isMobileNumberOptional = false;
 	
-	private Boolean iskiosk=false;
+	private Boolean iskiosk = false;
+
+	private Boolean hasLoginAccess = true;
+
+	private Boolean hasBillingAccess = true;
 
 	private String patientInitial = "P";
 
@@ -535,7 +539,6 @@ public class DoctorClinicProfile {
 		this.doctorSlugURL = doctorSlugURL;
 	}
 
-
 	public Boolean getIsParent() {
 		return isParent;
 	}
@@ -600,6 +603,22 @@ public class DoctorClinicProfile {
 		this.isPidHasDate = isPidHasDate;
 	}
 
+	public Boolean getHasLoginAccess() {
+		return hasLoginAccess;
+	}
+
+	public void setHasLoginAccess(Boolean hasLoginAccess) {
+		this.hasLoginAccess = hasLoginAccess;
+	}
+
+	public Boolean getHasBillingAccess() {
+		return hasBillingAccess;
+	}
+
+	public void setHasBillingAccess(Boolean hasBillingAccess) {
+		this.hasBillingAccess = hasBillingAccess;
+	}
+
 	public String getMrCode() {
 		return mrCode;
 	}
@@ -654,7 +673,8 @@ public class DoctorClinicProfile {
 				+ checkUpTypeEnum + ", packageType=" + packageType + ", doctorSlugURL=" + doctorSlugURL
 				+ ", showInventoryCount=" + showInventoryCount + ", showInventory=" + showInventory
 				+ ", saveToInventory=" + saveToInventory + ", isMobileNumberOptional=" + isMobileNumberOptional
-				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + ", isPidHasDate="
-				+ isPidHasDate + "]";
+				+ ", iskiosk=" + iskiosk + ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess="
+				+ hasBillingAccess + ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter
+				+ ", isPidHasDate=" + isPidHasDate + "]";
 	}
 }

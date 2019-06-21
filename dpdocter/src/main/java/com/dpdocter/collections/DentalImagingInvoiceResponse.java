@@ -3,7 +3,8 @@ package com.dpdocter.collections;
 import java.util.Date;
 import java.util.List;
 
-import com.dpdocter.beans.DentalImagingInvoiceItem;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.InvoiceTax;
 import com.dpdocter.beans.Location;
@@ -75,6 +76,9 @@ public class DentalImagingInvoiceResponse extends GenericCollection {
 
 	private Boolean isPaid = false;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public String getId() {
 		return id;
 	}
@@ -321,6 +325,30 @@ public class DentalImagingInvoiceResponse extends GenericCollection {
 
 	public void setDentalImagingDoctorId(String dentalImagingDoctorId) {
 		this.dentalImagingDoctorId = dentalImagingDoctorId;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "DentalImagingInvoiceResponse [id=" + id + ", dentalImagingId=" + dentalImagingId + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
+				+ ", patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", dentalImagingDoctorId="
+				+ dentalImagingDoctorId + ", dentalImagingLocationId=" + dentalImagingLocationId
+				+ ", dentalImagingHospitalId=" + dentalImagingHospitalId + ", uniqueInvoiceId=" + uniqueInvoiceId
+				+ ", referringDoctor=" + referringDoctor + ", totalDiscount=" + totalDiscount + ", totalCost="
+				+ totalCost + ", totalTax=" + totalTax + ", invoiceTaxes=" + invoiceTaxes + ", grandTotal=" + grandTotal
+				+ ", oldGrantTotal=" + oldGrantTotal + ", usedAdvanceAmount=" + usedAdvanceAmount + ", refundAmount="
+				+ refundAmount + ", balanceAmount=" + balanceAmount + ", discarded=" + discarded + ", receiptIds="
+				+ receiptIds + ", isTaxNotApplicable=" + isTaxNotApplicable + ", invoiceDate=" + invoiceDate
+				+ ", invoiceItems=" + invoiceItems + ", dentalImagingLab=" + dentalImagingLab + ", doctor=" + doctor
+				+ ", location=" + location + ", isPaid=" + isPaid + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

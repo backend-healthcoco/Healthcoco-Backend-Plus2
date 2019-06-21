@@ -2,8 +2,6 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import com.dpdocter.beans.DoctorExperience;
-
 public class WebAppointmentSlotDataResponse {
 
 	private String doctorSlugURL;

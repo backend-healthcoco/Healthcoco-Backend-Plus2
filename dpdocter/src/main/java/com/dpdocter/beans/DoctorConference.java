@@ -9,7 +9,7 @@ import com.dpdocter.response.OrganizingCommitteeResponse;
 public class DoctorConference extends GenericCollection {
 
 	private String id;
-	
+
 	private String title;
 
 	private String titleImage;
@@ -29,6 +29,8 @@ public class DoctorConference extends GenericCollection {
 	private List<OrganizingCommitteeResponse> speakers;
 
 	private Boolean discarded = false;
+
+	private String status = "NONE";
 
 	public String getId() {
 		return id;
@@ -116,6 +118,14 @@ public class DoctorConference extends GenericCollection {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }

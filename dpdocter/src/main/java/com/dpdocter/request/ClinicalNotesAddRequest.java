@@ -244,7 +244,6 @@ public class ClinicalNotesAddRequest {
 	private int noOfFemaleChildren;
 
 	private int noOfMaleChildren;
-	
 
 	private String pastHistory;
 
@@ -267,6 +266,7 @@ public class ClinicalNotesAddRequest {
 	private String priorConsultations;
 
 	private Boolean sendNotificationToDoctor = true;
+
 
 	public Date getCreatedTime() {
 		return createdTime;
@@ -347,8 +347,6 @@ public class ClinicalNotesAddRequest {
 	public void setEarsExam(String earsExam) {
 		this.earsExam = earsExam;
 	}
-
-	
 
 	public String getGlobalPCNose() {
 		return globalPCNose;
@@ -1121,7 +1119,6 @@ public class ClinicalNotesAddRequest {
 		this.earsExaminations = earsExaminations;
 	}
 
-
 	public String getPastHistory() {
 		return pastHistory;
 	}
@@ -1209,7 +1206,6 @@ public class ClinicalNotesAddRequest {
 	public void setGeneralHistorySurgical(String generalHistorySurgical) {
 		this.generalHistorySurgical = generalHistorySurgical;
 	}
-
 
 	public String getPainScale() {
 		return painScale;

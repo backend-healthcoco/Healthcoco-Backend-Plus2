@@ -1,9 +1,9 @@
 package com.dpdocter.beans;
 
 import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class TemplateItem {
@@ -12,6 +12,10 @@ public class TemplateItem {
 	private Duration duration;
 
 	private String dosage;
+
+	private DrugType drugType;
+
+	private String drugName;
 
 	private List<Long> dosageTime;
 
@@ -22,6 +26,8 @@ public class TemplateItem {
 	private Long inventoryQuantity;
 
 	private Integer quantity = 0;
+
+	private List<GenericCode> genericNames;
 
 	public ObjectId getDrugId() {
 		return drugId;
@@ -85,6 +91,30 @@ public class TemplateItem {
 
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
+	}
+	
+	public DrugType getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(DrugType drugType) {
+		this.drugType = drugType;
+	}
+
+	public String getDrugName() {
+		return drugName;
+	}
+
+	public void setDrugName(String drugName) {
+		this.drugName = drugName;
+	}
+
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
 	}
 
 	@Override

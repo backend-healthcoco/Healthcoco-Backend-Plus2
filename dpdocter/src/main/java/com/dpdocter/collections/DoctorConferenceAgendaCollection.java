@@ -36,7 +36,6 @@ public class DoctorConferenceAgendaCollection {
 		this.onDate = onDate;
 	}
 
-	
 	public String getTitleImage() {
 		return titleImage;
 	}

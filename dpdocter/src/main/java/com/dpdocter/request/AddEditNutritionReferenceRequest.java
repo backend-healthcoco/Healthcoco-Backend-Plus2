@@ -3,6 +3,7 @@ package com.dpdocter.request;
 import java.util.List;
 
 import com.dpdocter.enums.GoalStatus;
+import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.enums.RegularityStatus;
 import com.dpdocter.response.ImageURLResponse;
 
@@ -15,12 +16,12 @@ public class AddEditNutritionReferenceRequest {
 	private String patientId;
 	private String details;
 	private Integer durationInMonths;
+	private NutritionPlanType type;
+	private String nutritionPlanId;
+	private String subscriptionPlanId;
 	private List<ImageURLResponse> reports;
-	private String regularityStatus = RegularityStatus.NO_ACTION.getType();
-	private String goalStatus = GoalStatus.REFERRED.getType();
-	private String referredDoctorId;
-	private String referredLocationId;
-	private String referredHospitalId;
+	private RegularityStatus regularityStatus = RegularityStatus.NO_ACTION;
+	private GoalStatus goalStatus = GoalStatus.REFERRED;
 	private String localPatientName;
 	private String mobileNumber;
 
@@ -88,44 +89,20 @@ public class AddEditNutritionReferenceRequest {
 		this.reports = reports;
 	}
 
-	public String getRegularityStatus() {
+	public RegularityStatus getRegularityStatus() {
 		return regularityStatus;
 	}
 
-	public void setRegularityStatus(String regularityStatus) {
+	public void setRegularityStatus(RegularityStatus regularityStatus) {
 		this.regularityStatus = regularityStatus;
 	}
 
-	public String getGoalStatus() {
+	public GoalStatus getGoalStatus() {
 		return goalStatus;
 	}
 
-	public void setGoalStatus(String goalStatus) {
+	public void setGoalStatus(GoalStatus goalStatus) {
 		this.goalStatus = goalStatus;
-	}
-
-	public String getReferredDoctorId() {
-		return referredDoctorId;
-	}
-
-	public void setReferredDoctorId(String referredDoctorId) {
-		this.referredDoctorId = referredDoctorId;
-	}
-
-	public String getReferredLocationId() {
-		return referredLocationId;
-	}
-
-	public void setReferredLocationId(String referredLocationId) {
-		this.referredLocationId = referredLocationId;
-	}
-
-	public String getReferredHospitalId() {
-		return referredHospitalId;
-	}
-
-	public void setReferredHospitalId(String referredHospitalId) {
-		this.referredHospitalId = referredHospitalId;
 	}
 
 	public String getLocalPatientName() {
@@ -144,13 +121,28 @@ public class AddEditNutritionReferenceRequest {
 		this.mobileNumber = mobileNumber;
 	}
 
-	@Override
-	public String toString() {
-		return "AddEditNutritionReferenceRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", details=" + details
-				+ ", durationInMonths=" + durationInMonths + ", reports=" + reports + ", regularityStatus="
-				+ regularityStatus + ", goalStatus=" + goalStatus + ", referredDoctorId=" + referredDoctorId
-				+ ", referredLocationId=" + referredLocationId + ", referredHospitalId=" + referredHospitalId + "]";
+	public NutritionPlanType getType() {
+		return type;
+	}
+
+	public void setType(NutritionPlanType type) {
+		this.type = type;
+	}
+
+	public String getNutritionPlanId() {
+		return nutritionPlanId;
+	}
+
+	public void setNutritionPlanId(String nutritionPlanId) {
+		this.nutritionPlanId = nutritionPlanId;
+	}
+
+	public String getSubscriptionPlanId() {
+		return subscriptionPlanId;
+	}
+
+	public void setSubscriptionPlanId(String subscriptionPlanId) {
+		this.subscriptionPlanId = subscriptionPlanId;
 	}
 
 }

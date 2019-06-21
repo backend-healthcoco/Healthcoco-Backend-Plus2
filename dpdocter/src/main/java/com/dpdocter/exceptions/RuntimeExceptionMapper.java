@@ -3,7 +3,6 @@ package com.dpdocter.exceptions;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Date;
 import java.util.Enumeration;
 
 import javax.servlet.ServletContext;

@@ -66,7 +66,9 @@ public class DentalImagingCollection extends GenericCollection {
 	private Double grandTotal = 0.0;
 	@Field
 	private Boolean isVisited = false;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getPatientId() {
 		return patientId;
 	}
@@ -275,6 +277,14 @@ public class DentalImagingCollection extends GenericCollection {
 		this.isVisited = isVisited;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "DentalImagingCollection [id=" + id + ", patientId=" + patientId + ", requestId=" + requestId
@@ -284,7 +294,10 @@ public class DentalImagingCollection extends GenericCollection {
 				+ ", referringDoctor=" + referringDoctor + ", clinicalNotes=" + clinicalNotes + ", reportsRequired="
 				+ reportsRequired + ", specialInstructions=" + specialInstructions + ", services=" + services
 				+ ", discarded=" + discarded + ", patientName=" + patientName + ", mobileNumber=" + mobileNumber
-				+ ", uniqueInvoiceId=" + uniqueInvoiceId + "]";
+				+ ", invoiceId=" + invoiceId + ", uniqueInvoiceId=" + uniqueInvoiceId + ", totalCost=" + totalCost
+				+ ", isPaid=" + isPaid + ", isReportsUploaded=" + isReportsUploaded + ", totalDiscount=" + totalDiscount
+				+ ", totalTax=" + totalTax + ", grandTotal=" + grandTotal + ", isVisited=" + isVisited
+				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

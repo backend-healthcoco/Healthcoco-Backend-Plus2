@@ -69,6 +69,7 @@ import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
 
 @Service
 public class ESMasterServiceImpl implements ESMasterService {
@@ -133,9 +134,9 @@ public class ESMasterServiceImpl implements ESMasterService {
 	ESSymptomDiseaseConditionRepository esSymptomDiseaseConditionRepository;;
     
     @Override
-    public List<Reference> searchReference(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    public Response<Reference> searchReference(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
-	List<Reference> response = null;
+    	Response<Reference> response = null;
 
 	try {
 
@@ -159,16 +160,24 @@ public class ESMasterServiceImpl implements ESMasterService {
 	return response;
     }
 
-    private List<Reference> getGlobalReferences(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
-	List<Reference> response = null;
+    private Response<Reference> getGlobalReferences(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
+    Response<Reference> response = new Response<Reference>();
 	List<ESReferenceDocument> referenceDocuments = null;
 	try {
 		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.REFERENCE, page, size, updatedTime, discarded, "reference", searchTerm, null, null, null, "reference");
-		referenceDocuments = elasticsearchTemplate.queryForList(searchQuery, ESReferenceDocument.class);
-		if (referenceDocuments != null) {
-			response = new ArrayList<Reference>();
-			BeanUtil.map(referenceDocuments, response);
+		
+		Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESReferenceDocument.class);
+		
+		if(count > 0) {
+			referenceDocuments = elasticsearchTemplate.queryForList(searchQuery, ESReferenceDocument.class);
+			if (referenceDocuments != null) {
+				List<Reference> dataList = new ArrayList<Reference>();
+				BeanUtil.map(referenceDocuments, dataList);
+				response.setDataList(dataList);
+				response.setCount(count);
+			}
 		}
+		
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -177,16 +186,24 @@ public class ESMasterServiceImpl implements ESMasterService {
 	return response;
     }
 
-    private List<Reference> getCustomReferences(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    private Response<Reference> getCustomReferences(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
-	List<Reference> response = null;
+    	Response<Reference> response = new Response<Reference>();
 	List<ESReferenceDocument> referenceDocuments = null;
 	try {
 		SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "reference", searchTerm, null, null, "reference");
 		referenceDocuments = elasticsearchTemplate.queryForList(searchQuery, ESReferenceDocument.class);
-		if (referenceDocuments != null) {
-			response = new ArrayList<Reference>();
-			BeanUtil.map(referenceDocuments, response);
+		Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESReferenceDocument.class);
+
+		if(count > 0) {
+			referenceDocuments = elasticsearchTemplate.queryForList(searchQuery, ESReferenceDocument.class);
+			if (referenceDocuments != null) {
+				response = new Response<Reference>();
+				List<Reference> dataList = new ArrayList<Reference>();
+				BeanUtil.map(referenceDocuments, dataList);
+				response.setDataList(dataList);
+				response.setCount(count);
+			}
 		}
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -196,19 +213,25 @@ public class ESMasterServiceImpl implements ESMasterService {
 	return response;
     }
 
-    private List<Reference> getCustomGlobalReferences(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    private Response<Reference> getCustomGlobalReferences(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
-	List<Reference> response = null;
+    	Response<Reference> response = new Response<Reference>();
 	List<ESReferenceDocument> referenceDocuments = null;
 	try {
 		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.REFERENCE, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "reference", searchTerm, null, null, null, "reference");
 		referenceDocuments = elasticsearchTemplate.queryForList(searchQuery, ESReferenceDocument.class);
-		
-	    if (referenceDocuments != null) {
-		response = new ArrayList<Reference>();
-		BeanUtil.map(referenceDocuments, response);
-	    }
+		Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESReferenceDocument.class);
 
+		if(count > 0) {
+			referenceDocuments = elasticsearchTemplate.queryForList(searchQuery, ESReferenceDocument.class);
+			if (referenceDocuments != null) {
+				response = new Response<Reference>();
+				List<Reference> dataList = new ArrayList<Reference>();
+				BeanUtil.map(referenceDocuments, dataList);
+				response.setDataList(dataList);
+				response.setCount(count);
+			}
+		}
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);

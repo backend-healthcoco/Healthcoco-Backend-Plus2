@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
+import com.dpdocter.elasticsearch.response.ESDoctorCardResponse;
 import com.dpdocter.elasticsearch.response.ESWEBResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
@@ -74,6 +75,22 @@ public class ESAppointmentApi {
 				minExperience, maxExperience, service);
 
 		Response<ESDoctorDocument> response = new Response<ESDoctorDocument>();
+		response.setDataList(doctors);
+		return response;
+	}
+
+	@Path(value = PathProxy.SolrAppointmentUrls.GET_DOCTORS_CARD)
+	@GET
+	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_DOCTORS_CARD, notes = PathProxy.SolrAppointmentUrls.GET_DOCTORS_CARD)
+	public Response<ESDoctorCardResponse> getDoctors(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("city") String city, @QueryParam("location") String location,
+			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
+			@QueryParam("speciality") String speciality, @QueryParam("searchTerm") String searchTerm) {
+
+		List<ESDoctorCardResponse> doctors = solrAppointmentService.getDoctorsShortCard(page, size, city, location,
+				latitude, longitude, speciality, searchTerm);
+
+		Response<ESDoctorCardResponse> response = new Response<ESDoctorCardResponse>();
 		response.setDataList(doctors);
 		return response;
 	}
@@ -182,14 +199,6 @@ public class ESAppointmentApi {
 				speciality, symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
 				maxExperience, service, locality));
 		return response;
-	}
-
-	private String getFinalImageURL(String imageURL) {
-		if (imageURL != null) {
-			return imagePath + imageURL;
-		} else
-			return null;
-
 	}
 
 	@Path(value = PathProxy.SolrAppointmentUrls.GET_PHARMACIES_WEB)

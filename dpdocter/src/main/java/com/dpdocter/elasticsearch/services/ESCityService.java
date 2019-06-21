@@ -9,16 +9,18 @@ import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 
 public interface ESCityService {
 
-    boolean addCities(ESCityDocument solrCities);
+	boolean addCities(ESCityDocument solrCities);
 
-    boolean addLocalityLandmark(ESLandmarkLocalityDocument esLandmarkLocalityDocument);
+	boolean addLocalityLandmark(ESLandmarkLocalityDocument esLandmarkLocalityDocument);
 
-    List<ESCityLandmarkLocalityResponse> searchCityLandmarkLocality(String searchTerm, String latitude, String longitude);
-    
-    List<ESCityLandmarkLocalityResponse> searchCityLandmarkLocalityForWeb(String searchTerm, String latitude, String longitude);
+	List<ESCityLandmarkLocalityResponse> searchCityLandmarkLocality(String searchTerm, String latitude,
+			String longitude);
 
-    boolean activateDeactivateCity(String cityId, Boolean activate);
+	List<ESCityLandmarkLocalityResponse> searchCityLandmarkLocalityForWeb(String searchTerm, String latitude,
+			String longitude);
 
-	List<City> searchCity(String searchTerm);
+	boolean activateDeactivateCity(String cityId, Boolean activate);
+
+	List<City> searchCity(String searchTerm, Boolean isActivated);
 
 }

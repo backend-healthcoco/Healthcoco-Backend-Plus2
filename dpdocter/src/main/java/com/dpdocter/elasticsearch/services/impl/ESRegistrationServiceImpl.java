@@ -1,9 +1,5 @@
 package com.dpdocter.elasticsearch.services.impl;
 
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +12,7 @@ import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.joda.time.DateTime;
@@ -29,7 +26,6 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
-import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.beans.AdvancedSearch;
 import com.dpdocter.elasticsearch.beans.AdvancedSearchParameter;
@@ -91,7 +87,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 	@Autowired
 	private LocationRepository locationRepository;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -131,26 +127,23 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		List<ESPatientResponse> patientsResponse = null;
 		ESPatientResponseDetails patientResponseDetails = null;
 		try {
-			AdvancedSearchType advancedSearchTypeForPID = AdvancedSearchType.PID;
-			
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
-			if(locationCollection != null && locationCollection.getIsPidHasDate()!= null) {
-				if(!locationCollection.getIsPidHasDate())advancedSearchTypeForPID = AdvancedSearchType.PNUM;
-			}
 			searchTerm = searchTerm.toLowerCase();
 			String patientName = searchTerm.replaceAll("[^a-zA-Z0-9]", "");
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
-					.should(QueryBuilders.queryStringQuery("localPatientNameFormatted:" + "*" + patientName + "*")
-							.boost(4))
+					.mustNot(QueryBuilders.termQuery("isPatientDiscarded", true))
+
+					.should(QueryBuilders.queryStringQuery("localPatientNameFormatted:" + patientName + "*").boost(4))
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.EMAIL_ADDRESS.getSearchType(), searchTerm)
 							.boost(1.3f))
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.MOBILE_NUMBER.getSearchType(), searchTerm)
 							.boost(1.2f))
-					.should(QueryBuilders.matchPhrasePrefixQuery(advancedSearchTypeForPID.getSearchType(), searchTerm)
+					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchTerm)
+							.boost(1.0f))
+					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PNUM.getSearchType(), searchTerm)
 							.boost(1.0f))
 					.minimumNumberShouldMatch(1);
 			if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
@@ -159,9 +152,10 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 			SearchQuery searchQuery = null;
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size)).build();
+						.withPageable(new PageRequest(page, size, Direction.ASC, "localPatientName")).build();
 			else
-				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("localPatientName").order(SortOrder.ASC)).build();
 
 			patients = elasticsearchTemplate.queryForList(searchQuery, ESPatientDocument.class);
 			if (patients != null && !patients.isEmpty()) {
@@ -259,9 +253,9 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					if (searchType.equalsIgnoreCase(AdvancedSearchType.DOB.getSearchType())) {
 
 						String[] dob = searchValue.split("/");
-						builder = nestedQuery(AdvancedSearchType.DOB.getSearchType(),
-								boolQuery().must(termQuery("dob.years", dob[2])).must(termQuery("dob.months", dob[0]))
-										.must(termQuery("dob.days", dob[1])));
+						builder = QueryBuilders.nestedQuery(AdvancedSearchType.DOB.getSearchType(),
+								QueryBuilders.boolQuery().must(QueryBuilders.termQuery("dob.years", dob[2])).must(QueryBuilders.termQuery("dob.months", dob[0]))
+										.must(QueryBuilders.termQuery("dob.days", dob[1])));
 
 					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.REGISTRATION_DATE.getSearchType())) {
 
@@ -303,13 +297,16 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 							builder = QueryBuilders.termsQuery(searchType, referenceIds);
 						}
 					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.PID.getSearchType())){
-						AdvancedSearchType advancedSearchTypeForPID = AdvancedSearchType.PID;
+//						AdvancedSearchType advancedSearchTypeForPID = AdvancedSearchType.PID;
 						
-						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
-						if(locationCollection != null && locationCollection.getIsPidHasDate()!= null) {
-							if(!locationCollection.getIsPidHasDate())advancedSearchTypeForPID = AdvancedSearchType.PNUM;
-						}
-						builder = QueryBuilders.matchPhrasePrefixQuery(advancedSearchTypeForPID.getSearchType(), searchValue);
+//						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+//						if(locationCollection != null && locationCollection.getIsPidHasDate()!= null) {
+//							if(!locationCollection.getIsPidHasDate())advancedSearchTypeForPID = AdvancedSearchType.PNUM;
+//						}
+						builder = QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchValue);
+					 }else if (searchType.equalsIgnoreCase(AdvancedSearchType.PNUM.getSearchType())){
+							builder = QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PNUM.getSearchType(), searchValue);
+
 				     }else {
 						builder = QueryBuilders.matchPhrasePrefixQuery(searchType, searchValue);
 					}
@@ -359,7 +356,6 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					request.setServicesValue(services);
 				}					
 			}
-
 			esDoctorRepository.save(request);
 			transnationalService.addResource(new ObjectId(request.getUserId()), Resource.DOCTOR, true);
 			response = true;
@@ -460,4 +456,49 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		}
 		return response;
 	}
+
+	@Override
+	public List<ESPatientDocument> searchDeletedPatient(String doctorId, String locationId, String hospitalId, int page,
+			int size, String searchTerm, String sortBy) {
+		List<ESPatientDocument> response = null;
+		try {
+
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+					.must(QueryBuilders.termQuery("doctorId", doctorId))
+					.must(QueryBuilders.termQuery("locationId", locationId))
+					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
+					.must(QueryBuilders.termQuery("isPatientDiscarded", true));
+					
+			if(!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				boolQueryBuilder.should(QueryBuilders.queryStringQuery("localPatientNameFormatted:" + "*" + searchTerm + "*"))
+						.should(QueryBuilders
+								.matchPhrasePrefixQuery(AdvancedSearchType.MOBILE_NUMBER.getSearchType(), searchTerm)).minimumNumberShouldMatch(1);
+			}
+			SortBuilder sortBuilder = SortBuilders.fieldSort("createdTime").order(SortOrder.DESC);
+					
+			if(!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("localPatientName")) {
+				sortBuilder = SortBuilders.fieldSort("localPatientName").order(SortOrder.ASC);
+			}
+			
+			SearchQuery searchQuery = null;
+			if(size > 0) {
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(sortBuilder)
+						.withPageable(new PageRequest(page, size)).build();
+			}
+			else {
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(sortBuilder).build();
+			}
+			
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPatientDocument.class);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while searching deleted patient");
+		}
+		return response;
+	}
+
 }

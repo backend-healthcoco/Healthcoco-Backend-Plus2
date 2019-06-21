@@ -38,7 +38,9 @@ public class DeliveryReportsCollection extends GenericCollection {
 	private ObjectId hospitalId;
 	@Field
 	private Boolean discarded = false;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public Boolean getDiscarded() {
 		return discarded;
 	}
@@ -159,12 +161,22 @@ public class DeliveryReportsCollection extends GenericCollection {
 		this.uniqueDRId = uniqueDRId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "DeliveryReportsCollection [id=" + id + ", uniqueDRId=" + uniqueDRId + ", serialNo=" + serialNo
 				+ ", deliveryDate=" + deliveryDate + ", deliveryTime=" + deliveryTime + ", patientId=" + patientId
 				+ ", mobileNumber=" + mobileNumber + ", babyGender=" + babyGender + ", deliveryType=" + deliveryType
 				+ ", formNo=" + formNo + ", remarks=" + remarks + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
+				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", isPatientDiscarded="
+				+ isPatientDiscarded + "]";
 	}
+
 }

@@ -3,6 +3,7 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.CollectionBoy;
+import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
@@ -45,6 +46,8 @@ public interface SignUpService {
 
 	DoctorSignUp doctorSignUp(DoctorSignupRequest request);
 
-	com.dpdocter.beans.DoctorContactUs welcomeUser(String tokenId);
+	DoctorContactUs welcomeUser(String tokenId);
+	
+	public String verifyConfexAdmin(String tokenId);
 
 }

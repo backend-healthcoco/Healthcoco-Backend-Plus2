@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -14,9 +15,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.MyVideo;
 import com.dpdocter.beans.Video;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.AddMyVideoRequest;
 import com.dpdocter.request.AddVideoRequest;
 import com.dpdocter.services.VideoService;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -62,16 +65,35 @@ public class VideoApi {
 	    @Path(value = PathProxy.VideoUrls.GET_VIDEO)
 	    @GET
 	    @ApiOperation(value =PathProxy.VideoUrls.GET_VIDEO, notes = PathProxy.VideoUrls.GET_VIDEO)
-	    public Response<Video> getVideoss(@QueryParam("doctorId") String doctorId , @QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page , @QueryParam("size") int size)
+	    public Response<Video> getVideoss(@QueryParam(value = "doctorId") String doctorId , @QueryParam(value = "searchTerm") String searchTerm, @MatrixParam(value ="tags") List<String> tags, @QueryParam(value = "page") int page , @QueryParam(value = "size") int size)
 	    {
 	    	List<Video> videos = null;
 	    	if (doctorId == null) {
 	    	    logger.warn("Request send  is NULL");
 	    	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 	    	}
-	    	videos = videoService.getVideos(doctorId, searchTerm, page, size);
+	    	videos = videoService.getVideos(doctorId, searchTerm, tags, page, size);
 	    	Response<Video> response = new Response<Video>();
 	    	response.setDataList(videos);
+	    	return response;
+	    }
+	    
+	    @Path(value = PathProxy.VideoUrls.ADD_MY_VIDEO)
+	    @POST
+	    @Consumes({ MediaType.MULTIPART_FORM_DATA })
+	    @ApiOperation(value =PathProxy.VideoUrls.ADD_MY_VIDEO, notes = PathProxy.VideoUrls.ADD_MY_VIDEO)
+	    public Response<MyVideo> addMyVideo(@FormDataParam("file") FormDataBodyPart file,
+				@FormDataParam("data") FormDataBodyPart data)
+	    {
+	    	data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+			AddMyVideoRequest request = data.getValueAs(AddMyVideoRequest.class);
+	    	if (file == null) {
+	    	    logger.warn("Request send  is NULL");
+	    	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
+	    	}
+	    	MyVideo video = videoService.addMyVideo(file, request);
+	    	Response<MyVideo> response = new Response<MyVideo>();
+	    	response.setData(video);
 	    	return response;
 	    }
 

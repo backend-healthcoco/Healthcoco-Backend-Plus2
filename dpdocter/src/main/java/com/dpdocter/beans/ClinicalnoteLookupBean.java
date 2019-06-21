@@ -52,7 +52,7 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 	private String obstetricHistory;
 
 	private String indicationOfUSG;
-	
+
 	private String procedureNote;
 
 	private String pv;
@@ -68,7 +68,7 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 	private String echo;
 
 	private String holter;
-	
+
 	private String pcNose;
 
 	private String pcOralCavity;
@@ -86,7 +86,6 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 	private String neckExam;
 
 	private String earsExam;
-
 
 	private List<String> comments;
 

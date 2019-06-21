@@ -1145,9 +1145,8 @@ public class AdminServicesImpl implements AdminServices {
 	}
 
 	@Override
-	public Boolean updateDoctors() {
+	public void updateDoctors() {
 		// TODO Auto-generated method stub
-		return null;
 	}
 	
 }

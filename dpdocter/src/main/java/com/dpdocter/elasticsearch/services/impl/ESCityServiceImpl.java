@@ -7,6 +7,8 @@ import org.apache.commons.collections.IteratorUtils;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
@@ -296,22 +298,36 @@ public class ESCityServiceImpl implements ESCityService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<City> searchCity(String searchTerm) {
+	public List<City> searchCity(String searchTerm, Boolean isActivated) {
 		List<City> response = new ArrayList<City>();
+		int citySize = 0;
 		try {
 			List<ESCityDocument> cities = null;
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+			citySize = (int) esCityRepository.count();
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("city", searchTerm));
+			}
 
-			int citySize = (int) esCityRepository.count();
+			if (isActivated != null) {
+				boolQueryBuilder.must(QueryBuilders.termQuery("isActivated", isActivated));
+			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				if (citySize > 0) {
-					cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
-							.withQuery(new BoolQueryBuilder()
-									.must(QueryBuilders.matchPhrasePrefixQuery("city", searchTerm)))
-							.withPageable(new PageRequest(0, citySize)).build(), ESCityDocument.class);
+					cities = elasticsearchTemplate.queryForList(
+							new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, citySize))
+									.withSort(SortBuilders.fieldSort("city").order(SortOrder.ASC)).build(),
+							ESCityDocument.class);
 				}
 			} else {
-				if (citySize > 0)
-					cities = IteratorUtils.toList(esCityRepository.findAll(new PageRequest(0, citySize)).iterator());
+				if (citySize > 0) {
+					cities = elasticsearchTemplate.queryForList(
+							new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, citySize))
+									.withSort(SortBuilders.fieldSort("city").order(SortOrder.ASC)).build(),
+							ESCityDocument.class);
+				}
 			}
 
 			if (cities != null && !cities.isEmpty()) {
@@ -458,15 +474,20 @@ public class ESCityServiceImpl implements ESCityService {
 					BeanUtil.map(document, landmark);
 					if (city != null) {
 						landmark.setLocality(!DPDoctorUtils.anyStringEmpty(document.getLocality())
-								? document.getLocality().trim().replace(" ", "-") : document.getLocality());
+								? document.getLocality().trim().replace(" ", "-")
+								: document.getLocality());
 						landmark.setLandmark(!DPDoctorUtils.anyStringEmpty(document.getLandmark())
-								? document.getLandmark().trim().replace(" ", "-") : document.getLandmark());
-						landmark.setCity(!DPDoctorUtils.anyStringEmpty(city.getCity())
-								? city.getCity().trim().replace(" ", "-") : city.getCity());
+								? document.getLandmark().trim().replace(" ", "-")
+								: document.getLandmark());
+						landmark.setCity(
+								!DPDoctorUtils.anyStringEmpty(city.getCity()) ? city.getCity().trim().replace(" ", "-")
+										: city.getCity());
 						landmark.setState(!DPDoctorUtils.anyStringEmpty(city.getState())
-								? city.getState().trim().replace(" ", "-") : city.getState());
+								? city.getState().trim().replace(" ", "-")
+								: city.getState());
 						landmark.setCountry(!DPDoctorUtils.anyStringEmpty(city.getCountry())
-								? city.getCountry().trim().replace(" ", "-") : city.getCountry());
+								? city.getCountry().trim().replace(" ", "-")
+								: city.getCountry());
 					}
 					response.add(landmark);
 				}
@@ -478,15 +499,20 @@ public class ESCityServiceImpl implements ESCityService {
 					BeanUtil.map(document, locality);
 					if (city != null) {
 						locality.setLocality(!DPDoctorUtils.anyStringEmpty(document.getLocality())
-								? document.getLocality().trim().replace(" ", "-") : document.getLocality());
+								? document.getLocality().trim().replace(" ", "-")
+								: document.getLocality());
 						locality.setLandmark(!DPDoctorUtils.anyStringEmpty(document.getLandmark())
-								? document.getLandmark().trim().replace(" ", "-") : document.getLandmark());
-						locality.setCity(!DPDoctorUtils.anyStringEmpty(city.getCity())
-								? city.getCity().trim().replace(" ", "-") : city.getCity());
+								? document.getLandmark().trim().replace(" ", "-")
+								: document.getLandmark());
+						locality.setCity(
+								!DPDoctorUtils.anyStringEmpty(city.getCity()) ? city.getCity().trim().replace(" ", "-")
+										: city.getCity());
 						locality.setState(!DPDoctorUtils.anyStringEmpty(city.getState())
-								? city.getState().trim().replace(" ", "-") : city.getState());
+								? city.getState().trim().replace(" ", "-")
+								: city.getState());
 						locality.setCountry(!DPDoctorUtils.anyStringEmpty(city.getCountry())
-								? city.getCountry().trim().replace(" ", "-") : city.getCountry());
+								? city.getCountry().trim().replace(" ", "-")
+								: city.getCountry());
 					}
 					response.add(locality);
 				}
@@ -497,12 +523,15 @@ public class ESCityServiceImpl implements ESCityService {
 					BeanUtil.map(document, city);
 					if (document != null) {
 
-						city.setCity(!DPDoctorUtils.anyStringEmpty(city.getCity())
-								? city.getCity().trim().replace(" ", "-") : city.getCity());
+						city.setCity(
+								!DPDoctorUtils.anyStringEmpty(city.getCity()) ? city.getCity().trim().replace(" ", "-")
+										: city.getCity());
 						city.setState(!DPDoctorUtils.anyStringEmpty(city.getState())
-								? city.getState().trim().replace(" ", "-") : city.getState());
+								? city.getState().trim().replace(" ", "-")
+								: city.getState());
 						city.setCountry(!DPDoctorUtils.anyStringEmpty(city.getCountry())
-								? city.getCountry().trim().replace(" ", "-") : city.getCountry());
+								? city.getCountry().trim().replace(" ", "-")
+								: city.getCountry());
 					}
 					response.add(city);
 				}

@@ -8,15 +8,15 @@ public class WebDoctorClinicsResponse {
 
 	private String doctorId;
 	
+	private String doctorSlugURL;
+	
 	private String firstName;
 	
 	private List<String> specialities;
-
+	
 	private List<String> parentSpecialities;
 	
 	private List<WebClinicResponse> clinics;
-	
-	private String doctorSlugURL;
 
 	private DoctorExperience experience;
 
@@ -28,6 +28,14 @@ public class WebDoctorClinicsResponse {
 
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
+	}
+
+	public String getDoctorSlugURL() {
+		return doctorSlugURL;
+	}
+
+	public void setDoctorSlugURL(String doctorSlugURL) {
+		this.doctorSlugURL = doctorSlugURL;
 	}
 
 	public String getFirstName() {
@@ -62,14 +70,6 @@ public class WebDoctorClinicsResponse {
 		this.clinics = clinics;
 	}
 
-	public String getDoctorSlugURL() {
-		return doctorSlugURL;
-	}
-
-	public void setDoctorSlugURL(String doctorSlugURL) {
-		this.doctorSlugURL = doctorSlugURL;
-	}
-
 	public DoctorExperience getExperience() {
 		return experience;
 	}
@@ -88,10 +88,8 @@ public class WebDoctorClinicsResponse {
 
 	@Override
 	public String toString() {
-		return "WebDoctorClinicsResponse [doctorId=" + doctorId + ", firstName=" + firstName + ", specialities="
-				+ specialities + ", parentSpecialities=" + parentSpecialities + ", clinics=" + clinics
-				+ ", doctorSlugURL=" + doctorSlugURL + ", experience=" + experience + ", thumbnailUrl=" + thumbnailUrl
-				+ "]";
+		return "WebDoctorClinicsResponse [doctorId=" + doctorId + ", doctorSlugURL=" + doctorSlugURL + ", firstName="
+				+ firstName + ", specialities=" + specialities + ", parentSpecialities=" + parentSpecialities
+				+ ", clinics=" + clinics + ", experience=" + experience + ", thumbnailUrl=" + thumbnailUrl + "]";
 	}
-
 }

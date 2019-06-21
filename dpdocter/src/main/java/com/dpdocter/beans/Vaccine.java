@@ -21,6 +21,8 @@ public class Vaccine extends GenericCollection {
 	private Date givenDate;
 	private VaccineBrand vaccineBrand;
 	private Age age;
+	private String duration;
+	private Integer periodTime;
 
 	public String getId() {
 		return id;
@@ -100,6 +102,22 @@ public class Vaccine extends GenericCollection {
 
 	public void setVaccineBrand(VaccineBrand vaccineBrand) {
 		this.vaccineBrand = vaccineBrand;
+	}
+
+	public String getDuration() {
+		return duration;
+	}
+
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
+
+	public Integer getPeriodTime() {
+		return periodTime;
+	}
+
+	public void setPeriodTime(Integer periodTime) {
+		this.periodTime = periodTime;
 	}
 
 	@Override

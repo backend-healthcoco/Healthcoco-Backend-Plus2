@@ -2,15 +2,25 @@ package com.dpdocter.response;
 
 public class AmountDueAnalyticsDataResponse {
 
-	private Double invoiced;
-	
-	private Double received;
-	
+	private Double invoiced = 0.0;
+
+	private Double received = 0.0;
+
 	private String patientName;
-	
+
 	private String pid;
-	
+
 	private String doctorName;
+
+	private Double amountDue = 0.0;
+
+	public Double getAmountDue() {
+		return amountDue;
+	}
+
+	public void setAmountDue(Double amountDue) {
+		this.amountDue = amountDue;
+	}
 
 	public Double getInvoiced() {
 		return invoiced;

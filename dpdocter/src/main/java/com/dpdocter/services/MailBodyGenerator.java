@@ -7,8 +7,10 @@ import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.collections.UserCollection;
 
 public interface MailBodyGenerator {
-	public String generateActivationEmailBody(String fName, String tokenId, String templatePath, String doctorName,
-			String clinicName) throws Exception;
+	/*
+	 * public String generateActivationEmailBody(String fName, String tokenId,
+	 * String templatePath, String doctorName, String clinicName) throws Exception;
+	 */
 
 	public String generateForgotPasswordEmailBody(String fName, String tokenId);
 
@@ -25,7 +27,7 @@ public interface MailBodyGenerator {
 			String doctorName);
 
 	String generateAppointmentEmailBody(String doctorName, String patientName, String dateTime, String clinicName,
-			String templatePath);
+			String templatePath, String branch);
 
 	String generateEmailBody(String userName, String resumeType, String templatePath) throws Exception;
 
@@ -33,7 +35,7 @@ public interface MailBodyGenerator {
 			String mailRecordCreatedDate, String medicalRecordType, String templatePath);
 
 	public String generatePaymentEmailBody(String orderId, String planName, String amount, String patientName,
-			String templatePath);
+			String time, String templatePath);
 
 	public String generateFeedbackEmailBody(String patientName, String doctorName, String locationName,
 			String uniqueFeedbackId, String templatePath);
@@ -58,6 +60,13 @@ public interface MailBodyGenerator {
 	String generateDentalImagingInvoiceEmailBody(String doctorName, String dentalImagingLab, String patientName,
 			List<MailAttachment> reports, String templatePath);
 
-	String generateActivationEmailBodyForStaff(String fName, String tokenId, String templatePath, String doctorName,
+	String doctorWelcomeEmailBody(String fName, String tokenId, String templatePath, String doctorName,
 			String clinicName) throws Exception;
+
+	String generateActivationEmailBody(String fName, String tokenId, String templatePath, String doctorName,
+			String clinicName, String addedBy) throws Exception;
+
+	public String nutritionReferenceEmailBody(String patientName, String mobileNumber, String birthDate,
+			String profession, String gender, String address, String city, String pinCode, String doctorName,
+			String planName, String subplan,String templatePath) throws Exception;
 }

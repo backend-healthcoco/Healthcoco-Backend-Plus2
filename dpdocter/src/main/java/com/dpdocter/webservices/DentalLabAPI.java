@@ -21,17 +21,14 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
 import com.dpdocter.beans.DentalLabPickup;
-import com.dpdocter.beans.DentalStage;
 import com.dpdocter.beans.DentalWork;
 import com.dpdocter.beans.DentalWorksAmount;
 import com.dpdocter.beans.DentalWorksInvoice;
 import com.dpdocter.beans.DentalWorksReceipt;
 import com.dpdocter.beans.FileDetails;
-import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardDentalWorkAssociation;
 import com.dpdocter.beans.RateCardDoctorAssociation;
-import com.dpdocter.beans.User;
 import com.dpdocter.elasticsearch.document.ESDentalWorksDocument;
 import com.dpdocter.elasticsearch.services.impl.ESDentalLabServiceImpl;
 import com.dpdocter.enums.LabType;
@@ -43,7 +40,6 @@ import com.dpdocter.request.AddEditTaxRequest;
 import com.dpdocter.request.DentalLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalLabPickupChangeStatusRequest;
 import com.dpdocter.request.DentalLabPickupRequest;
-import com.dpdocter.request.LabReportsAddRequest;
 import com.dpdocter.request.UpdateDentalStagingRequest;
 import com.dpdocter.request.UpdateETARequest;
 import com.dpdocter.response.DentalLabDoctorAssociationLookupResponse;
@@ -462,7 +458,7 @@ public class DentalLabAPI {
 	@Path(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_REPORT)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_REPORT, notes = PathProxy.DentalLabUrls.DOWNLOAD_DENTAL_LAB_REPORT)
-	public Response<String> getReportById(@PathParam("requestId") String requestId) {
+	public Response<String> downloadReport(@PathParam("requestId") String requestId) {
 		if (requestId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -566,13 +562,12 @@ public class DentalLabAPI {
 	@Path(value = PathProxy.DentalLabUrls.GET_RECEIPTS)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RECEIPTS, notes = PathProxy.DentalLabUrls.GET_RECEIPTS)
-
 	public Response<DentalWorksReceipt> getReceipts(@QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("dentalLabLocationId") String dentalLabLocationId,
-			@QueryParam("dentalLabHospitalId") String dentalLabHospitalId,
-			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page) {
+			@QueryParam("dentalLabHospitalId") String dentalLabHospitalId,@DefaultValue("0") @QueryParam("from") Long from,
+			@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
+			@QueryParam("page") int page) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId, dentalLabHospitalId, dentalLabLocationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -607,7 +602,7 @@ public class DentalLabAPI {
 	}
 
 	@Path(value = PathProxy.DentalLabUrls.DISCARD_INVOICE)
-	@GET
+	@DELETE
 	@ApiOperation(value = PathProxy.DentalLabUrls.DISCARD_INVOICE, notes = PathProxy.DentalLabUrls.DISCARD_INVOICE)
 	public Response<DentalWorksInvoice> discardInvoice(@QueryParam("id") String id,
 			@QueryParam("discarded") Boolean discarded) {
@@ -620,7 +615,7 @@ public class DentalLabAPI {
 	}
 
 	@Path(value = PathProxy.DentalLabUrls.DISCARD_RECEIPT)
-	@GET
+	@DELETE
 	@ApiOperation(value = PathProxy.DentalLabUrls.DISCARD_RECEIPT, notes = PathProxy.DentalLabUrls.DISCARD_RECEIPT)
 	public Response<DentalWorksReceipt> discardReceipt(@QueryParam("id") String id,
 			@QueryParam("discarded") Boolean discarded) {

@@ -27,7 +27,7 @@ public class SpecialityCollection extends GenericCollection {
 
     @Field
     private String metaTitle;
-    
+
     public ObjectId getId() {
 	return id;
     }

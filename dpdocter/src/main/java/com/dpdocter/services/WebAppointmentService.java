@@ -9,5 +9,4 @@ public interface WebAppointmentService {
 
 	WebDoctorClinicsResponse getClinicsByDoctorSlugURL(String doctorSlugUrl);
 
-
 }

@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.enums.GoalStatus;
+
 @Document(collection = "nutrition_goal_status_stamping_cl")
 public class NutritionGoalStatusStampingCollection extends GenericCollection {
 
@@ -19,13 +21,9 @@ public class NutritionGoalStatusStampingCollection extends GenericCollection {
 	@Field
 	private ObjectId patientId;
 	@Field
-	private String goalStatus;
+	private GoalStatus goalStatus;
 	@Field
-	private ObjectId referredDoctorId;
-	@Field
-	private ObjectId referredLocationId;
-	@Field
-	private ObjectId referredHospitalId;
+	private Boolean isPatientDiscarded = false;
 
 	public ObjectId getId() {
 		return id;
@@ -67,42 +65,20 @@ public class NutritionGoalStatusStampingCollection extends GenericCollection {
 		this.patientId = patientId;
 	}
 
-	public String getGoalStatus() {
+	public GoalStatus getGoalStatus() {
 		return goalStatus;
 	}
 
-	public void setGoalStatus(String goalStatus) {
+	public void setGoalStatus(GoalStatus goalStatus) {
 		this.goalStatus = goalStatus;
 	}
 
-	public ObjectId getReferredDoctorId() {
-		return referredDoctorId;
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
 	}
 
-	public void setReferredDoctorId(ObjectId referredDoctorId) {
-		this.referredDoctorId = referredDoctorId;
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
-	public ObjectId getReferredLocationId() {
-		return referredLocationId;
-	}
-
-	public void setReferredLocationId(ObjectId referredLocationId) {
-		this.referredLocationId = referredLocationId;
-	}
-
-	public ObjectId getReferredHospitalId() {
-		return referredHospitalId;
-	}
-
-	public void setReferredHospitalId(ObjectId referredHospitalId) {
-		this.referredHospitalId = referredHospitalId;
-	}
-
-	@Override
-	public String toString() {
-		return "NutritionGoalStatusStampingCollection [id=" + id + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", goalStatus=" + goalStatus
-				+ "]";
-	}
 }

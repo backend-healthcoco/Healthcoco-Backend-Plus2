@@ -10,7 +10,7 @@ public class BlogResponse {
 	private List<Blog> blogs;
 	
 	private int totalsize;
-	
+
 	private BlogSuperCategoryType superCategory;
 	
 	public List<Blog> getBlogs() {

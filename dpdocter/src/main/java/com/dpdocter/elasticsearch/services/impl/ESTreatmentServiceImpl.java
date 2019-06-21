@@ -3,7 +3,6 @@ package com.dpdocter.elasticsearch.services.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -41,6 +40,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
 
 @Service
 public class ESTreatmentServiceImpl implements ESTreatmentService {
@@ -87,9 +87,11 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 	}
 
 	@Override
-	public List<?> search(String type, String range, int page, int size, String doctorId, String locationId,
+	public Response<Object> search(String type, String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
-		List<?> response = new ArrayList<Object>();
+		
+		Response<Object> response = new Response<Object>();
+		List<?> dataList = new ArrayList<Object>();
 
 		switch (PatientTreatmentService.valueOf(type.toUpperCase())) {
 
@@ -113,8 +115,9 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 			break;
 		}
 		case SERVICECOST: {
-			response = getCustomTreatmentServicesCost(page, size, doctorId, locationId, hospitalId, updatedTime,
+			dataList = getCustomTreatmentServicesCost(page, size, doctorId, locationId, hospitalId, updatedTime,
 					discarded, searchTerm);
+			response.setDataList(dataList);
 			break;
 		}
 		default:
@@ -124,9 +127,9 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<?> getGlobalTreatmentServices(int page, int size, String doctorId, String updatedTime,
+	private Response<Object> getGlobalTreatmentServices(int page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
-		List<ESTreatmentServiceDocument> response = null;
+		Response<Object> response = new Response<Object>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
 			Collection<String> specialities = Collections.EMPTY_LIST;
@@ -161,7 +164,12 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.TREATMENTSERVICE, page, size,
 					updatedTime, discarded, null, searchTerm, specialities, null, null, "name");
-			response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
+			
+			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESTreatmentServiceDocument.class);
+			if(count > 0) {
+				response.setCount(count);
+				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -170,13 +178,17 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 		return response;
 	}
 
-	private List<?> getCustomTreatmentServices(int page, int size, String doctorId, String locationId,
+	private Response<Object> getCustomTreatmentServices(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
-		List<ESTreatmentServiceDocument> response = null;
+		Response<Object> response = new Response<Object>();
 		try {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 					updatedTime, discarded, "rankingCount", searchTerm, null, null, "name");
-			response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
+			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESTreatmentServiceDocument.class);
+			if(count > 0) {
+				response.setCount(count);
+				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -186,9 +198,9 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<?> getCustomGlobalTreatmentServices(int page, int size, String doctorId, String locationId,
+	private Response<Object> getCustomGlobalTreatmentServices(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
-		List<ESTreatmentServiceDocument> response = null;
+		Response<Object> response = new Response<Object>();
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
 			Collection<String> specialities = Collections.EMPTY_LIST;
@@ -227,11 +239,11 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.TREATMENTSERVICE, page, 0,
 					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
 					null, "name");
-			response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
-			if (response != null && !response.isEmpty())
-
-				response = new ArrayList<ESTreatmentServiceDocument>(
-						new LinkedHashSet<ESTreatmentServiceDocument>(response));
+			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESTreatmentServiceDocument.class);
+			if(count > 0) {
+				response.setCount(count);
+				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

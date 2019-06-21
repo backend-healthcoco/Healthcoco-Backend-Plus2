@@ -89,7 +89,8 @@ public class WebAppointmentApi {
 	@Path(value = PathProxy.WebAppointmentUrls.GET_CLINICS_BY_DOCTOR_SLUG_URL)
 	@GET
 	@ApiOperation(value = PathProxy.WebAppointmentUrls.GET_CLINICS_BY_DOCTOR_SLUG_URL, notes = PathProxy.WebAppointmentUrls.GET_CLINICS_BY_DOCTOR_SLUG_URL)
-	public Response<WebDoctorClinicsResponse> getClinicsByDoctorSlugURL(@PathParam("doctorSlugUrl") String doctorSlugUrl) {		
+	public Response<WebDoctorClinicsResponse> getClinicsByDoctorSlugURL(@PathParam("doctorSlugUrl") String doctorSlugUrl) {
+		
 		WebDoctorClinicsResponse webDoctorClinicsResponse = webAppointmentService.getClinicsByDoctorSlugURL(doctorSlugUrl);
 		Response<WebDoctorClinicsResponse> response = new Response<WebDoctorClinicsResponse>();
 		response.setData(webDoctorClinicsResponse);

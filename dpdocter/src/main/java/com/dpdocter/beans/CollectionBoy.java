@@ -124,7 +124,6 @@ public class CollectionBoy extends GenericCollection {
 		this.userId = userId;
 	}
 
-
 	public String getLabType() {
 		return labType;
 	}

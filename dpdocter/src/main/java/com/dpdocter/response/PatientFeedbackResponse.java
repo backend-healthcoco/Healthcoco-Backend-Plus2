@@ -1,10 +1,15 @@
 package com.dpdocter.response;
 
+import java.util.List;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.PatientShortCard;
+import com.dpdocter.beans.Prescription;
+import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.AppointmentWaitTime;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.MedicationEffectType;
 
@@ -22,9 +27,11 @@ public class PatientFeedbackResponse extends GenericCollection {
 	private String hospitalName;
 	private String localeId;
 	private String localeName;
+	private Prescription prescription;
+	private Appointment appointment;
 	private Boolean isRecommended;
 	private Boolean isAppointmentStartedOnTime;
-	private String howLateWasAppointment;
+	private Integer howLateWasAppointmentInMinutes;
 	private Float overallExperience;
 	private String reasonOfVisit;
 	private String experience;
@@ -37,6 +44,12 @@ public class PatientFeedbackResponse extends GenericCollection {
 	private MedicationEffectType medicationEffectType; // how patient feeling
 	// after taking medicine
 	private FeedbackType feedbackType;
+	private String appointmentId;
+	private String prescriptionId;
+	private List<QuestionAnswers> questionAnswers;
+	private Boolean printPdfProvided = false;
+	private List<String> services;
+	private AppointmentWaitTime appointmentTiming;
 
 	public String getId() {
 		return id;
@@ -142,14 +155,6 @@ public class PatientFeedbackResponse extends GenericCollection {
 		this.isAppointmentStartedOnTime = isAppointmentStartedOnTime;
 	}
 
-	public String getHowLateWasAppointment() {
-		return howLateWasAppointment;
-	}
-
-	public void setHowLateWasAppointment(String howLateWasAppointment) {
-		this.howLateWasAppointment = howLateWasAppointment;
-	}
-
 	public Float getOverallExperience() {
 		return overallExperience;
 	}
@@ -238,18 +243,94 @@ public class PatientFeedbackResponse extends GenericCollection {
 		this.feedbackType = feedbackType;
 	}
 
+	public Prescription getPrescription() {
+		return prescription;
+	}
+
+	public void setPrescription(Prescription prescription) {
+		this.prescription = prescription;
+	}
+
+	public Appointment getAppointment() {
+		return appointment;
+	}
+
+	public void setAppointment(Appointment appointment) {
+		this.appointment = appointment;
+	}
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+	
+	
+
+	public Integer getHowLateWasAppointmentInMinutes() {
+		return howLateWasAppointmentInMinutes;
+	}
+
+	public void setHowLateWasAppointmentInMinutes(Integer howLateWasAppointmentInMinutes) {
+		this.howLateWasAppointmentInMinutes = howLateWasAppointmentInMinutes;
+	}
+
+	public List<QuestionAnswers> getQuestionAnswers() {
+		return questionAnswers;
+	}
+
+	public void setQuestionAnswers(List<QuestionAnswers> questionAnswers) {
+		this.questionAnswers = questionAnswers;
+	}
+
+	public Boolean getPrintPdfProvided() {
+		return printPdfProvided;
+	}
+
+	public void setPrintPdfProvided(Boolean printPdfProvided) {
+		this.printPdfProvided = printPdfProvided;
+	}
+
+	public List<String> getServices() {
+		return services;
+	}
+
+	public void setServices(List<String> services) {
+		this.services = services;
+	}
+
+	public AppointmentWaitTime getAppointmentTiming() {
+		return appointmentTiming;
+	}
+
+	public void setAppointmentTiming(AppointmentWaitTime appointmentTiming) {
+		this.appointmentTiming = appointmentTiming;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientFeedbackResponse [id=" + id + ", locationId=" + locationId + ", locationName=" + locationName
 				+ ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", patientId=" + patientId
 				+ ", patientCard=" + patientCard + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName
-				+ ", localeId=" + localeId + ", localeName=" + localeName + ", isRecommended=" + isRecommended
-				+ ", isAppointmentStartedOnTime=" + isAppointmentStartedOnTime + ", howLateWasAppointment="
-				+ howLateWasAppointment + ", overallExperience=" + overallExperience + ", reasonOfVisit="
-				+ reasonOfVisit + ", experience=" + experience + ", reply=" + reply + ", isAnonymous=" + isAnonymous
-				+ ", isApproved=" + isApproved + ", adminUpdatedExperience=" + adminUpdatedExperience + ", isDiscarded="
-				+ isDiscarded + ", isMedicationOnTime=" + isMedicationOnTime + ", medicationEffectType="
-				+ medicationEffectType + ", feedbackType=" + feedbackType + "]";
+				+ ", localeId=" + localeId + ", localeName=" + localeName + ", prescription=" + prescription
+				+ ", appointment=" + appointment + ", isRecommended=" + isRecommended + ", isAppointmentStartedOnTime="
+				+ isAppointmentStartedOnTime + ", howLateWasAppointmentInMinutes=" + howLateWasAppointmentInMinutes
+				+ ", overallExperience=" + overallExperience + ", reasonOfVisit=" + reasonOfVisit + ", experience="
+				+ experience + ", reply=" + reply + ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved
+				+ ", adminUpdatedExperience=" + adminUpdatedExperience + ", isDiscarded=" + isDiscarded
+				+ ", isMedicationOnTime=" + isMedicationOnTime + ", medicationEffectType=" + medicationEffectType
+				+ ", feedbackType=" + feedbackType + ", appointmentId=" + appointmentId + ", prescriptionId="
+				+ prescriptionId + ", questionAnswers=" + questionAnswers + "]";
 	}
 
 }

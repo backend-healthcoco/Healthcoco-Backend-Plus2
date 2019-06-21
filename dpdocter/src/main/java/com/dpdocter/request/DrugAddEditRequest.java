@@ -205,6 +205,8 @@ public class DrugAddEditRequest {
 				+ explanation + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId
 				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP
 				+ ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction="
-				+ direction + ", categories=" + categories + ", genericNames=" + genericNames + "]";
+				+ direction + ", categories=" + categories + ", genericNames=" + genericNames + ", drugQuantity="
+				+ drugQuantity + "]";
 	}
+
 }

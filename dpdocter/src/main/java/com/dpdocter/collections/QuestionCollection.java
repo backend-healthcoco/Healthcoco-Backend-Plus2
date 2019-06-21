@@ -81,4 +81,9 @@ public class QuestionCollection extends GenericCollection {
 		this.question = question;
 	}
 
+	@Override
+	public String toString() {
+		return "QuestionCollection [id=" + id + ", type=" + type + ", sessionId=" + sessionId + ", questionerId="
+				+ questionerId + ", noOfLikes=" + noOfLikes + ", discarded=" + discarded + "]";
+	}
 }

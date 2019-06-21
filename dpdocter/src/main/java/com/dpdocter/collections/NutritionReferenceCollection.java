@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.GoalStatus;
+import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.enums.RegularityStatus;
 import com.dpdocter.response.ImageURLResponse;
 
@@ -29,17 +30,24 @@ public class NutritionReferenceCollection extends GenericCollection {
 	@Field
 	private Integer durationInMonths;
 	@Field
+	private NutritionPlanType type;
+	@Field
+	private ObjectId nutritionPlanId;
+	@Field
+	private ObjectId subscriptionPlanId;
+	@Field
 	private List<ImageURLResponse> reports;
 	@Field
-	private String regularityStatus = RegularityStatus.NO_ACTION.getType();
+	private RegularityStatus regularityStatus = RegularityStatus.NO_ACTION;
 	@Field
-	private String goalStatus = GoalStatus.REFERRED.getType();
+	private GoalStatus goalStatus = GoalStatus.REFERRED;
+
 	@Field
-	private ObjectId referredDoctorId;
+	private Boolean isPatientDiscarded = false;
 	@Field
-	private ObjectId referredLocationId;
+	private String mobileNumber;
 	@Field
-	private ObjectId referredHospitalId;
+	private String localPatientName;
 
 	public ObjectId getId() {
 		return id;
@@ -105,53 +113,68 @@ public class NutritionReferenceCollection extends GenericCollection {
 		this.reports = reports;
 	}
 
-	public String getRegularityStatus() {
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	public NutritionPlanType getType() {
+		return type;
+	}
+
+	public void setType(NutritionPlanType type) {
+		this.type = type;
+	}
+
+	public ObjectId getNutritionPlanId() {
+		return nutritionPlanId;
+	}
+
+	public void setNutritionPlanId(ObjectId nutritionPlanId) {
+		this.nutritionPlanId = nutritionPlanId;
+	}
+
+	public ObjectId getSubscriptionPlanId() {
+		return subscriptionPlanId;
+	}
+
+	public void setSubscriptionPlanId(ObjectId subscriptionPlanId) {
+		this.subscriptionPlanId = subscriptionPlanId;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
+
+	public RegularityStatus getRegularityStatus() {
 		return regularityStatus;
 	}
 
-	public void setRegularityStatus(String regularityStatus) {
+	public void setRegularityStatus(RegularityStatus regularityStatus) {
 		this.regularityStatus = regularityStatus;
 	}
 
-	public String getGoalStatus() {
+	public GoalStatus getGoalStatus() {
 		return goalStatus;
 	}
 
-	public void setGoalStatus(String goalStatus) {
+	public void setGoalStatus(GoalStatus goalStatus) {
 		this.goalStatus = goalStatus;
-	}
-
-	public ObjectId getReferredDoctorId() {
-		return referredDoctorId;
-	}
-
-	public void setReferredDoctorId(ObjectId referredDoctorId) {
-		this.referredDoctorId = referredDoctorId;
-	}
-
-	public ObjectId getReferredLocationId() {
-		return referredLocationId;
-	}
-
-	public void setReferredLocationId(ObjectId referredLocationId) {
-		this.referredLocationId = referredLocationId;
-	}
-
-	public ObjectId getReferredHospitalId() {
-		return referredHospitalId;
-	}
-
-	public void setReferredHospitalId(ObjectId referredHospitalId) {
-		this.referredHospitalId = referredHospitalId;
-	}
-
-	@Override
-	public String toString() {
-		return "NutritionReferenceCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", details=" + details
-				+ ", durationInMonths=" + durationInMonths + ", reports=" + reports + ", regularityStatus="
-				+ regularityStatus + ", goalStatus=" + goalStatus + ", referredDoctorId=" + referredDoctorId
-				+ ", referredLocationId=" + referredLocationId + ", referredHospitalId=" + referredHospitalId + "]";
 	}
 
 }

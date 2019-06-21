@@ -390,12 +390,118 @@ public class FileManagerImpl implements FileManager {
 			fileDetail.setFileExtension("jpg");
 			imageURLResponse = saveImageAndReturnImageUrl(fileDetail, path, false);
 			if (imageURLResponse != null && !DPDoctorUtils.anyStringEmpty(imageURLResponse.getImageUrl()))
-				imagelist.add(imagePath + imageURLResponse.getImageUrl());
+				imagelist.add(imagePath+imageURLResponse.getImageUrl());
 		}
 		System.out.println(imagelist.size());
 		document.close();
 
 		return imagelist;
+	}
+
+	@Override
+	@Transactional
+	public ImageURLResponse saveImageAndReturnImageUrl(ByteArrayOutputStream outstream, String fileName, String path,
+			Boolean createThumbnail) throws Exception {
+		ImageURLResponse response = new ImageURLResponse();
+
+		String imageUrl = path + "/" + fileName;
+
+		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+		AmazonS3 s3client = new AmazonS3Client(credentials);
+		try {
+
+			InputStream fis = new ByteArrayInputStream(outstream.toByteArray());
+			String contentType = URLConnection.guessContentTypeFromStream(fis);
+
+			if (!DPDoctorUtils.anyStringEmpty(contentType) && contentType.equalsIgnoreCase("exe")) {
+				throw new BusinessException(ServiceError.NotAcceptable, "Invalid File");
+			}
+			ObjectMetadata metadata = new ObjectMetadata();
+			byte[] contentBytes = IOUtils.toByteArray(fis);
+			metadata.setContentLength(contentBytes.length);
+			System.out.println(new BigDecimal(contentBytes.length).divide(new BigDecimal(1000 * 1000)).doubleValue());
+			metadata.setContentEncoding("png");
+			metadata.setContentType(contentType);
+			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+			s3client.putObject(new PutObjectRequest(bucketName, imageUrl, fis, metadata));
+			response.setImageUrl(imageUrl);
+			if (createThumbnail) {
+				response.setThumbnailUrl(saveThumbnailAndReturnThumbNailUrl(fileName, path));
+			}
+		} catch (AmazonServiceException ase) {
+			System.out.println("Error Message:    " + ase.getMessage() + " HTTP Status Code: " + ase.getStatusCode()
+					+ " AWS Error Code:   " + ase.getErrorCode() + " Error Type:       " + ase.getErrorType()
+					+ " Request ID:       " + ase.getRequestId());
+		} catch (AmazonClientException ace) {
+			System.out.println(
+					"Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
+			System.out.println("Error Message: " + ace.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public String saveThumbnailAndReturnThumbNailUrl(String fileName, String path) {
+		String thumbnailUrl = "";
+
+		try {
+			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+			AmazonS3 s3client = new AmazonS3Client(credentials);
+
+			S3Object object = s3client
+					.getObject(new GetObjectRequest(bucketName, path + File.separator + fileName + "." + "jpg"));
+			InputStream objectData = object.getObjectContent();
+
+			BufferedImage originalImage = ImageIO.read(objectData);
+			double ratio = (double) originalImage.getWidth() / originalImage.getHeight();
+			int height = originalImage.getHeight();
+
+			int width = originalImage.getWidth();
+			int max = 120;
+			if (width == height) {
+				width = max;
+				height = max;
+			} else if (width > height) {
+				height = max;
+				width = (int) (ratio * max);
+			} else {
+				width = max;
+				height = (int) (max / ratio);
+			}
+			BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			img.createGraphics().drawImage(originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0,
+					null);
+			fileName = fileName + "_thumb." + "jpg";
+			thumbnailUrl = path + "/" + fileName;
+
+			originalImage.flush();
+			originalImage = null;
+
+			ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+			ImageIO.write(img, "jpg", outstream);
+			byte[] buffer = outstream.toByteArray();
+			objectData = new ByteArrayInputStream(buffer);
+
+			String contentType = URLConnection.guessContentTypeFromStream(objectData);
+			ObjectMetadata metadata = new ObjectMetadata();
+			metadata.setContentLength(buffer.length);
+			metadata.setContentEncoding("jpg");
+			metadata.setContentType(contentType);
+			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+			s3client.putObject(new PutObjectRequest(bucketName, thumbnailUrl, objectData, metadata));
+		} catch (AmazonServiceException ase) {
+			System.out.println("Error Message: " + ase.getMessage() + " HTTP Status Code: " + ase.getStatusCode()
+					+ " AWS Error Code:   " + ase.getErrorCode() + " Error Type:       " + ase.getErrorType()
+					+ " Request ID:       " + ase.getRequestId());
+		} catch (AmazonClientException ace) {
+			System.out.println(
+					"Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
+			System.out.println("Error Message: " + ace.getMessage());
+		} catch (Exception e) {
+			System.out.println("Error Message: " + e.getMessage());
+		}
+		return thumbnailUrl;
 	}
 
 }

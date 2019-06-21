@@ -20,9 +20,6 @@ public class SearchRequestToPharmacyCollection extends GenericCollection {
 	private String uniqueRequestId;
 
 	@Field
-	private String uniqueResponseId;
-
-	@Field
 	private Boolean isAlreadyRequested = false;
 
 	@Field
@@ -33,7 +30,10 @@ public class SearchRequestToPharmacyCollection extends GenericCollection {
 
 	@Field
 	private Discount discount;
-
+	
+	@Field
+	private String uniqueResponseId;
+	
 	@Field
 	private double discountedPrice;
 
@@ -134,8 +134,9 @@ public class SearchRequestToPharmacyCollection extends GenericCollection {
 	@Override
 	public String toString() {
 		return "SearchRequestToPharmacyCollection [id=" + id + ", userId=" + userId + ", uniqueRequestId="
-				+ uniqueRequestId + ", uniqueResponseId=" + uniqueResponseId + ", isAlreadyRequested="
-				+ isAlreadyRequested + ", replyType=" + replyType + ", localeId=" + localeId + ", discount=" + discount
+				+ uniqueRequestId + ", isAlreadyRequested=" + isAlreadyRequested + ", replyType=" + replyType
+				+ ", localeId=" + localeId + ", discount=" + discount + ", uniqueResponseId=" + uniqueResponseId
 				+ ", discountedPrice=" + discountedPrice + ", realPrice=" + realPrice + ", note=" + note + "]";
 	}
+
 }

@@ -35,7 +35,6 @@ import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.Location;
-import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
@@ -151,13 +150,12 @@ public class RegistrationApi {
 		}
 
 		if (request.getPastMedicalHistoryHandler() != null) {
-			request.getPastMedicalHistoryHandler().setPatientId(registeredPatientDetails.getPatient().getPatientId());
+			request.getPastMedicalHistoryHandler().setPatientId(registeredPatientDetails.getUserId());
 			historyServices.handleMedicalHistory(request.getPastMedicalHistoryHandler());
 		}
 
 		if (request.getPersonalHistoryAddRequest() != null) {
-			request.getPersonalHistoryAddRequest().setPatientId(registeredPatientDetails.getPatient().getPatientId());
-
+			request.getPersonalHistoryAddRequest().setPatientId(registeredPatientDetails.getUserId());
 			historyServices.assignPersonalHistory(request.getPersonalHistoryAddRequest());
 		}
 
@@ -198,31 +196,6 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM)
-	@GET
-	@ApiOperation(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, response = Response.class)
-	public Response<RegisteredPatientDetails> getExistingPatients(@PathParam("mobileNumber") String mobileNumber,
-			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId, @QueryParam("role") String role) {
-		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
-			logger.warn(mobileNumberValidaton);
-			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
-		}
-
-		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
-
-		List<RegisteredPatientDetails> users = registrationService.getUsersByPhoneNumber(mobileNumber, doctorId,
-				locationId, hospitalId, role);
-		if (users != null && !users.isEmpty()) {
-			for (RegisteredPatientDetails user : users) {
-				user.setImageUrl(getFinalImageURL(user.getImageUrl()));
-				user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
-			}
-		}
-		response.setDataList(users);
-		return response;
-	}
-
 	@Path(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, response = Response.class)
@@ -252,25 +225,6 @@ public class RegistrationApi {
 			}
 		}
 		response.setDataList(users);
-		return response;
-	}
-
-	@Path(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT)
-	@GET
-	@ApiOperation(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT, notes = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT, response = Response.class)
-	public Response<Integer> getExistingPatientsCount(@PathParam("mobileNumber") String mobileNumber) {
-		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
-			logger.warn(invalidInput);
-			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
-		}
-		Response<Integer> response = new Response<Integer>();
-		Integer patientCountByMobNum = 0;
-		List<RegisteredPatientDetails> users = registrationService.getUsersByPhoneNumber(mobileNumber, null, null, null,
-				null);
-		if (users != null) {
-			patientCountByMobNum = users.size();
-		}
-		response.setData(patientCountByMobNum);
 		return response;
 	}
 
@@ -634,30 +588,6 @@ public class RegistrationApi {
 		List<Profession> professionResponse = registrationService.getProfession(page, size, updatedTime);
 		Response<Profession> response = new Response<Profession>();
 		response.setDataList(professionResponse);
-		return response;
-	}
-
-	@Path(value = PathProxy.RegistrationUrls.USER_REGISTER_IN_CLINIC)
-	@POST
-	@ApiOperation(value = PathProxy.RegistrationUrls.USER_REGISTER_IN_CLINIC, notes = PathProxy.RegistrationUrls.USER_REGISTER_IN_CLINIC)
-	public Response<RegisterDoctorResponse> userRegister(DoctorRegisterRequest request) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getEmailAddress(), request.getFirstName(),
-				request.getLocationId(), request.getHospitalId())) {
-			logger.warn(invalidInput);
-			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
-		}
-		RegisterDoctorResponse doctorResponse = null;
-		if (!registrationService.checktDoctorExistByEmailAddress(request.getEmailAddress())) {
-			doctorResponse = registrationService.registerNewUser(request);
-		} else {
-			doctorResponse = registrationService.registerExisitingUser(request);
-		}
-
-		transnationalService.addResource(new ObjectId(doctorResponse.getUserId()), Resource.DOCTOR, false);
-		if (doctorResponse != null)
-			esRegistrationService.addDoctor(registrationService.getESDoctorDocument(doctorResponse));
-		Response<RegisterDoctorResponse> response = new Response<RegisterDoctorResponse>();
-		response.setData(doctorResponse);
 		return response;
 	}
 
@@ -1169,37 +1099,6 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.DELETE_PATIENT)
-	@DELETE
-	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_PATIENT, notes = PathProxy.RegistrationUrls.DELETE_PATIENT)
-	public Response<Boolean> deletePatient(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@PathParam("patientId") String patientId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
-			throw new BusinessException(ServiceError.InvalidInput,
-					"Doctor Id, locationId, hospitalId & patientId could not null");
-
-		}
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(registrationService.deletePatient(doctorId, locationId, hospitalId, patientId, discarded));
-		return response;
-	}
-
-	@Path(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
-	@GET
-	@ApiOperation(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT, notes = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
-	public Response<PatientShortCard> getDeletedPatient(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
-			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId, hospitalId could not null");
-
-		}
-		Response<PatientShortCard> response = new Response<PatientShortCard>();
-		response.setDataList(registrationService.getDeletedPatient(doctorId, locationId, hospitalId));
-		return response;
-	}
-
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER, notes = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER)
@@ -1247,6 +1146,25 @@ public class RegistrationApi {
 
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(registrationService.update());
+		return response;
+	}
+	
+	@Path(value = PathProxy.RegistrationUrls.CHECK_IF_PNUM_EXIST)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.CHECK_IF_PNUM_EXIST, notes = PathProxy.RegistrationUrls.CHECK_IF_PNUM_EXIST)
+	public Response<Boolean> checkIfPNUMExist(@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("PNUM") String PNUM) {
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "LocationId, hospitalId could not null");
+
+		}
+
+		if (DPDoctorUtils.allStringsEmpty(PNUM)) {
+			throw new BusinessException(ServiceError.InvalidInput, "PNUM cannot be null");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(registrationService.checkIfPNUMExist(locationId, hospitalId, PNUM));
 		return response;
 	}
 }

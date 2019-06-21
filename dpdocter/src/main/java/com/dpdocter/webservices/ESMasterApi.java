@@ -16,34 +16,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.Address;
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
-import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.collections.CityCollection;
-import com.dpdocter.collections.LocaleCollection;
-import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
-import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
-import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESMasterService;
-import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CityRepository;
-import com.dpdocter.repository.LocaleRepository;
-import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.services.AdminServices;
-import com.dpdocter.services.LocationServices;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -70,19 +60,7 @@ public class ESMasterApi {
 
 	@Autowired
 	private ESCityService esCityService;
-
-    @Autowired
-    private LocaleRepository localeRepository;
-    
-    @Autowired 
-    private UserRepository userRepository;
-    
-    @Autowired
-    private ESUserLocaleRepository esUserLocaleRepository;
-    
-	@Autowired
-	private LocationServices locationServices;
-    
+ 
     @Path(value = PathProxy.SolrMasterUrls.SEARCH_REFERENCE)
     @GET
     @ApiOperation(value = PathProxy.SolrMasterUrls.SEARCH_REFERENCE, notes = PathProxy.SolrMasterUrls.SEARCH_REFERENCE)
@@ -95,10 +73,9 @@ public class ESMasterApi {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
-	List<Reference> searchResonse = esMasterService.searchReference(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
-		searchTerm);
-	Response<Reference> response = new Response<Reference>();
-	response.setDataList(searchResonse);
+	
+    Response<Reference> response = esMasterService.searchReference(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+    		searchTerm);
 	return response;
     }
 

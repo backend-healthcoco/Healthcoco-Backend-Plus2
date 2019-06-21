@@ -5,12 +5,10 @@ import java.util.Date;
 public class AppointmentAverageTimeAnalyticResponse {
 
 	private Date date;
-	
-	private Long averageWaitingTime;
-	
-	private Long averageEngagedTime;
-	
-	private Long averageStayTime;
+
+	private Long averageWaitingTime = 0l;
+
+	private Long averageEngagedTime = 0l;
 
 	public Date getDate() {
 		return date;
@@ -24,31 +22,21 @@ public class AppointmentAverageTimeAnalyticResponse {
 		return averageWaitingTime;
 	}
 
-	public void setAverageWaitingTime(Long averageWaitingTime) {
-		this.averageWaitingTime = averageWaitingTime;
-		this.averageStayTime = averageWaitingTime + this.averageEngagedTime;
-	}
-
 	public Long getAverageEngagedTime() {
 		return averageEngagedTime;
 	}
 
 	public void setAverageEngagedTime(Long averageEngagedTime) {
 		this.averageEngagedTime = averageEngagedTime;
-		this.averageStayTime = averageWaitingTime + this.averageEngagedTime;
 	}
 
-	public Long getAverageStayTime() {
-		return averageStayTime;
-	}
-
-	public void setAverageStayTime(Long averageStayTime) {
-		this.averageStayTime = averageStayTime;
+	public void setAverageWaitingTime(Long averageWaitingTime) {
+		this.averageWaitingTime = averageWaitingTime;
 	}
 
 	@Override
 	public String toString() {
 		return "AppointmentAverageTimeAnalyticResponse [date=" + date + ", averageWaitingTime=" + averageWaitingTime
-				+ ", averageEngagedTime=" + averageEngagedTime + ", averageStayTime=" + averageStayTime + "]";
+				+ ", averageEngagedTime=" + averageEngagedTime + ", averageStayTime=" + "]";
 	}
 }

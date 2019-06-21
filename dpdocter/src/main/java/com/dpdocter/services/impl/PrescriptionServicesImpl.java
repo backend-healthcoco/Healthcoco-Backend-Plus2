@@ -75,6 +75,7 @@ import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.NutritionReferral;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
@@ -104,6 +105,7 @@ import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.InstructionsCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.NutritionReferralCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
@@ -144,6 +146,7 @@ import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.InstructionsRepository;
 import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.NutritionReferralRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
@@ -156,6 +159,7 @@ import com.dpdocter.request.DrugDirectionAddEditRequest;
 import com.dpdocter.request.DrugDosageAddEditRequest;
 import com.dpdocter.request.DrugDurationUnitAddEditRequest;
 import com.dpdocter.request.DrugTypeAddEditRequest;
+import com.dpdocter.request.NutritionReferralRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
@@ -295,6 +299,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Autowired
 	private InventoryService inventoryService;
 
+	@Autowired
+	private NutritionReferralRepository nutritionReferralRepository;
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -405,37 +412,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			drugCollection.setRankingCount(1);
 
 			drugCollection = drugRepository.save(drugCollection);
-			// DoctorDrugCollection doctorDrugCollection =
-			// doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
-			// drugCollection.getId(), drugCollection.getDoctorId(),
-			// drugCollection.getLocationId(),
-			// drugCollection.getHospitalId());
-			// if (doctorDrugCollection == null) {
-			// doctorDrugCollection = new
-			// DoctorDrugCollection(drugCollection.getId(),
-			// drugCollection.getDoctorId(),
-			// drugCollection.getLocationId(), drugCollection.getHospitalId(),
-			// 1, false,
-			// drugCollection.getDuration(), drugCollection.getDosage(),
-			// drugCollection.getDosageTime(),
-			// drugCollection.getDirection(), drugCollection.getGenericNames(),
-			// drugCollection.getCreatedBy());
-			// doctorDrugCollection.setCreatedTime(new Date());
-			// }
-			// doctorDrugCollection.setUpdatedTime(new Date());
-			// doctorDrugCollection =
-			// doctorDrugRepository.save(doctorDrugCollection);
-			// transnationalService.addResource(doctorDrugCollection.getId(),
-			// Resource.DOCTORDRUG, false);
-			// if (doctorDrugCollection != null) {
-			// ESDoctorDrugDocument esDoctorDrugDocument = new
-			// ESDoctorDrugDocument();
-			// BeanUtil.map(drugCollection, esDoctorDrugDocument);
-			// BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-			// esDoctorDrugDocument.setId(drugCollection.getId().toString());
-			// esPrescriptionService.addDoctorDrug(esDoctorDrugDocument,
-			// doctorDrugCollection.getId());
-			// }
 			response = new Drug();
 			BeanUtil.map(drugCollection, response);
 		} catch (Exception e) {
@@ -444,7 +420,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			try {
 				mailService.sendExceptionMail("Backend Business Exception :: While saving drugs", e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug");
@@ -491,42 +466,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					esPrescriptionService.addDrug(esDrugDocument);
 				}
 			}
-			// DoctorDrugCollection doctorDrugCollection =
-			// doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
-			// drugCollection.getId(), new ObjectId(request.getDoctorId()), new
-			// ObjectId(request.getLocationId()),
-			// new ObjectId(request.getHospitalId()));
-			// if (doctorDrugCollection == null) {
-			// doctorDrugCollection = new
-			// DoctorDrugCollection(drugCollection.getId(),
-			// new ObjectId(request.getDoctorId()), new
-			// ObjectId(request.getLocationId()),
-			// new ObjectId(request.getHospitalId()), 1, false,
-			// drugCollection.getDuration(),
-			// drugCollection.getDosage(), drugCollection.getDosageTime(),
-			// drugCollection.getDirection(),
-			// drugCollection.getGenericNames(), drugCollection.getCreatedBy());
-			// doctorDrugCollection.setCreatedTime(new Date());
-			// } else {
-			// doctorDrugCollection.setDirection(request.getDirection());
-			// doctorDrugCollection.setDosage(request.getDosage());
-			// doctorDrugCollection.setDosageTime(request.getDosageTime());
-			// doctorDrugCollection.setDuration(request.getDuration());
-			// }
-			// doctorDrugCollection.setUpdatedTime(new Date());
-			// doctorDrugCollection =
-			// doctorDrugRepository.save(doctorDrugCollection);
-			// transnationalService.addResource(doctorDrugCollection.getId(),
-			// Resource.DOCTORDRUG, false);
-			// if (doctorDrugCollection != null) {
-			// ESDoctorDrugDocument esDoctorDrugDocument = new
-			// ESDoctorDrugDocument();
-			// BeanUtil.map(drugCollection, esDoctorDrugDocument);
-			// BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-			// esDoctorDrugDocument.setId(drugCollection.getId().toString());
-			// esPrescriptionService.addDoctorDrug(esDoctorDrugDocument,
-			// doctorDrugCollection.getId());
-			// }
 			response = new Drug();
 			BeanUtil.map(drugCollection, response);
 		} catch (Exception e) {
@@ -535,7 +474,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			try {
 				mailService.sendExceptionMail("Backend Business Exception :: While editing drugs", e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug");
@@ -553,9 +491,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (drugCollection != null) {
 				if (drugCollection.getDoctorId() != null && drugCollection.getHospitalId() != null
 						&& drugCollection.getLocationId() != null) {
-					if (drugCollection.getDoctorId().equals(doctorId)
-							&& drugCollection.getHospitalId().equals(hospitalId)
-							&& drugCollection.getLocationId().equals(locationId)) {
+					if (drugCollection.getDoctorId().toString().equals(doctorId)
+							&& drugCollection.getHospitalId().toString().equals(hospitalId)
+							&& drugCollection.getLocationId().toString().equals(locationId)) {
 						drugCollection.setDiscarded(discarded);
 						drugCollection.setUpdatedTime(new Date());
 						drugCollection = drugRepository.save(drugCollection);
@@ -595,7 +533,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			try {
 				mailService.sendExceptionMail("Backend Business Exception :: While deleting Drug", e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
@@ -767,9 +704,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (templateCollection != null) {
 				if (templateCollection.getDoctorId() != null && templateCollection.getHospitalId() != null
 						&& templateCollection.getLocationId() != null) {
-					if (templateCollection.getDoctorId().equals(doctorId)
-							&& templateCollection.getHospitalId().equals(hospitalId)
-							&& templateCollection.getLocationId().equals(locationId)) {
+					if (templateCollection.getDoctorId().toString().equals(doctorId)
+							&& templateCollection.getHospitalId().toString().equals(hospitalId)
+							&& templateCollection.getLocationId().toString().equals(locationId)) {
 						templateCollection.setUpdatedTime(new Date());
 						templateCollection.setDiscarded(discarded);
 						templateCollection = templateRepository.save(templateCollection);
@@ -825,7 +762,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.instructions", "$items.instructions"),
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
-					Fields.field("updatedTime", "$updatedTime")));
+					Fields.field("isDefault", "$isDefault"), Fields.field("updatedTime", "$updatedTime")));
 
 			Aggregation aggregation = Aggregation.newAggregation(
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
@@ -847,6 +784,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									.append("items", new BasicDBObject("$push", "$items"))
 									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+									.append("isDefault", new BasicDBObject("$first", "$isDefault"))
 									.append("createdBy", new BasicDBObject("$first", "$createdBy")))));
 
 			AggregationResults<TemplateAddEditResponseDetails> groupResults = mongoTemplate.aggregate(aggregation,
@@ -907,6 +845,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				for (PrescriptionItem item : prescriptionCollection.getItems()) {
 					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 					List<DrugDirection> directions = null;
+
+					if (item.getDrugQuantity() != null) {
+						item.setAnalyticsDrugQuantity(item.getDrugQuantity());
+					} else {
+						item.setAnalyticsDrugQuantity(1);
+					}
+
 					if (item.getDirection() != null && !item.getDirection().isEmpty()) {
 						for (DrugDirection drugDirection : item.getDirection()) {
 							if (drugDirection != null && !DPDoctorUtils.anyStringEmpty(drugDirection.getId())) {
@@ -927,6 +872,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						items = new ArrayList<PrescriptionItem>();
 						itemDetails = new ArrayList<PrescriptionItemDetail>();
 					}
+
 					BeanUtil.map(item, prescriptionItemDetail);
 					if (!DPDoctorUtils.allStringsEmpty(item.getDrugId())) {
 						drugCollection = drugRepository.findOne(item.getDrugId());
@@ -954,6 +900,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					if (item.getInventoryQuantity() == null || item.getInventoryQuantity() == 0l) {
 						item.setInventoryQuantity(1l);
 					}
+
 
 					drugAddEditRequest.setDirection(item.getDirection());
 					drugAddEditRequest.setDuration(item.getDuration());
@@ -1052,10 +999,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									+ " is here - Tap to view it!",
 							ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
 
-					/*
-					 * if (sendSMS && DPDoctorUtils.allStringsEmpty(id))
-					 * sendMessage(prescriptionCollection);
-					 */
+					if (sendSMS && DPDoctorUtils.allStringsEmpty(id))
+						sendMessage(prescriptionCollection);
 				}
 			});
 
@@ -1194,6 +1139,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				List<PrescriptionItem> items = null;
 				DrugCollection drugCollection = null;
 				for (PrescriptionItem item : prescriptionCollection.getItems()) {
+
+					if (item.getInventoryQuantity() != null) {
+						item.setInventoryQuantity(item.getInventoryQuantity());
+					} else {
+						item.setInventoryQuantity(1l);
+					}
+
 					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 					List<DrugDirection> directions = null;
 					if (item.getDirection() != null && !item.getDirection().isEmpty()) {
@@ -1493,6 +1445,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
+					Fields.field("items.drugQuantity", "$items.drugQuantity"),
 					Fields.field("items.instructions", "$items.instructions"),
 					Fields.field("tests", "$diagnosticTests"), Fields.field("locationName", "$location.locationName")));
 			Aggregation aggregation = null;
@@ -1664,6 +1617,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.duration", "$items.duration"), Fields.field("items.dosage", "$items.dosage"),
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
+					Fields.field("items.drugQuantity", "$items.drugQuantity"),
 					Fields.field("items.instructions", "$items.instructions"),
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("tests", "$diagnosticTests")));
@@ -1776,16 +1730,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			Aggregation aggregation = null;
 
 			if (size > 0) {
-				aggregation = Aggregation
-						.newAggregation(
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
-												.append("includeArrayIndex", "arrayIndex1"))),
-								Aggregation.match(criteria),
-								Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
-								new CustomAggregationOperation(
-
-										new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+				aggregation = Aggregation.newAggregation(
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex1"))),
+						Aggregation.match(criteria), Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex2"))),
+						projectList,
+						new CustomAggregationOperation(
+								new BasicDBObject("$group",
+										new BasicDBObject("id", "$_id")
 												.append("name", new BasicDBObject("$first", "$name"))
 												.append("locationId", new BasicDBObject("$first", "$locationId"))
 												.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -1800,8 +1756,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 														.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 														.append("isDefault",
 																new BasicDBObject("$first", "$isDefault"))))),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-								Aggregation.skip((page) * size), Aggregation.limit(size));
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
 			}
 
 			else
@@ -2247,6 +2203,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
 					Fields.field("items.instructions", "$items.instructions"),
+					Fields.field("items.drugQuantity", "$items.drugQuantity"),
 					Fields.field("items.inventoryQuantity", "$items.inventoryQuantity"),
 					Fields.field("tests", "$diagnosticTests")));
 			Aggregation aggregation = Aggregation
@@ -2327,11 +2284,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	@Transactional
-	public List<?> getPrescriptionItems(String type, String range, int page, int size, String doctorId,
+	public Response<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, Boolean isAdmin,
 			String disease, String searchTerm) {
-
-		List<?> response = new ArrayList<Object>();
+		Response<Object> response = new Response<Object>();
+		List<?> dataList = new ArrayList<Object>();
 
 		switch (PrescriptionItems.valueOf(type.toUpperCase())) {
 
@@ -2343,41 +2300,43 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			case GLOBAL:
 				drugs = getGlobalDrugs(page, size, updatedTime, discarded);
-				response = addStockToDrug(drugs);
+				dataList = addStockToDrug(drugs);
 				break;
 
 			case CUSTOM:
-				response = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				dataList = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 
 			case BOTH:
-				response = getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				dataList = getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 
 			case FAVOURITES:
-				response = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				dataList = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			default:
 				break;
 			}
+			response.setDataList(dataList);
 			break;
 		}
 		case DRUGTYPE: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
-				response = getGlobalDrugType(page, size, updatedTime, discarded);
+				dataList = getGlobalDrugType(page, size, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				response = getCustomDrugType(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				dataList = getCustomDrugType(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalDrugType(page, size, doctorId, locationId, hospitalId, updatedTime,
+				dataList = getCustomGlobalDrugType(page, size, doctorId, locationId, hospitalId, updatedTime,
 						discarded);
 				break;
 			default:
 				break;
 			}
+			response.setDataList(dataList);
 			break;
 		}
 		case DRUGDIRECTION: {
@@ -2420,19 +2379,20 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
-				response = getGlobalDrugDurationUnit(page, size, updatedTime, discarded);
+				dataList = getGlobalDrugDurationUnit(page, size, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				response = getCustomDrugDurationUnit(page, size, doctorId, locationId, hospitalId, updatedTime,
+				dataList = getCustomDrugDurationUnit(page, size, doctorId, locationId, hospitalId, updatedTime,
 						discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalDrugDurationUnit(page, size, doctorId, locationId, hospitalId, updatedTime,
+				dataList = getCustomGlobalDrugDurationUnit(page, size, doctorId, locationId, hospitalId, updatedTime,
 						discarded);
 				break;
 			default:
 				break;
 			}
+			response.setDataList(dataList);
 			break;
 		}
 
@@ -2443,13 +2403,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			case GLOBAL:
 				break;
 			case CUSTOM:
-				response = getCustomLabTests(page, size, locationId, hospitalId, updatedTime, discarded);
+				dataList = getCustomLabTests(page, size, locationId, hospitalId, updatedTime, discarded);
 				break;
 			case BOTH:
 				break;
 			default:
 				break;
 			}
+			response.setDataList(dataList);
 			break;
 		}
 
@@ -2644,13 +2605,24 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<DrugDirection> getGlobalDrugDirection(int page, int size, String updatedTime, boolean discarded) {
-		List<DrugDirection> response = null;
+	private Response<Object> getGlobalDrugDirection(int page, int size, String updatedTime, boolean discarded) {
+		Response<Object> response = new Response<Object>();
 		try {
-			AggregationResults<DrugDirection> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, null, null),
-					DrugDirectionCollection.class, DrugDirection.class);
-			response = results.getMappedResults();
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(Long.parseLong(updatedTime))).and("doctorId")
+					.is(null).and("locationId").is(null).and("hospitalId").is(null);
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+
+			Integer count = (int) mongoTemplate.count(new Query(criteria), DrugDirectionCollection.class);
+			if (count > 0) {
+				AggregationResults<DrugDirection> results = mongoTemplate.aggregate(DPDoctorUtils
+						.createGlobalAggregation(page, size, updatedTime, discarded, null, null, null, null),
+						DrugDirectionCollection.class, DrugDirection.class);
+				response.setDataList(results.getMappedResults());
+				response.setCount(count);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Direction");
@@ -2659,16 +2631,32 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<DrugDirection> getCustomDrugDirection(int page, int size, String doctorId, String locationId,
+	private Response<Object> getCustomDrugDirection(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, boolean discarded) {
-		List<DrugDirection> response = null;
+		Response<Object> response = new Response<Object>();
 		try {
-			AggregationResults<DrugDirection> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, null),
-							DrugDirectionCollection.class, DrugDirection.class);
-			response = results.getMappedResults();
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(Long.parseLong(updatedTime)));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+
+			Integer count = (int) mongoTemplate.count(new Query(criteria), DrugDirectionCollection.class);
+			if (count > 0) {
+				AggregationResults<DrugDirection> results = mongoTemplate
+						.aggregate(
+								DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+										updatedTime, discarded, null, null, null),
+								DrugDirectionCollection.class, DrugDirection.class);
+				response.setDataList(results.getMappedResults());
+				response.setCount(count);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Direction");
@@ -2677,16 +2665,42 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<DrugDirection> getCustomGlobalDrugDirection(int page, int size, String doctorId, String locationId,
+	private Response<Object> getCustomGlobalDrugDirection(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, boolean discarded) {
-		List<DrugDirection> response = null;
+		Response<Object> response = new Response<Object>();
 		try {
-			AggregationResults<DrugDirection> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-							updatedTime, discarded, null, null, null, null),
-					DrugDirectionCollection.class, DrugDirection.class);
-			response = results.getMappedResults();
 
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+					criteria.orOperator(
+							new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
+									.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId)),
+							new Criteria("doctorId").is(null).and("locationId").is(null).and("hospitalId").is(null));
+				} else {
+					criteria.orOperator(new Criteria("doctorId").is(new ObjectId(doctorId)),
+							new Criteria("doctorId").is(null));
+				}
+			} else if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+				criteria.orOperator(
+						new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
+								.is(new ObjectId(hospitalId)),
+						new Criteria("locationId").is(null).and("hospitalId").is(null));
+			}
+			Integer count = (int) mongoTemplate.count(new Query(criteria), DrugDirectionCollection.class);
+			if (count > 0) {
+				AggregationResults<DrugDirection> results = mongoTemplate.aggregate(
+						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, null, null, null, null),
+						DrugDirectionCollection.class, DrugDirection.class);
+				response.setDataList(results.getMappedResults());
+				response.setCount(count);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Direction");
@@ -2695,13 +2709,25 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<DrugDosage> getGlobalDrugDosage(int page, int size, String updatedTime, boolean discarded) {
-		List<DrugDosage> response = null;
+	private Response<Object> getGlobalDrugDosage(int page, int size, String updatedTime, boolean discarded) {
+		Response<Object> response = new Response<Object>();
 		try {
-			AggregationResults<DrugDosage> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, null, null),
-					DrugDosageCollection.class, DrugDosage.class);
-			response = results.getMappedResults();
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("doctorId").is(null)
+					.and("locationId").is(null).and("hospitalId").is(null);
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+
+			Integer count = (int) mongoTemplate.count(new Query(criteria), DrugDosageCollection.class);
+			if (count > 0) {
+				AggregationResults<DrugDosage> results = mongoTemplate.aggregate(DPDoctorUtils
+						.createGlobalAggregation(page, size, updatedTime, discarded, null, null, null, null),
+						DrugDosageCollection.class, DrugDosage.class);
+				response.setDataList(results.getMappedResults());
+				response.setCount(count);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Dosage");
@@ -2710,16 +2736,32 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<DrugDosage> getCustomDrugDosage(int page, int size, String doctorId, String locationId,
+	private Response<Object> getCustomDrugDosage(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, boolean discarded) {
-		List<DrugDosage> response = null;
+		Response<Object> response = new Response<Object>();
 		try {
-			AggregationResults<DrugDosage> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, null),
-							DrugDosageCollection.class, DrugDosage.class);
-			response = results.getMappedResults();
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+
+			Integer count = (int) mongoTemplate.count(new Query(criteria), DrugDosageCollection.class);
+			if (count > 0) {
+				AggregationResults<DrugDosage> results = mongoTemplate
+						.aggregate(
+								DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+										updatedTime, discarded, null, null, null),
+								DrugDosageCollection.class, DrugDosage.class);
+				response.setDataList(results.getMappedResults());
+				response.setCount(count);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Dosage");
@@ -2728,16 +2770,41 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<DrugDosage> getCustomGlobalDrugDosage(int page, int size, String doctorId, String locationId,
+	private Response<Object> getCustomGlobalDrugDosage(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, boolean discarded) {
-		List<DrugDosage> response = null;
+		Response<Object> response = new Response<Object>();
 		try {
-			AggregationResults<DrugDosage> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-							updatedTime, discarded, null, null, null, null),
-					DrugDosageCollection.class, DrugDosage.class);
-			response = results.getMappedResults();
+			long createdTimeStamp = Long.parseLong(updatedTime);
 
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+					criteria.orOperator(
+							new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
+									.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId)),
+							new Criteria("doctorId").is(null).and("locationId").is(null).and("hospitalId").is(null));
+				} else {
+					criteria.orOperator(new Criteria("doctorId").is(new ObjectId(doctorId)),
+							new Criteria("doctorId").is(null));
+				}
+			} else if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+				criteria.orOperator(
+						new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
+								.is(new ObjectId(hospitalId)),
+						new Criteria("locationId").is(null).and("hospitalId").is(null));
+			}
+			Integer count = (int) mongoTemplate.count(new Query(criteria), DrugDosageCollection.class);
+			if (count > 0) {
+				AggregationResults<DrugDosage> results = mongoTemplate.aggregate(
+						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, null, null, null, null),
+						DrugDosageCollection.class, DrugDosage.class);
+				response.setDataList(results.getMappedResults());
+				response.setCount(count);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Dosage");
@@ -3607,13 +3674,23 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<DiagnosticTest> getGlobalDiagnosticTests(int page, int size, String updatedTime, Boolean discarded) {
-		List<DiagnosticTest> response = null;
+	private Response<Object> getGlobalDiagnosticTests(int page, int size, String updatedTime, Boolean discarded) {
+		Response<Object> response = new Response<Object>();
 		try {
-			AggregationResults<DiagnosticTest> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, null, null),
-					DiagnosticTestCollection.class, DiagnosticTest.class);
-			response = results.getMappedResults();
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("doctorId").is(null)
+					.and("locationId").is(null).and("hospitalId").is(null);
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			Integer count = (int) mongoTemplate.count(new Query(criteria), DiagnosticTestCollection.class);
+			if (count > 0) {
+				AggregationResults<DiagnosticTest> results = mongoTemplate.aggregate(DPDoctorUtils
+						.createGlobalAggregation(page, size, updatedTime, discarded, null, null, null, null),
+						DiagnosticTestCollection.class, DiagnosticTest.class);
+				response.setDataList(results.getMappedResults());
+				response.setCount(count);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting LabTests");
@@ -3622,15 +3699,29 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<DiagnosticTest> getCustomDiagnosticTests(int page, int size, String locationId, String hospitalId,
+	private Response<Object> getCustomDiagnosticTests(int page, int size, String locationId, String hospitalId,
 			String updatedTime, boolean discarded) {
-		List<DiagnosticTest> response = null;
+		Response<Object> response = new Response<Object>();
 		try {
-			AggregationResults<DiagnosticTest> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createCustomAggregation(page, size, null, locationId, hospitalId, updatedTime,
-							discarded, null, null, null),
-					DiagnosticTestCollection.class, DiagnosticTest.class);
-			response = results.getMappedResults();
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			Integer count = (int) mongoTemplate.count(new Query(criteria), DiagnosticTestCollection.class);
+			if (count > 0) {
+				AggregationResults<DiagnosticTest> results = mongoTemplate
+						.aggregate(
+								DPDoctorUtils.createCustomAggregation(page, size, null, locationId, hospitalId,
+										updatedTime, discarded, null, null, null),
+								DiagnosticTestCollection.class, DiagnosticTest.class);
+				response.setDataList(results.getMappedResults());
+				response.setCount(count);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Diagnostic Tests");
@@ -3639,16 +3730,32 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<DiagnosticTest> getCustomGlobalDiagnosticTests(int page, int size, String locationId,
-			String hospitalId, String updatedTime, boolean discarded) {
-		List<DiagnosticTest> response = null;
+	private Response<Object> getCustomGlobalDiagnosticTests(int page, int size, String locationId, String hospitalId,
+			String updatedTime, boolean discarded) {
+		Response<Object> response = new Response<Object>();
 		try {
-			AggregationResults<DiagnosticTest> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomGlobalAggregation(page, size, null, locationId, hospitalId,
-									updatedTime, discarded, null, null, null, null),
-							DiagnosticTestCollection.class, DiagnosticTest.class);
-			response = results.getMappedResults();
+
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+
+			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+				criteria.orOperator(
+						new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
+								.is(new ObjectId(hospitalId)),
+						new Criteria("locationId").is(null).and("hospitalId").is(null));
+			}
+			Integer count = (int) mongoTemplate.count(new Query(criteria), DiagnosticTestCollection.class);
+			if (count > 0) {
+				AggregationResults<DiagnosticTest> results = mongoTemplate.aggregate(
+						DPDoctorUtils.createCustomGlobalAggregation(page, size, null, locationId, hospitalId,
+								updatedTime, discarded, null, null, null, null),
+						DiagnosticTestCollection.class, DiagnosticTest.class);
+				response.setDataList(results.getMappedResults());
+				response.setCount(count);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Diagnostic Tests");
@@ -3800,7 +3907,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		if (!isLabPrint) {
 			int no = 0;
-			Boolean showIntructions = false, showDirection = false;
+			Boolean showIntructions = false, showDirection = false, showDrugQty = false;
 			if (prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty())
 				for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 					if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
@@ -3888,7 +3995,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								duration = "--";
 							else
 								duration = durationValue + " " + durationUnit;
-							no = no + 1;
 
 							PrescriptionJasperDetails prescriptionJasperDetails = null;
 							if (printSettings.getContentSetup() != null) {
@@ -3926,6 +4032,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 												: "--",
 										genericName);
 							}
+							if (prescriptionItem.getDrugQuantity() == null) {
+								prescriptionJasperDetails.setDrugQuantity("0");
+							} else {
+								showDrugQty = true;
+								prescriptionJasperDetails
+										.setDrugQuantity(prescriptionItem.getDrugQuantity().toString());
+							}
 							prescriptionItems.add(prescriptionJasperDetails);
 						}
 					}
@@ -3947,6 +4060,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						+ sdf.format(prescriptionCollection.getFromDate());
 				parameters.put("followUpAppointment", "Next Review on " + dateTime);
 			}
+			parameters.put("showDrugQty", showDrugQty);
 			parameters.put("prescriptionItems", prescriptionItems);
 			parameters.put("showIntructions", showIntructions);
 			parameters.put("showDirection", showDirection);
@@ -4122,22 +4236,43 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Advice> getCustomGlobalAdvices(int page, int size, String doctorId, String locationId,
+	private Response<Object> getCustomGlobalAdvices(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, String disease, String searchTerm, Boolean discarded) {
-		List<Advice> response = new ArrayList<Advice>();
+		Response<Object> response = new Response<Object>();
 		try {
-			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-			if (doctorCollection == null) {
-				logger.warn("No Doctor Found");
-				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(disease))
+				criteria.and("diseases").is(disease);
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+					criteria.orOperator(
+							new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
+									.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId)),
+							new Criteria("doctorId").is(null).and("locationId").is(null).and("hospitalId").is(null));
+				} else {
+					criteria.orOperator(new Criteria("doctorId").is(new ObjectId(doctorId)),
+							new Criteria("doctorId").is(null));
+				}
+			} else if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+				criteria.orOperator(
+						new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
+								.is(new ObjectId(hospitalId)),
+						new Criteria("locationId").is(null).and("hospitalId").is(null));
 			}
-
-			AggregationResults<Advice> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-							updatedTime, discarded, null, searchTerm, null, disease, "advice"),
-					AdviceCollection.class, Advice.class);
-			response = results.getMappedResults();
-
+			Integer count = (int) mongoTemplate.count(new Query(criteria), AdviceCollection.class);
+			if (count > 0) {
+				AggregationResults<Advice> results = mongoTemplate.aggregate(
+						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, null, searchTerm, null, disease, "advice"),
+						AdviceCollection.class, Advice.class);
+				response.setDataList(results.getMappedResults());
+				response.setCount(count);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -4147,21 +4282,25 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	}
 
-	private List<Advice> getGlobalAdvices(int page, int size, String doctorId, String updatedTime, String disease,
+	private Response<Object> getGlobalAdvices(int page, int size, String doctorId, String updatedTime, String disease,
 			String searchTerm, Boolean discarded) {
-		List<Advice> response = null;
+		Response<Object> response = new Response<Object>();
 		try {
-			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-			if (doctorCollection == null) {
-				logger.warn("No Doctor Found");
-				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("doctorId").is(null)
+					.and("locationId").is(null).and("hospitalId").is(null);
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+
+			Integer count = (int) mongoTemplate.count(new Query(criteria), AdviceCollection.class);
+			if (count > 0) {
+				AggregationResults<Advice> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page,
+						size, updatedTime, discarded, null, searchTerm, null, disease, "advice"),
+						AdviceCollection.class, Advice.class);
+				response.setDataList(results.getMappedResults());
+				response.setCount(count);
 			}
-
-			AggregationResults<Advice> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page,
-					size, updatedTime, discarded, null, searchTerm, null, disease, "advice"), AdviceCollection.class,
-					Advice.class);
-			response = results.getMappedResults();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -4170,16 +4309,32 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Advice> getCustomAdvices(int page, int size, String doctorId, String locationId, String hospitalId,
+	private Response<Object> getCustomAdvices(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, String disease, String searchTerm, Boolean discarded) {
-		List<Advice> response = null;
+		Response<Object> response = new Response<Object>();
 		try {
-			AggregationResults<Advice> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, disease, null, "advice"),
-							AdviceCollection.class, Advice.class);
-			response = results.getMappedResults();
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+
+			Integer count = (int) mongoTemplate.count(new Query(criteria), AdviceCollection.class);
+			if (count > 0) {
+				AggregationResults<Advice> results = mongoTemplate
+						.aggregate(
+								DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+										updatedTime, discarded, null, disease, null, "advice"),
+								AdviceCollection.class, Advice.class);
+				response.setDataList(results.getMappedResults());
+				response.setCount(count);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -4799,11 +4954,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.save(esGenericCodesAndReactions);
 				}
 
-				Collections.sort(codesList, new Comparator<Code>() {
-					public int compare(Code one, Code other) {
-						return one.getGenericCode().compareTo(other.getGenericCode());
-					}
-				});
+				// Collections.sort(codesList, new Comparator<Code>() {
+				// public int compare(Code one, Code other) {
+				// return
+				// one.getGenericCode().compareTo(other.getGenericCode());
+				// }
+				// });
 				esGenericCodesAndReactionsOfZeroIndex.setCodes(codesList);
 				esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
 						.save(esGenericCodesAndReactionsOfZeroIndex);
@@ -5229,11 +5385,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				request.setTime(appointment.getTime());
 				request.setFromDate(appointment.getFromDate());
 			}
+			if (request.getAdminCreatedTime() == null) {
+				request.setAdminCreatedTime(new Date());
+			}
+			if (request.getCreatedTime() == null) {
+				request.setCreatedTime(new Date());
+			}
 			BeanUtil.map(request, eyePrescriptionCollection);
 
 			UserCollection userCollection = userRepository.findOne(eyePrescriptionCollection.getDoctorId());
-			Date createdTime = new Date();
-			eyePrescriptionCollection.setCreatedTime(createdTime);
 			eyePrescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
 			eyePrescriptionCollection
 					.setUniqueEmrId(UniqueIdInitial.PRESCRIPTION.getInitial() + DPDoctorUtils.generateRandomId());
@@ -5277,6 +5437,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (eyePrescriptionCollection == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Record not found");
 		}
+		if (eyePrescriptionCollection.getAdminCreatedTime() != null) {
+			request.setAdminCreatedTime(eyePrescriptionCollection.getAdminCreatedTime());
+		}
+
 		BeanUtil.map(request, eyePrescriptionCollection);
 		eyePrescriptionCollection = eyePrescriptionRepository.save(eyePrescriptionCollection);
 		if (eyePrescriptionCollection != null) {
@@ -5887,16 +6051,34 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	@Transactional
-	public List<Instructions> getInstructions(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
-		List<Instructions> response = null;
+	public Response<Instructions> getInstructions(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		Response<Instructions> response = new Response<Instructions>();
 		try {
-			AggregationResults<Instructions> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, null),
-							InstructionsCollection.class, Instructions.class);
-			response = results.getMappedResults();
+
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+
+			Integer count = (int) mongoTemplate.count(new Query(criteria), InstructionsCollection.class);
+			if (count > 0) {
+				AggregationResults<Instructions> results = mongoTemplate
+						.aggregate(
+								DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+										updatedTime, discarded, null, null, null),
+								InstructionsCollection.class, Instructions.class);
+
+				response.setDataList(results.getMappedResults());
+				response.setCount(count);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -6044,8 +6226,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					String[] fields = line.split(cvsSplitBy);
 					if (fields.length > 3 && !DPDoctorUtils.anyStringEmpty(fields[3])) {
 						String reason = fields[3];
-						System.out.println(reason);
-
 						if (reason.equalsIgnoreCase("SPELLING MISTAKE")) {
 							updateSpellingOfGenericCodes(fields[0], fields[2]);
 						} else if (reason.equalsIgnoreCase("REPEAT")) {
@@ -6088,7 +6268,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			if (drugCollections != null) {
 				for (DrugCollection drugCollection : drugCollections) {
-
 					long rxCount = mongoTemplate.count(
 							new Query(new Criteria("items.drugId").is(drugCollection.getId())),
 							PrescriptionCollection.class);
@@ -6235,7 +6414,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 //				}
 //			}
 		}
-
 	}
 
 	private void updateSpellingOfGenericCodes(String code, String name) {
@@ -6254,7 +6432,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						if (genericCode.getId().equalsIgnoreCase(genericCodeCollection.getId().toString())) {
 							genericCode.setName(genericCodeCollection.getName());
 							drugCollection = drugRepository.save(drugCollection);
-
 							transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
 							if (drugCollection != null) {
 								ESDrugDocument esDrugDocument = new ESDrugDocument();
@@ -6402,7 +6579,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						smsTrackDetail.setType(type);
 						SMSDetail smsDetail = new SMSDetail();
 						smsDetail.setUserId(prescriptionCollection.getPatientId());
-						if (userCollection != null)
+						if (patientCollection != null)
 							smsDetail.setUserName(patientCollection.getLocalPatientName());
 						SMS sms = new SMS();
 						sms.setSmsText("Hi " + patientName + ", your prescription "
@@ -6953,7 +7130,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						if (fields.length > 12 && !DPDoctorUtils.anyStringEmpty(fields[12])) {
 							drugCollection.setUnsafeWith(fields[12]);
 						}
-						System.out.println(drugCollection.toString());
 						drugCollection = drugRepository.save(drugCollection);
 
 						transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
@@ -7028,7 +7204,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 
 		if (drugCollection != null) {
-			System.out.println(drugCollection.getDrugCode());
 			Integer count = Integer.parseInt(drugCollection.getDrugCode().toUpperCase().replace(drugCode, "")) + 1;
 			if (count < 1000) {
 				drugCode = drugCode + String.format("%04d", count);
@@ -7110,6 +7285,56 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					e.printStackTrace();
 				}
 			}
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public NutritionReferral addNutritionReferral(NutritionReferralRequest request) {
+		NutritionReferral response = null;
+
+		try {
+			if (request != null) {
+				NutritionReferralCollection nutritionReferralCollection = new NutritionReferralCollection();
+				BeanUtil.map(request, nutritionReferralCollection);
+				nutritionReferralCollection = nutritionReferralRepository.save(nutritionReferralCollection);
+				if (nutritionReferralCollection != null) {
+					response = new NutritionReferral();
+					BeanUtil.map(nutritionReferralCollection, response);
+					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+							nutritionReferralCollection.getPatientId(), nutritionReferralCollection.getLocationId(),
+							nutritionReferralCollection.getHospitalId());
+					if (patientCollection != null) {
+						patientCollection.setIsNutritionActive(true);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public List<Drug> getDrugs(List<ObjectId> drugIds) {
+		List<Drug> response = null;
+		try {
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria("id").in(drugIds).and("discarded").is(false);
+
+			aggregation = Aggregation.newAggregation(
+
+					Aggregation.match(criteria), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+			AggregationResults<Drug> results = mongoTemplate.aggregate(aggregation, DrugCollection.class, Drug.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drug");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug");
 		}
 		return response;
 	}

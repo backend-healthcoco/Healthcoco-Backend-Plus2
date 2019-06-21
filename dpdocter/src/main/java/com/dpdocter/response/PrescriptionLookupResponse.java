@@ -3,7 +3,6 @@ package com.dpdocter.response;
 import java.util.List;
 
 import com.dpdocter.beans.TestAndRecordData;
-import com.dpdocter.beans.User;
 import com.dpdocter.collections.GenericCollection;
 
 public class PrescriptionLookupResponse extends GenericCollection{

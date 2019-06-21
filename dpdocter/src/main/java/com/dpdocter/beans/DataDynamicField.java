@@ -2,7 +2,6 @@ package com.dpdocter.beans;
 
 public class DataDynamicField {
 
-
 	private PrescriptionDynamicField prescriptionDynamicField;
 
 	private ClinicalNotesDynamicField clinicalNotesDynamicField;
@@ -10,7 +9,6 @@ public class DataDynamicField {
 	private DischargeSummaryDynamicFields dischargeSummaryDynamicFields;
 	
 	private TreatmentDynamicFields treatmentDynamicFields;
-
 
 	public PrescriptionDynamicField getPrescriptionDynamicField() {
 		return prescriptionDynamicField;
@@ -45,13 +43,11 @@ public class DataDynamicField {
 		this.treatmentDynamicFields = treatmentDynamicFields;
 	}
 
-
 	@Override
 	public String toString() {
 		return "DataDynamicField [prescriptionDynamicField=" + prescriptionDynamicField + ", clinicalNotesDynamicField="
 				+ clinicalNotesDynamicField + ", dischargeSummaryDynamicFields=" + dischargeSummaryDynamicFields
 				+ ", treatmentDynamicFields=" + treatmentDynamicFields + "]";
-
 	}
 
 }

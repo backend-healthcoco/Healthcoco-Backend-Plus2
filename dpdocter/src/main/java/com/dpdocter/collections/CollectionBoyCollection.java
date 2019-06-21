@@ -37,9 +37,6 @@ public class CollectionBoyCollection extends GenericCollection {
 	@Field
 	private String labType = LabType.DIAGNOSTIC.getType();
 
-	//@Field
-	//private String labType = LabType.DIAGNOSTIC.getType();
-
 	public ObjectId getId() {
 		return id;
 	}
@@ -128,7 +125,6 @@ public class CollectionBoyCollection extends GenericCollection {
 		this.userId = userId;
 	}
 
-
 	public String getLabType() {
 		return labType;
 	}
@@ -140,8 +136,9 @@ public class CollectionBoyCollection extends GenericCollection {
 	@Override
 	public String toString() {
 		return "CollectionBoyCollection [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", name=" + name + ", age=" + age + ", gender=" + gender + ", address=" + address + ", mobileNumber="
-				+ mobileNumber + ", discarded=" + discarded + "]";
+				+ ", userId=" + userId + ", name=" + name + ", age=" + age + ", gender=" + gender + ", address="
+				+ address + ", mobileNumber=" + mobileNumber + ", discarded=" + discarded + ", isAvailable="
+				+ isAvailable + ", labType=" + labType + "]";
 	}
 
 }

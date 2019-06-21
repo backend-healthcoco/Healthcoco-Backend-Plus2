@@ -54,6 +54,7 @@ import com.dpdocter.beans.SMSFormat;
 import com.dpdocter.beans.SMSReport;
 import com.dpdocter.beans.SMSTrack;
 import com.dpdocter.beans.UserMobileNumbers;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.SubscriptionDetailCollection;
@@ -62,6 +63,7 @@ import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.SMSTrackRepository;
 import com.dpdocter.repository.SubscriptionDetailRepository;
@@ -136,20 +138,36 @@ public class SMSServicesImpl implements SMSServices {
 
 	@Autowired
 	private SubscriptionDetailRepository subscriptionDetailRepository;
+	
+	@Autowired
+	private LocationRepository locationRepository;
 
-	@Async
+	
 	@Override
 	@Transactional
 	public Boolean sendSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
 		Boolean response = false;
 		String responseId = null;
+		LocationCollection locationCollection = null;
 		try {
+			if(smsTrackDetail.getLocationId() != null)
+			{
+				locationCollection = locationRepository.findOne(smsTrackDetail.getLocationId());
+			}
+			
 			Message message = new Message();
 			List<SMS> smsList = new ArrayList<SMS>();
 			message.setAuthKey(AUTH_KEY);
 			message.setCountryCode(COUNTRY_CODE);
 			message.setRoute(ROUTE);
-			message.setSenderId(SENDER_ID);
+			if(locationCollection != null && DPDoctorUtils.anyStringEmpty(locationCollection.getSmsCode()))
+			{
+				message.setSenderId(locationCollection.getSmsCode());
+			}
+			else
+			{
+				message.setSenderId(SENDER_ID);
+			}
 			message.setUnicode(UNICODE);
 			Boolean isSMSInAccount = true;
 			UserMobileNumbers userNumber = null;
@@ -841,7 +859,6 @@ public class SMSServicesImpl implements SMSServices {
 		String url =  "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + "93114AV2rXJuxL56001692" + "&mobiles="
 				+ "9766914900" + "&message=" + UriUtils.encode(text, "UTF-8") + "&sender="
 				+ "HTCOCO" + "&route=" + "4" + "&country=" + "91"+ "&unicode="+"1";
-		System.out.println(url);
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		// optional default is POST

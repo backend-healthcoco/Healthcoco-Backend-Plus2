@@ -3,6 +3,7 @@ package com.dpdocter.enums;
 public enum DentistPermissionEnum {
 
 	PAIN_SCALE("PAIN_SCALE");
+
 	private String permissions;
 
 	private DentistPermissionEnum(String permissions) {

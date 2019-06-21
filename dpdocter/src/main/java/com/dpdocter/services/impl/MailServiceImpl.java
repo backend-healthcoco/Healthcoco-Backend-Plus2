@@ -18,6 +18,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -30,11 +32,15 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
 import com.amazonaws.services.simpleemail.model.RawMessage;
 import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.collections.EmailSubscriptionCollection;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.repository.EmailSubscriptionRepository;
+import com.dpdocter.request.MailSubsciptionRequest;
 import com.dpdocter.services.MailService;
 
 @Service
 public class MailServiceImpl implements MailService {
-
 
 	@Value(value = "${mail.from}")
 	private String FROM;
@@ -68,6 +74,9 @@ public class MailServiceImpl implements MailService {
 	
 	@Value(value = "${is.qa}")
 	private String QA_ENV;
+
+	@Autowired
+	private EmailSubscriptionRepository emailSubscriptionRepository;
 
 	@Async
 	@Override
@@ -189,25 +198,23 @@ public class MailServiceImpl implements MailService {
 	    System.out.println("Error message: " + ex.getMessage());
 	}
 	return respone;
-    }
+	}
 
 	@Async
 	@Override
 	public Boolean sendExceptionMail(String body) throws MessagingException {
 		Boolean status = false;
-		if(PROD_ENV.equalsIgnoreCase("true"))
-		{
+		if (PROD_ENV.equalsIgnoreCase("true")) {
 			status = sendEmail(TO, SUBJECT, body, null);
 		}
 		return status;
-		
+
 	}
 
 	@Async
 	@Override
 	public Boolean sendExceptionMail(String subject, String body) throws MessagingException {
 		Boolean status = false;
-
 		if (PROD_ENV.equalsIgnoreCase("true")) {
 			status = sendEmail(TO,"Prod - " + subject, body, null);
 		}
@@ -216,12 +223,35 @@ public class MailServiceImpl implements MailService {
 		}
 		return status;
 	}
-	
+
 	@Async
 	@Override
 	public Boolean sendMailToIOSteam(String subject, String body) throws MessagingException {
 		Boolean status = false;
-		status = sendEmail(TO_IOS,subject, body, null);
+		status = sendEmail(TO_IOS, subject, body, null);
+		return status;
+	}
+
+	@Override
+	public Boolean subscribeMail(MailSubsciptionRequest request) {
+		Boolean status = false;
+		try {
+			EmailSubscriptionCollection emailSubscriptionCollection = emailSubscriptionRepository
+					.findBySubscriberId(new ObjectId(request.getSubscriberId()));
+			if (emailSubscriptionCollection == null) {
+				emailSubscriptionCollection = new EmailSubscriptionCollection();
+			}
+			emailSubscriptionCollection.setDiscarded(request.getDiscarded());
+			emailSubscriptionCollection.setReason(request.getReason());
+			emailSubscriptionCollection.setSubscriberId(new ObjectId(request.getSubscriberId()));
+			emailSubscriptionRepository.save(emailSubscriptionCollection);
+			status = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while mail unSubcription : " + e.getCause().getMessage());
+
+		}
 		return status;
 	}
 	

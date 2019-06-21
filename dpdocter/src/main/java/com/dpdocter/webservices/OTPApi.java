@@ -29,66 +29,73 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.OTP_BASE_URL, description = "Endpoint for otp")
 public class OTPApi {
 
-    private static Logger logger = Logger.getLogger(OTPApi.class.getName());
+	private static Logger logger = Logger.getLogger(OTPApi.class.getName());
 
-    @Autowired
-    private OTPService otpService;
+	@Autowired
+	private OTPService otpService;
 
-    @Path(value = PathProxy.OTPUrls.OTP_GENERATOR)
-    @GET
-    @ApiOperation(value = PathProxy.OTPUrls.OTP_GENERATOR, notes = PathProxy.OTPUrls.OTP_GENERATOR)
-    public Response<String> otpGenerator(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-	    @PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
-	    logger.warn("Invalid Input. DoctorId, LocationId, HospitalId, PatientId Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. DoctorId, LocationId, HospitalId, PatientId, Cannot Be Empty");
+	@Path(value = PathProxy.OTPUrls.OTP_GENERATOR)
+	@GET
+	@ApiOperation(value = PathProxy.OTPUrls.OTP_GENERATOR, notes = PathProxy.OTPUrls.OTP_GENERATOR)
+	public Response<String> otpGenerator(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("patientId") String patientId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
+			logger.warn("Invalid Input. DoctorId, LocationId, HospitalId, PatientId Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. DoctorId, LocationId, HospitalId, PatientId, Cannot Be Empty");
+		}
+		String OTP = otpService.otpGenerator(doctorId, locationId, hospitalId, patientId);
+		Response<String> response = new Response<String>();
+		response.setData(OTP);
+		return response;
 	}
-	String OTP = otpService.otpGenerator(doctorId, locationId, hospitalId, patientId);
-	Response<String> response = new Response<String>();
-	response.setData(OTP);
-	return response;
-    }
 
-    @Path(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
+	@Path(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
     @GET
     @ApiOperation(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE, notes = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
-    public Response<Boolean> otpGenerator(@PathParam("mobileNumber") String mobileNumber, @DefaultValue("false") @QueryParam(value = "isPatientOTP") Boolean isPatientOTP) {
+    public Response<Boolean> otpGenerator(@PathParam("mobileNumber") String mobileNumber, @DefaultValue("false") @QueryParam(value = "isPatientOTP") Boolean isPatientOTP,@DefaultValue("+91") @QueryParam(value = "countryCode") String countryCode) {
 	if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 	    logger.warn("Invalid Input. Mobile Number Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty");
 	}
+	mobileNumber=countryCode+mobileNumber;
 	Boolean OTP = otpService.otpGenerator(mobileNumber, isPatientOTP);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(OTP);
 	return response;
     }
 
-    @Path(value = PathProxy.OTPUrls.VERIFY_OTP)
-    @GET
-    @ApiOperation(value = PathProxy.OTPUrls.VERIFY_OTP, notes = PathProxy.OTPUrls.VERIFY_OTP)
-    public Response<Boolean> verifyOTP(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-	    @PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId, @PathParam("otpNumber") String otpNumber) {
-	if (DPDoctorUtils.anyStringEmpty(otpNumber, doctorId, locationId, hospitalId, patientId)) {
-	    logger.warn("Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
+	@Path(value = PathProxy.OTPUrls.VERIFY_OTP)
+	@GET
+	@ApiOperation(value = PathProxy.OTPUrls.VERIFY_OTP, notes = PathProxy.OTPUrls.VERIFY_OTP)
+	public Response<Boolean> verifyOTP(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("patientId") String patientId, @PathParam("otpNumber") String otpNumber) {
+		if (DPDoctorUtils.anyStringEmpty(otpNumber, doctorId, locationId, hospitalId, patientId)) {
+			logger.warn("Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
+		}
+		Boolean verifyOTPResponse = otpService.verifyOTP(doctorId, locationId, hospitalId, patientId, otpNumber);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(verifyOTPResponse);
+		return response;
 	}
-	Boolean verifyOTPResponse = otpService.verifyOTP(doctorId, locationId, hospitalId, patientId, otpNumber);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(verifyOTPResponse);
-	return response;
-    }
 
-    @Path(value = PathProxy.OTPUrls.VERIFY_OTP_MOBILE)
-    @GET
-    @ApiOperation(value = PathProxy.OTPUrls.VERIFY_OTP_MOBILE, notes = PathProxy.OTPUrls.VERIFY_OTP_MOBILE)
-    public Response<Boolean> verifyOTP(@PathParam("mobileNumber") String mobileNumber, @PathParam("otpNumber") String otpNumber) {
-	if (DPDoctorUtils.anyStringEmpty(otpNumber, mobileNumber)) {
-	    logger.warn("Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
+	@Path(value = PathProxy.OTPUrls.VERIFY_OTP_MOBILE)
+	@GET
+	@ApiOperation(value = PathProxy.OTPUrls.VERIFY_OTP_MOBILE, notes = PathProxy.OTPUrls.VERIFY_OTP_MOBILE)
+	public Response<Boolean> verifyOTP(@PathParam("mobileNumber") String mobileNumber,
+			@PathParam("otpNumber") String otpNumber) {
+		if (DPDoctorUtils.anyStringEmpty(otpNumber, mobileNumber)) {
+			logger.warn("Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
+		}
+		Boolean verifyOTPResponse = otpService.verifyOTP(mobileNumber, otpNumber);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(verifyOTPResponse);
+		return response;
 	}
-	Boolean verifyOTPResponse = otpService.verifyOTP(mobileNumber, otpNumber);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(verifyOTPResponse);
-	return response;
-    }
 }

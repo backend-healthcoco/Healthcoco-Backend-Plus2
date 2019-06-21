@@ -2,8 +2,6 @@ package com.dpdocter.request;
 
 import java.util.Date;
 
-import com.dpdocter.collections.GenericCollection;
-
 public class AdmitCardRequest {
 
 	private String id;

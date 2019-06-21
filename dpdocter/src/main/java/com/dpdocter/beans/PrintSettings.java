@@ -197,5 +197,4 @@ public class PrintSettings extends GenericCollection {
 	public void setIsLab(Boolean isLab) {
 		this.isLab = isLab;
 	}
-
 }

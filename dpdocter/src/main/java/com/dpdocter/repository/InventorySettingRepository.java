@@ -10,5 +10,4 @@ public interface InventorySettingRepository extends MongoRepository<InventorySet
 
 	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
     public InventorySettingsCollection findByDoctorIdPatientIdHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
-	
 }

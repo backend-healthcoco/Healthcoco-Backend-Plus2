@@ -2,10 +2,7 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.beans.CollectionBoy;
-import com.dpdocter.beans.DentalWorksSample;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.GenericCollection;

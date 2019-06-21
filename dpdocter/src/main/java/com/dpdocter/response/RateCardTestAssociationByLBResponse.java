@@ -23,5 +23,4 @@ public class RateCardTestAssociationByLBResponse {
 	public void setRateCards(List<RateCardTestAssociation> rateCards) {
 		this.rateCards = rateCards;
 	}
-
 }

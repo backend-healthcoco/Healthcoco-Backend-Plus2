@@ -82,7 +82,7 @@ public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 				clinicContactUsCollection = clinicContactUsRepository.save(clinicContactUsCollection);
 				String body = mailBodyGenerator.generateActivationEmailBody(
 						userCollection.getTitle() + " " + userCollection.getFirstName(), null,
-						"doctorWelcomeTemplate.vm", null, null);
+						"doctorWelcomeTemplate.vm", null, null , null);
 				mailService.sendEmail(clinicContactUs.getEmailAddress(), doctorWelcomeSubject, body, null);
 				body = mailBodyGenerator.generateContactEmailBody(
 						userCollection.getTitle() + " " + userCollection.getFirstName(), "Location",

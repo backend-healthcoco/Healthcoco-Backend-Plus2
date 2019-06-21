@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -45,6 +44,7 @@ import com.dpdocter.collections.CollectionBoyLabAssociationCollection;
 import com.dpdocter.collections.DentalWorkCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DynamicCollectionBoyAllocationCollection;
+import com.dpdocter.collections.FavouriteRateCardTestCollection;
 import com.dpdocter.collections.LabAssociationCollection;
 import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LabTestPickupCollection;
@@ -56,7 +56,6 @@ import com.dpdocter.collections.RateCardTestAssociationCollection;
 import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.SpecimenCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
@@ -67,6 +66,7 @@ import com.dpdocter.repository.CollectionBoyLabAssociationRepository;
 import com.dpdocter.repository.CollectionBoyRepository;
 import com.dpdocter.repository.DentalWorkRepository;
 import com.dpdocter.repository.DynamicCollectionBoyAllocationRepository;
+import com.dpdocter.repository.FavouriteRateCardTestRepositoy;
 import com.dpdocter.repository.LabAssociationRepository;
 import com.dpdocter.repository.LabReportsRepository;
 import com.dpdocter.repository.LabTestPickupRepository;
@@ -104,6 +104,9 @@ import common.util.web.DPDoctorUtils;
 public class LocationServiceImpl implements LocationServices {
 
 	private static Logger logger = Logger.getLogger(LoginServiceImpl.class.getName());
+
+	@Autowired
+	private FavouriteRateCardTestRepositoy favouriteRateCardTestRepositoy;
 
 	@Autowired
 	private LocationRepository locationRepository;
@@ -148,7 +151,7 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Autowired
 	private DentalWorkRepository dentalWorkRepository;
-	
+
 	@Autowired
 	private DynamicCollectionBoyAllocationRepository dynamicCollectionBoyAllocationRepository;
 
@@ -1335,7 +1338,6 @@ public class LocationServiceImpl implements LocationServices {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("mobileNumber").regex(searchTerm, "i"),
 						new Criteria("name").regex(searchTerm, "i"));
-
 			}
 			 if (!DPDoctorUtils.anyStringEmpty(labType))
 			{
@@ -1354,7 +1356,6 @@ public class LocationServiceImpl implements LocationServices {
 			AggregationResults<CollectionBoyResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					CollectionBoyCollection.class, CollectionBoyResponse.class);
 			response = aggregationResults.getMappedResults();
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Getting Collection Boys");
@@ -1706,12 +1707,9 @@ public class LocationServiceImpl implements LocationServices {
 	@Override
 	@Transactional
 	public List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm,
-			String rateCardId, String labId) {
+			String rateCardId, String labId, Boolean discarded) {
 		List<RateCardTestAssociationLookupResponse> rateCardTests = null;
-		RateCardTestAssociationLookupResponse rateCardTestAssociation = null;
-		List<RateCardTestAssociationLookupResponse> specialRateCardsTests = null;
-		// List<RateCardTestAssociationLookupResponse> responses = null;
-		List<RateCardTestAssociationLookupResponse> rateCardTestAssociationLookupResponses = null;
+
 		try {
 			Aggregation aggregation = null;
 
@@ -1721,8 +1719,12 @@ public class LocationServiceImpl implements LocationServices {
 			}
 			criteria.and("rateCardId").is(new ObjectId(rateCardId));
 			criteria.and("isAvailable").is(true);
+			criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(labId)) {
+				criteria.and("labId").is(new ObjectId(labId));
+			}
 
-			if (size > 0)
+			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("diagnostic_test_cl", "diagnosticTestId", "_id", "diagnosticTest"),
 						Aggregation.unwind("diagnosticTest"),
@@ -1733,39 +1735,16 @@ public class LocationServiceImpl implements LocationServices {
 						 */
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
-			else
+			} else {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("diagnostic_test_cl", "diagnosticTestId", "_id", "diagnosticTest"),
 						Aggregation.unwind("diagnosticTest"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			}
 			AggregationResults<RateCardTestAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(
 					aggregation, RateCardTestAssociationCollection.class, RateCardTestAssociationLookupResponse.class);
-			rateCardTestAssociationLookupResponses = aggregationResults.getMappedResults();
-			if (!DPDoctorUtils.anyStringEmpty(labId)) {
-				aggregation = Aggregation.newAggregation(
-						Aggregation.lookup("diagnostic_test_cl", "diagnosticTestId", "_id", "diagnosticTest"),
-						Aggregation.unwind("diagnosticTest"),
-						Aggregation.match(criteria.and("labId").is(new ObjectId(labId))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-				AggregationResults<RateCardTestAssociationLookupResponse> results = mongoTemplate.aggregate(aggregation,
-						RateCardTestAssociationCollection.class, RateCardTestAssociationLookupResponse.class);
-				specialRateCardsTests = results.getMappedResults();
-			}
-			if (rateCardTestAssociationLookupResponses != null) {
-				rateCardTests = new ArrayList<RateCardTestAssociationLookupResponse>();
-				for (RateCardTestAssociationLookupResponse lookupResponse : rateCardTestAssociationLookupResponses) {
-					if (specialRateCardsTests != null) {
-						for (RateCardTestAssociationLookupResponse specialRateCard : specialRateCardsTests) {
-							if (lookupResponse.getDiagnosticTestId().equals(specialRateCard.getDiagnosticTestId())) {
-								BeanUtil.map(specialRateCard, lookupResponse);
-							}
-						}
-					}
-					rateCardTestAssociation = new RateCardTestAssociationLookupResponse();
-					BeanUtil.map(lookupResponse, rateCardTestAssociation);
-					rateCardTests.add(rateCardTestAssociation);
-				}
-			}
+			rateCardTests = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Getting rate cards");
@@ -1787,7 +1766,6 @@ public class LocationServiceImpl implements LocationServices {
 
 		List<RateCardTestAssociationByLBResponse> rateCardTestAssociationLookupResponses = null;
 		try {
-
 			RateCardLabAssociationCollection rateCardLabAssociationCollection = rateCardLabAssociationRepository
 					.getByLocation(new ObjectId(daughterLabId), new ObjectId(parentLabId));
 			if (rateCardLabAssociationCollection == null) {
@@ -1812,6 +1790,7 @@ public class LocationServiceImpl implements LocationServices {
 				criteria = criteria.orOperator(new Criteria("testName").regex(searchTerm, "i"));
 			}
 			criteria.and("rateCardTest.rateCardId").is(rateCardId);
+			criteria.and("rateCardTest.discarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(specimen)) {
 				criteria = criteria
 						.andOperator(new Criteria().orOperator(new Criteria("specimen").regex(specimen, "i")));
@@ -1827,6 +1806,7 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("rateCardTest.category", "$rateCardTest.category"),
 					Fields.field("rateCardTest.labId", "$rateCardTest.labId"),
 					Fields.field("rateCardTest.isAvailable", "$rateCardTest.isAvailable"),
+					Fields.field("rateCardTest.discarded", "$rateCardTest.discarded"),
 					Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
 					Fields.field("createdTime", "$createdTime")));
 
@@ -1850,9 +1830,7 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.match(criteria), projectList, aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
-			}
-
-			else {
+			}else {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("rate_card_test_association_cl", "_id", "diagnosticTestId", "rateCardTest"),
 						Aggregation.unwind("rateCardTest"),
@@ -1992,6 +1970,14 @@ public class LocationServiceImpl implements LocationServices {
 				criteria.and("isDentalImagingLab").is(isDentalImagingLab);
 			}
 
+			if (isDentalWorksLab != null) {
+				criteria.and("isDentalWorksLab").is(isDentalWorksLab);
+			}
+
+			if (isDentalImagingLab != null) {
+				criteria.and("isDentalImagingLab").is(isDentalImagingLab);
+			}
+
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(Sort.Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
@@ -2116,7 +2102,6 @@ public class LocationServiceImpl implements LocationServices {
 				}
 
 				criteria.and("labTestSamples.parentLabLocationId").is(locationObjectId);
-
 			} else {
 				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 					criteria = criteria.orOperator(
@@ -2442,7 +2427,7 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return customWorks;
 	}
-	
+
 	@Override
 	@Transactional
 	public DentalWork deleteCustomWork(String id, boolean discarded) {
@@ -2466,7 +2451,6 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return response;
 	}
-	
 
 	private String reportSerialNumberGenerator(String locationId) {
 		String generatedId = null;
@@ -2506,20 +2490,19 @@ public class LocationServiceImpl implements LocationServices {
 		return generatedId;
 	}
 
-
 	@Override
 	@Transactional
 	public DynamicCollectionBoyAllocationResponse allocateCBDynamically(DynamicCollectionBoyAllocationRequest request) {
 		DynamicCollectionBoyAllocationCollection dynamicCollectionBoyAllocationCollection = null;
 		DynamicCollectionBoyAllocationResponse response = null;
-		CollectionBoyCollection collectionBoyCollection = null;
 		ObjectId oldId = null;
 		try {
 			if (request != null) {
+
 				if (request.getRequestId() != null) {
 					LabTestPickupCollection labTestPickupCollection = labTestPickupRepository
 							.findOne(new ObjectId(request.getRequestId()));
-			 collectionBoyCollection = collectionBoyRepository
+					CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
 							.findOne(labTestPickupCollection.getCollectionBoyId());
 					if (collectionBoyCollection != null) {
 						pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null,
@@ -2541,14 +2524,13 @@ public class LocationServiceImpl implements LocationServices {
 					if (dynamicCollectionBoyAllocationCollection == null) {
 						dynamicCollectionBoyAllocationCollection = new DynamicCollectionBoyAllocationCollection();
 						BeanUtil.map(request, dynamicCollectionBoyAllocationCollection);
-						Long toTime = DPDoctorUtils.getEndTime(new Date(request.getFromTime())).getMillis();
+						Long toTime = DPDoctorUtils.getEndTimeInMillis(new Date(request.getFromTime()));
 						dynamicCollectionBoyAllocationCollection.setToTime(toTime);
 						dynamicCollectionBoyAllocationCollection.setCreatedTime(new Date());
 					} else {
 						oldId = dynamicCollectionBoyAllocationCollection.getId();
 						BeanUtil.map(request, dynamicCollectionBoyAllocationCollection);
-						Long toTime = DPDoctorUtils.getEndTime(new Date(request.getFromTime())).getMillis();
-
+						Long toTime = DPDoctorUtils.getEndTimeInMillis(new Date(request.getFromTime()));
 						dynamicCollectionBoyAllocationCollection.setToTime(toTime);
 						dynamicCollectionBoyAllocationCollection.setId(oldId);
 					}
@@ -2560,7 +2542,6 @@ public class LocationServiceImpl implements LocationServices {
 					}
 				}
 				if (response == null) {
-
 					response = new DynamicCollectionBoyAllocationResponse();
 					BeanUtil.map(request, response);
 				}
@@ -2571,5 +2552,34 @@ public class LocationServiceImpl implements LocationServices {
 		return response;
 	}
 
-	
+	@Override
+	@Transactional
+	public Boolean makeFavouriteRateCardTest(String locationId, String hospitalId, String diagnosticTestId) {
+		Boolean response = false;
+		try {
+
+			FavouriteRateCardTestCollection favouriteRateCardTestCollection = favouriteRateCardTestRepositoy
+					.findByLocationIdHospitalIdAndTestId(new ObjectId(locationId), new ObjectId(hospitalId),
+							new ObjectId(diagnosticTestId));
+			if (favouriteRateCardTestCollection != null) {
+				favouriteRateCardTestCollection.setDiscarded(!favouriteRateCardTestCollection.getDiscarded());
+			} else {
+				favouriteRateCardTestCollection = new FavouriteRateCardTestCollection();
+				favouriteRateCardTestCollection.setHospitalId(new ObjectId(hospitalId));
+				favouriteRateCardTestCollection.setLocationId(new ObjectId(locationId));
+				favouriteRateCardTestCollection.setDiagnosticTestId(new ObjectId(diagnosticTestId));
+				favouriteRateCardTestCollection.setDiscarded(true);
+				favouriteRateCardTestCollection.setCreatedTime(new Date());
+				favouriteRateCardTestCollection.setAdminCreatedTime(new Date());
+			}
+			favouriteRateCardTestCollection.setUpdatedTime(new Date());
+			favouriteRateCardTestRepositoy.save(favouriteRateCardTestCollection);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error Getting while make Favourite to Rate Card Test");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting while make Favourite to Rate Card Test");
+		}
+		return response;
+	}
 }

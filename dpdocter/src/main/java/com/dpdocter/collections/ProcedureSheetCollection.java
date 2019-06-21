@@ -39,6 +39,8 @@ public class ProcedureSheetCollection extends GenericCollection {
 	private Boolean discarded = false;
 	@Field
 	private String type;
+	@Field
+	private Boolean isPatientDiscarded = false;
 
 	public ObjectId getId() {
 		return id;
@@ -136,12 +138,20 @@ public class ProcedureSheetCollection extends GenericCollection {
 		this.type = type;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "ProcedureSheetCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", procedureConsentForm="
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", procedureSheetStructureId="
+				+ procedureSheetStructureId + ", procedureName=" + procedureName + ", procedureConsentForm="
 				+ procedureConsentForm + ", diagrams=" + diagrams + ", procedureSheetFields=" + procedureSheetFields
-				+ ", discarded=" + discarded + "]";
+				+ ", discarded=" + discarded + ", type=" + type + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
-
 }

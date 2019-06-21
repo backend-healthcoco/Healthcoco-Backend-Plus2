@@ -10,7 +10,7 @@ import com.dpdocter.request.LoginRequest;
 import com.dpdocter.response.DoctorLoginPinRequest;
 
 public interface LoginService {
-	LoginResponse login(LoginRequest request, Boolean isMobileApp);
+	LoginResponse login(LoginRequest request, Boolean isMobileApp, Boolean isNutritionist);
 
 	List<RegisteredPatientDetails> loginPatient(LoginPatientRequest request);
 
@@ -23,5 +23,7 @@ public interface LoginService {
 	public Boolean checkLoginPin(DoctorLoginPinRequest request);
 
 	public DoctorLoginPin AddEditLoginPin(DoctorLoginPin request);
+
+	public List<RegisteredPatientDetails> loginPatientByOtp(LoginPatientRequest request);
 
 }

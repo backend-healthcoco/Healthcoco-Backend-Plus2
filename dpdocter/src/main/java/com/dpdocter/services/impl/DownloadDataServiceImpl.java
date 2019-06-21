@@ -265,6 +265,43 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 		
 	}
 
+	private void writeHeader(Class classOfObject, FileWriter fileWriter) throws IOException {
+		int index = 1;
+		String headerString = "";
+	    for (Field field : classOfObject.getDeclaredFields()) {
+	        field.setAccessible(true);
+	        
+	        if(!field.getName().equalsIgnoreCase("dob")) {
+	        		if(!DPDoctorUtils.anyStringEmpty(headerString)) headerString = headerString + field.getName();
+		        else headerString = headerString + "," + field.getName();
+	        }
+	        
+//	    		Cell cell = fileWriter.createCell(++index);
+//		    cell.setCellValue(field.getName());
+	    }
+	    fileWriter.append(headerString);
+	    fileWriter.append(NEW_LINE_SEPARATOR);
+	}
+
+	private void writeData(Object obj, FileWriter fileWriter) throws IllegalArgumentException, IllegalAccessException, IOException {
+		String dataString = "";
+		int index = 1;
+	    for (Field field : obj.getClass().getDeclaredFields()) {
+	    		field.setAccessible(true);
+	    		if(!field.getName().equalsIgnoreCase("dob")) {
+		    		if(DPDoctorUtils.anyStringEmpty(dataString)) dataString = dataString + field.get(obj);
+			    else dataString = dataString + "," + field.get(obj);
+	    		}
+//	    		Cell cell = fileWriter.createCell(index);
+//		    cell.setCellValue(field.get(obj)+"");
+	    }
+	    dataString.replaceAll("\\[", "\"");
+	    dataString.replaceAll("\\]", "\"");
+	    fileWriter.append(dataString);
+	    fileWriter.append(NEW_LINE_SEPARATOR);
+	}
+
+	@SuppressWarnings("resource")
 	@Override
 	public Boolean downloadClinicalItems(String doctorId, String locationId, String hospitalId) {
 		Boolean response = false;
@@ -307,7 +344,6 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId))), ObservationCollection.class, ObservationCollection.class).getMappedResults();
 			
 			if(observationCollections != null && !observationCollections.isEmpty()) {
-				System.out.println(observationCollections.size());
 				fileWriter = new FileWriter("/home/ubuntu/Observations.csv");
 				fileWriter.append("Observations");
 			    fileWriter.append(NEW_LINE_SEPARATOR);
@@ -328,7 +364,6 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId))), InvestigationCollection.class, InvestigationCollection.class).getMappedResults();
 			
 			if(investigationCollections != null && !investigationCollections.isEmpty()) {
-				System.out.println(investigationCollections.size());
 				fileWriter = new FileWriter("/home/ubuntu/Investigation.csv");
 				fileWriter.append("Investigations");
 			    fileWriter.append(NEW_LINE_SEPARATOR);
@@ -369,7 +404,6 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId))), NotesCollection.class, NotesCollection.class).getMappedResults();
 			
 			if(notesCollections != null && !notesCollections.isEmpty()) {
-				System.out.println(notesCollections.size());
 				fileWriter = new FileWriter("/home/ubuntu/Notes.csv");
 				fileWriter.append("Notes");
 			    fileWriter.append(NEW_LINE_SEPARATOR);

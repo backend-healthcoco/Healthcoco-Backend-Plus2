@@ -303,31 +303,7 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	public void setHasBillingAccess(Boolean hasBillingAccess) {
 		this.hasBillingAccess = hasBillingAccess;
 	}
-
-	public Boolean getIskiosk() {
-		return iskiosk;
-	}
-
-	public void setIskiosk(Boolean iskiosk) {
-		this.iskiosk = iskiosk;
-	}
-
-	public Boolean getIsNutritionist() {
-		return isNutritionist;
-	}
-
-	public void setIsNutritionist(Boolean isNutritionist) {
-		this.isNutritionist = isNutritionist;
-	}
-
-	public Boolean getIsSuperAdmin() {
-		return isSuperAdmin;
-	}
-
-	public void setIsSuperAdmin(Boolean isSuperAdmin) {
-		this.isSuperAdmin = isSuperAdmin;
-	}
-
+	
 	public Boolean getIsVaccinationModuleOn() {
 		return isVaccinationModuleOn;
 	}

@@ -1,48 +1,22 @@
 package com.dpdocter.services.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.Fields;
-import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicImage;
-import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.PrescriptionItem;
-import com.dpdocter.beans.SMS;
-import com.dpdocter.beans.SMSAddress;
-import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.AdviceCollection;
-import com.dpdocter.collections.AppLinkDetailsCollection;
-import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.BabyNoteCollection;
 import com.dpdocter.collections.CementCollection;
 import com.dpdocter.collections.CityCollection;
@@ -58,11 +32,13 @@ import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.ECGDetailsCollection;
 import com.dpdocter.collections.EarsExaminationCollection;
 import com.dpdocter.collections.EchoCollection;
+import com.dpdocter.collections.ExpenseTypeCollection;
 import com.dpdocter.collections.GeneralExamCollection;
 import com.dpdocter.collections.HolterCollection;
 import com.dpdocter.collections.ImplantCollection;
 import com.dpdocter.collections.IndicationOfUSGCollection;
 import com.dpdocter.collections.IndirectLarygoscopyExaminationCollection;
+import com.dpdocter.collections.IngredientCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LabourNoteCollection;
@@ -73,6 +49,7 @@ import com.dpdocter.collections.MenstrualHistoryCollection;
 import com.dpdocter.collections.NeckExaminationCollection;
 import com.dpdocter.collections.NoseExaminationCollection;
 import com.dpdocter.collections.NotesCollection;
+import com.dpdocter.collections.NutrientCollection;
 import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.ObstetricHistoryCollection;
@@ -82,7 +59,6 @@ import com.dpdocter.collections.PACollection;
 import com.dpdocter.collections.PSCollection;
 import com.dpdocter.collections.PVCollection;
 import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PresentComplaintCollection;
 import com.dpdocter.collections.PresentComplaintHistoryCollection;
 import com.dpdocter.collections.PresentingComplaintEarsCollection;
@@ -91,9 +67,8 @@ import com.dpdocter.collections.PresentingComplaintOralCavityCollection;
 import com.dpdocter.collections.PresentingComplaintThroatCollection;
 import com.dpdocter.collections.ProcedureNoteCollection;
 import com.dpdocter.collections.ProvisionalDiagnosisCollection;
+import com.dpdocter.collections.RecipeCollection;
 import com.dpdocter.collections.ReferencesCollection;
-import com.dpdocter.collections.RoleCollection;
-import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.ServicesCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.SymptomDiseaseConditionCollection;
@@ -102,7 +77,6 @@ import com.dpdocter.collections.TransactionalCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.collections.XRayDetailsCollection;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
 import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
@@ -120,11 +94,13 @@ import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESECGDetailsDocument;
 import com.dpdocter.elasticsearch.document.ESEarsExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESEchoDocument;
+import com.dpdocter.elasticsearch.document.ESExpenseTypeDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
 import com.dpdocter.elasticsearch.document.ESHolterDocument;
 import com.dpdocter.elasticsearch.document.ESImplantDocument;
 import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
 import com.dpdocter.elasticsearch.document.ESIndirectLarygoscopyExaminationDocument;
+import com.dpdocter.elasticsearch.document.ESIngredientDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESLabTestDocument;
 import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
@@ -133,6 +109,7 @@ import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNeckExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNoseExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
+import com.dpdocter.elasticsearch.document.ESNutrientDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESOperationNoteDocument;
@@ -148,6 +125,7 @@ import com.dpdocter.elasticsearch.document.ESPresentingComplaintNoseDocument;
 import com.dpdocter.elasticsearch.document.ESPresentingComplaintOralCavityDocument;
 import com.dpdocter.elasticsearch.document.ESPresentingComplaintThroatDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
+import com.dpdocter.elasticsearch.document.ESRecipeDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.document.ESServicesDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
@@ -162,18 +140,15 @@ import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.elasticsearch.services.ESDischargeSummaryService;
+import com.dpdocter.elasticsearch.services.ESExpenseTypeService;
 import com.dpdocter.elasticsearch.services.ESLocaleService;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
+import com.dpdocter.elasticsearch.services.ESRecipeService;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
-import com.dpdocter.enums.AppointmentState;
-import com.dpdocter.enums.AppointmentType;
-import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.OTPState;
 import com.dpdocter.enums.Resource;
-import com.dpdocter.enums.RoleEnum;
-import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -194,11 +169,13 @@ import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.ECGDetailsRepository;
 import com.dpdocter.repository.EarsExaminationRepository;
 import com.dpdocter.repository.EchoRepository;
+import com.dpdocter.repository.ExpenseTypeRepository;
 import com.dpdocter.repository.GeneralExamRepository;
 import com.dpdocter.repository.HolterRepository;
 import com.dpdocter.repository.ImplantRepository;
 import com.dpdocter.repository.IndicationOfUSGRepository;
 import com.dpdocter.repository.IndirectLarygoscopyExaminationRepository;
+import com.dpdocter.repository.IngredientRepository;
 import com.dpdocter.repository.InvestigationRepository;
 import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LabourNoteRepository;
@@ -209,6 +186,7 @@ import com.dpdocter.repository.MenstrualHistoryRepository;
 import com.dpdocter.repository.NeckExaminationRepository;
 import com.dpdocter.repository.NoseExaminationRepository;
 import com.dpdocter.repository.NotesRepository;
+import com.dpdocter.repository.NutrientRepository;
 import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.ObservationRepository;
 import com.dpdocter.repository.ObstetricHistoryRepository;
@@ -228,6 +206,7 @@ import com.dpdocter.repository.PresentingComplaintThroatRepository;
 import com.dpdocter.repository.ProcedureNoteRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.ProvisionalDiagnosisRepository;
+import com.dpdocter.repository.RecipeRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SMSTrackRepository;
@@ -240,15 +219,10 @@ import com.dpdocter.repository.TreatmentServicesCostRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.XRayDetailsRepository;
-import com.dpdocter.response.AppointmentDoctorReminderResponse;
-import com.dpdocter.response.AppointmentPatientReminderResponse;
-import com.dpdocter.response.DoctorAppointmentSMSResponse;
-import com.dpdocter.response.LocationAdminAppointmentLookupResponse;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
-import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -474,6 +448,24 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	private RoleRepository roleRepository;
 
 	@Autowired
+	private ExpenseTypeRepository expenseTypeRepository;
+
+	@Autowired
+	private NutrientRepository nutrientRepository;
+
+	@Autowired
+	private IngredientRepository ingredientRepository;
+
+	@Autowired
+	private RecipeRepository recipeRepository;
+
+	@Autowired
+	private ESExpenseTypeService exExpenseTypeService;
+
+	@Autowired
+	private ESRecipeService ESRecipeService;
+
+	@Autowired
 	private ServicesRepository servicesRepository;
 	
 	@Value(value = "${mail.appointment.details.subject}")
@@ -498,7 +490,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	SymptomDiseaseConditionRepository symptomDiseaseConditionRepository;
 	
 	//@Scheduled(cron = "00 00 3 * * *", zone = "IST")
-//	@Scheduled(fixedDelay = 1800)
+	//	@Scheduled(fixedDelay = 1800)
 	@Override
 	@Transactional
 	public void checkResources() {
@@ -671,7 +663,17 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						case IMPLANT:
 							checkImplant(transactionalCollection.getResourceId());
 							break;
-						case COLLECTION_BOY:
+						case EXPENSE_TYPE:
+							checkExpenseType(transactionalCollection.getResourceId());
+							break;
+						case RECIPE:
+							checkRecipe(transactionalCollection.getResourceId());
+							break;
+						case INGREDIENT:
+							checkIngredient(transactionalCollection.getResourceId());
+							break;
+						case NUTRIENT:
+							checkNutrient(transactionalCollection.getResourceId());
 							break;
 						case STATE:
 							break;
@@ -688,762 +690,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			}
 			// Expire invalid otp
 			checkOTP();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-		}
-	}
-
-	// Appointment Reminder to Doctor, if appointment > 0
-	//@Scheduled(cron = "${appointment.reminder.to.doctor.cron.time}", zone = "IST")
-	@Override
-	@Transactional
-	public void sendReminderToDoctor() {
-		try {
-			if (sendSMS) {
-				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-
-				localCalendar.setTime(new Date());
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				Aggregation aggregation = Aggregation.newAggregation(
-						Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
-								.is(AppointmentType.APPOINTMENT.getType()).and("fromDate").gte(fromTime).and("toDate")
-								.lte(toTime)),
-						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-						Aggregation.lookup("user_device_cl", "doctorId", "userIds", "userDevices"),
-						Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
-				AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate
-						.aggregate(aggregation, AppointmentCollection.class, AppointmentDoctorReminderResponse.class);
-
-				List<AppointmentDoctorReminderResponse> appointmentDoctorReminderResponses = aggregationResults
-						.getMappedResults();
-				Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
-
-				SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-				SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-
-				if (appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
-					for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses) {
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-								new ObjectId(appointmentDoctorReminderResponse.getPatientId()),
-								appointmentDoctorReminderResponse.getLocationId(),
-								appointmentDoctorReminderResponse.getHospitalId());
-
-						String _24HourTime = String.format("%02d:%02d",
-								appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
-								appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
-
-						Date _24HourDt = _24HourSDF.parse(_24HourTime);
-
-						if (doctorAppointmentSMSResponseMap
-								.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
-							DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
-									.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-							response.setMessage(response.getMessage() + ", " + patientCollection.getLocalPatientName()
-									+ "(" + _12HourSDF.format(_24HourDt) + ")");
-							response.setNoOfAppointments(response.getNoOfAppointments() + 1);
-							doctorAppointmentSMSResponseMap
-									.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
-						} else {
-							DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
-							response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
-							response.setMessage(
-									patientCollection.getLocalPatientName() + "(" + _12HourSDF.format(_24HourDt) + ")");
-							response.setNoOfAppointments(1);
-							response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
-							doctorAppointmentSMSResponseMap
-									.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
-						}
-					}
-
-				for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
-					DoctorAppointmentSMSResponse response = entry.getValue();
-					UserCollection userCollection = response.getDoctor();
-					String message = "Healthcoco! You have " + response.getNoOfAppointments()
-							+ " appointments scheduled today.\n" + response.getMessage()
-							+ ".\nHave a Healthy and Happy day!!";
-					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-					smsTrackDetail.setDoctorId(userCollection.getId());
-					smsTrackDetail.setType("APPOINTMENT");
-					SMSDetail smsDetail = new SMSDetail();
-					smsDetail.setUserId(userCollection.getId());
-					SMS sms = new SMS();
-					smsDetail.setUserName(userCollection.getFirstName());
-					sms.setSmsText(message);
-
-					SMSAddress smsAddress = new SMSAddress();
-					smsAddress.setRecipient(userCollection.getMobileNumber());
-					sms.setSmsAddress(smsAddress);
-
-					smsDetail.setSms(sms);
-					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-					smsDetails.add(smsDetail);
-					smsTrackDetail.setSmsDetails(smsDetails);
-					sMSServices.sendSMS(smsTrackDetail, true);
-					if (response.getUserDevices() != null && !response.getUserDevices().isEmpty()) {
-						pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
-								null, response.getUserDevices());
-					}
-				}
-			}
-			sendAppointmentScheduleToClinicAdmin();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-		}
-	}
-
-	@Override
-	@Transactional
-	public void sendAppointmentScheduleToClinicAdmin() {
-		try {
-			if (sendSMS) {
-				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-
-				localCalendar.setTime(new Date());
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole());
-				if(roleCollection != null) {
-					Aggregation aggregation = Aggregation.newAggregation(
-							Aggregation.match(new Criteria("roleId").is(roleCollection.getId())),
-							Aggregation.lookup("user_cl", "userId", "_id", "locationAdmin"), Aggregation.unwind("locationAdmin"),
-							Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-							Aggregation.lookup("user_device_cl", "userId", "userIds", "userDevices"),
-							Aggregation.lookup("appointment_cl", "locationId", "locationId", "locationAppointments"),
-							Aggregation.unwind("locationAppointments"),
-							Aggregation.match(new Criteria("locationAppointments.state").is(AppointmentState.CONFIRM.getState())
-									.and("locationAppointments.type").is(AppointmentType.APPOINTMENT.getType())
-									.and("locationAppointments.fromDate").gte(fromTime).and("locationAppointments.toDate").lte(toTime)),
-							
-							Aggregation.lookup("user_cl", "locationAppointments.doctorId", "_id", "doctor"), 
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$doctor")
-											.append("preserveNullAndEmptyArrays", true))),
-							Aggregation.lookup("patient_cl", "locationAppointments.patientId", "userId", "patient"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$patient")
-											.append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
-									new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
-									.append("then", "$$KEEP").append("else", "$$PRUNE")))),
-							
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("locationId", "$locationId")
-									.append("userId", "$userId")
-									.append("locationAdminName", "$locationAdmin.firstName")
-									.append("locationAdminMobileNumber", "$locationAdmin.mobileNumber")
-									.append("locationAdminEmailAddress", "$locationAdmin.emailAddress")
-									.append("locationName", "$location.locationName")
-									.append("userDevices", "$userDevices")
-									.append("drAppointments.time", "$locationAppointments.time")
-									.append("drAppointments.localPatientName", "$patient.localPatientName")
-									.append("drAppointments.doctorName", new BasicDBObject("$concat",Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
-									.append("drAppointments.doctorId", "$locationAppointments.doctorId")
-									)),
-							
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$locationId")
-									.append("locationId", new BasicDBObject("$first","$locationId"))
-									.append("userId", new BasicDBObject("$first","$userId"))
-									.append("locationAdminName", new BasicDBObject("$first","$locationAdminName"))
-									.append("locationAdminMobileNumber", new BasicDBObject("$first","$locationAdminMobileNumber"))
-									.append("locationName", new BasicDBObject("$first","$locationName"))
-									.append("locationAdminEmailAddress", new BasicDBObject("$first","$locationAdminEmailAddress"))
-									.append("userDevices", new BasicDBObject("$first","$userDevices"))
-									.append("drAppointments", new BasicDBObject("$addToSet","$drAppointments"))
-									)),
-							
-							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("locationAppointments.time.fromTime", 1)))
-							);
-					
-					List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate
-							.aggregate(aggregation, UserRoleCollection.class, LocationAdminAppointmentLookupResponse.class).getMappedResults();
-					
-					Map<String, LocationAdminAppointmentLookupResponse> locationDetailsMap = new HashMap<String, LocationAdminAppointmentLookupResponse>();
-					if(aggregationResults != null && !aggregationResults.isEmpty()) {
-						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-						
-						for(LocationAdminAppointmentLookupResponse lookupResponse : aggregationResults) {
-							Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
-							int count = 0;
-							if (lookupResponse.getDrAppointments() != null && !lookupResponse.getDrAppointments().isEmpty())
-								for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : lookupResponse.getDrAppointments()) {
-									
-									String _24HourTime = String.format("%02d:%02d",
-											appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
-											appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
-
-									Date _24HourDt = _24HourSDF.parse(_24HourTime);
-
-									if (doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
-										DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-										response.setMessage(response.getMessage() + ", " + appointmentDoctorReminderResponse.getLocalPatientName()
-												+ "(" + _12HourSDF.format(_24HourDt) + ")");
-										count = count + 1;
-										doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
-									} else {
-										DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
-										response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
-										response.setMessage(appointmentDoctorReminderResponse.getDoctorName() + ":" +appointmentDoctorReminderResponse.getLocalPatientName() + "(" + _12HourSDF.format(_24HourDt) + ")");
-										count = count + 1;
-										response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
-										doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
-									}
-								}
-							lookupResponse.setTotalAppointments(count);
-							String message = "";
-							for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
-								if(DPDoctorUtils.anyStringEmpty(message))message = entry.getValue().getMessage();
-								else message = message + " "+entry.getValue().getMessage();
-							}
-							lookupResponse.setMessage(message);
-							locationDetailsMap.put(lookupResponse.getLocationId(), lookupResponse);
-					}
-					for (Entry<String, LocationAdminAppointmentLookupResponse> entry : locationDetailsMap.entrySet()) {
-							LocationAdminAppointmentLookupResponse response = entry.getValue();
-							String message = "Healthcoco! Your clinic " + response.getLocationName() + " have " + response.getTotalAppointments()
-									+ " appointments scheduled today.\n" + response.getMessage()
-									+ ".\nHave a Healthy and Happy day!!";
-							
-							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-							smsTrackDetail.setDoctorId(response.getUserId());
-							smsTrackDetail.setType("APPOINTMENT");
-							SMSDetail smsDetail = new SMSDetail();
-							smsDetail.setUserId(response.getUserId());
-							SMS sms = new SMS();
-							smsDetail.setUserName(response.getLocationAdminName());
-							sms.setSmsText(message);
-
-							SMSAddress smsAddress = new SMSAddress();
-							smsAddress.setRecipient(response.getLocationAdminMobileNumber());
-							sms.setSmsAddress(smsAddress);
-
-							smsDetail.setSms(sms);
-							smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-							List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-							smsDetails.add(smsDetail);
-							smsTrackDetail.setSmsDetails(smsDetails);
-							sMSServices.sendSMS(smsTrackDetail, true);
-							if (response.getUserDevices() != null && !response.getUserDevices().isEmpty()) {
-								pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
-										null, response.getUserDevices());
-							}
-					}	
-				}
-				}				
-			}
-//			sendAppointmentScheduleToStaff();
-			sendEventReminderToDoctor();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-		}
-	}
-	
-	@Override
-	@Transactional
-	public void sendEventReminderToDoctor() {
-			try {
-				if (sendSMS) {
-					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-
-					localCalendar.setTime(new Date());
-					int currentDay = localCalendar.get(Calendar.DATE);
-					int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-					int currentYear = localCalendar.get(Calendar.YEAR);
-					DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-							DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-					DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-							DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-					Aggregation aggregation = Aggregation.newAggregation(
-							Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
-									.is(AppointmentType.EVENT.getType())
-									.and("fromDate").gte(fromTime).and("toDate")
-									.lte(toTime)
-									),
-							Aggregation.unwind("doctorIds"),
-							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"), Aggregation.unwind("doctor"),
-							Aggregation.lookup("user_device_cl", "doctorIds", "userIds", "userDevices"),
-							Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
-					AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate
-							.aggregate(aggregation, AppointmentCollection.class, AppointmentDoctorReminderResponse.class);
-
-					List<AppointmentDoctorReminderResponse> appointmentDoctorReminderResponses = aggregationResults
-							.getMappedResults();
-					Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
-
-					SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-					SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-
-					if (appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
-						for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses) {
-							
-							String _24HourTime = String.format("%02d:%02d",
-									appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
-									appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
-
-							Date _24HourDt = _24HourSDF.parse(_24HourTime);
-
-							if (appointmentDoctorReminderResponse.getDoctor() != null && doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctor().getId().toString()) != null) {
-								DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
-										.get(appointmentDoctorReminderResponse.getDoctor().getId().toString());
-								response.setMessage(response.getMessage() + ", " + appointmentDoctorReminderResponse.getSubject()
-										+ "(" + _12HourSDF.format(_24HourDt) + ")");
-								doctorAppointmentSMSResponseMap
-										.put(appointmentDoctorReminderResponse.getDoctor().getId().toString(), response);
-							} else {
-								DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
-								response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
-								response.setMessage(appointmentDoctorReminderResponse.getSubject() + "(" + _12HourSDF.format(_24HourDt) + ")");
-								response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
-								doctorAppointmentSMSResponseMap
-										.put(appointmentDoctorReminderResponse.getDoctor().getId().toString(), response);
-							}
-						}
-
-					for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
-						DoctorAppointmentSMSResponse response = entry.getValue();
-						UserCollection userCollection = response.getDoctor();
-						String message = "Healthcoco! Today's event:\n" + response.getMessage();
-						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-						smsTrackDetail.setDoctorId(userCollection.getId());
-						smsTrackDetail.setType("EVENTS");
-						SMSDetail smsDetail = new SMSDetail();
-						smsDetail.setUserId(userCollection.getId());
-						SMS sms = new SMS();
-						smsDetail.setUserName(userCollection.getFirstName());
-						sms.setSmsText(message);
-
-						SMSAddress smsAddress = new SMSAddress();
-						smsAddress.setRecipient(userCollection.getMobileNumber());
-						sms.setSmsAddress(smsAddress);
-
-						smsDetail.setSms(sms);
-						smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-						smsDetails.add(smsDetail);
-						smsTrackDetail.setSmsDetails(smsDetails);
-						sMSServices.sendSMS(smsTrackDetail, true);
-						if (response.getUserDevices() != null && !response.getUserDevices().isEmpty()) {
-							pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
-									null, response.getUserDevices());
-						}
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error(e);
-			}
-	}
-	
-	
-	
-	@Override
-	@Transactional
-	public void sendAppointmentScheduleToStaff() {
-		try {
-				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-
-				localCalendar.setTime(new Date());
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.RECEPTIONIST_NURSE.getRole());
-				if(roleCollection != null) {
-					System.out.println("finding appointments");
-					Aggregation aggregation = Aggregation.newAggregation(
-							Aggregation.match(new Criteria("roleId").is(roleCollection.getId())),
-							Aggregation.lookup("user_cl", "userId", "_id", "receptionist"), Aggregation.unwind("receptionist"),
-							Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-							Aggregation.lookup("appointment_cl", "locationId", "locationId", "locationAppointments"),
-							Aggregation.unwind("locationAppointments"),
-							Aggregation.match(new Criteria("locationAppointments.state").is(AppointmentState.CONFIRM.getState())
-									.and("locationAppointments.type").is(AppointmentType.APPOINTMENT.getType())
-									.and("locationAppointments.fromDate").gte(fromTime).and("locationAppointments.toDate").lte(toTime)),
-							
-							Aggregation.lookup("user_cl", "locationAppointments.doctorId", "_id", "doctor"), 
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$doctor")
-											.append("preserveNullAndEmptyArrays", true))),
-							Aggregation.lookup("patient_cl", "locationAppointments.patientId", "userId", "patient"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$patient")
-											.append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
-									new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
-									.append("then", "$$KEEP").append("else", "$$PRUNE")))),
-							
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("locationId", "$locationId")
-									.append("userId", "$userId")
-									.append("locationAdminName", "$receptionist.firstName")
-									.append("locationAdminMobileNumber", "$receptionist.mobileNumber")
-									.append("locationAdminEmailAddress", "$receptionist.emailAddress")
-									.append("locationName", "$location.locationName")
-									.append("userDevices", "$userDevices")
-									.append("drAppointments.time", "$locationAppointments.time")
-									.append("drAppointments.localPatientName", "$patient.localPatientName")
-									.append("drAppointments.doctorName", new BasicDBObject("$concat",Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
-									.append("drAppointments.doctorId", "$locationAppointments.doctorId")
-									)),
-							
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$locationId")
-									.append("locationId", new BasicDBObject("$first","$locationId"))
-									.append("userId", new BasicDBObject("$first","$userId"))
-									.append("locationAdminName", new BasicDBObject("$first","$locationAdminName"))
-									.append("locationAdminMobileNumber", new BasicDBObject("$first","$locationAdminMobileNumber"))
-									.append("locationName", new BasicDBObject("$first","$locationName"))
-									.append("locationAdminEmailAddress", new BasicDBObject("$first","$locationAdminEmailAddress"))
-									.append("userDevices", new BasicDBObject("$first","$userDevices"))
-									.append("drAppointments", new BasicDBObject("$addToSet","$drAppointments"))
-									)),
-							
-							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("locationAppointments.time.fromTime", 1)))
-							);
-					
-					List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate
-							.aggregate(aggregation, UserRoleCollection.class, LocationAdminAppointmentLookupResponse.class).getMappedResults();
-					
-					System.out.println(aggregationResults.size());
-					Map<String, LocationAdminAppointmentLookupResponse> locationDetailsMap = new HashMap<String, LocationAdminAppointmentLookupResponse>();
-					if(aggregationResults != null && !aggregationResults.isEmpty()) {
-						System.out.println("get response");
-						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-						
-						for(LocationAdminAppointmentLookupResponse lookupResponse : aggregationResults) {
-							System.out.println(lookupResponse.toString());
-							Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
-							int count = 0;
-							if (lookupResponse.getDrAppointments() != null && !lookupResponse.getDrAppointments().isEmpty())
-								for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : lookupResponse.getDrAppointments()) {
-									
-									String _24HourTime = String.format("%02d:%02d",
-											appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
-											appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
-
-									Date _24HourDt = _24HourSDF.parse(_24HourTime);
-
-									if (doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
-										DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-										response.setMessage(response.getMessage() + ", " + appointmentDoctorReminderResponse.getLocalPatientName()
-												+ "(" + _12HourSDF.format(_24HourDt) + ")");
-										count = count + 1;
-										doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
-									} else {
-										DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
-										response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
-										response.setMessage(appointmentDoctorReminderResponse.getDoctorName() + ":" +appointmentDoctorReminderResponse.getLocalPatientName() + "(" + _12HourSDF.format(_24HourDt) + ")");
-										count = count + 1;
-										response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
-										doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
-									}
-								}
-							lookupResponse.setTotalAppointments(count);
-							String message = "";
-							for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
-								if(DPDoctorUtils.anyStringEmpty(message))message = entry.getValue().getMessage();
-								else message = message + " "+entry.getValue().getMessage();
-							}
-							lookupResponse.setMessage(message);
-							locationDetailsMap.put(lookupResponse.getLocationId(), lookupResponse);
-							System.out.println("added");
-					}
-					for (Entry<String, LocationAdminAppointmentLookupResponse> entry : locationDetailsMap.entrySet()) {
-							LocationAdminAppointmentLookupResponse response = entry.getValue();
-							String message = "Healthcoco! Your clinic " + response.getLocationName() + " have " + response.getTotalAppointments()
-									+ " appointments scheduled today.\n" + response.getMessage()
-									+ ".\nHave a Healthy and Happy day!!";
-							
-							System.out.println(response.getUserId().toString() + response.getLocationAdminName() + ".."+response.getLocationAdminEmailAddress()+ ".."+response.getLocationAdminMobileNumber());
-							System.out.println(response.getUserDevices() != null);
-							System.out.println(message);
-//							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-//							smsTrackDetail.setDoctorId(response.getUserId());
-//							smsTrackDetail.setType("APPOINTMENT");
-//							SMSDetail smsDetail = new SMSDetail();
-//							smsDetail.setUserId(response.getUserId());
-//							SMS sms = new SMS();
-//							smsDetail.setUserName(response.getLocationAdminName());
-//							sms.setSmsText(message);
-//
-//							SMSAddress smsAddress = new SMSAddress();
-//							smsAddress.setRecipient(response.getLocationAdminMobileNumber());
-//							sms.setSmsAddress(smsAddress);
-//
-//							smsDetail.setSms(sms);
-//							smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-//							List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-//							smsDetails.add(smsDetail);
-//							smsTrackDetail.setSmsDetails(smsDetails);
-//							sMSServices.sendSMS(smsTrackDetail, true);
-//							if (response.getUserDevices() != null && !response.getUserDevices().isEmpty()) {
-//								pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
-//										null, response.getUserDevices());
-//							}
-					}	
-						
-				}
-					else {
-						System.out.println("null response");
-					}	
-				}				
-//			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-		}
-	}
-	// @Scheduled(cron = "0 0/30 9 * * *", zone = "IST")
-	@Override
-	@Transactional
-	public Boolean sendPromotionalSMSToPatient() {
-		Boolean response = false;
-		try {
-			List<PrescriptionCollection> prescriptions = prescriptionRepository.findAll();
-
-			for (PrescriptionCollection prescriptionCollection : prescriptions) {
-				UserCollection userCollection = userRepository
-						.findByIdAndNotSignedUp(prescriptionCollection.getPatientId(), false);
-				if (userCollection != null) {
-					String[] type = { "APP_LINK_THROUGH_PRESCRIPTION" };
-					Calendar cal = Calendar.getInstance();
-					cal.add(Calendar.DATE, -5);
-					List<SMSTrackDetail> smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalPatient(
-							prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
-							prescriptionCollection.getHospitalId(), prescriptionCollection.getPatientId(), type,
-							cal.getTime(), new Date(), new PageRequest(0, 1));
-
-					if (smsTrackDetails == null || smsTrackDetails.isEmpty()) {
-						String message = downloadAppMessageToPatient;
-						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-						smsTrackDetail.setDoctorId(prescriptionCollection.getDoctorId());
-						smsTrackDetail.setLocationId(prescriptionCollection.getLocationId());
-						smsTrackDetail.setHospitalId(prescriptionCollection.getHospitalId());
-						smsTrackDetail.setType("APP_LINK_THROUGH_PRESCRIPTION");
-						SMSDetail smsDetail = new SMSDetail();
-						smsDetail.setUserId(userCollection.getId());
-						SMS sms = new SMS();
-						smsDetail.setUserName(userCollection.getFirstName());
-						sms.setSmsText(message.replace("{doctorName}", prescriptionCollection.getCreatedBy()));
-
-						SMSAddress smsAddress = new SMSAddress();
-						smsAddress.setRecipient(userCollection.getMobileNumber());
-						sms.setSmsAddress(smsAddress);
-
-						smsDetail.setSms(sms);
-						smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-						smsDetails.add(smsDetail);
-						smsTrackDetail.setSmsDetails(smsDetails);
-						sMSServices.sendSMS(smsTrackDetail, true);
-					}
-				}
-			}
-			response = true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-		}
-		return response;
-	}
-
-	// Appointment Reminder to Patient
-	//@Scheduled(cron = "${appointment.reminder.to.patient.cron.time}", zone = "IST")
-	@Override
-	@Transactional
-	public void sendReminderToPatient() {
-		try {
-			if (sendSMS) {
-				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-
-				localCalendar.setTime(new Date());
-				int currentDayFromTime = localCalendar.get(Calendar.DATE);
-				int currentMonthFromTime = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYearFromTime = localCalendar.get(Calendar.YEAR);
-				DateTime fromTime = new DateTime(currentYearFromTime, currentMonthFromTime, currentDayFromTime, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				localCalendar.setTime(new Date());
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				ProjectionOperation projectList = new ProjectionOperation(Fields.from(
-						Fields.field("doctorName", "$user.firstName"), Fields.field("doctorTitle", "$user.title"),
-						Fields.field("patientMobileNumber", "$patient.mobileNumber"),
-						Fields.field("appointmentId", "$appointmentId"),
-						Fields.field("clinicNumber", "$location.clinicNumber"),
-						Fields.field("locationName", "$location.locationName"), Fields.field("time", "$time"),
-						Fields.field("fromDate", "$fromDate")));
-
-				Aggregation aggregation = Aggregation.newAggregation(
-						Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
-								.is(AppointmentType.APPOINTMENT.getType()).and("fromDate").gte(fromTime).and("toDate")
-								.lte(toTime)),
-						Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
-						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
-						Aggregation.unwind("patient"), projectList);
-				AggregationResults<AppointmentPatientReminderResponse> aggregationResults = mongoTemplate
-						.aggregate(aggregation, AppointmentCollection.class, AppointmentPatientReminderResponse.class);
-
-				List<AppointmentPatientReminderResponse> appointmentPatientReminderResponses = aggregationResults
-						.getMappedResults();
-
-				if (appointmentPatientReminderResponses != null && !appointmentPatientReminderResponses.isEmpty())
-					for (AppointmentPatientReminderResponse appointmentPatientReminderResponse : appointmentPatientReminderResponses) {
-						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-
-						String _24HourTime = String.format("%02d:%02d",
-								appointmentPatientReminderResponse.getTime().getFromTime() / 60,
-								appointmentPatientReminderResponse.getTime().getFromTime() % 60);
-						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-						_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-						_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-
-						Date _24HourDt = _24HourSDF.parse(_24HourTime);
-						String dateTime = _12HourSDF.format(_24HourDt) + ", "
-								+ sdf.format(appointmentPatientReminderResponse.getFromDate());
-
-						if (!DPDoctorUtils
-								.anyStringEmpty(appointmentPatientReminderResponse.getPatientMobileNumber())) {
-
-							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-							SMSDetail smsDetail = new SMSDetail();
-							SMS sms = new SMS();
-							sms.setSmsText("You have an appointment "
-									+ " @ " + dateTime
-									+ " with " + appointmentPatientReminderResponse.getDoctorTitle() + " "
-									+ appointmentPatientReminderResponse.getDoctorName()
-									+ (!DPDoctorUtils
-											.anyStringEmpty(appointmentPatientReminderResponse.getLocationName())
-													? (", " + appointmentPatientReminderResponse.getLocationName())
-													: "")
-									+ (!DPDoctorUtils
-											.anyStringEmpty(appointmentPatientReminderResponse.getClinicNumber())
-													? ", " + appointmentPatientReminderResponse.getClinicNumber() : "")
-									+ ". Download Healthcoco App- " + patientAppBitLink);
-
-							SMSAddress smsAddress = new SMSAddress();
-							smsAddress.setRecipient(appointmentPatientReminderResponse.getPatientMobileNumber());
-							sms.setSmsAddress(smsAddress);
-
-							smsDetail.setSms(sms);
-							smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-							List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-							smsDetails.add(smsDetail);
-							smsTrackDetail.setSmsDetails(smsDetails);
-							sMSServices.sendSMS(smsTrackDetail, false);
-						}
-					}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-		}
-	}
-
-//	@Scheduled(cron = "0 30 23 * * *", zone = "IST")
-	@Transactional
-	public void clearAppLinkDetails() {
-		List<AppLinkDetailsCollection> appLinkDetailsCollections = appLinkDetailsRepository.findAll();
-		for (AppLinkDetailsCollection appLinkDetailsCollection : appLinkDetailsCollections) {
-			appLinkDetailsCollection.setCount(0);
-		}
-		appLinkDetailsRepository.save(appLinkDetailsCollections);
-	}
-
-	//@Scheduled(cron = "0 0/30 12 * * SUN", zone = "IST")
-	@Override
-	@Transactional
-	public void updateActivePrescription() {
-		try {
-			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findActiveAndDrugExistRx();
-			for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
-				Boolean isActive = false;
-				for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
-					if (prescriptionItem.getDuration() != null
-							&& !DPDoctorUtils.anyStringEmpty(prescriptionItem.getDuration().getValue())
-							&& prescriptionItem.getDuration().getDurationUnit() != null) {
-						int noOfDays = 0;
-						Calendar cal = Calendar.getInstance();
-						Date createdTime = prescriptionCollection.getCreatedTime();
-						cal.setTime(createdTime);
-
-						switch (prescriptionItem.getDuration().getDurationUnit().getUnit()) {
-
-						case "time(s)":
-							break;
-						case "year(s)": {
-							cal.add(Calendar.YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue()));
-							long diff = cal.getTime().getTime() - new Date().getTime();
-							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-							break;
-						}
-						case "month(s)": {
-							cal.add(Calendar.MONTH, Integer.parseInt(prescriptionItem.getDuration().getValue()));
-							long diff = cal.getTime().getTime() - new Date().getTime();
-							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-							break;
-						}
-						case "week(s)": {
-							noOfDays = Integer.parseInt(prescriptionItem.getDuration().getValue()) * 7;
-							cal.add(Calendar.DAY_OF_YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue()));
-							long diff = cal.getTime().getTime() - new Date().getTime();
-							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-							break;
-						}
-						case "day(s)": {
-							cal.add(Calendar.DAY_OF_YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue()));
-							long diff = cal.getTime().getTime() - new Date().getTime();
-							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-							break;
-						}
-						case "hour(s)": {
-							// cal.add(Calendar.YEAR,
-							// Integer.parseInt(prescriptionItem.getDuration().getValue()));
-							// long diff = cal.getTime().getTime() - new
-							// Date().getTime();
-							// noOfDays = (int) TimeUnit.DAYS.convert(diff,
-							// TimeUnit.MILLISECONDS);
-							break;
-						}
-						}
-						if (noOfDays > 0)
-							isActive = true;
-					}
-				}
-				prescriptionCollection.setIsActive(isActive);
-				prescriptionRepository.save(prescriptionCollection);
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -2391,6 +1637,67 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ESCementDocument cementDocument = new ESCementDocument();
 				BeanUtil.map(cementCollection, cementDocument);
 				esDischargeSummaryService.addCement(cementDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkExpenseType(ObjectId resourceId) {
+		try {
+
+			ExpenseTypeCollection typeCollection = expenseTypeRepository.findOne(resourceId);
+			if (typeCollection != null) {
+				ESExpenseTypeDocument expenseDocument = new ESExpenseTypeDocument();
+				BeanUtil.map(typeCollection, expenseDocument);
+				exExpenseTypeService.addEditExpenseType(expenseDocument);
+	
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkRecipe(ObjectId resourceId) {
+		try {
+
+			RecipeCollection recipeCollection = recipeRepository.findOne(resourceId);
+			if (recipeCollection != null) {
+				ESRecipeDocument esRecipeDocument = new ESRecipeDocument();
+				BeanUtil.map(recipeCollection, esRecipeDocument);
+				ESRecipeService.addRecipe(esRecipeDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkIngredient(ObjectId resourceId) {
+		try {
+
+			IngredientCollection ingredientCollection = ingredientRepository.findOne(resourceId);
+			if (ingredientCollection != null) {
+				ESIngredientDocument esIngredientDocument = new ESIngredientDocument();
+				BeanUtil.map(ingredientCollection, esIngredientDocument);
+				ESRecipeService.addIngredient(esIngredientDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkNutrient(ObjectId resourceId) {
+		try {
+
+			NutrientCollection nutrientCollection = nutrientRepository.findOne(resourceId);
+			if (nutrientCollection != null) {
+				ESNutrientDocument esNutrientDocument = new ESNutrientDocument();
+				BeanUtil.map(nutrientCollection, esNutrientDocument);
+				ESRecipeService.addNutrient(esNutrientDocument);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

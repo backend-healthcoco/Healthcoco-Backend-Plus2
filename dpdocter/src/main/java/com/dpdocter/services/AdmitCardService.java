@@ -6,7 +6,6 @@ import org.bson.types.ObjectId;
 
 import com.dpdocter.request.AdmitCardRequest;
 import com.dpdocter.response.AdmitCardResponse;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface AdmitCardService {
 

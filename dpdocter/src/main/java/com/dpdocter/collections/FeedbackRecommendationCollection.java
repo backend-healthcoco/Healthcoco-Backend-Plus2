@@ -32,6 +32,9 @@ public class FeedbackRecommendationCollection extends GenericCollection {
 	@Field
 	private FeedbackType feedbackType;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -88,11 +91,20 @@ public class FeedbackRecommendationCollection extends GenericCollection {
 		this.feedbackType = feedbackType;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "FeedbackRecommendationCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", patientId=" + patientId + ", hospitalId=" + hospitalId + ", recommendationType="
-				+ recommendationType + ", feedbackType=" + feedbackType + "]";
+				+ recommendationType + ", feedbackType=" + feedbackType + ", isPatientDiscarded=" + isPatientDiscarded
+				+ "]";
 	}
 
 }

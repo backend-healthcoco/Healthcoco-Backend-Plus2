@@ -5,7 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import com.dpdocter.collections.InventoryItemCollection;
-import com.dpdocter.collections.InventorySettingsCollection;
 
 public interface InventoryItemRepository extends MongoRepository<InventoryItemCollection, ObjectId>{
 

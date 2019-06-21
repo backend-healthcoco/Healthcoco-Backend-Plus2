@@ -4,19 +4,19 @@ import java.util.Date;
 
 public interface OTPService {
 
-    String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId);
+	String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId);
 
-    Boolean otpGenerator(String mobileNumber, Boolean isPatientOTP);
+	Boolean otpGenerator(String mobileNumber, Boolean isPatientOTP);
 
-    Boolean verifyOTP(String doctorId, String locationId, String hospitalId, String patientId, String otpNumber);
+	Boolean verifyOTP(String doctorId, String locationId, String hospitalId, String patientId, String otpNumber);
 
-    boolean verifyOTP(String mobileNumber, String otpNumber);
+	boolean verifyOTP(String mobileNumber, String otpNumber);
 
-    Boolean checkOTPVerified(String doctorId, String locationId, String hospitalId, String patientId);
+	Boolean checkOTPVerified(String doctorId, String locationId, String hospitalId, String patientId);
 
-    boolean isNonVerifiedOTPValid(Date createdTime);
+	boolean isNonVerifiedOTPValid(Date createdTime);
 
-    boolean isOTPValid(Date createdTime);
+	boolean isOTPValid(Date createdTime);
 
 	Boolean checkOTPVerifiedForPatient(String mobileNumber, String otpNumber);
 

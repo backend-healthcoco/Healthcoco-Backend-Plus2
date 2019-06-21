@@ -92,6 +92,8 @@ public class UserLocationWithDoctorClinicProfile {
 
 	private Boolean isVaccinationModuleOn = false;
 
+	private Boolean isPidHasDate = true;
+
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -402,6 +404,14 @@ public class UserLocationWithDoctorClinicProfile {
 
 	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
 		this.isVaccinationModuleOn = isVaccinationModuleOn;
+	}
+
+	public Boolean getIsPidHasDate() {
+		return isPidHasDate;
+	}
+
+	public void setIsPidHasDate(Boolean isPidHasDate) {
+		this.isPidHasDate = isPidHasDate;
 	}
 
 	@Override

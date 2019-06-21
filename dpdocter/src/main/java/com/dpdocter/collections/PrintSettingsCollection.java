@@ -76,7 +76,7 @@ public class PrintSettingsCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPidHasDate = true;
-	
+
 	public Boolean getShowPoweredBy() {
 		return showPoweredBy;
 	}
@@ -213,6 +213,10 @@ public class PrintSettingsCollection extends GenericCollection {
 		this.generalNotes = generalNotes;
 	}
 
+	public void setIsLab(boolean isLab) {
+		this.isLab = isLab;
+	}
+
 	public Boolean getIsPidHasDate() {
 		return isPidHasDate;
 	}
@@ -237,7 +241,7 @@ public class PrintSettingsCollection extends GenericCollection {
 				+ ", clinicLogoUrl=" + clinicLogoUrl + ", hospitalUId=" + hospitalUId + ", contentSetup=" + contentSetup
 				+ ", contentLineSpace=" + contentLineSpace + ", contentLineStyle=" + contentLineStyle
 				+ ", showDrugGenericNames=" + showDrugGenericNames + ", showPoweredBy=" + showPoweredBy
-				+ ", generalNotes=" + generalNotes + ", isPidHasDate=" + isPidHasDate + "]";
+				+ ", generalNotes=" + generalNotes + ", isLab=" + isLab + ", isPidHasDate=" + isPidHasDate + "]";
 	}
 
 }

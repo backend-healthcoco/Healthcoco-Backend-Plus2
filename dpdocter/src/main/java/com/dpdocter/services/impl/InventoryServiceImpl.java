@@ -110,12 +110,26 @@ public class InventoryServiceImpl implements InventoryService {
 				response = new InventoryItem();
 				BeanUtil.map(inventoryItemCollection, response);
 			}
-			
-			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(inventoryItem.getLocationId()));
+
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+					.findByLocationId(new ObjectId(inventoryItem.getLocationId()));
 			for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-				Drug drug = makeDrugFavourite(inventoryItem.getResourceId(), doctorClinicProfileCollection.getDoctorId().toString(), doctorClinicProfileCollection.getLocationId().toString(), inventoryItem.getHospitalId());
+				Drug drug = makeDrugFavourite(inventoryItem.getResourceId(),
+						doctorClinicProfileCollection.getDoctorId().toString(),
+						doctorClinicProfileCollection.getLocationId().toString(), inventoryItem.getHospitalId());
+
+				transnationalService.addResource(new ObjectId(drug.getId()), Resource.DRUG, false);
+				if (drug != null) {
+					ESDrugDocument esDrugDocument = new ESDrugDocument();
+					BeanUtil.map(drug, esDrugDocument);
+					if (drug.getDrugType() != null) {
+						esDrugDocument.setDrugTypeId(drug.getDrugType().getId());
+						esDrugDocument.setDrugType(drug.getDrugType().getType());
+					}
+					esPrescriptionService.addDrug(esDrugDocument);
+				}
 			}
-			
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.warn("Error while adding inventory item");
@@ -436,8 +450,6 @@ public class InventoryServiceImpl implements InventoryService {
 					}
 				}
 			}
-
-			
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.warn("Error while creating stock");
@@ -754,8 +766,6 @@ public class InventoryServiceImpl implements InventoryService {
 		return response;
 	}
 
-	
-	
 	@Override
 	@Transactional
 	public List<InventoryBatch> getInventoryBatchByResourceId(String locationId, String hospitalId, String resourceId)
@@ -790,7 +800,7 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return inventoryStock;
 	}
-	
+
 	@Override
 	@Transactional
 	public Long getInventoryStockItemCount(String locationId, String hospitalId, String resourceId , String invoiceId)
@@ -816,7 +826,7 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return quantity;
 	}
-	
+
 	@Override
 	@Transactional
 	public InventoryBatch getInventoryBatchById(String id) {
@@ -832,7 +842,6 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return inventoryBatch;
 	}
-
 
 	@Transactional
 	private Drug makeDrugFavourite(String drugCode, String doctorId, String locationId, String hospitalId) {

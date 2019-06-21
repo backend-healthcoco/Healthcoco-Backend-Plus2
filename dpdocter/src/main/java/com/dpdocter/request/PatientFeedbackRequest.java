@@ -3,6 +3,7 @@ package com.dpdocter.request;
 import java.util.List;
 
 import com.dpdocter.beans.QuestionAnswers;
+import com.dpdocter.enums.AppointmentWaitTime;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.MedicationEffectType;
 
@@ -32,6 +33,25 @@ public class PatientFeedbackRequest {
 	// after taking medicine
 	private FeedbackType feedbackType;
 	private List<QuestionAnswers> questionAnswers;
+	private Boolean printPdfProvided = false;
+	private List<String> services;
+	private AppointmentWaitTime appointmentTiming;
+
+	public Boolean getPrintPdfProvided() {
+		return printPdfProvided;
+	}
+
+	public void setPrintPdfProvided(Boolean printPdfProvided) {
+		this.printPdfProvided = printPdfProvided;
+	}
+
+	public List<String> getServices() {
+		return services;
+	}
+
+	public void setServices(List<String> services) {
+		this.services = services;
+	}
 
 	public String getId() {
 		return id;
@@ -217,6 +237,14 @@ public class PatientFeedbackRequest {
 		this.questionAnswers = questionAnswers;
 	}
 
+	public AppointmentWaitTime getAppointmentTiming() {
+		return appointmentTiming;
+	}
+
+	public void setAppointmentTiming(AppointmentWaitTime appointmentTiming) {
+		this.appointmentTiming = appointmentTiming;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientFeedbackRequest [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId
@@ -228,7 +256,8 @@ public class PatientFeedbackRequest {
 				+ reply + ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved + ", adminUpdatedExperience="
 				+ adminUpdatedExperience + ", isDiscarded=" + isDiscarded + ", isMedicationOnTime=" + isMedicationOnTime
 				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType
-				+ ", questionAnswers=" + questionAnswers + "]";
+				+ ", questionAnswers=" + questionAnswers + ", printPdfProvided=" + printPdfProvided + ", services="
+				+ services + ", appointmentTiming=" + appointmentTiming + "]";
 	}
 
 }

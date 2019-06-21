@@ -59,8 +59,11 @@ import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.NutritionAppointment;
+import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientQueue;
+import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
@@ -81,10 +84,12 @@ import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.NutritionAppointmentCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientQueueCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.RecommendationsCollection;
+import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -115,10 +120,12 @@ import com.dpdocter.repository.CustomAppointmentRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.NutritionAppointmentRepository;
 import com.dpdocter.repository.PatientQueueRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.RecommendationsRepository;
+import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.SpecialityRepository;
@@ -193,6 +200,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 	private AppointmentRepository appointmentRepository;
 
 	@Autowired
+	private NutritionAppointmentRepository nutritionAppointmentRepository;
+
+	@Autowired
 	private LocationServices locationServices;
 
 	@Autowired
@@ -224,6 +234,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private RegistrationService registrationService;
+
+	@Autowired
+	private ReferenceRepository referenceRepository;
 
 	@Value(value = "${Appointment.timeSlotIsBooked}")
 	private String timeSlotIsBooked;
@@ -569,6 +582,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 						BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
 						doctorClinicProfile.setLocationId(doctorClinicProfileCollection.getLocationId());
 						doctorClinicProfile.setDoctorId(doctorClinicProfileCollection.getDoctorId());
+						doctorClinicProfile.setIsPidHasDate(location.getIsPidHasDate());
+						doctorClinicProfile.setPatientInitial(location.getPatientInitial());
+						doctorClinicProfile.setPatientCounter(location.getPatientCounter());
+						
 						ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 								Fields.field("role", "$role.role"), Fields.field("locationId", "$locationId"),
 								Fields.field("hospitalId", "$hospitalId")));
@@ -711,12 +728,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 									appointmentCollection.getLocationId());
 
 					appointmentCollection.setCategory(request.getCategory());
+					appointmentCollection.setBranch(request.getBranch());
 					appointmentCollection.setExplanation(request.getExplanation());
 					appointmentCollection.setNotifyDoctorByEmail(request.getNotifyDoctorByEmail());
 					appointmentCollection.setNotifyDoctorBySms(request.getNotifyDoctorBySms());
 					appointmentCollection.setNotifyPatientByEmail(request.getNotifyPatientByEmail());
 					appointmentCollection.setNotifyPatientBySms(request.getNotifyPatientByEmail());
 					appointmentCollection.setUpdatedTime(new Date());
+					appointmentCollection.setTreatmentFields(request.getTreatmentFields());
 					appointmentCollection = appointmentRepository.save(appointmentCollection);
 
 					if (updateVisit && !DPDoctorUtils.anyStringEmpty(appointmentCollection.getVisitId())) {
@@ -754,9 +773,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					final String appointmentId = appointmentCollection.getAppointmentId();
 					final String dateTime = _12HourSDF.format(_24HourDt) + ", "
 							+ sdf.format(appointmentCollection.getFromDate());
-					
-					final String toDateTime = _12HourSDF.format(_24HourToDt) + ", "
-							+ sdf.format(appointmentCollection.getFromDate());
+					final String branch = appointmentLookupResponse.getBranch();
 					final String clinicName = appointmentLookupResponse.getLocation().getLocationName();
 					final String clinicContactNum = appointmentLookupResponse.getLocation().getClinicNumber() != null
 							? appointmentLookupResponse.getLocation().getClinicNumber()
@@ -779,8 +796,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 						public void run() {
 							try {
 								sendAppointmentEmailSmsNotification(false, request, id, appointmentId, doctorName,
-										patientName, dateTime,toDateTime, clinicName, clinicContactNum, patientEmailAddress,
-										patientMobileNumber, doctorEmailAddress, doctorMobileNumber, facility);
+										patientName, dateTime, clinicName, clinicContactNum, patientEmailAddress,
+										patientMobileNumber, doctorEmailAddress, doctorMobileNumber, facility, branch);
 							} catch (MessagingException e) {
 								e.printStackTrace();
 							}
@@ -864,7 +881,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					response.setLatitude(appointmentLookupResponse.getLocation().getLatitude());
 					response.setLongitude(appointmentLookupResponse.getLocation().getLongitude());
 				}
-
 				List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 						.findByLocationId(new ObjectId(request.getLocationId()));
 				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
@@ -911,7 +927,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					patientCard = patientCards.get(0);
 				request.setLocalPatientName(patientCard.getLocalPatientName());
 			}
-
 			AppointmentCollection appointmentCollection = null;
 
 			if (request.getCreatedBy().equals(AppointmentCreatedBy.PATIENT)) {
@@ -951,13 +966,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 								AppointmentCollection.class, AppointmentCollection.class)
 						.getMappedResults();
-
-				// appointmentRepository.findAppointmentbyUserLocationIdTimeDate(
-				// new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
-				// request.getTime().getFromTime(), request.getTime().getToTime(),
-				// request.getFromDate(),
-				// request.getToDate(), AppointmentState.CANCEL.getState());
-
 				if (appointmentCollections != null && !appointmentCollections.isEmpty()) {
 					logger.error(timeSlotIsBooked);
 					throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
@@ -1010,11 +1018,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 						clinicContactNum = locationCollection.getClinicNumber() != null
 								? locationCollection.getClinicNumber()
 								: "";
+				final String branch = request.getBranch();
 
 				if (request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)) {
 					appointmentCollection.setState(AppointmentState.CONFIRM);
 					appointmentCollection.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 				} else {
+					appointmentCollection.setIsCreatedByPatient(true);
 					if (patientCard != null)
 						appointmentCollection.setCreatedBy(patientCard.getLocalPatientName());
 					else
@@ -1058,8 +1068,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 					public void run() {
 						try {
 							sendAppointmentEmailSmsNotification(true, request, id, appointmentId, doctorName,
-									patientName, dateTime,toDateTime, clinicName, clinicContactNum, patientEmailAddress,
-									patientMobileNumber, doctorEmailAddress, doctorMobileNumber, facility);
+									patientName, dateTime, clinicName, clinicContactNum, patientEmailAddress,
+									patientMobileNumber, doctorEmailAddress, doctorMobileNumber, facility, branch);
 						} catch (MessagingException e) {
 							e.printStackTrace();
 						}
@@ -1124,7 +1134,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 							response.setLongitude(locationCollection.getLongitude());
 						}
 					}
-
 					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 							.findByLocationId(locationId);
 					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
@@ -1159,6 +1168,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			patientRegistrationRequest.setGender(request.getGender());
 			patientRegistrationRequest.setDob(request.getDob());
 			patientRegistrationRequest.setAge(request.getAge());
+			patientRegistrationRequest.setPNUM(request.getPNUM());
 			RegisteredPatientDetails patientDetails = null;
 			patientDetails = registrationService.registerNewPatient(patientRegistrationRequest);
 			if (patientDetails != null) {
@@ -1183,6 +1193,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				patientRegistrationRequest.setGender(request.getGender());
 				patientRegistrationRequest.setDob(request.getDob());
 				patientRegistrationRequest.setAge(request.getAge());
+				patientRegistrationRequest.setPNUM(request.getPNUM());
 				RegisteredPatientDetails patientDetails = registrationService
 						.registerExistingPatient(patientRegistrationRequest, null);
 				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
@@ -1204,9 +1215,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	private void sendAppointmentEmailSmsNotification(Boolean isAddAppointment, AppointmentRequest request,
 			String appointmentCollectionId, String appointmentId, String doctorName, String patientName,
-			String dateTime, String toDateTime, String clinicName, String clinicContactNum, String patientEmailAddress,
+			String dateTime, String clinicName, String clinicContactNum, String patientEmailAddress,
 			String patientMobileNumber, String doctorEmailAddress, String doctorMobileNumber,
-			DoctorFacility doctorFacility) throws MessagingException {
+			DoctorFacility doctorFacility, String branch) throws MessagingException {
 
 		/*
 		 * sendAppointmentEmailSmsNotification(true, request,
@@ -1222,69 +1233,69 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)) {
 				if (request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail())
 					sendEmail(doctorName, patientName, dateTime, clinicName,
-							"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress);
+							"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch);
 				if (request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()) {
 					sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
 							request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
-							appointmentId, dateTime, toDateTime,doctorName, clinicName, clinicContactNum);
+							appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch);
 				}
 				sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
 						patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
-						clinicContactNum);
+						clinicContactNum, branch);
 
 				if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 						&& patientEmailAddress != null)
 					sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_TO_PATIENT",
-							patientEmailAddress);
+							patientEmailAddress, branch);
 				if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()
 						&& !DPDoctorUtils.anyStringEmpty(patientMobileNumber)) {
 					sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 							request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-							request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime, toDateTime,
-							doctorName, clinicName, clinicContactNum);
+							request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
+							doctorName, clinicName, clinicContactNum, branch);
 				}
 				if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 					sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
 							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum);
+							doctorName, clinicName, clinicContactNum, branch);
 			} else {
 				if (doctorFacility != null
 						&& (doctorFacility.getType().equalsIgnoreCase(DoctorFacility.IBS.getType()))) {
 					sendEmail(doctorName, patientName, dateTime, clinicName,
-							"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress);
+							"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch);
 					sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
 							request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
-							appointmentId, dateTime,toDateTime, doctorName, clinicName, clinicContactNum);
+							appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,toDateTime,
-								doctorName, clinicName, clinicContactNum);
+								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
+								doctorName, clinicName, clinicContactNum, branch);
 					sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
 							patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
-							clinicContactNum);
+							clinicContactNum, branch);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
 								patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum);
+								doctorName, clinicName, clinicContactNum, branch);
 				} else {
 					sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR",
-							doctorEmailAddress);
+							doctorEmailAddress, branch);
 					sendMsg(null, "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR", request.getDoctorId(),
 							request.getLocationId(), request.getHospitalId(), request.getDoctorId(), doctorMobileNumber,
-							patientName, appointmentId, dateTime,toDateTime, doctorName, clinicName, clinicContactNum);
+							patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(), "TENTATIVE_APPOINTMENT_TO_PATIENT",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,toDateTime,
-								doctorName, clinicName, clinicContactNum);
+								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
+								doctorName, clinicName, clinicContactNum, branch);
 					sendPushNotification("CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR", request.getDoctorId(),
 							doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum);
+							doctorName, clinicName, clinicContactNum, branch);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendPushNotification("TENTATIVE_APPOINTMENT_TO_PATIENT", request.getPatientId(),
 								patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum);
+								doctorName, clinicName, clinicContactNum, branch);
 				}
 			}
 		} else {
@@ -1292,96 +1303,96 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (request.getCancelledBy().equals(AppointmentCreatedBy.DOCTOR.getType())) {
 					if (request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail())
 						sendEmail(doctorName, patientName, dateTime, clinicName,
-								"CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", doctorEmailAddress);
+								"CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", doctorEmailAddress, branch);
 
 					if (request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()) {
 						sendMsg(null, "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", request.getDoctorId(),
 								request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
-								doctorMobileNumber, patientName, appointmentId, dateTime,toDateTime, doctorName, clinicName,
-								clinicContactNum);
+								doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
+								clinicContactNum, branch);
 					}
 
 					sendPushNotification("CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", request.getDoctorId(),
 							doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum);
+							doctorName, clinicName, clinicContactNum, branch);
 
 					if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 							&& patientEmailAddress != null)
 						sendEmail(doctorName, patientName, dateTime, clinicName,
-								"CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR", patientEmailAddress);
+								"CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR", patientEmailAddress, branch);
 
 					if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()
 							&& !DPDoctorUtils.anyStringEmpty(patientMobileNumber)) {
 						sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(), "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,toDateTime,
-								doctorName, clinicName, clinicContactNum);
+								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
+								doctorName, clinicName, clinicContactNum, branch);
 					}
 
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendPushNotification("CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR", request.getPatientId(),
 								patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum);
+								doctorName, clinicName, clinicContactNum, branch);
 				} else {
 					if (request.getState().getState().equals(AppointmentState.CANCEL.getState())) {
 						sendMsg(null, "CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT", request.getDoctorId(),
 								request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
-								doctorMobileNumber, patientName, appointmentId, dateTime,toDateTime, doctorName, clinicName,
-								clinicContactNum);
+								doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
+								clinicContactNum, branch);
 						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(),
 									"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getPatientId(),
-									patientMobileNumber, patientName, appointmentId, dateTime,toDateTime, doctorName, clinicName,
-									clinicContactNum);
+									patientMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
+									clinicContactNum, branch);
 
 						sendPushNotification("CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT", request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum);
+								doctorName, clinicName, clinicContactNum, branch);
 						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendPushNotification("CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", request.getPatientId(),
 									patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-									doctorName, clinicName, clinicContactNum);
+									doctorName, clinicName, clinicContactNum, branch);
 						if (!DPDoctorUtils.anyStringEmpty(patientEmailAddress))
 							sendEmail(doctorName, patientName, dateTime, clinicName,
-									"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", patientEmailAddress);
+									"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", patientEmailAddress, branch);
 						sendEmail(doctorName, patientName, dateTime, clinicName,
-								"CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress);
+								"CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch);
 					}
 				}
 			} else {
 				if (request.getCreatedBy().getType().equals(AppointmentCreatedBy.DOCTOR.getType())) {
 					if (request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail())
 						sendEmail(doctorName, patientName, dateTime, clinicName,
-								"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress);
+								"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch);
 
 					if (request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()) {
 						if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
 							sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
-									doctorMobileNumber, patientName, appointmentId, dateTime, toDateTime,doctorName, clinicName,
-									clinicContactNum);
+									doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
+									clinicContactNum, branch);
 						else
 							sendMsg(null, "RESCHEDULE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
-									doctorMobileNumber, patientName, appointmentId, dateTime, toDateTime,doctorName, clinicName,
-									clinicContactNum);
+									doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
+									clinicContactNum, branch);
 					}
 
 					if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
 						sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum);
+								doctorName, clinicName, clinicContactNum, branch);
 					else
 						sendPushNotification("RESCHEDULE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum);
+								doctorName, clinicName, clinicContactNum, branch);
 				}
 				if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 						&& !DPDoctorUtils.allStringsEmpty(patientEmailAddress)) {
 
 					sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_TO_PATIENT",
-							patientEmailAddress);
+							patientEmailAddress, branch);
 				}
 				if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()) {
 					if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
@@ -1389,40 +1400,32 @@ public class AppointmentServiceImpl implements AppointmentService {
 						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,toDateTime,
-									doctorName, clinicName, clinicContactNum);
+									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
+									doctorName, clinicName, clinicContactNum, branch);
 						else if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(), "RESCHEDULE_APPOINTMENT_TO_PATIENT",
 									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,toDateTime,
-									doctorName, clinicName, clinicContactNum);
-					}
-					else if (request.getState().getState().equals(AppointmentState.RESCHEDULE.getState())) {
-						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber)) {
-							sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(), "RESCHEDULE_APPOINTMENT_TO_PATIENT",
-									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-									toDateTime, doctorName, clinicName, clinicContactNum);
-						}
-					}
+									doctorName, clinicName, clinicContactNum, branch);
 				}
 
 				if (request.getState().getState().equals(AppointmentState.CONFIRM.getState())
 						&& !DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 					sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
 							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum);
+							doctorName, clinicName, clinicContactNum, branch);
 				else if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 					sendPushNotification("RESCHEDULE_APPOINTMENT_TO_PATIENT", request.getPatientId(),
 							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum);
+							doctorName, clinicName, clinicContactNum, branch);
 			}
 		}
 	}
+}
 
 	private void sendPushNotification(String type, String userId, String mobileNumber, String patientName,
 			String appointmentCollectionId, String appointmentId, String dateTime, String doctorName, String clinicName,
-			String clinicContactNum) {
+			String clinicContactNum, String branch) {
 
 		if (DPDoctorUtils.anyStringEmpty(patientName))
 			patientName = "";
@@ -1440,7 +1443,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		String text = "";
 		switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
+			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")+ (branch != "" ? ", " + branch : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ " + dateTime
 					+ ".";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
@@ -1450,7 +1453,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		case "CONFIRMED_APPOINTMENT_TO_DOCTOR": {
 			text = "Healthcoco! Your appointment with " + patientName + " has been scheduled @ " + dateTime
-					+ (clinicName != "" ? " at " + clinicName : "") + ".";
+					+ (clinicName != "" ? " at " + clinicName : "") + (branch != "" ? ", " + branch : "")+ ".";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
 					appointmentCollectionId, null);
 		}
@@ -1458,7 +1461,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		case "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR": {
 			text = "Healthcoco! You have an appointment request from " + patientName + " for " + dateTime + " at "
-					+ clinicName + ".";
+					+ clinicName + (branch != "" ? ", " + branch : "")+ ".";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
 					appointmentCollectionId, null);
 		}
@@ -1466,7 +1469,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		case "TENTATIVE_APPOINTMENT_TO_PATIENT": {
 			text = "Your appointment @ " + dateTime + " with " + doctorName
-					+ (clinicName != "" ? ", " + clinicName : "")
+					+ (clinicName != "" ? ", " + clinicName : "")+ (branch != "" ? ", " + branch : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been sent for confirmation.";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
 					appointmentCollectionId, null);
@@ -1474,7 +1477,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR": {
-			text = "Your appointment" + " with " + patientName + " for " + dateTime + " at " + clinicName
+			text = "Your appointment" + " with " + patientName + " for " + dateTime + " at " + clinicName+ (branch != "" ? ", " + branch : "")
 					+ " has been cancelled as per your request.";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
 					appointmentCollectionId, null);
@@ -1483,7 +1486,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR": {
 			text = "Your appointment @ " + dateTime + " has been cancelled by " + doctorName
-					+ (clinicName != "" ? ", " + clinicName : "")
+					+ (clinicName != "" ? ", " + clinicName : "")+ (branch != "" ? ", " + branch : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ".";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
 					appointmentCollectionId, null);
@@ -1491,7 +1494,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT": {
-			text = "Healthcoco! Your appointment" + " with " + patientName + " @ " + dateTime + " at " + clinicName
+			text = "Healthcoco! Your appointment" + " with " + patientName + " @ " + dateTime + " at " + clinicName+ (branch != "" ? ", " + branch : "")
 					+ ", has been cancelled by patient.";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
 					appointmentCollectionId, null);
@@ -1508,7 +1511,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		case "APPOINTMENT_REMINDER_TO_PATIENT": {
 			text = "You have an appointment @ " + dateTime + " with " + doctorName
-					+ (clinicName != "" ? ", " + clinicName : "")
+					+ (clinicName != "" ? ", " + clinicName : "")+ (branch != "" ? ", " + branch : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ".";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
 					appointmentCollectionId, null);
@@ -1516,7 +1519,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
+			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")+ (branch != "" ? ", " + branch : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been rescheduled @ " + dateTime
 					+ ".";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
@@ -1525,7 +1528,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_DOCTOR": {
-			text = "Your appointment with " + patientName + " has been rescheduled to " + dateTime + " at " + clinicName
+			text = "Your appointment with " + patientName + " has been rescheduled to " + dateTime + " at " + clinicName+ (branch != "" ? ", " + branch : "")
 					+ ".";
 			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(),
 					appointmentCollectionId, null);
@@ -1538,67 +1541,69 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	private void sendEmail(String doctorName, String patientName, String dateTime, String clinicName, String type,
-			String emailAddress) throws MessagingException {
+			String emailAddress, String branch) throws MessagingException {
+		
+		if(!DPDoctorUtils.anyStringEmpty(branch))branch = " "+branch+" ";
 		switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"confirmAppointmentToPatient.vm");
+					"confirmAppointmentToPatient.vm", branch);
 			mailService.sendEmail(emailAddress, appointmentConfirmToPatientMailSubject + " " + dateTime, body, null);
 		}
 			break;
 
 		case "CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"confirmAppointmentToDoctorByPatient.vm");
+					"confirmAppointmentToDoctorByPatient.vm", branch);
 			mailService.sendEmail(emailAddress, appointmentConfirmToDoctorMailSubject + " " + dateTime, body, null);
 		}
 			break;
 
 		case "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentRequestToDoctorByPatient.vm");
+					"appointmentRequestToDoctorByPatient.vm", branch);
 			mailService.sendEmail(emailAddress, appointmentRequestToDoctorMailSubject + " " + dateTime, body, null);
 		}
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentCancelByDoctorToDoctor.vm");
+					"appointmentCancelByDoctorToDoctor.vm", branch);
 			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentCancelToPatientByDoctor.vm");
+					"appointmentCancelToPatientByDoctor.vm", branch);
 			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentCancelByPatientToDoctor.vm");
+					"appointmentCancelByPatientToDoctor.vm", branch);
 			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentCancelToPatientByPatient.vm");
+					"appointmentCancelToPatientByPatient.vm", branch);
 			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentCancelToPatientByDoctor.vm");
+					"appointmentCancelToPatientByDoctor.vm", branch);
 			mailService.sendEmail(emailAddress, appointmentRescheduleToPatientMailSubject + " " + dateTime, body, null);
 		}
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_DOCTOR": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentRescheduleByDoctorToDoctor.vm");
+					"appointmentRescheduleByDoctorToDoctor.vm", branch);
 			mailService.sendEmail(emailAddress, appointmentRescheduleToDoctorMailSubject + " " + dateTime, body, null);
 		}
 			break;
@@ -1610,8 +1615,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	private void sendMsg(String formatType, String type, String doctorId, String locationId, String hospitalId,
-			String userId, String mobileNumber, String patientName, String appointmentId, String dateTime, String toDateTime,
-			String doctorName, String clinicName, String clinicContactNum) {
+			String userId, String mobileNumber, String patientName, String appointmentId, String dateTime,
+			String doctorName, String clinicName, String clinicContactNum, String branch) {
 		SMSFormatCollection smsFormatCollection = null;
 		String time = "@ " + dateTime;
 		if (formatType != null) {
@@ -1649,49 +1654,40 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (!smsFormatCollection.getContent().contains(SMSContent.CLINIC_NAME.getContent())
 						|| clinicName == null)
 					clinicName = "";
-				if (!smsFormatCollection.getContent().equals(SMSContent.CLINIC_CONTACT_NUMBER.getContent())
+				if (!smsFormatCollection.getContent().contains(SMSContent.CLINIC_CONTACT_NUMBER.getContent())
 						|| clinicContactNum == null)
 					clinicContactNum = "";
-				
-				if (!smsFormatCollection.getContent().equals(SMSContent.SLOT_SMS.getContent())
-						|| clinicContactNum == null)
-				{
-					time = "between " + dateTime + " - " + toDateTime;
-				}
-				else
-				{
-					time = "@ " + dateTime;
-				}
-					
-					
+				if (!smsFormatCollection.getContent().contains(SMSContent.BRANCH.getContent())
+						|| branch == null)
+					branch = "";
 			}
 		}
 		String text = "";
 		switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
-					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed " + time
+			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "") + (branch != "" ? ", " + branch : "")
+					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ " + dateTime
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
 		}
 			break;
 
 		case "CONFIRMED_APPOINTMENT_TO_DOCTOR": {
-			text = "Healthcoco! Your appointment with " + patientName + " has been scheduled " + time
-					+ (clinicName != "" ? " at " + clinicName : "") + ".";
+			text = "Healthcoco! Your appointment with " + patientName + " has been scheduled @ " + dateTime
+					+ (clinicName != "" ? " at " + clinicName : "") + (branch != "" ? ", " + branch : "") + ".";
 			smsDetail.setUserName(doctorName);
 		}
 			break;
 
 		case "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR": {
-			text = "Healthcoco! You have an appointment request from " + patientName + " "+ time + " at "
-					+ clinicName + ".";
+			text = "Healthcoco! You have an appointment request from " + patientName + " for " + dateTime + " at "
+					+ clinicName + (branch != "" ? ", " + branch : "")+ ".";
 			smsDetail.setUserName(doctorName);
 		}
 			break;
 
 		case "TENTATIVE_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointmen " + time + " with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
+			text = "Your appointmen @ " + dateTime + " with " + doctorName + (clinicName != "" ? ", " + clinicName : "")+ (branch != "" ? ", " + branch : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "")
 					+ " has been sent for confirmation. Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
@@ -1699,15 +1695,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR": {
-			text = "Your appointment" + " with " + patientName + " " + time + " at " + clinicName
+			text = "Your appointment" + " with " + patientName + " for " + dateTime + " at " + clinicName+ (branch != "" ? ", " + branch : "")
 					+ " has been cancelled as per your request.";
 			smsDetail.setUserName(doctorName);
 		}
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR": {
-			text = "Your appointment " + time + " has been cancelled by " + doctorName
-					+ (clinicName != "" ? ", " + clinicName : "")
+			text = "Your appointment @ " + dateTime + " has been cancelled by " + doctorName
+					+ (clinicName != "" ? ", " + clinicName : "")+ (branch != "" ? ", " + branch : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "")
 					+ ". Request you to book again. Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
@@ -1715,7 +1711,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT": {
-			text = "Healthcoco! Your appointment" + " with " + patientName + " " + time + " at " + clinicName
+			text = "Healthcoco! Your appointment" + " with " + patientName + " @ " + dateTime + " at " + clinicName+ (branch != "" ? ", " + branch : "")
 					+ ", has been cancelled by patient.";
 			smsDetail.setUserName(doctorName);
 		}
@@ -1729,8 +1725,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "APPOINTMENT_REMINDER_TO_PATIENT": {
-			text = "You have an appointment " + time + " with " + doctorName
-					+ (clinicName != "" ? ", " + clinicName : "")
+			text = "You have an appointment @ " + dateTime + " with " + doctorName
+					+ (clinicName != "" ? ", " + clinicName : "")+ (branch != "" ? ", " + branch : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ". Download Healthcoco App- "
 					+ patientAppBitLink;
 			smsDetail.setUserName(patientName);
@@ -1738,15 +1734,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
-					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been rescheduled " + time
+			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")+ (branch != "" ? ", " + branch : "")
+					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been rescheduled @ " + dateTime
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
 		}
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_DOCTOR": {
-			text = "Your appointment with " + patientName + " has been rescheduled " + time + " at " + clinicName
+			text = "Your appointment with " + patientName + " has been rescheduled to " + dateTime + " at " + clinicName+ (branch != "" ? ", " + branch : "")
 					+ ".";
 			smsDetail.setUserName(doctorName);
 		}
@@ -1772,10 +1768,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	@Transactional
-	public List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
+	public Response<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
-			String toTime, Boolean isWeb) {
-		List<Appointment> response = null;
+			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb) {
+		Response<Appointment> response = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 
@@ -1839,135 +1835,196 @@ public class AppointmentServiceImpl implements AppointmentService {
 				} else if (status.equalsIgnoreCase(QueueStatus.CHECKED_OUT.toString())) {
 					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "checkedOutAt"));
 				}
-			} else if (!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("updatedTime")) {
+			} else if(!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("startTime")){
+				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "time.fromTime"));
+			}
+			else if (!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("updatedTime")) {
 				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
 			}
+			
 
 			if (isWeb)
-				response = getAppointmentsForWeb(criteria, sortOperation, page, size, response,
-						appointmentLookupResponses);
+				response = getAppointmentsForWeb(criteria, sortOperation, page, size, appointmentLookupResponses);
 			else {
-				if (size > 0) {
-					appointmentLookupResponses = mongoTemplate.aggregate(
-							Aggregation
-									.newAggregation(Aggregation.match(criteria),
-											Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-											Aggregation.unwind("doctor"),
-											Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-											Aggregation.unwind("location"),
+				Integer count = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
+				if(count > 0) {
+					response = new Response<Appointment>();
+					if (size > 0) {
+						appointmentLookupResponses = mongoTemplate.aggregate(
+								Aggregation
+										.newAggregation(Aggregation.match(criteria),
+												Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+												Aggregation.unwind("doctor"),
+												Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+												Aggregation.unwind("location"),
 
-											Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-											new CustomAggregationOperation(new BasicDBObject(
-													"$unwind",
-													new BasicDBObject(
-															"path", "$patientCard").append("preserveNullAndEmptyArrays",
-																	true))),
-											new CustomAggregationOperation(
-													new BasicDBObject("$redact",
-															new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$patientCard.locationId",
-																					"$locationId")))
-																							.append("then", "$$KEEP")
-																							.append("else",
-																									"$$PRUNE")))),
+												Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+												new CustomAggregationOperation(new BasicDBObject(
+														"$unwind",
+														new BasicDBObject(
+																"path", "$patientCard").append("preserveNullAndEmptyArrays",
+																		true))),
+												new CustomAggregationOperation(
+														new BasicDBObject("$redact",
+																new BasicDBObject("$cond",
+																		new BasicDBObject("if", new BasicDBObject("$eq",
+																				Arrays.asList("$patientCard.locationId",
+																						"$locationId")))
+																								.append("then", "$$KEEP")
+																								.append("else",
+																										"$$PRUNE")))),
 
-											Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
-											Aggregation.unwind("patientCard.user"), sortOperation,
-											Aggregation.skip((page) * size), Aggregation.limit(size))
-									.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
-							AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
-				} else {
-					appointmentLookupResponses = mongoTemplate.aggregate(
-							Aggregation
-									.newAggregation(Aggregation.match(criteria),
-											Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-											Aggregation.unwind("doctor"),
-											Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-											Aggregation.unwind("location"),
-											Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-											new CustomAggregationOperation(new BasicDBObject(
-													"$unwind",
-													new BasicDBObject(
-															"path", "$patientCard").append("preserveNullAndEmptyArrays",
-																	true))),
-											new CustomAggregationOperation(
-													new BasicDBObject("$redact",
-															new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$patientCard.locationId",
-																					"$locationId")))
-																							.append("then", "$$KEEP")
-																							.append("else",
-																									"$$PRUNE")))),
+												Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
+												Aggregation.unwind("patientCard.user"), sortOperation,
+												Aggregation.skip((page) * size), Aggregation.limit(size))
+										.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
+								AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
+					} else {
+						appointmentLookupResponses = mongoTemplate.aggregate(
+								Aggregation
+										.newAggregation(Aggregation.match(criteria),
+												Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+												Aggregation.unwind("doctor"),
+												Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+												Aggregation.unwind("location"),
+												Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+												new CustomAggregationOperation(new BasicDBObject(
+														"$unwind",
+														new BasicDBObject(
+																"path", "$patientCard").append("preserveNullAndEmptyArrays",
+																		true))),
+												new CustomAggregationOperation(
+														new BasicDBObject("$redact",
+																new BasicDBObject("$cond",
+																		new BasicDBObject("if", new BasicDBObject("$eq",
+																				Arrays.asList("$patientCard.locationId",
+																						"$locationId")))
+																								.append("then", "$$KEEP")
+																								.append("else",
+																										"$$PRUNE")))),
 
-											Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
-											Aggregation.unwind("patientCard.user"), sortOperation)
-									.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
-							AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
-				}
+												Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
+												Aggregation.unwind("patientCard.user"), sortOperation)
+										.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
+								AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
+					}
 
-				if (appointmentLookupResponses != null && !appointmentLookupResponses.isEmpty()) {
-					response = new ArrayList<Appointment>();
+					if (appointmentLookupResponses != null && !appointmentLookupResponses.isEmpty()) {
+						List<Appointment> appointments = new ArrayList<Appointment>();
 
-					for (AppointmentLookupResponse collection : appointmentLookupResponses) {
-						Appointment appointment = new Appointment();
-						PatientCard patient = null;
-						if (collection.getType().getType().equals(AppointmentType.APPOINTMENT.getType())) {
-							patient = collection.getPatientCard();
-							if (patient != null) {
-								patient.setId(patient.getUserId());
+						for (AppointmentLookupResponse collection : appointmentLookupResponses) {
+							Appointment appointment = new Appointment();
+							PatientCard patientCard = null;
+							if (collection.getType().getType().equals(AppointmentType.APPOINTMENT.getType())) {
+								patientCard = collection.getPatientCard();
+								if (patientCard != null) {
+									patientCard.setBackendPatientId(patientCard.getId());
+									patientCard.setId(patientCard.getUserId());
 
-								if (patient.getUser() != null) {
-									patient.setColorCode(patient.getUser().getColorCode());
-									patient.setMobileNumber(patient.getUser().getMobileNumber());
+									if (patientCard.getUser() != null) {
+										patientCard.setColorCode(patientCard.getUser().getColorCode());
+										patientCard.setMobileNumber(patientCard.getUser().getMobileNumber());
+									}
+									patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+									patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
+
 								}
-								patient.setImageUrl(getFinalImageURL(patient.getImageUrl()));
-								patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl()));
-
 							}
-						}
-						BeanUtil.map(collection, appointment);
-						appointment.setPatient(patient);
-						if (collection.getDoctor() != null) {
-							appointment.setDoctorName(
-									collection.getDoctor().getTitle() + " " + collection.getDoctor().getFirstName());
-						}
-						if (collection.getLocation() != null) {
-							appointment.setLocationName(collection.getLocation().getLocationName());
-							appointment.setClinicNumber(collection.getLocation().getClinicNumber());
+							BeanUtil.map(collection, appointment);
+							appointment.setPatient(patientCard);
 
-							String address = (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getStreetAddress())
-									? collection.getLocation().getStreetAddress() + ", "
-									: "")
-									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getLandmarkDetails())
-											? collection.getLocation().getLandmarkDetails() + ", "
-											: "")
-									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getLocality())
-											? collection.getLocation().getLocality() + ", "
-											: "")
-									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getCity())
-											? collection.getLocation().getCity() + ", "
-											: "")
-									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getState())
-											? collection.getLocation().getState() + ", "
-											: "")
-									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getCountry())
-											? collection.getLocation().getCountry() + ", "
-											: "")
-									+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getPostalCode())
-											? collection.getLocation().getPostalCode()
-											: "");
+							// -----------------------------------------
 
-							if (address.charAt(address.length() - 2) == ',') {
-								address = address.substring(0, address.length() - 2);
+							if (isRegisteredPatientRequired == true && patientCard != null) {
+								RegisteredPatientDetails registeredPatientDetail = new RegisteredPatientDetails();
+								if (patientCard.getUser() != null) {
+									BeanUtil.map(patientCard.getUser(), registeredPatientDetail);
+									if (patientCard.getUser().getId() != null) {
+										registeredPatientDetail.setUserId(patientCard.getUser().getId().toString());
+									}
+								}
+
+								Patient patient = new Patient();
+								BeanUtil.map(patientCard, patient);
+								patient.setPatientId(patientCard.getUser().getId().toString());
+								ObjectId referredBy = null;
+								if (patientCard.getReferredBy() != null) {
+									referredBy = new ObjectId(patientCard.getReferredBy());
+								}
+
+								patientCard.setReferredBy(null);
+								BeanUtil.map(patientCard, registeredPatientDetail);
+
+								registeredPatientDetail.setPatient(patient);
+								registeredPatientDetail.setAddress(patientCard.getAddress());
+
+								registeredPatientDetail.setDoctorId(patientCard.getDoctorId().toString());
+								registeredPatientDetail.setLocationId(patientCard.getLocationId().toString());
+								registeredPatientDetail.setHospitalId(patientCard.getHospitalId().toString());
+								registeredPatientDetail.setCreatedTime(patientCard.getCreatedTime());
+								registeredPatientDetail.setPID(patientCard.getPID());
+								registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
+
+								if (patientCard.getDob() != null) {
+									registeredPatientDetail.setDob(patientCard.getDob());
+								}
+
+								Reference reference = new Reference();
+								if (referredBy != null) {
+									ReferencesCollection referencesCollection = referenceRepository.findOne(referredBy);
+									if (referencesCollection != null)
+										BeanUtil.map(referencesCollection, reference);
+								}
+								registeredPatientDetail.setReferredBy(reference);
+								registeredPatientDetail.setColorCode(patientCard.getUser().getColorCode());
+								appointment.setRegisteredPatientDetails(registeredPatientDetail);
+								appointment.setPatient(null);
 							}
 
-							appointment.setClinicAddress(address);
-							appointment.setLatitude(collection.getLocation().getLatitude());
-							appointment.setLongitude(collection.getLocation().getLongitude());
+							// -----------------------------------------
+
+							if (collection.getDoctor() != null) {
+								appointment.setDoctorName(
+										collection.getDoctor().getTitle() + " " + collection.getDoctor().getFirstName());
+							}
+							if (collection.getLocation() != null) {
+								appointment.setLocationName(collection.getLocation().getLocationName());
+								appointment.setClinicNumber(collection.getLocation().getClinicNumber());
+
+								String address = (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getStreetAddress())
+										? collection.getLocation().getStreetAddress() + ", "
+										: "")
+										+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getLandmarkDetails())
+												? collection.getLocation().getLandmarkDetails() + ", "
+												: "")
+										+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getLocality())
+												? collection.getLocation().getLocality() + ", "
+												: "")
+										+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getCity())
+												? collection.getLocation().getCity() + ", "
+												: "")
+										+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getState())
+												? collection.getLocation().getState() + ", "
+												: "")
+										+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getCountry())
+												? collection.getLocation().getCountry() + ", "
+												: "")
+										+ (!DPDoctorUtils.anyStringEmpty(collection.getLocation().getPostalCode())
+												? collection.getLocation().getPostalCode()
+												: "");
+
+								if (address.charAt(address.length() - 2) == ',') {
+									address = address.substring(0, address.length() - 2);
+								}
+
+								appointment.setClinicAddress(address);
+								appointment.setLatitude(collection.getLocation().getLatitude());
+								appointment.setLongitude(collection.getLocation().getLongitude());
+							}
+							appointments.add(appointment);
 						}
-						response.add(appointment);
+						response.setCount(count);
+						response.setDataList(appointments);
 					}
 				}
 			}
@@ -1978,150 +2035,158 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 	}
 
-	private List<Appointment> getAppointmentsForWeb(Criteria criteria, SortOperation sortOperation, int page, int size,
-			List<Appointment> response, List<AppointmentLookupResponse> appointmentLookupResponses) {
+	private Response<Appointment> getAppointmentsForWeb(Criteria criteria, SortOperation sortOperation, int page, int size,
+			List<AppointmentLookupResponse> appointmentLookupResponses) {
 
-		CustomAggregationOperation projectOperation = new CustomAggregationOperation(new BasicDBObject("$project",
-				new BasicDBObject("_id", "$_id").append("doctorId", "$doctorId").append("locationId", "$locationId")
-						.append("hospitalId", "$hospitalId").append("patientId", "$patientId").append("time", "$time")
-						.append("state", "$state").append("isRescheduled", "$isRescheduled")
-						.append("fromDate", "$fromDate").append("toDate", "$toDate")
-						.append("appointmentId", "$appointmentId").append("subject", "$subject")
-						.append("explanation", "$explanation").append("type", "$type")
-						.append("isCalenderBlocked", "$isCalenderBlocked")
-						.append("isFeedbackAvailable", "$isFeedbackAvailable").append("isAllDayEvent", "$isAllDayEvent")
-						.append("doctorName",
-								new BasicDBObject("$concat", Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
-						.append("cancelledBy", "$cancelledBy").append("notifyPatientBySms", "$notifyPatientBySms")
-						.append("notifyPatientByEmail", "$notifyPatientByEmail")
-						.append("notifyDoctorBySms", "$notifyDoctorBySms")
-						.append("notifyDoctorByEmail", "$notifyDoctorByEmail").append("visitId", "$visitId")
-						.append("status", "$status").append("waitedFor", "$waitedFor")
-						.append("engagedFor", "$engagedFor").append("engagedAt", "$engagedAt")
-						.append("checkedInAt", "$checkedInAt").append("checkedOutAt", "$checkedOutAt")
-						.append("count", "$count").append("category", "$category")
-						.append("cancelledByProfile", "$cancelledByProfile")
-						.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
-						.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
-						.append("patient._id", "$patientCard.userId").append("patient.userId", "$patientCard.userId")
-						.append("patient.localPatientName", "$patientCard.localPatientName")
-						.append("patient.PID", "$patientCard.PID")
-						.append("patient.PNUM", "$patientCard.PNUM")
-						.append("patient.imageUrl", new BasicDBObject("$cond",
-								new BasicDBObject(
-										"if", new BasicDBObject("eq", Arrays.asList("$patientCard.imageUrl", null)))
-												.append("then",
-														new BasicDBObject("$concat",
-																Arrays.asList(imagePath, "$patientCard.imageUrl")))
-												.append("else", null)))
-						.append("patient.thumbnailUrl", new BasicDBObject("$cond",
-								new BasicDBObject("if",
-										new BasicDBObject("eq", Arrays.asList("$patientCard.thumbnailUrl", null)))
-												.append("then",
-														new BasicDBObject("$concat",
-																Arrays.asList(imagePath, "$patientCard.thumbnailUrl")))
-												.append("else", null)))
-						.append("patient.mobileNumber", "$patientUser.mobileNumber")
-						.append("patient.colorCode", "$patientUser.colorCode")));
+		Response<Appointment> response = null;
+		Integer count = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
+		if(count > 0) {
+			response = new Response<Appointment>();
+			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new BasicDBObject("$project",
+					new BasicDBObject("_id", "$_id").append("doctorId", "$doctorId").append("locationId", "$locationId")
+							.append("hospitalId", "$hospitalId").append("patientId", "$patientId").append("time", "$time")
+							.append("state", "$state").append("isRescheduled", "$isRescheduled")
+							.append("fromDate", "$fromDate").append("toDate", "$toDate")
+							.append("appointmentId", "$appointmentId").append("subject", "$subject")
+							.append("explanation", "$explanation").append("type", "$type")
+							.append("isCalenderBlocked", "$isCalenderBlocked").append("treatmentFields", "$treatmentFields")
+							.append("isFeedbackAvailable", "$isFeedbackAvailable").append("isAllDayEvent", "$isAllDayEvent")
+							.append("doctorName",
+									new BasicDBObject("$concat", Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
+							.append("cancelledBy", "$cancelledBy").append("notifyPatientBySms", "$notifyPatientBySms")
+							.append("notifyPatientByEmail", "$notifyPatientByEmail")
+							.append("notifyDoctorBySms", "$notifyDoctorBySms")
+							.append("notifyDoctorByEmail", "$notifyDoctorByEmail").append("visitId", "$visitId")
+							.append("status", "$status").append("waitedFor", "$waitedFor")
+							.append("engagedFor", "$engagedFor").append("engagedAt", "$engagedAt")
+							.append("checkedInAt", "$checkedInAt").append("checkedOutAt", "$checkedOutAt")
+							.append("count", "$count").append("category", "$category")
+							.append("branch", "$branch")
+							.append("cancelledByProfile", "$cancelledByProfile")
+							.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
+							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
+							.append("isCreatedByPatient", "$isCreatedByPatient")
+							.append("patient._id", "$patientCard.userId").append("patient.userId", "$patientCard.userId")
+							.append("patient.localPatientName", "$patientCard.localPatientName")
+							.append("patient.PID", "$patientCard.PID").append("patient.PNUM", "$patientCard.PNUM")
+							.append("patient.imageUrl", new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("eq", Arrays.asList("$patientCard.imageUrl", null)))
+													.append("then",
+															new BasicDBObject("$concat",
+																	Arrays.asList(imagePath, "$patientCard.imageUrl")))
+													.append("else", null)))
+							.append("patient.thumbnailUrl", new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("eq", Arrays.asList("$patientCard.thumbnailUrl", null)))
+													.append("then",
+															new BasicDBObject("$concat",
+																	Arrays.asList(imagePath, "$patientCard.thumbnailUrl")))
+													.append("else", null)))
+							.append("patient.mobileNumber", "$patientUser.mobileNumber")
+							.append("patient.colorCode", "$patientUser.colorCode")));
 
-		CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-				new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
-						.append("locationId", new BasicDBObject("$first", "$locationId"))
-						.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-						.append("patientId", new BasicDBObject("$first", "$patientId"))
-						.append("time", new BasicDBObject("$first", "$time"))
-						.append("state", new BasicDBObject("$first", "$state"))
-						.append("isRescheduled", new BasicDBObject("$first", "$isRescheduled"))
-						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-						.append("toDate", new BasicDBObject("$first", "$toDate"))
-						.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
-						.append("subject", new BasicDBObject("$first", "$subject"))
-						.append("explanation", new BasicDBObject("$first", "$explanation"))
-						.append("type", new BasicDBObject("$first", "$type"))
-						.append("isCalenderBlocked", new BasicDBObject("$first", "$isCalenderBlocked"))
-						.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
-						.append("isAllDayEvent", new BasicDBObject("$first", "$isAllDayEvent"))
-						.append("doctorName", new BasicDBObject("$first", "$doctorName"))
-						.append("cancelledBy", new BasicDBObject("$first", "$cancelledBy"))
-						.append("notifyPatientBySms", new BasicDBObject("$first", "$notifyPatientBySms"))
-						.append("notifyPatientByEmail", new BasicDBObject("$first", "$notifyPatientByEmail"))
-						.append("notifyDoctorBySms", new BasicDBObject("$first", "$notifyDoctorBySms"))
-						.append("notifyDoctorByEmail", new BasicDBObject("$first", "$notifyDoctorByEmail"))
-						.append("visitId", new BasicDBObject("$first", "$visitId"))
-						.append("status", new BasicDBObject("$first", "$status"))
-						.append("waitedFor", new BasicDBObject("$first", "$waitedFor"))
-						.append("engagedFor", new BasicDBObject("$first", "$engagedFor"))
-						.append("engagedAt", new BasicDBObject("$first", "$engagedAt"))
-						.append("checkedInAt", new BasicDBObject("$first", "$checkedInAt"))
-						.append("checkedOutAt", new BasicDBObject("$first", "$checkedOutAt"))
-						.append("count", new BasicDBObject("$first", "$count"))
-						.append("category", new BasicDBObject("$first", "$category"))
-						.append("cancelledByProfile", new BasicDBObject("$first", "$cancelledByProfile"))
-						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
-						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-						.append("createdBy", new BasicDBObject("$first", "$createdBy"))
-						.append("patient", new BasicDBObject("$first", "$patient"))));
+			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
+							.append("locationId", new BasicDBObject("$first", "$locationId"))
+							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+							.append("patientId", new BasicDBObject("$first", "$patientId"))
+							.append("time", new BasicDBObject("$first", "$time"))
+							.append("state", new BasicDBObject("$first", "$state"))
+							.append("isRescheduled", new BasicDBObject("$first", "$isRescheduled"))
+							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+							.append("toDate", new BasicDBObject("$first", "$toDate"))
+							.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+							.append("subject", new BasicDBObject("$first", "$subject"))
+							.append("explanation", new BasicDBObject("$first", "$explanation"))
+							.append("type", new BasicDBObject("$first", "$type"))
+							.append("isCalenderBlocked", new BasicDBObject("$first", "$isCalenderBlocked"))
+							.append("treatmentFields", new BasicDBObject("$first", "$treatmentFields"))
+							.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
+							.append("isAllDayEvent", new BasicDBObject("$first", "$isAllDayEvent"))
+							.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+							.append("cancelledBy", new BasicDBObject("$first", "$cancelledBy"))
+							.append("notifyPatientBySms", new BasicDBObject("$first", "$notifyPatientBySms"))
+							.append("notifyPatientByEmail", new BasicDBObject("$first", "$notifyPatientByEmail"))
+							.append("notifyDoctorBySms", new BasicDBObject("$first", "$notifyDoctorBySms"))
+							.append("notifyDoctorByEmail", new BasicDBObject("$first", "$notifyDoctorByEmail"))
+							.append("visitId", new BasicDBObject("$first", "$visitId"))
+							.append("status", new BasicDBObject("$first", "$status"))
+							.append("waitedFor", new BasicDBObject("$first", "$waitedFor"))
+							.append("engagedFor", new BasicDBObject("$first", "$engagedFor"))
+							.append("engagedAt", new BasicDBObject("$first", "$engagedAt"))
+							.append("checkedInAt", new BasicDBObject("$first", "$checkedInAt"))
+							.append("checkedOutAt", new BasicDBObject("$first", "$checkedOutAt"))
+							.append("count", new BasicDBObject("$first", "$count"))
+							.append("category", new BasicDBObject("$first", "$category"))
+							.append("branch", new BasicDBObject("$first", "$branch"))
+							.append("cancelledByProfile", new BasicDBObject("$first", "$cancelledByProfile"))
+							.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
+							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+							.append("isCreatedByPatient", new BasicDBObject("$first", "$isCreatedByPatient"))
+							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+							.append("patient", new BasicDBObject("$first", "$patient"))));
 
-		if (size > 0) {
-			response = mongoTemplate
-					.aggregate(
-							Aggregation
-									.newAggregation(Aggregation.match(criteria),
-											Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-											Aggregation.unwind("doctor"),
-											Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-											new CustomAggregationOperation(new BasicDBObject(
-													"$unwind",
-													new BasicDBObject(
-															"path", "$patientCard").append("preserveNullAndEmptyArrays",
-																	true))),
-											new CustomAggregationOperation(
-													new BasicDBObject("$redact",
-															new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$patientCard.locationId",
-																					"$locationId")))
-																							.append("then", "$$KEEP")
-																							.append("else",
-																									"$$PRUNE")))),
+			if (size > 0) {
+				response.setDataList(mongoTemplate
+						.aggregate(
+								Aggregation
+										.newAggregation(Aggregation.match(criteria),
+												Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+												Aggregation.unwind("doctor"),
+												Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+												new CustomAggregationOperation(new BasicDBObject(
+														"$unwind",
+														new BasicDBObject(
+																"path", "$patientCard").append("preserveNullAndEmptyArrays",
+																		true))),
+												new CustomAggregationOperation(
+														new BasicDBObject("$redact",
+																new BasicDBObject("$cond",
+																		new BasicDBObject("if", new BasicDBObject("$eq",
+																				Arrays.asList("$patientCard.locationId",
+																						"$locationId")))
+																								.append("then", "$$KEEP")
+																								.append("else",
+																										"$$PRUNE")))),
 
-											Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
-											Aggregation.unwind("patientUser"), projectOperation, groupOperation,
-											sortOperation, Aggregation.skip((page) * size), Aggregation.limit(size))
-									.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
-							AppointmentCollection.class, Appointment.class)
-					.getMappedResults();
+												Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+												Aggregation.unwind("patientUser"), projectOperation, groupOperation,
+												sortOperation, Aggregation.skip((page) * size), Aggregation.limit(size))
+										.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
+								AppointmentCollection.class, Appointment.class)
+						.getMappedResults());
+			} else {
+				response.setDataList(mongoTemplate
+						.aggregate(
+								Aggregation
+										.newAggregation(Aggregation.match(criteria),
+												Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+												Aggregation.unwind("doctor"),
+												Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+												new CustomAggregationOperation(new BasicDBObject(
+														"$unwind",
+														new BasicDBObject(
+																"path", "$patientCard").append("preserveNullAndEmptyArrays",
+																		true))),
+												new CustomAggregationOperation(
+														new BasicDBObject("$redact",
+																new BasicDBObject("$cond",
+																		new BasicDBObject("if", new BasicDBObject("$eq",
+																				Arrays.asList("$patientCard.locationId",
+																						"$locationId")))
+																								.append("then", "$$KEEP")
+																								.append("else",
+																										"$$PRUNE")))),
 
-		} else {
-			response = mongoTemplate
-					.aggregate(
-							Aggregation
-									.newAggregation(Aggregation.match(criteria),
-											Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-											Aggregation.unwind("doctor"),
-											Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-											new CustomAggregationOperation(new BasicDBObject(
-													"$unwind",
-													new BasicDBObject(
-															"path", "$patientCard").append("preserveNullAndEmptyArrays",
-																	true))),
-											new CustomAggregationOperation(
-													new BasicDBObject("$redact",
-															new BasicDBObject("$cond",
-																	new BasicDBObject("if", new BasicDBObject("$eq",
-																			Arrays.asList("$patientCard.locationId",
-																					"$locationId")))
-																							.append("then", "$$KEEP")
-																							.append("else",
-																									"$$PRUNE")))),
-
-											Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
-											Aggregation.unwind("patientUser"), projectOperation, groupOperation,
-											sortOperation)
-									.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
-							AppointmentCollection.class, Appointment.class)
-					.getMappedResults();
+												Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+												Aggregation.unwind("patientUser"), projectOperation, groupOperation,
+												sortOperation)
+										.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
+								AppointmentCollection.class, Appointment.class)
+						.getMappedResults());
+			}
 		}
 		return response;
 	}
@@ -2134,7 +2199,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		List<Appointment> appointments = null;
 		List<AppointmentLookupResponse> appointmentLookupResponses = null;
 		try {
-
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 			Criteria criteria = new Criteria("type").is(AppointmentType.APPOINTMENT.getType()).and("updatedTime")
 					.gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").is(false);
@@ -2267,7 +2331,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 							Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
 							Aggregation.unwind("hospital")), LocationCollection.class, Location.class)
 					.getUniqueMappedResult();
-
 			if (location == null) {
 				return null;
 			} else {
@@ -2317,7 +2380,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				response.setLocation(location);
 				response.setHospital(location.getHospital());
 				response.setId(locationId);
-
 				Criteria criteria2 = new Criteria("locationId").is(new ObjectId(location.getId()));
 
 				Criteria criteriaForActive = new Criteria();
@@ -2372,6 +2434,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 				}
 				response.setDoctors(doctors);
+				response.setId(locationId);
 				response.setNoOfLabTest(
 						(int) mongoTemplate.count(
 								new Query(new Criteria("locationId").is(new ObjectId(location.getId()))
@@ -2568,16 +2631,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 					response.setSlots(slotResponse);
 				}
 			}
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting time slots");
 		}
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public Event addEvent(final EventRequest request) {
+	public Event addEvent(final EventRequest request, Boolean forAllDoctors) {
 		Event response = null;
 		try {
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
@@ -2592,10 +2658,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 			AppointmentCollection appointmentCollection = null;
 
 			List<ObjectId> doctorIds = new ArrayList<ObjectId>();
-			if (request.getDoctorIds() != null && !request.getDoctorIds().isEmpty()) {
+			if(forAllDoctors) {
+				List<DoctorClinicProfileCollection> doctors = doctorClinicProfileRepository.findByLocationId(locationObjectId, true);
+				doctorIds = (List<ObjectId>) CollectionUtils.collect(doctors, new BeanToPropertyValueTransformer("doctorId"));
+			}
+			else if (request.getDoctorIds() != null && !request.getDoctorIds().isEmpty()) {
 				for (String doctorId : request.getDoctorIds())
 					doctorIds.add(new ObjectId(doctorId));
-
 			}
 			List<AppointmentCollection> appointmentCollections = mongoTemplate
 					.aggregate(
@@ -2711,25 +2780,69 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public Event updateEvent(EventRequest request) {
+	public Event updateEvent(EventRequest request, Boolean forAllDoctors) {
 		Event response = null;
 		try {
+			
 			AppointmentCollection appointmentCollection = appointmentRepository.findOne(new ObjectId(request.getId()));
 			if (appointmentCollection != null) {
-				AppointmentCollection appointmentCollectionToCheck = null;
-				if (request.getState().equals(AppointmentState.RESCHEDULE)) {
-					appointmentCollectionToCheck = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(
-							appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(),
-							request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(),
-							request.getToDate(), AppointmentState.CANCEL.getState());
-					if (appointmentCollectionToCheck != null)
-						if (!request.getIsCalenderBlocked())
-							appointmentCollectionToCheck = null;
+				
+				List<ObjectId> doctorIds = new ArrayList<ObjectId>();
+				if(forAllDoctors) {
+					List<DoctorClinicProfileCollection> doctors = doctorClinicProfileRepository.findByLocationId(appointmentCollection.getLocationId(), true);
+					doctorIds = (List<ObjectId>) CollectionUtils.collect(doctors, new BeanToPropertyValueTransformer("doctorId"));
 				}
+				else if (request.getDoctorIds() != null && !request.getDoctorIds().isEmpty()) {
+					for (String doctorId : request.getDoctorIds())
+						doctorIds.add(new ObjectId(doctorId));
+				}
+				
+				if (request.getState().equals(AppointmentState.RESCHEDULE) && request.getIsCalenderBlocked()) {
+					List<AppointmentCollection> appointmentCollections = mongoTemplate
+					.aggregate(
+							Aggregation
+									.newAggregation(
+											Aggregation
+													.match(new Criteria("locationId")
+															.is(new ObjectId(request.getLocationId()))
+															.and("id").ne(new ObjectId(request.getId()))
+															.andOperator(
+																	new Criteria().orOperator(
+																			new Criteria("doctorId")
+																					.is(new ObjectId(
+																							request.getDoctorId())),
+																			new Criteria("doctorIds")
+																					.in(doctorIds)
+																					.and("isCalenderBlocked")
+																					.is(true)),
+																	new Criteria().orOperator(
+																			new Criteria("time.fromTime")
+																					.lte(request.getTime()
+																							.getFromTime())
+																					.and("time.toTime")
+																					.gt(request.getTime()
+																							.getToTime()),
+																			new Criteria("time.fromTime")
+																					.lt(request.getTime()
+																							.getFromTime())
+																					.and("time.toTime")
+																					.gte(request.getTime()
+																							.getToTime())))
+															.and("fromDate").gte(request.getFromDate())
+															.and("toDate").lte(request.getToDate())
+															.and("state").ne(AppointmentState.CANCEL.getState()))),
 
-				if (appointmentCollectionToCheck == null) {
+							AppointmentCollection.class, AppointmentCollection.class)
+					.getMappedResults();
+					if (appointmentCollections != null && !appointmentCollections.isEmpty()) {
+						logger.error(timeSlotIsBooked);
+						throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
+					}
+			}
+
 					AppointmentWorkFlowCollection appointmentWorkFlowCollection = new AppointmentWorkFlowCollection();
 					BeanUtil.map(appointmentCollection, appointmentWorkFlowCollection);
 					appointmentWorkFlowRepository.save(appointmentWorkFlowCollection);
@@ -2747,6 +2860,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						appointmentCollection.setTime(request.getTime());
 						appointmentCollection.setIsCalenderBlocked(request.getIsCalenderBlocked());
 						appointmentCollection.setExplanation(request.getExplanation());
+						appointmentCollection.setDoctorIds(doctorIds);
 						if (request.getState().equals(AppointmentState.RESCHEDULE)) {
 							appointmentCollection.setIsRescheduled(true);
 							appointmentCollection.setState(AppointmentState.CONFIRM);
@@ -2771,10 +2885,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					appointmentCollection = appointmentRepository.save(appointmentCollection);
 					response = new Event();
 					BeanUtil.map(appointmentCollection, response);
-				} else {
-					logger.error(timeSlotIsBooked);
-					throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
-				}
+				
 			} else {
 				logger.error("Incorrect Id");
 				throw new BusinessException(ServiceError.InvalidInput, "Incorrect Id");
@@ -2848,23 +2959,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 										? locationCollection.getClinicNumber()
 										: "";
 										
-						if(appointmentLookupResponse.getTime() != null)
-						{
-							timeDiff = appointmentLookupResponse.getTime().getToTime()
-									- appointmentLookupResponse.getTime().getFromTime();
-							System.out.println("Time diff :: " + timeDiff);
-							addMillis = TimeUnit.MINUTES.toMillis(timeDiff);
-							System.out.println("Add millis :: " + addMillis);
-						}
-
-						String toDateTime = _12HourSDF.format(_24HourToDt) + ", "
-								+ sdf.format(new Date(appointmentLookupResponse.getFromDate().getTime() + addMillis));				
 						sendMsg(SMSFormatType.APPOINTMENT_REMINDER.getType(), "APPOINTMENT_REMINDER_TO_PATIENT",
 								appointmentLookupResponse.getDoctorId().toString(),
 								appointmentLookupResponse.getLocationId().toString(),
 								appointmentLookupResponse.getHospitalId().toString(),
 								appointmentLookupResponse.getPatientId().toString(), patient.getMobileNumber(),
-								patientName, appointmentId, dateTime,toDateTime, doctorName, clinicName, clinicContactNum);
+								patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum, appointmentLookupResponse.getBranch());
 						response = true;
 					}
 				}
@@ -3381,8 +3481,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			String to) {
 		LocationWithPatientQueueDetails response = null;
 		try {
-			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("state")
-					.ne(AppointmentState.CANCEL.getState()).and("isPatientDiscarded").ne(true);
+			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId))
+					.and("type").is(AppointmentType.APPOINTMENT.getType())
+					.and("state").ne(AppointmentState.CANCEL.getState()).and("isPatientDiscarded").ne(true);
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
@@ -3522,7 +3623,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					Criteria criteria2 = new Criteria("type").is(AppointmentType.APPOINTMENT.getType()).and("doctorId")
 							.is(userCollection.getId()).and("locationId").is(new ObjectId(locationId))
 							.and("isPatientDiscarded").is(false);
-
 					if (!DPDoctorUtils.anyStringEmpty(from)) {
 						localCalendar.setTime(new Date(Long.parseLong(from)));
 						int currentDay = localCalendar.get(Calendar.DATE);
@@ -3593,7 +3693,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			} else if (status.equalsIgnoreCase(QueueStatus.WAITING.name())) {
 				appointmentCollection.setCheckedInAt(new Date(System.currentTimeMillis()).getTime());
 			} else if (status.equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
-				appointmentCollection.setEngagedAt(new Date().getTime());
+				appointmentCollection.setEngagedAt(new Date(System.currentTimeMillis()).getTime());
 				appointmentCollection
 						.setWaitedFor(appointmentCollection.getEngagedAt() - appointmentCollection.getCheckedInAt());
 			} else if (status.equalsIgnoreCase(QueueStatus.CHECKED_OUT.name())) {
@@ -4258,7 +4358,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			jasperReportResponse = jasperReportService.createPDF(ComponentType.PATIENT_CARD, parameters,
 					dentalWorksFormA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 					Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
-
 			if (jasperReportResponse != null)
 				response = getFinalImageURL(jasperReportResponse.getPath());
 			if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -4694,9 +4793,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public List<Event> getEvents(String locationId, List<String> doctorId, String from, String to, int page, int size,
-			String updatedTime, String sortBy, String fromTime, String toTime) {
-		List<Event> response = null;
+	public Response<Event> getEvents(String locationId, List<String> doctorId, String from, String to, int page, int size,
+			String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked, String state) {
+		Response<Event> response = null;
+		List<Event> events = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 
@@ -4712,6 +4812,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 				criteria.and("doctorIds").in(doctorObjectIds);
 			}
 
+			if (!DPDoctorUtils.anyStringEmpty(state))
+				criteria.and("state").is(state.toUpperCase());
+			
+			if(isCalenderBlocked) {
+				criteria.and("isCalenderBlocked").is(true);
+			}
+			
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
@@ -4749,109 +4856,80 @@ public class AppointmentServiceImpl implements AppointmentService {
 				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
 			}
 
-			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project",
-					new BasicDBObject("id", "$_id").append("state", "$state").append("subject", "$subject")
-							.append("explanation", "$explanation").append("locationId", "$locationId")
-							.append("doctorId", "$doctorId").append("time", "$time")
-							.append("isCalenderBlocked", "$isCalenderBlocked").append("fromDate", "$fromDate")
-							.append("toDate", "$toDate").append("isAllDayEvent", "$isAllDayEvent")
-							.append("isRescheduled", "$isRescheduled").append("doctorIds", "$doctorIds")
-							// .append("localPatientName", "$patientCard.localPatientName")
-							.append("doctors.id", "$doctor._id").append("doctors.firstName", "$doctor.firstName")
-							.append("hospitalId", "$hospitalId").append("patientId", "$patientId")
-							.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
-							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
+			Integer count = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
+			if(count != null && count > 0) {
+				response = new Response<>();
+				response.setCount(count);
+				
+				CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project",
+						new BasicDBObject("id", "$_id").append("state", "$state").append("subject", "$subject")
+								.append("explanation", "$explanation").append("locationId", "$locationId")
+								.append("doctorId", "$doctorId").append("time", "$time")
+								.append("isCalenderBlocked", "$isCalenderBlocked").append("fromDate", "$fromDate")
+								.append("toDate", "$toDate").append("isAllDayEvent", "$isAllDayEvent")
+								.append("isRescheduled", "$isRescheduled").append("doctorIds", "$doctorIds")
+								.append("doctors.id", "$doctor._id").append("doctors.firstName", "$doctor.firstName")
+								.append("hospitalId", "$hospitalId").append("patientId", "$patientId")
+								.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
+								.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
 
-			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("id", "$_id").append("state", new BasicDBObject("$first", "$state"))
-							.append("subject", new BasicDBObject("$first", "$subject"))
-							.append("explanation", new BasicDBObject("$first", "$explanation"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("time", new BasicDBObject("$first", "$time"))
-							.append("isCalenderBlocked", new BasicDBObject("$first", "$isCalenderBlocked"))
-							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-							.append("toDate", new BasicDBObject("$first", "$toDate"))
-							.append("isAllDayEvent", new BasicDBObject("$first", "$isAllDayEvent"))
-							.append("isRescheduled", new BasicDBObject("$first", "$isRescheduled"))
-							.append("doctorIds", new BasicDBObject("$push", "$doctorIds"))
-							// .append("localPatientName", new
-							// BasicDBObject("$first","$patientCard.localPatientName"))
-							.append("doctors", new BasicDBObject("$push", "$doctors"))
-							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-							.append("patientId", new BasicDBObject("$first", "$patientId"))
-							.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
+				CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
+						new BasicDBObject("id", "$_id").append("state", new BasicDBObject("$first", "$state"))
+								.append("subject", new BasicDBObject("$first", "$subject"))
+								.append("explanation", new BasicDBObject("$first", "$explanation"))
+								.append("locationId", new BasicDBObject("$first", "$locationId"))
+								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+								.append("time", new BasicDBObject("$first", "$time"))
+								.append("isCalenderBlocked", new BasicDBObject("$first", "$isCalenderBlocked"))
+								.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+								.append("toDate", new BasicDBObject("$first", "$toDate"))
+								.append("isAllDayEvent", new BasicDBObject("$first", "$isAllDayEvent"))
+								.append("isRescheduled", new BasicDBObject("$first", "$isRescheduled"))
+								.append("doctorIds", new BasicDBObject("$push", "$doctorIds"))
+								.append("doctors", new BasicDBObject("$push", "$doctors"))
+								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+								.append("patientId", new BasicDBObject("$first", "$patientId"))
+								.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
+								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+								.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
-			if (size > 0) {
-				response = mongoTemplate.aggregate(
-						Aggregation.newAggregation(Aggregation.match(criteria),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$doctorIds")
-												.append("preserveNullAndEmptyArrays", true))),
-								Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
-												true))),
-
-								// Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-								// new CustomAggregationOperation(new BasicDBObject("$unwind",
-								// new BasicDBObject("path",
-								// "$patientCard").append("preserveNullAndEmptyArrays",
-								// true))),
-								// new CustomAggregationOperation(new BasicDBObject("$redact",
-								// new BasicDBObject("$cond",
-								// new BasicDBObject("if", new BasicDBObject("$ne",
-								// Arrays.asList("$patientCard", null)))
-								// .append("then", new BasicDBObject("$cond",
-								// new BasicDBObject("if", new BasicDBObject("$eq",
-								// Arrays.asList("$patientCard.locationId",
-								// "$locationId"))).append("then", "$$KEEP")
-								// .append("else", "$$PRUNE")))
-								// .append("else", "$$KEEP")))),
-								project, group, sortOperation, Aggregation.skip((page) * size),
-								Aggregation.limit(size)),
-						AppointmentCollection.class, Event.class).getMappedResults();
-			} else {
-				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
-						Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
-
-						// Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-						// new CustomAggregationOperation(new BasicDBObject("$unwind",
-						// new BasicDBObject("path",
-						// "$patientCard").append("preserveNullAndEmptyArrays",
-						// true))),
-						// new CustomAggregationOperation(new BasicDBObject("$redact",
-						// new BasicDBObject("$cond",
-						// new BasicDBObject("if", new BasicDBObject("$ne",
-						// Arrays.asList("$patientCard", null)))
-						// .append("then", new BasicDBObject("$cond",
-						// new BasicDBObject("if", new BasicDBObject("$eq",
-						// Arrays.asList("$patientCard.locationId",
-						// "$locationId"))).append("then", "$$KEEP")
-						// .append("else", "$$PRUNE")))
-						// .append("else", "$$KEEP")))),
+				if (size > 0) {
+					events = mongoTemplate.aggregate(
+							Aggregation.newAggregation(Aggregation.match(criteria),
+									new CustomAggregationOperation(new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$doctorIds")
+													.append("preserveNullAndEmptyArrays", true))),
+									Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
+									new CustomAggregationOperation(new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
+													true))),
+							project, group, sortOperation, Aggregation.skip((page) * size),
+									Aggregation.limit(size)),
+							AppointmentCollection.class, Event.class).getMappedResults();
+				} else {
+					events = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
+							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 						project, group, sortOperation), AppointmentCollection.class, Event.class).getMappedResults();
-
-			}
-			if (response != null) {
-				for (Event event : response) {
-					if (!DPDoctorUtils.anyStringEmpty(event.getPatientId())) {
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-								new ObjectId(event.getPatientId()), new ObjectId(locationId),
-								new ObjectId(event.getHospitalId()));
-						if (patientCollection != null)
-							event.setLocalPatientName(patientCollection.getLocalPatientName());
+				}
+				if (events != null) {
+					for (Event event : events) {
+						if (!DPDoctorUtils.anyStringEmpty(event.getPatientId())) {
+							PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+									new ObjectId(event.getPatientId()), new ObjectId(locationId),
+									new ObjectId(event.getHospitalId()));
+							if (patientCollection != null)
+								event.setLocalPatientName(patientCollection.getLocalPatientName());
+						}
 					}
 				}
+				response.setDataList(events);
 			}
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -4935,9 +5013,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public List<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page,
-			int size, String updatedTime, String sortBy, String fromTime, String toTime) {
-		List<Event> response = null;
+	public Response<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page,
+			int size, String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked, String state) {
+		Response<Event> response = null;
+		List<Event> events = null;
 		try {
 
 			if (DPDoctorUtils.allStringsEmpty(from, to)) {
@@ -4958,6 +5037,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 				criteria.and("doctorIds").in(doctorObjectIds);
 			}
 
+			if (!DPDoctorUtils.anyStringEmpty(state))
+				criteria.and("state").is(state.toUpperCase());
+			
+			if(isCalenderBlocked) {
+				criteria.and("isCalenderBlocked").is(true);
+			}
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 			if (!DPDoctorUtils.anyStringEmpty(from))
@@ -4979,150 +5064,252 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("updatedTime")) {
 				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
 			}
+			Integer count = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
+			if(count != null && count > 0) {
+				response = new Response<>();
+				response.setCount(count);
+				ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"),
+						Fields.field("toDate", "$toDate"), Fields.field("type", "$type"), Fields.field("state", "$state"),
+						Fields.field("subject", "$subject"), Fields.field("explanation", "$explanation"),
+						Fields.field("locationId", "$locationId"), Fields.field("doctorId", "$doctorId"),
+						Fields.field("time", "$time"), Fields.field("isCalenderBlocked", "$isCalenderBlocked"),
+						Fields.field("isAllDayEvent", "$isAllDayEvent"), Fields.field("isRescheduled", "$isRescheduled"),
+						Fields.field("doctorIds", "$doctorIds"), Fields.field("hospitalId", "$hospitalId"),
+						Fields.field("patientId", "$patientId"), Fields.field("adminCreatedTime", "$adminCreatedTime"),
+						Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+						Fields.field("createdBy", "$createdBy")));
 
-			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"),
-					Fields.field("toDate", "$toDate"), Fields.field("type", "$type"), Fields.field("state", "$state"),
-					Fields.field("subject", "$subject"), Fields.field("explanation", "$explanation"),
-					Fields.field("locationId", "$locationId"), Fields.field("doctorId", "$doctorId"),
-					Fields.field("time", "$time"), Fields.field("isCalenderBlocked", "$isCalenderBlocked"),
-					Fields.field("isAllDayEvent", "$isAllDayEvent"), Fields.field("isRescheduled", "$isRescheduled"),
-					Fields.field("doctorIds", "$doctorIds"), Fields.field("hospitalId", "$hospitalId"),
-					Fields.field("patientId", "$patientId"), Fields.field("adminCreatedTime", "$adminCreatedTime"),
-					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
-					Fields.field("createdBy", "$createdBy")));
+				CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project",
+						new BasicDBObject("state", "$state").append("fromDateMonth", "$fromDateMonth")
+								.append("fromDateYear", "$fromDateYear").append("toDateMonth", "$toDateMonth")
+								.append("toDateYear", "$toDateYear").append("subject", "$subject")
+								.append("explanation", "$explanation").append("locationId", "$locationId")
+								.append("doctorId", "$doctorId").append("time", "$time")
+								.append("isCalenderBlocked", "$isCalenderBlocked").append("fromDate", "$fromDate")
+								.append("toDate", "$toDate").append("isAllDayEvent", "$isAllDayEvent")
+								.append("isRescheduled", "$isRescheduled").append("doctorIds", "$doctorIds")
+								.append("doctors.id", "$doctor._id").append("doctors.firstName", "$doctor.firstName")
+								.append("hospitalId", "$hospitalId").append("patientId", "$patientId")
+								.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
+								.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
+								.append("patientCard", "$patientCard")));
 
-			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project",
-					new BasicDBObject("state", "$state").append("fromDateMonth", "$fromDateMonth")
-							.append("fromDateYear", "$fromDateYear").append("toDateMonth", "$toDateMonth")
-							.append("toDateYear", "$toDateYear").append("subject", "$subject")
-							.append("explanation", "$explanation").append("locationId", "$locationId")
-							.append("doctorId", "$doctorId").append("time", "$time")
-							.append("isCalenderBlocked", "$isCalenderBlocked").append("fromDate", "$fromDate")
-							.append("toDate", "$toDate").append("isAllDayEvent", "$isAllDayEvent")
-							.append("isRescheduled", "$isRescheduled").append("doctorIds", "$doctorIds")
-							// .append("localPatientName", "$patientCard.localPatientName")
-							.append("doctors.id", "$doctor._id").append("doctors.firstName", "$doctor.firstName")
-							.append("hospitalId", "$hospitalId").append("patientId", "$patientId")
-							.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
-							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
-							.append("patientCard", "$patientCard")));
+				CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
+						new BasicDBObject("_id", "$_id")
+								.append("fromDateMonth", new BasicDBObject("$first", "$fromDateMonth"))
+								.append("fromDateYear", new BasicDBObject("$first", "$fromDateYear"))
+								.append("toDateMonth", new BasicDBObject("$first", "$toDateMonth"))
+								.append("toDateYear", new BasicDBObject("$first", "$toDateYear"))
+								.append("state", new BasicDBObject("$first", "$state"))
+								.append("subject", new BasicDBObject("$first", "$subject"))
+								.append("explanation", new BasicDBObject("$first", "$explanation"))
+								.append("locationId", new BasicDBObject("$first", "$locationId"))
+								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+								.append("time", new BasicDBObject("$first", "$time"))
+								.append("isCalenderBlocked", new BasicDBObject("$first", "$isCalenderBlocked"))
+								.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+								.append("toDate", new BasicDBObject("$first", "$toDate"))
+								.append("isAllDayEvent", new BasicDBObject("$first", "$isAllDayEvent"))
+								.append("isRescheduled", new BasicDBObject("$first", "$isRescheduled"))
+								.append("doctorIds", new BasicDBObject("$push", "$doctorIds"))
+								.append("doctors", new BasicDBObject("$push", "$doctors"))
+								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+								.append("patientId", new BasicDBObject("$first", "$patientId"))
+								.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
+								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+								.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+								.append("patientCard", new BasicDBObject("$first", "$patientCard"))));
 
-			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", "$_id")
-							.append("fromDateMonth", new BasicDBObject("$first", "$fromDateMonth"))
-							.append("fromDateYear", new BasicDBObject("$first", "$fromDateYear"))
-							.append("toDateMonth", new BasicDBObject("$first", "$toDateMonth"))
-							.append("toDateYear", new BasicDBObject("$first", "$toDateYear"))
-							.append("state", new BasicDBObject("$first", "$state"))
-							.append("subject", new BasicDBObject("$first", "$subject"))
-							.append("explanation", new BasicDBObject("$first", "$explanation"))
-							.append("locationId", new BasicDBObject("$first", "$locationId"))
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("time", new BasicDBObject("$first", "$time"))
-							.append("isCalenderBlocked", new BasicDBObject("$first", "$isCalenderBlocked"))
-							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-							.append("toDate", new BasicDBObject("$first", "$toDate"))
-							.append("isAllDayEvent", new BasicDBObject("$first", "$isAllDayEvent"))
-							.append("isRescheduled", new BasicDBObject("$first", "$isRescheduled"))
-							.append("doctorIds", new BasicDBObject("$push", "$doctorIds"))
-							// .append("localPatientName", new
-							// BasicDBObject("$first","$patientCard.localPatientName"))
-							.append("doctors", new BasicDBObject("$push", "$doctors"))
-							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-							.append("patientId", new BasicDBObject("$first", "$patientId"))
-							.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
-							.append("patientCard", new BasicDBObject("$first", "$patientCard"))));
+				if (size > 0) {
+					events = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria), projectList
 
-			if (size > 0) {
-				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria), projectList
+							.and("fromDate").extractMonth().as("fromDateMonth").and("fromDate").extractYear()
+							.as("fromDateYear").and("toDate").extractMonth().as("toDateMonth").and("toDate").extractYear()
+							.as("toDateYear"),
 
-						.and("fromDate").extractMonth().as("fromDateMonth").and("fromDate").extractYear()
-						.as("fromDateYear").and("toDate").extractMonth().as("toDateMonth").and("toDate").extractYear()
-						.as("toDateYear"),
+							new CustomAggregationOperation(new BasicDBObject("$match",
+									new BasicDBObject("$or", Arrays.asList(
+											new BasicDBObject("fromDateMonth", dateMonth).append("fromDateYear", dateYear),
+											new BasicDBObject("toDateMonth", dateMonth).append("toDateYear", dateYear))))),
 
-						new CustomAggregationOperation(new BasicDBObject("$match",
-								new BasicDBObject("$or", Arrays.asList(
-										new BasicDBObject("fromDateMonth", dateMonth).append("fromDateYear", dateYear),
-										new BasicDBObject("toDateMonth", dateMonth).append("toDateYear", dateYear))))),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
+							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
+							project, group, sortOperation, Aggregation.skip((page) * size), Aggregation.limit(size)),
+							AppointmentCollection.class, Event.class).getMappedResults();
+				} else {
+					events = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria), projectList
 
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
-						Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
+							.and("fromDate").extractMonth().as("fromDateMonth").and("fromDate").extractYear()
+							.as("fromDateYear").and("toDate").extractMonth().as("toDateMonth").and("toDate").extractYear()
+							.as("toDateYear"),
 
-						// Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-						// new CustomAggregationOperation(new BasicDBObject("$unwind",
-						// new BasicDBObject("path",
-						// "$patientCard").append("preserveNullAndEmptyArrays",
-						// true))),
-						// new CustomAggregationOperation(new BasicDBObject("$redact",
-						// new BasicDBObject("$cond",
-						// new BasicDBObject("if", new BasicDBObject("$ne",
-						// Arrays.asList("$patientCard", null)))
-						// .append("then", new BasicDBObject("$cond",
-						// new BasicDBObject("if", new BasicDBObject("$eq",
-						// Arrays.asList("$patientCard.locationId",
-						// "$locationId"))).append("then", "$$KEEP")
-						// .append("else", "$$PRUNE")))
-						// .append("else", "$$KEEP")))),
-						project, group, sortOperation, Aggregation.skip((page) * size), Aggregation.limit(size)),
-						AppointmentCollection.class, Event.class).getMappedResults();
-			} else {
-				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria), projectList
+							new CustomAggregationOperation(new BasicDBObject("$match",
+									new BasicDBObject("$or", Arrays.asList(
+											new BasicDBObject("fromDateMonth", dateMonth).append("fromDateYear", dateYear),
+											new BasicDBObject("toDateMonth", dateMonth).append("toDateYear", dateYear))))),
 
-						.and("fromDate").extractMonth().as("fromDateMonth").and("fromDate").extractYear()
-						.as("fromDateYear").and("toDate").extractMonth().as("toDateMonth").and("toDate").extractYear()
-						.as("toDateYear"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
+							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
+							project, group, sortOperation), "appointment_cl", Event.class).getMappedResults();
 
-						new CustomAggregationOperation(new BasicDBObject("$match",
-								new BasicDBObject("$or", Arrays.asList(
-										new BasicDBObject("fromDateMonth", dateMonth).append("fromDateYear", dateYear),
-										new BasicDBObject("toDateMonth", dateMonth).append("toDateYear", dateYear))))),
-
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
-						Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
-
-						// Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-						// new CustomAggregationOperation(new BasicDBObject("$unwind",
-						// new BasicDBObject("path",
-						// "$patientCard").append("preserveNullAndEmptyArrays",
-						// true))),
-						// new CustomAggregationOperation(new BasicDBObject("$redact",
-						// new BasicDBObject("$cond",
-						// new BasicDBObject("if", new BasicDBObject("$or", Arrays.asList(new
-						// BasicDBObject("$ne", Arrays.asList("$patientCard", null)),
-						// new BasicDBObject("$patientCard", new BasicDBObject("$exists", true)))))
-						// .append("then", new BasicDBObject("$cond",
-						// new BasicDBObject("if", new BasicDBObject("$eq",
-						// Arrays.asList("$patientCard.locationId",
-						// "$locationId"))).append("then", "$$KEEP")
-						// .append("else", "$$PRUNE")))
-						// .append("else", "$$KEEP")))),
-						project, group, sortOperation), "appointment_cl", Event.class).getMappedResults();
-
-			}
-			if (response != null) {
-				for (Event event : response) {
-					if (!DPDoctorUtils.anyStringEmpty(event.getPatientId())) {
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-								new ObjectId(event.getPatientId()), new ObjectId(locationId),
-								new ObjectId(event.getHospitalId()));
-						if (patientCollection != null)
-							event.setLocalPatientName(patientCollection.getLocalPatientName());
+				}
+				if (events != null) {
+					for (Event event : events) {
+						if (!DPDoctorUtils.anyStringEmpty(event.getPatientId())) {
+							PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+									new ObjectId(event.getPatientId()), new ObjectId(locationId),
+									new ObjectId(event.getHospitalId()));
+							if (patientCollection != null)
+								event.setLocalPatientName(patientCollection.getLocalPatientName());
+						}
 					}
 				}
+				response.setDataList(events);
 			}
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean addEditNutritionAppointment(NutritionAppointment request) {
+		Boolean response = false;
+		try {
+			NutritionAppointmentCollection appointmentCollection = null;
+
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				appointmentCollection = nutritionAppointmentRepository.findOne(new ObjectId(request.getId()));
+				if (appointmentCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Appointment not found By Id ");
+				}
+				request.setCreatedBy(appointmentCollection.getCreatedBy());
+				request.setCreatedTime(appointmentCollection.getCreatedTime());
+				appointmentCollection = new NutritionAppointmentCollection();
+				BeanUtil.map(request, appointmentCollection);
+
+			} else {
+				appointmentCollection = new NutritionAppointmentCollection();
+				BeanUtil.map(request, appointmentCollection);
+				UserCollection userCollection = userRepository.findOne(appointmentCollection.getUserId());
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "user not found By Id ");
+				}
+
+				appointmentCollection.setCreatedTime(new Date());
+				appointmentCollection.setCreatedBy(
+						(DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? "" : userCollection.getTitle())
+								+ userCollection.getFirstName());
+
+			}
+			appointmentCollection = nutritionAppointmentRepository.save(appointmentCollection);
+			response = true;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while add edit Nutrition Appointment  : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					" Error while add edit Nutrition Appointment  : " + e.getCause().getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public List<NutritionAppointment> getNutritionAppointments(int page, int size, String userId, String fromDate,
+			String toDate) {
+		List<NutritionAppointment> response = null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(false);
+			Date from = null;
+			Date to = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(fromDate));
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(Long.parseLong(toDate));
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date();
+				to = new Date();
+			}
+			criteria.and("toDate").gte(from).lte(to).and("userId").is(new ObjectId(userId));
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "toDate")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "toDate")));
+
+			}
+			AggregationResults<NutritionAppointment> aggregationResults = mongoTemplate.aggregate(aggregation,
+					NutritionAppointmentCollection.class, NutritionAppointment.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while getting Nutrition Appointment : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					" Error while getting Nutrition Appointment : " + e.getCause().getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public NutritionAppointment getNutritionAppointmentById(String appointmentId) {
+		NutritionAppointment response = null;
+		try {
+
+			NutritionAppointmentCollection nutritionAppointmentCollection = nutritionAppointmentRepository
+					.findOne(new ObjectId(appointmentId));
+			response = new NutritionAppointment();
+			BeanUtil.map(nutritionAppointmentCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while getting Nutrition Appointment : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting Nutrition Appointment : " + e.getCause().getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public NutritionAppointment deleteNutritionAppointment(String appointmentId, Boolean discarded) {
+		NutritionAppointment response = null;
+		try {
+			NutritionAppointmentCollection nutritionAppointmentCollection = nutritionAppointmentRepository
+					.findOne(new ObjectId(appointmentId));
+			if (nutritionAppointmentCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Appointment not found with Id ");
+			}
+			nutritionAppointmentCollection.setUpdatedTime(new Date());
+			nutritionAppointmentCollection.setDiscarded(discarded);
+			nutritionAppointmentCollection = nutritionAppointmentRepository.save(nutritionAppointmentCollection);
+			response = new NutritionAppointment();
+			BeanUtil.map(nutritionAppointmentCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while deleting nutrition Appointment : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					" Error while deleting nutrition Appointment : " + e.getCause().getMessage());
+
 		}
 		return response;
 	}

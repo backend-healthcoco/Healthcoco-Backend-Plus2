@@ -86,5 +86,4 @@ public class LabPrintSettingCollection extends GenericCollection {
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
-
 }

@@ -4,7 +4,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-import com.dpdocter.collections.EyeObservationCollection;
 import com.dpdocter.collections.EyePrescriptionCollection;
 
 public interface EyePrescriptionRepository extends MongoRepository<EyePrescriptionCollection, ObjectId>{

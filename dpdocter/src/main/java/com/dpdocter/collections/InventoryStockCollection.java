@@ -2,7 +2,6 @@ package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 //@Document(collection = "inventory_stock_cl")
@@ -38,7 +37,9 @@ public class InventoryStockCollection extends GenericCollection {
 	private String resourceId;
 	@Field
 	private ObjectId invoiceId;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -103,12 +104,20 @@ public class InventoryStockCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public String getResourceId() {
-		return resourceId;
+	public Double getCostPrice() {
+		return costPrice;
 	}
 
-	public void setResourceId(String resourceId) {
-		this.resourceId = resourceId;
+	public void setCostPrice(Double costPrice) {
+		this.costPrice = costPrice;
+	}
+
+	public Double getRetailPrice() {
+		return retailPrice;
+	}
+
+	public void setRetailPrice(Double retailPrice) {
+		this.retailPrice = retailPrice;
 	}
 
 	public ObjectId getPatientId() {
@@ -127,30 +136,6 @@ public class InventoryStockCollection extends GenericCollection {
 		this.doctorId = doctorId;
 	}
 
-	public ObjectId getInvoiceId() {
-		return invoiceId;
-	}
-
-	public void setInvoiceId(ObjectId invoiceId) {
-		this.invoiceId = invoiceId;
-	}
-
-	public Double getCostPrice() {
-		return costPrice;
-	}
-
-	public void setCostPrice(Double costPrice) {
-		this.costPrice = costPrice;
-	}
-
-	public Double getRetailPrice() {
-		return retailPrice;
-	}
-
-	public void setRetailPrice(Double retailPrice) {
-		this.retailPrice = retailPrice;
-	}
-
 	public Double getTotalPrice() {
 		return totalPrice;
 	}
@@ -159,12 +144,36 @@ public class InventoryStockCollection extends GenericCollection {
 		this.totalPrice = totalPrice;
 	}
 
+	public String getResourceId() {
+		return resourceId;
+	}
+
+	public void setResourceId(String resourceId) {
+		this.resourceId = resourceId;
+	}
+
+	public ObjectId getInvoiceId() {
+		return invoiceId;
+	}
+
+	public void setInvoiceId(ObjectId invoiceId) {
+		this.invoiceId = invoiceId;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "InventoryStockCollection [id=" + id + ", itemId=" + itemId + ", quantity=" + quantity + ", batchId="
 				+ batchId + ", costPrice=" + costPrice + ", retailPrice=" + retailPrice + ", stockType=" + stockType
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", totalPrice=" + totalPrice + ", resourceId=" + resourceId + "]";
+				+ ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", discarded=" + discarded + ", totalPrice=" + totalPrice + ", resourceId=" + resourceId
+				+ ", invoiceId=" + invoiceId + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
-
 }

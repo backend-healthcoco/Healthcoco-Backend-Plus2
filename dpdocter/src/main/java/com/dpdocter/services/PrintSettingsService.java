@@ -2,7 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import com.dpdocter.beans.DentalLabPrintSetting;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.PrintSettings;
 

@@ -61,11 +61,12 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Override
 	@Transactional
 	public String generateActivationEmailBody(String fName, String tokenId, String templatePath, String doctorName,
-			String clinicName) throws Exception {
+			String clinicName, String addedBy) throws Exception {
 
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("fName", fName);
 		model.put("doctorName", doctorName);
+		model.put("addedBy", addedBy);
 		model.put("clinicName", clinicName);
 		model.put("link", welcomeLink + "/" + tokenId);
 		model.put("loginLink", loginLink);
@@ -83,14 +84,14 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	
 	@Override
 	@Transactional
-	public String generateActivationEmailBodyForStaff(String fName, String tokenId, String templatePath, String doctorName,
+	public String doctorWelcomeEmailBody(String fName, String tokenId, String templatePath, String doctorName,
 			String clinicName) throws Exception {
 
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("fName", fName);
 		model.put("doctorName", doctorName);
 		model.put("clinicName", clinicName);
-		model.put("link", link + "/" + tokenId);
+		model.put("link", welcomeLink + "/" + tokenId);
 		model.put("loginLink", loginLink);
 		model.put("imageURL", imagePath + "templatesImage");
 		model.put("contactUsEmail", contactUsEmail);
@@ -98,12 +99,11 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("twitterLink", twitterLink);
 		model.put("linkedInLink", linkedInLink);
 		model.put("googlePlusLink", googlePlusLink);
-		model.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
+		// model.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 		return text;
 	}
 
-	
 	@Override
 	@Transactional
 	public String generateForgotPasswordEmailBody(String fName, String tokenId) {
@@ -266,12 +266,13 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Override
 	@Transactional
 	public String generateAppointmentEmailBody(String doctorName, String patientName, String dateTime,
-			String clinicName, String templatePath) {
+			String clinicName, String templatePath, String branch) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("doctorName", doctorName);
 		model.put("patientName", patientName);
 		model.put("dateTime", dateTime);
 		model.put("clinicName", clinicName);
+		model.put("branch", branch);
 		model.put("imageURL", imagePath + "templatesImage");
 		model.put("contactUsEmail", contactUsEmail);
 		model.put("fbLink", fbLink);
@@ -320,18 +321,14 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	}
 
 	public String generatePaymentEmailBody(String orderId, String planName, String amount, String patientName,
-			String templatePath) {
+
+			String time, String templatePath) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("orderId", orderId);
 		model.put("planName", planName);
 		model.put("amount", amount);
 		model.put("patientName", patientName);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
+		model.put("time", time);
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 		return text;
 	}
@@ -423,6 +420,29 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		}
 		return text;
 
+	}
+
+	@Override
+	@Transactional
+	public String nutritionReferenceEmailBody(String patientName, String mobileNumber, String birthDate,
+			String profession, String gender, String address, String city, String pinCode, String doctorName,
+			String planName, String subplan,String templatePath) throws Exception {
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("patientName", patientName);
+		model.put("doctorName", doctorName);
+		model.put("mobileNumber", mobileNumber);
+		model.put("birthDate", birthDate);
+		model.put("profession", profession);
+		model.put("gender", gender);
+		model.put("address", address);
+		model.put("city", city);
+		model.put("pinCode", pinCode);
+		model.put("planName", planName);
+		model.put("subplan", subplan);
+		// model.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
+		@SuppressWarnings("deprecation")
+		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		return text;
 	}
 
 }

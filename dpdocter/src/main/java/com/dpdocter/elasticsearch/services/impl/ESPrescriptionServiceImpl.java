@@ -212,7 +212,6 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					drugDocument.setDrugType(drugType);
 					response.add(drugDocument);
 				}
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -503,15 +502,47 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			response = getCustomGlobalDiagnosticTests(page, size, locationId, hospitalId, updatedTime, discarded,
 					searchTerm);
 			break;
-
+		case PATIIENT:
+			response = getDiagnosticTestsForPatients(page, size, updatedTime, discarded, searchTerm);
+			break;
 		default:
 			break;
 		}
 		return response;
 	}
 
+	private List<ESDiagnosticTestDocument> getDiagnosticTestsForPatients(int page, int size, String updatedTime,
+			Boolean discarded, String searchTerm) {
+		List<ESDiagnosticTestDocument> response = null;
+		try {
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+					.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
 
-	
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("testName", searchTerm));
+			if (!discarded)
+				boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
+
+			SearchQuery searchQuery = null;
+
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(new PageRequest(page, size))
+						.withSort(SortBuilders.fieldSort("testName").order(SortOrder.ASC)).build();
+
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("testName").order(SortOrder.ASC)).build();
+
+			response = elasticsearchTemplate.queryForList(searchQuery, ESDiagnosticTestDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Diagnostic Tests For Patient");
+			throw new BusinessException(ServiceError.Unknown,
+					"Error Occurred While Getting Diagnostic Tests For Patient");
+		}
+		return response;
+	}
 
 	@Override
 	public Integer getDiagnosticTestCount(String range, int page, int size, String locationId, String hospitalId,
@@ -805,11 +836,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	
 	private List<ESDrugDocument> addStockToDrug(List<ESDrugDocument> drugs)
 	{
-		List<ESDrugDocument> response= new ArrayList<>();
-
 
 		for (ESDrugDocument drug : drugs) {
 
@@ -824,14 +852,11 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					drug.setStockingUnit(inventoryItemLookupResposne.getStockingUnit());
 				}
 			}
-			response.add(drug);
 		}
-		return response;
+		return drugs;
 	}
 
-	
-	private List<DrugDocument> addStockToDrugWeb(List<DrugDocument> drugs)
-	{
+	private List<DrugDocument> addStockToDrugWeb(List<DrugDocument> drugs) {
 		List<DrugDocument> response= new ArrayList<>();
 
 		for (DrugDocument drug : drugs) {

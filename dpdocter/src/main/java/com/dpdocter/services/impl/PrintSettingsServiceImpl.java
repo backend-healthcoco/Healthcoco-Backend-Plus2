@@ -28,6 +28,7 @@ import com.dpdocter.enums.PrintFilter;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DentalLabPrintSettingRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
@@ -50,6 +51,9 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	@Autowired
 	private HospitalRepository hospitalRepository;
+
+	@Autowired
+	private DentalLabPrintSettingRepository dentalLabPrintSettingRepository;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -75,7 +79,6 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 				hospitalObjectId = new ObjectId(request.getHospitalId());
 			PrintSettingsCollection oldPrintSettingsCollection = null;
 			if (request.getId() == null) {
-
 				if (!request.getIsLab()) {
 					oldPrintSettingsCollection = printSettingsRepository.getSettings(doctorObjectId, locationObjectId,
 							hospitalObjectId);

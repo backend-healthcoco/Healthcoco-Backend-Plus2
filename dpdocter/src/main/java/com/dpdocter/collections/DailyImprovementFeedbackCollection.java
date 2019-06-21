@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.DailyPatientFeedback;
-import com.dpdocter.enums.FeelingTypeEnum;
 
 @Document(collection = "daily_improvement_feedback_cl")
 public class DailyImprovementFeedbackCollection extends GenericCollection {
@@ -29,7 +28,9 @@ public class DailyImprovementFeedbackCollection extends GenericCollection {
 	private List<DailyPatientFeedback> dailyPatientFeedbacks;
 	@Field
 	private Boolean discarded;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -94,11 +95,20 @@ public class DailyImprovementFeedbackCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "DailyImprovementFeedbackCollection [id=" + id + ", prescriptionId=" + prescriptionId + ", locationId="
 				+ locationId + ", doctorId=" + doctorId + ", patientId=" + patientId + ", hospitalId=" + hospitalId
-				+ ", dailyPatientFeedbacks=" + dailyPatientFeedbacks + ", discarded=" + discarded + "]";
+				+ ", dailyPatientFeedbacks=" + dailyPatientFeedbacks + ", discarded=" + discarded
+				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

@@ -1,7 +1,5 @@
 package com.dpdocter.request;
 
-import common.util.web.JacksonUtil;
-
 public class DentalLabPickupChangeStatusRequest {
 
 	private String dentalLabPickupId;
@@ -84,5 +82,4 @@ public class DentalLabPickupChangeStatusRequest {
 				+ isAcceptedAtLab + ", feedbackRating=" + feedbackRating + ", feedbackComment=" + feedbackComment
 				+ ", discarded=" + discarded + "]";
 	}
-
 }

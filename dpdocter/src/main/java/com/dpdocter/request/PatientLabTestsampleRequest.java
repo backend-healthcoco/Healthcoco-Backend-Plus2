@@ -75,5 +75,4 @@ public class PatientLabTestsampleRequest {
 		return "PatientLabTestsampleRequest [patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", age="
 				+ age + ", gender=" + gender + ", labTestSamples=" + labTestSamples + "]";
 	}
-
 }

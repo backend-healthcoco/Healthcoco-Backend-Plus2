@@ -12,8 +12,8 @@ import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.enums.DoctorFacility;
-import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.LabType;
+import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.RegularCheckUpTypeEnum;
 
 @Document(collection = "doctor_clinic_profile_cl")
@@ -120,6 +120,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private Boolean isSuperAdmin = false;
 
+	@Field
 	private String mrCode;
 
 	@Field
@@ -131,8 +132,12 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private Boolean isVaccinationModuleOn = false;
 
+	// This Id Use For set default doctor in Get User API At doctor level
 	@Field
 	private ObjectId defaultDoctorId;
+
+	@Field
+	private Boolean isPidHasDate = true;
 
 	public ObjectId getId() {
 		return id;
@@ -445,6 +450,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
 		this.isVaccinationModuleOn = isVaccinationModuleOn;
 	}
+	
+	public Boolean getIsPidHasDate() {
+		return isPidHasDate;
+	}
+
+	public void setIsPidHasDate(Boolean isPidHasDate) {
+		this.isPidHasDate = isPidHasDate;
+	}
 
 	@Override
 	public String toString() {
@@ -457,7 +470,10 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 				+ ", timeZone=" + timeZone + ", isDoctorListed=" + isDoctorListed + ", rankingCount=" + rankingCount
 				+ ", isSendBirthdaySMS=" + isSendBirthdaySMS + ", isAutoSMS=" + isAutoSMS + ", isSendRegularCheckupSMS="
 				+ isSendRegularCheckupSMS + ", regularCheckUpMonths=" + regularCheckUpMonths + ", checkUpTypeEnum="
-				+ checkUpTypeEnum + "]";
+				+ checkUpTypeEnum + ", packageType=" + packageType + ", doctorSlugURL=" + doctorSlugURL
+				+ ", showInventoryCount=" + showInventoryCount + ", showInventory=" + showInventory
+				+ ", saveToInventory=" + saveToInventory + ", iskiosk=" + iskiosk + ", labType=" + labType
+				+ ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + "]";
 	}
 
 }

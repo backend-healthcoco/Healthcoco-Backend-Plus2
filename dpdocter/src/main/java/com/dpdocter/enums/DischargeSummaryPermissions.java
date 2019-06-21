@@ -26,6 +26,5 @@ public enum DischargeSummaryPermissions {
 	private DischargeSummaryPermissions(String permission) {
 		this.permission = permission;
 	}
-	
-	
+
 }

@@ -16,13 +16,6 @@ import com.dpdocter.enums.GenderType;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DoctorContactUs extends GenericCollection {
 
-	/*
-	 * title, firstName, userName,gender, emailAddress, mobileNumber,
-	 * specialities, city, userCurrentState(value = VERIFIED, APPROACH,
-	 * INTERESTED, NOT INTERESTED, SIGNED UP), Boolean isVerified, Boolean
-	 * toList
-	 */
-
 	private String id;
 	private String title;
 	private String firstName;

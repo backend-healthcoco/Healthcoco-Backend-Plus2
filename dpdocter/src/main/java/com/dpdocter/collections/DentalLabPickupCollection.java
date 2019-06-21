@@ -76,7 +76,9 @@ public class DentalLabPickupCollection extends GenericCollection {
 	private ObjectId invoiceId;
 	@Field
 	private String uniqueInvoiceId;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -333,18 +335,29 @@ public class DentalLabPickupCollection extends GenericCollection {
 		this.dentalLabHospitalId = dentalLabHospitalId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "DentalLabPickupCollection [id=" + id + ", patientId=" + patientId + ", patientName=" + patientName
 				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", age=" + age + ", dentalWorksSamples="
 				+ dentalWorksSamples + ", crn=" + crn + ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime
-				+ ", status=" + status + ", doctorId=" + doctorId + ", dentalLabId=" + dentalLabId + ", discarded="
-				+ discarded + ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
+				+ ", status=" + status + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", dentalLabLocationId=" + dentalLabLocationId + ", dentalLabHospitalId="
+				+ dentalLabHospitalId + ", dentalLabId=" + dentalLabId + ", discarded=" + discarded
+				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
 				+ numberOfSamplesPicked + ", requestId=" + requestId + ", isAcceptedAtLab=" + isAcceptedAtLab
 				+ ", isCollectedAtDoctor=" + isCollectedAtDoctor + ", isCompleted=" + isCompleted + ", collectionBoyId="
 				+ collectionBoyId + ", serialNumber=" + serialNumber + ", reasonForCancel=" + reasonForCancel
 				+ ", cancelledBy=" + cancelledBy + ", feedBackRating=" + feedBackRating + ", feedBackComment="
-				+ feedBackComment + "]";
+				+ feedBackComment + ", invoiceId=" + invoiceId + ", uniqueInvoiceId=" + uniqueInvoiceId
+				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

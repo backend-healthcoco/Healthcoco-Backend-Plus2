@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.Amount;
+
 @Document(collection = "diagnostic_test_cl")
 public class DiagnosticTestCollection extends GenericCollection {
 
@@ -30,7 +32,19 @@ public class DiagnosticTestCollection extends GenericCollection {
 	private Boolean discarded = false;
 
 	@Field
-	private String code;
+	private String diagnosticTestCode;
+
+    @Field
+    private Double diagnosticTestCost = 0.0;
+
+    @Field
+    private Amount diagnosticTestComission;
+
+    @Field
+    private Double diagnosticTestCostForPatient = 0.0;
+
+    @Field
+    private long rankingCount = 0;
 
 	public ObjectId getId() {
 		return id;
@@ -80,14 +94,6 @@ public class DiagnosticTestCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
 	public String getSpecimen() {
 		return specimen;
 	}
@@ -96,10 +102,53 @@ public class DiagnosticTestCollection extends GenericCollection {
 		this.specimen = specimen;
 	}
 
+	public String getDiagnosticTestCode() {
+		return diagnosticTestCode;
+	}
+
+	public void setDiagnosticTestCode(String diagnosticTestCode) {
+		this.diagnosticTestCode = diagnosticTestCode;
+	}
+
+	public Double getDiagnosticTestCost() {
+		return diagnosticTestCost;
+	}
+
+	public void setDiagnosticTestCost(Double diagnosticTestCost) {
+		this.diagnosticTestCost = diagnosticTestCost;
+	}
+
+	public Amount getDiagnosticTestComission() {
+		return diagnosticTestComission;
+	}
+
+	public void setDiagnosticTestComission(Amount diagnosticTestComission) {
+		this.diagnosticTestComission = diagnosticTestComission;
+	}
+
+	public Double getDiagnosticTestCostForPatient() {
+		return diagnosticTestCostForPatient;
+	}
+
+	public void setDiagnosticTestCostForPatient(Double diagnosticTestCostForPatient) {
+		this.diagnosticTestCostForPatient = diagnosticTestCostForPatient;
+	}
+
+	public long getRankingCount() {
+		return rankingCount;
+	}
+
+	public void setRankingCount(long rankingCount) {
+		this.rankingCount = rankingCount;
+	}
+
 	@Override
 	public String toString() {
 		return "DiagnosticTestCollection [id=" + id + ", testName=" + testName + ", explanation=" + explanation
-				+ ", specimen=" + specimen + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", discarded=" + discarded + ", code=" + code + "]";
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", specimen=" + specimen + ", diagnosticTestCode=" + diagnosticTestCode + ", diagnosticTestCost="
+				+ diagnosticTestCost + ", diagnosticTestComission=" + diagnosticTestComission
+				+ ", diagnosticTestCostForPatient=" + diagnosticTestCostForPatient + ", rankingCount=" + rankingCount
+				+ "]";
 	}
 }

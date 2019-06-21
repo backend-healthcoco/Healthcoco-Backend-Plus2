@@ -1,7 +1,5 @@
 package com.dpdocter.response;
 
-import java.util.List;
-
 public class DentalImagingInvoiceJasper {
 	private int sNo;
 	private String serviceName;

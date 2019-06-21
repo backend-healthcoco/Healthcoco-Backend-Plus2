@@ -5,13 +5,15 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Transient;
 
+import com.dpdocter.beans.v2.GenericCode;
+
 public class PrescriptionItem {
 	private ObjectId drugId;
 
 	private Duration duration;
 
 	private String dosage;
-	
+
 	private DrugType drugType;
 
 	private String drugName;
@@ -24,8 +26,17 @@ public class PrescriptionItem {
 
 	private String instructions;
 
+	private Integer drugQuantity;
+	
+	private Integer analyticsDrugQuantity = 1;
+
 	private Long inventoryQuantity;
-	 
+
+	@Transient
+	private Long arrayIndex1;
+	
+	private List<GenericCode> genericNames;
+
 	public PrescriptionItem() {
 		super();
 	}
@@ -44,9 +55,6 @@ public class PrescriptionItem {
 		this.instructions = instructions;
 	}
 
-	@Transient
-	private Long arrayIndex1;
-	
 	public DrugType getDrugType() {
 		return drugType;
 	}
@@ -135,11 +143,35 @@ public class PrescriptionItem {
 		this.inventoryQuantity = inventoryQuantity;
 	}
 
+	public Integer getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(Integer drugQuantity) {
+		this.drugQuantity = drugQuantity;
+	}
+
+	public Integer getAnalyticsDrugQuantity() {
+		return analyticsDrugQuantity;
+	}
+
+	public void setAnalyticsDrugQuantity(Integer analyticsDrugQuantity) {
+		this.analyticsDrugQuantity = analyticsDrugQuantity;
+	}
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
+	}
+
 	@Override
 	public String toString() {
-		return "PrescriptionItem [drugId=" + drugId + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
-				+ dosageTime + ", direction=" + direction + ", instructions=" + instructions + ", arrayIndex1="
-				+ arrayIndex1 + "]";
+		return "PrescriptionItem [drugId=" + drugId + ", duration=" + duration + ", dosage=" + dosage + ", drugType="
+				+ drugType + ", drugName=" + drugName + ", explanation=" + explanation + ", dosageTime=" + dosageTime
+				+ ", direction=" + direction + ", instructions=" + instructions + ", drugQuantity=" + drugQuantity
+				+ ", inventoryQuantity=" + inventoryQuantity + ", arrayIndex1=" + arrayIndex1 + "]";
 	}
 
 }

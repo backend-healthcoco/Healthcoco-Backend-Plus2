@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.beans.DoctorExpense;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientReceipt;
+import com.dpdocter.beans.ExpenseType;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
@@ -72,5 +74,26 @@ public interface BillingService {
 	void emailMultipleReceipt(List<String> ids, String emailAddress);
 
 	Boolean changeInvoiceTreatmentStatus(InvoiceItemChangeStatusRequest request);
+
+	DoctorExpense addEditDoctorExpense(DoctorExpense request);
+
+	List<DoctorExpense> getDoctorExpenses(String expenseType, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String paymentMode);
+
+	DoctorExpense deleteDoctorExpense(String expenseId, Boolean discarded);
+
+	Double countDoctorExpenses(String expenseType, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String paymentMode);
+
+	DoctorExpense getDoctorExpense(String expenseId);
+
+	public ExpenseType addEditExpenseType(ExpenseType request);
+
+	public ExpenseType getExpenseType(String expenseTypeId);
+
+	public Boolean deleteExpenseType(String expenseTypeId, Boolean discarded);
+
+	public List<ExpenseType> getExpenseType(int page, int size, String doctorId, String locationId, String hospitalId,
+			String searchTerm, Boolean discarded);
 
 }

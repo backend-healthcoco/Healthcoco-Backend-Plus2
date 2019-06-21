@@ -5,7 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import com.dpdocter.collections.CustomAppointmentCollection;
-import com.dpdocter.collections.PatientTreatmentCollection;
 
 public interface CustomAppointmentRepository extends MongoRepository<CustomAppointmentCollection, ObjectId> {
 

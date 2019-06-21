@@ -1,9 +1,7 @@
 package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import common.util.web.JacksonUtil;
+import com.dpdocter.enums.DrugTypePlacement;
 
 import com.dpdocter.enums.DrugTypePlacement;
 
@@ -19,12 +17,13 @@ public class InventoryItem extends GenericCollection {
 	private Long reOrderLevel;
 	private String manufacturer;
 	private Boolean saveManufacturer;
+	private String doctorId;
 	private String resourceId;
 	private String locationId;
 	private String hospitalId;
 	private Boolean discarded = false;
-	private Double retailPrice;
 	private String itemType;
+	private Double retailPrice;
 	private String drugType;
 	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
 
@@ -132,15 +131,22 @@ public class InventoryItem extends GenericCollection {
 		this.retailPrice = retailPrice;
 	}
 
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
 	public String getItemType() {
 		return itemType;
 	}
 
 	public void setItemType(String itemType) {
 		this.itemType = itemType;
-
+		
 	}
-
 	public String getDrugType() {
 		return drugType;
 	}
@@ -160,9 +166,10 @@ public class InventoryItem extends GenericCollection {
 	@Override
 	public String toString() {
 		return "InventoryItem [id=" + id + ", name=" + name + ", type=" + type + ", code=" + code + ", stockingUnit="
-				+ stockingUnit + ", manufacturer=" + manufacturer + ", saveManufacturer=" + saveManufacturer
-				+ ", resourceId=" + resourceId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", discarded=" + discarded + "]";
+				+ stockingUnit + ", reOrderLevel=" + reOrderLevel + ", manufacturer=" + manufacturer
+				+ ", saveManufacturer=" + saveManufacturer + ", doctorId=" + doctorId + ", resourceId=" + resourceId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", retailPrice=" + retailPrice + ", itemType=" + itemType + "]";
 	}
 
 }

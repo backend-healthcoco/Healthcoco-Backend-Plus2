@@ -13,17 +13,35 @@ public class DiagnosticTest extends GenericCollection {
 
 	private String explanation;
 
-	private String specimen;
-
 	private String locationId;
 
 	private String hospitalId;
 
 	private Boolean discarded = false;
 
-	private String code;
+	private String specimen;
 
-	private long count;
+	private String diagnosticTestCode;
+
+	private Double diagnosticTestCost = 0.0;
+
+	private Amount diagnosticTestComission;
+
+	private Double diagnosticTestCostForPatient = 0.0;
+
+	private long rankingCount = 0;
+
+	private long count = 0;
+
+	private Integer turnaroundTime;
+
+	public long getCount() {
+		return count;
+	}
+
+	public void setCount(long count) {
+		this.count = count;
+	}
 
 	public String getId() {
 		return id;
@@ -73,14 +91,6 @@ public class DiagnosticTest extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
 	public String getSpecimen() {
 		return specimen;
 	}
@@ -89,20 +99,61 @@ public class DiagnosticTest extends GenericCollection {
 		this.specimen = specimen;
 	}
 
-	public long getCount() {
-		return count;
+	public String getDiagnosticTestCode() {
+		return diagnosticTestCode;
 	}
 
-	public void setCount(long count) {
-		this.count = count;
+	public void setDiagnosticTestCode(String diagnosticTestCode) {
+		this.diagnosticTestCode = diagnosticTestCode;
+	}
+
+	public Double getDiagnosticTestCost() {
+		return diagnosticTestCost;
+	}
+
+	public void setDiagnosticTestCost(Double diagnosticTestCost) {
+		this.diagnosticTestCost = diagnosticTestCost;
+	}
+
+	public Amount getDiagnosticTestComission() {
+		return diagnosticTestComission;
+	}
+
+	public void setDiagnosticTestComission(Amount diagnosticTestComission) {
+		this.diagnosticTestComission = diagnosticTestComission;
+	}
+
+	public Double getDiagnosticTestCostForPatient() {
+		return diagnosticTestCostForPatient;
+	}
+
+	public void setDiagnosticTestCostForPatient(Double diagnosticTestCostForPatient) {
+		this.diagnosticTestCostForPatient = diagnosticTestCostForPatient;
+	}
+
+	public long getRankingCount() {
+		return rankingCount;
+	}
+
+	public void setRankingCount(long rankingCount) {
+		this.rankingCount = rankingCount;
+	}
+
+	public Integer getTurnaroundTime() {
+		return turnaroundTime;
+	}
+
+	public void setTurnaroundTime(Integer turnaroundTime) {
+		this.turnaroundTime = turnaroundTime;
 	}
 
 	@Override
 	public String toString() {
-		return "DiagnosticTest [id=" + id + ", testName=" + testName + ", explanation=" + explanation + ", specimen="
-				+ specimen + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", code=" + code + ", count=" + count + "]";
+		return "DiagnosticTest [id=" + id + ", testName=" + testName + ", explanation=" + explanation + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", specimen=" + specimen
+				+ ", diagnosticTestCode=" + diagnosticTestCode + ", diagnosticTestCost=" + diagnosticTestCost
+				+ ", diagnosticTestComission=" + diagnosticTestComission + ", diagnosticTestCostForPatient="
+				+ diagnosticTestCostForPatient + ", rankingCount=" + rankingCount + ", turnaroundTime=" + turnaroundTime
+				+ "]";
 	}
-
-
 }

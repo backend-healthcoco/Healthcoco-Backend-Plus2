@@ -29,6 +29,7 @@ import com.dpdocter.beans.CustomAppointment;
 import com.dpdocter.beans.Event;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
+import com.dpdocter.beans.NutritionAppointment;
 import com.dpdocter.beans.PatientQueue;
 import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.services.ESCityService;
@@ -276,12 +277,11 @@ public class AppointmentApi {
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "status") String status, @QueryParam(value = "sortBy") String sortBy,
 			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime,
+			@DefaultValue("false") @QueryParam("isRegisteredPatientRequired") Boolean isRegisteredPatientRequired,
 			@DefaultValue(value = "false") @QueryParam(value = "isWeb") Boolean isWeb) {
 
-		List<Appointment> appointment = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
-				page, size, updatedTime, status, sortBy, fromTime, toTime, isWeb);
-		Response<Appointment> response = new Response<Appointment>();
-		response.setDataList(appointment);
+		Response<Appointment> response = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
+				page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb);
 		return response;
 	}
 
@@ -294,8 +294,8 @@ public class AppointmentApi {
 			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime) {
 
-		Response<Object> response = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from,
-				to, page, size, updatedTime);
+		Response<Object> response = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from, to,
+				page, size, updatedTime);
 		return response;
 	}
 
@@ -322,7 +322,8 @@ public class AppointmentApi {
 	@Path(value = PathProxy.AppointmentUrls.ADD_EDIT_EVENT)
 	@POST
 	@ApiOperation(value = PathProxy.AppointmentUrls.ADD_EDIT_EVENT, notes = PathProxy.AppointmentUrls.ADD_EDIT_EVENT)
-	public Response<Event> addEditEvent(EventRequest request) throws MessagingException {
+	public Response<Event> addEditEvent(EventRequest request, 
+			@DefaultValue(value = "false") @QueryParam(value = "ALL") Boolean forAllDoctors) throws MessagingException {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
 			logger.warn("Invalid Input");
 			mailService.sendExceptionMail("Invalid input :: Doctor Id ,Location Id  cannot be empty");
@@ -330,9 +331,9 @@ public class AppointmentApi {
 		}
 		Event event = null;
 		if (request.getId() == null)
-			event = appointmentService.addEvent(request);
+			event = appointmentService.addEvent(request, forAllDoctors);
 		else
-			event = appointmentService.updateEvent(request);
+			event = appointmentService.updateEvent(request, forAllDoctors);
 
 		Response<Event> response = new Response<Event>();
 		response.setData(event);
@@ -655,23 +656,25 @@ public class AppointmentApi {
 	@GET
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_EVENTS, notes = PathProxy.AppointmentUrls.GET_EVENTS)
 	public Response<Event> getEvents(@QueryParam(value = "locationId") String locationId,
-			@MatrixParam(value = "doctorId") List<String> doctorId,
-			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
-			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
+			@MatrixParam(value = "doctorId") List<String> doctorId, @QueryParam(value = "from") String from,
+			@QueryParam(value = "to") String to, @QueryParam(value = "page") int page,
+			@QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
-			@QueryParam(value = "sortBy") String sortBy,
-			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime,
-			@DefaultValue(value = "false") @QueryParam(value = "byMonth") Boolean byMonth) {
+			@QueryParam(value = "sortBy") String sortBy, @QueryParam(value = "fromTime") String fromTime,
+			@QueryParam(value = "toTime") String toTime,
+			@DefaultValue(value = "false") @QueryParam(value = "byMonth") Boolean byMonth,
+			@DefaultValue(value = "false") @QueryParam(value = "isCalenderBlocked") Boolean isCalenderBlocked,
+			@QueryParam(value = "state") String state) {
 
-		List<Event> events = null;
-		
-		if(byMonth)events = appointmentService.getEventsByMonth(locationId, doctorId, from, to,
-				page, size, updatedTime, sortBy, fromTime, toTime);
-		
-		else events = appointmentService.getEvents(locationId, doctorId, from, to,
-				page, size, updatedTime, sortBy, fromTime, toTime);
 		Response<Event> response = new Response<Event>();
-		response.setDataList(events);
+
+		if (byMonth)
+			response = appointmentService.getEventsByMonth(locationId, doctorId, from, to, page, size, updatedTime,
+					sortBy, fromTime, toTime, isCalenderBlocked, state);
+		else
+			response = appointmentService.getEvents(locationId, doctorId, from, to, page, size, updatedTime, sortBy,
+					fromTime, toTime, isCalenderBlocked, state);
+		
 		return response;
 	}
 
@@ -686,6 +689,23 @@ public class AppointmentApi {
 		Event event = appointmentService.getEventById(eventId);
 		Response<Event> response = new Response<Event>();
 		response.setData(event);
+		return response;
+	}
+
+	@Path(value = PathProxy.AppointmentUrls.ADD_NUTRITION_APPOINTMENT)
+	@POST
+	@ApiOperation(value = PathProxy.AppointmentUrls.ADD_NUTRITION_APPOINTMENT, notes = PathProxy.AppointmentUrls.ADD_NUTRITION_APPOINTMENT)
+	public Response<Boolean> addNutritionAppointment(NutritionAppointment request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		if (DPDoctorUtils.anyStringEmpty(request.getUserId(), request.getMobileNumber())) {
+			throw new BusinessException(ServiceError.InvalidInput, "userId and mobile number should not null or empty");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(appointmentService.addEditNutritionAppointment(request));
 		return response;
 	}
 }

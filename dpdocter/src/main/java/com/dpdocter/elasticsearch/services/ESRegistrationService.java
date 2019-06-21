@@ -1,5 +1,7 @@
 package com.dpdocter.elasticsearch.services;
 
+import java.util.List;
+
 import com.dpdocter.elasticsearch.beans.AdvancedSearch;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
 import com.dpdocter.elasticsearch.document.ESCollectionBoyDocument;
@@ -24,5 +26,8 @@ public interface ESRegistrationService {
 	void activateUser(String userId);
 
 	boolean addCollectionBoy(ESCollectionBoyDocument request);
+
+	List<ESPatientDocument> searchDeletedPatient(String doctorId, String locationId, String hospitalId, int page, int size,
+			String searchTerm, String sortBy);
 
 }

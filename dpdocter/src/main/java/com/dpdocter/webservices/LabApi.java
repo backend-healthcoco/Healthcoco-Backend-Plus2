@@ -14,7 +14,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
-import org.elasticsearch.cluster.routing.allocation.command.AllocateAllocationCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -139,7 +138,6 @@ public class LabApi {
 		Response<Object> response = new Response<Object>();
 		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm ,LabType.DIAGNOSTIC.getType()));
 		response.setData(locationServices.getCBCount(locationId, searchTerm , LabType.DIAGNOSTIC.getType()));
-
 		return response;
 	}
 
@@ -164,13 +162,14 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_RATE_CARD_TEST, notes = PathProxy.LabUrls.GET_RATE_CARD_TEST)
 	public Response<RateCardTestAssociationLookupResponse> getRateCardTests(@QueryParam("rateCardId") String rateCardId,
 			@QueryParam("labId") String labId, @QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("searchTerm") String searchTerm,
+			@QueryParam("discarded") @DefaultValue("false") Boolean discarded) {
 		if (rateCardId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<RateCardTestAssociationLookupResponse> response = new Response<RateCardTestAssociationLookupResponse>();
-		response.setDataList(locationServices.getRateCardTests(page, size, searchTerm, rateCardId, labId));
+		response.setDataList(locationServices.getRateCardTests(page, size, searchTerm, rateCardId, labId, discarded));
 
 		return response;
 	}
@@ -717,6 +716,34 @@ public class LabApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.LabUrls.ADD_EDIT_DENTAL_WORKS)
+	@POST
+	@ApiOperation(value = PathProxy.LabUrls.ADD_EDIT_DENTAL_WORKS, notes = PathProxy.LabUrls.ADD_EDIT_DENTAL_WORKS)
+	public Response<DentalWork> addEditPickupRequest(AddEditCustomWorkRequest request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<DentalWork> response = new Response<DentalWork>();
+		response.setData(locationServices.addEditCustomWork(request));
+
+		return response;
+	}
+
+	@Path(value = PathProxy.LabUrls.GET_DENTAL_WORKS)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_DENTAL_WORKS, notes = PathProxy.LabUrls.GET_DENTAL_WORKS)
+	public Response<Object> getDentalWorks(@QueryParam("locationId") String locationId, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+		if (locationId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Object> response = new Response<Object>();
+		response.setDataList(locationServices.getCustomWorks(page, size, searchTerm));
+		return response;
+	}
+
 	@Path(value = PathProxy.LabUrls.DOWNLOAD_REQUISATION_FORM)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.DOWNLOAD_REQUISATION_FORM, notes = PathProxy.LabUrls.DOWNLOAD_REQUISATION_FORM)
@@ -741,11 +768,22 @@ public class LabApi {
 		}
 		DynamicCollectionBoyAllocationResponse dynamicCollectionBoyAllocationResponse = locationServices
 				.allocateCBDynamically(request);
-
 		Response<DynamicCollectionBoyAllocationResponse> response = new Response<DynamicCollectionBoyAllocationResponse>();
 		response.setData(dynamicCollectionBoyAllocationResponse);
 		return response;
 	}
 
+	@GET
+	@Path(value = PathProxy.LabUrls.ADD_TO_FAVOURITE_RATE_CARD_TEST)
+	@ApiOperation(value = PathProxy.LabUrls.ADD_TO_FAVOURITE_RATE_CARD_TEST, notes = PathProxy.LabUrls.ADD_TO_FAVOURITE_RATE_CARD_TEST)
+	public Response<Boolean> makeFavouriteRateCardTest(@PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId, @PathParam("diagnosticTestId") String diagnosticTestId) {
+		if (DPDoctorUtils.allStringsEmpty(hospitalId, locationId, diagnosticTestId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(locationServices.makeFavouriteRateCardTest(locationId, hospitalId, diagnosticTestId));
+		return response;
+	}
 
 }

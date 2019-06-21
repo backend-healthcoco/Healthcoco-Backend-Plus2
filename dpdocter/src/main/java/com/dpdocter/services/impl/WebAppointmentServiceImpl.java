@@ -42,9 +42,9 @@ import com.dpdocter.services.WebAppointmentService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.DateAndTimeUtility;
-
 @Service
-public class WebAppointmentServiceImpl implements WebAppointmentService {
+public class WebAppointmentServiceImpl implements WebAppointmentService{
+
 
 	@Autowired
 	ElasticsearchTemplate elasticsearchTemplate;
@@ -63,10 +63,10 @@ public class WebAppointmentServiceImpl implements WebAppointmentService {
 
 	@Autowired
 	MongoTemplate mongoTemplate;
-
+	
 	@Value(value = "${image.path}")
 	private String imagePath;
-
+	
 	@Override
 	public WebDoctorClinicsResponse getClinicsByDoctorSlugURL(String doctorSlugUrl) {
 		WebDoctorClinicsResponse webDoctorClinicsResponse = null;
@@ -167,16 +167,15 @@ public class WebAppointmentServiceImpl implements WebAppointmentService {
 				response.setHospitalId(hospitalId);
 				
 				slotDataResponses = new ArrayList<SlotDataResponse>();
-				if (doctorClinicProfileCollection.getWorkingSchedules() != null
-						&& doctorClinicProfileCollection.getAppointmentSlot() != null) {
-					for (int j = 0; j < 6; j++) {
+				if (doctorClinicProfileCollection.getWorkingSchedules() != null && doctorClinicProfileCollection.getAppointmentSlot() != null) {
+					for(int j=0;j<6;j++) {
 						String day = sdf.format(localCalendar.getTime());
 						slotTime = doctorClinicProfileCollection.getAppointmentSlot().getTime();
-
+						
 						SlotDataResponse slotDataResponse = new SlotDataResponse();
 						slotDataResponse.setAppointmentSlot(doctorClinicProfileCollection.getAppointmentSlot());
 						slotDataResponse.setDate(localCalendar.getTime().getTime());
-
+						
 						slotResponse = new ArrayList<Slot>();
 						List<WorkingHours> workingHours = null;
 						for (WorkingSchedule workingSchedule : doctorClinicProfileCollection.getWorkingSchedules()) {
@@ -185,7 +184,6 @@ public class WebAppointmentServiceImpl implements WebAppointmentService {
 							}
 						}
 						if (workingHours != null && !workingHours.isEmpty()) {
-
 							int dayOfDate = localCalendar.get(Calendar.DATE);
 							int monthOfDate = localCalendar.get(Calendar.MONTH) + 1;
 							int yearOfDate = localCalendar.get(Calendar.YEAR);
@@ -206,7 +204,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService {
 								startTime = hours.getFromTime();
 								endTime = hours.getToTime();
 
-								if (startTime != null && endTime != null) {
+								if(startTime != null && endTime != null) {
 									if (bookedSlots != null && !bookedSlots.isEmpty()) {
 										while (i < bookedSlots.size()) {
 											AppointmentBookedSlotCollection bookedSlot = bookedSlots.get(i);
@@ -222,15 +220,12 @@ public class WebAppointmentServiceImpl implements WebAppointmentService {
 														}
 													}
 													List<Slot> slots = DateAndTimeUtility.sliceTime(startTime,
-															bookedSlot.getTime().getFromTime(), Math.round(slotTime),
-															true);
+															bookedSlot.getTime().getFromTime(), Math.round(slotTime), true);
 													if (slots != null)
 														slotResponse.addAll(slots);
 
-													slots = DateAndTimeUtility.sliceTime(
-															bookedSlot.getTime().getFromTime(),
-															bookedSlot.getTime().getToTime(), Math.round(slotTime),
-															false);
+													slots = DateAndTimeUtility.sliceTime(bookedSlot.getTime().getFromTime(),
+															bookedSlot.getTime().getToTime(), Math.round(slotTime), false);
 													if (slots != null)
 														slotResponse.addAll(slots);
 													startTime = bookedSlot.getTime().getToTime();
@@ -265,10 +260,10 @@ public class WebAppointmentServiceImpl implements WebAppointmentService {
 								}
 							slotDataResponse.setSlots(slotResponse);
 						}
-						slotDataResponses.add(slotDataResponse);
-						localCalendar.add(Calendar.DATE, 1);
+					slotDataResponses.add(slotDataResponse);
+					localCalendar.add(Calendar.DATE, 1);
 					}
-					response.setSlots(slotDataResponses);
+				response.setSlots(slotDataResponses);
 				}
 			}
 		} catch (Exception e) {

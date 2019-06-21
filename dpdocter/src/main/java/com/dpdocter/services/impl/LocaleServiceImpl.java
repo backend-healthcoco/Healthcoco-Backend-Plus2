@@ -53,10 +53,10 @@ public class LocaleServiceImpl implements LocaleService {
 	RecommendationsRepository recommendationsRepository;
 
 	@Autowired
-	FileManager fileManager;
+	public MongoTemplate mongoTemplate;
 
 	@Autowired
-	public MongoTemplate mongoTemplate;
+	FileManager fileManager;
 
 	@Value(value = "${image.path}")
 	private String imagePath;

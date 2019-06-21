@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.WorkingSchedule;
-import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.LocationType;
 
 @Document(collection = "location_cl")
@@ -159,6 +158,12 @@ public class LocationCollection extends GenericCollection {
 	@Field
 	private Boolean isPatientWelcomeMessageOn = false;
 
+<<<<<<< HEAD
+=======
+	@Field
+	private String smsCode;
+
+>>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;
 	}
@@ -543,6 +548,17 @@ public class LocationCollection extends GenericCollection {
 		this.isPatientWelcomeMessageOn = isPatientWelcomeMessageOn;
 	}
 
+<<<<<<< HEAD
+=======
+	public String getSmsCode() {
+		return smsCode;
+	}
+
+	public void setSmsCode(String smsCode) {
+		this.smsCode = smsCode;
+	}
+
+>>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 	@Override
 	public String toString() {
 		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="

@@ -1,19 +1,23 @@
 package com.dpdocter.response;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.dpdocter.beans.DiagnosticTest;
 
-public class TestAndRecordDataResponse{
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+public class TestAndRecordDataResponse {
 
-    private DiagnosticTest test;
+	private DiagnosticTest test;
 
-    private String recordId;
-    
-	public TestAndRecordDataResponse() {
-	}
+	private String recordId;
 
 	public TestAndRecordDataResponse(DiagnosticTest test, String recordId) {
 		this.test = test;
 		this.recordId = recordId;
+	}
+
+	public TestAndRecordDataResponse() {
+
 	}
 
 	public DiagnosticTest getTest() {

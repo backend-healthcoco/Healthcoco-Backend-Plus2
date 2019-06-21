@@ -11,4 +11,7 @@ public interface IPDReportsRepository extends MongoRepository<IPDReportsCollecti
 	@Query(value = "{ 'locationId': ?0, 'doctorId': ?1}", count = true)
 	Integer getReportsCount(ObjectId locationId, ObjectId doctorId);
 
+	@Query(value = "{ 'locationId': ?0}", count = true)
+	Integer getReportsCount(ObjectId locationId);
+
 }

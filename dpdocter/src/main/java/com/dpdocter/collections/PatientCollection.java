@@ -457,25 +457,8 @@ public class PatientCollection extends GenericCollection {
 				+ ", isPatientDiscarded=" + isPatientDiscarded + ", dateOfVisit=" + dateOfVisit + ", referredBy="
 				+ referredBy + ", address=" + address + ", consultantDoctorIds=" + consultantDoctorIds
 				+ ", personalInformation=" + personalInformation + ", medicalQuestionAnswers=" + medicalQuestionAnswers
-				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", PNUM=" + PNUM + ", getId()=" + getId()
-				+ ", getBloodGroup()=" + getBloodGroup() + ", getProfession()=" + getProfession() + ", getRelations()="
-				+ getRelations() + ", getEmailAddress()=" + getEmailAddress() + ", getDoctorId()=" + getDoctorId()
-				+ ", getSecMobile()=" + getSecMobile() + ", getAdhaarId()=" + getAdhaarId() + ", getPanCardNumber()="
-				+ getPanCardNumber() + ", getLocalPatientName()=" + getLocalPatientName() + ", getDrivingLicenseId()="
-				+ getDrivingLicenseId() + ", getInsuranceId()=" + getInsuranceId() + ", getInsuranceName()="
-				+ getInsuranceName() + ", getUserId()=" + getUserId() + ", getNotes()=" + getNotes() + ", getPID()="
-				+ getPID() + ", getLocationId()=" + getLocationId() + ", getHospitalId()=" + getHospitalId()
-				+ ", getRegistrationDate()=" + getRegistrationDate() + ", getFirstName()=" + getFirstName()
-				+ ", getGender()=" + getGender() + ", getDob()=" + getDob() + ", getImageUrl()=" + getImageUrl()
-				+ ", getThumbnailUrl()=" + getThumbnailUrl() + ", getDiscarded()=" + getDiscarded()
-				+ ", getIsPatientDiscarded()=" + getIsPatientDiscarded() + ", getDateOfVisit()=" + getDateOfVisit()
-				+ ", getReferredBy()=" + getReferredBy() + ", getAddress()=" + getAddress()
-				+ ", getConsultantDoctorIds()=" + getConsultantDoctorIds() + ", getPersonalInformation()="
-				+ getPersonalInformation() + ", getMedicalQuestionAnswers()=" + getMedicalQuestionAnswers()
-				+ ", getLifestyleQuestionAnswers()=" + getLifestyleQuestionAnswers() + ", getPNUM()=" + getPNUM()
-				+ ", getCreatedTime()=" + getCreatedTime() + ", getUpdatedTime()=" + getUpdatedTime()
-				+ ", getCreatedBy()=" + getCreatedBy() + ", getAdminCreatedTime()=" + getAdminCreatedTime()
-				+ ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString()
-				+ "]";
+				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", PNUM=" + PNUM + ", isNutritionActive="
+				+ isNutritionActive + "]";
 	}
+
 }

@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -30,10 +31,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.AdvanceReceiptIdWithAmount;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
+import com.dpdocter.beans.DoctorExpense;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientLedger;
 import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.ExpenseType;
 import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
@@ -46,30 +49,37 @@ import com.dpdocter.beans.ReceiptJasperDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.collections.DoctorExpenseCollection;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.ExpenseTypeCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.elasticsearch.document.ESExpenseTypeDocument;
+import com.dpdocter.elasticsearch.services.ESExpenseTypeService;
 import com.dpdocter.enums.BillingType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.InvoiceItemType;
 import com.dpdocter.enums.ReceiptType;
 import com.dpdocter.enums.SMSStatus;
+import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorExpenseRepository;
 import com.dpdocter.repository.DoctorPatientDueAmountRepository;
 import com.dpdocter.repository.DoctorPatientInvoiceRepository;
 import com.dpdocter.repository.DoctorPatientLedgerRepository;
 import com.dpdocter.repository.DoctorPatientReceiptRepository;
 import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.ExpenseTypeRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
@@ -138,9 +148,6 @@ public class BillingServiceImpl implements BillingService {
 	private InventoryService inventoryService;
 
 	@Autowired
-	private DrugRepository drugRepository;
-
-	@Autowired
 	private MailService mailService;
 
 	@Value(value = "${jasper.print.receipt.a4.fileName}")
@@ -165,9 +172,6 @@ public class BillingServiceImpl implements BillingService {
 	private SMSServices smsServices;
 
 	@Autowired
-	private PrescriptionServices prescriptionServices;
-
-	@Autowired
 	DoctorPatientLedgerRepository doctorPatientLedgerRepository;
 
 	@Autowired
@@ -178,10 +182,25 @@ public class BillingServiceImpl implements BillingService {
 
 	@Value(value = "${jasper.print.multiple.receipt.fileName}")
 	private String multipleReceiptFileName;
-	
+
+	@Autowired
+	DrugRepository drugRepository;
+
+	@Autowired
+	private PrescriptionServices prescriptionServices;
+
 	@Autowired
 	PushNotificationServices pushNotificationServices;
-	
+
+	@Autowired
+	private DoctorExpenseRepository doctorExpenseRepository;
+
+	@Autowired
+	private ExpenseTypeRepository expenseTypeRepository;
+
+	@Autowired
+	private ESExpenseTypeService esExpenseTypeService;
+
 	@Override
 	public InvoiceAndReceiptInitials getInitials(String locationId) {
 		InvoiceAndReceiptInitials response = null;
@@ -242,6 +261,7 @@ public class BillingServiceImpl implements BillingService {
 
 			ObjectId doctorObjectId = new ObjectId(request.getDoctorId());
 			Double dueAmount = 0.0;
+
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 				BeanUtil.map(request, doctorPatientInvoiceCollection);
 				UserCollection userCollection = userRepository.findOne(doctorObjectId);
@@ -274,9 +294,14 @@ public class BillingServiceImpl implements BillingService {
 				Double paidAmount = doctorPatientInvoiceCollection.getGrandTotal()
 						- doctorPatientInvoiceCollection.getBalanceAmount();
 
-				if (doctorPatientInvoiceCollection.getReceiptIds() != null
-						&& !doctorPatientInvoiceCollection.getReceiptIds().isEmpty()
-						&& paidAmount > request.getGrandTotal()) {
+				List<DoctorPatientReceiptCollection> doPatientReceiptCollections = doctorPatientReceiptRepository
+						.findByInvoiceId(doctorPatientInvoiceCollection.getId(), false);
+
+				if (doPatientReceiptCollections != null && !doPatientReceiptCollections.isEmpty()) {
+					throw new BusinessException(ServiceError.Unknown,
+							"Invoice cannot be edited as receipt is already added.");
+				}
+				if (paidAmount > request.getGrandTotal()) {
 					throw new BusinessException(ServiceError.Unknown,
 							"Invoice cannot be edited as old invoice's total is less than paid amount.");
 				}
@@ -352,7 +377,6 @@ public class BillingServiceImpl implements BillingService {
 								request.getHospitalId(), drug.getDrugCode(),
 								doctorPatientInvoiceCollection.getId().toString());
 					}
-
 					if (quantity != null && quantity > 0 && invoiceItemResponse.getInventoryBatch() != null) {
 						if (inventoryStock.getBatchId().equals(invoiceItemResponse.getInventoryBatch().getId())) {
 							if (quantity > invoiceItemResponse.getQuantity().getValue()) {
@@ -432,7 +456,6 @@ public class BillingServiceImpl implements BillingService {
 									doctorPatientInvoiceCollection.getId().toString(), "CONSUMED");
 						}
 					}
-
 				}
 
 				InvoiceItem invoiceItem = new InvoiceItem();
@@ -442,7 +465,6 @@ public class BillingServiceImpl implements BillingService {
 			}
 
 			for (ObjectId itemId : itemIds) {
-				// itemId);
 				DrugCollection drug = drugRepository.findOne(itemId);
 				if (drug != null) {
 					InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(
@@ -505,9 +527,9 @@ public class BillingServiceImpl implements BillingService {
 				doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
 			}
 			pushNotificationServices.notifyUser(doctorPatientInvoiceCollection.getDoctorId().toString(),
-					"Invoice Added",
-					ComponentType.INVOICE_REFRESH.getType(), doctorPatientInvoiceCollection.getPatientId().toString(), null);
-			
+					"Invoice Added", ComponentType.INVOICE_REFRESH.getType(),
+					doctorPatientInvoiceCollection.getPatientId().toString(), null);
+
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
@@ -664,11 +686,15 @@ public class BillingServiceImpl implements BillingService {
 			}
 			
 
+			if (doctorPatientInvoiceCollection != null && doctorPatientInvoiceCollection.getInvoiceItems() != null) {
+				itemIds = CollectionUtils.collect(doctorPatientInvoiceCollection.getInvoiceItems(),
+						new BeanToPropertyValueTransformer("itemId"));
+			}
+
 			if (doctorPatientInvoiceCollection != null) {
 				response = new DoctorPatientInvoice();
 				BeanUtil.map(doctorPatientInvoiceCollection, response);
 			}
-			
 			for (ObjectId itemId : itemIds) {
 				// itemId);
 				DrugCollection drug = drugRepository.findOne(itemId);
@@ -679,8 +705,8 @@ public class BillingServiceImpl implements BillingService {
 					Long quantity = inventoryService.getInventoryStockItemCount(response.getLocationId(),
 							response.getHospitalId(), drug.getDrugCode(),
 							doctorPatientInvoiceCollection.getId().toString());
-					InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(response.getLocationId(),
-							response.getHospitalId(), drug.getDrugCode());
+					InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
+							response.getLocationId(), response.getHospitalId(), drug.getDrugCode());
 					if (inventoryStock != null) {
 						InventoryBatch inventoryBatch = inventoryService
 								.getInventoryBatchById(inventoryStock.getBatchId());
@@ -897,11 +923,11 @@ public class BillingServiceImpl implements BillingService {
 					response.setTotalDueAmount(amountResponse.getTotalDueAmount());
 				}
 			}
-			
+
 			pushNotificationServices.notifyUser(doctorPatientReceiptCollection.getDoctorId().toString(),
-					"Receipt Added",
-					ComponentType.RECEIPT_REFRESH.getType(), doctorPatientReceiptCollection.getPatientId().toString(), null);
-			
+					"Receipt Added", ComponentType.RECEIPT_REFRESH.getType(),
+					doctorPatientReceiptCollection.getPatientId().toString(), null);
+
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
@@ -1172,47 +1198,8 @@ public class BillingServiceImpl implements BillingService {
 				}
 				InvoiceItem invoiceItem = new InvoiceItem();
 
-				/*
-				 * InventoryItem inventoryItem =
-				 * inventoryService.getInventoryItemByResourceId(request. getLocationId(),
-				 * request.getHospitalId(), invoiceItemResponse.getItemId()); if
-				 * (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
-				 * createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
-				 * invoiceItemResponse.getInventoryBatch(), request.getPatientId(),
-				 * request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-				 * invoiceItemResponse.getInventoryQuantity()); }
-				 */
-				// createInventoryStock(invoiceItemResponse.getItemId(),
-				// invoiceItemResponse.getBatchId(), request.getPatientId(),
-				// request.getDoctorId(), request.getLocationId(),
-				// request.getHospitalId());
 				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
 						request.getHospitalId(), invoiceItemResponse.getItemId());
-				/*
-				 * if (DPDoctorUtils.anyStringEmpty(request.getId())) { inventoryStock =
-				 * inventoryService.getInventoryStockByInvoiceIdResourceId(
-				 * request.getLocationId(), request.getHospitalId(),
-				 * invoiceItemResponse.getItemId(), request.getId()); } // InventoryStock
-				 * inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(
-				 * request.getLocationId(), request.getHospitalId(),
-				 * invoiceItemResponse.getItemId(), request.getId());
-				 * 
-				 * if (inventoryStock != null) { >>>>>>> release-1.0.63
-				 * 
-				 * } else { InventoryItem inventoryItem =
-				 * inventoryService.getInventoryItemByResourceId(request. getLocationId(),
-				 * request.getHospitalId(), invoiceItemResponse.getItemId()); if
-				 * (invoiceItemResponse.getInventoryBatch() != null && inventoryItem != null) {
-				 * createInventoryStock(invoiceItemResponse.getItemId(), inventoryItem.getId(),
-				 * invoiceItemResponse.getInventoryBatch(), request.getPatientId(),
-				 * request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-				 * invoiceItemResponse.getInventoryQuantity() ,
-				 * doctorPatientInvoiceCollection.getId().toString()); } }
-				 */
-				// createInventoryStock(invoiceItemResponse.getItemId(),
-				// invoiceItemResponse.getBatchId(), request.getPatientId(),
-				// request.getDoctorId(), request.getLocationId(),
-				// request.getHospitalId());
 				BeanUtil.map(invoiceItemResponse, invoiceItem);
 				invoiceItems.add(invoiceItem);
 				doctorPatientInvoiceCollection.setInvoiceItems(invoiceItems);
@@ -1385,7 +1372,6 @@ public class BillingServiceImpl implements BillingService {
 			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId)).and("locationId")
 					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId))
 					.and("isPatientDiscarded").ne(true);
-			;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -1929,8 +1915,8 @@ public class BillingServiceImpl implements BillingService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Invoice", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Invoice", body,
-					mailResponse.getMailAttachment());
+			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Invoice",
+					body, mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -2035,8 +2021,8 @@ public class BillingServiceImpl implements BillingService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Receipt", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Receipt", body,
-					mailResponse.getMailAttachment());
+			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Receipt",
+					body, mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -2098,8 +2084,11 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	/*
-	 * private void updateInventoryItem(String itemId, String locationId , String
-	 * hospitalId , Quantity quantity) { InventoryStockCollection
+	 * <<<<<<< HEAD private void updateInventoryItem(String itemId, String
+	 * locationId , String hospitalId , Quantity quantity) {
+	 * InventoryStockCollection ======= private void updateInventoryItem(String
+	 * itemId, String locationId , String hospitalId , Quantity quantity) {
+	 * InventoryStockCollection >>>>>>> e5408604ee47a0585cf6f3af38163a2902fe3750
 	 * inventoryStockCollection =
 	 * inventoryStockRepository.getByResourceIdLocationIdHospitalId(itemId,
 	 * locationId, hospitalId); if(inventoryStockCollection != null) { Long
@@ -2109,7 +2098,6 @@ public class BillingServiceImpl implements BillingService {
 	private void createInventoryStock(String resourceId, String itemId, InventoryBatch inventoryBatch, String patientId,
 			String doctorId, String locationId, String hospitalId, Integer inventoryQuantity, String invoiceId,
 			String stockType) {
-
 		InventoryStock inventoryStock = new InventoryStock();
 		inventoryStock.setInventoryBatch(inventoryBatch);
 		inventoryStock.setItemId(itemId);
@@ -2123,7 +2111,6 @@ public class BillingServiceImpl implements BillingService {
 		if (inventoryQuantity != null) {
 			inventoryStock.setQuantity(inventoryQuantity.longValue());
 		}
-
 		inventoryStock = inventoryService.addInventoryStock(inventoryStock);
 	}
 
@@ -2303,7 +2290,6 @@ public class BillingServiceImpl implements BillingService {
 		UserCollection user = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
-
 			List<DoctorPatientReceiptLookupResponse> doctorPatientReceiptLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(ids)),
 							Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoiceCollection"),
@@ -2385,8 +2371,8 @@ public class BillingServiceImpl implements BillingService {
 				String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 						mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), "",
 						"Receipts", "multipleEmrMailTemplate.vm");
-				Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Receipts", body,
-						mailResponse.getMailAttachment());
+				Boolean response = mailService.sendEmail(emailAddress,
+						mailResponse.getDoctorName() + " sent you Receipts", body, mailResponse.getMailAttachment());
 				if (response != null && mailResponse.getMailAttachment() != null
 						&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 					if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -2395,12 +2381,10 @@ public class BillingServiceImpl implements BillingService {
 				logger.warn("Reciept Ids does not exist");
 				throw new BusinessException(ServiceError.NotFound, "Reciept Ids does not exist");
 			}
-
 		} catch (Exception e) {
 			logger.error("Error while emailing Reciepts" + e);
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while emailing Reciepts" + e);
-
 		}
 	}
 
@@ -2428,5 +2412,280 @@ public class BillingServiceImpl implements BillingService {
 			logger.error(e.getMessage());
 		}
 		return status;
+	}
+
+	@Override
+	public DoctorExpense addEditDoctorExpense(DoctorExpense request) {
+		DoctorExpense response = null;
+		try {
+			DoctorExpenseCollection expenseCollection = null;
+			UserCollection userCollection = null;
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				expenseCollection = doctorExpenseRepository.findOne(new ObjectId(request.getId()));
+				if (expenseCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Doctor Expense not found with Id");
+				}
+				request.setCreatedBy(expenseCollection.getCreatedBy());
+				request.setCreatedTime(expenseCollection.getCreatedTime());
+				request.setUpdatedTime(new Date());
+				request.setUniqueExpenseId(expenseCollection.getUniqueExpenseId());
+				expenseCollection = new DoctorExpenseCollection();
+				BeanUtil.map(request, expenseCollection);
+			} else {
+				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Doctor found with DoctorId");
+				}
+				expenseCollection = new DoctorExpenseCollection();
+				BeanUtil.map(request, expenseCollection);
+				expenseCollection.setUniqueExpenseId(
+						UniqueIdInitial.EXPENSE.getInitial() + "-" + DPDoctorUtils.generateRandomId());
+				expenseCollection.setCreatedBy(
+						(DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? "Dr." : userCollection.getTitle())
+								+ " " + userCollection.getFirstName());
+				expenseCollection.setCreatedTime(new Date());
+				expenseCollection.setAdminCreatedTime(new Date());
+			}
+			expenseCollection = doctorExpenseRepository.save(expenseCollection);
+			response = new DoctorExpense();
+			BeanUtil.map(expenseCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public List<DoctorExpense> getDoctorExpenses(String expenseType, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String paymentMode) {
+		List<DoctorExpense> response = null;
+		try {
+			long createdTimestamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
+				criteria.and("expenseType").is(expenseType.toUpperCase());
+			}
+			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
+				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
+			}
+			if (size > 0) {
+				response = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "toDate")),
+								Aggregation.skip((page) * size), Aggregation.limit(size)),
+						DoctorExpenseCollection.class, DoctorExpense.class).getMappedResults();
+			} else {
+				response = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "toDate"))),
+						DoctorExpenseCollection.class, DoctorExpense.class).getMappedResults();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Double countDoctorExpenses(String expenseType, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String paymentMode) {
+		Double response = 0.0;
+		try {
+			long createdTimestamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
+				criteria.and("expenseType").is(expenseType.toUpperCase());
+			}
+			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
+				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
+			}
+			DoctorExpense doctorExpense = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id",
+											new BasicDBObject("locationId", "$locationId").append("hospitalId",
+													"hospitalId")).append("cost",
+															new BasicDBObject("$sum", "$cost"))))),
+					DoctorExpenseCollection.class, DoctorExpense.class).getUniqueMappedResult();
+			if (doctorExpense != null) {
+				response = doctorExpense.getCost();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public DoctorExpense deleteDoctorExpense(String expenseId, Boolean discarded) {
+		DoctorExpense response = null;
+		try {
+
+			DoctorExpenseCollection expenseCollection = doctorExpenseRepository.findOne(new ObjectId(expenseId));
+			if (expenseCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Doctor Expense not found with Id");
+			}
+			expenseCollection.setDiscarded(discarded);
+			expenseCollection.setUpdatedTime(new Date());
+			response = new DoctorExpense();
+			BeanUtil.map(expenseCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public DoctorExpense getDoctorExpense(String expenseId) {
+		DoctorExpense response = null;
+		try {
+
+			DoctorExpenseCollection expenseCollection = doctorExpenseRepository.findOne(new ObjectId(expenseId));
+			response = new DoctorExpense();
+			BeanUtil.map(expenseCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public ExpenseType addEditExpenseType(ExpenseType request) {
+		ExpenseType response = null;
+		try {
+			ExpenseTypeCollection expenseTypeCollection = null;
+			UserCollection userCollection = null;
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				expenseTypeCollection = expenseTypeRepository.findOne(new ObjectId(request.getId()));
+				if (expenseTypeCollection == null) {
+					throw new BusinessException(ServiceError.InvalidInput, "Expense Not Found with Id");
+				}
+				request.setCreatedBy(expenseTypeCollection.getCreatedBy());
+				request.setCreatedTime(expenseTypeCollection.getCreatedTime());
+				expenseTypeCollection = new ExpenseTypeCollection();
+				BeanUtil.map(request, expenseTypeCollection);
+
+			} else {
+				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Doctor found with DoctorId");
+				}
+				expenseTypeCollection = new ExpenseTypeCollection();
+				
+				expenseTypeCollection.setCreatedBy(
+						(DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? "Dr." : userCollection.getTitle())
+								+ " " + userCollection.getFirstName());
+				expenseTypeCollection.setCreatedTime(new Date());
+				BeanUtil.map(request, expenseTypeCollection);
+				
+			}
+			expenseTypeCollection = expenseTypeRepository.save(expenseTypeCollection);
+			ESExpenseTypeDocument esDocument = new ESExpenseTypeDocument();
+			esExpenseTypeService.addEditExpenseType(esDocument);
+			response = new ExpenseType();
+			BeanUtil.map(expenseTypeCollection, response);
+		} catch (Exception e) {
+			logger.error("Error occurred while adding or editing Expense Type", e);
+			throw new BusinessException(ServiceError.Unknown, "Error occurred while adding or editing Expense Type");
+		}
+		return response;
+	}
+
+	@Override
+	public ExpenseType getExpenseType(String expenseTypeId) {
+		ExpenseType response = null;
+		try {
+
+			ExpenseTypeCollection expenseTypeCollection = expenseTypeRepository.findOne(new ObjectId(expenseTypeId));
+			response = new ExpenseType();
+			BeanUtil.map(expenseTypeCollection, response);
+
+		} catch (Exception e) {
+			logger.error("Error occurred while getting Expense Type", e);
+			throw new BusinessException(ServiceError.Unknown, "Error occurred while getting Expense Type");
+		}
+		return response;
+	}
+
+	@Override
+	public List<ExpenseType> getExpenseType(int page, int size, String doctorId, String locationId, String hospitalId,
+			String searchTerm, Boolean discarded) {
+		List<ExpenseType> response = null;
+		try {
+			Criteria criteria = new Criteria();
+
+			new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(new ObjectId(locationId))
+					.and("hospitalId").is(new ObjectId(hospitalId));
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
+						new Criteria("name").regex("^" + searchTerm));
+			}
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			}
+
+			AggregationResults<ExpenseType> results = mongoTemplate.aggregate(aggregation, ExpenseTypeCollection.class,
+					ExpenseType.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			logger.error("Error occurred while getting Expense Type", e);
+			throw new BusinessException(ServiceError.Unknown, "Error occurred while getting Expense Type");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean deleteExpenseType(String expenseTypeId, Boolean discarded) {
+		Boolean response = false;
+		try {
+			ExpenseTypeCollection expenseTypeCollection = expenseTypeRepository.findOne(new ObjectId(expenseTypeId));
+			if (expenseTypeCollection == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Expense Type Not Found with Id");
+			}
+			expenseTypeCollection.setUpdatedTime(new Date());
+			expenseTypeCollection.setDiscarded(discarded);
+			expenseTypeCollection = expenseTypeRepository.save(expenseTypeCollection);
+			ESExpenseTypeDocument esDocument = new ESExpenseTypeDocument();
+			esExpenseTypeService.addEditExpenseType(esDocument);
+			response = true;
+		} catch (Exception e) {
+			logger.error("Error occurred while getting Expense Type ", e);
+			throw new BusinessException(ServiceError.Unknown, "Error occurred while getting Expense Type");
+		}
+		return response;
 	}
 }

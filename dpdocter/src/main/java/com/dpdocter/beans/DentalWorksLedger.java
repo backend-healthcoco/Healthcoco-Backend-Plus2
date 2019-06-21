@@ -1,12 +1,22 @@
 package com.dpdocter.beans;
 
-public class DentalWorksLedger {
+import java.util.List;
+
+import com.dpdocter.collections.GenericCollection;
+
+public class DentalWorksLedger extends GenericCollection {
 
 	private String id;
+
+	private String doctorId;
 
 	private String locationId;
 
 	private String hospitalId;
+
+	private String dentalLabLocationId;
+
+	private String dentalLabHospitalId;
 
 	private String patientId;
 
@@ -15,6 +25,10 @@ public class DentalWorksLedger {
 	private String invoiceId;
 
 	private Double dueAmount;
+
+	private Double paidAmount;
+
+	List<DentalLabPickup> requests;
 
 	private Double creditAmount;
 
@@ -34,6 +48,14 @@ public class DentalWorksLedger {
 		this.id = id;
 	}
 
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
 	public String getLocationId() {
 		return locationId;
 	}
@@ -50,6 +72,23 @@ public class DentalWorksLedger {
 		this.hospitalId = hospitalId;
 	}
 
+	public String getDentalLabLocationId() {
+		return dentalLabLocationId;
+	}
+
+	public void setDentalLabLocationId(String dentalLabLocationId) {
+		this.dentalLabLocationId = dentalLabLocationId;
+	}
+
+	public String getDentalLabHospitalId() {
+		return dentalLabHospitalId;
+	}
+
+	public void setDentalLabHospitalId(String dentalLabHospitalId) {
+		this.dentalLabHospitalId = dentalLabHospitalId;
+
+	}
+	
 	public String getPatientId() {
 		return patientId;
 	}
@@ -120,6 +159,32 @@ public class DentalWorksLedger {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public Double getPaidAmount() {
+		return paidAmount;
+	}
+
+	public void setPaidAmount(Double paidAmount) {
+		this.paidAmount = paidAmount;
+	}
+
+	public List<DentalLabPickup> getRequests() {
+		return requests;
+	}
+
+	public void setRequests(List<DentalLabPickup> requests) {
+		this.requests = requests;
+	}
+
+	@Override
+	public String toString() {
+		return "DentalWorksLedger [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", dentalLabLocationId=" + dentalLabLocationId + ", dentalLabHospitalId="
+				+ dentalLabHospitalId + ", patientId=" + patientId + ", receiptId=" + receiptId + ", invoiceId="
+				+ invoiceId + ", dueAmount=" + dueAmount + ", paidAmount=" + paidAmount + ", requests=" + requests
+				+ ", creditAmount=" + creditAmount + ", debitAmount=" + debitAmount + ", invoice=" + invoice
+				+ ", receipt=" + receipt + ", discarded=" + discarded + "]";
 	}
 
 }

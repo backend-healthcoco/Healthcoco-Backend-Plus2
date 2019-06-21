@@ -54,7 +54,9 @@ public class VaccineCollection extends GenericCollection {
 	private String note;
 	@Field
 	private Boolean isUpdatedByPatient = false;
-
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -215,6 +217,14 @@ public class VaccineCollection extends GenericCollection {
 		this.isUpdatedByPatient = isUpdatedByPatient;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "VaccineCollection [id=" + id + ", vaccineId=" + vaccineId + ", doctorId=" + doctorId + ", locationId="
@@ -222,7 +232,7 @@ public class VaccineCollection extends GenericCollection {
 				+ ", longName=" + longName + ", dueDate=" + dueDate + ", status=" + status + ", route=" + route
 				+ ", bodySite=" + bodySite + ", dosage=" + dosage + ", vaccineBrandId=" + vaccineBrandId
 				+ ", givenDate=" + givenDate + ", age=" + age + ", duration=" + duration + ", periodTime=" + periodTime
-				+ "]";
+				+ ", note=" + note + ", isUpdatedByPatient=" + isUpdatedByPatient + ", isPatientDiscarded="
+				+ isPatientDiscarded + "]";
 	}
-
 }

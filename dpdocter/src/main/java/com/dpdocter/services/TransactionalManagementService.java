@@ -34,20 +34,6 @@ public interface TransactionalManagementService {
     
     void checkPharmacy(ObjectId resourceId);
 
-	void sendReminderToDoctor();
-
-	Boolean sendPromotionalSMSToPatient();
-
-	void sendReminderToPatient();
-
 	void checkDoctorDrug(ObjectId resourceId);
-
-	void updateActivePrescription();
-
-	void sendAppointmentScheduleToClinicAdmin();
-
-	void sendAppointmentScheduleToStaff();
-
-	void sendEventReminderToDoctor();
 
 }

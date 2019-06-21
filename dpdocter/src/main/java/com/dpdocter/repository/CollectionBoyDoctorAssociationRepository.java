@@ -9,7 +9,7 @@ import com.dpdocter.collections.CollectionBoyDoctorAssociationCollection;
 public interface CollectionBoyDoctorAssociationRepository extends MongoRepository<CollectionBoyDoctorAssociationCollection, ObjectId>{
 
 	
-	@Query("{'dentalLabId': ?0 , 'doctorId' : ?1}")
+	@Query("{'dentalLabId': ?0 , 'doctorId' : ?1 , 'collectionBoyId' :?2}")
 	public CollectionBoyDoctorAssociationCollection getByLocationDoctorCollectionBoy(ObjectId dentalLabId , ObjectId doctorId , ObjectId collectionBoyId);
 	
 	

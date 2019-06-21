@@ -7,79 +7,81 @@ import com.dpdocter.beans.FileDetails;
 
 public class DoctorMultipleDataAddEditRequest {
 
-    private String doctorId;
+	private String doctorId;
 
-    private String title;
+	private String title;
 
-    private String firstName;
+	private String firstName;
 
-    private int experience;
+	private int experience;
 
-    private List<String> specialities;
+	private List<String> specialities;
 
-    private FileDetails profileImage;
+	private FileDetails profileImage;
 
-    private FileDetails coverImage;
-    
-    private String gender;
-    
-    private DOB dob;
+	private FileDetails coverImage;
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	private String gender;
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	private DOB dob;
 
-    public String getTitle() {
-	return title;
-    }
+	private String freshchatRestoreId;
 
-    public void setTitle(String title) {
-	this.title = title;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public String getFirstName() {
-	return firstName;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setFirstName(String firstName) {
-	this.firstName = firstName;
-    }
+	public String getTitle() {
+		return title;
+	}
 
-    public int getExperience() {
-	return experience;
-    }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-    public void setExperience(int experience) {
-	this.experience = experience;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public List<String> getSpeciality() {
-	return specialities;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public void setSpeciality(List<String> specialities) {
-	this.specialities = specialities;
-    }
+	public int getExperience() {
+		return experience;
+	}
 
-    public FileDetails getProfileImage() {
-	return profileImage;
-    }
+	public void setExperience(int experience) {
+		this.experience = experience;
+	}
 
-    public void setProfileImage(FileDetails profileImage) {
-	this.profileImage = profileImage;
-    }
+	public List<String> getSpeciality() {
+		return specialities;
+	}
 
-    public FileDetails getCoverImage() {
-	return coverImage;
-    }
+	public void setSpeciality(List<String> specialities) {
+		this.specialities = specialities;
+	}
 
-    public void setCoverImage(FileDetails coverImage) {
-	this.coverImage = coverImage;
-    }
+	public FileDetails getProfileImage() {
+		return profileImage;
+	}
+
+	public void setProfileImage(FileDetails profileImage) {
+		this.profileImage = profileImage;
+	}
+
+	public FileDetails getCoverImage() {
+		return coverImage;
+	}
+
+	public void setCoverImage(FileDetails coverImage) {
+		this.coverImage = coverImage;
+	}
 
 	public List<String> getSpecialities() {
 		return specialities;
@@ -103,6 +105,14 @@ public class DoctorMultipleDataAddEditRequest {
 
 	public void setDob(DOB dob) {
 		this.dob = dob;
+	}
+
+	public String getFreshchatRestoreId() {
+		return freshchatRestoreId;
+	}
+
+	public void setFreshchatRestoreId(String freshchatRestoreId) {
+		this.freshchatRestoreId = freshchatRestoreId;
 	}
 
 	@Override

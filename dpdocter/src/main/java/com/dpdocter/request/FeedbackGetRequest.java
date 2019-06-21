@@ -6,6 +6,8 @@ public class FeedbackGetRequest {
 	private String hospitalId;
 	private String localeId;
 	private String patientId;
+	private String appointmentId;
+	private String prescriptionId;
 	// private FeedbackType type;
 	private int size;
 	private int page;
@@ -68,6 +70,22 @@ public class FeedbackGetRequest {
 
 	public void setLocaleId(String localeId) {
 		this.localeId = localeId;
+	}
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
 	}
 
 	@Override

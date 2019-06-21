@@ -8,11 +8,6 @@ public class Fields {
 
 	private String type;
 	
-	@Override
-	public String toString() {
-		return "Fields [key=" + key + ", value=" + value + ", type=" + type + "]";
-	}
-
 	public String getKey() {
 		return key;
 	}
@@ -36,5 +31,9 @@ public class Fields {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Fields [key=" + key + ", value=" + value + ", type=" + type + "]";
+	}	
 }

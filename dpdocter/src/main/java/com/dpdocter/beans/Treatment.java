@@ -1,5 +1,6 @@
 package com.dpdocter.beans;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -11,6 +12,10 @@ public class Treatment extends GenericCollection {
     
 	private ObjectId treatmentServiceId;
 
+	private ObjectId doctorId;
+	
+	private Date treatmentDate;
+	
 	private String status;
 
 	private double cost = 0.0;
@@ -89,10 +94,27 @@ public class Treatment extends GenericCollection {
 		this.treatmentFields = treatmentFields;
 	}
 
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public Date getTreatmentDate() {
+		return treatmentDate;
+	}
+
+	public void setTreatmentDate(Date treatmentDate) {
+		this.treatmentDate = treatmentDate;
+	}
+
 	@Override
 	public String toString() {
-		return "Treatment [treatmentServiceId=" + treatmentServiceId + ", status=" + status + ", cost=" + cost
-				+ ", note=" + note + ", discount=" + discount + ", finalCost=" + finalCost + ", quantity=" + quantity
-				+ ", treatmentFields=" + treatmentFields + "]";
+		return "Treatment [treatmentServiceId=" + treatmentServiceId + ", doctorId=" + doctorId + ", treatmentDate="
+				+ treatmentDate + ", status=" + status + ", cost=" + cost + ", note=" + note + ", discount=" + discount
+				+ ", finalCost=" + finalCost + ", quantity=" + quantity + ", treatmentFields=" + treatmentFields + "]";
 	}
+
 }

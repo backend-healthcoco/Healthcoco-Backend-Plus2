@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -20,17 +20,17 @@ import com.dpdocter.beans.DailyImprovementFeedback;
 import com.dpdocter.beans.PatientFeedback;
 import com.dpdocter.beans.PharmacyFeedback;
 import com.dpdocter.beans.PrescriptionFeedback;
-import com.dpdocter.collections.DailyImprovementFeedbackCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DailyImprovementFeedbackRequest;
 import com.dpdocter.request.FeedbackGetRequest;
 import com.dpdocter.request.PatientFeedbackReplyRequest;
 import com.dpdocter.request.PatientFeedbackRequest;
+import com.dpdocter.request.PharmacyFeedbackRequest;
 import com.dpdocter.request.PrescriptionFeedbackRequest;
 import com.dpdocter.response.DailyImprovementFeedbackResponse;
+import com.dpdocter.response.PatientFeedbackIOSResponse;
 import com.dpdocter.response.PatientFeedbackResponse;
-import com.dpdocter.request.PharmacyFeedbackRequest;
 import com.dpdocter.services.FeedbackService;
 
 import common.util.web.DPDoctorUtils;
@@ -83,7 +83,7 @@ public class FeedbackAPI {
 			}
 			pharmacyFeedback = feedbackService.addEditPharmacyFeedback(feedback);
 			response.setData(pharmacyFeedback);
-			
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.warn(e);
@@ -112,11 +112,12 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
-	
+
 	@POST
 	@Path(PathProxy.FeedbackUrls.ADD_EDIT_DAILY_IMPROVEMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_EDIT_DAILY_IMPROVEMENT_FEEDBACK)
-	public Response<DailyImprovementFeedback> addEditDailyImprovementFeedback(DailyImprovementFeedbackRequest feedback) {
+	public Response<DailyImprovementFeedback> addEditDailyImprovementFeedback(
+			DailyImprovementFeedbackRequest feedback) {
 		Response<DailyImprovementFeedback> response = new Response<>();
 		DailyImprovementFeedback dailyImprovementFeedback = null;
 		try {
@@ -132,7 +133,6 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
-	
 
 	@POST
 	@Path(PathProxy.FeedbackUrls.ADD_EDIT_PATIENT_FEEDBACK)
@@ -154,7 +154,6 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
-
 
 	@POST
 	@Path(PathProxy.FeedbackUrls.GET_GENERAL_APPOINTMENT_FEEDBACK)
@@ -206,17 +205,19 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
-	
+
 	@GET
 	@Path(PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
-	public Response<DailyImprovementFeedbackResponse> getDailyImprovementFeedback( @QueryParam("page") int page, @QueryParam("size") int size,
-		    @QueryParam(value = "prescriptionId") String prescriptionId, @QueryParam(value = "doctorId") String doctorId,
-		    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId) {
+	public Response<DailyImprovementFeedbackResponse> getDailyImprovementFeedback(@QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "prescriptionId") String prescriptionId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId) {
 		Response<DailyImprovementFeedbackResponse> response = new Response<>();
 		List<DailyImprovementFeedbackResponse> feedbacks = null;
 		try {
-			feedbacks = feedbackService.getDailyImprovementFeedbackList(prescriptionId, doctorId, locationId, hospitalId, page, size);
+			feedbacks = feedbackService.getDailyImprovementFeedbackList(prescriptionId, doctorId, locationId,
+					hospitalId, page, size);
 			response.setDataList(feedbacks);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -225,15 +226,16 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
-	
+
 	@POST
 	@Path(PathProxy.FeedbackUrls.GET_PATIENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_PATIENT_FEEDBACK)
-	public Response<PatientFeedbackResponse> getPatientFeedback(FeedbackGetRequest request , @QueryParam("type") String type) {
+	public Response<PatientFeedbackResponse> getPatientFeedback(FeedbackGetRequest request,
+			@QueryParam("type") String type) {
 		Response<PatientFeedbackResponse> response = new Response<>();
 		List<PatientFeedbackResponse> feedbacks = null;
 		try {
-			feedbacks = feedbackService.getPatientFeedbackList(request , type);
+			feedbacks = feedbackService.getPatientFeedbackList(request, type);
 			response.setDataList(feedbacks);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -242,7 +244,7 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
-	
+
 	@POST
 	@Path(PathProxy.FeedbackUrls.ADD_PATIENT_FEEDBACK_REPLY)
 	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_PATIENT_FEEDBACK_REPLY)
@@ -259,7 +261,32 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
-	
-	
+
+	@GET
+	@Path(PathProxy.FeedbackUrls.GET_PATIENT_FEEDBACK_FOR_MOBILE)
+	@ApiOperation(value = PathProxy.FeedbackUrls.GET_PATIENT_FEEDBACK_FOR_MOBILE)
+	public Response<PatientFeedbackIOSResponse> getPatientFeedback(@MatrixParam("services") List<String> services,
+			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("patientId") String patientId,
+			@QueryParam("doctorId") String doctorId, @QueryParam("localeId") String localeId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("discarded") Boolean discarded, @QueryParam("isApproved") Boolean isApproved,
+			@QueryParam("type") String type) {
+		Response<PatientFeedbackIOSResponse> response = new Response<>();
+		List<PatientFeedbackIOSResponse> feedbacks = null;
+		try {
+			Integer count = feedbackService.countPatientFeedbackList(patientId, doctorId, localeId, locationId,
+					hospitalId, type, services, discarded, isApproved);
+			if (count > 0)
+				feedbacks = feedbackService.getPatientFeedbackList(size, page, patientId, doctorId, localeId,
+						locationId, hospitalId, type, services, discarded, isApproved);
+			response.setDataList(feedbacks);
+			response.setCount(count);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
 
 }

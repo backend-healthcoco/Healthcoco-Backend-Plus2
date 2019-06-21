@@ -5,14 +5,17 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.beans.Branch;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.request.BulkSMSRequest;
-import com.dpdocter.request.ExportContactsRequest;
+import com.dpdocter.request.ExportRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
+
+import common.util.web.Response;
 
 public interface ContactsService {
 
@@ -28,20 +31,15 @@ public interface ContactsService {
 
 	Boolean importContacts(ImportContactsRequest request);
 
-	Boolean exportContacts(ExportContactsRequest request);
+	Boolean exportContacts(ExportRequest request);
 
 	DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId, String updatedTime,
 			boolean discarded, int page, int size, String role);
 
-	List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId,
-			String updatedTime, boolean discarded, String role, int page, int size, String searchTerm);
-
-	public Integer getDoctorContactsHandheldCount(String doctorId, String locationId, String hospitalId,
-			boolean discarded, String role, String searchTerm);
 
 	PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request);
 
-	List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId,
+	Response<Object> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, boolean discarded);
 
 	DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId,
@@ -52,5 +50,23 @@ public interface ContactsService {
 			String role) throws Exception;
 
 	Boolean sendSMSToGroup(BulkSMSRequest request);
+
+	/*List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId,
+			String updatedTime, boolean discarded, String role, int page, int size, String searchTerm);*/
+
+	Integer getDoctorContactsHandheldCount(String doctorId, String locationId, String hospitalId, boolean discarded,
+			String role, String searchTerm);
+
+	List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId,
+			String updatedTime, boolean discarded, String role, int page, int size, String searchTerm, String userId);
+
+	Branch addEditBranch(Branch branch);
+
+	Branch deleteBranch(String branchId, Boolean discarded);
+
+	Branch getBranchById(String branchId);
+
+	Response<Object> getBranches(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String searchTerm);
 
 }

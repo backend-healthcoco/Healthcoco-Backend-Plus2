@@ -11,7 +11,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +33,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.BLOGS_BASE_URL, description = "Endpoint for blog")
 
 public class BlogApi {
-	private static Logger logger = Logger.getLogger(BlogApi.class.getName());
+//	private static Logger logger = Logger.getLogger(BlogApi.class.getName());
 
 	@Autowired
 	BlogService blogService;

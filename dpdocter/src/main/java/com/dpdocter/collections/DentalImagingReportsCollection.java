@@ -55,6 +55,9 @@ public class DentalImagingReportsCollection extends GenericCollection {
 	@Field
 	private String note;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getPatientId() {
 		return patientId;
 	}
@@ -173,6 +176,24 @@ public class DentalImagingReportsCollection extends GenericCollection {
 
 	public void setNote(String note) {
 		this.note = note;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "DentalImagingReportsCollection [id=" + id + ", patientId=" + patientId + ", serviceName=" + serviceName
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", report=" + report + ", hospitalId="
+				+ hospitalId + ", discarded=" + discarded + ", uploadedByDoctorId=" + uploadedByDoctorId
+				+ ", uploadedByLocationId=" + uploadedByLocationId + ", uploadedByHospitalId=" + uploadedByHospitalId
+				+ ", isSharedToPatient=" + isSharedToPatient + ", requestId=" + requestId + ", title=" + title
+				+ ", note=" + note + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

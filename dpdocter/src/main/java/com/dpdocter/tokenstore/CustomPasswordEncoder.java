@@ -28,7 +28,6 @@ public class CustomPasswordEncoder extends BaseDigestPasswordEncoder {
 		String pass1 = "" + encPass;
 		
 		String pass2 = encodePassword(rawPass, salt);
-		
 		return match( pass1, pass2);
 	}
 

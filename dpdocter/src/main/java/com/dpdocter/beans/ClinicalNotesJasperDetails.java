@@ -80,7 +80,7 @@ public class ClinicalNotesJasperDetails {
 	private String noOfChildren;
 
 	private String procedureNote;
-
+	
 	private String pastHistory;
 
 	private String familyHistory;

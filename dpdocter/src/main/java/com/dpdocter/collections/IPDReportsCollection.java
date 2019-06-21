@@ -39,7 +39,7 @@ public class IPDReportsCollection extends GenericCollection {
 	@Field
 	private ObjectId hospitalId;
 	@Field
-	private Boolean discarded = false;
+	private Boolean discarded=false;
 	@Field
 	private Boolean isPatientDiscarded = false;
 

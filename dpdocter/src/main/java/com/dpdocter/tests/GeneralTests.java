@@ -11,6 +11,8 @@ import org.xml.sax.SAXException;
 
 import com.lowagie.text.DocumentException;
 
+import common.util.web.DPDoctorUtils;
+
 public class GeneralTests {
 
 	public static void main(String args[]) throws SAXException, IOException, DocumentException, ParserConfigurationException {
@@ -57,7 +59,6 @@ public class GeneralTests {
 //			}
 //		}
 		
-		System.out.println(slugUrl.replaceAll("-*-","-"));
 //		System.out.println(Pattern.compile(slugUrl).matcher(slugUrl).replaceAll("-*-"));
 		
 		List<String> ne = new ArrayList<String>();

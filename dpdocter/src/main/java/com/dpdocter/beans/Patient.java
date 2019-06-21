@@ -75,6 +75,8 @@ public class Patient {
 
 	private String motherName;
 
+	private String backendPatientId;
+
 	public String getLocalPatientName() {
 		return localPatientName;
 	}
@@ -299,6 +301,14 @@ public class Patient {
 		this.hospitalId = hospitalId;
 	}
 
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
 	public PersonalInformation getPersonalInformation() {
 		return personalInformation;
 	}
@@ -315,12 +325,12 @@ public class Patient {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
-	public String getPNUM() {
-		return PNUM;
+	public String getBackendPatientId() {
+		return backendPatientId;
 	}
 
-	public void setPNUM(String pNUM) {
-		PNUM = pNUM;
+	public void setBackendPatientId(String backendPatientId) {
+		this.backendPatientId = backendPatientId;
 	}
 
 	public Boolean getIsChild() {
@@ -351,16 +361,16 @@ public class Patient {
 	public String toString() {
 		return "Patient [firstName=" + firstName + ", localPatientName=" + localPatientName + ", patientId=" + patientId
 				+ ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations=" + relations
-				+ ", emailAddress=" + emailAddress + ", doctorId=" + doctorId + ", addressId=" + addressId
-				+ ", secMobile=" + secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
-				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName="
-				+ insuranceName + ", notes=" + notes + ", isDataAvailableWithOtherDoctor="
-				+ isDataAvailableWithOtherDoctor + ", isPatientOTPVerified=" + isPatientOTPVerified + ", address="
-				+ address + ", PID=" + PID + ", gender=" + gender + ", dob=" + dob + ", consultantDoctorIds="
-				+ consultantDoctorIds + ", medicalQuestionAnswers=" + medicalQuestionAnswers
+				+ ", emailAddress=" + emailAddress + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId="
+				+ adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId
+				+ ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes
+				+ ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor + ", isPatientOTPVerified="
+				+ isPatientOTPVerified + ", address=" + address + ", PID=" + PID + ", gender=" + gender + ", dob=" + dob
+				+ ", consultantDoctorIds=" + consultantDoctorIds + ", medicalQuestionAnswers=" + medicalQuestionAnswers
 				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", personalInformation="
 				+ personalInformation + ", registrationDate=" + registrationDate + ", isPatientDiscarded="
-				+ isPatientDiscarded + ", PNUM=" + PNUM + "]";
+				+ isPatientDiscarded + ", PNUM=" + PNUM + ", backendPatientId=" + backendPatientId + "]";
 	}
 
 }

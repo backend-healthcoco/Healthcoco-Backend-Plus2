@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -35,9 +33,9 @@ import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.beans.SubscriptionDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.CollectionBoyCollection;
+import com.dpdocter.collections.ConfexUserCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorContactUsCollection;
@@ -56,7 +54,6 @@ import com.dpdocter.elasticsearch.document.ESCollectionBoyDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ColorCode;
-import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
@@ -67,6 +64,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CollectionBoyRepository;
+import com.dpdocter.repository.ConfexUserRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorContactUsRepository;
 import com.dpdocter.repository.DoctorRepository;
@@ -143,9 +141,6 @@ public class SignUpServiceImpl implements SignUpService {
 	@Autowired
 	private SMSServices smsServices;
 	
-	@Autowired
-	private DoctorContactUsRepository doctorContactUsRepository;
-
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
 
@@ -171,19 +166,22 @@ public class SignUpServiceImpl implements SignUpService {
 
 	@Autowired
 	private ForgotPasswordService forgotPasswordService;
-	
+
 	@Autowired
 	private SpecialityRepository specialityRepository;
-	
+
 	@Autowired
 	private DoctorRepository doctorRepository;
-	
+
 	@Autowired
 	private HospitalRepository hospitalRepository;
-	
+
 	@Autowired
 	private LocationServices locationServices;
-	
+
+	@Autowired
+	private ConfexUserRepository confexUserRepository;
+
 	@Autowired
 	private AccessControlServices accessControlServices;
 
@@ -200,10 +198,13 @@ public class SignUpServiceImpl implements SignUpService {
 	private String unlockPatientBasedOn80PercentMatch;
 	
 	@Autowired
-	private PCUserRepository pcUserRepository; 
-	
+	private PCUserRepository pcUserRepository;
+
 	@Autowired
 	private SubscriptionService subscriptionService;
+
+	@Autowired
+	private DoctorContactUsRepository doctorContactUsRepository;
 
 	@Override
 	@Transactional
@@ -246,6 +247,48 @@ public class SignUpServiceImpl implements SignUpService {
 			e.printStackTrace();
 			logger.error(e + " Error occured while Activating user");
 			throw new BusinessException(ServiceError.Unknown, "Error occured while Activating user");
+		}
+
+	}
+
+	@Override
+	@Transactional
+	public DoctorContactUs welcomeUser(String tokenId) {
+		DoctorContactUs doctorContactUs = null;
+		try {
+			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(tokenId));
+			if (tokenCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord,
+						"Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the welcome email that we sent you.");
+			} /*
+				 * else if (tokenCollection.getIsUsed()) { throw new
+				 * BusinessException(ServiceError.Forbidden ,
+				 * "Your welcome link has already been used." +
+				 * " Please contact support@healthcoco.com for completing your email verification"
+				 * );
+				 * 
+				 * }
+				 */else {
+				DoctorContactUsCollection doctorContactUsCollection = doctorContactUsRepository
+						.findOne(tokenCollection.getResourceId());
+				if (doctorContactUsCollection != null) {
+					doctorContactUs = new DoctorContactUs();
+					BeanUtil.map(doctorContactUsCollection, doctorContactUs);
+				}
+				tokenCollection.setIsUsed(true);
+				tokenRepository.save(tokenCollection);
+				return doctorContactUs;
+			}
+		} catch (IllegalArgumentException argumentException) {
+			throw new BusinessException(ServiceError.Forbidden,
+					"Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the welcome email that we sent you.");
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while registering user");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while registerings user");
 		}
 
 	}
@@ -513,8 +556,8 @@ public class SignUpServiceImpl implements SignUpService {
 	}
 
 	/**
-	 * This service implementation checks if name/names for mobileNumber matches
-	 * 80% with the queryName.
+	 * This service implementation checks if name/names for mobileNumber matches 80%
+	 * with the queryName.
 	 * 
 	 * @return boolean
 	 */
@@ -544,8 +587,8 @@ public class SignUpServiceImpl implements SignUpService {
 	}
 
 	/**
-	 * This Service Implementation will check for 80% match of name,if matched
-	 * then unlock all the locked users for the given mobile number.
+	 * This Service Implementation will check for 80% match of name,if matched then
+	 * unlock all the locked users for the given mobile number.
 	 */
 
 	@Override
@@ -589,8 +632,8 @@ public class SignUpServiceImpl implements SignUpService {
 	}
 
 	/**
-	 * This service implementation will signup the new patient into DB. This
-	 * newly created patient will be in unlock state.
+	 * This service implementation will signup the new patient into DB. This newly
+	 * created patient will be in unlock state.
 	 */
 	@Override
 	@Transactional
@@ -669,9 +712,9 @@ public class SignUpServiceImpl implements SignUpService {
 	}
 
 	/**
-	 * This Service Impl will signup the already registered patients into the
-	 * DB. If 80% match is found for the fname then it will unlock all the
-	 * patients in the DB.
+	 * This Service Impl will signup the already registered patients into the DB. If
+	 * 80% match is found for the fname then it will unlock all the patients in the
+	 * DB.
 	 */
 	@Override
 	@Transactional
@@ -696,6 +739,7 @@ public class SignUpServiceImpl implements SignUpService {
 						userCollection.setSalt(salt);
 						userCollection.setPassword(password);
 						userCollection.setSignedUp(true);
+						userCollection.setColorCode(request.getCountryCode());
 						userRepository.save(userCollection);
 
 						PatientCollection patientCollection = patientRepository
@@ -753,7 +797,7 @@ public class SignUpServiceImpl implements SignUpService {
 		CollectionBoyResponse response = null;
 		ESCollectionBoyDocument esCollectionBoyDocument = null;
 		try {
-			// String localePassword = DPDoctorUtils.randomString(8);
+
 			UserCollection userCollection = new UserCollection();
 			userCollection.setUserName(UniqueIdInitial.PHARMACY.getInitial() + collectionBoy.getMobileNumber());
 			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
@@ -765,8 +809,6 @@ public class SignUpServiceImpl implements SignUpService {
 			userCollection.setUserState(UserState.COLLECTION_BOY);
 			userCollection.setSalt(DPDoctorUtils.generateSalt());
 			String salt = new String(userCollection.getSalt());
-			// char[] sha3Password =
-			// DPDoctorUtils.getSHA3SecurePassword(localePassword.toCharArray());
 			char[] sha3Password = DPDoctorUtils.getSHA3SecurePassword(collectionBoy.getPassword().toCharArray());
 			String password = new String(sha3Password);
 			password = passwordEncoder.encodePassword(password, salt);
@@ -781,25 +823,22 @@ public class SignUpServiceImpl implements SignUpService {
 			// + DPDoctorUtils.generateRandomId());
 
 			/*
-			 * if (collectionBoyCollection.getAddress() != null) { Address
-			 * address = collectionBoyCollection.getAddress();
-			 * List<GeocodedLocation> geocodedLocations = locationServices
-			 * .geocodeLocation((!DPDoctorUtils.anyStringEmpty(address.
-			 * getStreetAddress()) ? address.getStreetAddress() + ", " : "") +
-			 * (!DPDoctorUtils.anyStringEmpty(address.getLocality()) ?
-			 * address.getLocality() + ", " : "") +
-			 * (!DPDoctorUtils.anyStringEmpty(address.getCity()) ?
+			 * if (collectionBoyCollection.getAddress() != null) { Address address =
+			 * collectionBoyCollection.getAddress(); List<GeocodedLocation>
+			 * geocodedLocations = locationServices
+			 * .geocodeLocation((!DPDoctorUtils.anyStringEmpty(address. getStreetAddress())
+			 * ? address.getStreetAddress() + ", " : "") +
+			 * (!DPDoctorUtils.anyStringEmpty(address.getLocality()) ? address.getLocality()
+			 * + ", " : "") + (!DPDoctorUtils.anyStringEmpty(address.getCity()) ?
 			 * address.getCity() + ", " : "") +
-			 * (!DPDoctorUtils.anyStringEmpty(address.getState()) ?
-			 * address.getState() + ", " : "") +
-			 * (!DPDoctorUtils.anyStringEmpty(address.getCountry()) ?
+			 * (!DPDoctorUtils.anyStringEmpty(address.getState()) ? address.getState() +
+			 * ", " : "") + (!DPDoctorUtils.anyStringEmpty(address.getCountry()) ?
 			 * address.getCountry() + ", " : "") +
 			 * (!DPDoctorUtils.anyStringEmpty(address.getPostalCode()) ?
 			 * address.getPostalCode() : ""));
 			 * 
 			 * if (geocodedLocations != null && !geocodedLocations.isEmpty())
-			 * BeanUtil.map(geocodedLocations.get(0), collectionBoyCollection);
-			 * }
+			 * BeanUtil.map(geocodedLocations.get(0), collectionBoyCollection); }
 			 */
 
 			collectionBoyCollection = collectionBoyRepository.save(collectionBoyCollection);
@@ -827,7 +866,7 @@ public class SignUpServiceImpl implements SignUpService {
 				smsServices.sendSMS(smsTrackDetail, true);
 				response = new CollectionBoyResponse();
 				BeanUtil.map(collectionBoyCollection, response);
-				//response.setPassword(null);
+				// response.setPassword(null);
 			}
 			esCollectionBoyDocument = new ESCollectionBoyDocument();
 			BeanUtil.map(collectionBoyCollection, esCollectionBoyDocument);
@@ -842,11 +881,12 @@ public class SignUpServiceImpl implements SignUpService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error occured while contacting Healthcoco");
-			throw new BusinessException(ServiceError.Unknown, " Error occured while contacting Healthcoco. Please Check mobile number or contact administration");
+			throw new BusinessException(ServiceError.Unknown,
+					" Error occured while contacting Healthcoco. Please Check mobile number or contact administration");
 		}
 		return response;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
@@ -916,6 +956,12 @@ public class SignUpServiceImpl implements SignUpService {
 			doctorCollection.setRegisterNumber(request.getRegisterNumber());
 			doctorCollection.setUserId(userCollection.getId());
 			doctorCollection.setCreatedTime(new Date());
+			if (request.getMrCode() != null) {
+				pcUserCollection = pcUserRepository.findByMRCode(request.getMrCode());
+				if (pcUserCollection != null) {
+					doctorCollection.setDivisionIds(pcUserCollection.getDivisionId());
+				}
+			}
 			doctorCollection = doctorRepository.save(doctorCollection);
 
 			userCollection = userRepository.save(userCollection);
@@ -1032,18 +1078,49 @@ public class SignUpServiceImpl implements SignUpService {
 			}
 			subscriptionService.activate(detail);*/
 
+			/*
+			 * if(request.getMrCode() != null) { pcUserCollection =
+			 * pcUserRepository.findByMRCode(request.getMrCode());
+			 * List<PharmaLicenseResponse> pharmaLicenseResponses =
+			 * pharmaService.getLicenses(pcUserCollection.getCompanyId().toString(), 0, 0);
+			 * for(PharmaLicenseResponse pharmaLicenseResponse : pharmaLicenseResponses) {
+			 * if(pharmaLicenseResponse.getAvailable() > 0) { licenseResponse =
+			 * pharmaLicenseResponse; break; } } }
+			 * 
+			 * // Subscribe Doctor with Clinic SubscriptionDetail detail = new
+			 * SubscriptionDetail(); detail.setCreatedBy("Admin");
+			 * detail.setDoctorId(userCollection.getId().toString());
+			 * detail.setIsDemo(true); detail.setMonthsforSms(1);
+			 * detail.setMonthsforSuscrption(1); detail.setNoOfsms(500); Set<String>
+			 * locationSet = new HashSet<String>();
+			 * locationSet.add(locationCollection.getId().toString());
+			 * detail.setLocationIds(locationSet); if(licenseResponse != null) {
+			 * detail.setIsDemo(false); detail.setFromDate(new Date());
+			 * detail.setToDate(DateUtils.addMonths(new Date(),
+			 * licenseResponse.getDuration()));
+			 * detail.setLicenseId(licenseResponse.getId());
+			 * licenseResponse.setAvailable(licenseResponse.getAvailable() - 1);
+			 * licenseResponse.setConsumed(licenseResponse.getConsumed() + 1);
+			 * PharmaLicenseCollection pharmaLicenseCollection = new
+			 * PharmaLicenseCollection(); BeanUtil.map(licenseResponse, pharmaL"isVerified"
+			 * : falseicenseCollection);
+			 * pharmaLicenseRepository.save(pharmaLicenseCollection);
+			 * 
+			 * } subscriptionService.activate(detail);
+			 */
+
 			// Subscribe Doctor with Clinic
-			/*SubscriptionDetail detail = new SubscriptionDetail();
-			detail.setCreatedBy("Admin");
-			detail.setDoctorId(userCollection.getId().toString());
-			detail.setIsDemo(true);
-			detail.setMonthsforSms(1);
-			detail.setMonthsforSuscrption(1);
-			detail.setNoOfsms(500);
-			Set<String> locationSet = new HashSet<String>();
-			locationSet.add(locationCollection.getId().toString());
-			detail.setLocationIds(locationSet);
-			subscriptionDetailServices.activate(detail);*/
+			/*
+			 * SubscriptionDetail detail = new SubscriptionDetail();
+			 * detail.setCreatedBy("Admin");
+			 * detail.setDoctorId(userCollection.getId().toString());
+			 * detail.setIsDemo(true); detail.setMonthsforSms(1);
+			 * detail.setMonthsforSuscrption(1); detail.setNoOfsms(500); Set<String>
+			 * locationSet = new HashSet<String>();
+			 * locationSet.add(locationCollection.getId().toString());
+			 * detail.setLocationIds(locationSet);
+			 * subscriptionDetailServices.activate(detail);
+			 */
 
 			// save token
 			TokenCollection tokenCollection = new TokenCollection();
@@ -1052,47 +1129,45 @@ public class SignUpServiceImpl implements SignUpService {
 			tokenCollection = tokenRepository.save(tokenCollection);
 
 			// send activation email
-			/*String body = mailBodyGenerator
-					.generateActivationEmailBody(
-							(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-									+ userCollection.getFirstName(),
-							tokenCollection.getId(), "mailTemplate.vm", null, null);
-			mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);*/
-			
-			/*String body = mailBodyGenerator.generateActivationEmailBody(
-					(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-							+ userCollection.getFirstName(),
-					tokenCollection.getId(), "mailTemplate.vm", null, null);
-			mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
-*/
+			/*
+			 * String body = mailBodyGenerator .generateActivationEmailBody(
+			 * (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") +
+			 * userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm",
+			 * null, null); mailService.sendEmail(userCollection.getEmailAddress(),
+			 * signupSubject, body, null);
+			 */
+
+			/*
+			 * String body = mailBodyGenerator.generateActivationEmailBody(
+			 * (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") +
+			 * userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm",
+			 * null, null); mailService.sendEmail(userCollection.getEmailAddress(),
+			 * signupSubject, body, null);
+			 */
 
 			// user.setPassword(null);
-/*
-			if (userCollection.getMobileNumber() != null) {
-				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-
-				smsTrackDetail.setType("BEFORE_VERIFICATION_TO_DOCTOR");
-				SMSDetail smsDetail = new SMSDetail();
-				smsDetail.setUserId(userCollection.getId());
-				smsDetail.setUserName(userCollection.getFirstName());
-				SMS sms = new SMS();
-				sms.setSmsText("Welcome " + (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-						+ userCollection.getFirstName()
-						+ " to Healthcoco. We will contact you shortly to get you started. Download the Healthcoco+ app now: "
-						+ doctorAppLink + ". For queries, please feel free to contact us at support@healthcoco.com");
-
-				SMSAddress smsAddress = new SMSAddress();
-				smsAddress.setRecipient(userCollection.getMobileNumber());
-				sms.setSmsAddress(smsAddress);
-
-				smsDetail.setSms(sms);
-				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-				smsDetails.add(smsDetail);
-				smsTrackDetail.setSmsDetails(smsDetails);
-				sMSServices.sendSMS(smsTrackDetail, true);
-			}
-*/
+			/*
+			 * if (userCollection.getMobileNumber() != null) { SMSTrackDetail smsTrackDetail
+			 * = new SMSTrackDetail();
+			 * 
+			 * smsTrackDetail.setType("BEFORE_VERIFICATION_TO_DOCTOR"); SMSDetail smsDetail
+			 * = new SMSDetail(); smsDetail.setUserId(userCollection.getId());
+			 * smsDetail.setUserName(userCollection.getFirstName()); SMS sms = new SMS();
+			 * sms.setSmsText("Welcome " + (userCollection.getTitle() != null ?
+			 * userCollection.getTitle() + " " : "") + userCollection.getFirstName() +
+			 * " to Healthcoco. We will contact you shortly to get you started. Download the Healthcoco+ app now: "
+			 * + doctorAppLink +
+			 * ". For queries, please feel free to contact us at support@healthcoco.com");
+			 * 
+			 * SMSAddress smsAddress = new SMSAddress();
+			 * smsAddress.setRecipient(userCollection.getMobileNumber());
+			 * sms.setSmsAddress(smsAddress);
+			 * 
+			 * smsDetail.setSms(sms); smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+			 * List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+			 * smsDetails.add(smsDetail); smsTrackDetail.setSmsDetails(smsDetails);
+			 * sMSServices.sendSMS(smsTrackDetail, true); }
+			 */
 			response = new DoctorSignUp();
 			User user = new User();
 			userCollection.setPassword(null);
@@ -1143,42 +1218,45 @@ public class SignUpServiceImpl implements SignUpService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public DoctorContactUs welcomeUser(String tokenId) {
-		DoctorContactUs doctorContactUs = null;
+	public String verifyConfexAdmin(String tokenId) {
 		try {
 			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(tokenId));
 			if (tokenCollection == null) {
-				throw new BusinessException(ServiceError.NoRecord , "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the welcome email that we sent you.");
-			}/* else if (tokenCollection.getIsUsed()) {
-				throw new BusinessException(ServiceError.Forbidden , "Your welcome link has already been used."
-						+ " Please contact support@healthcoco.com for completing your email verification");
-						
-			} */else {
-				DoctorContactUsCollection doctorContactUsCollection = doctorContactUsRepository.findOne(tokenCollection.getResourceId());
-				if(doctorContactUsCollection != null)
-				{
-					doctorContactUs = new DoctorContactUs();
-					BeanUtil.map(doctorContactUsCollection, doctorContactUs);
+				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification  that we sent you.";
+			} else if (tokenCollection.getIsUsed()) {
+				return "Your verification link has already been used."
+						+ " Please contact support@healthcoco.com for completing your  verification";
+			} else {
+				if (!forgotPasswordService.isLinkValid(tokenCollection.getCreatedTime()))
+					return "We were unable to verify your Healthcoco+ account."
+							+ " Please contact support@healthcoco.com for completing your account verification.";
+				ConfexUserCollection userCollection = confexUserRepository.findOne(tokenCollection.getResourceId());
+				if (userCollection == null) {
+					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification  that we sent you.";
 				}
+				userCollection.setIsVerified(true);
+				confexUserRepository.save(userCollection);
+
 				tokenCollection.setIsUsed(true);
 				tokenRepository.save(tokenCollection);
-				return doctorContactUs;
+				return "You have successfully verified your Account."
+						+ "If you haven't already done so, download the Healthcoco+ app - Every Doctor's Pocket Clinic."
+						+ "Stay Healthy and Happy!";
 			}
 		} catch (IllegalArgumentException argumentException) {
-			throw new BusinessException(ServiceError.Forbidden ,"Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the welcome email that we sent you.");
+			return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification  that we sent you.";
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error occured while registering user");
-			throw new BusinessException(ServiceError.Unknown, "Error occured while registerings user");
+			logger.error(e + " Error occured while Activating user");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while Activating user");
 		}
 
 	}
-
 
 }

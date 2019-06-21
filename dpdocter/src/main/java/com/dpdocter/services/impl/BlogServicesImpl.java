@@ -429,6 +429,7 @@ public class BlogServicesImpl implements BlogService {
 
 	}
 
+
 	@Override
 	public List<BlogResponse> getBlogs(BlogRequest request) {
 		List<BlogResponse> response = null;

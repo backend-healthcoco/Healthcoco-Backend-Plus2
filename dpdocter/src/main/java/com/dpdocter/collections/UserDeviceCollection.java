@@ -103,7 +103,8 @@ public class UserDeviceCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "UserDeviceCollection [id=" + id + ", userIds=" + userIds + ", deviceType=" + deviceType + ", deviceId="
-				+ deviceId + ", pushToken=" + pushToken + ", role=" + role + ", batchCount=" + batchCount + "]";
+		return "UserDeviceCollection [id=" + id + ", userIds=" + userIds + ", localeId=" + localeId + ", deviceType="
+				+ deviceType + ", deviceId=" + deviceId + ", pushToken=" + pushToken + ", role=" + role
+				+ ", batchCount=" + batchCount + "]";
 	}
 }

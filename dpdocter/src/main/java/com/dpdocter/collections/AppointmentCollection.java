@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
@@ -111,17 +112,27 @@ public class AppointmentCollection extends GenericCollection {
 	private String category;
 
 	@Field
-	private String cancelledByProfile;
-
-	@Field
-	private String localPatientName;
+	private String branch;
 	
 	@Field
 	private Boolean isPatientDiscarded = false;
 
 	@Field
-	private List<ObjectId> doctorIds;
+	private String cancelledByProfile;
+
+	@Field
+	private String localPatientName;
 	
+
+	@Field
+	private List<ObjectId> doctorIds;
+
+	@Field
+	private List<Fields> treatmentFields;
+
+	@Field
+	private Boolean isCreatedByPatient = false;
+
 	public String getCancelledByProfile() {
 		return cancelledByProfile;
 	}
@@ -394,6 +405,30 @@ public class AppointmentCollection extends GenericCollection {
 		this.doctorIds = doctorIds;
 	}
 
+	public List<Fields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<Fields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
+
+	public Boolean getIsCreatedByPatient() {
+		return isCreatedByPatient;
+	}
+
+	public void setIsCreatedByPatient(Boolean isCreatedByPatient) {
+		this.isCreatedByPatient = isCreatedByPatient;
+	}
+
+	public String getBranch() {
+		return branch;
+	}
+
+	public void setBranch(String branch) {
+		this.branch = branch;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentCollection [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -406,7 +441,9 @@ public class AppointmentCollection extends GenericCollection {
 				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId
 				+ ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt="
 				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", category="
-				+ category + ", isPatientDiscarded=" + isPatientDiscarded + ", cancelledByProfile=" + cancelledByProfile
-				+ ", localPatientName=" + localPatientName + ", doctorIds=" + doctorIds + "]";
+				+ category + ", branch=" + branch + ", isPatientDiscarded=" + isPatientDiscarded
+				+ ", cancelledByProfile=" + cancelledByProfile + ", localPatientName=" + localPatientName
+				+ ", doctorIds=" + doctorIds + ", treatmentFields=" + treatmentFields + ", isCreatedByPatient="
+				+ isCreatedByPatient + "]";
 	}
 }

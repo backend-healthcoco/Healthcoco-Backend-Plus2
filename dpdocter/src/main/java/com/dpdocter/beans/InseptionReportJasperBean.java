@@ -129,7 +129,6 @@ public class InseptionReportJasperBean {
 	public void setItems(List<DentalStagejasperBean> items) {
 		this.items = items;
 	}
-
 	@Override
 	public String toString() {
 		return "s [dentalLab=" + dentalLab + ", doctor=" + doctor + ", patientName=" + patientName + ", shade=" + shade

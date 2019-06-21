@@ -121,5 +121,4 @@ public class LabReportsAddRequest extends GenericCollection {
 				+ ", uploadedByLocationId=" + uploadedByLocationId + ", uploadedByHospitalId=" + uploadedByHospitalId
 				+ ", labTestSampleId=" + labTestSampleId + ", recordsState=" + recordsState + "]";
 	}
-
 }

@@ -6,7 +6,10 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
+<<<<<<< HEAD
 import org.springframework.data.elasticsearch.annotations.FieldIndex;
+=======
+>>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.MultiField;
 
@@ -24,12 +27,12 @@ public class ESSymptomDiseaseConditionDocument {
     @Field(type = FieldType.Date)
     private Date updatedTime = new Date();
 
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	@MultiField(mainField = @Field(type = FieldType.String))
     private List<String> specialities;
     
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
-    private List<String> formattedSpecialities;
-    
+//	@MultiField(mainField = @Field(type = FieldType.String))
+//    private List<String> formattedSpecialities;
+//    
 	@MultiField(mainField = @Field(type = FieldType.String))
     private List<String> specialityIds;
 
@@ -73,14 +76,6 @@ public class ESSymptomDiseaseConditionDocument {
 		this.specialities = specialities;
 	}
 
-	public List<String> getFormattedSpecialities() {
-		return formattedSpecialities;
-	}
-
-	public void setFormattedSpecialities(List<String> formattedSpecialities) {
-		this.formattedSpecialities = formattedSpecialities;
-	}
-
 	public List<String> getSpecialityIds() {
 		return specialityIds;
 	}
@@ -92,7 +87,7 @@ public class ESSymptomDiseaseConditionDocument {
 	@Override
 	public String toString() {
 		return "ESSymptomDiseaseConditionDocument [id=" + id + ", name=" + name + ", type=" + type + ", updatedTime="
-				+ updatedTime + ", specialities=" + specialities + ", formattedSpecialities=" + formattedSpecialities
+				+ updatedTime + ", specialities=" + specialities
 				+ ", specialityIds=" + specialityIds + "]";
 	}
 }

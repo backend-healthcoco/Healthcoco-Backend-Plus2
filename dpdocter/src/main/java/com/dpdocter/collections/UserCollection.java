@@ -282,6 +282,15 @@ public class UserCollection extends GenericCollection {
 	public UserCollection() {
 		super();
 	}
+	
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
 
 	public UserCollection(ObjectId id, String title, String firstName, String lastName, String middleName,
 			String userName, char[] password, char[] salt, String emailAddress, String mobileNumber, String imageUrl,

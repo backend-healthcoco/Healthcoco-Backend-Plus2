@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 
 public interface ESCityRepository extends ElasticsearchRepository<ESCityDocument, String> {
-    
+
 	@Query("{\"bool\": {\"must\": [{\"prefix\": {\"city\": \"?0\"}}]}}")
 	List<ESCityDocument> findByQueryAnnotation(String searchTerm);
 

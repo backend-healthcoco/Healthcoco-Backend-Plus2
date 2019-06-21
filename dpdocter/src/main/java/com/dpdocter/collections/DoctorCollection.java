@@ -90,6 +90,18 @@ public class DoctorCollection extends GenericCollection {
 	@Field
 	private String drugTypePlacement = "PREFIX";
 
+	@Field
+	private String mrCode;
+
+	@Field
+	private List<ObjectId> divisionIds;
+
+	@Field
+	private String deviceType;
+
+	@Field
+	private String freshchatRestoreId;
+
 	public Boolean getIsPrescriptionSMS() {
 		return isPrescriptionSMS;
 	}
@@ -282,6 +294,38 @@ public class DoctorCollection extends GenericCollection {
 
 	public void setDrugTypePlacement(String drugTypePlacement) {
 		this.drugTypePlacement = drugTypePlacement;
+	}
+
+	public String getMrCode() {
+		return mrCode;
+	}
+
+	public void setMrCode(String mrCode) {
+		this.mrCode = mrCode;
+	}
+
+	public List<ObjectId> getDivisionIds() {
+		return divisionIds;
+	}
+
+	public void setDivisionIds(List<ObjectId> divisionIds) {
+		this.divisionIds = divisionIds;
+	}
+
+	public String getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
+	}
+
+	public String getFreshchatRestoreId() {
+		return freshchatRestoreId;
+	}
+
+	public void setFreshchatRestoreId(String freshchatRestoreId) {
+		this.freshchatRestoreId = freshchatRestoreId;
 	}
 
 	@Override

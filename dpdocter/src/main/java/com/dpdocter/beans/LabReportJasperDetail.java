@@ -41,4 +41,10 @@ public class LabReportJasperDetail {
 		this.test = test;
 	}
 
+	@Override
+	public String toString() {
+		return "LabReportJasperDetail [no=" + no + ", patientName=" + patientName + ", gender=" + gender + ", test="
+				+ test + "]";
+	}
+
 }

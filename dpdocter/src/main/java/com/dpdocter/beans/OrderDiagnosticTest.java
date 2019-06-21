@@ -19,6 +19,8 @@ public class OrderDiagnosticTest extends GenericCollection{
 	
 	private Long pickUpDate;
 	
+	private List<String> testsPackageIds;
+
 	private String testsPackageId;
 
 	private List<DiagnosticTest> diagnosticTests;
@@ -35,6 +37,14 @@ public class OrderDiagnosticTest extends GenericCollection{
 	
 	private Boolean isCancelled = false;
 
+	private String locationName;
+	
+	private String patientName;
+	
+	private Boolean isNABLAccredited = false;
+	
+	List<DiagnosticTestPackage> testsPackages;
+	
 	public String getId() {
 		return id;
 	}
@@ -147,13 +157,56 @@ public class OrderDiagnosticTest extends GenericCollection{
 		this.isCancelled = isCancelled;
 	}
 
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	public Boolean getIsNABLAccredited() {
+		return isNABLAccredited;
+	}
+
+	public void setIsNABLAccredited(Boolean isNABLAccredited) {
+		this.isNABLAccredited = isNABLAccredited;
+	}
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+
+	public List<String> getTestsPackageIds() {
+		return testsPackageIds;
+	}
+
+	public void setTestsPackageIds(List<String> testsPackageIds) {
+		this.testsPackageIds = testsPackageIds;
+	}
+
+	public List<DiagnosticTestPackage> getTestsPackages() {
+		return testsPackages;
+	}
+
+	public void setTestsPackages(List<DiagnosticTestPackage> testsPackages) {
+		this.testsPackages = testsPackages;
+	}
+
 	@Override
 	public String toString() {
 		return "OrderDiagnosticTest [id=" + id + ", locationId=" + locationId + ", userId=" + userId
 				+ ", uniqueOrderId=" + uniqueOrderId + ", pickUpTime=" + pickUpTime + ", pickUpDate=" + pickUpDate
-				+ ", testsPackageId=" + testsPackageId + ", diagnosticTests=" + diagnosticTests + ", pickUpAddress="
-				+ pickUpAddress + ", orderStatus=" + orderStatus + ", totalCost=" + totalCost + ", totalCostForPatient="
-				+ totalCostForPatient + ", totalSavingInPercentage=" + totalSavingInPercentage + ", isCancelled="
-				+ isCancelled + "]";
+				+ ", testsPackageIds=" + testsPackageIds + ", testsPackageId=" + testsPackageId + ", diagnosticTests="
+				+ diagnosticTests + ", pickUpAddress=" + pickUpAddress + ", orderStatus=" + orderStatus + ", totalCost="
+				+ totalCost + ", totalCostForPatient=" + totalCostForPatient + ", totalSavingInPercentage="
+				+ totalSavingInPercentage + ", isCancelled=" + isCancelled + ", locationName=" + locationName
+				+ ", patientName=" + patientName + ", isNABLAccredited=" + isNABLAccredited + ", testsPackages="
+				+ testsPackages + "]";
 	}
+
 }

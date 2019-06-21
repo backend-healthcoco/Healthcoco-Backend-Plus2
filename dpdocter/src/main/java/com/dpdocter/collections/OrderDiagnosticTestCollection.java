@@ -34,6 +34,9 @@ public class OrderDiagnosticTestCollection extends GenericCollection {
 	private Long pickUpDate;
 	
 	@Field
+	private List<ObjectId> testsPackageIds;
+
+	@Field
 	private ObjectId testsPackageId;
 
 	@Field
@@ -169,13 +172,22 @@ public class OrderDiagnosticTestCollection extends GenericCollection {
 		this.isCancelled = isCancelled;
 	}
 
+	public List<ObjectId> getTestsPackageIds() {
+		return testsPackageIds;
+	}
+
+	public void setTestsPackageIds(List<ObjectId> testsPackageIds) {
+		this.testsPackageIds = testsPackageIds;
+	}
+
 	@Override
 	public String toString() {
 		return "OrderDiagnosticTestCollection [id=" + id + ", locationId=" + locationId + ", userId=" + userId
 				+ ", uniqueOrderId=" + uniqueOrderId + ", pickUpTime=" + pickUpTime + ", pickUpDate=" + pickUpDate
-				+ ", testsPackageId=" + testsPackageId + ", diagnosticTests=" + diagnosticTests + ", pickUpAddress="
-				+ pickUpAddress + ", orderStatus=" + orderStatus + ", totalCost=" + totalCost + ", totalCostForPatient="
-				+ totalCostForPatient + ", totalSavingInPercentage=" + totalSavingInPercentage + ", isCancelled="
-				+ isCancelled + "]";
+				+ ", testsPackageIds=" + testsPackageIds + ", testsPackageId=" + testsPackageId + ", diagnosticTests="
+				+ diagnosticTests + ", pickUpAddress=" + pickUpAddress + ", orderStatus=" + orderStatus + ", totalCost="
+				+ totalCost + ", totalCostForPatient=" + totalCostForPatient + ", totalSavingInPercentage="
+				+ totalSavingInPercentage + ", isCancelled=" + isCancelled + "]";
 	}
+
 }

@@ -56,11 +56,11 @@ public class ESDrugDocument {
 	@Field(type = FieldType.String)
 	private String prizePerPack;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
-	private List<String> specialities;
-
 	@Field(type = FieldType.Long)
 	private long companyRankingCount = 0;
+
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> specialities;
 
 	@Field(type = FieldType.String)
 	private String rxRequired;
@@ -147,14 +147,6 @@ public class ESDrugDocument {
 		this.explanation = explanation;
 	}
 
-	public String getCompanyName() {
-		return companyName;
-	}
-
-	public void setCompanyName(String companyName) {
-		this.companyName = companyName;
-	}
-
 	public String getPackSize() {
 		return packSize;
 	}
@@ -185,6 +177,14 @@ public class ESDrugDocument {
 
 	public void setMRP(String mRP) {
 		MRP = mRP;
+	}
+
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
 	}
 
 	public Duration getDuration() {
@@ -370,7 +370,6 @@ public class ESDrugDocument {
 	public void setStockingUnit(String stockingUnit) {
 		this.stockingUnit = stockingUnit;
 	}
-
 
 	public String getDrugTypePlacement() {
 		return drugTypePlacement;

@@ -1,14 +1,13 @@
 package com.dpdocter.response;
 
-
-
 import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.collections.GenericCollection;
 
 /**
  * @author healthcoco
  *
  */
-public class RateCardTestAssociationLookupResponse {
+public class RateCardTestAssociationLookupResponse extends GenericCollection {
 
 	private String id;
 	private String locationId;
@@ -20,7 +19,25 @@ public class RateCardTestAssociationLookupResponse {
 	private String category;
 	private String labId;
 	private DiagnosticTest diagnosticTest;
-	
+	private Boolean isAvailable;
+	private Boolean discarded = false;
+
+	public Boolean getIsAvailable() {
+		return isAvailable;
+	}
+
+	public void setIsAvailable(Boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
 	public String getId() {
 		return id;
 	}

@@ -12,6 +12,7 @@ import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.Instructions;
 import com.dpdocter.beans.LabTest;
+import com.dpdocter.beans.NutritionReferral;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DrugCollection;
@@ -20,6 +21,7 @@ import com.dpdocter.request.DrugDirectionAddEditRequest;
 import com.dpdocter.request.DrugDosageAddEditRequest;
 import com.dpdocter.request.DrugDurationUnitAddEditRequest;
 import com.dpdocter.request.DrugTypeAddEditRequest;
+import com.dpdocter.request.NutritionReferralRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
@@ -104,7 +106,7 @@ public interface PrescriptionServices {
 
 	DrugDurationUnitAddEditResponse deleteDrugDurationUnit(String drugDurationUnitId, Boolean discarded);
 
-	public List<?> getPrescriptionItems(String type, String range, int page, int size, String doctorId,
+	public Response<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, Boolean isAdmin,
 			String disease, String searchTerm);
 
@@ -201,7 +203,7 @@ public interface PrescriptionServices {
 	
 	Instructions addEditInstructions(Instructions instruction);
 
-	List<Instructions> getInstructions(int page, int size, String doctorId, String locationId, String hospitalId,
+	Response<Instructions> getInstructions(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded);
 
 	Instructions deleteInstructions(String id, String doctorId, String locationId, String hospitalId,
@@ -230,4 +232,7 @@ public interface PrescriptionServices {
 
 	Boolean updateDrugInteraction();
 
+	NutritionReferral addNutritionReferral(NutritionReferralRequest request);
+	
+	public List<Drug> getDrugs(List<ObjectId> drugIds);
 }

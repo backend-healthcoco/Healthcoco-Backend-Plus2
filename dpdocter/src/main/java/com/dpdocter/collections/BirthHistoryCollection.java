@@ -40,6 +40,9 @@ public class BirthHistoryCollection extends GenericCollection {
 	@Field
 	private ObjectId patientId;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -152,13 +155,22 @@ public class BirthHistoryCollection extends GenericCollection {
 		this.patientId = patientId;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "BirthHistoryCollection [id=" + id + ", birthPlace=" + birthPlace + ", obstetricianName="
 				+ obstetricianName + ", gestationType=" + gestationType + ", prematureWeeks=" + prematureWeeks
 				+ ", birthType=" + birthType + ", height=" + height + ", weight=" + weight + ", birthOrder="
 				+ birthOrder + ", birthProblem=" + birthProblem + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + "]";
+				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", isPatientDiscarded="
+				+ isPatientDiscarded + "]";
 	}
 
 }

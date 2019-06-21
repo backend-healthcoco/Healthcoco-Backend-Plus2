@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.bson.types.ObjectId;
 import org.elasticsearch.common.unit.DistanceUnit;
@@ -28,7 +29,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorRegistrationDetail;
@@ -727,7 +727,6 @@ public class SearchServiceImpl implements SearchService {
 					doctorProfile.setParentSpecialities(doctorDocument.getParentSpecialities());
 					doctorProfile.setServices(doctorDocument.getServicesValue());
 				}
-							
 				List<DoctorRegistrationDetail> registrationDetails = new ArrayList<DoctorRegistrationDetail>();
 				if (doctorProfile.getRegistrationDetails() != null
 						&& !doctorProfile.getRegistrationDetails().isEmpty()) {

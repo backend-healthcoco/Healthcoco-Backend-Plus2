@@ -132,7 +132,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	
 	@Autowired
 	private ServicesRepository servicesRepository;
-	
+
 	@Autowired
 	private FileManager fileManager;
 
@@ -557,7 +557,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				criteria.and("locationId").is(new ObjectId(locationId));
 
 			if (isSearched == false) {
-				criteria.and("isActivate").is(true);
+				criteria.and("isActivate").is(true).and("hasLoginAccess").ne(false);
 			}
 
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -689,6 +689,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinic.setLocationId(doctorClinicProfileLookupResponse.getLocationId().toString());
 			doctorClinic.setDoctorId(doctorClinicProfileLookupResponse.getDoctorId().toString());
 			doctorClinic.setDoctorSlugURL(doctorClinicProfileLookupResponse.getDoctorSlugURL());
+
 			Criteria criteria = new Criteria("doctorId").is(doctorClinicProfileLookupResponse.getDoctorId())
 					.and("locationId").is(locationCollection.getId()).and("hospitalId")
 					.is(locationCollection.getHospitalId());
@@ -1087,6 +1088,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 				if (!DPDoctorUtils.anyStringEmpty(request.getGender())) {
 					doctorCollection.setGender(request.getGender());
+				}
+				
+				if (!DPDoctorUtils.anyStringEmpty(request.getFreshchatRestoreId())) {
+					doctorCollection.setFreshchatRestoreId(request.getFreshchatRestoreId());
 				}
 				doctorCollection.setDob(request.getDob());
 
@@ -1504,13 +1509,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					if (doctorClinicProfile != null)
 						clinicProfile.add(doctorClinicProfile);
 				}
-
 				doctorProfile = new DoctorProfile();
-
 				BeanUtil.map(userCollection, doctorProfile);
-
 				BeanUtil.map(doctorCollection, doctorProfile);
-
 				doctorProfile.setDoctorId(doctorCollection.getUserId().toString());
 				// set specialities using speciality ids
 				if (doctorCollection.getSpecialities() != null) {

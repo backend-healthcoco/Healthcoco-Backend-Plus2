@@ -20,6 +20,9 @@ public class PatientGroupCollection extends GenericCollection {
     @Field
     private Boolean discarded = false;
 
+    @Field
+	private Boolean isPatientDiscarded = false;
+    
     public ObjectId getId() {
 	return id;
     }
@@ -52,8 +55,18 @@ public class PatientGroupCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "PatientGroupCollection [id=" + id + ", groupId=" + groupId + ", patientId=" + patientId + ", discarded=" + discarded + "]";
-    }
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientGroupCollection [id=" + id + ", groupId=" + groupId + ", patientId=" + patientId + ", discarded="
+				+ discarded + ", isPatientDiscarded=" + isPatientDiscarded + "]";
+	}
+
 }

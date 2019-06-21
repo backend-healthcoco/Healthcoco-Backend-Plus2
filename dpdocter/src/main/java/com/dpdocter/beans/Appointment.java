@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import java.util.Date;
+import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
@@ -8,6 +9,7 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.QueueStatus;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Appointment extends GenericCollection {
 
@@ -18,7 +20,7 @@ public class Appointment extends GenericCollection {
 	private String locationId;
 
 	private String hospitalId;
-	
+
 	private String patientId;
 
 	private WorkingHours time;
@@ -72,7 +74,9 @@ public class Appointment extends GenericCollection {
 	private String visitId;
 
 	private QueueStatus status = QueueStatus.SCHEDULED;
-    
+
+	private RegisteredPatientDetails registeredPatientDetails;
+
     private long waitedFor = 0;
     
     private long engagedFor = 0;
@@ -87,10 +91,16 @@ public class Appointment extends GenericCollection {
     
     private String category;
     
+	private String branch;
+
 	private String cancelledByProfile;
     
 	private String localPatientName;
 	
+	private List<Fields> treatmentFields;
+
+	private Boolean isCreatedByPatient = false;
+
 	public String getId() {
 		return id;
 	}
@@ -411,6 +421,38 @@ public class Appointment extends GenericCollection {
 		this.localPatientName = localPatientName;
 	}
 
+	public RegisteredPatientDetails getRegisteredPatientDetails() {
+		return registeredPatientDetails;
+	}
+
+	public void setRegisteredPatientDetails(RegisteredPatientDetails registeredPatientDetails) {
+		this.registeredPatientDetails = registeredPatientDetails;
+	}
+
+	public List<Fields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<Fields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
+
+	public Boolean getIsCreatedByPatient() {
+		return isCreatedByPatient;
+	}
+
+	public void setIsCreatedByPatient(Boolean isCreatedByPatient) {
+		this.isCreatedByPatient = isCreatedByPatient;
+	}
+
+	public String getBranch() {
+		return branch;
+	}
+
+	public void setBranch(String branch) {
+		this.branch = branch;
+	}
+
 	@Override
 	public String toString() {
 		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
@@ -423,9 +465,12 @@ public class Appointment extends GenericCollection {
 				+ clinicNumber + ", latitude=" + latitude + ", longitude=" + longitude + ", cancelledBy=" + cancelledBy
 				+ ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail
 				+ ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail
-				+ ", visitId=" + visitId + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor="
-				+ engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt="
-				+ checkedOutAt + ", count=" + count + ", category=" + category + ", cancelledByProfile="
-				+ cancelledByProfile + ", localPatientName=" + localPatientName + "]";
+				+ ", visitId=" + visitId + ", status=" + status + ", registeredPatientDetails="
+				+ registeredPatientDetails + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt="
+				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", count=" + count
+				+ ", category=" + category + ", branch=" + branch + ", cancelledByProfile=" + cancelledByProfile
+				+ ", localPatientName=" + localPatientName + ", treatmentFields=" + treatmentFields
+				+ ", isCreatedByPatient=" + isCreatedByPatient + "]";
 	}
+
 }

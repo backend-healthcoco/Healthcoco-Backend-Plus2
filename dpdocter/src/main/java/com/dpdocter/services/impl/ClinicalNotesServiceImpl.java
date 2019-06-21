@@ -1409,10 +1409,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 												DiagramsCollection.class, Diagram.class).getMappedResults(),
 										diagramIds));
 
-			if (!(request.getSendNotificationToDoctor() != null && !request.getSendNotificationToDoctor()))
-				pushNotificationServices.notifyUser(clinicalNotesCollection.getDoctorId().toString(),
-						"Clinical Notes Added", ComponentType.CLINICAL_NOTES_REFRESH.getType(),
-						clinicalNotesCollection.getPatientId().toString(), null);
+			pushNotificationServices.notifyUser(clinicalNotesCollection.getDoctorId().toString(),
+					"Clinical Notes Added", ComponentType.CLINICAL_NOTES_REFRESH.getType(),
+					clinicalNotesCollection.getPatientId().toString(), null);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1587,7 +1586,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 										diagramIds));
 
 			pushNotificationServices.notifyUser(clinicalNotesCollection.getDoctorId().toString(),
-					"Clinical Notes Updated", ComponentType.CLINICAL_NOTES_REFRESH.getType(),
+					"Clinical Notes Added", ComponentType.CLINICAL_NOTES_REFRESH.getType(),
 					clinicalNotesCollection.getPatientId().toString(), null);
 
 		} catch (Exception e) {
@@ -4135,6 +4134,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("generalHistorySurgical", clinicalNotesCollection.getGeneralHistorySurgical());
 		parameters.put("pastHistory", clinicalNotesCollection.getPastHistory());
 		parameters.put("familyHistory", clinicalNotesCollection.getFamilyHistory());
+		parameters.put("priorConsultations", clinicalNotesCollection.getPriorConsultations());
 		parameters.put("painScale", clinicalNotesCollection.getPainScale());
 		parameters.put("priorConsultations", clinicalNotesCollection.getPriorConsultations());
 		if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
@@ -4299,7 +4299,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			parameters.put("showHistory", true);
 			patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
 		}
-
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails()
@@ -8405,24 +8404,26 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	public String downloadMultipleClinicalNotes(List<String> ids) {
 		String response = null;
 		try {
-			List<ObjectId> objectIds = new ArrayList<ObjectId>();
-			for (String id : ids) {
-				if (!DPDoctorUtils.anyStringEmpty(id)) {
-					objectIds.add(new ObjectId(id));
-				}
-			}
+			List<ClinicalnoteLookupBean> clinicalnoteLookupBeans = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(ids)),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.unwind("patient"),
+							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("$eq",
+													Arrays.asList("$patient.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+							Aggregation.unwind("patientUser"),
+							Aggregation.sort(new Sort(Direction.ASC, "createdTime"))),
+					ClinicalNotesCollection.class, ClinicalnoteLookupBean.class).getMappedResults();
 
-			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository
-					.getClinicalNotesByIds(objectIds);
-			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
-				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						clinicalNotesCollections.get(0).getPatientId(), clinicalNotesCollections.get(0).getDoctorId(),
-						clinicalNotesCollections.get(0).getLocationId(),
-						clinicalNotesCollections.get(0).getHospitalId());
-				UserCollection user = userRepository.findOne(clinicalNotesCollections.get(0).getPatientId());
+			if (clinicalnoteLookupBeans != null && !clinicalnoteLookupBeans.isEmpty()) {
+				PatientCollection patient = clinicalnoteLookupBeans.get(0).getPatient();
+				UserCollection user = clinicalnoteLookupBeans.get(0).getPatientUser();
 
 				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(
-						clinicalNotesCollections, patient, user);
+						clinicalnoteLookupBeans, patient, user);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -8441,7 +8442,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	private JasperReportResponse createJasperForMultipleClinicalNotes(
-			List<ClinicalNotesCollection> clinicalNotesCollections, PatientCollection patient, UserCollection user)
+			List<ClinicalnoteLookupBean> clinicalnoteLookupBeans, PatientCollection patient, UserCollection user)
 			throws NumberFormatException, IOException {
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
@@ -8452,8 +8453,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
-				clinicalNotesCollections.get(0).getDoctorId(), clinicalNotesCollections.get(0).getLocationId(),
-				clinicalNotesCollections.get(0).getHospitalId(), ComponentType.ALL.getType());
+				clinicalnoteLookupBeans.get(0).getDoctorId(), clinicalnoteLookupBeans.get(0).getLocationId(),
+				clinicalnoteLookupBeans.get(0).getHospitalId(), ComponentType.ALL.getType());
 
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
@@ -8466,11 +8467,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						? printSettings.getContentLineStyle()
 						: LineStyle.INLINE.name();
 
-		for (ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
-
+		for (ClinicalnoteLookupBean clinicalnote : clinicalnoteLookupBeans) {
+			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
+			BeanUtil.map(clinicalnote, clinicalNotesCollection);
 			ClinicalNotesJasperDetails clinicalJasperDetails = patientVisitService.getClinicalNotesJasperDetails(
-					clinicalNotesCollection.getId().toString(), contentLineStyle, parameters, false, false, false,
-					false, false, clinicalNotesCollection, false);
+					clinicalnote.getId().toString(), contentLineStyle, parameters, false, false, false, false, false,
+					clinicalNotesCollection, false);
 			clinicalJasperDetails.setTitle(simpleDateFormat.format(clinicalNotesCollection.getCreatedTime())
 					+ "(Clinical Notes : " + clinicalNotesCollection.getUniqueEmrId() + ")");
 			clinicalNotes.add(clinicalJasperDetails);
@@ -8526,24 +8528,27 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		MailAttachment mailAttachment = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
-			List<ObjectId> objectIds = new ArrayList<ObjectId>();
-			for (String id : ids) {
-				if (!DPDoctorUtils.anyStringEmpty(id)) {
-					objectIds.add(new ObjectId(id));
-				}
-			}
+			List<ClinicalnoteLookupBean> clinicalnoteLookupBeans = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(ids)),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.unwind("patient"),
+							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("$eq",
+													Arrays.asList("$patient.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+							Aggregation.unwind("patientUser"),
+							Aggregation.sort(new Sort(Direction.ASC, "createdTime"))),
+					ClinicalNotesCollection.class, ClinicalnoteLookupBean.class).getMappedResults();
 
-			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository
-					.getClinicalNotesByIds(objectIds);
-			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
-				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						clinicalNotesCollections.get(0).getPatientId(), clinicalNotesCollections.get(0).getDoctorId(),
-						clinicalNotesCollections.get(0).getLocationId(),
-						clinicalNotesCollections.get(0).getHospitalId());
-				UserCollection user = userRepository.findOne(clinicalNotesCollections.get(0).getPatientId());
-				emailTrackCollection.setDoctorId(clinicalNotesCollections.get(0).getDoctorId());
-				emailTrackCollection.setHospitalId(clinicalNotesCollections.get(0).getHospitalId());
-				emailTrackCollection.setLocationId(clinicalNotesCollections.get(0).getLocationId());
+			if (clinicalnoteLookupBeans != null && !clinicalnoteLookupBeans.isEmpty()) {
+				PatientCollection patient = clinicalnoteLookupBeans.get(0).getPatient();
+				UserCollection user = clinicalnoteLookupBeans.get(0).getPatientUser();
+
+				emailTrackCollection.setDoctorId(clinicalnoteLookupBeans.get(0).getDoctorId());
+				emailTrackCollection.setHospitalId(clinicalnoteLookupBeans.get(0).getHospitalId());
+				emailTrackCollection.setLocationId(clinicalnoteLookupBeans.get(0).getLocationId());
 				emailTrackCollection.setType(ComponentType.CLINICAL_NOTES.getType());
 				emailTrackCollection.setSubject("Clinical Notes");
 				if (user != null) {
@@ -8551,14 +8556,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					emailTrackCollection.setPatientId(user.getId());
 				}
 				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(
-						clinicalNotesCollections, patient, user);
+						clinicalnoteLookupBeans, patient, user);
 
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-				UserCollection doctorUser = userRepository.findOne(clinicalNotesCollections.get(0).getDoctorId());
+				UserCollection doctorUser = userRepository.findOne(clinicalnoteLookupBeans.get(0).getDoctorId());
 				LocationCollection locationCollection = locationRepository
-						.findOne(clinicalNotesCollections.get(0).getLocationId());
+						.findOne(clinicalnoteLookupBeans.get(0).getLocationId());
 
 				mailResponse = new MailResponse();
 				mailResponse.setMailAttachment(mailAttachment);

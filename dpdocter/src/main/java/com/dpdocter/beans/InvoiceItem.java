@@ -10,15 +10,15 @@ import com.dpdocter.enums.PatientTreatmentStatus;
 public class InvoiceItem {
 
 	private ObjectId itemId;
-	
+
 	private ObjectId doctorId;
-	
+
 	private String doctorName;
-	
+
 	private String name;
-	
-	private InvoiceItemType type;// = [SERVICE || PRODUCT] 
-	
+
+	private InvoiceItemType type;// = [SERVICE || PRODUCT]
+
 	private Quantity quantity;
 
 	private Long inventoryQuantity;
@@ -26,11 +26,11 @@ public class InvoiceItem {
 	private boolean saveToInventory = false;
 
 	private PatientTreatmentStatus status;
-	
+
 	private Double cost = 0.0;
 
 	private Discount discount;
-	
+
 	private Tax tax;
 
 	private Double finalCost = 0.0;
@@ -38,7 +38,7 @@ public class InvoiceItem {
 	private InventoryBatch inventoryBatch;
 
 	private String note;
-
+	
 	private List<Fields> treatmentFields;
 	
 	public ObjectId getItemId() {

@@ -114,6 +114,11 @@ public class Location {
 
 	private Boolean isPatientWelcomeMessageOn = false;
 
+<<<<<<< HEAD
+=======
+	private String smsCode;
+
+>>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 	public Boolean getIsMobileNumberOptional() {
 		return isMobileNumberOptional;
 	}
@@ -522,6 +527,17 @@ public class Location {
 		this.isPatientWelcomeMessageOn = isPatientWelcomeMessageOn;
 	}
 
+<<<<<<< HEAD
+=======
+	public String getSmsCode() {
+		return smsCode;
+	}
+
+	public void setSmsCode(String smsCode) {
+		this.smsCode = smsCode;
+	}
+
+>>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 	@Override
 	public String toString() {
 		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state

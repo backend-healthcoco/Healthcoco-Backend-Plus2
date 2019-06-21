@@ -26,6 +26,7 @@ import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.Instructions;
 import com.dpdocter.beans.LabTest;
+import com.dpdocter.beans.NutritionReferral;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
@@ -42,6 +43,7 @@ import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDirectionAddEditRequest;
 import com.dpdocter.request.DrugDosageAddEditRequest;
 import com.dpdocter.request.DrugDurationUnitAddEditRequest;
+import com.dpdocter.request.NutritionReferralRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
@@ -721,11 +723,9 @@ public class PrescriptionApi {
 				}
 			}
 		}
-		List<?> clinicalItems = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId,
+		Response<Object> response = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId,
 				hospitalId, updatedTime, discarded, false, disease, null);
 
-		Response<Object> response = new Response<Object>();
-		response.setDataList(clinicalItems);
 		return response;
 	}
 
@@ -1234,7 +1234,6 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.ADD_EDIT_INSTRUCTIONS)
 	@POST
 	public Response<Instructions> addEditInstruction( Instructions request) {
-
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId())) {
 			logger.warn("Invalid Input");
@@ -1259,10 +1258,7 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		} 
-		List<Instructions> instructions = prescriptionServices.getInstructions(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
-
-		Response<Instructions> response = new Response<Instructions>();
-		response.setDataList(instructions);
+		Response<Instructions> response = prescriptionServices.getInstructions(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 		return response;
 	}
 	
@@ -1306,6 +1302,21 @@ public class PrescriptionApi {
 		List<Drug> drugs = prescriptionServices.getDrugSubstitutes(drugId);
 		Response<List<Drug>> response = new Response<List<Drug>>();
 		response.setDataList(drugs);
+		return response;
+	}
+		
+	@Path(value = PathProxy.PrescriptionUrls.ADD_NUTRITION_REFERRAL)
+	@POST
+	public Response<NutritionReferral> addNutritionReferral( NutritionReferralRequest request) {
+
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId() , request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		} 
+		NutritionReferral nutritionReferral = prescriptionServices.addNutritionReferral(request);
+		Response<NutritionReferral> response = new Response<NutritionReferral>();
+		response.setData(nutritionReferral);
 		return response;
 	}
 	

@@ -18,7 +18,8 @@ public interface PatientTreatmentServices {
 
 	TreatmentServiceCost addEditServiceCost(TreatmentServiceCost request);
 
-	PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request, Boolean isAppointmentAdd, String createdBy, Appointment appointment);
+	PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request, Boolean isAppointmentAdd,
+			String createdBy, Appointment appointment);
 
 	PatientTreatmentResponse deletePatientTreatment(String treatmentId, String doctorId, String locationId,
 			String hospitalId, Boolean discarded);
@@ -59,10 +60,12 @@ public interface PatientTreatmentServices {
 	public Integer genrateTreatmentCode();
 
 	public TreatmentService addFavouritesToService(TreatmentService request, String createdBy);
-	
+
 	TreatmentService makeServiceFavourite(String serviceId, String doctorId, String locationId, String hospitalId);
 
 	List<TreatmentService> getListBySpeciality(String speciality);
 
 	PatientTreatmentResponse deletePatientTreatmentForWeb(String treatmentId, Boolean discarded);
+
+	public List<TreatmentService> getTreatmentServices(List<ObjectId> idList);
 }

@@ -12,6 +12,7 @@ import com.dpdocter.beans.CustomAppointment;
 import com.dpdocter.beans.Event;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
+import com.dpdocter.beans.NutritionAppointment;
 import com.dpdocter.beans.PatientQueue;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
@@ -38,14 +39,18 @@ public interface AppointmentService {
 
 	Clinic getClinic(String locationId, String role, Boolean active);
 
-	List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
+	Clinic getClinic(String slugUrl);
+
+	Response<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
-			String toTime, Boolean isWeb);
+			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb);
 
 	Response<Object> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime);
 
 	Lab getLab(String locationId, String patientId, Boolean active);
+
+	Lab getLab(String slugUrl);
 
 	List<City> getCountries();
 
@@ -57,9 +62,9 @@ public interface AppointmentService {
 
 	Appointment updateAppointment(AppointmentRequest request, Boolean updateVisit, Boolean isStatusChange);
 
-	Event addEvent(EventRequest request);
+	Event addEvent(EventRequest request, Boolean forAllDoctors);
 
-	Event updateEvent(EventRequest request);
+	Event updateEvent(EventRequest request, Boolean forAllDoctors);
 
 	Boolean sendReminderToPatient(String appointmentId);
 
@@ -77,11 +82,6 @@ public interface AppointmentService {
 
 	LocationWithAppointmentCount getDoctorsWithAppointmentCount(String locationId, String role, Boolean active,
 			String from, String to);
-	/*
-	 * Object changeStatusInAppointment(String doctorId, String locationId,
-	 * String hospitalId, String patientId, String appointmentId, String
-	 * status);
-	 */
 
 	public void updateQueue();
 
@@ -99,10 +99,6 @@ public interface AppointmentService {
 
 	Appointment getPatientLastAppointment(String locationId, String doctorId, String patientId);
 
-	Lab getLab(String slugUrl);
-
-	Clinic getClinic(String slugUrl);
-
 	Appointment updateAppointmentDoctor(String appointmentId, String doctorId);
 
 	String printPatientCard(PrintPatientCardRequest request);
@@ -114,15 +110,24 @@ public interface AppointmentService {
 			Boolean isGroupByDoctor, Boolean showMobileNo, Boolean showAppointmentStatus, Boolean showNotes,
 			Boolean showPatientGroups);
 
-	List<Event> getEvents(String locationId, List<String> doctorId, String from, String to, int page, int size,
-			String updatedTime, String sortBy, String fromTime, String toTime);
+	Response<Event> getEvents(String locationId, List<String> doctorId, String from, String to, int page, int size,
+			String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked, String state);
 
 	Event getEventById(String eventId);
 
-	List<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page, int size,
-			String updatedTime, String sortBy, String fromTime, String toTime);
-	
-	Boolean checkToday(int dayOfDate, int yearOfDate, String timeZone);
+	Response<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page, int size,
+			String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked, String state);
 
-	Integer getMinutesOfDay(Date date);
+	NutritionAppointment deleteNutritionAppointment(String appointmentId, Boolean discarded);
+
+	NutritionAppointment getNutritionAppointmentById(String appointmentId);
+
+	List<NutritionAppointment> getNutritionAppointments(int page, int size, String userId, String fromDate,
+			String toDate);
+
+	Boolean addEditNutritionAppointment(NutritionAppointment request);
+
+	Boolean checkToday(int i, int yearOfDate, String timeZone);
+
+	Integer getMinutesOfDay(Date dateObj);
 }

@@ -96,6 +96,9 @@ public class DentalImagingInvoiceCollection extends GenericCollection {
 	@Field
 	private String referringDoctor;
 
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -312,6 +315,26 @@ public class DentalImagingInvoiceCollection extends GenericCollection {
 		this.isPaid = isPaid;
 	}
 
-	
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
 
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "DentalImagingInvoiceCollection [id=" + id + ", dentalImagingId=" + dentalImagingId + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
+				+ ", patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", dentalImagingDoctorId="
+				+ dentalImagingDoctorId + ", dentalImagingLocationId=" + dentalImagingLocationId
+				+ ", dentalImagingHospitalId=" + dentalImagingHospitalId + ", uniqueInvoiceId=" + uniqueInvoiceId
+				+ ", totalDiscount=" + totalDiscount + ", totalCost=" + totalCost + ", totalTax=" + totalTax
+				+ ", invoiceTaxes=" + invoiceTaxes + ", grandTotal=" + grandTotal + ", oldGrantTotal=" + oldGrantTotal
+				+ ", usedAdvanceAmount=" + usedAdvanceAmount + ", refundAmount=" + refundAmount + ", balanceAmount="
+				+ balanceAmount + ", discarded=" + discarded + ", isTaxNotApplicable=" + isTaxNotApplicable
+				+ ", invoiceDate=" + invoiceDate + ", invoiceItems=" + invoiceItems + ", isPaid=" + isPaid
+				+ ", referringDoctor=" + referringDoctor + ", isPatientDiscarded=" + isPatientDiscarded + "]";
+	}
 }

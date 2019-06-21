@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -8,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.QuestionAnswers;
+import com.dpdocter.enums.AppointmentWaitTime;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.MedicationEffectType;
 
@@ -54,13 +56,20 @@ public class PatientFeedbackCollection extends GenericCollection {
 	private MedicationEffectType medicationEffectType; // how patient feeling after taking medicine
 	@Field
 	private FeedbackType feedbackType;
-
 	@Field
 	private ObjectId appointmentId;
 	@Field
 	private ObjectId prescriptionId;
 	@Field
 	private List<QuestionAnswers> questionAnswers;
+	@Field
+	private Boolean isPatientDiscarded = false;
+	@Field
+	private Boolean printPdfProvided = false;
+	@Field
+	private Set<ObjectId> services;
+	@Field
+	private AppointmentWaitTime appointmentTiming;
 
 	public ObjectId getId() {
 		return id;
@@ -246,6 +255,38 @@ public class PatientFeedbackCollection extends GenericCollection {
 		this.questionAnswers = questionAnswers;
 	}
 
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	public Boolean getPrintPdfProvided() {
+		return printPdfProvided;
+	}
+
+	public void setPrintPdfProvided(Boolean printPdfProvided) {
+		this.printPdfProvided = printPdfProvided;
+	}
+
+	public Set<ObjectId> getServices() {
+		return services;
+	}
+
+	public void setServices(Set<ObjectId> services) {
+		this.services = services;
+	}
+
+	public AppointmentWaitTime getAppointmentTiming() {
+		return appointmentTiming;
+	}
+
+	public void setAppointmentTiming(AppointmentWaitTime appointmentTiming) {
+		this.appointmentTiming = appointmentTiming;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientFeedbackCollection [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId
@@ -255,7 +296,9 @@ public class PatientFeedbackCollection extends GenericCollection {
 				+ overallExperience + ", reasonOfVisit=" + reasonOfVisit + ", experience=" + experience + ", reply="
 				+ reply + ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved + ", adminUpdatedExperience="
 				+ adminUpdatedExperience + ", isDiscarded=" + isDiscarded + ", isMedicationOnTime=" + isMedicationOnTime
-				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType + "]";
+				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType
+				+ ", appointmentId=" + appointmentId + ", prescriptionId=" + prescriptionId + ", questionAnswers="
+				+ questionAnswers + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
 
 }

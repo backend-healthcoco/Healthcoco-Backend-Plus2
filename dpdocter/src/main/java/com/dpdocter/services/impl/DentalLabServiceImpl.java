@@ -121,7 +121,6 @@ import com.dpdocter.response.TaxResponse;
 import com.dpdocter.services.DentalLabService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
-import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
@@ -176,13 +175,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	private PushNotificationServices pushNotificationServices;
 
 	@Autowired
-	private LocationServices locationServices;
-
-	@Autowired
 	private UserDeviceRepository userDeviceRepository;
-
-	@Autowired
-	private PrintSettingsRepository printSettingsRepository;
 
 	@Autowired
 	private DynamicCollectionBoyAllocationRepository dynamicCollectionBoyAllocationRepository;
@@ -210,6 +203,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Autowired
 	private DentalWorksAmountRepository dentalWorksAmountRepository;
+
+	@Autowired
+	private PrintSettingsRepository printSettingsRepository;
 
 	@Value("${collection.boy.notification}")
 	private String COLLECTION_BOY_NOTIFICATION;
@@ -353,7 +349,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			response = new DentalWork();
 			BeanUtil.map(customWorkCollection, response);
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -442,7 +437,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 	public List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId,
 			String doctorId, int page, int size, String searchTerm) {
 		List<DentalLabDoctorAssociationLookupResponse> responses = null;
-		List<User> users = new ArrayList<>();
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -983,7 +977,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Transactional
 	public List<CBDoctorAssociationLookupResponse> getCBAssociatedDoctors(String doctorId, String dentalLabId,
 			String collectionBoyId, int size, int page) {
-		List<User> users = null;
 		List<CBDoctorAssociationLookupResponse> lookupResponses = null;
 		try {
 			Aggregation aggregation = null;
@@ -1021,7 +1014,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			 */
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			logger.warn(e);
 		}
@@ -1254,7 +1246,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 				}
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -1273,7 +1264,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			currentDate = DPDoctorUtils.getPrefixedNumber(currentDay) + DPDoctorUtils.getPrefixedNumber(currentMonth)
 					+ DPDoctorUtils.getPrefixedNumber(currentYear % 100);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -1446,7 +1436,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -1467,7 +1456,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return imageURLResponse;
@@ -1495,7 +1483,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return imageURLResponse;
@@ -2838,14 +2825,15 @@ public class DentalLabServiceImpl implements DentalLabService {
 		parameters.put("invoiceId", "<b>InvoiceId : </b>" + dentalWorksInvoiceCollection.getUniqueInvoiceId());
 		parameters.put("date", "<b>Date : </b>" + simpleDateFormat.format(new Date()));
 
-		printSettings = printSettingsRepository.getSettings(dentalWorksInvoiceCollection.getDentalLabLocationId(),
-				dentalWorksInvoiceCollection.getDentalLabHospitalId());
+		printSettings = printSettingsRepository.getSettings(dentalWorksInvoiceCollection.getLocationId(),
+				dentalWorksInvoiceCollection.getHospitalId());
 
 		if (printSettings == null) {
 
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
+
 		}
 
 		patientVisitService.generatePrintSetup(parameters, printSettings, null);
@@ -3093,7 +3081,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 						new Criteria("doctor.firstName").regex(searchTerm + ".*"),
 						new Criteria("patientName").regex("^" + searchTerm, "i"),
 						new Criteria("patientName").regex("^" + searchTerm),
-						new Criteria("patientName").regex(searchTerm + ".*"));
+						new Criteria("patientName").regex(searchTerm + ".*"),
+						new Criteria("uniqueInvoiceId").regex("^" + searchTerm, "i"),
+						new Criteria("uniqueInvoiceId").regex("^" + searchTerm),
+						new Criteria("uniqueInvoiceId").regex(searchTerm + "$", "i"),
+						new Criteria("uniqueInvoiceId").regex(searchTerm + "$"),
+						new Criteria("uniqueInvoiceId").regex(searchTerm + ".*"));
 			}
 
 			/* (SEVEN) */
@@ -3167,9 +3160,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 			if (to != null) {
-				criteria.and("receivedDate").gte(from).lte(to);
+				criteria.and("updatedTime").gte(new Date(from)).lte(DPDoctorUtils.getEndTime(new Date(to)));
 			} else {
-				criteria.and("receivedDate").gte(from);
+				criteria.and("updatedTime").gte(new Date(from));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("dentalLab.locationName").regex("^" + searchTerm, "i"),
@@ -3180,7 +3173,12 @@ public class DentalLabServiceImpl implements DentalLabService {
 						new Criteria("doctor.firstName").regex(searchTerm + ".*"),
 						new Criteria("patientName").regex("^" + searchTerm, "i"),
 						new Criteria("patientName").regex("^" + searchTerm),
-						new Criteria("patientName").regex(searchTerm + ".*"));
+						new Criteria("patientName").regex(searchTerm + ".*"),
+						new Criteria("uniqueReceiptId").regex("^" + searchTerm, "i"),
+						new Criteria("uniqueReceiptId").regex("^" + searchTerm),
+						new Criteria("uniqueReceiptId").regex(searchTerm + "$", "i"),
+						new Criteria("uniqueReceiptId").regex(searchTerm + "$"),
+						new Criteria("uniqueReceiptId").regex(searchTerm + ".*"));
 			}
 
 			/* (SEVEN) */
@@ -3458,12 +3456,11 @@ public class DentalLabServiceImpl implements DentalLabService {
 			userName = user.getTitle();
 		}
 		String content = "<br>Received with thanks from &nbsp;&nbsp;<b>" + userName + user.getFirstName()
-				+ "</b>. a sum of Rs:- " + dentalWorksReceiptResponse.getAmountPaid() + "<br> by <b>"
-				+ dentalWorksReceiptResponse.getModeOfPayment()
-				+ "</b> towords professional charge .&nbsp;&nbsp;&nbsp;";
+				+ "</b>. a sum of Rupees:- " + dentalWorksReceiptResponse.getAmountPaid() + "<br> By <b>"
+				+ dentalWorksReceiptResponse.getModeOfPayment() + "</b> towords professional charge &nbsp;&nbsp;&nbsp;";
 		parameters.put("content", content);
 		parameters.put("paid", "Rs.&nbsp;" + dentalWorksReceiptResponse.getAmountPaid());
-		parameters.put("receiptId", "<b>ReceiptId : </b>" + dentalWorksReceiptResponse.getUniqueReceiptId());
+		parameters.put("receiptId", "<b>receiptId : </b>" + dentalWorksReceiptResponse.getUniqueReceiptId());
 		parameters.put("date", "<b>Date : </b>" + simpleDateFormat.format(new Date()));
 
 		LocationCollection location = locationRepository

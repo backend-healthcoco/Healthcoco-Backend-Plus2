@@ -289,5 +289,4 @@ public class ConsentForm extends GenericCollection {
 				+ inputElements + ", templateHtmlText=" + templateHtmlText + ", type=" + type + ", PNUM=" + PNUM + "]";
 	}
 
-
 }

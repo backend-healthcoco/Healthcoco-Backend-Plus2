@@ -120,6 +120,7 @@ import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.TestAndRecordDataResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.ClinicalNotesService;
+import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
@@ -215,7 +216,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private AppointmentRepository appointmentRepository;
 
 	@Autowired
-	private PushNotificationServices pushNotificationServices;
+	PushNotificationServices pushNotificationServices;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -252,6 +253,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Autowired
 	private EyePrescriptionRepository eyePrescriptionRepository;
+
+	@Autowired
+	private ContactsService contactsService;
 
 	@Override
 	@Transactional
@@ -1202,7 +1206,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 
 						new CustomAggregationOperation(
@@ -1783,7 +1786,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 
 		try {
-
 			PatientVisitLookupResponse patientVisitLookupResponse = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(visitId))),
 							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
@@ -1808,7 +1810,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				UserCollection user = patientVisitLookupResponse.getPatientUser();
 				user.setFirstName(patient.getLocalPatientName());
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,
-						null, false, false, false, false, false, false, false, false, false, false, true, true, true,
+						null, false, false, false, false, false, false, false, false, false, false, false, false, false,
 						false);
 				if (jasperReportResponse != null) {
 					if (user != null) {
@@ -1937,7 +1939,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		List<ClinicalNotesJasperDetails> clinicalNotes = null;
 
-		if (!isLabPrint && showclinicalNotes) {
+		if (!isLabPrint && !showclinicalNotes) {
 			if (patientVisitLookupResponse.getClinicalNotesId() != null) {
 				clinicalNotes = new ArrayList<ClinicalNotesJasperDetails>();
 				String contentLineStyle = (printSettings != null
@@ -1955,7 +1957,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 		}
 		List<DBObject> patientTreatments = null;
-		if (!showUSG && !isLabPrint && showTreatment) {
+		if (!showUSG && !isLabPrint && !showTreatment) {
 			if (patientVisitLookupResponse.getTreatmentId() != null) {
 				patientTreatments = new ArrayList<DBObject>();
 				for (ObjectId treatmentId : patientVisitLookupResponse.getTreatmentId()) {
@@ -1969,7 +1971,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 		}
-		if (!showUSG && !isLabPrint && showPrescription) {
+		if (!showUSG && !isLabPrint && !showPrescription) {
 			if (patientVisitLookupResponse.getEyePrescriptionId() != null) {
 				EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository
 						.findOne(patientVisitLookupResponse.getEyePrescriptionId());
@@ -2208,7 +2210,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									quantity = quantity + treatment.getQuantity().getType().getDuration();
 								patientTreatments.setQuantity(quantity);
 							}
-
+							if (treatment.getDiscount() != null && treatment.getDiscount().getValue() > 0)
+								showTreatmentDiscount = true;
 							patientTreatments.setNote(treatment.getNote() != null
 									? "<font size='1'><b>Note :</b> " + treatment.getNote() + "</font>"
 									: "");
@@ -2395,10 +2398,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						&& printSettings.getClinicLogoUrl() != null
 						&& !printSettings.getHeaderSetup().getShowHeaderImage()) {
 					logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
-				} else if (!DPDoctorUtils.anyStringEmpty(printSettings.getHeaderSetup().getHeaderImageUrl())
-						&& printSettings.getHeaderSetup().getShowHeaderImage()) {
+				} else if (!DPDoctorUtils.anyStringEmpty(printSettings.getHeaderSetup().getHeaderImageUrl())) {
 					headerImageUrl = getFinalImageURL(printSettings.getHeaderSetup().getHeaderImageUrl());
-					headerHeight = printSettings.getHeaderSetup().getHeaderHeight();
 				}
 			}
 
@@ -2425,18 +2426,23 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 
 			if (printSettings.getFooterSetup() != null) {
-				if (printSettings.getFooterSetup().getShowSignature() && !DPDoctorUtils.anyStringEmpty(doctorId)) {
+				if (printSettings.getFooterSetup().getShowSignature() && !DPDoctorUtils.anyStringEmpty(doctorId)
+						) {
 					UserCollection doctorUser = userRepository.findOne(doctorId);
 					if (doctorUser != null)
 						footerSignature = doctorUser.getTitle() + " " + doctorUser.getFirstName();
 				}
 
 				if (printSettings.getFooterSetup().getShowPoweredBy()) {
-					poweredBy = "<font color='#9d9fa0'>" + footerText + "</font>";
+					parameters.put("poweredBy", "<font color='#9d9fa0'>" + footerText + "</font>");
 				}
 				if (printSettings.getFooterSetup().getShowBottomSignText()
 						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getBottomSignText())) {
-					bottomSignText = printSettings.getFooterSetup().getBottomSignText();
+					parameters.put("bottomSignText", printSettings.getFooterSetup().getBottomSignText());
+				}
+				if (printSettings.getFooterSetup().getShowImageFooter()
+						&& printSettings.getFooterSetup().getShowImageFooter()) {
+					footerImageUrl = getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl());
 				}
 				if (printSettings.getFooterSetup().getShowImageFooter()
 						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getFooterImageUrl())) {
@@ -2474,6 +2480,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientLeftText = "", patientRightText = "";
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 		sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+
 		if (patientDetails == null) {
 			patientDetails = new PatientDetails();
 		}
@@ -2622,9 +2629,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		try {
 			if (clinicalNotesId != null) {
 				clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
-				if (clinicalNotesCollection != null) {
-					if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
-							&& clinicalNotesCollection.getLocationId() != null) {
+			if (clinicalNotesCollection != null) {
+				if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
+						&& clinicalNotesCollection.getLocationId() != null) {
 
 						clinicalNotesJasperDetails = new ClinicalNotesJasperDetails();
 						if (clinicalNotesCollection.getVitalSigns() != null && !showVitalSign) {
@@ -2750,21 +2757,87 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 						}
 
-						clinicalNotesJasperDetails.setObservations(clinicalNotesCollection.getObservation());
-						clinicalNotesJasperDetails.setNotes(clinicalNotesCollection.getNote());
-						clinicalNotesJasperDetails.setInvestigations(clinicalNotesCollection.getInvestigation());
-						clinicalNotesJasperDetails.setDiagnosis(clinicalNotesCollection.getDiagnosis());
+					clinicalNotesJasperDetails.setObservations(clinicalNotesCollection.getObservation());
+					clinicalNotesJasperDetails.setNotes(clinicalNotesCollection.getNote());
+					clinicalNotesJasperDetails.setInvestigations(clinicalNotesCollection.getInvestigation());
+					clinicalNotesJasperDetails.setDiagnosis(clinicalNotesCollection.getDiagnosis());
 
-						clinicalNotesJasperDetails.setComplaints(clinicalNotesCollection.getComplaint());
-						clinicalNotesJasperDetails.setPresentComplaint(clinicalNotesCollection.getPresentComplaint());
-						clinicalNotesJasperDetails
-								.setPresentComplaintHistory(clinicalNotesCollection.getPresentComplaintHistory());
-						clinicalNotesJasperDetails.setGeneralExam(clinicalNotesCollection.getGeneralExam());
-						clinicalNotesJasperDetails.setSystemExam(clinicalNotesCollection.getSystemExam());
-						clinicalNotesJasperDetails.setMenstrualHistory(clinicalNotesCollection.getMenstrualHistory());
-						clinicalNotesJasperDetails.setObstetricHistory(clinicalNotesCollection.getObstetricHistory());
-						clinicalNotesJasperDetails
-								.setProvisionalDiagnosis(clinicalNotesCollection.getProvisionalDiagnosis());
+					clinicalNotesJasperDetails.setComplaints(clinicalNotesCollection.getComplaint());
+					clinicalNotesJasperDetails.setPresentComplaint(clinicalNotesCollection.getPresentComplaint());
+					clinicalNotesJasperDetails
+							.setPresentComplaintHistory(clinicalNotesCollection.getPresentComplaintHistory());
+					clinicalNotesJasperDetails.setGeneralExam(clinicalNotesCollection.getGeneralExam());
+					clinicalNotesJasperDetails.setSystemExam(clinicalNotesCollection.getSystemExam());
+					clinicalNotesJasperDetails.setMenstrualHistory(clinicalNotesCollection.getMenstrualHistory());
+					clinicalNotesJasperDetails.setObstetricHistory(clinicalNotesCollection.getObstetricHistory());
+					clinicalNotesJasperDetails
+							.setProvisionalDiagnosis(clinicalNotesCollection.getProvisionalDiagnosis());
+
+					if (!isCustomPDF || showUSG) {
+						clinicalNotesJasperDetails.setIndicationOfUSG(clinicalNotesCollection.getIndicationOfUSG());
+					}
+					clinicalNotesJasperDetails.setPv(clinicalNotesCollection.getPv());
+					clinicalNotesJasperDetails.setPa(clinicalNotesCollection.getPa());
+					clinicalNotesJasperDetails.setPs(clinicalNotesCollection.getPs());
+					clinicalNotesJasperDetails.setEcgDetails(clinicalNotesCollection.getEcgDetails());
+					clinicalNotesJasperDetails.setxRayDetails(clinicalNotesCollection.getxRayDetails());
+					clinicalNotesJasperDetails.setEcho(clinicalNotesCollection.getEcho());
+					clinicalNotesJasperDetails.setHolter(clinicalNotesCollection.getHolter());
+					clinicalNotesJasperDetails.setProcedureNote(clinicalNotesCollection.getProcedureNote());
+					clinicalNotesJasperDetails.setNoseExam(clinicalNotesCollection.getNoseExam());
+					clinicalNotesJasperDetails
+							.setOralCavityThroatExam(clinicalNotesCollection.getOralCavityThroatExam());
+					clinicalNotesJasperDetails
+							.setIndirectLarygoscopyExam(clinicalNotesCollection.getIndirectLarygoscopyExam());
+					clinicalNotesJasperDetails.setEarsExam(clinicalNotesCollection.getEarsExam());
+					clinicalNotesJasperDetails.setNeckExam(clinicalNotesCollection.getNeckExam());
+					clinicalNotesJasperDetails.setPcNose(clinicalNotesCollection.getPcNose());
+					clinicalNotesJasperDetails.setPcOralCavity(clinicalNotesCollection.getPcOralCavity());
+					clinicalNotesJasperDetails.setPcThroat(clinicalNotesCollection.getPcThroat());
+					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+					clinicalNotesJasperDetails
+							.setPersonalHistoryTobacco(clinicalNotesCollection.getPersonalHistoryTobacco());
+					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+					clinicalNotesJasperDetails
+							.setPersonalHistoryAlcohol(clinicalNotesCollection.getPersonalHistoryAlcohol());
+					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+					clinicalNotesJasperDetails
+							.setPersonalHistorySmoking(clinicalNotesCollection.getPersonalHistorySmoking());
+					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+					clinicalNotesJasperDetails.setPersonalHistoryDiet(clinicalNotesCollection.getPersonalHistoryDiet());
+					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+					clinicalNotesJasperDetails
+							.setPersonalHistoryOccupation(clinicalNotesCollection.getPersonalHistoryOccupation());
+					clinicalNotesJasperDetails.setGeneralHistoryDrugs(clinicalNotesCollection.getGeneralHistoryDrugs());
+					clinicalNotesJasperDetails
+							.setGeneralHistoryMedicine(clinicalNotesCollection.getGeneralHistoryMedicine());
+					clinicalNotesJasperDetails
+							.setGeneralHistoryAllergies(clinicalNotesCollection.getGeneralHistoryAllergies());
+					clinicalNotesJasperDetails
+							.setGeneralHistorySurgical(clinicalNotesCollection.getGeneralHistorySurgical());
+					clinicalNotesJasperDetails.setPastHistory(clinicalNotesCollection.getPastHistory());
+					clinicalNotesJasperDetails.setFamilyHistory(clinicalNotesCollection.getFamilyHistory());
+					clinicalNotesJasperDetails.setPainScale(clinicalNotesCollection.getPainScale());
+					clinicalNotesJasperDetails.setPriorConsultations(clinicalNotesCollection.getPriorConsultations());
+					if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcNose())
+							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcEars())
+							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcOralCavity())
+							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcThroat())) {
+						parameters.put("ComplaintsTitle", "Complaints :");
+						showTitle = true;
+					}
+					parameters.put("showPCTitle", showTitle);
+					showTitle = false;
+					if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getEarsExam())
+							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNeckExam())
+							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getIndirectLarygoscopyExam())
+							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getOralCavityThroatExam())
+							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNoseExam())) {
+						parameters.put("Examination", "Examination :");
+						showTitle = true;
+					}
+					parameters.put("showExamTitle", showTitle);
+>>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 
 						if (!isCustomPDF || showUSG) {
 							clinicalNotesJasperDetails.setIndicationOfUSG(clinicalNotesCollection.getIndicationOfUSG());
@@ -2932,7 +3005,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						prescriptionItemsObj.put("advice", prescriptionCollection.getAdvice());
 
 					int no = 0;
-					Boolean showIntructions = false, showDirection = false;
+					Boolean showIntructions = false, showDirection = false, showDrugQty = false;
 					if (prescriptionCollection.getItems() != null)
 						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 							if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
@@ -3059,10 +3132,18 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 														: "--",
 												genericName);
 									}
+									if (prescriptionItem.getDrugQuantity() == null) {
+										prescriptionJasperDetails.setDrugQuantity("0");
+									} else {
+										showDrugQty = true;
+										prescriptionJasperDetails
+												.setDrugQuantity(prescriptionItem.getDrugQuantity().toString());
+									}
 									prescriptionItems.add(prescriptionJasperDetails);
 								}
 							}
 						}
+					parameters.put("showDrugQty", showDrugQty);
 					parameters.put("showIntructions", showIntructions);
 					parameters.put("showDirection", showDirection);
 					if (parameters.get("followUpAppointment") == null

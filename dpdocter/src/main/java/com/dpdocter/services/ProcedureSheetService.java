@@ -2,7 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import com.dpdocter.beans.LabReports;
 import com.dpdocter.request.AddEditProcedureSheetRequest;
 import com.dpdocter.request.AddEditProcedureSheetStructureRequest;
 import com.dpdocter.response.ImageURLResponse;
@@ -35,5 +34,11 @@ public interface ProcedureSheetService {
 	ImageURLResponse addDiagrams(FormDataBodyPart file);
 
 	public String downloadProcedureSheet(String id);
+
+	Integer getProcedureSheetListCount(String doctorId, String hospitalId, String locationId, String patientId,
+			String searchTerm, Long from, Long to, Boolean discarded, String type);
+
+	Integer getProcedureSheetStructureListCount(String doctorId, String hospitalId, String locationId,
+			String searchTerm, Long from, Long to, Boolean discarded, String type);
 
 }

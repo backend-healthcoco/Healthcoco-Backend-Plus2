@@ -6,7 +6,7 @@ public class AppointmentAnalyticResponse {
 
 	private long totalAppointments;
 	
-	List<AppointmentDeatilAnalyticResponse> appointments;
+	List<AppointmentDetailAnalyticResponse> appointments;
 
 	public long getTotalAppointments() {
 		return totalAppointments;
@@ -16,11 +16,11 @@ public class AppointmentAnalyticResponse {
 		this.totalAppointments = count;
 	}
 
-	public List<AppointmentDeatilAnalyticResponse> getAppointments() {
+	public List<AppointmentDetailAnalyticResponse> getAppointments() {
 		return appointments;
 	}
 
-	public void setAppointments(List<AppointmentDeatilAnalyticResponse> appointments) {
+	public void setAppointments(List<AppointmentDetailAnalyticResponse> appointments) {
 		this.appointments = appointments;
 	}
 

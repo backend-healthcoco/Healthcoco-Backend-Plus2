@@ -15,9 +15,7 @@ public interface VaccineRepository extends MongoRepository<VaccineCollection, Ob
 	 public List<VaccineCollection> findBypatientdoctorlocationhospital(ObjectId patientId , ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
 	 
 	 @Query("{'dueDate': {'$gte': ?0}, 'dueDate': {'$lte': ?1}}")
-	 public List<VaccineCollection> findVaccinations(DateTime start, DateTime end);
-
-	
+	 public List<VaccineCollection> findVaccinations(DateTime start, DateTime end);	
 	 
 	 @Query("{'patientId': ?0}")
 	 public List<VaccineCollection> findBypatientId(ObjectId patientId);

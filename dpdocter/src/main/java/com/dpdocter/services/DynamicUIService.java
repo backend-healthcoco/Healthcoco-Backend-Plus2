@@ -5,9 +5,11 @@ import com.dpdocter.beans.DentalLabDynamicField;
 import com.dpdocter.beans.DentalLabDynamicUi;
 import com.dpdocter.beans.DynamicUI;
 import com.dpdocter.beans.KioskDynamicUi;
+import com.dpdocter.beans.NutritionUI;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.request.DynamicUIRequest;
 import com.dpdocter.request.KioskDynamicUiResquest;
+import com.dpdocter.request.NutrirtionUIRequest;
 import com.dpdocter.response.DynamicUIResponse;
 
 public interface DynamicUIService {
@@ -36,4 +38,9 @@ public interface DynamicUIService {
 
 	public KioskDynamicUi addEditKioskUiPermission(KioskDynamicUiResquest request);
 
+	public NutritionUI getNutritionUIPermission(String doctorId);
+
+	public NutritionUI addEditNutritionUIPermission(NutrirtionUIRequest request);
+
+	public NutritionUI getAllNutritionUIPermission();
 }

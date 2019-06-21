@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import com.dpdocter.collections.GenericCollection;
 
 public class Video extends GenericCollection {
@@ -10,11 +12,21 @@ public class Video extends GenericCollection {
 
 	private String speciality;
 
+	private String doctorId;
+
+	private String locationId;
+
+	private String hospitalId;
+
 	private Boolean discarded = false;
 
 	private String videoUrl;
 
 	private String description;
+
+	private String type;
+
+	private List<String> tags;
 
 	public String getId() {
 		return id;
@@ -62,6 +74,46 @@ public class Video extends GenericCollection {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public List<String> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<String> tags) {
+		this.tags = tags;
 	}
 
 	@Override

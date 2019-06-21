@@ -2,7 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.Date;
 
-import com.dpdocter.collections.GenericCollection;
 
 public class DoctorConferenceAgenda {
 

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.ws.rs.HEAD;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -104,6 +106,7 @@ import com.dpdocter.request.DentalImagingLabDoctorRegistrationRequest;
 import com.dpdocter.request.DentalImagingReportsAddRequest;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.DentalImagingDataResponse;
 import com.dpdocter.response.DentalImagingInvoiceItemResponse;
 import com.dpdocter.response.DentalImagingInvoiceJasper;
@@ -116,7 +119,6 @@ import com.dpdocter.response.DoctorHospitalDentalImagingAssociationResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
-import com.dpdocter.response.PatientAnalyticResponse;
 import com.dpdocter.response.PatientDentalImagignVisitAnalyticsResponse;
 import com.dpdocter.services.DentalImagingService;
 import com.dpdocter.services.EmailTackService;
@@ -675,6 +677,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 						if (patientCollection != null) {
 							PatientShortCard patientShortCard = new PatientShortCard();
 							BeanUtil.map(patientCollection, patientShortCard);
+							patientShortCard.setBackendPatientId(patientCollection.getId().toString());
 							dentalImagingResponse.setPatient(patientShortCard);
 
 							UserCollection userCollection = userRepository
@@ -1348,8 +1351,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			patientRegistrationRequest.setDoctorId(request.getDoctorId());
 			patientRegistrationRequest.setLocationId(request.getLocationId());
 			patientRegistrationRequest.setHospitalId(request.getHospitalId());
-			// System.out.println("Patient registration request in imaging service:: " +
-			// patientRegistrationRequest);
 			RegisteredPatientDetails patientDetails = null;
 			patientDetails = registrationService.registerNewPatient(patientRegistrationRequest);
 			if (patientDetails != null) {
@@ -1371,8 +1372,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				patientRegistrationRequest.setUserId(request.getPatientId());
 				patientRegistrationRequest.setLocationId(request.getLocationId());
 				patientRegistrationRequest.setHospitalId(request.getHospitalId());
-				// System.out.println("Patient registration request in imaging service:: " +
-				// patientRegistrationRequest);
 				RegisteredPatientDetails patientDetails = registrationService
 						.registerExistingPatient(patientRegistrationRequest, null);
 				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
@@ -1527,7 +1526,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingInvoiceCollection.setInvoiceItems(invoiceItems);
 			}
 
-			//dentalImagingInvoiceCollection.setInvoiceItems(invoiceItems);
 			dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.save(dentalImagingInvoiceCollection);
 			dentalImagingCollection.setInvoiceId(dentalImagingInvoiceCollection.getId());
 			dentalImagingCollection.setUniqueInvoiceId(dentalImagingInvoiceCollection.getUniqueInvoiceId());
@@ -1722,17 +1720,12 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			}
 
 			if (dentalImagingInvoiceCollection != null) {
-				// UserCollection userCollection =
-				// userRepository.findOne(dentalImagingInvoiceCollection.getDoctorId());
-				
 				dentalImagingInvoiceCollection.setDiscarded(discarded);
 				dentalImagingInvoiceCollection = dentalImagingInvoiceRepository.save(dentalImagingInvoiceCollection);
-
 				if (dentalImagingInvoiceCollection.getDentalImagingId() != null) {
 					DentalImagingCollection dentalImagingCollection = dentalImagingRepository
 							.findOne(dentalImagingInvoiceCollection.getDentalImagingId());
 					if (dentalImagingCollection != null) {
-
 						dentalImagingCollection.setInvoiceId(null);
 						dentalImagingCollection.setUniqueInvoiceId(null);
 						dentalImagingCollection.setIsPaid(false);
@@ -2005,7 +1998,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				criteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
 				visitCriteria.and("dentalImagingHospitalId").is(new ObjectId(dentalImagingHospitalId));
 			}
-
 			if (toDate != null) {
 				criteria.and("updatedTime").gte(new Date(Long.parseLong(fromDate)))
 						.lte(new Date(Long.parseLong(toDate)));
@@ -2066,10 +2058,10 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 	@Override
 	@Transactional
-	public List<PatientAnalyticResponse> getPatientVisitAnalytics(Long fromDate, Long toDate,
-			String dentalImagingLocationId, String dentalImagingHospitalId, String searchType) {
+	public List<AnalyticResponse> getPatientVisitAnalytics(Long fromDate, Long toDate, String dentalImagingLocationId,
+			String dentalImagingHospitalId, String searchType) {
 
-		List<PatientAnalyticResponse> response = null;
+		List<AnalyticResponse> response = null;
 		try {
 			Aggregation aggregation = null;
 			AggregationOperation aggregationOperation = null;
@@ -2090,7 +2082,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			} else {
 				criteria.and("updatedTime").gte(new Date(fromDate));
 			}
-			
 			criteria.and("discarded").is(false);
 
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
@@ -2165,13 +2156,13 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							.as("month").and("createdTime").extractYear().as("year").and("createdTime").extractWeek()
 							.as("week"),
 					aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					DentalImagingCollection.class, PatientAnalyticResponse.class);
+			AggregationResults<AnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					"dental_imaging_cl", AnalyticResponse.class);
 			response = aggregationResults.getMappedResults();
-			
-			for (PatientAnalyticResponse patientAnalyticResponse : response) {
-				patientAnalyticResponse.setCount(patientAnalyticResponse.getPatients().size());
-				patientAnalyticResponse.setPatients(null);
+
+			for (AnalyticResponse analyticResponse : response) {
+				analyticResponse.setCount(analyticResponse.getPatients().size());
+				analyticResponse.setPatients(null);
 			}
 
 			/*
@@ -2236,11 +2227,9 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					DentalImagingReportsCollection.class, DentalImagingReports.class);
 			dentalImagingReports = aggregationResult.getMappedResults();
 
-			
-			for(DentalImagingReports report  : dentalImagingReports)
-			{
-				report.getReport().setImageUrl(imagePath + report.getReport().getImageUrl());
-				report.getReport().setThumbnailUrl(imagePath + report.getReport().getThumbnailUrl());
+			for (DentalImagingReports report : dentalImagingReports) {
+				report.getReport().setImageUrl(report.getReport().getImageUrl());
+				report.getReport().setThumbnailUrl(report.getReport().getThumbnailUrl());
 			}
 
 		} catch (Exception e) {
@@ -2373,7 +2362,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
-			
 
 			if (toDate != null) {
 				criteria.and("updatedTime").gte(new Date(fromDate)).lte(new Date(toDate));
@@ -2382,7 +2370,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			}
 
 			criteria.and("discarded").is(false);
-
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 					// Fields.field("dentalImaging.id", "$id"),
 					Fields.field("dentalImaging.services", "$services"),
@@ -2569,14 +2556,11 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		MailResponse mailResponse = null;
 		Boolean response = false;
 		try {
-			// System.out.println(id);
 			mailResponse = createReportMailData(id);
-			// System.out.println(mailResponse);
 			String body = mailBodyGenerator.generateDentalImagingInvoiceEmailBody(mailResponse.getDoctorName(),
 					mailResponse.getClinicName(), mailResponse.getPatientName(), mailResponse.getMailAttachments(),
 					"dentalImagingRecordEmailTemplate.vm");
-			// System.out.println(body);
-			response = mailService.sendEmailMultiAttach(emailAddress, mailResponse.getClinicName()
+		response = mailService.sendEmailMultiAttach(emailAddress, mailResponse.getClinicName()
 					+ " sent you dental imaging reports for your patient " + mailResponse.getPatientName() + ".", body,
 					mailResponse.getMailAttachments());
 
@@ -2724,7 +2708,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 		try {
 			Aggregation aggregation = null;
-			Aggregation countAggregation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(dentalImagingLocationId)) {
 				criteria.and("dentalImagingLocationId").is(new ObjectId(dentalImagingLocationId));
@@ -2752,19 +2735,15 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			System.out.println(aggregation);
 			AggregationResults<DentalImagingResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DentalImagingCollection.class, DentalImagingResponse.class);
 
 			dentalImagingResponses = aggregationResults.getMappedResults();
-
-			 countAggregation = Aggregation.newAggregation(Aggregation.match(criteria));
-
+			Aggregation countAggregation = Aggregation.newAggregation(Aggregation.match(criteria));
 
 			AggregationResults<DentalImagingResponse> countAggregationResults = mongoTemplate
 					.aggregate(countAggregation, DentalImagingCollection.class, DentalImagingResponse.class);
 
-		
 			List<DentalImagingResponse> paidDentalImagingResponses = new ArrayList<>();
 			List<DentalImagingResponse> visitedDentalImagingResponses = new ArrayList<>();
 			for (DentalImagingResponse dentalImagingResponse : dentalImagingResponses) {
@@ -2777,7 +2756,6 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				}
 
 			}
-		
 			response.setCount(countAggregationResults.getMappedResults().size());
 			response.setVisitedResponses(visitedDentalImagingResponses);
 			response.setPaidResponses(paidDentalImagingResponses);

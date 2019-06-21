@@ -2,7 +2,7 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class RateCardTestAssociation extends GenericCollection  {
+public class RateCardTestAssociation extends GenericCollection {
 
 	private String id;
 	private String locationId;
@@ -14,7 +14,25 @@ public class RateCardTestAssociation extends GenericCollection  {
 	private String category = "NORMAL";
 	private String labId;
 	private Boolean isAvailable = true;
+	private Boolean discarded = false;
 	private DiagnosticTest diagnosticTest;
+	private Boolean isFavrouriteTest;
+
+	public Boolean getIsFavrouriteTest() {
+		return isFavrouriteTest;
+	}
+
+	public void setIsFavrouriteTest(Boolean isFavrouriteTest) {
+		this.isFavrouriteTest = isFavrouriteTest;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
 	public String getId() {
 		return id;

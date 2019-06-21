@@ -114,7 +114,7 @@ public class LoginServiceImpl implements LoginService {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public LoginResponse login(LoginRequest request, Boolean isMobileApp) {
+	public LoginResponse login(LoginRequest request, Boolean isMobileApp, Boolean isNutritionist) {
 		LoginResponse response = null;
 		try {
 			Criteria criteria = new Criteria("userName").is(request.getUsername());
@@ -183,12 +183,13 @@ public class LoginServiceImpl implements LoginService {
 
 					userCollection.setLastSession(new Date());
 					userCollection = userRepository.save(userCollection);
+					criteria = new Criteria("doctorId").is(userCollection.getId()).and("isActivate").is(true)
+							.and("hasLoginAccess").ne(false);
 
+					criteria.and("isNutritionist").is(isNutritionist);
 					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate
 							.aggregate(
-									Aggregation.newAggregation(
-											Aggregation.match(new Criteria("doctorId").is(userCollection.getId())
-													.and("isActivate").is(true)),
+									Aggregation.newAggregation(Aggregation.match(criteria),
 											Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 											Aggregation.unwind("location"),
 											Aggregation.lookup("hospital_cl", "$location.hospitalId", "_id",
@@ -197,11 +198,17 @@ public class LoginServiceImpl implements LoginService {
 									DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 							.getMappedResults();
 					if (doctorClinicProfileLookupResponses == null || doctorClinicProfileLookupResponses.isEmpty()) {
+<<<<<<< HEAD
 
 						logger.warn("None of your clinic is active");
 						// user.setUserState(UserState.NOTACTIVATED);
 						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active");
 
+=======
+						logger.warn("None of your clinic is active or you don't have login access");
+						throw new BusinessException(ServiceError.NotAuthorized,
+								"None of your clinic is active or you don't have login access");
+>>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 					}
 					if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
 						List<Hospital> hospitals = new ArrayList<Hospital>();
@@ -217,7 +224,12 @@ public class LoginServiceImpl implements LoginService {
 									getFinalImageURL(locationAndAccessControl.getLogoThumbnailUrl()));
 							locationAndAccessControl
 									.setImages(getFinalClinicImages(locationAndAccessControl.getImages()));
+<<<<<<< HEAD
 							locationAndAccessControl.setIsVaccinationModuleOn(doctorClinicProfileLookupResponse.getIsVaccinationModuleOn());
+=======
+							locationAndAccessControl.setIsVaccinationModuleOn(
+									doctorClinicProfileLookupResponse.getIsVaccinationModuleOn());
+>>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 							List<Role> roles = null;
 
 							Boolean isStaff = false;
@@ -282,12 +294,18 @@ public class LoginServiceImpl implements LoginService {
 									hospital.setHospitalImageUrl(getFinalImageURL(hospital.getHospitalImageUrl()));
 									hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 									checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
+									hospital.setHospitalUId(hospitalCollection.getHospitalUId());
 									hospitals.add(hospital);
 								} else {
+<<<<<<< HEAD
 
 									Hospital hospital = checkHospitalId
 											.get(locationCollection.getHospitalId().toString());
 
+=======
+									Hospital hospital = checkHospitalId
+											.get(locationCollection.getHospitalId().toString());
+>>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 									hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 									hospital.setHospitalUId(hospitalCollection.getHospitalUId());
 									checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
@@ -414,7 +432,6 @@ public class LoginServiceImpl implements LoginService {
 						logger.warn(loginPatient);
 						throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 					}
-
 					PatientCollection patientCollection = patientRepository
 							.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
 					if (patientCollection != null) {
@@ -435,9 +452,107 @@ public class LoginServiceImpl implements LoginService {
 				}
 
 			}
+
 			if (response == null) {
 				logger.warn(loginPatient);
 				throw new BusinessException(ServiceError.InvalidInput, loginPatient);
+			}
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while login");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while login");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public List<RegisteredPatientDetails> loginPatientByOtp(LoginPatientRequest request) {
+		List<RegisteredPatientDetails> response = null;
+		try {
+			Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber()).and("userState")
+					.is("USERSTATECOMPLETE");
+			Query query = new Query();
+			query.addCriteria(criteria);
+			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
+			if (userCollections != null && !userCollections.isEmpty()) {
+				for (UserCollection userCollection : userCollections) {
+					if (userCollection.getEmailAddress() != null) {
+						if (!DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
+							Boolean verifyOTPResponse = false;
+							if (!verifyOTPResponse) {
+								verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(),
+										request.getOtpNumber());
+								if (!verifyOTPResponse) {
+									logger.warn(loginPatient);
+									throw new BusinessException(ServiceError.InvalidInput, loginPatient);
+								}
+							}
+							RegisteredPatientDetails user = new RegisteredPatientDetails();
+							PatientCollection patientCollection = patientRepository
+									.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null,
+											null);
+							if (patientCollection != null) {
+								Patient patient = new Patient();
+								BeanUtil.map(patientCollection, patient);
+								BeanUtil.map(patientCollection, user);
+								patient.setPatientId(patientCollection.getUserId().toString());
+								user.setPatient(patient);
+							}
+							BeanUtil.map(userCollection, user);
+							user.setUserNutritionSubscriptions(addUserNutritionSubscriptionResponse(userCollection));
+							user.setUserId(userCollection.getId().toString());
+
+							if (response == null)
+								response = new ArrayList<RegisteredPatientDetails>();
+							response.add(user);
+
+						}
+
+					}else {
+
+						RegisteredPatientDetails user = new RegisteredPatientDetails();
+						if (!DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
+							Boolean verifyOTPResponse = false;
+							if (!verifyOTPResponse) {
+								verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(),
+										request.getOtpNumber());
+								if (!verifyOTPResponse) {
+									logger.warn(loginPatient);
+									throw new BusinessException(ServiceError.InvalidInput, loginPatient);
+								}
+							}
+						}
+						PatientCollection patientCollection = patientRepository
+								.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
+						if (patientCollection != null) {
+							Patient patient = new Patient();
+							BeanUtil.map(patientCollection, patient);
+							BeanUtil.map(patientCollection, user);
+							patient.setPatientId(patientCollection.getUserId().toString());
+							user.setPatient(patient);
+						}
+						BeanUtil.map(userCollection, user);
+						user.setUserNutritionSubscriptions(addUserNutritionSubscriptionResponse(userCollection));
+						user.setUserId(userCollection.getId().toString());
+
+						if (response == null)
+							response = new ArrayList<RegisteredPatientDetails>();
+						response.add(user);
+
+					
+						
+					}
+				}
+			} else {
+				Boolean verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(), request.getOtpNumber());
+				if (!verifyOTPResponse) {
+					logger.warn(loginPatient);
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid Mobile Number ");
+				}
 			}
 		} catch (BusinessException be) {
 			logger.error(be);
@@ -552,7 +667,6 @@ public class LoginServiceImpl implements LoginService {
 							Aggregation.unwind("roleCollection"),
 							Aggregation.match(new Criteria("roleCollection.role").is("LOCATION_ADMIN"))),
 					UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
-
 			if (userRoleLookupResponses != null && !userRoleLookupResponses.isEmpty())
 				response = true;
 		} catch (Exception e) {
@@ -569,6 +683,25 @@ public class LoginServiceImpl implements LoginService {
 
 		DoctorLoginPinCollection olddoctorLoginPinCollection = null;
 
+<<<<<<< HEAD
+			if (userRoleLookupResponses != null && !userRoleLookupResponses.isEmpty())
+				response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while checking is Location Admin");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while checking is Location Admin");
+		}
+		return response;
+	}
+
+	@Override
+	public DoctorLoginPin AddEditLoginPin(DoctorLoginPin request) {
+		DoctorLoginPin response = null;
+
+		DoctorLoginPinCollection olddoctorLoginPinCollection = null;
+
+=======
+>>>>>>> 1e0fe1ccd5c237f5dfa375d51f79b9e6e6820f74
 		try {
 			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
 			if (doctor == null) {

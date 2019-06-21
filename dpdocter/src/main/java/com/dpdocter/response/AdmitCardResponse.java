@@ -3,7 +3,6 @@ package com.dpdocter.response;
 import java.util.Date;
 
 import com.dpdocter.beans.Patient;
-import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.collections.GenericCollection;
 
 public class AdmitCardResponse extends GenericCollection {

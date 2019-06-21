@@ -19,6 +19,8 @@ public class PrescriptionJasperDetails {
 
     private String genericNames;
     
+	private String drugQuantity;
+    
     public PrescriptionJasperDetails(int no, String drug, String dosage, String duration, String direction, String instruction, String genericNames) {
 	this.no = no;
 	this.drug = drug;
@@ -92,4 +94,14 @@ public class PrescriptionJasperDetails {
 				+ genericNames + "]";
 	}
 
+	public String getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(String drugQuantity) {
+		this.drugQuantity = drugQuantity;
+	}
+
+
 }
+

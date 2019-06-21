@@ -87,7 +87,6 @@ public class ClinicalNotes extends GenericCollection {
 
 	private String hospitalId;
 
-
 	private String pastHistory;
 
 	private String familyHistory;
@@ -101,7 +100,6 @@ public class ClinicalNotes extends GenericCollection {
 	private String generalHistoryMedicine;
 	private String generalHistoryAllergies;
 	private String generalHistorySurgical;
-
 
 	private String painScale;
 	private String priorConsultations;
@@ -532,7 +530,6 @@ public class ClinicalNotes extends GenericCollection {
 		this.procedureNote = procedureNote;
 	}
 
-
 	public String getPastHistory() {
 		return pastHistory;
 	}
@@ -671,5 +668,4 @@ public class ClinicalNotes extends GenericCollection {
 				+ ", fromDate=" + fromDate + ", lmp=" + lmp + ", edd=" + edd + ", noOfFemaleChildren="
 				+ noOfFemaleChildren + ", noOfMaleChildren=" + noOfMaleChildren + "]";
 	}
-
 }

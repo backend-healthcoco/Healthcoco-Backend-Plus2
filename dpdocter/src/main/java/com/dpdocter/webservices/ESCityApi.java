@@ -57,12 +57,11 @@ public class ESCityApi {
 		return response;
 	}
 
-
 	@GET
 	@ApiOperation(value = "SEARCH_CITY", notes = "SEARCH_CITY")
-	public Response<City> searchCity(@QueryParam(value = "searchTerm") String searchTerm) {
-
-		List<City> searchResonse = esCityService.searchCity(searchTerm);
+	public Response<City> searchCity(@QueryParam(value = "searchTerm") String searchTerm,
+			@QueryParam(value = "isActivated") Boolean isActivated) {
+		List<City> searchResonse = esCityService.searchCity(searchTerm, isActivated);
 		Response<City> response = new Response<City>();
 		response.setDataList(searchResonse);
 		return response;

@@ -559,8 +559,6 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.noOfMaleChildren = noOfMaleChildren;
 	}
 
-	
-
 	public String getPcNose() {
 		return pcNose;
 	}
@@ -756,7 +754,10 @@ public class ClinicalNotesCollection extends GenericCollection {
 				+ ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory=" + menstrualHistory
 				+ ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG + ", pv=" + pv
 				+ ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails=" + xRayDetails
-				+ ", echo=" + echo + ", holter=" + holter + ", comments=" + comments + ", doctorId=" + doctorId
+				+ ", echo=" + echo + ", holter=" + holter + ", pcNose=" + pcNose + ", pcOralCavity=" + pcOralCavity
+				+ ", pcThroat=" + pcThroat + ", pcEars=" + pcEars + ", noseExam=" + noseExam + ", oralCavityThroatExam="
+				+ oralCavityThroatExam + ", indirectLarygoscopyExam=" + indirectLarygoscopyExam + ", neckExam="
+				+ neckExam + ", earsExam=" + earsExam + ", comments=" + comments + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
 				+ ", discarded=" + discarded + ", inHistory=" + inHistory + ", vitalSigns=" + vitalSigns
 				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + ", lmp=" + lmp

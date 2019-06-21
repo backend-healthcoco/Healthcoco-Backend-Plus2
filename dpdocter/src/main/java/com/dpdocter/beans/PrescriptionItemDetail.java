@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.beans.v2.GenericCode;
 import com.dpdocter.response.PrescriptionInventoryBatchResponse;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
@@ -18,6 +19,8 @@ public class PrescriptionItemDetail {
 
 	private String drugName;
 
+	private Integer drugQuantity;
+
 	private Long totalStock;
 
 	private List<PrescriptionInventoryBatchResponse> inventoryBatchs;
@@ -31,6 +34,8 @@ public class PrescriptionItemDetail {
 	private String instructions;
 
 	private Long inventoryQuantity;
+
+	private List<GenericCode> genericNames;
 
 	public DrugType getDrugType() {
 		return drugType;
@@ -128,9 +133,29 @@ public class PrescriptionItemDetail {
 		this.inventoryBatchs = inventoryBatchs;
 	}
 
+	public Integer getDrugQuantity() {
+		return drugQuantity;
+	}
+
+	public void setDrugQuantity(Integer drugQuantity) {
+		this.drugQuantity = drugQuantity;
+	}
+
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
+	}
+
 	@Override
 	public String toString() {
-		return "PrescriptionItemDetail [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage
-				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", instructions=" + instructions + "]";
+		return "PrescriptionItemDetail [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage + ", drugType="
+				+ drugType + ", drugName=" + drugName + ", drugQuantity=" + drugQuantity + ", totalStock=" + totalStock
+				+ ", inventoryBatchs=" + inventoryBatchs + ", explanation=" + explanation + ", dosageTime=" + dosageTime
+				+ ", direction=" + direction + ", instructions=" + instructions + ", inventoryQuantity="
+				+ inventoryQuantity + "]";
 	}
+
 }

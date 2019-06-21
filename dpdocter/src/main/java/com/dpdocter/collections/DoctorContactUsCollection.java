@@ -38,12 +38,12 @@ public class DoctorContactUsCollection extends GenericCollection {
 	private Boolean isVerified = Boolean.FALSE;
 	@Field
 	private Boolean toList = Boolean.FALSE;
-
+	@Field
+	private String mrCode;
 	@Field
 	private String mrCode;
 	@Field
 	private String city;
-
 	@Field
 	private String deviceType;
 

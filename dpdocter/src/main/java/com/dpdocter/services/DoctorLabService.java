@@ -1,5 +1,6 @@
 package com.dpdocter.services;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.dpdocter.beans.DoctorLabReport;
@@ -43,4 +44,6 @@ public interface DoctorLabService {
 	public Boolean DiscardFavouriteDoctor(String id);
 
 	public Boolean DiscardDoctorLabReports(String reportId);
+
+	public String downloadReport() throws IOException;
 }

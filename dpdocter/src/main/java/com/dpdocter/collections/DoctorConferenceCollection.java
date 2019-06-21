@@ -35,6 +35,8 @@ public class DoctorConferenceCollection extends GenericCollection {
 	private List<OrganizingCommittee> speakers;
 	@Field
 	private Boolean discarded = false;
+	@Field
+	private String status = "NONE";
 
 	public Boolean getDiscarded() {
 		return discarded;
@@ -124,4 +126,11 @@ public class DoctorConferenceCollection extends GenericCollection {
 		this.title = title;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 }

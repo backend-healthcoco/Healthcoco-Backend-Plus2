@@ -1,10 +1,7 @@
 package com.dpdocter.beans;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.dpdocter.collections.GenericCollection;
 
 public class DoctorLoginPin {
 
