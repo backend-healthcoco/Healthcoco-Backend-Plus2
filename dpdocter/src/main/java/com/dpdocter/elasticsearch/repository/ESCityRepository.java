@@ -21,6 +21,6 @@ public interface ESCityRepository extends ElasticsearchRepository<ESCityDocument
 	@Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0\"}}]}}")
     ESCityDocument findByName(String city);
 	
-	@Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0\"}}, {\"match\": {\"isActivated\": \"?1\"}}]}}")
+	@Query("{\"bool\": {\"must\": [{\"termQuery\": {\"city\": \"?0\"}}, {\"match\": {\"isActivated\": \"?1\"}}]}}")
     ESCityDocument findByNameAndActivated(String city, Boolean isActivated);
 }

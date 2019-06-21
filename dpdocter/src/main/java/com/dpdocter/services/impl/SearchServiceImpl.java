@@ -112,11 +112,14 @@ public class SearchServiceImpl implements SearchService {
 			if (!DPDoctorUtils.anyStringEmpty(city)) {
 				city = city.replaceAll("-", " ");
 				city = WordUtils.capitalizeFully(city);
-				ESCityDocument cityDoc = esCityRepository.findByNameAndActivated(city, true);
+				List<ESCityDocument> cityDocs = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(new BoolQueryBuilder().must(
+						QueryBuilders.matchPhrasePrefixQuery("city", city)).must(QueryBuilders.matchQuery("isActivated", true))).build(), ESCityDocument.class);
 
-				if (cityDoc == null) {
+				if (cityDocs == null || cityDocs.isEmpty()) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid City");
 				}
+				ESCityDocument cityDoc = cityDocs.get(0);
+				System.out.println(cityDoc.getCity()+" "+cityDocs.size());
 				cityId = cityDoc.getId();
 				latitudeDouble = cityDoc.getLatitude();
 				longitudeDouble = cityDoc.getLongitude();
