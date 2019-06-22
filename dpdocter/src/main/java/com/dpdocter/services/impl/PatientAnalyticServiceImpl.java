@@ -1188,12 +1188,14 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 			if (size > 0)
 				aggregation = Aggregation
 						.newAggregation(Aggregation.match(criteria), projectList, aggregationOperation,
+								Aggregation.match(new Criteria("name").exists(true)),
 								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
 								Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
 				aggregation = Aggregation
 						.newAggregation(Aggregation.match(criteria), projectList, aggregationOperation,
+								Aggregation.match(new Criteria("name").exists(true)),
 								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 		} else {
@@ -1209,8 +1211,9 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 										new BasicDBObject("_id", "$userId")
 												.append("name", new BasicDBObject("$first", "$name"))
 												.append("count", new BasicDBObject("$first", "$count")))),
-								aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
-								Aggregation.skip((page) * size), Aggregation.limit(size))
+								aggregationOperation, Aggregation.match(new Criteria("name").exists(true)),
+								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
+								Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
 				aggregation = Aggregation
@@ -1224,7 +1227,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 										new BasicDBObject("_id", "$userId")
 												.append("name", new BasicDBObject("$first", "$name"))
 												.append("count", new BasicDBObject("$first", "$count")))),
-								aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
+								aggregationOperation, Aggregation.match(new Criteria("name").exists(true)),
+								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		}
@@ -1296,15 +1300,17 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"),
 								Aggregation.unwind("refer"), Aggregation.match(criteria3), projectList,
-								aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
-								Aggregation.skip((page) * size), Aggregation.limit(size))
+								aggregationOperation, Aggregation.match(new Criteria("name").exists(true)),
+								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
+								Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
 				aggregation = Aggregation
 						.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("referrences_cl", "referredBy", "_id", "refer"),
 								Aggregation.unwind("refer"), Aggregation.match(criteria3), projectList,
-								aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
+								aggregationOperation, Aggregation.match(new Criteria("name").exists(true)),
+								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 		} else {
 			if (size > 0)
@@ -1323,6 +1329,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$id").append("name", new BasicDBObject("$first", "$name"))
 										.append("count", new BasicDBObject("$sum", 1)))),
+						Aggregation.match(new Criteria("name").exists(true)),
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
 						Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
@@ -1342,6 +1349,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("_id", "$name").append("name", new BasicDBObject("$first", "$name"))
 										.append("count", new BasicDBObject("$sum", 1)))),
+						Aggregation.match(new Criteria("name").exists(true)),
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
@@ -1420,8 +1428,9 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						Aggregation.match(new Criteria("patientGroup.discarded").is(false)),
 						Aggregation.lookup("group_cl", "patientGroup.groupId", "_id", "group"),
 						Aggregation.unwind("group"), Aggregation.match(criteria2.and("group.discarded").is(false)),
-						projectList, aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")),
-						Aggregation.skip((page) * size), Aggregation.limit(size))
+						projectList, aggregationOperation, Aggregation.match(new Criteria("name").exists(true)),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
+						Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1430,7 +1439,8 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 						Aggregation.match(new Criteria("patientGroup.discarded").is(false)),
 						Aggregation.lookup("group_cl", "patientGroup.groupId", "_id", "group"),
 						Aggregation.unwind("group"), Aggregation.match(criteria2.and("group.discarded").is(false)),
-						projectList, aggregationOperation, Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
+						projectList, aggregationOperation, Aggregation.match(new Criteria("name").exists(true)),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 		} else {
 			if (size > 0)
@@ -1461,6 +1471,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 										new BasicDBObject("_id", "$groupId")
 												.append("name", new BasicDBObject("$first", "$name"))
 												.append("count", new BasicDBObject("$sum", 1)))),
+								Aggregation.match(new Criteria("name").exists(true)),
 								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
 								Aggregation.limit(size))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
@@ -1492,6 +1503,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 										new BasicDBObject("_id", "$groupId")
 												.append("name", new BasicDBObject("$first", "$name"))
 												.append("count", new BasicDBObject("$sum", 1)))),
+								Aggregation.match(new Criteria("name").exists(true)),
 								Aggregation.sort(new Sort(Sort.Direction.ASC, "name")))
 						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 

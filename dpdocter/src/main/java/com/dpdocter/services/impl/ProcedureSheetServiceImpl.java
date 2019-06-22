@@ -744,7 +744,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				String i = "";
 				String[] fieldList = null;
 				if (keys != null && !keys.isEmpty()) {
-					fieldList = new String[fields.keySet().size()];
+					fieldList = new String[fields.keySet().size()+1];
 					for (int index = 0; index < fields.keySet().size(); index++) {
 						i = keys.get(index);
 						value = fields.get(i).getValue();
