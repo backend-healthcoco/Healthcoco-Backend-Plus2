@@ -208,6 +208,7 @@ public class CounterServiceImpl implements CounterService {
 
 			counterSettingCollection = waterCounterSettingRepository.findByuserId(new ObjectId(request.getUserId()));
 			if (counterSettingCollection != null) {
+				request.setId(counterSettingCollection.getId().toString());
 				request.setCreatedTime(counterSettingCollection.getCreatedTime());
 				counterSettingCollection = new WaterCounterSettingCollection();
 				BeanUtil.map(request, counterSettingCollection);
@@ -260,6 +261,7 @@ public class CounterServiceImpl implements CounterService {
 			counterSettingCollection = weightCounterSettingRepository.findByuserId(new ObjectId(request.getUserId()));
 			if (counterSettingCollection != null) {
 				request.setCreatedTime(counterSettingCollection.getCreatedTime());
+				request.setId(counterSettingCollection.getId().toString());
 				counterSettingCollection = new WeightCounterSettingCollection();
 				BeanUtil.map(request, counterSettingCollection);
 			} else {
@@ -473,8 +475,8 @@ public class CounterServiceImpl implements CounterService {
 		List<MealCounter> response = null;
 		try {
 			Criteria criteria = new Criteria("discarded").is(false);
-			if(!DPDoctorUtils.anyStringEmpty(mealTime)) {
-			criteria.and("mealTime").is(mealTime.toUpperCase());
+			if (!DPDoctorUtils.anyStringEmpty(mealTime)) {
+				criteria.and("mealTime").is(mealTime.toUpperCase());
 			}
 			Date from = null;
 			Date to = null;
