@@ -568,6 +568,35 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return drugAddEditResponse;
 	}
 
+	
+	@Override
+	@Transactional
+	public Drug getDrugByDrugCode(String drugCode) {
+		Drug drugAddEditResponse = null;
+		try {
+			DrugCollection drugCollection = drugRepository.findByDrugCode(drugCode);
+			if (drugCollection != null) {
+				drugAddEditResponse = new Drug();
+				BeanUtil.map(drugCollection, drugAddEditResponse);
+			} else {
+				logger.warn("Drug not found. Please check Drug Id");
+				throw new BusinessException(ServiceError.NoRecord, "Drug not found. Please check Drug Id");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drug");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting drug for drug code:" + drugCode,
+						e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug");
+		}
+		return drugAddEditResponse;
+	}
+
 	@Override
 	@Transactional
 	public TemplateAddEditResponse addTemplate(TemplateAddEditRequest request) {

@@ -24,7 +24,7 @@ public class ESServicesDocument {
 	private Date updatedTime = new Date();
 
 	@MultiField(mainField = @Field(type = FieldType.String))
-	private List<String> specialities;
+    private List<String> specialities;
 
 	/*
 	 * @MultiField(mainField = @Field(type = FieldType.String, index =

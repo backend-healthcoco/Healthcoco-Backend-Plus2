@@ -1905,6 +1905,11 @@ public interface PathProxy {
 		public static final String GET_NUTRITION_RECORD_BY_ID = "/record/{recordId}/get";
 		public static final String UPDATE_IS_SHARE_WITH_PATIENT = "/updateIsShareWithPatient/{recordId}";
 		public static final String DELETE_NUTRITION_RECORD = "/record/{recordId}/delete";
+		public static final String GET_USER_NUTRITION_PLAN = "/getNutritionPlans";
+		public static final String GET_USER_NUTRITION_PLAN_BY_ID = "/getNutritionPlanById/{id}";
+		public static final String ADD_EDIT_TESTIMONIALS = "/tesitmonials/addEdit";
+		public static final String DELETE_TESTIMONIALS = "/testimonials/delete/{id}";
+		public static final String GET_TESTIMONIALS_BY_PLAN_ID = "/testimonials/getByPlanId/{id}";
 	}
 
 	public static final String DENTAL_IMAGING_URL = BASE_URL + "/dentalImaging";
@@ -2145,6 +2150,8 @@ public interface PathProxy {
 		public static final String GET_DRUG_INFO_LIST= "/getDrugInfoList";
 		public static final String CLEAR_CART = "/clearCart/{id}";
 		public static final String MEDICINE_ORDER_ADD_EDIT_RX_IMAGE = "/addEditRxImage";
+		public static final String GET_DRUGS_BY_CODE = "/getByDrugCode/{drugCode}";
+		public static final String GET_DRUGS_BY_CODES = "/getByDrugCodes";
 		
 	}
 

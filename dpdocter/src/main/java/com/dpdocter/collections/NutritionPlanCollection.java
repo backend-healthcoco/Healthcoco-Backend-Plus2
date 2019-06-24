@@ -1,12 +1,16 @@
 package com.dpdocter.collections;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.PlanDescriptionPrices;
+import com.dpdocter.beans.PlanPrice;
+import com.dpdocter.beans.PlanPriceDescription;
 import com.dpdocter.enums.NutritionPlanType;
 
 @Document(collection = "nutrition_plan_cl")
@@ -25,6 +29,9 @@ public class NutritionPlanCollection extends GenericCollection {
 	private String planDescription;
 
 	@Field
+	private String shortPlanDescription;
+
+	@Field
 	private List<String> nutrientDescriptions;
 
 	@Field
@@ -32,6 +39,9 @@ public class NutritionPlanCollection extends GenericCollection {
 
 	@Field
 	private Double amount = 0.0;
+
+	@Field
+	private Double discountedAmount = 0.0;
 
 	@Field
 	private String planImage;
@@ -43,7 +53,13 @@ public class NutritionPlanCollection extends GenericCollection {
 	private String backgroundColor;
 
 	@Field
+	private String secondaryBackgroundColor;
+
+	@Field
 	private Boolean discarded = false;
+
+	@Field
+	private Map<String, PlanPriceDescription> planPriceDescription;
 
 	@Field
 	private Integer rank = 0;
@@ -144,11 +160,40 @@ public class NutritionPlanCollection extends GenericCollection {
 		this.backgroundColor = backgroundColor;
 	}
 
+	public String getSecondaryBackgroundColor() {
+		return secondaryBackgroundColor;
+	}
+
+	public void setSecondaryBackgroundColor(String secondaryBackgroundColor) {
+		this.secondaryBackgroundColor = secondaryBackgroundColor;
+	}
+
+	public Double getDiscountedAmount() {
+		return discountedAmount;
+	}
+
+	public void setDiscountedAmount(Double discountedAmount) {
+		this.discountedAmount = discountedAmount;
+	}
+
+	public String getShortPlanDescription() {
+		return shortPlanDescription;
+	}
+
+	public void setShortPlanDescription(String shortPlanDescription) {
+		this.shortPlanDescription = shortPlanDescription;
+	}
+
+
+	@Override
 	public String toString() {
 		return "NutritionPlanCollection [id=" + id + ", title=" + title + ", type=" + type + ", planDescription="
-				+ planDescription + ", nutrientDescriptions=" + nutrientDescriptions + ", recommendedFoods="
-				+ recommendedFoods + ", amount=" + amount + ", planImage=" + planImage + ", bannerImage=" + bannerImage
-				+ ", backgroundColor=" + backgroundColor + "]";
+				+ planDescription + ", shortPlanDescription=" + shortPlanDescription + ", nutrientDescriptions="
+				+ nutrientDescriptions + ", recommendedFoods=" + recommendedFoods + ", amount=" + amount
+				+ ", discountedAmount=" + discountedAmount + ", planImage=" + planImage + ", bannerImage=" + bannerImage
+				+ ", backgroundColor=" + backgroundColor + ", secondaryBackgroundColor=" + secondaryBackgroundColor
+				+ ", discarded=" + discarded + ", planPriceDescription=" + planPriceDescription + ", rank=" + rank
+				+ "]";
 	}
 
 }

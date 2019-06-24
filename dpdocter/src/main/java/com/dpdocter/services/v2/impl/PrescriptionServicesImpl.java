@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DiagnosticTestRepository;
+import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.EyePrescriptionRepository;
 import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.PrescriptionInventoryBatchResponse;
@@ -104,6 +107,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Value(value = "${update.drug.interaction.file}")
 	private String UPDATE_DRUG_INTERACTION_DATA_FILE;
+	
+	@Autowired
+	private DrugRepository drugRepository;
 
 	/*
 	 * LoadingCache<String, List<Code>> Cache =
@@ -1060,6 +1066,27 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return prescriptions;
 	}
 	
+	
+	@Override
+	@Transactional
+	public Drug getDrugByDrugCode(String drugCode) {
+		Drug drugAddEditResponse = null;
+		try {
+			DrugCollection drugCollection = drugRepository.findByDrugCode(drugCode);
+			if (drugCollection != null) {
+				drugAddEditResponse = new Drug();
+				BeanUtil.map(drugCollection, drugAddEditResponse);
+			} else {
+				logger.warn("Drug not found. Please check Drug Id");
+				throw new BusinessException(ServiceError.NoRecord, "Drug not found. Please check Drug Id");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drug");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug");
+		}
+		return drugAddEditResponse;
+	}
 	
 	
 	

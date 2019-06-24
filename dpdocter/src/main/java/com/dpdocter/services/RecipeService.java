@@ -33,8 +33,8 @@ public interface RecipeService {
 
 	Recipe discardRecipe(String id, boolean discarded);
 
-	public List<Recipe> getRecipeList(int size, int page, boolean discarded, String searchTerm, String doctorId,
-			String locationId, String hospitalId);
+	/*public List<Recipe> getRecipeList(int size, int page, boolean discarded, String searchTerm, String doctorId,
+			String locationId, String hospitalId);*/
 
 	List<RecipeCounterAddItem> getFavouriteRecipe(int size, int page, boolean discarded, String searchTerm, String userId);
 
@@ -43,5 +43,8 @@ public interface RecipeService {
 	List<RecipeCounterAddItem> getFrequentRecipe(int size, int page, boolean discarded, String userId);
 
 	List<RecentRecipeResponse> getRecentRecipe(int size, int page, String userId, boolean discarded, String mealTime);
+
+	List<Recipe> getRecipeList(int size, int page, boolean discarded, String searchTerm, String doctorId,
+			String locationId, String hospitalId, String planId);
 
 }

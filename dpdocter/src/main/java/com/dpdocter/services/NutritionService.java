@@ -6,7 +6,10 @@ import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
+import com.dpdocter.beans.SugarSetting;
+import com.dpdocter.beans.Testimonial;
 import com.dpdocter.beans.UserNutritionSubscription;
+import com.dpdocter.elasticsearch.response.NutritionPlanWithCategoryShortResponse;
 import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.request.NutritionPlanRequest;
 import com.dpdocter.response.NutritionPlanResponse;
@@ -42,4 +45,12 @@ public interface NutritionService {
 	public List<SubscriptionNutritionPlan> getSubscritionPlans(List<ObjectId> idList);
 
 	public List<NutritionPlan> getNutritionPlans(List<ObjectId> idList);
+
+	public List<NutritionPlanWithCategoryShortResponse> getNutritionPlanDetailsByCategory(NutritionPlanRequest request);
+
+	public NutritionPlan getNutritionPlanById(String id);
+
+	List<Testimonial> getTestimonialsByPlanId(String planId, int size, int page);
+
+	SugarSetting getSugarSettingById(String id);
 }

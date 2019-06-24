@@ -138,6 +138,9 @@ public class RecipeCollection extends GenericCollection {
 	@Field
 	private boolean nutrientValueAtRecipeLevel = false;
 
+	@Field
+	private List<ObjectId> planIds;
+
 	public MealQuantity getFiber() {
 		return fiber;
 	}
@@ -464,6 +467,14 @@ public class RecipeCollection extends GenericCollection {
 
 	public void setCostType(LevelType costType) {
 		this.costType = costType;
+	}
+
+	public List<ObjectId> getPlanIds() {
+		return planIds;
+	}
+
+	public void setPlanIds(List<ObjectId> planIds) {
+		this.planIds = planIds;
 	}
 
 }

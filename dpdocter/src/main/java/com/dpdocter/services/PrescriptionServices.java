@@ -235,4 +235,6 @@ public interface PrescriptionServices {
 	NutritionReferral addNutritionReferral(NutritionReferralRequest request);
 	
 	public List<Drug> getDrugs(List<ObjectId> drugIds);
+
+	Drug getDrugByDrugCode(String drugCode);
 }

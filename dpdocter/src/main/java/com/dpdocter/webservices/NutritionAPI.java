@@ -28,7 +28,9 @@ import com.dpdocter.beans.PatientLifeStyle;
 import com.dpdocter.beans.PatientMeasurementInfo;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
+import com.dpdocter.beans.Testimonial;
 import com.dpdocter.beans.UserNutritionSubscription;
+import com.dpdocter.elasticsearch.response.NutritionPlanWithCategoryShortResponse;
 import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -569,5 +571,49 @@ public class NutritionAPI {
 		response.setData(nutritionRecordService.deleteNutritionRecord(recordId, discarded));
 		return response;
 	}
+	
 
+	@Path(PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN)
+	@POST
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN, notes = PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN)
+	public Response<NutritionPlanWithCategoryShortResponse> getPlanDetailsByCategory(NutritionPlanRequest request) {
+
+		Response<NutritionPlanWithCategoryShortResponse> response = new Response<NutritionPlanWithCategoryShortResponse>();
+		response.setDataList(nutritionService.getNutritionPlanDetailsByCategory(request));
+
+		return response;
+	}
+	
+	@Path(PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN_BY_ID, notes = PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN_BY_ID)
+	public Response<NutritionPlan> getNutritionPlanById(@PathParam("id") String id) {
+
+		Response<NutritionPlan> response = null;
+
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		response = new Response<NutritionPlan>();
+		response.setData(nutritionService.getNutritionPlanById(id));
+
+		return response;
+	}
+	
+	@Path(value = PathProxy.NutritionUrl.GET_TESTIMONIALS_BY_PLAN_ID)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_TESTIMONIALS_BY_PLAN_ID, notes = PathProxy.NutritionUrl.GET_TESTIMONIALS_BY_PLAN_ID)
+	public Response<Testimonial> getTestimonialsByPlanId(@PathParam("id") String planId , @QueryParam("page") int page ,  @QueryParam("size") int size ) {
+		if (planId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<Testimonial> response = new Response<Testimonial>();
+
+		response.setDataList(nutritionService.getTestimonialsByPlanId(planId, size, page));
+
+		return response;
+	}
+	
 }

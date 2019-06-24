@@ -226,11 +226,11 @@ public class RecipeApi {
 	public Response<Recipe> getRecipes(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
-			@QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("searchTerm") String searchTerm,@QueryParam("planId") String planId) {
 
 		Response<Recipe> response = new Response<Recipe>();
 		response.setDataList(
-				recipeService.getRecipeList(size, page, discarded, searchTerm, doctorId, locationId, hospitalId));
+				recipeService.getRecipeList(size, page, discarded, searchTerm, doctorId, locationId, hospitalId, planId));
 		return response;
 	}
 

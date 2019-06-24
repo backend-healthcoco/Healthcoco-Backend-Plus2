@@ -60,6 +60,8 @@ public interface PrescriptionServices {
 
 	List<Prescription> getPrescriptionsByIdsForEMR(List<ObjectId> prescriptionIds, ObjectId visitId);
 
+	Drug getDrugByDrugCode(String drugCode);
+
 	/*
 	 * List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds,
 	 * ObjectId visitId);
