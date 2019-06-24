@@ -29,6 +29,7 @@ public class ESSymptomDiseaseConditionDocument {
 //	@MultiField(mainField = @Field(type = FieldType.String))
 //    private List<String> formattedSpecialities;
 //    
+
 	@MultiField(mainField = @Field(type = FieldType.String))
     private List<String> specialityIds;
 

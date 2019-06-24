@@ -276,7 +276,7 @@ public class RecipeServiceImpl implements RecipeService {
 
 	@Override
 	public List<Recipe> getRecipeList(int size, int page, boolean discarded, String searchTerm, String doctorId,
-			String locationId, String hospitalId) {
+			String locationId, String hospitalId , String planId) {
 		List<Recipe> response = null;
 		try {
 			Criteria criteria = new Criteria("discarded").is(discarded);
@@ -290,6 +290,8 @@ public class RecipeServiceImpl implements RecipeService {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			if (!DPDoctorUtils.allStringsEmpty(hospitalId))
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			if (!DPDoctorUtils.allStringsEmpty(planId))
+				criteria.and("planIds").is(new ObjectId(planId));
 
 		
 

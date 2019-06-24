@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import common.util.web.JacksonUtil;
+
 public class SubscriptionNutritionPlan {
 
 	private String id;
@@ -114,9 +116,14 @@ public class SubscriptionNutritionPlan {
 
 	@Override
 	public String toString() {
-		return "SubcriptionNutritionPlan [id=" + id + ", title=" + title + ", backgroundImage=" + backgroundImage
+		return "SubscriptionNutritionPlan [id=" + id + ", title=" + title + ", backgroundImage=" + backgroundImage
 				+ ", amountInText=" + amountInText + ", amount=" + amount + ", desciprion=" + desciprion + ", discount="
-				+ discount + ", discountedAmount=" + discountedAmount + "]";
+				+ discount + ", discountedAmount=" + discountedAmount + ", discarded=" + discarded
+				+ ", nutritionPlanId=" + nutritionPlanId + ", duration=" + duration + "]";
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(JacksonUtil.obj2Json(new SubscriptionNutritionPlan()));
 	}
 
 }

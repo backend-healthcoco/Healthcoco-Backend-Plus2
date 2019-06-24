@@ -7,6 +7,7 @@ import com.dpdocter.beans.MedicineOrder;
 import com.dpdocter.beans.TrackingOrder;
 import com.dpdocter.beans.UserCart;
 import com.dpdocter.enums.OrderStatus;
+import com.dpdocter.request.DrugCodeListRequest;
 import com.dpdocter.request.MedicineOrderAddEditAddressRequest;
 import com.dpdocter.request.MedicineOrderPaymentAddEditRequest;
 import com.dpdocter.request.MedicineOrderPreferenceAddEditRequest;
@@ -56,5 +57,9 @@ public interface MedicineOrderService {
 	MedicineOrder updateStatus(UpdateOrderStatusRequest request);
 
 	MedicineOrder addeditRxImage(MedicineOrderRxImageRequest request);
+
+	List<DrugInfo> getDrugByDrugCodes(DrugCodeListRequest request);
+
+	DrugInfo getDrugByDrugCode(String drugCode);
 
 }

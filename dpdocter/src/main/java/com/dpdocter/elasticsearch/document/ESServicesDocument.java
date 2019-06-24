@@ -25,16 +25,19 @@ public class ESServicesDocument {
 
 	@MultiField(mainField = @Field(type = FieldType.String))
     private List<String> specialities;
-    
-	@MultiField(mainField = @Field(type = FieldType.String))
-    private List<String> formattedSpecialities;
-    
-	@MultiField(mainField = @Field(type = FieldType.String))
-    private List<String> specialityIds;
-    
-    public String getId() {
-	return id;
-    }
+
+
+	/*
+	 * @MultiField(mainField = @Field(type = FieldType.String, index =
+	 * FieldIndex.not_analyzed)) private List<String> formattedSpecialities;
+	 */
+
+	@Field(type = FieldType.String)
+	private List<String> specialityIds;
+
+	public String getId() {
+		return id;
+	}
 
     public void setId(String id) {
 	this.id = id;

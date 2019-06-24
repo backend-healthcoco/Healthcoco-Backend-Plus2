@@ -28,6 +28,8 @@ import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.TrackingOrder;
 import com.dpdocter.beans.UserCart;
+import com.dpdocter.beans.v2.Drug;
+import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.DrugInfoCollection;
 import com.dpdocter.collections.MedicineOrderCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -40,9 +42,11 @@ import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DrugInfoRepository;
 import com.dpdocter.repository.MedicineOrderRepository;
 import com.dpdocter.repository.TrackingOrderRepository;
 import com.dpdocter.repository.UserCartRepository;
+import com.dpdocter.request.DrugCodeListRequest;
 import com.dpdocter.request.MedicineOrderAddEditAddressRequest;
 import com.dpdocter.request.MedicineOrderPaymentAddEditRequest;
 import com.dpdocter.request.MedicineOrderPreferenceAddEditRequest;
@@ -104,6 +108,9 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 	
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
+	
+	@Autowired
+	private DrugInfoRepository drugInfoRepository;
 
 	
 	@Override
@@ -356,6 +363,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			medicineOrderCollection.setOrderStatus(status);
 			switch (status) {
 			case PLACED:
+				System.out.println("Inside Placed");
 				message = ORDER_PLACED_MESSAGE;
 				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message,
 						ComponentType.ORDER_PLACED.getType(), id, null);
@@ -896,6 +904,49 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			e.printStackTrace();
 		}
 
+	}
+	
+	@Override
+	@Transactional
+	public DrugInfo getDrugByDrugCode(String drugCode) {
+		DrugInfo drugAddEditResponse = null;
+		try {
+			DrugInfoCollection drugCollection = drugInfoRepository.findByDrugCode(drugCode);
+			if (drugCollection != null) {
+				drugAddEditResponse = new DrugInfo();
+				BeanUtil.map(drugCollection, drugAddEditResponse);
+			} else {
+				logger.warn("Drug not found. Please check Drug Id");
+				throw new BusinessException(ServiceError.NoRecord, "Drug not found. Please check Drug Id");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drug");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug");
+		}
+		return drugAddEditResponse;
+	}
+	
+	
+	@Override
+	@Transactional
+	public List<DrugInfo> getDrugByDrugCodes(DrugCodeListRequest request) {
+		List<DrugInfo> drugInfos = null;
+		Aggregation aggregation = null;
+		try {
+			Criteria criteria = new Criteria("drugCode").in(request.getDrugCodes());
+
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
+
+			drugInfos = mongoTemplate.aggregate(aggregation, DrugInfoCollection.class, DrugInfo.class)
+					.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+
+		}
+		return drugInfos;
 	}
 	
 }

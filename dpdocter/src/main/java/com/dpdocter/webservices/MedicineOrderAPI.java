@@ -21,9 +21,11 @@ import com.dpdocter.beans.DrugInfo;
 import com.dpdocter.beans.MedicineOrder;
 import com.dpdocter.beans.TrackingOrder;
 import com.dpdocter.beans.UserCart;
+import com.dpdocter.beans.v2.Drug;
 import com.dpdocter.enums.OrderStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.DrugCodeListRequest;
 import com.dpdocter.request.MedicineOrderAddEditAddressRequest;
 import com.dpdocter.request.MedicineOrderPaymentAddEditRequest;
 import com.dpdocter.request.MedicineOrderPreferenceAddEditRequest;
@@ -326,6 +328,34 @@ public class MedicineOrderAPI {
 		UserCart userCart = medicineOrderService.clearCart(id);
 		Response<UserCart> response = new Response<UserCart>();
 		response.setData(userCart);
+		return response;
+	}
+	
+	@Path(value = PathProxy.OrderMedicineUrls.GET_DRUGS_BY_CODE)
+	@GET
+	@ApiOperation(value = PathProxy.OrderMedicineUrls.GET_DRUGS_BY_CODE, notes = PathProxy.OrderMedicineUrls.GET_DRUGS_BY_CODE)
+	public Response<DrugInfo> getDrugDetails(@PathParam("drugCode") String drugCode) {
+		if (drugCode == null) {
+			//logger.error("DrugId Is NULL");
+			throw new BusinessException(ServiceError.InvalidInput, "Drug code Is NULL");
+		}
+		DrugInfo drugAddEditResponse = medicineOrderService.getDrugByDrugCode(drugCode.trim());
+		Response<DrugInfo> response = new Response<DrugInfo>();
+		response.setData(drugAddEditResponse);
+		return response;
+	}
+	
+	@Path(value = PathProxy.OrderMedicineUrls.GET_DRUGS_BY_CODES)
+	@POST
+	@ApiOperation(value = PathProxy.OrderMedicineUrls.GET_DRUGS_BY_CODES, notes = PathProxy.OrderMedicineUrls.GET_DRUGS_BY_CODES)
+	public Response<DrugInfo> getDrugDetails(DrugCodeListRequest request) {
+		if (request == null || request.getDrugCodes() == null) {
+			//logger.error("DrugId Is NULL");
+			throw new BusinessException(ServiceError.InvalidInput, "Drug codes are NULL");
+		}
+		List<DrugInfo> drugAddEditResponse = medicineOrderService.getDrugByDrugCodes(request);
+		Response<DrugInfo> response = new Response<DrugInfo>();
+		response.setDataList(drugAddEditResponse);
 		return response;
 	}
 }

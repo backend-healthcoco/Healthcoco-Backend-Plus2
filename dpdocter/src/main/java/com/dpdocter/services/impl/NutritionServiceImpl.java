@@ -23,18 +23,24 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
+import com.dpdocter.beans.SugarSetting;
+import com.dpdocter.beans.Testimonial;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserNutritionSubscription;
 import com.dpdocter.collections.NutritionPlanCollection;
 import com.dpdocter.collections.SubscriptionNutritionPlanCollection;
+import com.dpdocter.collections.SugarSettingCollection;
+import com.dpdocter.collections.TestimonialCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserNutritionSubscriptionCollection;
+import com.dpdocter.elasticsearch.response.NutritionPlanWithCategoryShortResponse;
 import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.NutritionPlanRepository;
 import com.dpdocter.repository.SubscritptionNutritionPlanRepository;
+import com.dpdocter.repository.SugarSettingRepository;
 import com.dpdocter.repository.UserNutritionSubscriptionRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.NutritionPlanRequest;
@@ -72,6 +78,9 @@ public class NutritionServiceImpl implements NutritionService {
 
 	@Autowired
 	private AsyncService asyncService;
+	
+	@Autowired
+	private SugarSettingRepository sugarSettingRepository;
 
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null)
@@ -669,4 +678,202 @@ public class NutritionServiceImpl implements NutritionService {
 		}
 		return response;
 	}
+	
+	@Override
+	public List<NutritionPlanWithCategoryShortResponse> getNutritionPlanDetailsByCategory(NutritionPlanRequest request) {
+		List<NutritionPlanWithCategoryShortResponse> response = null;
+		try {
+			Aggregation aggregation = null;
+
+			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new BasicDBObject("$project",
+					new BasicDBObject("nutritionPlan.title", "$title").append("nutritionPlan._id", "$_id")
+							.append("nutritionPlan.id", "$_id")
+							.append("nutritionPlan.planImage", new BasicDBObject("$cond",
+									new BasicDBObject("if", new BasicDBObject("eq", Arrays.asList("$planImage", null)))
+											.append("then",
+													new BasicDBObject("$concat",
+															Arrays.asList(imagePath, "$planImage")))
+											.append("else", null)))
+							.append("nutritionPlan.bannerImage",
+									new BasicDBObject("$cond",
+											new BasicDBObject("if",
+													new BasicDBObject("eq", Arrays.asList("$bannerImage", null)))
+															.append("then",
+																	new BasicDBObject("$concat",
+																			Arrays.asList(imagePath, "$bannerImage")))
+															.append("else", null)))
+							.append("category", "$type").append("nutritionPlan.type", "$type").append("rank", "$rank")
+							.append("nutritionPlan.backgroundColor", "$backgroundColor")
+							.append("nutritionPlan.planDescription", "$planDescription")
+							.append("nutritionPlan.shortPlanDescription", "$shortPlanDescription")
+							.append("nutritionPlan.amount", "$amount")
+							.append("nutritionPlan.discountedAmount", "$discountedAmount")
+							.append("nutritionPlan.discarded", "$discarded")
+							.append("nutritionPlan.adminCreatedTime", "$adminCreatedTime")
+							.append("nutritionPlan.createdTime", "$createdTime")
+							.append("nutritionPlan.updatedTime", "$updatedTime")
+							.append("nutritionPlan.createdBy", "$createdBy")));
+
+			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					new BasicDBObject("_id", "$category").append("category", new BasicDBObject("$first", "$category"))
+							.append("rank", new BasicDBObject("$first", "$rank"))
+							.append("nutritionPlan", new BasicDBObject("$push", "$nutritionPlan"))));
+			Criteria criteria = new Criteria();
+			if (request != null) {
+				if (request.getTypes() != null && !request.getTypes().isEmpty()) {
+					criteria = criteria.and("type").in(request.getTypes());
+				}
+				if (request.getUpdatedTime() > 0) {
+					criteria = criteria.and("createdTime").gte(new Date(request.getUpdatedTime()));
+				}
+
+				criteria.and("discarded").is(request.getDiscarded());
+			}
+
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), projectOperation, groupOperation,
+					Aggregation.sort(Sort.Direction.ASC, "rank"));
+
+			AggregationResults<NutritionPlanWithCategoryShortResponse> results = mongoTemplate.aggregate(aggregation,
+					NutritionPlanCollection.class, NutritionPlanWithCategoryShortResponse.class);
+			response = results.getMappedResults();
+
+		} catch (BusinessException e) {
+			logger.error("Error while getting nutrition Plan " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting nutrition Plan " + e.getMessage());
+
+		}
+		return response;
+	}
+	
+	@Override
+	public NutritionPlan getNutritionPlanById(String id) {
+		NutritionPlan response = null;
+		try {
+
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria("id").is(new ObjectId(id));
+
+			aggregation = Aggregation.newAggregation(
+					Aggregation.match(criteria),
+					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+			AggregationResults<NutritionPlan> results = mongoTemplate.aggregate(aggregation,
+					NutritionPlanCollection.class, NutritionPlan.class);
+			response = results.getUniqueMappedResult();
+			if (response != null) {
+				if (!DPDoctorUtils.anyStringEmpty(response.getPlanImage())) {
+					response.setPlanImage(getFinalImageURL(response.getPlanImage()));
+				}
+				if (!DPDoctorUtils.anyStringEmpty(response.getBannerImage())) {
+					response.setBannerImage(getFinalImageURL(response.getBannerImage()));
+				}
+			}
+
+		} catch (BusinessException e) {
+
+			logger.error("Error while getting nutrition Plan " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting nutrition Plan " + e.getMessage());
+
+		}
+		return response;
+	}
+	
+	@Override
+	public List<Testimonial> getTestimonialsByPlanId(String planId, int size , int page) {
+		List<Testimonial> response = null;
+		Aggregation aggregation = null;
+		try {
+			Criteria criteria = new Criteria("planId").is(new ObjectId(planId));
+			
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						 Aggregation.sort(Sort.Direction.DESC, "createdTime"),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						 Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+			}
+
+			AggregationResults<Testimonial> results = mongoTemplate.aggregate(aggregation,
+					TestimonialCollection.class, Testimonial.class);
+			response = results.getMappedResults();
+
+		} catch (BusinessException e) {
+			logger.error("Error while getting nutrition Plan " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting nutrition Plan " + e.getMessage());
+
+		}
+		return response;
+	}
+	
+	public SugarSetting addEditSugarSetting(SugarSetting request)
+	{
+		SugarSettingCollection sugarSettingCollection = null;
+		SugarSetting response = null;
+		
+		try {
+			if(!DPDoctorUtils.anyStringEmpty(request.getId()))
+			{
+				sugarSettingCollection = sugarSettingRepository.findOne(new ObjectId(request.getId()));
+			}
+			else
+			{
+				sugarSettingCollection = new SugarSettingCollection();
+				sugarSettingCollection.setCreatedTime(new Date());
+			}
+			
+			if(sugarSettingCollection == null)
+			{
+				throw new BusinessException(ServiceError.NoRecord,"Record not found");
+			}
+			
+			BeanUtil.map(request, sugarSettingCollection);
+			sugarSettingCollection = sugarSettingRepository.save(sugarSettingCollection);
+			if(sugarSettingCollection != null)
+			{
+				response = new SugarSetting();
+				BeanUtil.map(sugarSettingCollection, response);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return response;
+	}
+	
+	@Override
+	public SugarSetting getSugarSettingById(String id) {
+		SugarSetting response = null;
+		try {
+
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria("id").is(new ObjectId(id));
+
+			aggregation = Aggregation.newAggregation(
+					Aggregation.match(criteria),
+					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+			AggregationResults<SugarSetting> results = mongoTemplate.aggregate(aggregation,
+					SugarSettingCollection.class, SugarSetting.class);
+			response = results.getUniqueMappedResult();
+		
+		} catch (BusinessException e) {
+
+			logger.error("Error while getting Sugar Setting " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Sugar Setting " + e.getMessage());
+
+		}
+		return response;
+	}
+	
+	
 }
+
+
