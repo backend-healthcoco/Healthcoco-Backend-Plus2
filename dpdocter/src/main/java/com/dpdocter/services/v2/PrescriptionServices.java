@@ -40,7 +40,7 @@ public interface PrescriptionServices {
 	 * String hospitalId, String locationId, String patientId, Boolean discarded);
 	 */
 
-	List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId,
+	/*List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId,
 			String patientId, String updatedTime, boolean isOTPVerified, boolean discarded, boolean inHistory);
 
 	List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds, ObjectId visitId);
@@ -61,7 +61,7 @@ public interface PrescriptionServices {
 	List<Prescription> getPrescriptionsByIdsForEMR(List<ObjectId> prescriptionIds, ObjectId visitId);
 
 	Drug getDrugByDrugCode(String drugCode);
-
+*/
 	/*
 	 * List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds,
 	 * ObjectId visitId);

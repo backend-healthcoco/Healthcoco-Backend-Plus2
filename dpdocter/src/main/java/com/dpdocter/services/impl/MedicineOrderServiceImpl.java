@@ -28,8 +28,6 @@ import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.TrackingOrder;
 import com.dpdocter.beans.UserCart;
-import com.dpdocter.beans.v2.Drug;
-import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.DrugInfoCollection;
 import com.dpdocter.collections.MedicineOrderCollection;
 import com.dpdocter.collections.SMSTrackDetail;

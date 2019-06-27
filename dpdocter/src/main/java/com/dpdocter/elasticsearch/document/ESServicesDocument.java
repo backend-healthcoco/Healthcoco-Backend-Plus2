@@ -83,19 +83,18 @@ public class ESServicesDocument {
 		this.formattedService = formattedService;
 	}
 
-	public List<String> getFormattedSpecialities() {
+/*	public List<String> getFormattedSpecialities() {
 		return formattedSpecialities;
 	}
 
 	public void setFormattedSpecialities(List<String> formattedSpecialities) {
 		this.formattedSpecialities = formattedSpecialities;
-	}
+	}*/
 
 	@Override
 	public String toString() {
 		return "ESServicesDocument [id=" + id + ", service=" + service + ", formattedService=" + formattedService
-				+ ", updatedTime=" + updatedTime + ", specialities=" + specialities + ", formattedSpecialities="
-				+ formattedSpecialities + ", specialityIds=" + specialityIds + "]";
-
+				+ ", updatedTime=" + updatedTime + ", specialities=" + specialities + ", specialityIds=" + specialityIds
+				+ "]";
 	}
 }

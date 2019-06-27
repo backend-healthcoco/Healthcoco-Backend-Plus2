@@ -1,53 +1,8 @@
 package com.dpdocter.services.v2.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.mail.MessagingException;
-
-import org.apache.log4j.Logger;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.Fields;
-import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.EyePrescription;
-import com.dpdocter.beans.InventoryBatch;
-import com.dpdocter.beans.InventoryItem;
-import com.dpdocter.beans.TestAndRecordData;
-/*import com.dpdocter.beans.v2.DiagnosticTest;
-import com.dpdocter.beans.v2.Drug;
-import com.dpdocter.beans.v2.Prescription;
-import com.dpdocter.beans.v2.PrescriptionItemDetail;*/
-import com.dpdocter.collections.DiagnosticTestCollection;
-import com.dpdocter.collections.DrugCollection;
-import com.dpdocter.collections.EyePrescriptionCollection;
-import com.dpdocter.exceptions.BusinessException;
-import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.DiagnosticTestRepository;
-import com.dpdocter.repository.DrugRepository;
-import com.dpdocter.repository.EyePrescriptionRepository;
-import com.dpdocter.response.InventoryItemLookupResposne;
-import com.dpdocter.response.PrescriptionInventoryBatchResponse;
-import com.dpdocter.response.v2.TestAndRecordDataResponse;
-import com.dpdocter.services.InventoryService;
-import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.v2.PrescriptionServices;
-import com.mongodb.BasicDBObject;
-
-import common.util.web.DPDoctorUtils;
 
 @Service(value = "PrescriptionServicesImplV2")
 public class PrescriptionServicesImpl implements PrescriptionServices {

@@ -21,7 +21,6 @@ import com.dpdocter.beans.DrugInfo;
 import com.dpdocter.beans.MedicineOrder;
 import com.dpdocter.beans.TrackingOrder;
 import com.dpdocter.beans.UserCart;
-import com.dpdocter.beans.v2.Drug;
 import com.dpdocter.enums.OrderStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
