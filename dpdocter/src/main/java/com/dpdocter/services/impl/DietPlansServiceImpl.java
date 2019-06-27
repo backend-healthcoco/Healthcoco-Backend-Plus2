@@ -27,7 +27,9 @@ import org.springframework.util.StringUtils;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DietPlan;
 import com.dpdocter.beans.DietPlanJasperDetail;
+import com.dpdocter.beans.DietPlanRecipeAddItem;
 import com.dpdocter.beans.DietPlanRecipeItem;
+import com.dpdocter.beans.DietplanAddItem;
 import com.dpdocter.beans.DietplanItem;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.RecipeItem;
@@ -159,6 +161,57 @@ public class DietPlansServiceImpl implements DietPlansService {
 			AggregationResults<DietPlan> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DietPlanCollection.class, DietPlan.class);
 			response = aggregationResults.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while getting Diet Plans : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					" Error while getting Diet Plans : " + e.getCause().getMessage());
+		}
+		return response;
+	}
+	
+	
+	@Override
+	public List<DietPlan> getDietPlansForPatient(int page, int size, String patientId, long updatedTime, boolean discarded) {
+		List<DietPlan> response = null;
+		try {
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTime)).and("discarded").is(discarded);
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				patientObjectId = new ObjectId(patientId);
+			if (!DPDoctorUtils.anyStringEmpty(patientObjectId))
+				criteria.and("patientId").is(patientObjectId);
+
+			Aggregation aggregation = null;
+
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			}
+			AggregationResults<DietPlan> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DietPlanCollection.class, DietPlan.class);
+			response = aggregationResults.getMappedResults();
+			
+			for (DietPlan dietPlan : response) {
+				for (DietplanAddItem dietplanAddItem : dietPlan.getItems()) {
+					for (DietPlanRecipeAddItem recipeAddItem : dietplanAddItem.getRecipes()) {
+						recipeAddItem.setGeneralNutrients(null);
+						recipeAddItem.setCarbNutrients(null);
+						recipeAddItem.setLipidNutrients(null);
+						recipeAddItem.setProteinAminoAcidNutrients(null);
+						recipeAddItem.setMineralNutrients(null);
+						recipeAddItem.setOtherNutrients(null);
+						recipeAddItem.setVitaminNutrients(null);
+					}
+				}
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();

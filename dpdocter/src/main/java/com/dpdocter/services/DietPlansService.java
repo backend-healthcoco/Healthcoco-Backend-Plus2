@@ -19,4 +19,6 @@ public interface DietPlansService {
 
 	public Boolean emailDietPlan(String emailAddress, String planId);
 
+	public List<DietPlan> getDietPlansForPatient(int page, int size, String patientId, long updatedTime, boolean discarded);
+
 }

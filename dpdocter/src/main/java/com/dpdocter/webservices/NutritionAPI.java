@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.AssessmentPersonalDetail;
+import com.dpdocter.beans.BloodGlucose;
 import com.dpdocter.beans.NutritionGoalAnalytics;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.NutritionRecord;
@@ -28,6 +29,8 @@ import com.dpdocter.beans.PatientLifeStyle;
 import com.dpdocter.beans.PatientMeasurementInfo;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
+import com.dpdocter.beans.SugarMedicineReminder;
+import com.dpdocter.beans.SugarSetting;
 import com.dpdocter.beans.Testimonial;
 import com.dpdocter.beans.UserNutritionSubscription;
 import com.dpdocter.elasticsearch.response.NutritionPlanWithCategoryShortResponse;
@@ -615,5 +618,123 @@ public class NutritionAPI {
 
 		return response;
 	}
+	
+
+	@Path(value = PathProxy.NutritionUrl.ADD_EDIT_SUGAR_SETTINGS)
+	@POST
+	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_SUGAR_SETTINGS, notes = PathProxy.NutritionUrl.ADD_EDIT_SUGAR_SETTINGS)
+	public Response<SugarSetting> addEditSugarSetting(SugarSetting request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<SugarSetting> response = new Response<SugarSetting>();
+
+		response.setData(nutritionService.addEditSugarSetting(request));
+
+		return response;
+	}
+	
+	@Path(value = PathProxy.NutritionUrl.GET_SUGAR_SETTINGS_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_SUGAR_SETTINGS_BY_ID, notes = PathProxy.NutritionUrl.GET_SUGAR_SETTINGS_BY_ID)
+	public Response<SugarSetting> getSugarSettingById(@PathParam("id") String id) {
+		if (id == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<SugarSetting> response = new Response<SugarSetting>();
+
+		response.setData(nutritionService.getSugarSettingById(id));
+
+		return response;
+	}
+	
+	
+
+	@Path(value = PathProxy.NutritionUrl.ADD_EDIT_BLOOD_GLUCOSE)
+	@POST
+	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_BLOOD_GLUCOSE, notes = PathProxy.NutritionUrl.ADD_EDIT_BLOOD_GLUCOSE)
+	public Response<BloodGlucose> addEditBloodGlucose(BloodGlucose request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<BloodGlucose> response = new Response<BloodGlucose>();
+
+		response.setData(nutritionService.addEditBloodGlucose(request));
+
+		return response;
+	}
+	
+	@Path(value = PathProxy.NutritionUrl.GET_BLOOD_GLUCOSE_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_BLOOD_GLUCOSE_BY_ID, notes = PathProxy.NutritionUrl.GET_BLOOD_GLUCOSE_BY_ID)
+	public Response<BloodGlucose> getBloodGlucoseById(@PathParam("id") String id) {
+		if (id == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<BloodGlucose> response = new Response<BloodGlucose>();
+		response.setData(nutritionService.getBloodGlucoseById(id));
+		return response;
+	}
+	
+	@Path(value = PathProxy.NutritionUrl.GET_BLOOD_GLUCOSE_LIST_BY_PATIENT_ID)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_BLOOD_GLUCOSE_LIST_BY_PATIENT_ID, notes = PathProxy.NutritionUrl.GET_BLOOD_GLUCOSE_LIST_BY_PATIENT_ID)
+	public Response<BloodGlucose> getBloodGlucoseListByPatientId(@QueryParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size) {
+		if (patientId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<BloodGlucose> response = new Response<BloodGlucose>();
+		response.setDataList(nutritionService.getBloodGlucoseList(patientId, size, page, null, null));
+		return response;
+	}
+	
+
+	@Path(value = PathProxy.NutritionUrl.ADD_EDIT_SUGAR_MEDICINE_REMINDER)
+	@POST
+	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_SUGAR_MEDICINE_REMINDER, notes = PathProxy.NutritionUrl.ADD_EDIT_SUGAR_MEDICINE_REMINDER)
+	public Response<SugarMedicineReminder> addEditSugarMedicineReminder(SugarMedicineReminder request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<SugarMedicineReminder> response = new Response<SugarMedicineReminder>();
+
+		response.setData(nutritionService.addEditSugarMedicineReminder(request));
+
+		return response;
+	}
+	
+	@Path(value = PathProxy.NutritionUrl.GET_SUGAR_MEDICINE_REMINDER_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_SUGAR_MEDICINE_REMINDER_BY_ID, notes = PathProxy.NutritionUrl.GET_SUGAR_MEDICINE_REMINDER_BY_ID)
+	public Response<SugarMedicineReminder> getSugarMedicineReminderById(@PathParam("id") String id) {
+		if (id == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<SugarMedicineReminder> response = new Response<SugarMedicineReminder>();
+		response.setData(nutritionService.getSugarMedicineReminderById(id));
+		return response;
+	}
+	
+	@Path(value = PathProxy.NutritionUrl.GET_SUGAR_MEDICINE_REMINDER_LIST_BY_PATIENT_ID)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_SUGAR_MEDICINE_REMINDER_LIST_BY_PATIENT_ID, notes = PathProxy.NutritionUrl.GET_SUGAR_MEDICINE_REMINDER_LIST_BY_PATIENT_ID)
+	public Response<SugarMedicineReminder> getSugarReminderListByPatientId(@QueryParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size) {
+		if (patientId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<SugarMedicineReminder> response = new Response<SugarMedicineReminder>();
+		response.setDataList(nutritionService.getSugarMedicineReminders(patientId, size, page, null, null));
+		return response;
+	}
+	
+	
 	
 }

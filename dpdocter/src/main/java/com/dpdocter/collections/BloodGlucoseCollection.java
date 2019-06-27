@@ -1,24 +1,46 @@
-package com.dpdocter.beans;
+package com.dpdocter.collections;
 
-import com.dpdocter.collections.GenericCollection;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-public class BloodGlucose extends GenericCollection {
+import com.dpdocter.beans.BloodPressure;
 
-	private String id;
-	private String patientId;
+@Document(collection = "blood_glucose_cl")
+public class BloodGlucoseCollection extends GenericCollection {
+
+	@Id
+	private ObjectId id;
+	@Field
+	private ObjectId patientId;
+	@Field
 	private String bloodGlucose;
+	@Field
 	private String notes;
+	@Field
 	private String meal;
+	@Field
 	private Long dateTime;
+	@Field
 	private BloodPressure bloodPressure;
+	@Field
 	private Boolean discarded;
 
-	public String getId() {
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
+	}
+
+	public ObjectId getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
 	}
 
 	public String getBloodGlucose() {
@@ -61,14 +83,6 @@ public class BloodGlucose extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public String getPatientId() {
-		return patientId;
-	}
-
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
-	}
-
 	public BloodPressure getBloodPressure() {
 		return bloodPressure;
 	}
@@ -76,7 +90,5 @@ public class BloodGlucose extends GenericCollection {
 	public void setBloodPressure(BloodPressure bloodPressure) {
 		this.bloodPressure = bloodPressure;
 	}
-	
-	
 
 }

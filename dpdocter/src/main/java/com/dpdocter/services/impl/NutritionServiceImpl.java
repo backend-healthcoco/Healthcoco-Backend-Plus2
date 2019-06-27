@@ -20,15 +20,19 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.BloodGlucose;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
+import com.dpdocter.beans.SugarMedicineReminder;
 import com.dpdocter.beans.SugarSetting;
 import com.dpdocter.beans.Testimonial;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserNutritionSubscription;
+import com.dpdocter.collections.BloodGlucoseCollection;
 import com.dpdocter.collections.NutritionPlanCollection;
 import com.dpdocter.collections.SubscriptionNutritionPlanCollection;
+import com.dpdocter.collections.SugarMedicineReminderCollection;
 import com.dpdocter.collections.SugarSettingCollection;
 import com.dpdocter.collections.TestimonialCollection;
 import com.dpdocter.collections.UserCollection;
@@ -38,8 +42,10 @@ import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.BloodGlucoseRepository;
 import com.dpdocter.repository.NutritionPlanRepository;
 import com.dpdocter.repository.SubscritptionNutritionPlanRepository;
+import com.dpdocter.repository.SugarMedicineReminderRepository;
 import com.dpdocter.repository.SugarSettingRepository;
 import com.dpdocter.repository.UserNutritionSubscriptionRepository;
 import com.dpdocter.repository.UserRepository;
@@ -81,6 +87,12 @@ public class NutritionServiceImpl implements NutritionService {
 	
 	@Autowired
 	private SugarSettingRepository sugarSettingRepository;
+	
+	@Autowired
+	private BloodGlucoseRepository bloodGlucoseRepository;
+	
+	@Autowired
+	private SugarMedicineReminderRepository sugarMedicineReminderRepository;
 
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null)
@@ -810,6 +822,7 @@ public class NutritionServiceImpl implements NutritionService {
 		return response;
 	}
 	
+	@Override
 	public SugarSetting addEditSugarSetting(SugarSetting request)
 	{
 		SugarSettingCollection sugarSettingCollection = null;
@@ -873,6 +886,191 @@ public class NutritionServiceImpl implements NutritionService {
 		return response;
 	}
 	
+	@Override
+	public BloodGlucose addEditBloodGlucose(BloodGlucose request)
+	{
+		BloodGlucoseCollection bloodGlucoseCollection = null;
+		BloodGlucose response = null;
+		
+		try {
+			if(!DPDoctorUtils.anyStringEmpty(request.getId()))
+			{
+				bloodGlucoseCollection = bloodGlucoseRepository.findOne(new ObjectId(request.getId()));
+			}
+			else
+			{
+				bloodGlucoseCollection = new BloodGlucoseCollection();
+				bloodGlucoseCollection.setCreatedTime(new Date());
+			}
+			
+			if(bloodGlucoseCollection == null)
+			{
+				throw new BusinessException(ServiceError.NoRecord,"Record not found");
+			}
+			
+			BeanUtil.map(request, bloodGlucoseCollection);
+			bloodGlucoseCollection = bloodGlucoseRepository.save(bloodGlucoseCollection);
+			if(bloodGlucoseCollection != null)
+			{
+				response = new BloodGlucose();
+				BeanUtil.map(bloodGlucoseCollection, response);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return response;
+	}
+	
+	
+	@Override
+	public BloodGlucose getBloodGlucoseById(String id) {
+		BloodGlucose response = null;
+		try {
+
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria("id").is(new ObjectId(id));
+
+			aggregation = Aggregation.newAggregation(
+					Aggregation.match(criteria),
+					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+			AggregationResults<BloodGlucose> results = mongoTemplate.aggregate(aggregation,
+					BloodGlucoseCollection.class, BloodGlucose.class);
+			response = results.getUniqueMappedResult();
+		
+		} catch (BusinessException e) {
+
+			logger.error("Error while getting Blood Glucose " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Blood GLucose " + e.getMessage());
+
+		}
+		return response;
+	}
+	
+	
+	@Override
+	public List<BloodGlucose> getBloodGlucoseList(String patientId, int size , int page , Long from , Long to) {
+		List<BloodGlucose> response = null;
+		try {
+
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId));
+
+			aggregation = Aggregation.newAggregation(
+					Aggregation.match(criteria),
+					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+			AggregationResults<BloodGlucose> results = mongoTemplate.aggregate(aggregation,
+					BloodGlucoseCollection.class, BloodGlucose.class);
+			response = results.getMappedResults();
+		
+		} catch (BusinessException e) {
+
+			logger.error("Error while getting Blood Glucose " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Blood GLucose " + e.getMessage());
+
+		}
+		return response;
+	}
+	
+	@Override
+	public SugarMedicineReminder addEditSugarMedicineReminder(SugarMedicineReminder request)
+	{
+		SugarMedicineReminderCollection sugarMedicineReminderCollection = null;
+		SugarMedicineReminder response = null;
+		
+		try {
+			if(!DPDoctorUtils.anyStringEmpty(request.getId()))
+			{
+				sugarMedicineReminderCollection = sugarMedicineReminderRepository.findOne(new ObjectId(request.getId()));
+			}
+			else
+			{
+				sugarMedicineReminderCollection = new SugarMedicineReminderCollection();
+				sugarMedicineReminderCollection.setCreatedTime(new Date());
+			}
+			
+			if(sugarMedicineReminderCollection == null)
+			{
+				throw new BusinessException(ServiceError.NoRecord,"Record not found");
+			}
+			
+			BeanUtil.map(request, sugarMedicineReminderCollection);
+			sugarMedicineReminderCollection = sugarMedicineReminderRepository.save(sugarMedicineReminderCollection);
+			if(sugarMedicineReminderCollection != null)
+			{
+				response = new SugarMedicineReminder();
+				BeanUtil.map(sugarMedicineReminderCollection, response);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return response;
+	}
+	
+	
+	@Override
+	public SugarMedicineReminder getSugarMedicineReminderById(String id) {
+		SugarMedicineReminder response = null;
+		try {
+
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria("id").is(new ObjectId(id));
+
+			aggregation = Aggregation.newAggregation(
+					Aggregation.match(criteria),
+					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+			AggregationResults<SugarMedicineReminder> results = mongoTemplate.aggregate(aggregation,
+					SugarMedicineReminderCollection.class, SugarMedicineReminder.class);
+			response = results.getUniqueMappedResult();
+		
+		} catch (BusinessException e) {
+
+			logger.error("Error while getting Blood Glucose " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Blood GLucose " + e.getMessage());
+
+		}
+		return response;
+	}
+	
+	
+	@Override
+	public List<SugarMedicineReminder> getSugarMedicineReminders(String patientId, int size , int page , Long from , Long to) {
+		List<SugarMedicineReminder> response = null;
+		try {
+
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId));
+
+			aggregation = Aggregation.newAggregation(
+					Aggregation.match(criteria),
+					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+			AggregationResults<SugarMedicineReminder> results = mongoTemplate.aggregate(aggregation,
+					SugarMedicineReminderCollection.class, SugarMedicineReminder.class);
+			response = results.getMappedResults();
+		
+		} catch (BusinessException e) {
+
+			logger.error("Error while getting Blood Glucose " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Blood GLucose " + e.getMessage());
+
+		}
+		return response;
+	}
 	
 }
 

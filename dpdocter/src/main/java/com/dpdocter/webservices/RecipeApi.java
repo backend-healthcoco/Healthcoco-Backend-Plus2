@@ -27,6 +27,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.response.RecentRecipeResponse;
+import com.dpdocter.response.RecipeCardResponse;
 import com.dpdocter.services.RecipeService;
 
 import common.util.web.DPDoctorUtils;
@@ -354,6 +355,21 @@ public class RecipeApi {
 		}
 		Response<RecentRecipeResponse> response = new Response<RecentRecipeResponse>();
 		response.setDataList(recipeService.getFrequentRecipe(size, page, discarded, userId));
+		return response;
+	}
+	
+	@Path(value = PathProxy.RecipeUrls.GET_RECIPES_BY_PLAN_ID)
+	@GET
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPES_BY_PLAN_ID, notes = PathProxy.RecipeUrls.GET_RECIPES_BY_PLAN_ID)
+	public Response<RecipeCardResponse> getRecipesByPlanId(@QueryParam("planId") String planId,
+			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(planId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "user Id should not be null or empty");
+
+		}
+		Response<RecipeCardResponse> response = new Response<RecipeCardResponse>();
+		response.setDataList(recipeService.getRecipeByPlanId(size, page, planId));
 		return response;
 	}
 }
