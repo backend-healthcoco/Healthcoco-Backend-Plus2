@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.beans.BloodGlucose;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
+import com.dpdocter.beans.SugarMedicineReminder;
 import com.dpdocter.beans.SugarSetting;
 import com.dpdocter.beans.Testimonial;
 import com.dpdocter.beans.UserNutritionSubscription;
@@ -53,4 +55,18 @@ public interface NutritionService {
 	List<Testimonial> getTestimonialsByPlanId(String planId, int size, int page);
 
 	SugarSetting getSugarSettingById(String id);
+
+	BloodGlucose getBloodGlucoseById(String id);
+
+	List<BloodGlucose> getBloodGlucoseList(String patientId, int size, int page, Long from, Long to);
+
+	List<SugarMedicineReminder> getSugarMedicineReminders(String patientId, int size, int page, Long from, Long to);
+
+	SugarMedicineReminder getSugarMedicineReminderById(String id);
+
+	SugarMedicineReminder addEditSugarMedicineReminder(SugarMedicineReminder request);
+
+	BloodGlucose addEditBloodGlucose(BloodGlucose request);
+
+	SugarSetting addEditSugarSetting(SugarSetting request);
 }

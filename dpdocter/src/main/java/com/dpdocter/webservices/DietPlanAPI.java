@@ -69,6 +69,17 @@ public class DietPlanAPI {
 				updatedTime, discarded));
 		return response;
 	}
+	
+	@Path(value = PathProxy.DietPlanUrls.GET_DIET_PLANS_FOR_PATIENT)
+	@GET
+	@ApiOperation(value = PathProxy.DietPlanUrls.GET_DIET_PLANS_FOR_PATIENT, notes = PathProxy.DietPlanUrls.GET_DIET_PLANS_FOR_PATIENT)
+	public Response<DietPlan> getDietPlans( @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("patientId") String patientId,
+			@QueryParam("updatedTime") long updatedTime, @QueryParam("discarded") boolean discarded) {
+		Response<DietPlan> response = new Response<DietPlan>();
+		response.setDataList(dietPlansService.getDietPlansForPatient(page, size, patientId, updatedTime, discarded));
+		return response;
+	}
 
 	@Path(value = PathProxy.DietPlanUrls.DELETE_DIET_PLAN)
 	@DELETE

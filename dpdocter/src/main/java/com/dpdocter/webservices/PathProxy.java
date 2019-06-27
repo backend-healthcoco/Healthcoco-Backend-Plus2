@@ -1912,6 +1912,14 @@ public interface PathProxy {
 		public static final String ADD_EDIT_TESTIMONIALS = "/tesitmonials/addEdit";
 		public static final String DELETE_TESTIMONIALS = "/testimonials/delete/{id}";
 		public static final String GET_TESTIMONIALS_BY_PLAN_ID = "/testimonials/getByPlanId/{id}";
+		public static final String ADD_EDIT_SUGAR_SETTINGS = "/sugarSettings/addEdit";
+		public static final String GET_SUGAR_SETTINGS_BY_ID = "/sugarSettings/get/{id}";
+		public static final String ADD_EDIT_BLOOD_GLUCOSE = "/bloodGlucose/addEdit";
+		public static final String GET_BLOOD_GLUCOSE_LIST_BY_PATIENT_ID = "/bloodGlucose/getList";
+		public static final String GET_BLOOD_GLUCOSE_BY_ID = "/bloodGlucose/get/{id}";
+		public static final String ADD_EDIT_SUGAR_MEDICINE_REMINDER = "/sugarMedicineReminder/addEdit";
+		public static final String GET_SUGAR_MEDICINE_REMINDER_LIST_BY_PATIENT_ID = "/sugarMedicineReminder/getList";
+		public static final String GET_SUGAR_MEDICINE_REMINDER_BY_ID = "/sugarMedicineReminder/get/{id}";
 	}
 
 	public static final String DENTAL_IMAGING_URL = BASE_URL + "/dentalImaging";
@@ -2028,6 +2036,7 @@ public interface PathProxy {
 		public static final String GET_RECENT_RECIPE = "recent/{userId}/get";
 		public static final String GET_FREQUENT_RECIPE = "frequent/{userId}/get";
 		public static final String GET_FAVOURITE_RECIPE = "favourite/{userId}/get";
+		public static final String GET_RECIPES_BY_PLAN_ID = "getRecipesForPlan";
 
 	}
 
@@ -2040,6 +2049,7 @@ public interface PathProxy {
 		public static final String GET_DIET_PLAN = "{planId}/get";
 		public static final String DOWNLOAD_DIET_PLAN = "{planId}/download";
 		public static final String SEND_DIET_PLAN_EMAIL = "{planId}/sendEmail";
+		public static final String GET_DIET_PLANS_FOR_PATIENT = "/get/patient";
 	}
 
 	public static final String COUNTER_BASE_URL = BASE_URL + "/counter";

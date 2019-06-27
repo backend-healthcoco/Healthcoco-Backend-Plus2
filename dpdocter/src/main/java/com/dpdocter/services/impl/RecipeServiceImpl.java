@@ -42,6 +42,7 @@ import com.dpdocter.repository.RecipeRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.RecipeCounterAddItem;
 import com.dpdocter.response.RecentRecipeResponse;
+import com.dpdocter.response.RecipeCardResponse;
 import com.dpdocter.services.RecipeService;
 import com.mongodb.BasicDBObject;
 
@@ -682,4 +683,31 @@ public class RecipeServiceImpl implements RecipeService {
 		return response;
 	}
 
+	@Override
+	public List<RecipeCardResponse> getRecipeByPlanId(int size, int page, String planId) {
+		List<RecipeCardResponse> response = null;
+		try {
+			Criteria criteria = new Criteria("planIds").is(new ObjectId(planId));
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip(page * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, RecipeCollection.class, RecipeCardResponse.class)
+					.getMappedResults();
+
+		} catch (BusinessException e) {
+			logger.error("Error while getting Recipe " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Recent Recipe " + e.getMessage());
+
+		}
+		return response;
+	}
+	
 }
