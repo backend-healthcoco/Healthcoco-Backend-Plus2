@@ -65,13 +65,13 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> services;
 
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> parentSpecialities;
 
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> specialitiesValue;//value
 
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> servicesValue;//value
 	
 	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))

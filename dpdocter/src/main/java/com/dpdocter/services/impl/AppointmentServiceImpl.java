@@ -769,7 +769,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					final String appointmentId = appointmentCollection.getAppointmentId();
 					final String dateTime = _12HourSDF.format(_24HourDt) + ", "
 							+ sdf.format(appointmentCollection.getFromDate());
-					final String branch = appointmentLookupResponse.getBranch();
+					final String branch = (!DPDoctorUtils.anyStringEmpty(appointmentLookupResponse.getBranch())) ? appointmentLookupResponse.getBranch() : "";
 					final String clinicName = appointmentLookupResponse.getLocation().getLocationName();
 					final String clinicContactNum = appointmentLookupResponse.getLocation().getClinicNumber() != null
 							? appointmentLookupResponse.getLocation().getClinicNumber()
@@ -1004,7 +1004,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						clinicContactNum = locationCollection.getClinicNumber() != null
 								? locationCollection.getClinicNumber()
 								: "";
-				final String branch = request.getBranch();
+				final String branch = (!DPDoctorUtils.anyStringEmpty(request.getBranch())) ? request.getBranch() : "";
 
 				if (request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)) {
 					appointmentCollection.setState(AppointmentState.CONFIRM);
