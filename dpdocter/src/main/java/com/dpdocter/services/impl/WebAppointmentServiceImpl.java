@@ -172,6 +172,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 						String day = sdf.format(localCalendar.getTime());
 						slotTime = doctorClinicProfileCollection.getAppointmentSlot().getTime();
 						if(slotTime == 0.0)slotTime = 15;
+
 						SlotDataResponse slotDataResponse = new SlotDataResponse();
 						slotDataResponse.setAppointmentSlot(doctorClinicProfileCollection.getAppointmentSlot());
 						slotDataResponse.setDate(localCalendar.getTime().getTime());
