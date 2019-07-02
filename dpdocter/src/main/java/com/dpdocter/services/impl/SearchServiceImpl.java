@@ -119,7 +119,6 @@ public class SearchServiceImpl implements SearchService {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid City");
 				}
 				ESCityDocument cityDoc = cityDocs.get(0);
-				System.out.println(cityDoc.getCity()+" "+cityDocs.size());
 				cityId = cityDoc.getId();
 				latitudeDouble = cityDoc.getLatitude();
 				longitudeDouble = cityDoc.getLongitude();

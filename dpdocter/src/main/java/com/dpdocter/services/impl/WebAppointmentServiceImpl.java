@@ -152,7 +152,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 			if (doctorClinicProfileCollection != null) {
 
 				Integer startTime = 0, endTime = 0;
-				float slotTime = 0;
+				float slotTime = 15;
 				SimpleDateFormat sdf = new SimpleDateFormat("EEEEE");
 				sdf.setTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
 
@@ -171,7 +171,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 					for(int j=0;j<6;j++) {
 						String day = sdf.format(localCalendar.getTime());
 						slotTime = doctorClinicProfileCollection.getAppointmentSlot().getTime();
-						
+						if(slotTime == 0.0)slotTime = 15;
 						SlotDataResponse slotDataResponse = new SlotDataResponse();
 						slotDataResponse.setAppointmentSlot(doctorClinicProfileCollection.getAppointmentSlot());
 						slotDataResponse.setDate(localCalendar.getTime().getTime());
@@ -240,7 +240,6 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 											}
 										}
 									}
-
 									if (endTime > startTime) {
 										List<Slot> slots = DateAndTimeUtility.sliceTime(startTime, endTime,
 												Math.round(slotTime), true);
@@ -249,7 +248,6 @@ public class WebAppointmentServiceImpl implements WebAppointmentService{
 									}
 								}
 							}
-
 							if (appointmentService.checkToday(localCalendar.get(Calendar.DAY_OF_YEAR), yearOfDate,
 									doctorClinicProfileCollection.getTimeZone()))
 								for (Slot slot : slotResponse) {
