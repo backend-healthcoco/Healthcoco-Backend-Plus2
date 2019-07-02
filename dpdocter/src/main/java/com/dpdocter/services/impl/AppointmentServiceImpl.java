@@ -2537,13 +2537,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 				}
 				Integer startTime = 0, endTime = 0;
-				float slotTime = 0;
+				float slotTime = 15;
 				SimpleDateFormat sdf = new SimpleDateFormat("EEEEE");
 				sdf.setTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
 				String day = sdf.format(date);
 				if (doctorClinicProfileCollection.getWorkingSchedules() != null
 						&& doctorClinicProfileCollection.getAppointmentSlot() != null) {
 					slotTime = doctorClinicProfileCollection.getAppointmentSlot().getTime();
+					if(slotTime == 0.0)slotTime = 15;
+
 					response = new SlotDataResponse();
 					response.setAppointmentSlot(doctorClinicProfileCollection.getAppointmentSlot());
 					slotResponse = new ArrayList<Slot>();
