@@ -834,8 +834,7 @@ public class ContactsServiceImpl implements ContactsService {
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-					Aggregation.match(criteriaSecond),
-					Aggregation.sort(Direction.DESC, "createdTime"));
+					Aggregation.match(criteriaSecond));
 
 			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientCollection.class, PatientCard.class);

@@ -230,17 +230,15 @@ public class ContactsServiceImpl implements ContactsService {
 							.append("insensitiveLocalPatientName", new BasicDBObject("$toLower", "$localPatientName"))
 							.append("userName", "$userName").append("emailAddress", "$emailAddress")
 							.append("imageUrl", "$imageUrl").append("thumbnailUrl", "$thumbnailUrl")
-							.append("bloodGroup", "$bloodGroup").append("PID", "$PID")
-							.append("PNUM", "$PNUM").append("gender", "$gender")
-							.append("countryCode", "$countryCode").append("mobileNumber", "$mobileNumber")
-							.append("secPhoneNumber", "$secPhoneNumber").append("dob", "$dob")
-							.append("dateOfVisit", "$dateOfVisit").append("doctorId", "$doctorId")
+							.append("bloodGroup", "$bloodGroup").append("PID", "$PID").append("PNUM", "$PNUM")
+							.append("gender", "$gender").append("countryCode", "$countryCode")
+							.append("mobileNumber", "$mobileNumber").append("secPhoneNumber", "$secPhoneNumber")
+							.append("dob", "$dob").append("dateOfVisit", "$dateOfVisit").append("doctorId", "$doctorId")
 							.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
 							.append("colorCode", "$user.colorCode").append("user", "$user")
 							.append("address", "$address").append("patientId", "$userId")
 							.append("profession", "$profession").append("relations", "$relations")
-							.append("consultantDoctorIds", "$consultantDoctorIds")
-							.append("doctorId", "$doctorId")
+							.append("consultantDoctorIds", "$consultantDoctorIds").append("doctorId", "$doctorId")
 							.append("registrationDate", "$registrationDate").append("createdTime", "$createdTime")
 							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
 
@@ -595,7 +593,6 @@ public class ContactsServiceImpl implements ContactsService {
 		return response;
 	}
 
-	
 	@Override
 	@Transactional
 	public Integer getDoctorContactsHandheldCount(String doctorId, String locationId, String hospitalId,
@@ -619,8 +616,8 @@ public class ContactsServiceImpl implements ContactsService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-	Criteria criteria = new Criteria("discarded").in(discards);
-
+			Criteria criteria = new Criteria("discarded").in(discards);
+			Criteria criteriaSecond = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
 					criteria.and("consultantDoctorIds").is(doctorObjectId);
@@ -635,10 +632,9 @@ public class ContactsServiceImpl implements ContactsService {
 						new Criteria("localPatientName").regex("^" + searchTerm, "i"));
 			}
 
-			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
-					Aggregation.unwind("user"), Aggregation.match(criteria),
-					Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
-					Aggregation.sort(Direction.DESC, "createdTime"));
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+					Aggregation.match(criteriaSecond));
 
 			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientCollection.class, PatientCard.class);
@@ -779,7 +775,7 @@ public class ContactsServiceImpl implements ContactsService {
 		}
 		return status;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId,
@@ -791,7 +787,7 @@ public class ContactsServiceImpl implements ContactsService {
 		Aggregation aggregation = null;
 		List<Boolean> discards = new ArrayList<Boolean>();
 		discards.add(false);
-		List<String> groupIdList  = null;
+		List<String> groupIdList = null;
 
 		try {
 			if (discarded)
@@ -806,6 +802,7 @@ public class ContactsServiceImpl implements ContactsService {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("discarded")
 					.in(discards);
+			Criteria criteriaSecond = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
 					criteria.and("consultantDoctorIds").is(doctorObjectId);
@@ -820,16 +817,14 @@ public class ContactsServiceImpl implements ContactsService {
 						new Criteria("localPatientName").regex("^" + searchTerm, "i"));
 			}
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
-						Aggregation.unwind("user"), Aggregation.match(criteria),
-						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
-						Aggregation.sort(Direction.DESC, "updatedTime"), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+						Aggregation.match(criteriaSecond), Aggregation.sort(Direction.DESC, "updatedTime"),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
-						Aggregation.sort(Direction.DESC, "updatedTime"));
+						Aggregation.match(criteriaSecond), Aggregation.sort(Direction.DESC, "updatedTime"));
 
 			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientCollection.class, PatientCard.class);
@@ -842,8 +837,7 @@ public class ContactsServiceImpl implements ContactsService {
 					Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
 							new BeanToPropertyValueTransformer("groupId"));
 					patientCard.setPatientGroupCollections(null);
-					
-					
+
 					RegisteredPatientDetails registeredPatientDetail = new RegisteredPatientDetails();
 					if (patientCard.getUser() != null) {
 						BeanUtil.map(patientCard.getUser(), registeredPatientDetail);
@@ -862,8 +856,7 @@ public class ContactsServiceImpl implements ContactsService {
 					registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
 					registeredPatientDetail.setBackendPatientId(patientCard.getId());
 					registeredPatientDetail.setColorCode(patientCard.getUser().getColorCode());
-					if(groupIds != null)
-					{
+					if (groupIds != null) {
 						groupIdList = new ArrayList<>();
 						for (ObjectId groupId : groupIds) {
 							groupIdList.add(String.valueOf(groupId));
