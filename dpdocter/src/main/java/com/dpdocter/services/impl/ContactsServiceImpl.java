@@ -128,13 +128,13 @@ public class ContactsServiceImpl implements ContactsService {
 
 	@Value(value = "${Contacts.checkIfBranchIsExistWithSameName}")
 	private String checkIfBranchIsExistWithSameName;
-	
+
 	@Value(value = "${Contacts.GroupNotFound}")
 	private String groupNotFound;
 
 	@Value(value = "${Contacts.BranchNotFound}")
 	private String branchNotFound;
-	
+
 	/**
 	 * This method returns all unblocked or blocked patients (based on param
 	 * blocked) of specified doctor.
@@ -244,11 +244,10 @@ public class ContactsServiceImpl implements ContactsService {
 							.append("insensitiveLocalPatientName", new BasicDBObject("$toLower", "$localPatientName"))
 							.append("userName", "$userName").append("emailAddress", "$emailAddress")
 							.append("imageUrl", "$imageUrl").append("thumbnailUrl", "$thumbnailUrl")
-							.append("bloodGroup", "$bloodGroup").append("PID", "$PID")
-							.append("PNUM", "$PNUM").append("gender", "$gender")
-							.append("countryCode", "$countryCode").append("mobileNumber", "$mobileNumber")
-							.append("secPhoneNumber", "$secPhoneNumber").append("dob", "$dob")
-							.append("dateOfVisit", "$dateOfVisit").append("doctorId", "$doctorId")
+							.append("bloodGroup", "$bloodGroup").append("PID", "$PID").append("PNUM", "$PNUM")
+							.append("gender", "$gender").append("countryCode", "$countryCode")
+							.append("mobileNumber", "$mobileNumber").append("secPhoneNumber", "$secPhoneNumber")
+							.append("dob", "$dob").append("dateOfVisit", "$dateOfVisit").append("doctorId", "$doctorId")
 							.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
 							.append("colorCode", "$user.colorCode").append("user", "$user")
 							.append("address", "$address").append("patientId", "$userId")
@@ -509,7 +508,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Transactional
 	public Response<Object> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, boolean discarded) {
-		Response<Object> response =  new Response<Object>();
+		Response<Object> response = new Response<Object>();
 		List<Group> groups = null;
 		List<GroupCollection> groupCollections = null;
 
@@ -544,17 +543,17 @@ public class ContactsServiceImpl implements ContactsService {
 					Fields.field("packageType", "$doctorClinic.packageType"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy")));
-			
-			Integer count = (int)mongoTemplate.count(new Query(criteriafirst), GroupCollection.class);
-			if(count>0) {
+
+			Integer count = (int) mongoTemplate.count(new Query(criteriafirst), GroupCollection.class);
+			if (count > 0) {
 				response = new Response<Object>();
 				response.setCount(count);
 				if (size > 0) {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteriafirst),
 							Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorClinic"),
 							Aggregation.unwind("doctorClinic"), Aggregation.match(criteriasecond), projectList,
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
-							Aggregation.limit(size));
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size));
 
 				} else {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteriafirst),
@@ -563,8 +562,8 @@ public class ContactsServiceImpl implements ContactsService {
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 				}
-				AggregationResults<Group> aggregationResults = mongoTemplate.aggregate(aggregation, GroupCollection.class,
-						Group.class);
+				AggregationResults<Group> aggregationResults = mongoTemplate.aggregate(aggregation,
+						GroupCollection.class, Group.class);
 				groups = aggregationResults.getMappedResults();
 				if (groups != null) {
 					for (Group group : groups) {
@@ -645,7 +644,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Transactional
 	public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId,
 			String hospitalId, String updatedTime, boolean discarded, String role, int page, int size,
-			String searchTerm , String userId) {
+			String searchTerm, String userId) {
 		List<RegisteredPatientDetails> registeredPatientDetails = null;
 		List<PatientCard> patientCards = null;
 		List<Group> groups = null;
@@ -665,6 +664,7 @@ public class ContactsServiceImpl implements ContactsService {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("discarded")
 					.in(discards);
+			Criteria criteriaSecond = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
 					criteria.and("consultantDoctorIds").is(doctorObjectId);
@@ -678,22 +678,19 @@ public class ContactsServiceImpl implements ContactsService {
 				criteria.and("userId").is(new ObjectId(userId));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria.orOperator(new Criteria("user.mobileNumber").regex("^" + searchTerm, "i"),
+				criteriaSecond.orOperator(new Criteria("user.mobileNumber").regex("^" + searchTerm, "i"),
 						new Criteria("localPatientName").regex("^" + searchTerm, "i"));
 			}
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
-						Aggregation.unwind("user"), Aggregation.match(criteria),
-						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
-						Aggregation.sort(Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+						Aggregation.match(criteriaSecond), Aggregation.sort(Direction.DESC, "createdTime"),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
+						Aggregation.match(criteriaSecond), Aggregation.sort(Direction.DESC, "updatedTime"));
 
-						Aggregation.sort(Direction.DESC, "updatedTime"));
-			
 			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientCollection.class, PatientCard.class);
 			patientCards = aggregationResults.getMappedResults();
@@ -820,7 +817,7 @@ public class ContactsServiceImpl implements ContactsService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("discarded").in(discards);
-
+			Criteria criteriaSecond = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
 					criteria.and("consultantDoctorIds").is(doctorObjectId);
@@ -831,13 +828,13 @@ public class ContactsServiceImpl implements ContactsService {
 				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria.orOperator(new Criteria("user.mobileNumber").regex("^" + searchTerm, "i"),
+				criteriaSecond.orOperator(new Criteria("user.mobileNumber").regex("^" + searchTerm, "i"),
 						new Criteria("localPatientName").regex("^" + searchTerm, "i"));
 			}
 
-			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
-					Aggregation.unwind("user"), Aggregation.match(criteria),
-					Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+					Aggregation.match(criteriaSecond),
 					Aggregation.sort(Direction.DESC, "createdTime"));
 
 			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -1060,7 +1057,7 @@ public class ContactsServiceImpl implements ContactsService {
 				branchCollection.setDiscarded(discarded);
 				branchCollection.setUpdatedTime(new Date());
 				branchCollection = branchRepository.save(branchCollection);
-				
+
 				response = new Branch();
 				BeanUtil.map(branchCollection, response);
 			} else {
@@ -1099,13 +1096,13 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	public Response<Object> getBranches(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm) {
-		Response<Object> response =  new Response<Object>();
+		Response<Object> response = new Response<Object>();
 		List<Branch> branches = null;
 
 		try {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			Aggregation aggregation = null;
-			
+
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -1122,24 +1119,25 @@ public class ContactsServiceImpl implements ContactsService {
 			if (!discarded) {
 				criteria.and("discarded").is(discarded);
 			}
-			if(!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria.and("name").regex("^" + searchTerm, "i");
 			}
-			Integer count = (int)mongoTemplate.count(new Query(criteria), BranchCollection.class);
-			if(count>0) {
+			Integer count = (int) mongoTemplate.count(new Query(criteria), BranchCollection.class);
+			if (count > 0) {
 				response = new Response<Object>();
 				response.setCount(count);
 				if (size > 0) {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
-							Aggregation.limit(size));
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size));
 
 				} else {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 				}
-				branches = mongoTemplate.aggregate(aggregation, BranchCollection.class, Branch.class).getMappedResults();
+				branches = mongoTemplate.aggregate(aggregation, BranchCollection.class, Branch.class)
+						.getMappedResults();
 				response.setDataList(branches);
 			}
 
