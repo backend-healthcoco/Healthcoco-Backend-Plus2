@@ -52,19 +52,21 @@ public class OTPApi {
 	}
 
 	@Path(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
-    @GET
-    @ApiOperation(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE, notes = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
-    public Response<Boolean> otpGenerator(@PathParam("mobileNumber") String mobileNumber, @DefaultValue("false") @QueryParam(value = "isPatientOTP") Boolean isPatientOTP,@DefaultValue("+91") @QueryParam(value = "countryCode") String countryCode) {
-	if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
-	    logger.warn("Invalid Input. Mobile Number Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty");
+	@GET
+	@ApiOperation(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE, notes = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
+	public Response<Boolean> otpGenerator(@PathParam("mobileNumber") String mobileNumber,
+			@DefaultValue("false") @QueryParam(value = "isPatientOTP") Boolean isPatientOTP,
+			@DefaultValue("+91") @QueryParam(value = "countryCode") String countryCode) {
+		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
+			logger.warn("Invalid Input. Mobile Number Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty");
+		}
+		mobileNumber = countryCode + mobileNumber;
+		Boolean OTP = otpService.otpGenerator(mobileNumber, isPatientOTP);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(OTP);
+		return response;
 	}
-	mobileNumber=countryCode+mobileNumber;
-	Boolean OTP = otpService.otpGenerator(mobileNumber, isPatientOTP);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(OTP);
-	return response;
-    }
 
 	@Path(value = PathProxy.OTPUrls.VERIFY_OTP)
 	@GET
@@ -87,12 +89,14 @@ public class OTPApi {
 	@GET
 	@ApiOperation(value = PathProxy.OTPUrls.VERIFY_OTP_MOBILE, notes = PathProxy.OTPUrls.VERIFY_OTP_MOBILE)
 	public Response<Boolean> verifyOTP(@PathParam("mobileNumber") String mobileNumber,
-			@PathParam("otpNumber") String otpNumber) {
+			@PathParam("otpNumber") String otpNumber,
+			@DefaultValue("+91") @QueryParam(value = "countryCode") String countryCode) {
 		if (DPDoctorUtils.anyStringEmpty(otpNumber, mobileNumber)) {
 			logger.warn("Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
 		}
+		mobileNumber = countryCode + mobileNumber;
 		Boolean verifyOTPResponse = otpService.verifyOTP(mobileNumber, otpNumber);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(verifyOTPResponse);
