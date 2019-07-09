@@ -458,7 +458,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	@Transactional
 	public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor) {
+			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor, Boolean discarded) {
 		List<PatientVisitResponse> response = null;
 		List<PatientVisitLookupBean> patientVisitlookupbeans = null;
 		try {
@@ -495,6 +495,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp)).and("patientId")
 					.is(patientObjectId).and("visitedFor").in(visitedFors).and("isPatientDiscarded").ne(true);
 
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);

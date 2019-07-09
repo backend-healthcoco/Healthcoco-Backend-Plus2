@@ -1,6 +1,7 @@
 package com.dpdocter.webservices.v2;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -38,9 +39,9 @@ public class ReportsAPI {
 	public Response<IPDReportsResponse> getIPDReports(@QueryParam("locationId") String locationId,
 			@QueryParam("doctorId") String doctorId, @QueryParam("patientId") String patientId,
 			@QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
+			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		IPDReportsResponse ipdReports = reportsService.getIPDReportsList(locationId, doctorId, patientId, from, to,
-				page, size, updatedTime);
+				page, size, updatedTime, discarded);
 		Response<IPDReportsResponse> response = new Response<IPDReportsResponse>();
 		response.setData(ipdReports);
 		return response;
@@ -64,9 +65,9 @@ public class ReportsAPI {
 	public Response<OTReportsResponse> getOTReports(@QueryParam("locationId") String locationId,
 			@QueryParam("doctorId") String doctorId, @QueryParam("patientId") String patientId,
 			@QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
+			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		OTReportsResponse otReports = reportsService.getOTReportsList(locationId, doctorId, patientId, from, to, page,
-				size, updatedTime);
+				size, updatedTime, discarded);
 		Response<OTReportsResponse> response = new Response<OTReportsResponse>();
 		response.setData(otReports);
 		return response;
@@ -78,9 +79,9 @@ public class ReportsAPI {
 	public Response<DeliveryReportsResponse> getDeliveryReports(@QueryParam("locationId") String locationId,
 			@QueryParam("doctorId") String doctorId, @QueryParam("patientId") String patientId,
 			@QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
+			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		DeliveryReportsResponse deliveryReports = reportsService.getDeliveryReportsList(locationId, doctorId, patientId,
-				from, to, page, size, updatedTime);
+				from, to, page, size, updatedTime, discarded);
 		Response<DeliveryReportsResponse> response = new Response<DeliveryReportsResponse>();
 		response.setData(deliveryReports);
 		return response;

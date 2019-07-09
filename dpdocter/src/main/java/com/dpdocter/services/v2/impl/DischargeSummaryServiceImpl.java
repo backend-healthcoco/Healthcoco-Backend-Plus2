@@ -53,7 +53,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	@Override
 	@Transactional
 	public List<DischargeSummaryResponse> getDischargeSummary(String doctorId, String locationId, String hospitalId,
-			String patientId, int page, int size, String updatedTime) {
+			String patientId, int page, int size, String updatedTime, Boolean discarded) {
 		List<DischargeSummaryResponse> response = null;
 		try {
 			DischargeSummaryResponse summaryResponse = null;
@@ -76,6 +76,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(doctorObjectId);
 
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
 			Aggregation aggregation = null;
 
 			if (size > 0)

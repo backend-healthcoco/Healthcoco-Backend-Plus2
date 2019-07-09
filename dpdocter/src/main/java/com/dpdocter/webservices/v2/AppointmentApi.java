@@ -96,10 +96,10 @@ public class AppointmentApi {
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "status") String status, @QueryParam(value = "sortBy") String sortBy,
 			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime ,@DefaultValue("false") @QueryParam("isRegisteredPatientRequired") Boolean isRegisteredPatientRequired,
-			@DefaultValue(value = "false") @QueryParam(value = "isWeb") Boolean isWeb) {
+			@DefaultValue(value = "false") @QueryParam(value = "isWeb") Boolean isWeb, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 		Response<Appointment> response = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
-				page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb);
+				page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb, discarded);
 		return response;
 	}
 

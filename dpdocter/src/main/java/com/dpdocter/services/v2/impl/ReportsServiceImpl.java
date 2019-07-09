@@ -112,7 +112,7 @@ public class ReportsServiceImpl implements ReportsService {
 	@Override
 	@Transactional
 	public IPDReportsResponse getIPDReportsList(String locationId, String doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime) {
+			String to, int page, int size, String updatedTime, Boolean discarded) {
 		List<IPDReports> response = null;
 		IPDReportsResponse ipdReportsResponse = null;
 		List<IPDReportLookupResponse> ipdReportLookupResponses = null;
@@ -142,6 +142,10 @@ public class ReportsServiceImpl implements ReportsService {
 			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
 				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
 			}
+			
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			
 			if (size > 0)
 				ipdReportLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
 						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
@@ -224,7 +228,7 @@ public class ReportsServiceImpl implements ReportsService {
 	@Override
 	@Transactional
 	public OTReportsResponse getOTReportsList(String locationId, String doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime) {
+			String to, int page, int size, String updatedTime, Boolean discarded) {
 		// TODO Auto-generated method stub
 		List<OTReports> response = null;
 		OTReportsResponse otReportsResponse = null;
@@ -256,6 +260,9 @@ public class ReportsServiceImpl implements ReportsService {
 				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
 			}
 
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			
 			if (size > 0)
 				otReportsLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
 						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
@@ -352,7 +359,7 @@ public class ReportsServiceImpl implements ReportsService {
 	@Override
 	@Transactional
 	public DeliveryReportsResponse getDeliveryReportsList(String locationId, String doctorId, String patientId,
-			String from, String to, int page, int size, String updatedTime) {
+			String from, String to, int page, int size, String updatedTime, Boolean discarded) {
 		// TODO Auto-generated method stub
 		List<DeliveryReports> response = null;
 		DeliveryReportsResponse deliveryReportsResponse = null;
@@ -384,6 +391,9 @@ public class ReportsServiceImpl implements ReportsService {
 				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
 			}
 
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			
 			if (size > 0)
 				deliveryReportsLookupResponses = mongoTemplate
 						.aggregate(

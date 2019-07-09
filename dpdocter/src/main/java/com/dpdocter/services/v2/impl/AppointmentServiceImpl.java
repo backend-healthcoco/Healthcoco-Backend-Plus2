@@ -1378,7 +1378,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Response<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
-			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb) {
+			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb, Boolean discarded) {
 		Response<Appointment> response = new Response<Appointment>();
 		List<Appointment> appointments = null;
 		try {
@@ -1402,6 +1402,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(status))
 				criteria.and("status").is(status.toUpperCase()).and("state").ne(AppointmentState.CANCEL.getState());
 
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 			if (!DPDoctorUtils.anyStringEmpty(from)) {

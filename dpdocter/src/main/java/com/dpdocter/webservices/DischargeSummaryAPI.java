@@ -528,7 +528,7 @@ public class DischargeSummaryAPI {
 			@QueryParam(value = "size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@QueryParam(value = "patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		Response<FlowsheetResponse> response = null;
 		List<FlowsheetResponse> flowsheetResponses = null;
 
@@ -537,7 +537,7 @@ public class DischargeSummaryAPI {
 					"Doctor or patient id or locationId or hospitalId is null");
 		}
 		flowsheetResponses = dischargeSummaryService.getFlowSheets(doctorId, locationId, hospitalId, patientId, page,
-				size, updatedTime);
+				size, updatedTime, discarded);
 		response = new Response<FlowsheetResponse>();
 		response.setDataList(flowsheetResponses);
 

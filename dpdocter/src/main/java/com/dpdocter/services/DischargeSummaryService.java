@@ -74,7 +74,7 @@ public interface DischargeSummaryService {
 	FlowsheetResponse addEditFlowSheets(AddEditFlowSheetRequest request);
 
 	List<FlowsheetResponse> getFlowSheets(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, String updatedTime);
+			int page, int size, String updatedTime, Boolean discarded);
 
 	FlowsheetResponse getFlowSheetsById(String id);
 

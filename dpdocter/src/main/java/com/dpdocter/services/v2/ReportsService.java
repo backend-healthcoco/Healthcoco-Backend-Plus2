@@ -8,13 +8,13 @@ public interface ReportsService {
 
 
 	IPDReportsResponse getIPDReportsList(String locationId, String doctorId, String patientId, String from, String to,
-			int page, int size, String updatedTime);
+			int page, int size, String updatedTime, Boolean discarded);
 
 
 	OTReportsResponse getOTReportsList(String locationId, String doctorId, String patientId, String from, String to,
-			int page, int size, String updatedTime);
+			int page, int size, String updatedTime, Boolean discarded);
 
 	DeliveryReportsResponse getDeliveryReportsList(String locationId, String doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime);
+			String to, int page, int size, String updatedTime, Boolean discarded);
 
 }
