@@ -7,7 +7,11 @@ import com.dpdocter.beans.DoctorAndCost;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.Surgery;
 import com.dpdocter.beans.TimeDuration;
+<<<<<<< HEAD
 import com.dpdocter.beans.PrescriptionItemDetail;
+=======
+import com.dpdocter.beans.v2.PrescriptionItemDetail;
+>>>>>>> 938e26bc3... HAPPY-4548 Backend : Dpdocter : Add drugs in OT reports and pdf
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
