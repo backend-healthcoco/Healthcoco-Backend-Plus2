@@ -1056,7 +1056,7 @@ public class ReportsServiceImpl implements ReportsService {
 		if (otReportsLookupResponse.getOperatingSurgeonAndCost() != null) {
 			nameAndCost = !DPDoctorUtils
 					.anyStringEmpty(otReportsLookupResponse.getOperatingSurgeonAndCost().getDoctor())
-							? otReportsLookupResponse.getOperatingSurgeonAndCost().getDoctor() + "("
+							? otReportsLookupResponse.getOperatingSurgeonAndCost().getDoctor() 
 							: null;
 			if (otReportsLookupResponse.getOperatingSurgeonAndCost().getCost() > 0)
 				nameAndCost = nameAndCost + "(Rs. "
@@ -1068,7 +1068,7 @@ public class ReportsServiceImpl implements ReportsService {
 		if (otReportsLookupResponse.getAnaesthetistAndCost() != null) {
 
 			nameAndCost = !DPDoctorUtils.anyStringEmpty(otReportsLookupResponse.getAnaesthetistAndCost().getDoctor())
-					? otReportsLookupResponse.getAnaesthetistAndCost().getDoctor() + "("
+					? otReportsLookupResponse.getAnaesthetistAndCost().getDoctor() 
 					: null;
 			if (otReportsLookupResponse.getAnaesthetistAndCost().getCost() > 0)
 				nameAndCost = nameAndCost + "(Rs. "
@@ -1081,7 +1081,7 @@ public class ReportsServiceImpl implements ReportsService {
 			for (DoctorAndCost doctorAndCost : otReportsLookupResponse.getAssitingDoctorsAndCost()) {
 				if (DPDoctorUtils.anyStringEmpty(nameAndCost)) {
 					nameAndCost = !DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor())
-							? doctorAndCost.getDoctor() + "("
+							? doctorAndCost.getDoctor() 
 							: null;
 					if (doctorAndCost.getCost() > 0)
 						nameAndCost = nameAndCost + "(Rs. " + doctorAndCost.getCost().intValue() + ")";
@@ -1089,7 +1089,7 @@ public class ReportsServiceImpl implements ReportsService {
 				} else {
 
 					nameAndCost = nameAndCost + (!DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor())
-							? " , " + doctorAndCost.getDoctor() + "("
+							? " , " + doctorAndCost.getDoctor() 
 							: null);
 					if (doctorAndCost.getCost() > 0)
 						nameAndCost = nameAndCost + "(Rs. " + doctorAndCost.getCost().intValue() + ")";
@@ -1105,7 +1105,7 @@ public class ReportsServiceImpl implements ReportsService {
 			for (DoctorAndCost doctorAndCost : otReportsLookupResponse.getAssitingNursesAndCost()) {
 				if (DPDoctorUtils.anyStringEmpty(nameAndCost)) {
 					nameAndCost = !DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor())
-							? doctorAndCost.getDoctor() + "("
+							? doctorAndCost.getDoctor()
 							: null;
 					if (doctorAndCost.getCost() > 0)
 						nameAndCost = nameAndCost + "(Rs. " + doctorAndCost.getCost().intValue() + ")";
@@ -1113,7 +1113,7 @@ public class ReportsServiceImpl implements ReportsService {
 				} else {
 
 					nameAndCost = nameAndCost + (!DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor())
-							? " , " + doctorAndCost.getDoctor() + "("
+							? " , " + doctorAndCost.getDoctor() 
 							: null);
 					if (doctorAndCost.getCost() > 0)
 						nameAndCost = nameAndCost + "(Rs. " + doctorAndCost.getCost() + ")";
@@ -1130,7 +1130,7 @@ public class ReportsServiceImpl implements ReportsService {
 		parameters.put("remarks", otReportsLookupResponse.getRemarks());
 		parameters.put("operationalNotes", otReportsLookupResponse.getOperationalNotes());
 		parameters.put("otReportsId", otReportsLookupResponse.getId());
-
+		
 		patientVisitService.generatePatientDetails((printSettings != null
 				&& printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null),
 				patient,
