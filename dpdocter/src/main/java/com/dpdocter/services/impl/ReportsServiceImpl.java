@@ -1716,10 +1716,11 @@ public class ReportsServiceImpl implements ReportsService {
 		parameters.put("remarks", otReportsLookupResponse.getRemarks());
 		parameters.put("operationalNotes", otReportsLookupResponse.getOperationalNotes());
 		parameters.put("otReportsId", otReportsLookupResponse.getId());
-		parameters.put("contentLineSpace",
-				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
-						? printSettings.getContentLineSpace()
-						: LineSpace.SMALL.name());
+
+//		parameters.put("contentLineSpace",
+//				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
+//						? printSettings.getContentLineSpace()
+//						: LineSpace.SMALL.name());
 		patientVisitService.generatePatientDetails((printSettings != null
 				&& printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null),
 				patient,
