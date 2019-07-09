@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.beans.v2.PrescriptionItemDetail;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AnaesthesiaTypeEnum;
 
@@ -39,6 +40,7 @@ public class OTReports extends GenericCollection {
 	private DoctorAndCost anaesthetistAndCost;
 	private List<DoctorAndCost> assitingDoctorsAndCost;
 	private List<DoctorAndCost> assitingNursesAndCost;
+	private List<PrescriptionItemDetail> postOperativeOrder;
 
 	public String getId() {
 		return id;
@@ -264,6 +266,14 @@ public class OTReports extends GenericCollection {
 		this.assitingNursesAndCost = assitingNursesAndCost;
 	}
 
+	public List<PrescriptionItemDetail> getPostOperativeOrder() {
+		return postOperativeOrder;
+	}
+
+	public void setPostOperativeOrder(List<PrescriptionItemDetail> postOperativeOrder) {
+		this.postOperativeOrder = postOperativeOrder;
+	}
+
 	@Override
 	public String toString() {
 		return "OTReports [id=" + id + ", uniqueOTId=" + uniqueOTId + ", patientId=" + patientId + ", patient="
@@ -276,7 +286,7 @@ public class OTReports extends GenericCollection {
 				+ ", hospitalName=" + hospitalName + ", timeDuration=" + timeDuration + ", discarded=" + discarded
 				+ ", operationalNotes=" + operationalNotes + ", operatingSurgeonAndCost=" + operatingSurgeonAndCost
 				+ ", anaesthetistAndCost=" + anaesthetistAndCost + ", assitingDoctorsAndCost=" + assitingDoctorsAndCost
-				+ ", assitingNursesAndCost=" + assitingNursesAndCost + "]";
+				+ ", assitingNursesAndCost=" + assitingNursesAndCost + ", postOperativeOrder=" + postOperativeOrder
+				+ "]";
 	}
-
 }
