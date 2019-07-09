@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.DoctorAndCost;
 import com.dpdocter.beans.Surgery;
+import com.dpdocter.beans.v2.PrescriptionItemDetail;
 import com.dpdocter.enums.AnaesthesiaTypeEnum;
 
 @Document(collection = "ot_report_cl")
@@ -63,6 +64,8 @@ public class OTReportsCollection extends GenericCollection {
 	private List<DoctorAndCost> assitingDoctorsAndCost;
 	@Field
 	private List<DoctorAndCost> assitingNursesAndCost;
+	@Field
+	private List<PrescriptionItemDetail> postOperativeOrder;
 
 	public ObjectId getId() {
 		return id;
@@ -256,6 +259,14 @@ public class OTReportsCollection extends GenericCollection {
 		this.assitingNursesAndCost = assitingNursesAndCost;
 	}
 
+	public List<PrescriptionItemDetail> getPostOperativeOrder() {
+		return postOperativeOrder;
+	}
+
+	public void setPostOperativeOrder(List<PrescriptionItemDetail> postOperativeOrder) {
+		this.postOperativeOrder = postOperativeOrder;
+	}
+
 	@Override
 	public String toString() {
 		return "OTReportsCollection [id=" + id + ", uniqueOTId=" + uniqueOTId + ", patientId=" + patientId
@@ -267,7 +278,7 @@ public class OTReportsCollection extends GenericCollection {
 				+ ", hospitalId=" + hospitalId + ", operationalNotes=" + operationalNotes + ", isPatientDiscarded="
 				+ isPatientDiscarded + ", discarded=" + discarded + ", operatingSurgeonAndCost="
 				+ operatingSurgeonAndCost + ", anaesthetistAndCost=" + anaesthetistAndCost + ", assitingDoctorsAndCost="
-				+ assitingDoctorsAndCost + ", assitingNursesAndCost=" + assitingNursesAndCost + "]";
+				+ assitingDoctorsAndCost + ", assitingNursesAndCost=" + assitingNursesAndCost + ", postOperativeOrder="
+				+ postOperativeOrder + "]";
 	}
-
 }
