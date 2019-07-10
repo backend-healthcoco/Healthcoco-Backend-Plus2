@@ -1,7 +1,7 @@
 package com.dpdocter.services.v2;
 
-import com.dpdocter.response.v2.IPDReportsResponse;
 import com.dpdocter.response.v2.DeliveryReportsResponse;
+import com.dpdocter.response.v2.IPDReportsResponse;
 import com.dpdocter.response.v2.OTReportsResponse;
 
 public interface ReportsService {

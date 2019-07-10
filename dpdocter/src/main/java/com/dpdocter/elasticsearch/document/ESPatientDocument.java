@@ -16,85 +16,85 @@ public class ESPatientDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String userId;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String PID;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String PNUM;
 	
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String userName;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String firstName;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String localPatientName;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String localPatientNameFormatted;
 	
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String gender;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String bloodGroup;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String emailAddress;
 
 	@Field(type = FieldType.Nested)
 	private DOB dob;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String city;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String locality;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String postalCode;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String mobileNumber;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String profession;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String doctorId;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String locationId;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String hospitalId;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String referredBy;
 
 	@Field(type = FieldType.Date)
 	private Date createdTime;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String imageUrl;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String thumbnailUrl;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String colorCode;
 
 	@Field(type = FieldType.Long)
 	private Long registrationDate;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String userUId;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private List<String> consultantDoctorIds;
 	
 	@Field(type = FieldType.Boolean)

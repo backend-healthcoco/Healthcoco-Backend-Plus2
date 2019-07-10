@@ -3,14 +3,14 @@ package com.dpdocter.response.v2;
 import java.util.Date;
 import java.util.List;
 
-import com.dpdocter.beans.v2.ClinicalNotes;
-import com.dpdocter.beans.v2.Diagram;
 import com.dpdocter.beans.EyePrescription;
-import com.dpdocter.beans.v2.PatientTreatment;
-import com.dpdocter.beans.v2.Prescription;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.beans.v2.AppointmentDetails;
+import com.dpdocter.beans.v2.ClinicalNotes;
+import com.dpdocter.beans.v2.Diagram;
+import com.dpdocter.beans.v2.PatientTreatment;
+import com.dpdocter.beans.v2.Prescription;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.enums.VisitedFor;

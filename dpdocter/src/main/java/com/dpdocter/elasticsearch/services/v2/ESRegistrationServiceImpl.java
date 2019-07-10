@@ -45,7 +45,6 @@ import com.dpdocter.elasticsearch.repository.ESPatientRepository;
 import com.dpdocter.elasticsearch.repository.ESReferenceRepository;
 import com.dpdocter.elasticsearch.response.v2.ESPatientResponse;
 import com.dpdocter.elasticsearch.response.v2.ESPatientResponseDetails;
-import com.dpdocter.elasticsearch.services.v2.ESRegistrationService;
 import com.dpdocter.enums.AdvancedSearchType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;

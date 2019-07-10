@@ -1,22 +1,8 @@
 package com.dpdocter.services.v2;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-import org.bson.types.ObjectId;
-
-import com.dpdocter.beans.ClinicalNotesJasperDetails;
 import com.dpdocter.beans.v2.DoctorContactsResponse;
-import com.dpdocter.beans.PatientDetails;
-import com.dpdocter.beans.PatientVisit;
-import com.dpdocter.beans.WorkingHours;
-import com.dpdocter.collections.ClinicalNotesCollection;
-import com.dpdocter.collections.HistoryCollection;
-import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PrintSettingsCollection;
-import com.dpdocter.enums.VisitedFor;
-import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.response.v2.PatientVisitResponse;
 
 public interface PatientVisitService {

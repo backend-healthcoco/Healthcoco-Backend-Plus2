@@ -22,9 +22,9 @@ import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AppointmentRequest;
-import com.dpdocter.services.v2.AppointmentService;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.TransactionalManagementService;
+import com.dpdocter.services.v2.AppointmentService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;

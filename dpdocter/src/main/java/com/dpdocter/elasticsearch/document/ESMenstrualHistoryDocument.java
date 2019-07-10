@@ -13,16 +13,16 @@ public class ESMenstrualHistoryDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String menstrualHistory;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String doctorId;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String locationId;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String hospitalId;
 
 	@Field(type = FieldType.Boolean)
@@ -31,7 +31,7 @@ public class ESMenstrualHistoryDocument {
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String speciality;
 
 	public String getId() {

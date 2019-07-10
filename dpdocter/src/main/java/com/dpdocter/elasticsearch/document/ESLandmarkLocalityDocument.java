@@ -13,16 +13,16 @@ public class ESLandmarkLocalityDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.text)
+    @Field(type = FieldType.Text)
     private String cityId;
 
-    @Field(type = FieldType.text)
+    @Field(type = FieldType.Text)
     private String locality;
 
-    @Field(type = FieldType.text)
+    @Field(type = FieldType.Text)
     private String landmark;
 
-    @Field(type = FieldType.text)
+    @Field(type = FieldType.Text)
     private String explanation;
 
     @GeoPointField
@@ -34,7 +34,7 @@ public class ESLandmarkLocalityDocument {
     @Field(type = FieldType.Double)
     private Double longitude;
 
-    @Field(type = FieldType.text)
+    @Field(type = FieldType.Text)
     private String postalCode;
 
     public String getId() {

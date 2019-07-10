@@ -13,28 +13,28 @@ import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import com.dpdocter.beans.WorkingSchedule;
 
 public class DoctorLocation {
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String locationId;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String hospitalId;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String locationName;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String country;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String state;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String city;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String postalCode;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String websiteUrl;
 
 	@GeoPointField
@@ -46,25 +46,25 @@ public class DoctorLocation {
 	@Field(type = FieldType.Double)
 	private Double longitude;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String landmarkDetails;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String locationEmailAddress;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String streetAddress;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String locality;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String clinicNumber;
 
-	@MultiField(mainField = @Field(type = FieldType.text))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> alternateClinicNumbers;
 
-	@MultiField(mainField = @Field(type = FieldType.text))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> specialization;
 
 	@Field(type = FieldType.Boolean)
@@ -82,16 +82,16 @@ public class DoctorLocation {
 	@Field(type = FieldType.Boolean)
 	private Boolean isHomeServiceAvailable = false;
 
-	@MultiField(mainField = @Field(type = FieldType.text))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> images;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String logoUrl;
 
 	@Field(type = FieldType.Integer)
 	private Integer noOfReviews = 0;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String locationUId;
 
 	@Field(type = FieldType.Nested)
@@ -115,10 +115,10 @@ public class DoctorLocation {
 	@Field(type = FieldType.Integer)
 	private Integer noOfClinicReview = 0;
 
-	// @Field(type = FieldType.text)
+	// @Field(type = FieldType.Text)
 	// private String invoiceInitial = "INV";
 	//
-	// @Field(type = FieldType.text)
+	// @Field(type = FieldType.Text)
 	// private String receiptInitial = "RC";
 
 	public Integer getNoOfClinicReview() {

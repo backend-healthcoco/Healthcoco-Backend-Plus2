@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.v2.ClinicalNotes;
 import com.dpdocter.beans.v2.Diagram;
-import com.dpdocter.services.v2.ClinicalNotesService;
 import com.dpdocter.services.OTPService;
+import com.dpdocter.services.v2.ClinicalNotesService;
 
 import common.util.web.Response;
 import io.swagger.annotations.Api;

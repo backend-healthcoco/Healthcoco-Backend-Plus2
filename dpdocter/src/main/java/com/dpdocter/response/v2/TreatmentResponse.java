@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.Discount;
-import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.Fields;
+import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.v2.TreatmentService;
 
 public class TreatmentResponse {

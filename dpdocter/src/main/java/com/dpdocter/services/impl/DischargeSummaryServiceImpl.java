@@ -17,6 +17,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.elasticsearch.search.suggest.SortBy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -1297,7 +1298,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Criteria criteria = new Criteria("patientId").exists(true).and("locationId").exists(true).and("hospitalId")
 					.exists(true).and("doctorId").exists(true).and("_id").in(visitObjectIds);
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+					Aggregation.sort(new Sort.Order(Sort.Direction.DESC, "createdTime").withProperties("createdTime")));
 			AggregationResults<PatientVisitLookupBean> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientVisitCollection.class, PatientVisitLookupBean.class);
 			List<PatientVisitLookupBean> patientVisitLookupBeans = aggregationResults.getMappedResults();

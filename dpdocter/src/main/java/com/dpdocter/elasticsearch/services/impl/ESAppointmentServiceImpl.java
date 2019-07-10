@@ -1449,8 +1449,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		try {
 			if (!DPDoctorUtils.allStringsEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
 				locality = locality.trim().replace("-", " ");
-				List<ESLandmarkLocalityDocument> localities = esLandmarkLocalityRepository.findByLocality(locality,
-						PageRequest.of(0, 1));
+				List<ESLandmarkLocalityDocument> localities = null;
+//				esLandmarkLocalityRepository.findByLocality(locality,
+//						PageRequest.of(0, 1));
 				if (localities != null && !localities.isEmpty()) {
 					latitude = localities.get(0).getLatitude() != null ? localities.get(0).getLatitude().toString()
 							: null;
@@ -1527,8 +1528,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		try {
 
 			if (!DPDoctorUtils.allStringsEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
-				List<ESLandmarkLocalityDocument> localities = esLandmarkLocalityRepository.findByLocality(locality,
-						PageRequest.of(0, 1));
+				List<ESLandmarkLocalityDocument> localities = null;
+//						esLandmarkLocalityRepository.findByLocality(locality,
+//						PageRequest.of(0, 1));
 				if (localities != null && !localities.isEmpty()) {
 					latitude = localities.get(0).getLatitude() != null ? localities.get(0).getLatitude().toString()
 							: null;
@@ -1571,8 +1573,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		ESWEBResponse response = null;
 		try {
 			if (!DPDoctorUtils.allStringsEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
-				List<ESLandmarkLocalityDocument> localities = esLandmarkLocalityRepository.findByLocality(locality,
-						PageRequest.of(0, 1));
+				List<ESLandmarkLocalityDocument> localities = null;
+//						esLandmarkLocalityRepository.findByLocality(locality,
+//						PageRequest.of(0, 1));
 				if (localities != null && !localities.isEmpty()) {
 					latitude = localities.get(0).getLatitude() != null ? localities.get(0).getLatitude().toString()
 							: null;

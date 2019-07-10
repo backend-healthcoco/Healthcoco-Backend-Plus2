@@ -24,28 +24,28 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@Id
 	private String id;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String userId;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String title;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String firstName;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String gender;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String emailAddress;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String mobileNumber;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String imageUrl;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String thumbnailUrl;
 
 	@Field(type = FieldType.Nested)
@@ -57,19 +57,19 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@Field(type = FieldType.Nested)
 	private List<WorkingSchedule> workingSchedules;
 
-	@MultiField(mainField = @Field(type = FieldType.text))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> specialities;
 
-	@MultiField(mainField = @Field(type = FieldType.text))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> services;
 	
 	@Field(type = FieldType.Nested)
 	private DoctorExperience experience;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String facility;
 
-	@MultiField(mainField = @Field(type = FieldType.text))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> appointmentBookingNumber;
 
 	@Field(type = FieldType.Nested)
@@ -81,19 +81,19 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@Field(type = FieldType.Boolean)
 	private Boolean isVerified = false;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String coverImageUrl;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String coverThumbnailImageUrl;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String colorCode;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String userState;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String registerNumber;
 
 	@Field(type = FieldType.Nested)
@@ -105,13 +105,13 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@Transient
 	private Double distance;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String userUId;
 
 	@Field(type = FieldType.Boolean)
 	private Boolean isDoctorListed = false;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String timeZone = "IST";
 
 	@Field(type = FieldType.Long)

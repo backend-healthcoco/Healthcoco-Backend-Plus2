@@ -11,6 +11,9 @@
 	<profiles>
 		<profile>
 			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -29,9 +32,13 @@
 				</resources>
 				<plugins>
 					<plugin>
-						<groupId>org.apache.tomcat.maven</groupId>
-						<artifactId>tomcat7-maven-plugin</artifactId>
-						<version>2.0</version>
+						<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
+						<!-- <dependency> -->
+						<groupId>org.apache.tomcat.embed</groupId>
+						<artifactId>tomcat-embed-core</artifactId>
+						<version>9.0.16</version>
+						<!-- </dependency> -->
+
 					</plugin>
 				</plugins>
 
@@ -59,9 +66,6 @@
 		</profile>
 		<profile>
 			<id>qa</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -158,11 +162,11 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- Jersey -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.sun.jersey</groupId> -->
-<!-- 			<artifactId>jersey-server</artifactId> -->
-<!-- 			<version>1.19.4</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>com.sun.jersey</groupId> -->
+		<!-- <artifactId>jersey-server</artifactId> -->
+		<!-- <version>1.19.4</version> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>com.sun.jersey.contribs</groupId>
 			<artifactId>jersey-multipart</artifactId>
@@ -174,12 +178,12 @@
 			<version>1.19.4</version>
 		</dependency>
 
-<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-server -->
-<dependency>
-    <groupId>org.glassfish.jersey.core</groupId>
-    <artifactId>jersey-server</artifactId>
-    <version>2.27</version>
-</dependency>
+		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-server -->
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>2.27</version>
+		</dependency>
 
 		<!-- Spring 4 dependencies -->
 		<dependency>
@@ -317,25 +321,25 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-	        <groupId>org.apache.velocity</groupId>
-	        <artifactId>velocity</artifactId>
-	        <version>1.6.4</version>
-	    </dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<version>1.6.4</version>
+		</dependency>
 		<!-- Servlet -->
 		<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
-<dependency>
-    <groupId>javax.servlet</groupId>
-    <artifactId>javax.servlet-api</artifactId>
-    <version>4.0.1</version>
-    <scope>provided</scope>
-</dependency>
-<!-- https://mvnrepository.com/artifact/javax.servlet.jsp/jsp-api -->
-<dependency>
-    <groupId>javax.servlet.jsp</groupId>
-    <artifactId>jsp-api</artifactId>
-    <version>2.2.1-b03</version>
-    <scope>provided</scope>
-</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.servlet.jsp/jsp-api -->
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.2.1-b03</version>
+			<scope>provided</scope>
+		</dependency>
 
 
 		<dependency>
@@ -343,22 +347,29 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
-		<!-- Spring data mongodb -->
+		<!-- Spring data mongodb 2.0.9, 3.5.0-->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
-			<version>2.0.9.RELEASE</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>spring-data-commons</artifactId>
-					<groupId>org.springframework.data</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+			<version>2.1.1.RELEASE</version>
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>spring-data-commons</artifactId> -->
+<!-- 					<groupId>org.springframework.data</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 	<dependency> -->
+<!--     <groupId>org.springframework.data</groupId> -->
+<!--     <artifactId>spring-data-commons</artifactId> -->
+<!--     <version>2.1.13.RELEASE</version> -->
+</dependency>
+
+		
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
-			<version>3.5.0</version>
+			<version>3.8.2</version>
 		</dependency>
 		<dependency>
 			<groupId>cglib</groupId>
@@ -497,21 +508,28 @@
 			<artifactId>xml-apis</artifactId>
 			<version>1.4.01</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<version>5.4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers-common</artifactId>
-			<version>5.4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-queryparser</artifactId>
-			<version>5.4.1</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.lucene</groupId> -->
+<!-- 			<artifactId>lucene-analyzers-common</artifactId> -->
+<!-- 			<version>5.4.1</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-core</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.lucene</groupId> -->
+<!-- 			<artifactId>lucene-queryparser</artifactId> -->
+<!-- 			<version>5.4.1</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-core</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>ar.com.fdvs</groupId>
 			<artifactId>DynamicJasper</artifactId>
@@ -1025,120 +1043,295 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-elasticsearch</artifactId>
-			<version>3.0.1.RELEASE</version>
+			<version>3.2.0.M2</version>
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-backward-codecs</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-grouping</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-suggest</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-spatial</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-join</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-misc</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-spatial3d</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-highlighter</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-memory</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-spatial-extras</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-core</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.elasticsearch.client</groupId> -->
+<!-- 					<artifactId>transport</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.elasticsearch</groupId> -->
+<!-- 					<artifactId>elasticsearch</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.elasticsearch</groupId> -->
+<!-- 					<artifactId>elasticsearch-core</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>net.sf.jopt-simple</groupId> -->
+<!-- 					<artifactId>jopt-simple</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>com.carrotsearch</groupId> -->
+<!-- 					<artifactId>hppc</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.yaml</groupId> -->
+<!-- 					<artifactId>snakeyaml</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>com.tdunning</groupId> -->
+<!-- 					<artifactId>t-digest</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.elasticsearch.plugin</groupId> -->
+<!-- 					<artifactId>reindex-client</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.hdrhistogram</groupId> -->
+<!-- 					<artifactId>HdrHistogram</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.elasticsearch.plugin</groupId> -->
+<!-- 					<artifactId>lang-mustache-client</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.httpcomponents</groupId> -->
+<!-- 					<artifactId>httpasyncclient</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.httpcomponents</groupId> -->
+<!-- 					<artifactId>httpcore-nio</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>io.netty</groupId> -->
+<!-- 					<artifactId>netty-common</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.elasticsearch.plugin</groupId> -->
+<!-- 					<artifactId>percolator-client</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.elasticsearch.plugin</groupId> -->
+<!-- 					<artifactId>transport-netty4-client</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>io.netty</groupId> -->
+<!-- 					<artifactId>netty-buffer</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.elasticsearch.plugin</groupId> -->
+<!-- 					<artifactId>parent-join-client</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>io.netty</groupId> -->
+<!-- 					<artifactId>netty-codec-http</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>com.github.spullara.mustache.java</groupId> -->
+<!-- 					<artifactId>compiler</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>io.netty</groupId> -->
+<!-- 					<artifactId>netty-handler</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>io.netty</groupId> -->
+<!-- 					<artifactId>netty-codec</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>io.netty</groupId> -->
+<!-- 					<artifactId>netty-transport</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.elasticsearch.plugin</groupId> -->
+<!-- 					<artifactId>rank-eval-client</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>io.netty</groupId> -->
+<!-- 					<artifactId>netty-resolver</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>com.vividsolutions</groupId> -->
+<!-- 					<artifactId>jts</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
 			<exclusions>
 				<exclusion>
-					<artifactId>spring-data-commons</artifactId>
 					<groupId>org.springframework.data</groupId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-backward-codecs</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-grouping</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-suggest</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-spatial</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-join</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-misc</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-spatial3d</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-highlighter</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-memory</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-spatial-extras</artifactId>
+					<artifactId>spring-data-commons</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-commons -->
-<dependency>
-    <groupId>org.springframework.data</groupId>
-    <artifactId>spring-data-commons</artifactId>
-    <version>2.0.9.RELEASE</version>
-</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-backward-codecs -->
-		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
-<dependency>
-    <groupId>org.apache.lucene</groupId>
-    <artifactId>lucene-core</artifactId>
-    <version>6.6.5</version>
-</dependency>
-		
-<dependency>
-    <groupId>org.apache.lucene</groupId>
-    <artifactId>lucene-backward-codecs</artifactId>
-    <version>5.4.1</version>
-</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.elasticsearch.client</groupId> -->
+<!-- 			<artifactId>transport</artifactId> -->
+<!-- 			<version>6.6.0</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>commons-logging</groupId> -->
+<!-- 					<artifactId>commons-logging</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+		<!-- https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch -->
+<!-- <dependency> -->
+<!--     <groupId>org.elasticsearch</groupId> -->
+<!--     <artifactId>elasticsearch</artifactId> -->
+<!--     <version>6.6.0</version> -->
+<!-- 	<exclusions> -->
+<!-- 		<exclusion> -->
+<!-- 			<groupId>org.apache.lucene</groupId> -->
+<!-- 			<artifactId>lucene-core</artifactId> -->
+<!-- 		</exclusion> -->
+<!-- 		<exclusion> -->
+<!-- 			<groupId>org.apache.lucene</groupId> -->
+<!-- 			<artifactId>lucene-backward-codecs</artifactId> -->
+<!-- 		</exclusion> -->
+<!-- 	</exclusions> -->
+<!-- </dependency> -->
+
+
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.lucene</groupId> -->
+<!-- 			<artifactId>lucene-backward-codecs</artifactId> -->
+<!-- 			<version>7.7.0</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-core</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.lucene</groupId> -->
+<!-- 			<artifactId>lucene-grouping</artifactId> -->
+<!-- 			<version>7.7.0</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-core</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.lucene</groupId> -->
+<!-- 			<artifactId>lucene-suggest</artifactId> -->
+<!-- 			<version>7.7.0</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-core</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.lucene</groupId> -->
+<!-- 			<artifactId>lucene-spatial</artifactId> -->
+<!-- 			<version>7.7.0</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-core</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.lucene</groupId> -->
+<!-- 			<artifactId>lucene-join</artifactId> -->
+<!-- 			<version>7.7.0</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-core</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.lucene</groupId> -->
+<!-- 			<artifactId>lucene-misc</artifactId> -->
+<!-- 			<version>7.7.0</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-core</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.lucene</groupId> -->
+<!-- 			<artifactId>lucene-spatial3d</artifactId> -->
+<!-- 			<version>7.7.0</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-core</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.lucene</groupId> -->
+<!-- 			<artifactId>lucene-highlighter</artifactId> -->
+<!-- 			<version>7.7.0</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-core</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.lucene</groupId> -->
+<!-- 			<artifactId>lucene-memory</artifactId> -->
+<!-- 			<version>7.7.0</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.lucene</groupId> -->
+<!-- 					<artifactId>lucene-core</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-orm -->
 		<dependency>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-grouping</artifactId>
-					<version>6.6.5</version>
-				</dependency>
-				<dependency>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-suggest</artifactId>
-					<version>6.6.5</version>
-				</dependency>
-				<dependency>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-spatial</artifactId>
-					<version>6.6.5</version>
-				</dependency>
-				<dependency>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-join</artifactId>
-					<version>6.6.5</version>
-				</dependency>
-				<dependency>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-misc</artifactId>
-					<version>6.6.5</version>
-				</dependency>
-				<dependency>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-spatial3d</artifactId>
-					<version>6.6.5</version>
-				</dependency>
-				<dependency>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-highlighter</artifactId>
-					<version>6.6.5</version>
-				</dependency>
-				<dependency>
-					<groupId>org.apache.lucene</groupId>
-					<artifactId>lucene-memory</artifactId>
-					<version>6.6.5</version>
-				</dependency>
-				<!-- https://mvnrepository.com/artifact/org.springframework/spring-orm -->
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-orm</artifactId>
-    <version>5.0.8.RELEASE</version>
-</dependency>
-				
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>5.0.8.RELEASE</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/com.twilio.sdk/twilio-java-sdk -->
 		<dependency>
 			<groupId>com.twilio.sdk</groupId>
@@ -1172,26 +1365,26 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.ow2.asm/asm -->
 		<dependency>
-		    <groupId>org.ow2.asm</groupId>
-		    <artifactId>asm</artifactId>
-		    <version>6.2.1</version>
-		</dependency>		
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
+			<version>6.2.1</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.jboss.spec.javax.net.ssl/jboss-jsse-api_8.0_spec -->
-<dependency>
-    <groupId>org.jboss.spec.javax.net.ssl</groupId>
-    <artifactId>jboss-jsse-api_8.0_spec</artifactId>
-    <version>1.0.0.Final</version>
-</dependency>
 		<dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver</artifactId>
-            <version>3.4.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jkutner</groupId>
-            <artifactId>env-keystore</artifactId>
-            <version>0.1.2</version>
-        </dependency>
+			<groupId>org.jboss.spec.javax.net.ssl</groupId>
+			<artifactId>jboss-jsse-api_8.0_spec</artifactId>
+			<version>1.0.0.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver</artifactId>
+			<version>3.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.jkutner</groupId>
+			<artifactId>env-keystore</artifactId>
+			<version>0.1.2</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<testResources>
@@ -1205,39 +1398,14 @@
 			</testResource>
 
 		</testResources>
-
-
 		<plugins>
-			<!-- <plugin> -->
-			<!-- <groupId>org.apache.maven.plugins</groupId> -->
-			<!-- <artifactId>maven-install-plugin</artifactId> -->
-			<!-- <version>2.3.1</version> -->
-			<!-- <executions> -->
-			<!-- <execution> -->
-			<!-- <id>install-external</id> -->
-			<!-- <phase>clean</phase> -->
-			<!-- <configuration> -->
-			<!-- <file>${basedir}/WEB-INF/lib/jasperreports-htmlcomponent-5.0.1.jar</file> -->
-			<!-- <repositoryLayout>default</repositoryLayout> -->
-			<!-- <groupId>net.sf.jasperreports</groupId> -->
-			<!-- <artifactId>jasperreports-htmlcomponent</artifactId> -->
-			<!-- <version>5.0.1</version> -->
-			<!-- <packaging>jar</packaging> -->
-			<!-- <generatePom>true</generatePom> -->
-			<!-- </configuration> -->
-			<!-- <goals> -->
-			<!-- <goal>install-file</goal> -->
-			<!-- </goals> -->
-			<!-- </execution> -->
-			<!-- </executions> -->
-			<!-- </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>10</source>
+					<target>10</target>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -1260,10 +1428,5 @@
 			<id>jaspersoft-third-party</id>
 			<url>http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/</url>
 		</repository>
-		<!-- <repository> -->
-		<!-- <id>project.local</id> -->
-		<!-- <name>project</name> -->
-		<!-- <url>file:${project.basedir}/repo</url> -->
-		<!-- </repository> -->
 	</repositories>
 </project>

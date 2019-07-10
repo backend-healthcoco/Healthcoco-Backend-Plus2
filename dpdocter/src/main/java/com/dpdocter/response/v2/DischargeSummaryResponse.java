@@ -6,9 +6,9 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.beans.FlowSheet;
-import com.dpdocter.beans.v2.Prescription;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.beans.v2.Prescription;
 import com.dpdocter.collections.GenericCollection;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)

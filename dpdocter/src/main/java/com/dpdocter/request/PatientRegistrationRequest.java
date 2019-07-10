@@ -6,7 +6,6 @@ import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.MedicalHistoryHandler;
-import com.dpdocter.beans.PersonalHistory;
 import com.dpdocter.beans.PersonalInformation;
 import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.beans.Reference;

@@ -9,19 +9,19 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "pa_in", type = "pa")
 public class ESPADocument {
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String id;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String pa;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String doctorId;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String locationId;
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String hospitalId;
 
 	@Field(type = FieldType.Boolean)
@@ -30,7 +30,7 @@ public class ESPADocument {
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
 
-	@Field(type = FieldType.text)
+	@Field(type = FieldType.Text)
 	private String speciality;
 
 	public String getId() {

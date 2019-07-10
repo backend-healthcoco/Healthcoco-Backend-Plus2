@@ -2,7 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import com.dpdocter.beans.LabReports;
 import com.dpdocter.request.AddEditProcedureSheetRequest;
 import com.dpdocter.request.AddEditProcedureSheetStructureRequest;
 import com.dpdocter.response.ImageURLResponse;
