@@ -53,7 +53,7 @@ public class PatientVisitApi {
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "patientId") String patientId, @QueryParam(value = "page") int page,
 			@QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@QueryParam("visitFor") String visitFor) {
+			@QueryParam("visitFor") String visitFor, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(patientId, hospitalId, locationId)) {
 			logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
@@ -65,7 +65,7 @@ public class PatientVisitApi {
 		}
 		List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId,
 				patientId, page, size, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId),
-				updatedTime, visitFor);
+				updatedTime, visitFor, discarded);
 
 		Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
 		response.setDataList(patienVisitResponse);
