@@ -1,7 +1,6 @@
 
 package com.dpdocter.services.impl;
 
-import java.awt.Color;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -1356,7 +1355,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-		
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$F{complaints}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaintHistory}", "$F{presentComplaintHistory}", fieldWidth,
@@ -5167,8 +5165,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{MaterialForHPE}", "$P{materialForHPE}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{Remarks}", "$P{remarks}", fieldWidth, false, 0, false);
 
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDrugs(parameters, contentFontSize, columnWidth,
-				pageWidth, pageHeight, "$P{prescriptionItems}", normalStyle));
 	}
 
 	private void createDeliveryReports(JasperDesign jasperDesign, Map<String, Object> parameters,
