@@ -18,6 +18,7 @@ public class UIPermissions {
 	private List<String> admitCardPermissions = new ArrayList<String>();
 	private String landingPagePermissions = "CONTACTS";
 	private List<String> patientCertificatePermissions = new ArrayList<String>();
+	private Boolean showSidePanels = true;
 	
 	public List<String> getTabPermissions() {
 		return tabPermissions;
@@ -99,6 +100,14 @@ public class UIPermissions {
 		this.patientCertificatePermissions = patientCertificatePermissions;
 	}
 
+	public Boolean getShowSidePanels() {
+		return showSidePanels;
+	}
+
+	public void setShowSidePanels(Boolean showSidePanels) {
+		this.showSidePanels = showSidePanels;
+	}
+
 	@Override
 	public String toString() {
 		return "UIPermissions [tabPermissions=" + tabPermissions + ", patientVisitPermissions="
@@ -107,9 +116,6 @@ public class UIPermissions {
 				+ ", vitalSignPermissions=" + vitalSignPermissions + ", dischargeSummaryPermissions="
 				+ dischargeSummaryPermissions + ", admitCardPermissions=" + admitCardPermissions
 				+ ", landingPagePermissions=" + landingPagePermissions + ", patientCertificatePermissions="
-				+ patientCertificatePermissions + "]";
+				+ patientCertificatePermissions + ", showSidePanels=" + showSidePanels + "]";
 	}
-
-	
-	
 }

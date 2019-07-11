@@ -53,6 +53,7 @@ import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.Doctor;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.Event;
+import com.dpdocter.beans.FieldsCollection;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LabTest;
@@ -733,7 +734,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 					appointmentCollection.setNotifyPatientByEmail(request.getNotifyPatientByEmail());
 					appointmentCollection.setNotifyPatientBySms(request.getNotifyPatientByEmail());
 					appointmentCollection.setUpdatedTime(new Date());
-					appointmentCollection.setTreatmentFields(request.getTreatmentFields());
+					
+					if(request.getTreatmentFields() != null && !request.getTreatmentFields().isEmpty()) {
+						List<FieldsCollection> fieldsCollections = new ArrayList<FieldsCollection>();
+						for(com.dpdocter.beans.Fields fields : request.getTreatmentFields()) {
+							FieldsCollection fieldsCollection = new FieldsCollection();
+							BeanUtil.map(fields, fieldsCollection);
+							fieldsCollections.add(fieldsCollection);
+						}
+						appointmentCollection.setTreatmentFields(fieldsCollections);
+					}
 					appointmentCollection = appointmentRepository.save(appointmentCollection);
 
 					if (updateVisit && !DPDoctorUtils.anyStringEmpty(appointmentCollection.getVisitId())) {
