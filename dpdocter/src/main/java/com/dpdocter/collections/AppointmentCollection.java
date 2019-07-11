@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Fields;
+import com.dpdocter.beans.FieldsCollection;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
@@ -127,7 +128,7 @@ public class AppointmentCollection extends GenericCollection {
 	private List<ObjectId> doctorIds;
 
 	@Field
-	private List<Fields> treatmentFields;
+	private List<FieldsCollection> treatmentFields;
 
 	@Field
 	private Boolean isCreatedByPatient = false;
@@ -404,11 +405,11 @@ public class AppointmentCollection extends GenericCollection {
 		this.doctorIds = doctorIds;
 	}
 
-	public List<Fields> getTreatmentFields() {
+	public List<FieldsCollection> getTreatmentFields() {
 		return treatmentFields;
 	}
 
-	public void setTreatmentFields(List<Fields> treatmentFields) {
+	public void setTreatmentFields(List<FieldsCollection> treatmentFields) {
 		this.treatmentFields = treatmentFields;
 	}
 
