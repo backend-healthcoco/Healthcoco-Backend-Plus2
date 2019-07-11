@@ -2836,7 +2836,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	public Event updateEvent(EventRequest request, Boolean forAllDoctors) {
