@@ -2,18 +2,18 @@ package com.dpdocter.beans;
 
 import org.bson.types.ObjectId;
 
-public class Fields {
+public class FieldsCollection {
 
-	private String key;
+private String key;
 	
 	private String value;
 
 	private String type;
-	
+		
 	private String name;
 
-	private String id;
-	
+	private ObjectId id;
+
 	public String getKey() {
 		return key;
 	}
@@ -46,16 +46,17 @@ public class Fields {
 		this.name = name;
 	}
 
-	public String getId() {
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 
 	@Override
 	public String toString() {
-		return "Fields [key=" + key + ", value=" + value + ", type=" + type + ", name=" + name + ", id=" + id + "]";
+		return "FieldsCollection [key=" + key + ", value=" + value + ", type=" + type + ", name=" + name + ", id=" + id
+				+ "]";
 	}
 }
