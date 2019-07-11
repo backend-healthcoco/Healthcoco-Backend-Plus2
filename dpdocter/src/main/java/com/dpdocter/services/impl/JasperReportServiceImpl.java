@@ -999,6 +999,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		return band;
 	}
 
+	@SuppressWarnings("deprecation")
 	private JRBand createPageHeader(JRDesignDatasetRun dsr, int columnWidth, Boolean showTableOne,
 			Map<String, Object> parameters) throws JRException {
 		band = new JRDesignBand();
@@ -1349,6 +1350,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		addItems(jasperDesign, columnWidth, "$P{PastHistory}", "$F{pastHistory}", fieldWidth, false, 0, false);
+		
 		addItems(jasperDesign, columnWidth, "$P{PriorConsultations}", "$F{priorConsultations}", fieldWidth, false, 0,
 				false);
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$F{complaints}", fieldWidth, false, 0, false);
@@ -2143,6 +2145,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 	}
 
+	@SuppressWarnings("unused")
 	private void addsignature(JasperDesign jasperDesign, Map<String, Object> parameter, Integer contentFontSize,
 			JRDesignStyle normalStyle, int columnWidth) {
 
@@ -3956,6 +3959,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	}
 
+	@SuppressWarnings("unused")
 	private JRDesignBand addDentalLabWork(Map<String, Object> parameters, Integer contentFontSize, int columnWidth,
 			int pageWidth, int pageHeight, String itemsValue, JRDesignStyle normalStyle) throws JRException {
 		JasperDesign jasperDesign = JRXmlLoader
@@ -4872,14 +4876,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 				false);
 		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$P{provisionalDiagnosis}", fieldWidth, false,
 				0, false);
+		addItems(jasperDesign, columnWidth, "$P{SurgeryTitle}", "$P{surgeryTitle}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{OperationalNotes}", "$P{operationalNotes}", fieldWidth, false, 0,
+				false);
 		addItems(jasperDesign, columnWidth, "$P{FinalDiagnosis}", "$P{finalDiagnosis}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{OperatingSurgeon}", "$P{operatingSurgeon}", fieldWidth, false, 0,
 				false);
 		addItems(jasperDesign, columnWidth, "$P{Anaesthetist}", "$P{anaesthetist}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{AssistingDoctor}", "$P{assistingDoctor}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{AssistingNurse}", "$P{assistingNurse}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{MaterialForHPE}", "$P{materialForHPE}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{Remarks}", "$P{remarks}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{OperationalNotes}", "$P{operationalNotes}", fieldWidth, false, 0,
-				false);
 	}
 
 	private void createDeliveryReports(JasperDesign jasperDesign, Map<String, Object> parameters,
@@ -7654,6 +7661,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	private void createDentalImagingInvoiceSubreport(JasperDesign jasperDesign, Map<String, Object> parameters,
 			Integer contentFontSize, int columnWidth, int pageWidth, int pageHeight, JRDesignStyle normalStyle)
 			throws JRException {
