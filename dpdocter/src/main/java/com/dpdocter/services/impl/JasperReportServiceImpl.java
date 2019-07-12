@@ -1350,7 +1350,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		addItems(jasperDesign, columnWidth, "$P{PastHistory}", "$F{pastHistory}", fieldWidth, false, 0, false);
-		
+
 		addItems(jasperDesign, columnWidth, "$P{PriorConsultations}", "$F{priorConsultations}", fieldWidth, false, 0,
 				false);
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$F{complaints}", fieldWidth, false, 0, false);
@@ -4839,7 +4839,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 	}
 
 	private void createOTReports(JasperDesign jasperDesign, Map<String, Object> parameters, Integer contentFontSize,
-			int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle) {
+			int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle) throws JRException {
 		int fieldWidth = 123;
 		if (contentFontSize > 13)
 			fieldWidth = 150;
@@ -4887,6 +4887,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{AssistingNurse}", "$P{assistingNurse}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{MaterialForHPE}", "$P{materialForHPE}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{Remarks}", "$P{remarks}", fieldWidth, false, 0, false);
+
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDrugs(parameters, contentFontSize, columnWidth,
+				pageWidth, pageHeight, "$P{prescriptionItems}", normalStyle));
 	}
 
 	private void createDeliveryReports(JasperDesign jasperDesign, Map<String, Object> parameters,
