@@ -36,6 +36,8 @@ import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.OTReports;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.beans.PrescriptionItemDetail;
+import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.TimeDuration;
 import com.dpdocter.collections.DeliveryReportsCollection;
@@ -52,6 +54,7 @@ import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -987,7 +990,7 @@ public class ReportsServiceImpl implements ReportsService {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		String nameAndCost = "";
-
+		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				new ObjectId(otReportsLookupResponse.getDoctorId()),
 				new ObjectId(otReportsLookupResponse.getLocationId()),
@@ -1122,6 +1125,148 @@ public class ReportsServiceImpl implements ReportsService {
 			}
 		}
 
+		int no = 0;
+		Boolean showIntructions = false, showDirection = false, showDrugQty = false;
+		
+		if (otReportsLookupResponse.getPostOperativeOrder() != null && !otReportsLookupResponse.getPostOperativeOrder().isEmpty())
+			for (PrescriptionItemDetail prescriptionItem : otReportsLookupResponse.getPostOperativeOrder()) {
+				if (prescriptionItem != null && prescriptionItem.getDrug() != null) {
+					DrugCollection drug = drugRepository.findOne(new ObjectId(prescriptionItem.getDrug().getId()));
+					if (drug != null) {
+						String drugType = drug.getDrugType() != null
+								? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " " : "")
+								: "";
+						String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
+						String genericName = "";
+						if (printSettings.getShowDrugGenericNames() && drug.getGenericNames() != null
+								&& !drug.getGenericNames().isEmpty()) {
+							for (GenericCode genericCode : drug.getGenericNames()) {
+								if (DPDoctorUtils.anyStringEmpty(genericName))
+									genericName = genericCode.getName();
+								else
+									genericName = genericName + "+" + genericCode.getName();
+							}
+							genericName = "<br><font size='1'><i>" + genericName + "</i></font>";
+						}
+						if (drug.getDrugTypePlacement() != null) {
+							if (drug.getDrugTypePlacement().equalsIgnoreCase("PREFIX")) {
+								drugName = (drugType + drugName) == "" ? "--"
+										: drugType + " " + drugName + genericName;
+							} else if (drug.getDrugTypePlacement().equalsIgnoreCase("SUFFIX")) {
+								drugName = (drugType + drugName) == "" ? "--"
+										: drugName + " " + drugType + genericName;
+							}
+						} else {
+							drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName + genericName;
+						}
+						// drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName +
+						// genericName;
+						String durationValue = prescriptionItem.getDuration() != null
+								? (prescriptionItem.getDuration().getValue() != null
+										? prescriptionItem.getDuration().getValue()
+										: "")
+								: "";
+						String durationUnit = prescriptionItem.getDuration() != null
+								? (prescriptionItem.getDuration().getDurationUnit() != null
+										? (!DPDoctorUtils.anyStringEmpty(
+												prescriptionItem.getDuration().getDurationUnit().getUnit())
+														? prescriptionItem.getDuration().getDurationUnit().getUnit()
+														: "")
+										: "")
+								: "";
+
+						String directions = "";
+						if (prescriptionItem.getDirection() != null && !prescriptionItem.getDirection().isEmpty()) {
+							showDirection = true;
+							if (prescriptionItem.getDirection().get(0).getDirection() != null) {
+								if (directions == "")
+									directions = directions
+											+ (prescriptionItem.getDirection().get(0).getDirection());
+								else
+									directions = directions + ","
+											+ (prescriptionItem.getDirection().get(0).getDirection());
+							}
+						}
+						if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
+							if (printSettings.getContentSetup() != null) {
+								if (printSettings.getContentSetup().getInstructionAlign() != null && printSettings
+										.getContentSetup().getInstructionAlign().equals(FieldAlign.HORIZONTAL)) {
+									prescriptionItem.setInstructions(
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+													? "<b>Instruction </b>: " + prescriptionItem.getInstructions()
+													: null);
+								} else {
+									prescriptionItem.setInstructions(
+											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+													? prescriptionItem.getInstructions()
+													: null);
+								}
+							} else {
+								prescriptionItem.setInstructions(
+										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+												? prescriptionItem.getInstructions()
+												: null);
+							}
+
+							showIntructions = true;
+						}
+						String duration = "";
+						if (durationValue == "" && durationValue == "")
+							duration = "--";
+						else
+							duration = durationValue + " " + durationUnit;
+
+						PrescriptionJasperDetails prescriptionJasperDetails = null;
+						if (printSettings.getContentSetup() != null) {
+							if (printSettings.getContentSetup().getInstructionAlign() != null && printSettings
+									.getContentSetup().getInstructionAlign().equals(FieldAlign.HORIZONTAL)) {
+
+								prescriptionJasperDetails = new PrescriptionJasperDetails(no, drugName,
+										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+												? prescriptionItem.getDosage()
+												: "--",
+										duration, directions.isEmpty() ? "--" : directions,
+										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+												? prescriptionItem.getInstructions()
+												: null,
+										genericName);
+							} else {
+								prescriptionJasperDetails = new PrescriptionJasperDetails(no, drugName,
+										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+												? prescriptionItem.getDosage()
+												: "--",
+										duration, directions.isEmpty() ? "--" : directions,
+										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+												? prescriptionItem.getInstructions()
+												: "--",
+										genericName);
+							}
+						} else {
+							prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
+									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+											? prescriptionItem.getDosage()
+											: "--",
+									duration, directions.isEmpty() ? "--" : directions,
+									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+											? prescriptionItem.getInstructions()
+											: "--",
+									genericName);
+						}
+						if (prescriptionItem.getDrugQuantity() == null) {
+							prescriptionJasperDetails.setDrugQuantity("0");
+						} else {
+							showDrugQty = true;
+							prescriptionJasperDetails
+									.setDrugQuantity(prescriptionItem.getDrugQuantity().toString());
+						}
+						prescriptionItems.add(prescriptionJasperDetails);
+					}
+				}
+			}
+
+		parameters.put("showIntructions", showIntructions);
+		parameters.put("showDirection", showDirection);
+		parameters.put("prescriptionItems", prescriptionItems);
 		parameters.put("assistingNurse", nameAndCost);
 		parameters.put("materialForHPE",
 				otReportsLookupResponse.getMaterialForHPE() != null && otReportsLookupResponse.getMaterialForHPE()

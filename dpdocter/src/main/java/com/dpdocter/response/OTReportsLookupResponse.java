@@ -7,7 +7,7 @@ import com.dpdocter.beans.DoctorAndCost;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.Surgery;
 import com.dpdocter.beans.TimeDuration;
-import com.dpdocter.beans.v2.PrescriptionItemDetail;
+import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -288,7 +288,6 @@ public class OTReportsLookupResponse extends GenericCollection {
 	public void setAssitingNursesAndCost(List<DoctorAndCost> assitingNursesAndCost) {
 		this.assitingNursesAndCost = assitingNursesAndCost;
 	}
-
 
 	public List<PrescriptionItemDetail> getPostOperativeOrder() {
 		return postOperativeOrder;
