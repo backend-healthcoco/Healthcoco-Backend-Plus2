@@ -14,5 +14,7 @@ public interface DoctorContactUsService {
 	public DoctorContactUs updateDoctorContactState(String contactId, DoctorContactStateType contactState);
 
 	public List<DoctorContactUs> getDoctorContactList(int page, int size, String searchTerm);
+
+	Boolean resendWelcomeMessage(String emailAddress);
 	
 }

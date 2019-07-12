@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.DietplanItem;
 import com.dpdocter.beans.MealQuantity;
+import com.dpdocter.enums.NutritionPlanType;
 @Document(collection = "diet_plan_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class DietPlanCollection extends GenericCollection {
@@ -18,6 +19,12 @@ public class DietPlanCollection extends GenericCollection {
 	private ObjectId id;
 	@Field
 	private String uniquePlanId;
+	@Field
+	private String title;
+	@Field
+	private NutritionPlanType type;
+	@Field
+	private ObjectId planId;
 	@Field
 	private ObjectId doctorId;
 	@Field

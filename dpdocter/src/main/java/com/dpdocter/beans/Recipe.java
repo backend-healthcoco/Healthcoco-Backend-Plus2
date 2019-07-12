@@ -19,6 +19,8 @@ public class Recipe extends GenericCollection {
 
 	private List<String> recipeImages;
 
+	private String thumbnailImage;
+
 	private List<RecipeAddItem> includeIngredients;
 
 	private List<RecipeAddItem> excludeIngredients;
@@ -415,6 +417,14 @@ public class Recipe extends GenericCollection {
 
 	public void setCostType(LevelType costType) {
 		this.costType = costType;
+	}
+
+	public String getThumbnailImage() {
+		return thumbnailImage;
+	}
+
+	public void setThumbnailImage(String thumbnailImage) {
+		this.thumbnailImage = thumbnailImage;
 	}
 
 }

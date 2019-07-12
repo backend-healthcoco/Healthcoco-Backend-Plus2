@@ -8,6 +8,8 @@ public class PlanDescriptionPrices {
 
 	private Double discountedAmount = 0.0;
 
+	private String currencySymbol;
+
 	public Double getAmount() {
 		return amount;
 	}
@@ -30,6 +32,14 @@ public class PlanDescriptionPrices {
 
 	public void setDiscountedAmount(Double discountedAmount) {
 		this.discountedAmount = discountedAmount;
+	}
+
+	public String getCurrencySymbol() {
+		return currencySymbol;
+	}
+
+	public void setCurrencySymbol(String currencySymbol) {
+		this.currencySymbol = currencySymbol;
 	}
 
 }

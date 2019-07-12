@@ -3,7 +3,9 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.enums.LevelType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RecipeAddItem {
 	private String id;
 

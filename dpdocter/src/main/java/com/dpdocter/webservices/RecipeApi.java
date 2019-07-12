@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dpdocter.beans.Ingredient;
 import com.dpdocter.beans.Nutrient;
 import com.dpdocter.beans.Recipe;
+import com.dpdocter.beans.RecipeStep;
 import com.dpdocter.elasticsearch.document.ESIngredientDocument;
 import com.dpdocter.elasticsearch.document.ESNutrientDocument;
 import com.dpdocter.elasticsearch.document.ESRecipeDocument;
@@ -370,6 +371,23 @@ public class RecipeApi {
 		}
 		Response<RecipeCardResponse> response = new Response<RecipeCardResponse>();
 		response.setDataList(recipeService.getRecipeByPlanId(size, page, planId));
+		return response;
+	}
+	
+
+	@Path(value = PathProxy.RecipeUrls.GET_RECIPE_STEPS)
+	@GET
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPE_STEPS, notes = PathProxy.RecipeUrls.GET_RECIPE_STEPS)
+	public Response<RecipeStep> getRecipeSteps(@PathParam("recipeId") String recipeId) {
+
+		if (DPDoctorUtils.anyStringEmpty(recipeId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		RecipeStep recipeSteps = recipeService.getRecipeStepByRecipeId(recipeId);
+		Response<RecipeStep> response = new Response<RecipeStep>();
+		response.setData(recipeSteps);
 		return response;
 	}
 }

@@ -1,5 +1,8 @@
 package com.dpdocter.response;
 
+import java.util.Map;
+
+import com.dpdocter.beans.PlanPriceDescription;
 import com.dpdocter.enums.NutritionPlanType;
 
 public class NutritionPlanShortResponse {
@@ -27,6 +30,8 @@ public class NutritionPlanShortResponse {
 	private String secondaryBackgroundColor;
 
 	private Boolean discarded = false;
+
+	private Map<String, PlanPriceDescription> planPriceDescription;
 
 	public String getId() {
 		return id;
@@ -124,6 +129,14 @@ public class NutritionPlanShortResponse {
 		this.discarded = discarded;
 	}
 
+	public Map<String, PlanPriceDescription> getPlanPriceDescription() {
+		return planPriceDescription;
+	}
+
+	public void setPlanPriceDescription(Map<String, PlanPriceDescription> planPriceDescription) {
+		this.planPriceDescription = planPriceDescription;
+	}
+
 	@Override
 	public String toString() {
 		return "NutritionPlanShortResponse [id=" + id + ", title=" + title + ", type=" + type + ", planDescription="
@@ -132,7 +145,5 @@ public class NutritionPlanShortResponse {
 				+ ", backgroundColor=" + backgroundColor + ", secondaryBackgroundColor=" + secondaryBackgroundColor
 				+ ", discarded=" + discarded + "]";
 	}
-	
-	
 
 }

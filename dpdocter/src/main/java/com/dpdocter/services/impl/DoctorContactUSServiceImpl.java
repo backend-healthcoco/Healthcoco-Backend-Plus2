@@ -109,6 +109,44 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 		return response;
 	}
 
+	
+	@Override
+	@Transactional
+	public Boolean resendWelcomeMessage(String emailAddress) {
+		Boolean response = false;
+		DoctorContactUsCollection doctorContactUsCollection = null;
+		if (emailAddress != null) {
+			
+			try {
+				doctorContactUsCollection = doctorContactUsRepository.findByEmailIdAndUserName(emailAddress);
+				
+				if(doctorContactUsCollection == null){
+					throw new BusinessException(ServiceError.NoRecord , "Record Not found for email address");
+				}
+
+				
+				TokenCollection tokenCollection = new TokenCollection();
+				tokenCollection.setResourceId(doctorContactUsCollection.getId());
+				tokenCollection.setCreatedTime(new Date());
+				tokenCollection = tokenRepository.save(tokenCollection);
+				
+				String body = mailBodyGenerator.doctorWelcomeEmailBody(
+						doctorContactUsCollection.getTitle() + " " + doctorContactUsCollection.getFirstName(), tokenCollection.getId(),
+						"doctorWelcomeTemplate.vm", null, null);
+				mailService.sendEmail(doctorContactUsCollection.getEmailAddress(), doctorWelcomeSubject, body, null);
+
+				response = true;
+			} catch (BusinessException be) {
+				logger.error(be);
+				throw be;
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e + " Error occured while sending welcome mail");
+				throw new BusinessException(ServiceError.Unknown, " Error occured while sending welcome mail");
+			}
+		}
+		return response;
+	}
 	@Override
 	@Transactional
 	public List<DoctorContactUs> getDoctorContactList(int page, int size, String searchTerm) {

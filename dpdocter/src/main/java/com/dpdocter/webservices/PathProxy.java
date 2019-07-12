@@ -2037,6 +2037,7 @@ public interface PathProxy {
 		public static final String GET_FREQUENT_RECIPE = "frequent/{userId}/get";
 		public static final String GET_FAVOURITE_RECIPE = "favourite/{userId}/get";
 		public static final String GET_RECIPES_BY_PLAN_ID = "getRecipesForPlan";
+		public static final String GET_RECIPE_STEPS = "steps/get/{recipeId}";
 
 	}
 

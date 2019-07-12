@@ -590,7 +590,7 @@ public class NutritionAPI {
 	@Path(PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN_BY_ID, notes = PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN_BY_ID)
-	public Response<NutritionPlan> getNutritionPlanById(@PathParam("id") String id) {
+	public Response<NutritionPlan> getNutritionPlanById(@PathParam("id") String id , @QueryParam("countryCode") String countryCode) {
 
 		Response<NutritionPlan> response = null;
 
@@ -599,7 +599,7 @@ public class NutritionAPI {
 		}
 
 		response = new Response<NutritionPlan>();
-		response.setData(nutritionService.getNutritionPlanById(id));
+		response.setData(nutritionService.getNutritionPlanById(id,countryCode));
 
 		return response;
 	}

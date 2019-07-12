@@ -3,7 +3,9 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.enums.MealTimeEnum;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DietplanAddItem {
 
 	private MealTimeEnum mealTiming;

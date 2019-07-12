@@ -692,6 +692,10 @@ public class ContactsServiceImpl implements ContactsService {
 						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
 						Aggregation.sort(Direction.DESC, "updatedTime"));
 			
+			
+			/*System.out.println("---------------------------");
+			System.out.println("Aggregation :: " + aggregation);
+			System.out.println("---------------------------");*/
 			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientCollection.class, PatientCard.class);
 			patientCards = aggregationResults.getMappedResults();

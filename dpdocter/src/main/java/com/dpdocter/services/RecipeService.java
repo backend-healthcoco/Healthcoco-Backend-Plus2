@@ -5,6 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.Ingredient;
 import com.dpdocter.beans.Nutrient;
 import com.dpdocter.beans.Recipe;
+import com.dpdocter.beans.RecipeStep;
 import com.dpdocter.request.RecipeCounterAddItem;
 import com.dpdocter.response.RecentRecipeResponse;
 import com.dpdocter.response.RecipeCardResponse;
@@ -49,6 +50,8 @@ public interface RecipeService {
 			String locationId, String hospitalId, String planId);
 
 	List<RecipeCardResponse> getRecipeByPlanId(int size, int page, String planId);
+
+	RecipeStep getRecipeStepByRecipeId(String recipeId);
 
 
 }

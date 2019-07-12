@@ -50,7 +50,7 @@ public interface NutritionService {
 
 	public List<NutritionPlanWithCategoryShortResponse> getNutritionPlanDetailsByCategory(NutritionPlanRequest request);
 
-	public NutritionPlan getNutritionPlanById(String id);
+	//public NutritionPlan getNutritionPlanById(String id);
 
 	List<Testimonial> getTestimonialsByPlanId(String planId, int size, int page);
 
@@ -69,4 +69,6 @@ public interface NutritionService {
 	BloodGlucose addEditBloodGlucose(BloodGlucose request);
 
 	SugarSetting addEditSugarSetting(SugarSetting request);
+
+	NutritionPlan getNutritionPlanById(String id, String countryCode);
 }

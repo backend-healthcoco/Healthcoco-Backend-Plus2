@@ -3,7 +3,9 @@ package com.dpdocter.services.impl;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.BloodGlucose;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.NutritionPlan;
+import com.dpdocter.beans.PlanPriceDescription;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.SugarMedicineReminder;
 import com.dpdocter.beans.SugarSetting;
@@ -51,6 +54,7 @@ import com.dpdocter.repository.UserNutritionSubscriptionRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.NutritionPlanRequest;
 import com.dpdocter.response.NutritionPlanResponse;
+import com.dpdocter.response.NutritionPlanShortResponse;
 import com.dpdocter.response.NutritionPlanWithCategoryResponse;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.scheduler.AsyncService;
@@ -587,6 +591,27 @@ public class NutritionServiceImpl implements NutritionService {
 			AggregationResults<NutritionPlanWithCategoryResponse> results = mongoTemplate.aggregate(aggregation,
 					NutritionPlanCollection.class, NutritionPlanWithCategoryResponse.class);
 			response = results.getMappedResults();
+			
+			if(response != null){
+				for (NutritionPlanWithCategoryResponse nutritionPlanWithCategoryResponse : response) {
+					if(nutritionPlanWithCategoryResponse.getNutritionPlan() != null)
+					{
+						for (NutritionPlan nutritionPlan : nutritionPlanWithCategoryResponse.getNutritionPlan()) {
+							if (request.getCountryCode() != null) {
+								if (nutritionPlan.getPlanPriceDescription() != null) {
+									PlanPriceDescription planPriceDescription = nutritionPlan.getPlanPriceDescription().get(request.getCountryCode());
+									if(planPriceDescription != null)
+									{
+									Map<String, PlanPriceDescription> map = new HashMap<>();
+									map.put(request.getCountryCode(), planPriceDescription);
+									nutritionPlan.setPlanPriceDescription(map);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 
 		} catch (BusinessException e) {
 			logger.error("Error while getting nutrition Plan " + e.getMessage());
@@ -720,6 +745,7 @@ public class NutritionServiceImpl implements NutritionService {
 							.append("nutritionPlan.shortPlanDescription", "$shortPlanDescription")
 							.append("nutritionPlan.amount", "$amount")
 							.append("nutritionPlan.discountedAmount", "$discountedAmount")
+							.append("nutritionPlan.planPriceDescription", "$planPriceDescription")
 							.append("nutritionPlan.discarded", "$discarded")
 							.append("nutritionPlan.adminCreatedTime", "$adminCreatedTime")
 							.append("nutritionPlan.createdTime", "$createdTime")
@@ -748,7 +774,28 @@ public class NutritionServiceImpl implements NutritionService {
 			AggregationResults<NutritionPlanWithCategoryShortResponse> results = mongoTemplate.aggregate(aggregation,
 					NutritionPlanCollection.class, NutritionPlanWithCategoryShortResponse.class);
 			response = results.getMappedResults();
-
+			
+			if (response != null) {
+				for (NutritionPlanWithCategoryShortResponse nutritionPlanWithCategoryResponse : response) {
+					if (nutritionPlanWithCategoryResponse.getNutritionPlan() != null) {
+						for (NutritionPlanShortResponse nutritionPlan : nutritionPlanWithCategoryResponse
+								.getNutritionPlan()) {
+							if (request.getCountryCode() != null) {
+								if (nutritionPlan.getPlanPriceDescription() != null) {
+									PlanPriceDescription planPriceDescription = nutritionPlan.getPlanPriceDescription()
+											.get(request.getCountryCode());
+									if (planPriceDescription != null) {
+										planPriceDescription.setPlanPrices(null);
+										Map<String, PlanPriceDescription> map = new HashMap<>();
+										map.put(request.getCountryCode(), planPriceDescription);
+										nutritionPlan.setPlanPriceDescription(map);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		} catch (BusinessException e) {
 			logger.error("Error while getting nutrition Plan " + e.getMessage());
 			e.printStackTrace();
@@ -759,7 +806,7 @@ public class NutritionServiceImpl implements NutritionService {
 	}
 	
 	@Override
-	public NutritionPlan getNutritionPlanById(String id) {
+	public NutritionPlan getNutritionPlanById(String id , String countryCode) {
 		NutritionPlan response = null;
 		try {
 
@@ -780,6 +827,14 @@ public class NutritionServiceImpl implements NutritionService {
 				}
 				if (!DPDoctorUtils.anyStringEmpty(response.getBannerImage())) {
 					response.setBannerImage(getFinalImageURL(response.getBannerImage()));
+				}
+				if (countryCode != null) {
+					if (response.getPlanPriceDescription() != null) {
+						PlanPriceDescription planPriceDescription = response.getPlanPriceDescription().get(countryCode);
+						Map<String, PlanPriceDescription> map = new HashMap<>();
+						map.put(countryCode, planPriceDescription);
+						response.setPlanPriceDescription(map);
+					}
 				}
 			}
 
@@ -1051,22 +1106,19 @@ public class NutritionServiceImpl implements NutritionService {
 		try {
 
 			Aggregation aggregation = null;
-
 			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId));
-
 			aggregation = Aggregation.newAggregation(
 					Aggregation.match(criteria),
 					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
-
 			AggregationResults<SugarMedicineReminder> results = mongoTemplate.aggregate(aggregation,
 					SugarMedicineReminderCollection.class, SugarMedicineReminder.class);
 			response = results.getMappedResults();
 		
 		} catch (BusinessException e) {
 
-			logger.error("Error while getting Blood Glucose " + e.getMessage());
+			logger.error("Error while getting Sugar Medicine Reminders " + e.getMessage());
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while getting Blood GLucose " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Sugar Medicine Reminders " + e.getMessage());
 
 		}
 		return response;

@@ -3,12 +3,21 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.NutritionPlanType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DietPlan extends GenericCollection {
 
 	private String id;
 
 	private String uniquePlanId;
+	
+	private String title;
+
+	private NutritionPlanType type;
+	
+	private String planId;
 
 	private String doctorId;
 
@@ -97,5 +106,30 @@ public class DietPlan extends GenericCollection {
 	public void setItems(List<DietplanAddItem> items) {
 		this.items = items;
 	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public NutritionPlanType getType() {
+		return type;
+	}
+
+	public void setType(NutritionPlanType type) {
+		this.type = type;
+	}
+
+	public String getPlanId() {
+		return planId;
+	}
+
+	public void setPlanId(String planId) {
+		this.planId = planId;
+	}
+	
 
 }

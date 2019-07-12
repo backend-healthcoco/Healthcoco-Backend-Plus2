@@ -20,11 +20,13 @@ import com.dpdocter.beans.Ingredient;
 import com.dpdocter.beans.Nutrient;
 import com.dpdocter.beans.Recipe;
 import com.dpdocter.beans.RecipeItem;
+import com.dpdocter.beans.RecipeStep;
 import com.dpdocter.collections.FavouriteRecipeCollection;
 import com.dpdocter.collections.IngredientCollection;
 import com.dpdocter.collections.MealCounterCollection;
 import com.dpdocter.collections.NutrientCollection;
 import com.dpdocter.collections.RecipeCollection;
+import com.dpdocter.collections.RecipeStepCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESIngredientDocument;
 import com.dpdocter.elasticsearch.document.ESNutrientDocument;
@@ -39,6 +41,7 @@ import com.dpdocter.repository.FavouriteRecipeRepository;
 import com.dpdocter.repository.IngredientRepository;
 import com.dpdocter.repository.NutrientRepository;
 import com.dpdocter.repository.RecipeRepository;
+import com.dpdocter.repository.RecipeStepRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.RecipeCounterAddItem;
 import com.dpdocter.response.RecentRecipeResponse;
@@ -81,6 +84,9 @@ public class RecipeServiceImpl implements RecipeService {
 
 	@Autowired
 	private FavouriteRecipeRepository favouriteRecipeRepository;
+	
+	@Autowired
+	private RecipeStepRepository recipeStepRepository;
 
 	@Override
 	public Nutrient addEditNutrient(Nutrient request) {
@@ -708,6 +714,38 @@ public class RecipeServiceImpl implements RecipeService {
 
 		}
 		return response;
+	}
+	
+	@Override
+	public RecipeStep getRecipeStepByRecipeId(String recipeId) {
+		RecipeStep response = null;
+		try {
+
+			RecipeStepCollection recipeStepCollection = null;
+			if (!DPDoctorUtils.anyStringEmpty(recipeId)) {
+				recipeStepCollection = recipeStepRepository.findByRecipeId(new ObjectId(recipeId));
+				if (recipeStepCollection == null) {
+					throw new BusinessException(ServiceError.InvalidInput, "Recipe steps not found for recipe Id");
+
+				}
+				response = new RecipeStep();
+				BeanUtil.map(recipeStepCollection, response);
+
+			} else {
+				throw new BusinessException(ServiceError.InvalidInput, "Recipe id is null");
+
+			}
+
+		} catch (
+
+		BusinessException e) {
+			logger.error("Error while getting Recipe Step " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Recipe step" + e.getMessage());
+
+		}
+		return response;
+
 	}
 	
 }

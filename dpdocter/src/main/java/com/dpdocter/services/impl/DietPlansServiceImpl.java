@@ -32,6 +32,7 @@ import com.dpdocter.beans.DietPlanRecipeItem;
 import com.dpdocter.beans.DietplanAddItem;
 import com.dpdocter.beans.DietplanItem;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.RecipeAddItem;
 import com.dpdocter.beans.RecipeItem;
 import com.dpdocter.collections.DietPlanCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
@@ -202,6 +203,15 @@ public class DietPlansServiceImpl implements DietPlansService {
 			for (DietPlan dietPlan : response) {
 				for (DietplanAddItem dietplanAddItem : dietPlan.getItems()) {
 					for (DietPlanRecipeAddItem recipeAddItem : dietplanAddItem.getRecipes()) {
+						for (RecipeAddItem item : recipeAddItem.getIngredients()) {
+							item.setGeneralNutrients(null);
+							item.setCarbNutrients(null);
+							item.setLipidNutrients(null);
+							item.setProteinAminoAcidNutrients(null);
+							item.setMineralNutrients(null);
+							item.setOtherNutrients(null);
+							item.setVitaminNutrients(null);
+						}
 						recipeAddItem.setGeneralNutrients(null);
 						recipeAddItem.setCarbNutrients(null);
 						recipeAddItem.setLipidNutrients(null);

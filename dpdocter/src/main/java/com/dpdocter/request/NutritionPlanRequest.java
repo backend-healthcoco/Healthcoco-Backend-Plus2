@@ -10,6 +10,8 @@ public class NutritionPlanRequest {
 
 	private Boolean discarded = false;
 
+	private String countryCode;
+
 	public List<String> getTypes() {
 		return types;
 	}
@@ -32,6 +34,14 @@ public class NutritionPlanRequest {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 }
