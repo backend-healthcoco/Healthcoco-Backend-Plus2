@@ -15,19 +15,19 @@ public class ESTreatmentServiceDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String name;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String speciality;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String locationId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String hospitalId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String doctorId;
 
 	@Field(type = FieldType.Boolean)
@@ -39,13 +39,13 @@ public class ESTreatmentServiceDocument {
 	@Field(type = FieldType.Double)
 	private double cost = 0.0;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String treatmentCode;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String category;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> fieldsRequired;
 
 	public double getCost() {

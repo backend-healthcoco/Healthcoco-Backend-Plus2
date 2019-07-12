@@ -17,24 +17,24 @@ public interface PharmacyService {
 
 	OrderDrugsRequest orderDrugs(OrderDrugsRequest request);
 
-	List<SearchRequestFromUserResponse> getPatientOrderHistoryList(String userId, int page, int size);
+	List<SearchRequestFromUserResponse> getPatientOrderHistoryList(String userId, long page, int size);
 
 	/*
 	 * List<SearchRequestToPharmacyResponse>
 	 * getPharmacyListbyOrderHistory(String userId, String uniqueRequestId,
-	 * String replyType, int page, int size);
+	 * String replyType, long page, int size);
 	 */
 
 	Integer getPharmacyListCountbyOrderHistory(String uniqueRequestId, String replyType);
 
 	List<SearchRequestToPharmacyResponse> getPharmacyListbyOrderHistory(String userId, String uniqueRequestId,
-			String replyType, int page, int size, Double latitude, Double longitude);
+			String replyType, long page, int size, Double latitude, Double longitude);
 
 	UserFakeRequestDetailResponse getUserFakeRequestCount(String userId);
 
-	List<OrderDrugsResponse> getPatientOrders(String userId, int page, int size, String updatedTime);
+	List<OrderDrugsResponse> getPatientOrders(String userId, long page, int size, String updatedTime);
 
-	List<SearchRequestFromUserResponse> getPatientRequests(String userId, int page, int size, String updatedTime);
+	List<SearchRequestFromUserResponse> getPatientRequests(String userId, long page, int size, String updatedTime);
 
 	OrderDrugsRequest cancelOrderDrug(String orderId, String userId);
 }

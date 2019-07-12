@@ -376,7 +376,7 @@ public class HistoryApi {
     public Response<HistoryDetailsResponse> getPatientHistoryDetailsOTP(@PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @MatrixParam("historyFilter") List<String> historyFilter,
-	    @PathParam(value = "otpVerified") boolean otpVerified, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @PathParam(value = "otpVerified") boolean otpVerified, @QueryParam("page") long page, @QueryParam("size") int size,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 	if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id, History Filter Cannot Be Empty");
@@ -408,7 +408,7 @@ public class HistoryApi {
     @GET
     @ApiOperation(value = PathProxy.HistoryUrls.GET_PATIENT_HISTORY, notes = PathProxy.HistoryUrls.GET_PATIENT_HISTORY)
     public Response<HistoryDetailsResponse> getPatientHistory(@PathParam(value = "patientId") String patientId,
-	    @MatrixParam("historyFilter") List<String> historyFilter, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @MatrixParam("historyFilter") List<String> historyFilter, @QueryParam("page") long page, @QueryParam("size") int size,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
     	if (DPDoctorUtils.anyStringEmpty(patientId)) {
     	    logger.warn("Invalid Input");

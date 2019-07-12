@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,18 +27,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.Group;
-import com.dpdocter.beans.Patient;
-import com.dpdocter.beans.Reference;
-import com.dpdocter.beans.v2.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.v2.DoctorContactsResponse;
 import com.dpdocter.beans.v2.PatientCard;
+import com.dpdocter.beans.v2.RegisteredPatientDetails;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
-import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
@@ -187,7 +185,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	@Transactional
 	public DoctorContactsResponse getSpecifiedPatientCards(Collection<ObjectId> patientIds, String doctorId,
-			String locationId, String hospitalId, int page, int size, String updatedTime, Boolean discarded,
+			String locationId, String hospitalId, long page, int size, String updatedTime, Boolean discarded,
 			Boolean sortByFirstName, String role) throws Exception {
 		DoctorContactsResponse response = null;
 		List<PatientCard> patientCards = null;
@@ -224,7 +222,7 @@ public class ContactsServiceImpl implements ContactsService {
 		Aggregation aggregation = null;
 		if (sortByFirstName) {
 
-			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("_id", "$_id").append("userId", "$userId").append("firstName", "$firstName")
 							.append("localPatientName", "$localPatientName")
 							.append("insensitiveLocalPatientName", new BasicDBObject("$toLower", "$localPatientName"))
@@ -242,7 +240,7 @@ public class ContactsServiceImpl implements ContactsService {
 							.append("registrationDate", "$registrationDate").append("createdTime", "$createdTime")
 							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
 
-			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("id", "$_id").append("userId", new BasicDBObject("$first", "$userId"))
 							.append("firstName", new BasicDBObject("$first", "$firstName"))
 							.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
@@ -281,13 +279,13 @@ public class ContactsServiceImpl implements ContactsService {
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 						projectOperations, groupOperations,
 						new CustomAggregationOperation(
-								new BasicDBObject("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))),
+								new Document("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 						projectOperations, groupOperations, new CustomAggregationOperation(
-								new BasicDBObject("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))));
+								new Document("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))));
 		} else {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -364,14 +362,14 @@ public class ContactsServiceImpl implements ContactsService {
 			BeanUtil.map(group, groupCollection);
 			if (DPDoctorUtils.allStringsEmpty(groupCollection.getId())) {
 				groupCollection.setCreatedTime(new Date());
-				UserCollection userCollection = userRepository.findOne(groupCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findById(groupCollection.getDoctorId()).orElse(null);
 				if (userCollection != null) {
 					groupCollection
 							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 									+ userCollection.getFirstName());
 				}
 			} else {
-				GroupCollection oldGroupCollection = groupRepository.findOne(groupCollection.getId());
+				GroupCollection oldGroupCollection = groupRepository.findById(groupCollection.getId()).orElse(null);
 				groupCollection.setCreatedTime(oldGroupCollection.getCreatedTime());
 				groupCollection.setCreatedBy(groupCollection.getCreatedBy());
 				groupCollection.setDiscarded(oldGroupCollection.getDiscarded());
@@ -424,7 +422,7 @@ public class ContactsServiceImpl implements ContactsService {
 		GroupCollection groupCollection = null;
 		List<PatientGroupCollection> patientGroupCollection = null;
 		try {
-			groupCollection = groupRepository.findOne(new ObjectId(groupId));
+			groupCollection = groupRepository.findById(new ObjectId(groupId)).orElse(null);
 			if (groupCollection != null) {
 				groupCollection.setDiscarded(discarded);
 				groupCollection.setUpdatedTime(new Date());

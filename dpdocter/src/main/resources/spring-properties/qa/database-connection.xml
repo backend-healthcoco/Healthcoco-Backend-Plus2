@@ -4,14 +4,16 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/data/mongo
-    http://www.springframework.org/schema/data/mongo/spring-mongo-1.8.xsd">
-	<mongo:mongo id="mongo" host="${db.host}" port="${db.port}"
-		write-concern="SAFE">
-		<mongo:options connect-timeout="${db.connectTimeout}"
-			connections-per-host="${db.connectionPerHost}"
-			threads-allowed-to-block-for-connection-multiplier="${db.threadsAllowedTblockForConnectionMultiplier}" ssl="true"/>
-	</mongo:mongo>
+    http://www.springframework.org/schema/data/mongo/spring-mongo-1.10.2.xsd">
+	
+	<mongo:mongo-client id="mongo" host="${db.host}" port="${db.port}">
 
+		<mongo:client-options connect-timeout="${db.connectTimeout}"
+			connections-per-host="${db.connectionPerHost}"
+			threads-allowed-to-block-for-connection-multiplier="${db.threadsAllowedTblockForConnectionMultiplier}" ssl="true" 
+			ssl-socket-factory-ref="sslsocketfactoryMongo"/>
+	</mongo:mongo-client>
+	
 	<mongo:db-factory dbname="${db.name}" host="${db.host}"
 		mongo-ref="mongo" port="${db.port}" />
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
@@ -19,7 +21,6 @@
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
 
 	</bean>
-
 	<bean id="readConverter"
 		class="com.dpdocter.tokenstore.OAuth2AuthenticationReadConverter" />
 
@@ -28,10 +29,13 @@
 			<mongo:converter ref="readConverter" />
 		</mongo:custom-converters>
 	</mongo:mapping-converter>
-	<bean name="gridFsTemplate"
-		class="org.springframework.data.mongodb.gridfs.GridFsTemplate">
+<!-- <mo -->
+	<bean id="gridFsTemplate" class="org.springframework.data.mongodb.gridfs.GridFsTemplate">
 		<constructor-arg ref="mongoDbFactory" />
 		<constructor-arg ref="mappingConverter" />
 	</bean>
-
+	
+	<bean id="sslsocketfactoryMongo" class="com.dpdocter.beans.SSLFactoryMongo">
+	</bean>
+	
 </beans>

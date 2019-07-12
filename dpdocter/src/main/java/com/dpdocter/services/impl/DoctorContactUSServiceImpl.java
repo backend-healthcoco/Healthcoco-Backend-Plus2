@@ -111,7 +111,7 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 
 	@Override
 	@Transactional
-	public List<DoctorContactUs> getDoctorContactList(int page, int size, String searchTerm) {
+	public List<DoctorContactUs> getDoctorContactList(long page, int size, String searchTerm) {
 		List<DoctorContactUs> response = null;
 		// String searchTerm = null;
 		Criteria criteria = null;

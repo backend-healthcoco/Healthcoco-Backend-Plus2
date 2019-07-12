@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -109,13 +110,13 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 				planName = "", subPlan = "";
 		NutritionPlan nutritionPlan = null;
 		try {
-			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "doctor not found");
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				nutritionReferenceCollection = nutritionReferenceRepository.findOne(new ObjectId(request.getId()));
+				nutritionReferenceCollection = nutritionReferenceRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			if (nutritionReferenceCollection == null) {
 				nutritionReferenceCollection = new NutritionReferenceCollection();
@@ -161,7 +162,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 				}
 				if (response.getLocationId() != null) {
 					LocationCollection locationCollection = locationRepository
-							.findOne(new ObjectId(response.getLocationId()));
+							.findById(new ObjectId(response.getLocationId())).orElse(null);
 					response.setLocationName(locationCollection.getLocationName());
 				}
 
@@ -178,7 +179,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 
 				}
 				if (!DPDoctorUtils.anyStringEmpty(nutritionReferenceCollection.getNutritionPlanId())) {
-					planCollection = nutritionPlanRepository.findOne(nutritionReferenceCollection.getNutritionPlanId());
+					planCollection = nutritionPlanRepository.findById(nutritionReferenceCollection.getNutritionPlanId()).orElse(null);
 					if (planCollection != null) {
 						planName = planCollection.getTitle();
 						nutritionPlan = new NutritionPlan();
@@ -297,30 +298,30 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 				nutritionReferenceResponses = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "nutritionPlan"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$nutritionPlan")
 												.append("preserveNullAndEmptyArrays", true)
 												.append("includeArrayIndex", "arrayIndex1"))),
 								Aggregation.lookup("subscription_nutrition_plan_cl", "subscriptionPlanId", "_id",
 										"subscriptionPlan"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$subscriptionPlan")
 												.append("preserveNullAndEmptyArrays", true)
 												.append("includeArrayIndex", "arrayIndex1"))),
 								Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
-								Aggregation.skip(page * size), Aggregation.limit(size)),
+								Aggregation.skip((long)page * size), Aggregation.limit(size)),
 						NutritionReferenceCollection.class, NutritionReference.class).getMappedResults();
 			} else {
 				nutritionReferenceResponses = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "nutritionPlan"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$nutritionPlan")
 												.append("preserveNullAndEmptyArrays", true)
 												.append("includeArrayIndex", "arrayIndex1"))),
 								Aggregation.lookup("subscription_nutrition_plan_cl", "subscriptionPlanId", "_id",
 										"subscriptionPlan"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$subscriptionPlan")
 												.append("preserveNullAndEmptyArrays", true)
 												.append("includeArrayIndex", "arrayIndex1"))),
@@ -386,7 +387,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 		NutritionReferenceCollection nutritionReferenceCollection = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
-				nutritionReferenceCollection = nutritionReferenceRepository.findOne(new ObjectId(id));
+				nutritionReferenceCollection = nutritionReferenceRepository.findById(new ObjectId(id)).orElse(null);
 				if (nutritionReferenceCollection != null) {
 					if (!DPDoctorUtils.anyStringEmpty(regularityStatus)) {
 						nutritionReferenceCollection.setRegularityStatus(RegularityStatus.valueOf(regularityStatus));
@@ -418,7 +419,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 							nutritionGoalStatusStampingCollection.setCreatedTime(new Date());
 							nutritionGoalStatusStampingCollection.setUpdatedTime(new Date());
 							UserCollection userCollection = userRepository
-									.findOne(nutritionReferenceCollection.getDoctorId());
+									.findById(nutritionReferenceCollection.getDoctorId()).orElse(null);
 							nutritionGoalStatusStampingCollection.setCreatedBy(userCollection.getCreatedBy());
 							nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository
 									.save(nutritionGoalStatusStampingCollection);
@@ -443,24 +444,24 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 				response = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(id))),
 								Aggregation.lookup("nutrition_plan_cl", "nutritionPlanId", "_id", "nutritionPlan"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$nutritionPlan")
 												.append("preserveNullAndEmptyArrays", true)
 												.append("includeArrayIndex", "arrayIndex1"))),
 								Aggregation.lookup("subscription_nutrition_plan_cl", "subscriptionPlanId", "_id",
 										"subscriptionPlan"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$subscriptionPlan")
 												.append("preserveNullAndEmptyArrays", true)
 												.append("includeArrayIndex", "arrayIndex1")))),
 						NutritionReferenceCollection.class, NutritionReferenceResponse.class).getUniqueMappedResult();
 				if (response != null) {
 					LocationCollection locationCollection = locationRepository
-							.findOne(new ObjectId(response.getHospitalId()));
+							.findById(new ObjectId(response.getHospitalId())).orElse(null);
 					if (locationCollection != null) {
 						response.setLocationName(locationCollection.getLocationName());
 					}
-					UserCollection userCollection = userRepository.findOne(new ObjectId(response.getDoctorId()));
+					UserCollection userCollection = userRepository.findById(new ObjectId(response.getDoctorId())).orElse(null);
 					if (userCollection != null) {
 						response.setDoctorName(userCollection.getTitle() + " " + userCollection.getFirstName());
 					}
@@ -468,7 +469,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 							new ObjectId(response.getPatientId()), new ObjectId(response.getLocationId()),
 							new ObjectId(response.getHospitalId()));
 					if (patientCollection != null) {
-						UserCollection patient = userRepository.findOne(patientCollection.getUserId());
+						UserCollection patient = userRepository.findById(patientCollection.getUserId()).orElse(null);
 						PatientShortCard patientCard = new PatientShortCard();
 						BeanUtil.map(patient, patientCard);
 						BeanUtil.map(patientCollection, patientCard);

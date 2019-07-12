@@ -7,6 +7,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -121,7 +122,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
@@ -131,7 +132,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
 								"appointmentRequest"),
 						new CustomAggregationOperation(
-								new BasicDBObject("$unwind",
+								new Document("$unwind",
 										new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
@@ -239,7 +240,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	public ClinicalNotes getNotesById(String id, ObjectId visitId) {
 		ClinicalNotes clinicalNote = null;
 		try {
-			ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(id));
+			ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findById(new ObjectId(id)).orElse(null);
 			if (clinicalNotesCollection != null) {
 				clinicalNote = new ClinicalNotes();
 				BeanUtil.map(clinicalNotesCollection, clinicalNote);

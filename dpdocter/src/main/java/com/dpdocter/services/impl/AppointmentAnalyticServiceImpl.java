@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -371,7 +372,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				Aggregation aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("appointment_cl", "userId", "patientId", "appointment"),
 						Aggregation.unwind("appointment"),
-						new CustomAggregationOperation(new BasicDBObject("$redact",
+						new CustomAggregationOperation(new Document("$redact",
 								new BasicDBObject("$cond",
 										new BasicDBObject()
 												.append("if",
@@ -380,7 +381,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 																		"$createdTime")))
 												.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 						Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")))
+						new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")))
 
 				);
 				appointmentCount = mongoTemplate
@@ -449,15 +450,15 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				if (size > 0) {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("patient_queue_cl", "appointmentId", "appointmentId", "patientQueue"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$patientQueue")
 											.append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-							new CustomAggregationOperation(new BasicDBObject(
+							new CustomAggregationOperation(new Document(
 									"$unwind", new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
 											true))),
 							Aggregation.match(new Criteria("patientQueue.discarded").is(false)),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+							new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$_id")
 									.append("date", new BasicDBObject("$first", "$fromDate"))
 									.append("fromTime", new BasicDBObject("$first", "$time.fromTime"))
 									.append("waitedFor", new BasicDBObject("$max", "$patientQueue.waitedFor"))
@@ -469,21 +470,21 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 									.append("locationId", new BasicDBObject("$first", "$locationId"))
 									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 									.append("doctorName", new BasicDBObject("$first", "$doctor.firstName")))),
-							Aggregation.skip(page * size), Aggregation.limit(size),
+							Aggregation.skip((long)page * size), Aggregation.limit(size),
 							Aggregation.sort(new Sort(Direction.DESC, "fromDate", "time.fromTime")));
 				} else {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("patient_queue_cl", "appointmentId", "appointmentId", "patientQueue"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$patientQueue").append("preserveNullAndEmptyArrays",
 											true))),
 							Aggregation.match(new Criteria("patientQueue.discarded").is(false)),
 							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+							new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$_id")
 									.append("date", new BasicDBObject("$first", "$fromDate"))
 									.append("fromTime", new BasicDBObject("$first", "$time.fromTime"))
 									.append("waitedFor", new BasicDBObject("$max", "$patientQueue.waitedFor"))
@@ -566,7 +567,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 
 				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 											.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
@@ -579,7 +580,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
 											"$year"))
@@ -594,7 +595,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				}
 
 				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
 									.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
@@ -605,7 +606,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
 									.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
@@ -619,7 +620,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					break;
 				}
 			} else {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("locationId", "$locationId").append("hospitalId", "$hospitalId"))
 										.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
@@ -637,7 +638,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 										.and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth()
 										.as("month").and("fromDate").extractYear().as("year").and("fromDate").extractWeek()
 										.as("week"),
-						aggregationOperation, Aggregation.sort(Direction.ASC, "fromDate"), Aggregation.skip(page * size),
+						aggregationOperation, Aggregation.sort(Direction.ASC, "fromDate"), Aggregation.skip((long)page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -733,7 +734,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 
 				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 											.append("day", new BasicDBObject("$first", "$day"))
@@ -749,7 +750,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
 											"$year")).append("month", new BasicDBObject("$first", "$month"))
@@ -763,7 +764,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				}
 
 				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("month", new BasicDBObject("$first", "$month"))
 									.append("year", new BasicDBObject("$first", "$year"))
@@ -775,7 +776,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("year", new BasicDBObject("$first", "$year"))
 									.append("date", new BasicDBObject("$first", "$fromDate"))
@@ -789,7 +790,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					break;
 				}
 			else {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 										.append("day", new BasicDBObject("$first", "$day"))
@@ -807,7 +808,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 						project.and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth().as("month")
 								.and("fromDate").extractYear().as("year").and("fromDate").extractWeek().as("week"),
 						aggregationOperation, Aggregation.sort(Direction.ASC, "fromDate"),
-						Aggregation.skip(page * size), Aggregation.limit(size));
+						Aggregation.skip((long)page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						project.and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth().as("month")
@@ -886,7 +887,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 
 				case DAILY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 											.append("day", new BasicDBObject("$first", "$day"))
@@ -903,7 +904,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 				case WEEKLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id",
 									new BasicDBObject("week", "$week").append("month", "$month").append("year",
 											"$year")).append("month", new BasicDBObject("$first", "$month"))
@@ -918,7 +919,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				}
 
 				case MONTHLY: {
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("month", "$month").append("year", "$year"))
 									.append("month", new BasicDBObject("$first", "$month"))
 									.append("year", new BasicDBObject("$first", "$year"))
@@ -931,7 +932,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				}
 				case YEARLY: {
 
-					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+					aggregationOperation = new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
 									.append("year", new BasicDBObject("$first", "$year"))
 									.append("groupName", new BasicDBObject("$first", "$groupName"))
@@ -946,7 +947,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					break;
 				}
 			else {
-				aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				aggregationOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id",
 								new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 										.append("day", new BasicDBObject("$first", "$day"))
@@ -971,7 +972,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 										.as("month").and("appointment.fromDate").extractYear().as("year")
 										.and("appointment.fromDate").extractWeek().as("week"),
 						aggregationOperation, Aggregation.sort(Direction.ASC, "fromDate"),
-						Aggregation.skip(page * size), Aggregation.limit(size));
+						Aggregation.skip((long)page * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("group_cl", "groupId", "_id", "group"),
 						Aggregation.unwind("group"),
@@ -1050,7 +1051,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					Aggregation.match(criteria),
 					Aggregation.lookup("appointment_cl", "patientId", "patientId", "appointment"),
 					Aggregation.unwind("appointment"), Aggregation.match(criteria2),
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("id", "$group._id"))
 									.append("groupName", new BasicDBObject("$first", "$group.name"))
 									.append("date", new BasicDBObject("$first", "$group.createdTime"))
@@ -1123,7 +1124,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					Aggregation.match(criteria),
 					Aggregation.lookup("appointment_cl", "patientId", "patientId", "appointment"),
 					Aggregation.unwind("appointment"), Aggregation.match(criteria2),
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("id", "$group._id")))));
 
 			response = mongoTemplate
@@ -1186,7 +1187,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			criteria = criteria.and("type").is(AppointmentType.APPOINTMENT);
 			AggregationOperation aggregationOperation = null;
 
-			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$doctorId").append("firstName", new BasicDBObject("$first", "$firstName"))
 							.append("date", new BasicDBObject("$first", "$fromDate"))
 							.append("count", new BasicDBObject("$sum", 1))));
@@ -1198,7 +1199,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 						new ProjectionOperation(Fields.from(Fields.field("fromDate", "$fromDate"),
 								Fields.field("doctorId", "$doctorId"), Fields.field("firstName", "$doctor.firstName"),
 								Fields.field("count", "$appointmentId"))),
-						aggregationOperation, Aggregation.sort(Direction.DESC, "count"), Aggregation.skip(page * size),
+						aggregationOperation, Aggregation.sort(Direction.DESC, "count"), Aggregation.skip((long)page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1290,7 +1291,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 								Fields.field("explanation", "$explanation"), Fields.field("subject", "$subject"),
 								Fields.field("appointmentId", "$appointmentId"),
 								Fields.field("fromDate", "$fromDate"))),
-						Aggregation.sort(Direction.DESC, "fromDate"), Aggregation.skip(page * size),
+						Aggregation.sort(Direction.DESC, "fromDate"), Aggregation.skip((long)page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),

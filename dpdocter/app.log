@@ -1,0 +1,175 @@
+[ERROR] 2019-07-10 12:52:55,242 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 12:52:55,661 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 12:52:56,024 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 12:52:56,133 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 12:52:56,243 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 12:52:56,286 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 12:52:56,329 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 12:52:56,387 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[INFO] 2019-07-10 12:52:57,017 org.mongodb.driver.cluster info - Cluster created with settings {hosts=[mongo.healthcoco.com:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=400}
+[INFO] 2019-07-10 12:52:57,217 org.mongodb.driver.cluster info - Exception in monitor thread while connecting to server mongo.healthcoco.com:27017
+com.mongodb.MongoSocketOpenException: Exception opening socket
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:67)
+	at com.mongodb.internal.connection.InternalStreamConnection.open(InternalStreamConnection.java:126)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.run(DefaultServerMonitor.java:117)
+	at java.base/java.lang.Thread.run(Thread.java:844)
+Caused by: java.net.ConnectException: Connection refused (Connection refused)
+	at java.base/java.net.PlainSocketImpl.socketConnect(Native Method)
+	at java.base/java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:400)
+	at java.base/java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:243)
+	at java.base/java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:225)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:402)
+	at java.base/java.net.Socket.connect(Socket.java:591)
+	at java.base/sun.security.ssl.SSLSocketImpl.connect(SSLSocketImpl.java:657)
+	at com.mongodb.internal.connection.SocketStreamHelper.initialize(SocketStreamHelper.java:64)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:62)
+	... 3 more
+[INFO] 2019-07-10 12:52:58,611 org.mongodb.driver.cluster info - Cluster description not yet available. Waiting for 30000 ms before timing out
+[ERROR] 2019-07-10 15:00:10,505 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 15:00:10,727 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 15:00:10,929 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 15:00:11,031 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 15:00:11,143 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 15:00:11,185 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 15:00:11,224 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 15:00:11,269 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[INFO] 2019-07-10 15:00:11,704 org.mongodb.driver.cluster info - Cluster created with settings {hosts=[mongo.healthcoco.com:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=400}
+[INFO] 2019-07-10 15:00:11,888 org.mongodb.driver.cluster info - Exception in monitor thread while connecting to server mongo.healthcoco.com:27017
+com.mongodb.MongoSocketOpenException: Exception opening socket
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:67)
+	at com.mongodb.internal.connection.InternalStreamConnection.open(InternalStreamConnection.java:126)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.run(DefaultServerMonitor.java:117)
+	at java.base/java.lang.Thread.run(Thread.java:844)
+Caused by: java.net.ConnectException: Connection refused (Connection refused)
+	at java.base/java.net.PlainSocketImpl.socketConnect(Native Method)
+	at java.base/java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:400)
+	at java.base/java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:243)
+	at java.base/java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:225)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:402)
+	at java.base/java.net.Socket.connect(Socket.java:591)
+	at java.base/sun.security.ssl.SSLSocketImpl.connect(SSLSocketImpl.java:657)
+	at com.mongodb.internal.connection.SocketStreamHelper.initialize(SocketStreamHelper.java:64)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:62)
+	... 3 more
+[INFO] 2019-07-10 15:00:12,398 org.mongodb.driver.cluster info - Cluster description not yet available. Waiting for 30000 ms before timing out
+[ERROR] 2019-07-10 16:36:56,134 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:36:56,375 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:36:56,707 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:36:56,818 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:36:56,937 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:36:56,981 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:36:57,021 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:36:57,067 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[INFO] 2019-07-10 16:36:57,668 org.mongodb.driver.cluster info - Cluster created with settings {hosts=[mongo.healthcoco.com:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=400}
+[INFO] 2019-07-10 16:36:58,320 org.mongodb.driver.connection info - Opened connection [connectionId{localValue:1, serverValue:1}] to mongo.healthcoco.com:27017
+[INFO] 2019-07-10 16:36:58,344 org.mongodb.driver.cluster info - Monitor thread successfully connected to server with description ServerDescription{address=mongo.healthcoco.com:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 0, 1]}, minWireVersion=0, maxWireVersion=7, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=9869466}
+[INFO] 2019-07-10 16:36:59,030 org.mongodb.driver.connection info - Opened connection [connectionId{localValue:2, serverValue:2}] to mongo.healthcoco.com:27017
+[ERROR] 2019-07-10 16:36:59,688 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:36:59,726 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:36:59,769 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:36:59,806 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:36:59,842 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:00,341 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:00,379 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:00,585 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:01,125 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:01,182 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:01,245 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:01,288 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:02,858 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:02,902 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:02,940 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:02,976 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,014 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,046 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,082 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,119 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,156 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,188 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,216 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,266 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,300 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,333 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,361 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,392 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,423 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,461 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,490 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,518 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,549 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,585 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,628 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,661 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,693 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,723 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,754 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,781 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,814 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,842 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:03,871 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:04,767 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:04,801 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:04,839 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:04,869 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:04,899 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:04,930 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:05,049 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:06,585 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:37:13,306 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:38:40,746 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:38:40,973 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:38:41,159 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:38:41,248 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:38:41,333 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:38:41,373 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:38:41,414 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[ERROR] 2019-07-10 16:38:41,455 org.springframework.data.elasticsearch.repository.support.AbstractElasticsearchRepository <init> - failed to load elasticsearch nodes : org.elasticsearch.cluster.block.ClusterBlockException: blocked by: [FORBIDDEN/12/index read-only / allow delete (api)];
+[INFO] 2019-07-10 16:38:41,893 org.mongodb.driver.cluster info - Cluster created with settings {hosts=[mongo.healthcoco.com:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=400}
+[INFO] 2019-07-10 16:38:42,212 org.mongodb.driver.cluster info - Exception in monitor thread while connecting to server mongo.healthcoco.com:27017
+com.mongodb.MongoSocketWriteException: Exception sending message
+	at com.mongodb.internal.connection.InternalStreamConnection.translateWriteException(InternalStreamConnection.java:525)
+	at com.mongodb.internal.connection.InternalStreamConnection.sendMessage(InternalStreamConnection.java:413)
+	at com.mongodb.internal.connection.InternalStreamConnection.sendCommandMessage(InternalStreamConnection.java:269)
+	at com.mongodb.internal.connection.InternalStreamConnection.sendAndReceive(InternalStreamConnection.java:253)
+	at com.mongodb.internal.connection.CommandHelper.sendAndReceive(CommandHelper.java:83)
+	at com.mongodb.internal.connection.CommandHelper.executeCommand(CommandHelper.java:33)
+	at com.mongodb.internal.connection.InternalStreamConnectionInitializer.initializeConnectionDescription(InternalStreamConnectionInitializer.java:106)
+	at com.mongodb.internal.connection.InternalStreamConnectionInitializer.initialize(InternalStreamConnectionInitializer.java:63)
+	at com.mongodb.internal.connection.InternalStreamConnection.open(InternalStreamConnection.java:127)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitorRunnable.run(DefaultServerMonitor.java:117)
+	at java.base/java.lang.Thread.run(Thread.java:844)
+Caused by: javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+	at java.base/sun.security.ssl.Alerts.getSSLException(Alerts.java:198)
+	at java.base/sun.security.ssl.SSLSocketImpl.fatal(SSLSocketImpl.java:1974)
+	at java.base/sun.security.ssl.Handshaker.fatalSE(Handshaker.java:345)
+	at java.base/sun.security.ssl.Handshaker.fatalSE(Handshaker.java:339)
+	at java.base/sun.security.ssl.ClientHandshaker.checkServerCerts(ClientHandshaker.java:1968)
+	at java.base/sun.security.ssl.ClientHandshaker.serverCertificate(ClientHandshaker.java:1777)
+	at java.base/sun.security.ssl.ClientHandshaker.processMessage(ClientHandshaker.java:264)
+	at java.base/sun.security.ssl.Handshaker.processLoop(Handshaker.java:1098)
+	at java.base/sun.security.ssl.Handshaker.processRecord(Handshaker.java:1026)
+	at java.base/sun.security.ssl.SSLSocketImpl.processInputRecord(SSLSocketImpl.java:1137)
+	at java.base/sun.security.ssl.SSLSocketImpl.readRecord(SSLSocketImpl.java:1074)
+	at java.base/sun.security.ssl.SSLSocketImpl.readRecord(SSLSocketImpl.java:973)
+	at java.base/sun.security.ssl.SSLSocketImpl.performInitialHandshake(SSLSocketImpl.java:1402)
+	at java.base/sun.security.ssl.SSLSocketImpl.writeRecord(SSLSocketImpl.java:733)
+	at java.base/sun.security.ssl.AppOutputStream.write(AppOutputStream.java:67)
+	at com.mongodb.internal.connection.SocketStream.write(SocketStream.java:79)
+	at com.mongodb.internal.connection.InternalStreamConnection.sendMessage(InternalStreamConnection.java:410)
+	... 9 more
+Caused by: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+	at java.base/sun.security.validator.PKIXValidator.doBuild(PKIXValidator.java:385)
+	at java.base/sun.security.validator.PKIXValidator.engineValidate(PKIXValidator.java:290)
+	at java.base/sun.security.validator.Validator.validate(Validator.java:264)
+	at java.base/sun.security.ssl.X509TrustManagerImpl.validate(X509TrustManagerImpl.java:343)
+	at java.base/sun.security.ssl.X509TrustManagerImpl.checkTrusted(X509TrustManagerImpl.java:226)
+	at java.base/sun.security.ssl.X509TrustManagerImpl.checkServerTrusted(X509TrustManagerImpl.java:133)
+	at java.base/sun.security.ssl.ClientHandshaker.checkServerCerts(ClientHandshaker.java:1947)
+	... 21 more
+Caused by: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+	at java.base/sun.security.provider.certpath.SunCertPathBuilder.build(SunCertPathBuilder.java:141)
+	at java.base/sun.security.provider.certpath.SunCertPathBuilder.engineBuild(SunCertPathBuilder.java:126)
+	at java.base/java.security.cert.CertPathBuilder.build(CertPathBuilder.java:297)
+	at java.base/sun.security.validator.PKIXValidator.doBuild(PKIXValidator.java:380)
+	... 27 more
+[INFO] 2019-07-10 16:38:42,520 org.mongodb.driver.cluster info - Cluster description not yet available. Waiting for 30000 ms before timing out

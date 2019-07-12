@@ -59,7 +59,7 @@ public class ESAppointmentApi {
 	@Path(value = PathProxy.SolrAppointmentUrls.GET_DOCTORS)
 	@GET
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_DOCTORS, notes = PathProxy.SolrAppointmentUrls.GET_DOCTORS)
-	public Response<ESDoctorDocument> getDoctors(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<ESDoctorDocument> getDoctors(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("location") String location,
 			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 			@QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom,
@@ -82,7 +82,7 @@ public class ESAppointmentApi {
 	@Path(value = PathProxy.SolrAppointmentUrls.GET_PHARMACIES)
 	@GET
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_PHARMACIES, notes = PathProxy.SolrAppointmentUrls.GET_PHARMACIES)
-	public Response<ESUserLocaleDocument> getPharmacies(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<ESUserLocaleDocument> getPharmacies(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("localeName") String localeName,
 			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 			@QueryParam("paymentType") String paymentType, @QueryParam("homeService") Boolean homeService,
@@ -114,7 +114,7 @@ public class ESAppointmentApi {
 	@Path(value = PathProxy.SolrAppointmentUrls.GET_LABS)
 	@GET
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_LABS, notes = PathProxy.SolrAppointmentUrls.GET_LABS)
-	public Response<LabResponse> getLabs(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<LabResponse> getLabs(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("location") String location,
 			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 			@QueryParam("test") String test, @QueryParam("booking") Boolean booking,
@@ -167,7 +167,7 @@ public class ESAppointmentApi {
 	@Path(value = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB, notes = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB)
-	public Response<ESWEBResponse> getDoctorForWeb(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<ESWEBResponse> getDoctorForWeb(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("location") String location,
 			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 			@QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom,
@@ -196,7 +196,7 @@ public class ESAppointmentApi {
 	@Path(value = PathProxy.SolrAppointmentUrls.GET_PHARMACIES_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_PHARMACIES_WEB, notes = PathProxy.SolrAppointmentUrls.GET_PHARMACIES_WEB)
-	public Response<ESWEBResponse> getPharmaciesForWeb(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<ESWEBResponse> getPharmaciesForWeb(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("localeName") String localeName,
 			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 			@QueryParam("paymentType") String paymentType, @QueryParam("homeService") Boolean homeService,
@@ -217,7 +217,7 @@ public class ESAppointmentApi {
 	@Path(value = PathProxy.SolrAppointmentUrls.GET_LABS_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_LABS_WEB, notes = PathProxy.SolrAppointmentUrls.GET_LABS_WEB)
-	public Response<ESWEBResponse> getLabsForWeb(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<ESWEBResponse> getLabsForWeb(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("location") String location,
 			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 			@QueryParam("test") String test, @QueryParam("booking") Boolean booking,

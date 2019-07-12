@@ -42,7 +42,7 @@ public class ESPrescriptionApi {
 	@Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
 	@GET
 	@ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG, notes = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
-	public Response<Object> searchDrug(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<Object> searchDrug(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -65,7 +65,7 @@ public class ESPrescriptionApi {
 	@Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST)
 	@GET
 	@ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST, notes = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST)
-	public Response<LabTest> searchLabTest(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<LabTest> searchLabTest(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "locationId") String locationId,
 			@QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -86,7 +86,7 @@ public class ESPrescriptionApi {
 	@GET
 	@ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST, notes = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST)
 	public Response<Object> searchDiagnosticTest(@PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -106,7 +106,7 @@ public class ESPrescriptionApi {
 	@Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_ADVICE)
 	@GET
 	@ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_ADVICE, notes = PathProxy.SolrPrescriptionUrls.SEARCH_ADVICE)
-	public Response<ESAdvicesDocument> searchAdvices(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ESAdvicesDocument> searchAdvices(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,

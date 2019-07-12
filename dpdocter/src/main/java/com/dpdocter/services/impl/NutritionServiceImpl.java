@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -185,7 +186,7 @@ public class NutritionServiceImpl implements NutritionService {
 		SubscriptionNutritionPlan response = null;
 		try {
 			SubscriptionNutritionPlanCollection subscriptionNutritionPlanCollection = subscritptionNutritionPlanRepository
-					.findOne(new ObjectId(id));
+					.findById(new ObjectId(id)).orElse(null);
 			response = new SubscriptionNutritionPlan();
 			if (!DPDoctorUtils.anyStringEmpty(subscriptionNutritionPlanCollection.getBackgroundImage())) {
 				subscriptionNutritionPlanCollection
@@ -386,17 +387,17 @@ public class NutritionServiceImpl implements NutritionService {
 
 			UserNutritionSubscriptionCollection nutritionSubscriptionCollection = new UserNutritionSubscriptionCollection();
 			BeanUtil.map(request, nutritionSubscriptionCollection);
-			UserCollection userCollection = userRepository.findOne(nutritionSubscriptionCollection.getUserId());
+			UserCollection userCollection = userRepository.findById(nutritionSubscriptionCollection.getUserId()).orElse(null);
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "user not found By Id ");
 			}
 			NutritionPlanCollection nutritionPlanCollection = nutritionPlanRepository
-					.findOne(nutritionSubscriptionCollection.getNutritionPlanId());
+					.findById(nutritionSubscriptionCollection.getNutritionPlanId()).orElseGet(null);
 			if (nutritionPlanCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Nutrition Plan not found By Id ");
 			}
 			SubscriptionNutritionPlanCollection subscriptionNutritionPlanCollection = subscritptionNutritionPlanRepository
-					.findOne(nutritionSubscriptionCollection.getSubscriptionPlanId());
+					.findById(nutritionSubscriptionCollection.getSubscriptionPlanId()).orElseGet(null);
 
 			if (subscriptionNutritionPlanCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "subscription Plan not found By Id ");
@@ -502,7 +503,7 @@ public class NutritionServiceImpl implements NutritionService {
 		UserNutritionSubscription response = null;
 		try {
 			UserNutritionSubscriptionCollection nutritionSubscriptionCollection = userNutritionSubscriptionRepository
-					.findOne(new ObjectId(id));
+					.findById(new ObjectId(id)).orElseGet(null);
 			if (nutritionSubscriptionCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Subscrition Plan not found By Id ");
 			}
@@ -527,7 +528,7 @@ public class NutritionServiceImpl implements NutritionService {
 		try {
 			Aggregation aggregation = null;
 
-			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("nutritionPlan.title", "$title").append("nutritionPlan._id", "$_id")
 							.append("nutritionPlan.id", "$_id")
 							.append("nutritionPlan.planImage", new BasicDBObject("$cond",
@@ -555,7 +556,7 @@ public class NutritionServiceImpl implements NutritionService {
 							.append("nutritionPlan.updatedTime", "$updatedTime")
 							.append("nutritionPlan.createdBy", "$createdBy")));
 
-			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$category").append("category", new BasicDBObject("$first", "$category"))
 							.append("rank", new BasicDBObject("$first", "$rank"))
 							.append("nutritionPlan", new BasicDBObject("$push", "$nutritionPlan"))));

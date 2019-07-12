@@ -152,7 +152,7 @@ public class SMSServicesImpl implements SMSServices {
 		try {
 			if(smsTrackDetail.getLocationId() != null)
 			{
-				locationCollection = locationRepository.findOne(smsTrackDetail.getLocationId());
+				locationCollection = locationRepository.findById(smsTrackDetail.getLocationId()).orElse(null);
 			}
 			
 			Message message = new Message();
@@ -347,7 +347,7 @@ public class SMSServicesImpl implements SMSServices {
 			if (doctorObjectId == null) {
 				if (size > 0)
 					smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationObjectId, hospitalObjectId,
-							type, new PageRequest(page, size, Direction.DESC, "createdTime"));
+							type, PageRequest.of(page, size, Direction.DESC, "createdTime"));
 				else
 					smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationObjectId, hospitalObjectId,
 							type, new Sort(Sort.Direction.DESC, "createdTime"));
@@ -355,7 +355,7 @@ public class SMSServicesImpl implements SMSServices {
 				if (size > 0)
 					smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorObjectId,
 							locationObjectId, hospitalObjectId, type,
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
+							PageRequest.of(page, size, Direction.DESC, "createdTime"));
 				else
 					smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorObjectId,
 							locationObjectId, hospitalObjectId, type, new Sort(Sort.Direction.DESC, "createdTime"));
@@ -384,7 +384,7 @@ public class SMSServicesImpl implements SMSServices {
 		for (ObjectId doctorId : doctorIds) {
 			DoctorSMSResponse doctorSMSResponse = new DoctorSMSResponse();
 			int count = smsTrackRepository.getDoctorsSMSCount(doctorId, locationId, hospitalId);
-			UserCollection user = userRepository.findOne(doctorId);
+			UserCollection user = userRepository.findById(doctorId).orElse(null);
 			doctorSMSResponse.setDoctorId(doctorId.toString());
 			if (user != null)
 				doctorSMSResponse.setDoctorName(user.getFirstName());
@@ -396,7 +396,7 @@ public class SMSServicesImpl implements SMSServices {
 
 	@Override
 	@Transactional
-	public List<SMSTrack> getSMSDetails(int page, int size, String patientId, String doctorId, String locationId,
+	public List<SMSTrack> getSMSDetails(long page, int size, String patientId, String doctorId, String locationId,
 			String hospitalId) {
 		List<SMSTrack> response = null;
 		try {
@@ -727,7 +727,6 @@ public class SMSServicesImpl implements SMSServices {
 			// con.setRequestProperty("User-Agent", USER_AGENT);
 			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 			con.setRequestProperty("Accept-Charset", "UTF-8");
-			int responseCode = con.getResponseCode();
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
@@ -868,10 +867,10 @@ public class SMSServicesImpl implements SMSServices {
 		con.setRequestProperty("User-Agent",
 				"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 		con.setRequestProperty("Accept-Charset", "UTF-8");
-		int responseCode = con.getResponseCode();
-
-		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		String inputLine;
+//		int responseCode = con.getResponseCode();
+//
+//		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+//		String inputLine;
 		/* response = new StringBuffer(); */
 
 		

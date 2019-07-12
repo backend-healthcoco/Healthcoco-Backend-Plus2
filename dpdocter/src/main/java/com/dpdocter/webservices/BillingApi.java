@@ -105,7 +105,7 @@ public class BillingApi {
 	@Path(value = PathProxy.BillingUrls.GET_INVOICES)
 	@GET
 	@ApiOperation(value = PathProxy.BillingUrls.GET_INVOICES, notes = PathProxy.BillingUrls.GET_INVOICES)
-	public Response<DoctorPatientInvoice> getInvoices(@PathParam("type") String type, @QueryParam("page") int page,
+	public Response<DoctorPatientInvoice> getInvoices(@PathParam("type") String type, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
@@ -195,7 +195,7 @@ public class BillingApi {
 	@Path(value = PathProxy.BillingUrls.GET_RECEIPTS)
 	@GET
 	@ApiOperation(value = PathProxy.BillingUrls.GET_RECEIPTS, notes = PathProxy.BillingUrls.GET_RECEIPTS)
-	public Response<DoctorPatientReceipt> getReceipts(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<DoctorPatientReceipt> getReceipts(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
@@ -274,7 +274,7 @@ public class BillingApi {
 	public Response<DoctorPatientLedgerResponse> getLedger(@QueryParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@PathParam("patientId") String patientId, @QueryParam(value = "from") String from,
-			@QueryParam(value = "to") String to, @QueryParam(value = "page") int page,
+			@QueryParam(value = "to") String to, @QueryParam(value = "page") long page,
 			@QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, patientId)) {

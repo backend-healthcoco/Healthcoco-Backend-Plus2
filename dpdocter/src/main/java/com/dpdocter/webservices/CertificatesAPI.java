@@ -72,7 +72,7 @@ public class CertificatesAPI {
 	@Path(value = PathProxy.CertificateTemplatesUrls.GET_CERTIFICATE_TEMPLATES)
 	@GET
 	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.GET_CERTIFICATE_TEMPLATES, notes = PathProxy.CertificateTemplatesUrls.GET_CERTIFICATE_TEMPLATES)
-	public Response<CertificateTemplate> getCertificateTemplates(@QueryParam("page") int page,
+	public Response<CertificateTemplate> getCertificateTemplates(@QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@DefaultValue("false") @QueryParam("discarded") Boolean discarded,
 			@MatrixParam("speciality") List<String> specialities, @QueryParam("type") String type) {
@@ -126,7 +126,7 @@ public class CertificatesAPI {
 	@Path(value = PathProxy.CertificateTemplatesUrls.GET_PATIENT_CERTIFICATES)
 	@GET
 	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.GET_PATIENT_CERTIFICATES, notes = PathProxy.CertificateTemplatesUrls.GET_PATIENT_CERTIFICATES)
-	public Response<ConsentForm> getPatientCertificates(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<ConsentForm> getPatientCertificates(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("true") @QueryParam("discarded") boolean discarded,

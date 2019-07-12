@@ -13,16 +13,16 @@ public class ESProvisionalDiagnosisDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String provisionalDiagnosis;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String doctorId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String locationId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String hospitalId;
 
 	@Field(type = FieldType.Boolean)
@@ -31,7 +31,7 @@ public class ESProvisionalDiagnosisDocument {
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String speciality;
 
 	public String getId() {

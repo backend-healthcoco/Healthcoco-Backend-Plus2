@@ -59,8 +59,7 @@ public class ESLocaleServiceImpl implements ESLocaleService {
 	@Override
 	public List<ESUserLocaleDocument> getLocale(UserSearchRequest userSearchRequest, Integer distance) {
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(userSearchRequest.getLatitude())
-						.lon(userSearchRequest.getLongitude()).distance(distance + "km"))
+				.filter(QueryBuilders.geoDistanceQuery("geoPoint").point(userSearchRequest.getLatitude(), userSearchRequest.getLongitude()).distance(distance + "km"))
 				.must(QueryBuilders.matchPhrasePrefixQuery("isLocaleListed", true))
 				.must(QueryBuilders.matchPhrasePrefixQuery("isOpen", true));
 		List<ESUserLocaleDocument> esUserLocaleDocuments = elasticsearchTemplate.queryForList(
@@ -73,7 +72,7 @@ public class ESLocaleServiceImpl implements ESLocaleService {
 	@Override
 	public Boolean updateStatus(String localeId, Boolean isOpen) {
 		Boolean response = false;
-		ESUserLocaleDocument esUserLocale = esUserLocaleRepository.findOne(localeId);
+		ESUserLocaleDocument esUserLocale = esUserLocaleRepository.findById(localeId).orElse(null);
 		if (esUserLocale == null) {
 			throw new BusinessException(ServiceError.NoRecord, "Record for id not found");
 		} else {
@@ -87,7 +86,7 @@ public class ESLocaleServiceImpl implements ESLocaleService {
 	@Override
 	public Boolean updateLocale(String localeId, LocaleCollection localeCollection) {
 		Boolean response = false;
-		ESUserLocaleDocument esUserLocale = esUserLocaleRepository.findOne(localeId);
+		ESUserLocaleDocument esUserLocale = esUserLocaleRepository.findById(localeId).orElse(null);
 		if (esUserLocale == null) {
 			throw new BusinessException(ServiceError.NoRecord, "Record for id not found");
 		} else {

@@ -6,7 +6,7 @@ import com.dpdocter.beans.RankingCount;
 
 public interface RankingAlgorithmsServices {
 
-	List<RankingCount> getDoctorsRankingCount(int page, int size);
+	List<RankingCount> getDoctorsRankingCount(long page, int size);
 
 	void calculateRankingOfResources();
 

@@ -90,7 +90,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			if (request.getId() == null) {
 				printSettingsCollection.setCreatedTime(new Date());
 			} else if (oldPrintSettingsCollection == null) {
-				oldPrintSettingsCollection = printSettingsRepository.findOne(new ObjectId(request.getId()));
+				oldPrintSettingsCollection = printSettingsRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 
 			if (oldPrintSettingsCollection != null) {
@@ -109,7 +109,6 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 						.anyStringEmpty(printSettingsCollection.getHeaderSetup().getHeaderImageUrl())) {
 					printSettingsCollection.getHeaderSetup().setHeaderImageUrl(
 							printSettingsCollection.getHeaderSetup().getHeaderImageUrl().replaceAll(imagePath, ""));
-
 				}
 				if (request.getFooterSetup() == null) {
 					printSettingsCollection.setFooterSetup(oldPrintSettingsCollection.getFooterSetup());
@@ -122,13 +121,13 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 			if (DPDoctorUtils.allStringsEmpty(printSettingsCollection.getHospitalUId())) {
 				HospitalCollection hospitalCollection = hospitalRepository
-						.findOne(new ObjectId(request.getHospitalId()));
+						.findById(new ObjectId(request.getHospitalId())).orElse(null);
 				if (hospitalCollection != null) {
 					printSettingsCollection.setHospitalUId(hospitalCollection.getHospitalUId());
 				}
 			}
 
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+			LocationCollection locationCollection = locationRepository.findById(new ObjectId(request.getLocationId())).orElse(null);
 			if (locationCollection != null) {
 				printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
 				printSettingsCollection.setIsPidHasDate(locationCollection.getIsPidHasDate());
@@ -187,7 +186,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 					if (size > 0)
 						printSettingsCollections = printSettingsRepository.getSettings(doctorObjectId,
 								new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "createdTime"));
+								PageRequest.of(page, size, Direction.DESC, "createdTime"));
 					else
 						printSettingsCollections = printSettingsRepository.getSettings(doctorObjectId,
 								new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
@@ -195,7 +194,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 					if (size > 0)
 						printSettingsCollections = printSettingsRepository.getSettings(doctorObjectId, locationObjectId,
 								hospitalObjectId, new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "createdTime"));
+								PageRequest.of(page, size, Direction.DESC, "createdTime"));
 					else
 						printSettingsCollections = printSettingsRepository.getSettings(doctorObjectId, locationObjectId,
 								hospitalObjectId, new Date(createdTimeStamp), discards,
@@ -296,13 +295,13 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			Boolean discarded) {
 		PrintSettings response = null;
 		try {
-			PrintSettingsCollection printSettingsCollection = printSettingsRepository.findOne(new ObjectId(id));
+			PrintSettingsCollection printSettingsCollection = printSettingsRepository.findById(new ObjectId(id)).orElse(null);
 			if (printSettingsCollection != null) {
 				if (printSettingsCollection.getDoctorId() != null && printSettingsCollection.getHospitalId() != null
 						&& printSettingsCollection.getLocationId() != null) {
-					if (printSettingsCollection.getDoctorId().equals(doctorId)
-							&& printSettingsCollection.getHospitalId().equals(hospitalId)
-							&& printSettingsCollection.getLocationId().equals(locationId)) {
+					if (printSettingsCollection.getDoctorId().toString().equals(doctorId)
+							&& printSettingsCollection.getHospitalId().toString().equals(hospitalId)
+							&& printSettingsCollection.getLocationId().toString().equals(locationId)) {
 						printSettingsCollection.setDiscarded(discarded);
 						printSettingsCollection.setUpdatedTime(new Date());
 						printSettingsRepository.save(printSettingsCollection);

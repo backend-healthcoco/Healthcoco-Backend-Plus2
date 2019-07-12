@@ -19,28 +19,28 @@ public class ESLocationDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String locationId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String hospitalId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String locationName;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String country;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String state;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String city;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String postalCode;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String websiteUrl;
 
 	@GeoPointField
@@ -52,25 +52,25 @@ public class ESLocationDocument {
 	@Field(type = FieldType.Double)
 	private Double longitude;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String landmarkDetails;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String locationEmailAddress;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String streetAddress;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String locality;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String clinicNumber;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> alternateClinicNumbers;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> specialization;
 
 	@Field(type = FieldType.Boolean)
@@ -88,10 +88,10 @@ public class ESLocationDocument {
 	@Field(type = FieldType.Boolean)
 	private Boolean isHomeServiceAvailable = false;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> images;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String logoUrl;
 
 	@Field(type = FieldType.Integer)
@@ -100,7 +100,7 @@ public class ESLocationDocument {
 	@Field(type = FieldType.Integer)
 	private Integer noOfRecommenations = 0;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String locationUId;
 
 	@Field(type = FieldType.Nested)
@@ -124,13 +124,13 @@ public class ESLocationDocument {
 	@Field(type = FieldType.Integer)
 	private Integer noOfClinicReview = 0;
 
-	// @Field(type = FieldType.String)
+	// @Field(type = FieldType.Text)
 	// private String invoiceInitial = "INV";
 	//
-	// @Field(type = FieldType.String)
+	// @Field(type = FieldType.Text)
 	// private String receiptInitial = "RC";
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String locationSlugUrl;
 
 	public String getLocationSlugUrl() {

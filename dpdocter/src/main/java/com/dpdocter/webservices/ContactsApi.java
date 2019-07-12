@@ -83,7 +83,7 @@ public class ContactsApi {
 	@GET
 	@ApiOperation(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC, notes = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC)
 	public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("type") String type,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded, @QueryParam("role") String role) {

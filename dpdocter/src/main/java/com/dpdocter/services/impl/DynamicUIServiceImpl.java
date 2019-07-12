@@ -137,7 +137,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			} else {
 				for (ObjectId specialityId : doctorCollection.getSpecialities()) {
 
-					SpecialityCollection specialityCollection = specialityRepository.findOne(specialityId);
+					SpecialityCollection specialityCollection = specialityRepository.findById(specialityId).orElse(null);
 					if (specialityCollection != null) {
 						speciality = specialityCollection.getSpeciality();
 					}
@@ -709,7 +709,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			dentalLabDynamicField
 					.setDentalWorkSamplePermission(new ArrayList<String>(Arrays.asList(dentalWorkSamplePermission())));
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return dentalLabDynamicField;
 	}
@@ -719,10 +719,10 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 	public DentalLabDynamicUi getPermissionForDentalLab(String dentalLabId) {
 		DentalLabDynamicUi dentalLabDynamicUi = null;
 		try {
-
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(dentalLabId));
-			if (locationCollection == null) {
-				throw new BusinessException(ServiceError.NoRecord, "Lab not found");
+			LocationCollection locationCollection = locationRepository.findById(new ObjectId(dentalLabId)).orElse(null);
+			if(locationCollection == null)
+			{
+				throw new BusinessException(ServiceError.NoRecord , "Lab not found");
 			}
 			DentalLabDynamicUICollection dentalLabDynamicUICollection = dentalLabDynamicUIRepository
 					.findByDentalLabId(new ObjectId(dentalLabId));
@@ -735,7 +735,6 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 				dentalLabDynamicUi.setDentalLabDynamicField(getAllDentalLabPermissions());
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return dentalLabDynamicUi;
@@ -747,7 +746,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		KioskDynamicUi response = null;
 		try {
 			KioskDynamicUiCollection dynamicUiCollection = null;
-			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.NoRecord, "doctor not found By doctorId");
 			}
@@ -839,12 +838,12 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		NutritionUI response = null;
 		try {
 			NutritionUICollection nutritionUICollection = null;
-			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getAdminId()));
+			UserCollection userCollection = userRepository.findById(new ObjectId(request.getAdminId())).orElse(null);
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "admin not found By Id");
 			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				nutritionUICollection = nutritionUIRepository.findOne(new ObjectId(request.getId()));
+				nutritionUICollection = nutritionUIRepository.findById(new ObjectId(request.getId())).orElse(null);
 				if (nutritionUICollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "nutrition not found By Id");
 				}
@@ -874,7 +873,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 	public NutritionUI getNutritionUIPermission(String doctorId) {
 		NutritionUI response = null;
 		try {
-			NutritionUICollection nutritionUICollection = nutritionUIRepository.findOne(new ObjectId(doctorId));
+			NutritionUICollection nutritionUICollection = nutritionUIRepository.findById(new ObjectId(doctorId)).orElse(null);
 			response = new NutritionUI();
 			BeanUtil.map(nutritionUICollection, response);
 

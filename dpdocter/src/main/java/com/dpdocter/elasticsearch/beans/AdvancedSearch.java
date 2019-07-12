@@ -12,7 +12,7 @@ public class AdvancedSearch {
 
     private List<AdvancedSearchParameter> searchParameters;
 
-    private int page;
+    private long page;
 
     private int size;
 
@@ -42,11 +42,11 @@ public class AdvancedSearch {
 	this.searchParameters = searchParameters;
     }
 
-    public int getPage() {
+    public long getPage() {
 	return page;
     }
 
-    public void setPage(int page) {
+    public void setPage(long page) {
 	this.page = page;
     }
 

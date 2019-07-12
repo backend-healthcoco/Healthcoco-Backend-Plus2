@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.ParserConfigurationException;
 
 //import org.xhtmlrenderer.pdf.ITextRenderer;
-import org.xml.sax.SAXException;
 
 import com.lowagie.text.DocumentException;
 
@@ -15,7 +13,7 @@ import common.util.web.DPDoctorUtils;
 
 public class GeneralTests {
 
-	public static void main(String args[]) throws SAXException, IOException, DocumentException, ParserConfigurationException {
+	public static void main(String args[]) throws IOException, DocumentException {
 		
 //		Scanner scanner = new Scanner(new File("/Users/nehakariya/Healthcoco Projects/PractoExport-Bhutada/Patients.csv"));
 //		

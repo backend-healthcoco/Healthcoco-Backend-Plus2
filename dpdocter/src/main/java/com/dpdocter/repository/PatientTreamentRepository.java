@@ -14,7 +14,7 @@ import com.dpdocter.collections.PatientTreatmentCollection;
 public interface PatientTreamentRepository extends MongoRepository<PatientTreatmentCollection, ObjectId> {
 
 	@Query("{'id' : ?0, 'doctorId' : ?1, 'locationId' : ?2, 'hospitalId' : ?3}")
-	public PatientTreatmentCollection findOne(ObjectId treatmentId, ObjectId doctorId, ObjectId locationId,
+	public PatientTreatmentCollection findById(ObjectId treatmentId, ObjectId doctorId, ObjectId locationId,
 			ObjectId hospitalId);
 
 	@Query("{'id' : {$in:?0}}")

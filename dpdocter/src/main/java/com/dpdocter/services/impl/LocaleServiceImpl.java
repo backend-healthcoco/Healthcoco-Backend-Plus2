@@ -70,7 +70,7 @@ public class LocaleServiceImpl implements LocaleService {
 	@Transactional
 	public Locale getLocaleDetailBySlugUrl(String slugUrl) {
 		Locale response = null;
-		LocaleCollection localeCollection = mongoTemplate.findOne(
+		LocaleCollection localeCollection = mongoTemplate.findById(
 				new Query(new Criteria("pharmacySlugUrl").regex("^" + slugUrl + "*", "i")), LocaleCollection.class);
 		if (localeCollection == null) {
 			throw new BusinessException(ServiceError.NoRecord, "Record for id not found");
@@ -111,7 +111,7 @@ public class LocaleServiceImpl implements LocaleService {
 	@Transactional
 	public Locale getLocaleDetails(String id, String userId) {
 		Locale response = null;
-		LocaleCollection localeCollection = localeRepository.findOne(new ObjectId(id));
+		LocaleCollection localeCollection = localeRepository.findById(new ObjectId(id)).orElse(null);
 		if (localeCollection == null) {
 			throw new BusinessException(ServiceError.NoRecord, "Record for id not found");
 		}
@@ -216,9 +216,9 @@ public class LocaleServiceImpl implements LocaleService {
 			ObjectId patientObjectId = new ObjectId(patientId);
 			RecommendationsCollection recommendationsCollection = null;
 
-			LocaleCollection localeCollection = localeRepository.findOne(localeObjectId);
+			LocaleCollection localeCollection = localeRepository.findById(localeObjectId).orElse(null);
 
-			UserCollection userCollection = userRepository.findOne(patientObjectId);
+			UserCollection userCollection = userRepository.findById(patientObjectId).orElse(null);
 
 			if (userCollection != null && localeCollection != null) {
 				recommendationsCollection = recommendationsRepository.findByDoctorIdLocationIdAndPatientId(null,

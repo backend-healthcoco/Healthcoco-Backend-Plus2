@@ -158,7 +158,7 @@ public class DoctorProfileApi {
 	@Path(value = PathProxy.DoctorProfileUrls.GET_MEDICAL_COUNCILS)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_MEDICAL_COUNCILS, notes = PathProxy.DoctorProfileUrls.GET_MEDICAL_COUNCILS)
-	public Response<MedicalCouncil> getMedicalCouncils(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<MedicalCouncil> getMedicalCouncils(@QueryParam("page") long page, @QueryParam("size") int size,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 		List<MedicalCouncil> medicalCouncils = doctorProfileService.getMedicalCouncils(page, size, updatedTime);
 		Response<MedicalCouncil> response = new Response<MedicalCouncil>();
@@ -375,7 +375,7 @@ public class DoctorProfileApi {
 	@Path(value = PathProxy.DoctorProfileUrls.GET_PROFESSIONAL_MEMBERSHIPS)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_PROFESSIONAL_MEMBERSHIPS, notes = PathProxy.DoctorProfileUrls.GET_PROFESSIONAL_MEMBERSHIPS)
-	public Response<ProfessionalMembership> getProfessionalMemberships(@QueryParam("page") int page,
+	public Response<ProfessionalMembership> getProfessionalMemberships(@QueryParam("page") long page,
 			@QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 		List<ProfessionalMembership> professionalMemberships = doctorProfileService.getProfessionalMemberships(page,
 				size, updatedTime);
@@ -495,7 +495,7 @@ public class DoctorProfileApi {
 	@Path(value = PathProxy.DoctorProfileUrls.GET_SPECIALITIES)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_SPECIALITIES, notes = PathProxy.DoctorProfileUrls.GET_SPECIALITIES)
-	public Response<Speciality> getSpeciality(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<Speciality> getSpeciality(@QueryParam("page") long page, @QueryParam("size") int size,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 		List<Speciality> specialities = doctorProfileService.getSpecialities(page, size, updatedTime);
 		Response<Speciality> response = new Response<Speciality>();
@@ -517,7 +517,7 @@ public class DoctorProfileApi {
 	@Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES, notes = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES)
-	public Response<EducationInstitute> getEducationInstitutes(@QueryParam("page") int page,
+	public Response<EducationInstitute> getEducationInstitutes(@QueryParam("page") long page,
 			@QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 		List<EducationInstitute> educationInstitutes = doctorProfileService.getEducationInstitutes(page, size,
 				updatedTime);
@@ -529,7 +529,7 @@ public class DoctorProfileApi {
 	@Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS, notes = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS)
-	public Response<EducationQualification> getEducationQualifications(@QueryParam("page") int page,
+	public Response<EducationQualification> getEducationQualifications(@QueryParam("page") long page,
 			@QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 		List<EducationQualification> qualifications = doctorProfileService.getEducationQualifications(page, size,
 				updatedTime);
@@ -640,7 +640,7 @@ public class DoctorProfileApi {
 	@Path(value = PathProxy.DoctorProfileUrls.GET_PATIENT)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_PATIENT, notes = PathProxy.DoctorProfileUrls.GET_PATIENT)
-	public Response<DoctorContactsResponse> getPatient(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<DoctorContactsResponse> getPatient(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("from") long from, @QueryParam("to") long to) {
 
@@ -675,7 +675,7 @@ public class DoctorProfileApi {
 			@PathParam(value = "prescribedByHospitalId") String prescribedByHospitalId,
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "size") int size,
-			@QueryParam(value = "page") int page) {
+			@QueryParam(value = "page") long page) {
 		if (DPDoctorUtils.anyStringEmpty(prescribedByDoctorId)
 				|| DPDoctorUtils.anyStringEmpty(prescribedByLocationId)) {
 			logger.warn("Invalid Input");

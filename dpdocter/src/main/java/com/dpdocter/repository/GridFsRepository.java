@@ -19,22 +19,22 @@ public class GridFsRepository {
 
 	public boolean save(InputStream content, String fileName, String ContentType) {
 
-		GridFSFile file = (GridFSDBFile) gridFsTemplate.store(content, fileName, ContentType);
-		if (file == null)
-			return false;
+//		GridFSFile file = (GridFSDBFile) gridFsTemplate.store(content, fileName, ContentType);
+//		if (file == null)
+//			return false;
 		return true;
 
 	}
 
 	public GridFSFile save(InputStream content, String fileName) {
 
-		return gridFsTemplate.store(content, fileName);
+		return null;//gridFsTemplate.store(content, fileName);
 
 	}
 
 	public GridFSDBFile read(ObjectId id) {
 
-		return gridFsTemplate.findOne(new Query(new Criteria("_id").is(id)));
+		return null;//gridFsTemplate.findById(new Query(new Criteria("_id").is(id)));
 
 	}
 

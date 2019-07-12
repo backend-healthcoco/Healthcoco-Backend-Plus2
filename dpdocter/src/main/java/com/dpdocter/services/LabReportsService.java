@@ -14,7 +14,7 @@ public interface LabReportsService {
 
 	public LabReports addLabReports(FormDataBodyPart file, LabReportsAddRequest request);
 
-	List<LabReports> getLabReports(String labTestSampleId, String searchTerm, int page, int size);
+	List<LabReports> getLabReports(String labTestSampleId, String searchTerm, long page, int size);
 
 	LabReports addLabReportBase64(FileDetails fileDetails, LabReportsAddRequest request);
 
@@ -22,19 +22,19 @@ public interface LabReportsService {
 
 	/*
 	 * List<LabReportsResponse> getLabReportsForDoctor(String doctorId, String
-	 * locationId, String hospitalId, String searchTerm, int page, int size);
+	 * locationId, String hospitalId, String searchTerm, long page, int size);
 	 * 
 	 * List<LabReportsResponse> getLabReportsForLab(String doctorId, String
-	 * locationId, String hospitalId, String searchTerm, int page, int size);
+	 * locationId, String hospitalId, String searchTerm, long page, int size);
 	 */
 
 	LabReports addLabReportBase64(FileDetails fileDetails, DoctorLabReportsAddRequest request);
 
 	List<LabReportsResponse> getLabReportsForDoctor(String doctorId, String locationId, String hospitalId,
-			String doctorId2, String searchTerm, int page, int size);
+			String doctorId2, String searchTerm, long page, int size);
 
 	List<LabReportsResponse> getLabReportsForLab(String doctorId, String locationId, String hospitalId,
-			String patientId, String searchTerm, int page, int size);
+			String patientId, String searchTerm, long page, int size);
 
 	LabReportsResponse changePatientShareStatus(String id, Boolean status);
 

@@ -554,7 +554,7 @@ public class AppointmentApi {
 	@Path(PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_LIST)
 	@GET
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_LIST, notes = PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_LIST)
-	public Response<CustomAppointment> getCustomAppointments(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<CustomAppointment> getCustomAppointments(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("doctorId") String doctorId,
 			@DefaultValue(value = "0") @QueryParam("updatedTime") String updatedTime,

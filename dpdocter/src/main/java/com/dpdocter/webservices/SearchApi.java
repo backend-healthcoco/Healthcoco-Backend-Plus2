@@ -109,7 +109,7 @@ public class SearchApi {
 	@Path(value = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB, notes = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB)
-	public Response<ESWEBResponse> getDoctorForWeb(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<ESWEBResponse> getDoctorForWeb(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("location") String location,
 			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 			@QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom,
@@ -189,7 +189,7 @@ public class SearchApi {
 	@Path(value = PathProxy.BlogsUrls.GET_BLOGS)
 	@GET
 	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOGS, notes = PathProxy.BlogsUrls.GET_BLOGS)
-	public Response<BlogResponse> getBlogs(@QueryParam(value = "size") int size, @QueryParam(value = "page") int page,
+	public Response<BlogResponse> getBlogs(@QueryParam(value = "size") int size, @QueryParam(value = "page") long page,
 			@QueryParam(value = "userId") String userId, @QueryParam(value = "category") String category,
 			@QueryParam(value = "title") String title) {
 		BlogResponse blogresponse = blogService.getBlogs(size, page, category, userId, title);

@@ -139,7 +139,7 @@ public class LocaleApi {
 	@GET
 	@Path(PathProxy.LocaleUrls.GET_PATIENT_ORDER_HISTORY)
 	public Response<SearchRequestFromUserResponse> getPatientOrderHistory(@PathParam("userId") String userId,
-			@QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("page") long page, @QueryParam("size") int size) {
 		Response<SearchRequestFromUserResponse> response = null;
 		List<SearchRequestFromUserResponse> list = null;
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
@@ -158,7 +158,7 @@ public class LocaleApi {
 	@Path(PathProxy.LocaleUrls.GET_PHARMCIES_FOR_ORDER)
 	public Response<SearchRequestToPharmacyResponse> getPharmaciesForOrder(@QueryParam("userId") String userId,
 			@QueryParam("uniqueRequestId") String uniqueRequestId, @QueryParam("replyType") String replyType,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("latitude") Double latitude,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam("latitude") Double latitude,
 			@QueryParam("longitude") Double longitude) {
 		Response<SearchRequestToPharmacyResponse> response = null;
 		List<SearchRequestToPharmacyResponse> list = null;
@@ -275,7 +275,7 @@ public class LocaleApi {
 	@Path(PathProxy.LocaleUrls.GET_PATIENT_ORDERS)
 	@ApiOperation(value = PathProxy.LocaleUrls.GET_PATIENT_ORDERS, notes = PathProxy.LocaleUrls.GET_PATIENT_ORDERS)
 	public Response<OrderDrugsResponse> getPatientOrders(@PathParam("userId") String userId,
-			@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("page") long page, @QueryParam("size") int size,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
@@ -294,7 +294,7 @@ public class LocaleApi {
 	@Path(PathProxy.LocaleUrls.GET_PATIENT_REQUEST)
 	@ApiOperation(value = PathProxy.LocaleUrls.GET_PATIENT_REQUEST, notes = PathProxy.LocaleUrls.GET_PATIENT_REQUEST)
 	public Response<SearchRequestFromUserResponse> getPatientRequests(@PathParam("userId") String userId,
-			@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("page") long page, @QueryParam("size") int size,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User id is null");

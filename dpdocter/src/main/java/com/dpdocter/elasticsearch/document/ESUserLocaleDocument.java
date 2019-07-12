@@ -22,25 +22,25 @@ public class ESUserLocaleDocument {
 	@Id
 	private String id;// This is localeId
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String title;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String firstName;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String userName;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String emailAddress;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String mobileNumber;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String imageUrl;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String thumbnailUrl;
 
 	@Field(type = FieldType.Boolean)
@@ -49,46 +49,46 @@ public class ESUserLocaleDocument {
 	@Field(type = FieldType.Boolean)
 	private Boolean isVerified = false;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String coverImageUrl;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String coverThumbnailImageUrl;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String colorCode;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String userUId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String userId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String localeId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String localeName;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String registeredOwnerName;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String licenseNumber;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<LocaleImage> localeImages;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String logoUrl;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String logoThumbnailUrl;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String contactNumber;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> alternateContactNumbers;
 
 	@Field(type = FieldType.Nested)
@@ -100,19 +100,19 @@ public class ESUserLocaleDocument {
 	@GeoPointField
 	private GeoPoint geoPoint;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String localeAddress;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String websiteUrl;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String localeEmailAddress;
 
 	@Field(type = FieldType.Boolean)
 	private Boolean isTwentyFourSevenOpen;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String localeUId;
 
 	@Field(type = FieldType.Integer)
@@ -136,13 +136,13 @@ public class ESUserLocaleDocument {
 	@Field(type = FieldType.Double)
 	private double homeDeliveryRadius;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String paymentInfo;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private List<String> paymentInfos;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String localeType = LocaleType.PHARMACY.getType();
 
 	@Field(type = FieldType.Boolean)
@@ -154,7 +154,7 @@ public class ESUserLocaleDocument {
 	@Field(type = FieldType.Boolean)
 	private Boolean isAcceptRequest = true;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private List<String> pharmacyType;
 
 	@Field(type = FieldType.Boolean)
@@ -163,7 +163,7 @@ public class ESUserLocaleDocument {
 	@Field(type = FieldType.Double)
 	private Double minimumAmountForDelivery = 0.0;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String pharmacySlugUrl;
 
 	public String getPharmacySlugUrl() {

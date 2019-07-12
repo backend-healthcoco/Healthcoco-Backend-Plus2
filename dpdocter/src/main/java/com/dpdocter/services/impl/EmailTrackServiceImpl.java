@@ -36,7 +36,7 @@ public class EmailTrackServiceImpl implements EmailTackService {
     
     @Override
     @Transactional
-    public List<EmailTrack> getEmailDetails(String patientId, String doctorId, String locationId, String hospitalId, int page, int size) {
+    public List<EmailTrack> getEmailDetails(String patientId, String doctorId, String locationId, String hospitalId, long page, int size) {
 	List<EmailTrack> response = null;
 	try {
 		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;

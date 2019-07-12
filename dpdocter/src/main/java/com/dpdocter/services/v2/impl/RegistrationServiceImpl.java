@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -139,6 +140,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					criteria.and("user.userState").is(userState);
 				}
 			}
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				doctorClinicProfileCollection = doctorClinicProfileRepository
 						.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
@@ -147,7 +149,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						: doctorClinicProfileCollection.getDoctorId().toString());
 				
 			}
-			CustomAggregationOperation projectionOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation projectionOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
 							.append("locationId", new BasicDBObject("$first", "$locationId"))
 							.append("isActivate", new BasicDBObject("$first", "$isActivate"))
@@ -189,7 +191,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 										Aggregation.unwind("userRoleCollection"),
 										Aggregation.match(criteria.and("userRoleCollection.locationId")
 												.is(new ObjectId(locationId))),
-										Aggregation.skip((page) * size), Aggregation.limit(size)),
+										Aggregation.skip((long)(page) * size), Aggregation.limit(size)),
 								DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 						.getMappedResults();
 			} else {

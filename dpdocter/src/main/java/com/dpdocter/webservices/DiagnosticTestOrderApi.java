@@ -46,7 +46,7 @@ public class DiagnosticTestOrderApi {
 	public Response<LabSearchResponse> searchLabs(@QueryParam("city") String city,
 			@QueryParam("location") String location, @QueryParam(value = "latitude") String latitude,
 			@QueryParam(value = "longitude") String longitude, @QueryParam("searchTerm") String searchTerm, 
-			@MatrixParam(value = "test") List<String> testNames, @QueryParam("page") int page, @QueryParam("size") int size,
+			@MatrixParam(value = "test") List<String> testNames, @QueryParam("page") long page, @QueryParam("size") int size,
 			@DefaultValue(value = "false") @QueryParam("havePackage") Boolean havePackage) {
 
 		List<LabSearchResponse> labSearchResponses = diagnosticTestOrderService.searchLabs(city, location, latitude, longitude, searchTerm, testNames, page, size, havePackage);

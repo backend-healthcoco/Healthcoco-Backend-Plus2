@@ -12,7 +12,7 @@ import com.dpdocter.response.SearchLandmarkLocalityResponse;
 
 public interface ESAppointmentService {
 
-	List<ESDoctorDocument> getDoctors(int page, int size, String city, String location, String latitude,
+	List<ESDoctorDocument> getDoctors(long page, int size, String city, String location, String latitude,
 			String longitude, String speciality, String symptom, Boolean booking, Boolean calling, int minFee,
 			int maxFee, int minTime, int maxTime, List<String> days, String gender, int minExperience,
 			int maxExperience, String service);
@@ -20,26 +20,26 @@ public interface ESAppointmentService {
 	List<AppointmentSearchResponse> search(String city, String location, String latitude, String longitude,
 			String searchTerm);
 
-	List<LabResponse> getLabs(int page, int size, String city, String location, String latitude, String longitude,
+	List<LabResponse> getLabs(long page, int size, String city, String location, String latitude, String longitude,
 			String test, Boolean booking, Boolean calling, int minTime, int maxTime, List<String> days,
 			Boolean onlineReports, Boolean homeService, Boolean nabl);
 
-	List<ESUserLocaleDocument> getPharmacies(int page, int size, String city, String location, String latitude,
+	List<ESUserLocaleDocument> getPharmacies(long page, int size, String city, String location, String latitude,
 			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, long minTime,
 			long maxTime, List<String> days, List<String> pharmacyType, Boolean isGenericMedicineAvailable);
 
 	Boolean sendSMSToDoctors();
 
-	public ESWEBResponse getPharmacyForWeb(int page, int size, String city, String localeName, String latitude,
+	public ESWEBResponse getPharmacyForWeb(long page, int size, String city, String localeName, String latitude,
 			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, long minTime,
 			long maxTime, List<String> days, List<String> pharmacyType, Boolean isGenericMedicineAvailable,
 			String locality);
 
-	ESWEBResponse getLabForWeb(int page, int size, String city, String location, String latitude, String longitude,
+	ESWEBResponse getLabForWeb(long page, int size, String city, String location, String latitude, String longitude,
 			String test, Boolean booking, Boolean calling, int minTime, int maxTime, List<String> days,
 			Boolean onlineReports, Boolean homeService, Boolean nabl, String locality);
 
-	ESWEBResponse getDoctorForWeb(int page, int size, String city, String location, String latitude, String longitude,
+	ESWEBResponse getDoctorForWeb(long page, int size, String city, String location, String latitude, String longitude,
 			String speciality, String symptom, Boolean booking, Boolean calling, int minFee, int maxFee, int minTime,
 			int maxTime, List<String> days, String gender, int minExperience, int maxExperience, String service,
 			String locality);

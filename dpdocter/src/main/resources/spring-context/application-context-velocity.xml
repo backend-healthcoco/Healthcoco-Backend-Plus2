@@ -5,13 +5,13 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 	<beans>
 		<bean id="velocityEngine"
-			class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
-			<property name="velocityProperties">
-				<value> resource.loader=class, file
-					class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
-					file.resource.loader.class=org.apache.velocity.runtime.resource.loader.FileResourceLoader
-				</value>
-			</property>
+			class="org.apache.velocity.app.VelocityEngine">
+<!-- 			<property name="velocityProperties"> -->
+<!-- 				<value> resource.loader=class, file -->
+<!-- 					class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader -->
+<!-- 					file.resource.loader.class=org.apache.velocity.runtime.resource.loader.FileResourceLoader -->
+<!-- 				</value> -->
+<!-- 			</property> -->
 		</bean>
 		<!-- <bean id="emailNotificationServiceSuggestPodcast" class="org.podcastpedia.web.suggestpodcast.EmailNotificationServiceImpl"> -->
 		<!-- <property name="mailSender" ref="mailSender"/> -->

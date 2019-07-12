@@ -58,7 +58,7 @@ public class UserFavouritesApi {
 	@Path(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_DOCTORS)
 	@GET
 	@ApiOperation(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_DOCTORS, notes = PathProxy.UserFavouritesUrls.GET_FAVOURITE_DOCTORS)
-	public Response<ESDoctorDocument> getFavouriteDoctors(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<ESDoctorDocument> getFavouriteDoctors(@QueryParam("page") long page, @QueryParam("size") int size,
 			@PathParam("userId") String userId) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("Invalid Input");
@@ -74,7 +74,7 @@ public class UserFavouritesApi {
 	@Path(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_PHARMACIES)
 	@GET
 	@ApiOperation(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_PHARMACIES, notes = PathProxy.UserFavouritesUrls.GET_FAVOURITE_PHARMACIES)
-	public Response<ESUserLocaleDocument> getFavouritePharmacies(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<ESUserLocaleDocument> getFavouritePharmacies(@QueryParam("page") long page, @QueryParam("size") int size,
 			@PathParam("userId") String userId) {
 
 		List<ESUserLocaleDocument> pharmacies = userFavouriteService.getFavouritePharmacies(page, size, userId);
@@ -87,7 +87,7 @@ public class UserFavouritesApi {
 	@Path(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_LABS)
 	@GET
 	@ApiOperation(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_LABS, notes = PathProxy.UserFavouritesUrls.GET_FAVOURITE_LABS)
-	public Response<LabResponse> getFavouriteLabs(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<LabResponse> getFavouriteLabs(@QueryParam("page") long page, @QueryParam("size") int size,
 			@PathParam("userId") String userId) {
 
 		List<LabResponse> doctors = userFavouriteService.getFavouriteLabs(page, size, userId);

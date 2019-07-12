@@ -9,7 +9,7 @@ import com.dpdocter.beans.WorkingHours;
 
 public class ESWorkingSchedule {
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
     private String workingDay;
 
     @Field(type = FieldType.Nested)

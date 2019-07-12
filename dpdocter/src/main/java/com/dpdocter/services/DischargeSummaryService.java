@@ -23,7 +23,7 @@ public interface DischargeSummaryService {
 	// List<DischargeSummary> getAllDischargeSummary();
 
 	List<DischargeSummaryResponse> getDischargeSummary(String doctorId, String locationId, String hospitalId,
-			String patientId, int page, int size, String updatedTime);
+			String patientId, long page, int size, String updatedTime);
 
 	int getDischargeSummaryCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
 			ObjectId hospitalObjectId, boolean isOTPVerified);
@@ -56,7 +56,7 @@ public interface DischargeSummaryService {
 
 	public OperationNote addEditOperationNote(OperationNote operationNote);
 
-	public List<?> getDischargeSummaryItems(String type, String range, int page, int size, String doctorId,
+	public List<?> getDischargeSummaryItems(String type, String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 	public Implant addEditImplant(Implant implant);
@@ -73,7 +73,7 @@ public interface DischargeSummaryService {
 	FlowsheetResponse addEditFlowSheets(AddEditFlowSheetRequest request);
 
 	List<FlowsheetResponse> getFlowSheets(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, String updatedTime);
+			long page, int size, String updatedTime);
 
 	FlowsheetResponse getFlowSheetsById(String id);
 

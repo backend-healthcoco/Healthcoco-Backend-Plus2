@@ -97,7 +97,7 @@ public class LabApi {
 			@QueryParam(value = "prescribedByDoctorId") String prescribedByDoctorId,
 			@QueryParam(value = "prescribedByLocationId") String prescribedByLocationId,
 			@QueryParam(value = "prescribedByHospitalId") String prescribedByHospitalId,
-			@QueryParam(value = "size") int size, @QueryParam(value = "page") int page) {
+			@QueryParam(value = "size") int size, @QueryParam(value = "page") long page) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId) || DPDoctorUtils.anyStringEmpty(hospitalId)
 				|| DPDoctorUtils.anyStringEmpty(hospitalId)) {
 			logger.warn("Invalid Input");
@@ -128,7 +128,7 @@ public class LabApi {
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_CB_LIST_BY_PARENT_LAB, notes = PathProxy.LabUrls.GET_CB_LIST_BY_PARENT_LAB)
 	public Response<Object> getCBListByParentLab(@QueryParam("locationId") String locationId,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -143,7 +143,7 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.GET_RATE_CARDS)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_RATE_CARDS, notes = PathProxy.LabUrls.GET_RATE_CARDS)
-	public Response<Object> getRateCards(@QueryParam("locationId") String locationId, @QueryParam("page") int page,
+	public Response<Object> getRateCards(@QueryParam("locationId") String locationId, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
@@ -160,7 +160,7 @@ public class LabApi {
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_RATE_CARD_TEST, notes = PathProxy.LabUrls.GET_RATE_CARD_TEST)
 	public Response<RateCardTestAssociationLookupResponse> getRateCardTests(@QueryParam("rateCardId") String rateCardId,
-			@QueryParam("labId") String labId, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("labId") String labId, @QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("searchTerm") String searchTerm) {
 		if (rateCardId == null) {
 			logger.warn("Invalid Input");
@@ -177,7 +177,7 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_GROUPED_LAB_TEST, notes = PathProxy.LabUrls.GET_GROUPED_LAB_TEST)
 	public Response<LabTestGroupResponse> getGroupedLabTest(@QueryParam("daughterLabId") String daughterLabId,
 			@QueryParam("parentLabId") String parentLabId, @QueryParam("labId") String labId,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		if (daughterLabId == null || parentLabId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -194,7 +194,7 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_RATE_CARD_TEST_BY_DL, notes = PathProxy.LabUrls.GET_RATE_CARD_TEST_BY_DL)
 	public Response<RateCardTestAssociationByLBResponse> getRateCardTests(
 			@QueryParam("daughterLabId") String daughterLabId, @QueryParam("parentLabId") String parentLabId,
-			@QueryParam("labId") String labId, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("labId") String labId, @QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("specimen") String specimen) {
 		if (daughterLabId == null || parentLabId == null) {
 			logger.warn("Invalid Input");
@@ -323,7 +323,7 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_CB_LAB_ASSOCIATION, notes = PathProxy.LabUrls.GET_CB_LAB_ASSOCIATION)
 	public Response<Location> getCBLabAssociation(@QueryParam("parentLabId") String parentLabId,
 			@QueryParam("daughterLabId") String daughterLabId, @QueryParam("collectionBoyId") String collectionBoyId,
-			@QueryParam("size") int size, @QueryParam("page") int page) {
+			@QueryParam("size") int size, @QueryParam("page") long page) {
 		if (collectionBoyId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -339,7 +339,7 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_ASSOCIATED_LABS, notes = PathProxy.LabUrls.GET_ASSOCIATED_LABS)
 	public Response<Location> getAssociateLabs(@QueryParam("locationId") String locationId,
 			@QueryParam("isParent") @DefaultValue("true") Boolean isParent, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("page") long page, @QueryParam("size") int size) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -352,7 +352,7 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.GET_CLINICS_AND_LABS)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_CLINICS_AND_LABS, notes = PathProxy.LabUrls.GET_CLINICS_AND_LABS)
-	public Response<Location> getClinics(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
+	public Response<Location> getClinics(@QueryParam(value = "page") long page, @QueryParam(value = "size") int size,
 			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "isClinic") Boolean isClinic,
 			@QueryParam(value = "isLab") Boolean isLab, @QueryParam(value = "isDentalWorksLab") Boolean isDentalWorksLab ,  @QueryParam(value = "isDentalImagingLab") Boolean isDentalImagingLab ,  @QueryParam(value = "isParent") Boolean isParent,
 			@QueryParam(value = "searchTerm") String searchTerm) {
@@ -368,7 +368,7 @@ public class LabApi {
 	@Path(PathProxy.LabUrls.GET_SPECIMEN_LIST)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_SPECIMEN_LIST, notes = PathProxy.LabUrls.GET_SPECIMEN_LIST)
-	public Response<Specimen> getSpecimen(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<Specimen> getSpecimen(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("searchTerm") String searchTerm) {
 		List<Specimen> specimens = null;
 		Response<Specimen> response = null;
@@ -454,7 +454,7 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_CB, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_CB)
 	public Response<LabTestPickupLookupResponse> getPickUpForCB(@QueryParam("collectionBoyId") String collectionBoyId,
 			@QueryParam("from") @DefaultValue("0") Long from, @QueryParam("to") @DefaultValue("0") Long to,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page) {
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") long page) {
 		List<LabTestPickupLookupResponse> labTestPickups = null;
 		Response<LabTestPickupLookupResponse> response = null;
 
@@ -475,7 +475,7 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_DL, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_DL)
 	public Response<LabTestPickupLookupResponse> getPickUpForDL(@QueryParam("daughterLabId") String daughterLabId,
 			@QueryParam("from") @DefaultValue("0") Long from, @QueryParam("to") @DefaultValue("0") Long to,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page) {
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") long page) {
 		List<LabTestPickupLookupResponse> labTestPickups = null;
 		Response<LabTestPickupLookupResponse> response = null;
 		try {
@@ -496,7 +496,7 @@ public class LabApi {
 	public Response<LabTestPickupLookupResponse> getPickUpForPL(@QueryParam("parentLabId") String parentLabId,
 			@QueryParam("daughterLabId") String daughterLabId, @QueryParam("from") @DefaultValue("0") Long from,
 			@QueryParam("to") @DefaultValue("0") Long to, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("size") int size, @QueryParam("page") int page) {
+			@QueryParam("size") int size, @QueryParam("page") long page) {
 		List<LabTestPickupLookupResponse> labTestPickups = null;
 		Response<LabTestPickupLookupResponse> response = null;
 
@@ -569,7 +569,7 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_REPORTS_FOR_SAMPLES, notes = PathProxy.LabUrls.GET_REPORTS_FOR_SAMPLES)
 	public Response<LabReports> getLabReports(@QueryParam("requestId") String requestId,
 			@QueryParam("labTestSampleId") String labTestSampleId, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("page") long page, @QueryParam("size") int size) {
 
 		List<LabReports> labReports = null;
 		try {
@@ -596,7 +596,7 @@ public class LabApi {
 	public Response<Object> getLabReports(@QueryParam("locationId") String locationId,
 			@QueryParam("isParent") @DefaultValue("true") Boolean isParent,
 			@QueryParam("from") @DefaultValue("0") Long from, @QueryParam("to") @DefaultValue("0") Long to,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("page") long page, @QueryParam("size") int size) {
 
 		List<PatientLabTestSampleReportResponse> labTestSamples = null;
 		try {
@@ -643,7 +643,7 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_DOCTOR, notes = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_DOCTOR)
 	public Response<DoctorLabReportResponseWithCount> getLabReportsForDoctor(@QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("patientId") String patientId, @QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
@@ -665,7 +665,7 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_LAB, notes = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_LAB)
 	public Response<DoctorLabReportResponseWithCount> getLabReportsForLab(@QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("patientId") String patientId, @QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");

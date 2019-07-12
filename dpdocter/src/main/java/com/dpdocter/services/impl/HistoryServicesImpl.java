@@ -11,6 +11,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -178,7 +179,7 @@ public class HistoryServicesImpl implements HistoryServices {
 				DiseasesCollection diseasesCollection = new DiseasesCollection();
 				BeanUtil.map(addEditRequest, diseasesCollection);
 				if (!DPDoctorUtils.anyStringEmpty(addEditRequest.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(new ObjectId(addEditRequest.getDoctorId()));
+					UserCollection userCollection = userRepository.findById(new ObjectId(addEditRequest.getDoctorId())).orElse(null);
 					if (userCollection != null) {
 						diseasesCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -207,7 +208,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		DiseasesCollection disease = new DiseasesCollection();
 		BeanUtil.map(request, disease);
 		try {
-			DiseasesCollection oldDisease = diseasesRepository.findOne(new ObjectId(request.getId()));
+			DiseasesCollection oldDisease = diseasesRepository.findById(new ObjectId(request.getId())).orElse(null);
 			disease.setCreatedBy(oldDisease.getCreatedBy());
 			disease.setCreatedTime(oldDisease.getCreatedTime());
 			disease.setDiscarded(oldDisease.getDiscarded());
@@ -229,12 +230,12 @@ public class HistoryServicesImpl implements HistoryServices {
 		DiseaseAddEditResponse response = null;
 		DiseasesCollection disease = null;
 		try {
-			disease = diseasesRepository.findOne(new ObjectId(diseaseId));
+			disease = diseasesRepository.findById(new ObjectId(diseaseId)).orElse(null);
 			if (disease != null) {
 				if (disease.getDoctorId() != null && disease.getHospitalId() != null
 						&& disease.getLocationId() != null) {
-					if (disease.getDoctorId().equals(doctorId) && disease.getHospitalId().equals(hospitalId)
-							&& disease.getLocationId().equals(locationId)) {
+					if (disease.getDoctorId().toString().equals(doctorId) && disease.getHospitalId().toString().equals(hospitalId)
+							&& disease.getLocationId().toString().equals(locationId)) {
 						disease.setDiscarded(discarded);
 						disease.setUpdatedTime(new Date());
 						disease = diseasesRepository.save(disease);
@@ -317,7 +318,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			historyRepository.save(historyCollection);
 
 			// modify record that it has been added to history.
-			recordsCollection = recordsRepository.findOne(new ObjectId(reportId));
+			recordsCollection = recordsRepository.findById(new ObjectId(reportId)).orElse(null);
 			if (recordsCollection != null) {
 				recordsCollection.setInHistory(true);
 				recordsCollection.setUpdatedTime(new Date());
@@ -388,7 +389,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			historyRepository.save(historyCollection);
 
 			// modify clinical notes that it has been added to history.
-			clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
+			clinicalNotesCollection = clinicalNotesRepository.findById(new ObjectId(clinicalNotesId)).orElse(null);
 			if (clinicalNotesCollection != null) {
 				clinicalNotesCollection.setInHistory(true);
 				clinicalNotesCollection.setUpdatedTime(new Date());
@@ -457,7 +458,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			}
 			historyRepository.save(historyCollection);
 
-			prescriptionCollection = prescriptionRepository.findOne(new ObjectId(prescriptionId));
+			prescriptionCollection = prescriptionRepository.findById(new ObjectId(prescriptionId)).orElse(null);
 			if (prescriptionCollection != null) {
 				prescriptionCollection.setUpdatedTime(new Date());
 				prescriptionCollection.setInHistory(true);
@@ -472,7 +473,7 @@ public class HistoryServicesImpl implements HistoryServices {
 						PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
 						BeanUtil.map(prescriptionItem, prescriptionItemDetails);
 						if (prescriptionItem.getDrugId() != null) {
-							DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+							DrugCollection drugCollection = drugRepository.findById(prescriptionItem.getDrugId()).orElse(null);
 							Drug drug = new Drug();
 							if (drugCollection != null)
 								BeanUtil.map(drugCollection, drug);
@@ -492,7 +493,7 @@ public class HistoryServicesImpl implements HistoryServices {
 					for (TestAndRecordData data : tests) {
 						if (data.getTestId() != null) {
 							DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-									.findOne(data.getTestId());
+									.findById(data.getTestId()).orElse(null);
 							DiagnosticTest diagnosticTest = new DiagnosticTest();
 							if (diagnosticTestCollection != null) {
 								BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -574,7 +575,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			historyRepository.save(historyCollection);
 
 			// modify patient treatment that it has been added to history.
-			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
+			patientTreatmentCollection = patientTreamentRepository.findById(new ObjectId(treatmentId)).orElse(null);
 			if (patientTreatmentCollection != null) {
 				patientTreatmentCollection.setUpdatedTime(new Date());
 				patientTreatmentCollection.setInHistory(true);
@@ -585,7 +586,7 @@ public class HistoryServicesImpl implements HistoryServices {
 					TreatmentResponse treatmentResponse = new TreatmentResponse();
 					BeanUtil.map(treatment, treatmentResponse);
 					TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-							.findOne(treatment.getTreatmentServiceId());
+							.findById(treatment.getTreatmentServiceId()).orElse(null);
 					if (treatmentServicesCollection != null) {
 						TreatmentService treatmentService = new TreatmentService();
 						BeanUtil.map(treatmentServicesCollection, treatmentService);
@@ -783,7 +784,7 @@ public class HistoryServicesImpl implements HistoryServices {
 				for (NotesCollection note : notesCollections) {
 					note.setInHistory(true);
 				}
-				notesRepository.save(notesCollections);
+				notesRepository.saveAll(notesCollections);
 			}
 
 		} catch (Exception e) {
@@ -820,13 +821,13 @@ public class HistoryServicesImpl implements HistoryServices {
 					if (reports.contains(reportId)) {
 						historyCollection.getGeneralRecords().remove(reports.indexOf(reportId));
 						if (checkIfHistoryRemovedCompletely(historyCollection)) {
-							historyRepository.delete(historyCollection.getId());
+							historyRepository.deleteById(historyCollection.getId());
 						} else {
 							historyCollection.setUpdatedTime(new Date());
 							historyRepository.save(historyCollection);
 						}
 						// modify records that it has been removed from history
-						recordsCollection = recordsRepository.findOne(new ObjectId(reportId));
+						recordsCollection = recordsRepository.findById(new ObjectId(reportId)).orElse(null);
 						if (recordsCollection != null) {
 							recordsCollection.setInHistory(false);
 							recordsCollection.setUpdatedTime(new Date());
@@ -880,12 +881,12 @@ public class HistoryServicesImpl implements HistoryServices {
 					if (clinicalNotes.contains(clinicalNotesId)) {
 						historyCollection.getGeneralRecords().remove(clinicalNotes.indexOf(clinicalNotesId));
 						if (checkIfHistoryRemovedCompletely(historyCollection)) {
-							historyRepository.delete(historyCollection.getId());
+							historyRepository.deleteById(historyCollection.getId());
 						} else {
 							historyCollection.setUpdatedTime(new Date());
 							historyRepository.save(historyCollection);
 						}
-						clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
+						clinicalNotesCollection = clinicalNotesRepository.findById(new ObjectId(clinicalNotesId)).orElse(null);
 						if (clinicalNotesCollection != null) {
 							clinicalNotesCollection.setInHistory(false);
 							clinicalNotesCollection.setUpdatedTime(new Date());
@@ -941,12 +942,12 @@ public class HistoryServicesImpl implements HistoryServices {
 					if (prescriptions.contains(prescriptionId)) {
 						historyCollection.getGeneralRecords().remove(prescriptions.indexOf(prescriptionId));
 						if (checkIfHistoryRemovedCompletely(historyCollection)) {
-							historyRepository.delete(historyCollection.getId());
+							historyRepository.deleteById(historyCollection.getId());
 						} else {
 							historyCollection.setUpdatedTime(new Date());
 							historyRepository.save(historyCollection);
 						}
-						prescriptionCollection = prescriptionRepository.findOne(new ObjectId(prescriptionId));
+						prescriptionCollection = prescriptionRepository.findById(new ObjectId(prescriptionId)).orElse(null);
 						if (prescriptionCollection != null) {
 							prescriptionCollection.setInHistory(false);
 							prescriptionCollection.setUpdatedTime(new Date());
@@ -962,7 +963,7 @@ public class HistoryServicesImpl implements HistoryServices {
 									BeanUtil.map(prescriptionItem, prescriptionItemDetails);
 									if (prescriptionItem.getDrugId() != null) {
 										DrugCollection drugCollection = drugRepository
-												.findOne(prescriptionItem.getDrugId());
+												.findById(prescriptionItem.getDrugId()).orElse(null);
 										Drug drug = new Drug();
 										if (drugCollection != null)
 											BeanUtil.map(drugCollection, drug);
@@ -982,7 +983,7 @@ public class HistoryServicesImpl implements HistoryServices {
 								for (TestAndRecordData data : tests) {
 									if (data.getTestId() != null) {
 										DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-												.findOne(data.getTestId());
+												.findById(data.getTestId()).orElse(null);
 										DiagnosticTest diagnosticTest = new DiagnosticTest();
 										if (diagnosticTestCollection != null) {
 											BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -1043,7 +1044,7 @@ public class HistoryServicesImpl implements HistoryServices {
 					if (medicalHistory.contains(new ObjectId(diseaseId))) {
 						medicalHistory.remove(new ObjectId(diseaseId));
 						if (checkIfHistoryRemovedCompletely(historyCollection)) {
-							historyRepository.delete(historyCollection.getId());
+							historyRepository.deleteById(historyCollection.getId());
 						} else {
 							historyCollection.setUpdatedTime(new Date());
 							historyCollection = historyRepository.save(historyCollection);
@@ -1106,7 +1107,7 @@ public class HistoryServicesImpl implements HistoryServices {
 					if (familyHistory.contains(new ObjectId(diseaseId))) {
 						familyHistory.remove(new ObjectId(diseaseId));
 						if (checkIfHistoryRemovedCompletely(historyCollection)) {
-							historyRepository.delete(historyCollection.getId());
+							historyRepository.deleteById(historyCollection.getId());
 						} else {
 							historyCollection.setUpdatedTime(new Date());
 							historyCollection = historyRepository.save(historyCollection);
@@ -1225,7 +1226,7 @@ public class HistoryServicesImpl implements HistoryServices {
 					if (size > 0)
 						diseasesCollections = diseasesRepository.findCustomDiseases(doctorObjectId,
 								new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+								PageRequest.of(page, size, Direction.DESC, "updatedTime"));
 					else
 						diseasesCollections = diseasesRepository.findCustomDiseases(doctorObjectId,
 								new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
@@ -1233,7 +1234,7 @@ public class HistoryServicesImpl implements HistoryServices {
 					if (size > 0)
 						diseasesCollections = diseasesRepository.findCustomDiseases(doctorObjectId, locationObjectId,
 								hospitalObjectId, new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+								PageRequest.of(page, size, Direction.DESC, "updatedTime"));
 					else
 						diseasesCollections = diseasesRepository.findCustomDiseases(doctorObjectId, locationObjectId,
 								hospitalObjectId, new Date(createdTimeStamp), discards,
@@ -1282,7 +1283,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			if(count > 0) {
 				if (size > 0)
 					diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "updatedTime"));
+							PageRequest.of(page, size, Direction.DESC, "updatedTime"));
 				else
 					diseasesCollections = diseasesRepository.findGlobalDiseases(new Date(createdTimeStamp), discards,
 							new Sort(Sort.Direction.DESC, "updatedTime"));
@@ -1345,7 +1346,7 @@ public class HistoryServicesImpl implements HistoryServices {
 					if (size > 0)
 						diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorObjectId,
 								new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+								PageRequest.of(page, size, Direction.DESC, "updatedTime"));
 					else
 						diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorObjectId,
 								new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
@@ -1353,7 +1354,7 @@ public class HistoryServicesImpl implements HistoryServices {
 					if (size > 0)
 						diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorObjectId, locationObjectId,
 								hospitalObjectId, new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+								PageRequest.of(page, size, Direction.DESC, "updatedTime"));
 					else
 						diseasesCollections = diseasesRepository.findCustomGlobalDiseases(doctorObjectId, locationObjectId,
 								hospitalObjectId, new Date(createdTimeStamp), discards,
@@ -1411,14 +1412,14 @@ public class HistoryServicesImpl implements HistoryServices {
 				if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 					if (size > 0)
 						diseasesCollections = diseasesRepository.findCustomDiseasesForAdmin(new Date(createdTimeStamp),
-								discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+								discards, PageRequest.of(page, size, Direction.DESC, "updatedTime"));
 					else
 						diseasesCollections = diseasesRepository.findCustomDiseasesForAdmin(new Date(createdTimeStamp),
 								discards, new Sort(Sort.Direction.DESC, "updatedTime"));
 				} else {
 					if (size > 0)
 						diseasesCollections = diseasesRepository.findCustomDiseasesForAdmin(new Date(createdTimeStamp),
-								discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+								discards, searchTerm, PageRequest.of(page, size, Direction.DESC, "updatedTime"));
 					else
 						diseasesCollections = diseasesRepository.findCustomDiseasesForAdmin(new Date(createdTimeStamp),
 								discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
@@ -1474,14 +1475,14 @@ public class HistoryServicesImpl implements HistoryServices {
 				if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
 					if (size > 0)
 						diseasesCollections = diseasesRepository.findGlobalDiseasesForAdmin(new Date(createdTimeStamp),
-								discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+								discards, PageRequest.of(page, size, Direction.DESC, "updatedTime"));
 					else
 						diseasesCollections = diseasesRepository.findGlobalDiseasesForAdmin(new Date(createdTimeStamp),
 								discards, new Sort(Sort.Direction.DESC, "updatedTime"));
 				} else {
 					if (size > 0)
 						diseasesCollections = diseasesRepository.findGlobalDiseasesForAdmin(new Date(createdTimeStamp),
-								discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+								discards, searchTerm, PageRequest.of(page, size, Direction.DESC, "updatedTime"));
 					else
 						diseasesCollections = diseasesRepository.findGlobalDiseasesForAdmin(new Date(createdTimeStamp),
 								searchTerm, discards, new Sort(Sort.Direction.DESC, "updatedTime"));
@@ -1540,7 +1541,7 @@ public class HistoryServicesImpl implements HistoryServices {
 					if (size > 0)
 						diseasesCollections = diseasesRepository.findCustomGlobalDiseasesForAdmin(
 								new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+								PageRequest.of(page, size, Direction.DESC, "updatedTime"));
 					else
 						diseasesCollections = diseasesRepository.findCustomGlobalDiseasesForAdmin(
 								new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
@@ -1548,7 +1549,7 @@ public class HistoryServicesImpl implements HistoryServices {
 					if (size > 0)
 						diseasesCollections = diseasesRepository.findCustomGlobalDiseasesForAdmin(
 								new Date(createdTimeStamp), discards, searchTerm,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
+								PageRequest.of(page, size, Direction.DESC, "updatedTime"));
 					else
 						diseasesCollections = diseasesRepository.findCustomGlobalDiseasesForAdmin(
 								new Date(createdTimeStamp), discards, searchTerm,
@@ -1586,7 +1587,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	@Override
 	@Transactional
 	public List<HistoryDetailsResponse> getPatientHistoryDetailsWithoutVerifiedOTP(String patientId, String doctorId,
-			String hospitalId, String locationId, List<String> historyFilter, int page, int size, String updatedTime) {
+			String hospitalId, String locationId, List<String> historyFilter, long page, int size, String updatedTime) {
 		List<HistoryDetailsResponse> response = null;
 		try {
 			for (int i = 0; i < historyFilter.size(); i++) {
@@ -1701,7 +1702,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	@Override
 	@Transactional
 	public List<HistoryDetailsResponse> getPatientHistoryDetailsWithVerifiedOTP(String patientId, String doctorId,
-			String hospitalId, String locationId, List<String> historyFilter, int page, int size, String updatedTime) {
+			String hospitalId, String locationId, List<String> historyFilter, long page, int size, String updatedTime) {
 		List<HistoryDetailsResponse> response = null;
 		try {
 			for (int i = 0; i < historyFilter.size(); i++) {
@@ -1715,11 +1716,11 @@ public class HistoryServicesImpl implements HistoryServices {
 				matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
 				if (size > 0)
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
+									new Document("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -1727,18 +1728,18 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"), matchForFilter,
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$specialNotes").append(
 													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -1759,11 +1760,11 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				else
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
+									new Document("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -1771,18 +1772,18 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"), matchForFilter,
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "'$familyhistory'").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "'$medicalhistory'").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "'$specialNotes'").append(
 													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -1804,11 +1805,11 @@ public class HistoryServicesImpl implements HistoryServices {
 			} else {
 				if (size > 0)
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
+									new Document("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -1816,18 +1817,18 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"),
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "'$familyhistory'").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "'$medicalhistory'").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "'$specialNotes'").append(
 													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -1848,11 +1849,11 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				else
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
+									new Document("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -1860,18 +1861,18 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"),
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "'$familyhistory'").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "'$medicalhistory'").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "'$specialNotes'").append(
 													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -1976,7 +1977,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		List<DiseaseListResponse> diseaseListResponses = null;
 		try {
 			List<DiseasesCollection> diseasesCollections = IteratorUtils
-					.toList(diseasesRepository.findAll(medicalHistoryIds).iterator());
+					.toList(diseasesRepository.findAllById(medicalHistoryIds).iterator());
 
 			if (diseasesCollections != null) {
 				diseaseListResponses = new ArrayList<DiseaseListResponse>();
@@ -2035,6 +2036,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		return historyCount;
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	@Transactional
 	public boolean handleMedicalHistory(MedicalHistoryHandler request) {
@@ -2082,7 +2084,7 @@ public class HistoryServicesImpl implements HistoryServices {
 				historyCollection.setMedicalhistory(medicalHistoryList);
 			}
 			if (checkIfHistoryRemovedCompletely(historyCollection)) {
-				historyRepository.delete(historyCollection.getId());
+				historyRepository.deleteById(historyCollection.getId());
 			} else {
 				historyRepository.save(historyCollection);
 			}
@@ -2098,6 +2100,7 @@ public class HistoryServicesImpl implements HistoryServices {
 		return response;
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	@Transactional
 	public boolean handleFamilyHistory(MedicalHistoryHandler request) {
@@ -2143,7 +2146,7 @@ public class HistoryServicesImpl implements HistoryServices {
 				historyCollection.setFamilyhistory(familyHistoryList);
 			}
 			if (checkIfHistoryRemovedCompletely(historyCollection)) {
-				historyRepository.delete(historyCollection.getId());
+				historyRepository.deleteById(historyCollection.getId());
 			} else {
 				historyRepository.save(historyCollection);
 			}
@@ -2247,7 +2250,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
 		PatientVisitCollection patientVisitCollection = null;
 		try {
-			patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+			patientVisitCollection = patientVisitRepository.findById(new ObjectId(visitId)).orElse(null);
 			if (patientVisitCollection != null) {
 				if (patientVisitCollection.getClinicalNotesId() != null) {
 					for (ObjectId clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
@@ -2283,7 +2286,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			String locationId) {
 		PatientVisitCollection patientVisitCollection = null;
 		try {
-			patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+			patientVisitCollection = patientVisitRepository.findById(new ObjectId(visitId)).orElse(null);
 			if (patientVisitCollection != null) {
 				if (patientVisitCollection.getClinicalNotesId() != null) {
 					for (ObjectId clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
@@ -2384,7 +2387,7 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	@Override
 	@Transactional
-	public List<HistoryDetailsResponse> getPatientHistory(String patientId, List<String> historyFilter, int page,
+	public List<HistoryDetailsResponse> getPatientHistory(String patientId, List<String> historyFilter, long page,
 			int size, String updatedTime) {
 		List<HistoryDetailsResponse> response = null;
 		try {
@@ -2398,11 +2401,11 @@ public class HistoryServicesImpl implements HistoryServices {
 				matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
 				if (size > 0) {
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
+									new Document("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -2410,18 +2413,18 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"), matchForFilter,
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$specialNotes").append(
 													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -2442,11 +2445,11 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				} else
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
+									new Document("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -2454,18 +2457,18 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"), matchForFilter,
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$specialNotes").append(
 													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -2487,10 +2490,10 @@ public class HistoryServicesImpl implements HistoryServices {
 			} else {
 				if (size > 0)
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -2498,17 +2501,17 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"),
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$specialNotes").append(
 													"preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -2529,11 +2532,11 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				else
 					aggregation = Aggregation.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
+									new Document("$unwind", new BasicDBObject("path", "$medicalhistory")
 											.append("preserveNullAndEmptyArrays", true))),
 
 							Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).and("isPatientDiscarded").ne(true)
@@ -2541,18 +2544,18 @@ public class HistoryServicesImpl implements HistoryServices {
 							Aggregation.unwind("generalRecords"),
 							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
+									new Document("$unwind",
 											new BasicDBObject("path", "$specialNotes").append(
 													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("id", "$_id")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -2615,12 +2618,12 @@ public class HistoryServicesImpl implements HistoryServices {
 					if (patientTreatments.contains(treatmentId)) {
 						historyCollection.getGeneralRecords().remove(patientTreatments.indexOf(treatmentId));
 						if (checkIfHistoryRemovedCompletely(historyCollection)) {
-							historyRepository.delete(historyCollection.getId());
+							historyRepository.deleteById(historyCollection.getId());
 						} else {
 							historyCollection.setUpdatedTime(new Date());
 							historyRepository.save(historyCollection);
 						}
-						patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
+						patientTreatmentCollection = patientTreamentRepository.findById(new ObjectId(treatmentId)).orElse(null);
 						if (patientTreatmentCollection != null) {
 							patientTreatmentCollection.setInHistory(false);
 							patientTreatmentCollection.setUpdatedTime(new Date());
@@ -2631,7 +2634,7 @@ public class HistoryServicesImpl implements HistoryServices {
 								TreatmentResponse treatmentResponse = new TreatmentResponse();
 								BeanUtil.map(treatment, treatmentResponse);
 								TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-										.findOne(treatment.getTreatmentServiceId());
+										.findById(treatment.getTreatmentServiceId()).orElse(null);
 								if (treatmentServicesCollection != null) {
 									TreatmentService treatmentService = new TreatmentService();
 									BeanUtil.map(treatmentServicesCollection, treatmentService);
@@ -2811,27 +2814,27 @@ public class HistoryServicesImpl implements HistoryServices {
 
 		aggregation = Aggregation
 				.newAggregation(
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 										true))),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 										true))),
 						new CustomAggregationOperation(
-								new BasicDBObject("$unwind",
+								new Document("$unwind",
 										new BasicDBObject("path", "$specialNotes").append("preserveNullAndEmptyArrays",
 												true))),
 						Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
 						Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
 						Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
 										true))),
 						new CustomAggregationOperation(
-								new BasicDBObject("$unwind",
+								new Document("$unwind",
 										new BasicDBObject("path", "$medicalhistory").append(
 												"preserveNullAndEmptyArrays", true))),
-						new CustomAggregationOperation(new BasicDBObject("$group",
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("id", "$_id")
 										.append("patientId", new BasicDBObject("$first", "$patientId"))
 										.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -2883,7 +2886,7 @@ public class HistoryServicesImpl implements HistoryServices {
 				drugObjectIds.add(new ObjectId(drugId));
 			}
 			List<DrugCollection> drugCollections = IteratorUtils
-					.toList(drugRepository.findAll(drugObjectIds).iterator());
+					.toList(drugRepository.findAllById(drugObjectIds).iterator());
 
 			if (drugCollections != null) {
 				drugs = new ArrayList<Drug>();

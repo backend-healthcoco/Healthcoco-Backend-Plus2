@@ -13,19 +13,19 @@ public class ESCityDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String city;
 
     @Field(type = FieldType.Boolean)
     private Boolean isActivated = false;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String explanation;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String state;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String country;
 
     @GeoPointField

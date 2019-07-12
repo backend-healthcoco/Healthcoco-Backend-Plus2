@@ -15,6 +15,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -205,7 +206,7 @@ public class BillingServiceImpl implements BillingService {
 	public InvoiceAndReceiptInitials getInitials(String locationId) {
 		InvoiceAndReceiptInitials response = null;
 		try {
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+			LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
 			if (locationCollection != null) {
 				response = new InvoiceAndReceiptInitials();
 				response.setLocationId(locationId);
@@ -228,7 +229,7 @@ public class BillingServiceImpl implements BillingService {
 	public InvoiceAndReceiptInitials updateInitials(InvoiceAndReceiptInitials request) {
 		InvoiceAndReceiptInitials response = null;
 		try {
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+			LocationCollection locationCollection = locationRepository.findById(new ObjectId(request.getLocationId())).orElse(null);
 			if (locationCollection != null) {
 				locationCollection.setInvoiceInitial(request.getInvoiceInitial());
 				locationCollection.setReceiptInitial(request.getReceiptInitial());
@@ -263,7 +264,7 @@ public class BillingServiceImpl implements BillingService {
 			Double dueAmount = 0.0;
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 				BeanUtil.map(request, doctorPatientInvoiceCollection);
-				UserCollection userCollection = userRepository.findOne(doctorObjectId);
+				UserCollection userCollection = userRepository.findById(doctorObjectId).orElse(null);
 				if (userCollection != null) {
 					doctorPatientInvoiceCollection.setCreatedBy(
 							(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() + " "
@@ -272,7 +273,7 @@ public class BillingServiceImpl implements BillingService {
 				}
 
 				LocationCollection locationCollection = locationRepository
-						.findOne(new ObjectId(request.getLocationId()));
+						.findById(new ObjectId(request.getLocationId())).orElse(null);
 				if (locationCollection == null)
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid Location Id");
 				doctorPatientInvoiceCollection
@@ -289,7 +290,7 @@ public class BillingServiceImpl implements BillingService {
 				}
 				doctorPatientInvoiceCollection.setAdminCreatedTime(new Date());
 			} else {
-				doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findOne(new ObjectId(request.getId()));
+				doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findById(new ObjectId(request.getId())).orElse(null);
 				Double paidAmount = doctorPatientInvoiceCollection.getGrandTotal()
 						- doctorPatientInvoiceCollection.getBalanceAmount();
 
@@ -353,7 +354,7 @@ public class BillingServiceImpl implements BillingService {
 					else {
 						UserCollection doctor = doctorsMap.get(invoiceItemResponse.getDoctorId().toString());
 						if (doctor == null) {
-							doctor = userRepository.findOne(new ObjectId(invoiceItemResponse.getDoctorId()));
+							doctor = userRepository.findById(new ObjectId(invoiceItemResponse.getDoctorId())).orElse(null);
 							doctorsMap.put(invoiceItemResponse.getDoctorId(), doctor);
 						}
 						invoiceItemResponse.setDoctorName(
@@ -462,7 +463,7 @@ public class BillingServiceImpl implements BillingService {
 
 			for (ObjectId itemId : itemIds) {
 				// itemId);
-				DrugCollection drug = drugRepository.findOne(itemId);
+				DrugCollection drug = drugRepository.findById(itemId).orElse(null);
 				if (drug != null) {
 					InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(
 							request.getLocationId(), request.getHospitalId(), drug.getDrugCode(),
@@ -544,7 +545,7 @@ public class BillingServiceImpl implements BillingService {
 		DoctorPatientInvoice response = null;
 		try {
 			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository
-					.findOne(new ObjectId(invoiceId));
+					.findById(new ObjectId(invoiceId)).orElse(null);
 			if (doctorPatientInvoiceCollection != null) {
 				response = new DoctorPatientInvoice();
 				BeanUtil.map(doctorPatientInvoiceCollection, response);
@@ -561,7 +562,7 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	@Override
-	public List<DoctorPatientInvoice> getInvoices(String type, int page, int size, String doctorId, String locationId,
+	public List<DoctorPatientInvoice> getInvoices(String type, long page, int size, String doctorId, String locationId,
 			String hospitalId, String patientId, String updatedTime, Boolean discarded) {
 		List<DoctorPatientInvoice> responses = null;
 		try {
@@ -619,7 +620,7 @@ public class BillingServiceImpl implements BillingService {
 		Collection<ObjectId> itemIds = null;
 		try {
 			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository
-					.findOne(new ObjectId(invoiceId));
+					.findById(new ObjectId(invoiceId)).orElse(null);
 			doctorPatientInvoiceCollection.setDiscarded(discarded);
 			doctorPatientInvoiceCollection.setUpdatedTime(new Date());
 
@@ -635,7 +636,7 @@ public class BillingServiceImpl implements BillingService {
 						for (AdvanceReceiptIdWithAmount receiptIdWithAmount : receiptCollection
 								.getAdvanceReceiptIdWithAmounts()) {
 							DoctorPatientReceiptCollection patientReceiptCollection = doctorPatientReceiptRepository
-									.findOne(receiptIdWithAmount.getReceiptId());
+									.findById(receiptIdWithAmount.getReceiptId()).orElse(null);
 							patientReceiptCollection
 									.setRemainingAdvanceAmount(patientReceiptCollection.getRemainingAdvanceAmount()
 											+ receiptIdWithAmount.getUsedAdvanceAmount());
@@ -660,7 +661,7 @@ public class BillingServiceImpl implements BillingService {
 				// receiptCollection.setUpdatedTime(new Date());
 				// }
 
-				doctorPatientReceiptRepository.save(doPatientReceiptCollections);
+				doctorPatientReceiptRepository.saveAll(doPatientReceiptCollections);
 			}
 			doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
 
@@ -690,7 +691,7 @@ public class BillingServiceImpl implements BillingService {
 
 			for (ObjectId itemId : itemIds) {
 				// itemId);
-				DrugCollection drug = drugRepository.findOne(itemId);
+				DrugCollection drug = drugRepository.findById(itemId).orElse(null);
 				if (drug != null) {
 					InventoryStock inventoryStock = inventoryService.getInventoryStockByInvoiceIdResourceId(
 							response.getLocationId(), response.getHospitalId(), drug.getDrugCode(),
@@ -735,7 +736,7 @@ public class BillingServiceImpl implements BillingService {
 			DoctorPatientReceiptCollection doctorPatientReceiptCollection = new DoctorPatientReceiptCollection();
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 				BeanUtil.map(request, doctorPatientReceiptCollection);
-				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (userCollection != null) {
 					doctorPatientReceiptCollection.setCreatedBy(
 							(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() + " "
@@ -743,7 +744,7 @@ public class BillingServiceImpl implements BillingService {
 				}
 				doctorPatientReceiptCollection.setCreatedTime(new Date());
 				LocationCollection locationCollection = locationRepository
-						.findOne(new ObjectId(request.getLocationId()));
+						.findById(new ObjectId(request.getLocationId())).orElse(null);
 				if (locationCollection == null)
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid Location Id");
 				doctorPatientReceiptCollection
@@ -755,7 +756,7 @@ public class BillingServiceImpl implements BillingService {
 				if (doctorPatientReceiptCollection.getReceivedDate() == null)
 					doctorPatientReceiptCollection.setReceivedDate(new Date());
 			} else {
-				doctorPatientReceiptCollection = doctorPatientReceiptRepository.findOne(new ObjectId(request.getId()));
+				doctorPatientReceiptCollection = doctorPatientReceiptRepository.findById(new ObjectId(request.getId())).orElse(null);
 				dueAmount = (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0)
 						- doctorPatientReceiptCollection.getAmountPaid();
 			}
@@ -768,7 +769,7 @@ public class BillingServiceImpl implements BillingService {
 
 				if (request.getInvoiceIds() != null && !request.getInvoiceIds().isEmpty()) {
 					DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository
-							.findOne(new ObjectId(request.getInvoiceIds().get(0)));
+							.findById(new ObjectId(request.getInvoiceIds().get(0))).orElse(null);
 					if (doctorPatientInvoiceCollection == null) {
 						throw new BusinessException(ServiceError.InvalidInput, "Invalid Invoice Id");
 					}
@@ -933,7 +934,7 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	@Override
-	public List<DoctorPatientReceipt> getReceipts(int page, int size, String doctorId, String locationId,
+	public List<DoctorPatientReceipt> getReceipts(long page, int size, String doctorId, String locationId,
 			String hospitalId, String patientId, String updatedTime, Boolean discarded) {
 		List<DoctorPatientReceipt> responses = null;
 		try {
@@ -1027,11 +1028,11 @@ public class BillingServiceImpl implements BillingService {
 		DoctorPatientReceipt response = null;
 		try {
 			DoctorPatientReceiptCollection doctorPatientReceiptCollection = doctorPatientReceiptRepository
-					.findOne(new ObjectId(receiptId));
+					.findById(new ObjectId(receiptId)).orElse(null);
 
 			if (doctorPatientReceiptCollection.getReceiptType().name().equalsIgnoreCase(ReceiptType.INVOICE.name())) {
 				DoctorPatientInvoiceCollection receiptInvoiceCollection = doctorPatientInvoiceRepository
-						.findOne(doctorPatientReceiptCollection.getInvoiceId());
+						.findById(doctorPatientReceiptCollection.getInvoiceId()).orElse(null);
 				receiptInvoiceCollection.setBalanceAmount(
 						receiptInvoiceCollection.getBalanceAmount() + doctorPatientReceiptCollection.getAmountPaid()
 								+ doctorPatientReceiptCollection.getUsedAdvanceAmount());
@@ -1043,7 +1044,7 @@ public class BillingServiceImpl implements BillingService {
 					for (AdvanceReceiptIdWithAmount receiptIdWithAmount : doctorPatientReceiptCollection
 							.getAdvanceReceiptIdWithAmounts()) {
 						DoctorPatientReceiptCollection patientReceiptCollection = doctorPatientReceiptRepository
-								.findOne(receiptIdWithAmount.getReceiptId());
+								.findById(receiptIdWithAmount.getReceiptId()).orElse(null);
 						patientReceiptCollection
 								.setRemainingAdvanceAmount(patientReceiptCollection.getRemainingAdvanceAmount()
 										+ receiptIdWithAmount.getUsedAdvanceAmount());
@@ -1072,7 +1073,7 @@ public class BillingServiceImpl implements BillingService {
 						receiptCollection.setUpdatedTime(new Date());
 
 						DoctorPatientInvoiceCollection receiptInvoiceCollection = doctorPatientInvoiceRepository
-								.findOne(receiptCollection.getInvoiceId());
+								.findById(receiptCollection.getInvoiceId()).orElse(null);
 						receiptInvoiceCollection
 								.setBalanceAmount(receiptInvoiceCollection.getBalanceAmount() + usedAdvanceAmt);
 						receiptInvoiceCollection.setUpdatedTime(new Date());
@@ -1152,7 +1153,7 @@ public class BillingServiceImpl implements BillingService {
 			ObjectId doctorObjectId = new ObjectId(request.getDoctorId());
 
 			BeanUtil.map(request, doctorPatientInvoiceCollection);
-			UserCollection userCollection = userRepository.findOne(doctorObjectId);
+			UserCollection userCollection = userRepository.findById(doctorObjectId).orElse(null);
 			if (userCollection != null) {
 				doctorPatientInvoiceCollection.setCreatedBy(
 						(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() + " "
@@ -1162,7 +1163,7 @@ public class BillingServiceImpl implements BillingService {
 			doctorPatientInvoiceCollection.setCreatedTime(new Date());
 			if (doctorPatientInvoiceCollection.getInvoiceDate() == null)
 				doctorPatientInvoiceCollection.setInvoiceDate(new Date());
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+			LocationCollection locationCollection = locationRepository.findById(new ObjectId(request.getLocationId())).orElse(null);
 			if (locationCollection == null)
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid Location Id");
 			doctorPatientInvoiceCollection
@@ -1181,7 +1182,7 @@ public class BillingServiceImpl implements BillingService {
 					else {
 						UserCollection doctor = doctorsMap.get(invoiceItemResponse.getDoctorId().toString());
 						if (doctor == null) {
-							doctor = userRepository.findOne(new ObjectId(invoiceItemResponse.getDoctorId()));
+							doctor = userRepository.findById(new ObjectId(invoiceItemResponse.getDoctorId())).orElse(null);
 							doctorsMap.put(invoiceItemResponse.getDoctorId(), doctor);
 						}
 						invoiceItemResponse.setDoctorName(
@@ -1205,8 +1206,8 @@ public class BillingServiceImpl implements BillingService {
 				// invoiceItemResponse.getBatchId(), request.getPatientId(),
 				// request.getDoctorId(), request.getLocationId(),
 				// request.getHospitalId());
-				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
-						request.getHospitalId(), invoiceItemResponse.getItemId());
+//				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(request.getLocationId(),
+//						request.getHospitalId(), invoiceItemResponse.getItemId());
 				/*
 				 * if (DPDoctorUtils.anyStringEmpty(request.getId())) { inventoryStock =
 				 * inventoryService.getInventoryStockByInvoiceIdResourceId(
@@ -1431,7 +1432,7 @@ public class BillingServiceImpl implements BillingService {
 
 	@Override
 	public DoctorPatientLedgerResponse getLedger(String doctorId, String locationId, String hospitalId,
-			String patientId, String from, String to, int page, int size, String updatedTime) {
+			String patientId, String from, String to, long page, int size, String updatedTime) {
 		DoctorPatientLedgerResponse response = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -1453,20 +1454,20 @@ public class BillingServiceImpl implements BillingService {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoice"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$invoice").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("doctor_patient_receipt_cl", "receiptId", "_id", "receipt"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$receipt").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.skip((page) * size), Aggregation.limit(size),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoice"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$invoice").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("doctor_patient_receipt_cl", "receiptId", "_id", "receipt"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$receipt").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
@@ -1548,12 +1549,12 @@ public class BillingServiceImpl implements BillingService {
 		String response = null;
 		try {
 			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository
-					.findOne(new ObjectId(invoiceId));
+					.findById(new ObjectId(invoiceId)).orElse(null);
 			if (doctorPatientInvoiceCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 						doctorPatientInvoiceCollection.getPatientId(), doctorPatientInvoiceCollection.getLocationId(),
 						doctorPatientInvoiceCollection.getHospitalId());
-				UserCollection user = userRepository.findOne(doctorPatientInvoiceCollection.getPatientId());
+				UserCollection user = userRepository.findById(doctorPatientInvoiceCollection.getPatientId()).orElse(null);
 				JasperReportResponse jasperReportResponse = createJasper(doctorPatientInvoiceCollection, patient, user);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
@@ -1756,12 +1757,12 @@ public class BillingServiceImpl implements BillingService {
 		String response = null;
 		try {
 			DoctorPatientReceiptCollection doctorPatientReceiptCollection = doctorPatientReceiptRepository
-					.findOne(new ObjectId(receiptId));
+					.findById(new ObjectId(receiptId)).orElse(null);
 			if (doctorPatientReceiptCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 						doctorPatientReceiptCollection.getPatientId(), doctorPatientReceiptCollection.getLocationId(),
 						doctorPatientReceiptCollection.getHospitalId());
-				UserCollection user = userRepository.findOne(doctorPatientReceiptCollection.getPatientId());
+				UserCollection user = userRepository.findById(doctorPatientReceiptCollection.getPatientId()).orElse(null);
 				JasperReportResponse jasperReportResponse = createJasperForReceipt(doctorPatientReceiptCollection,
 						patient, user);
 				if (jasperReportResponse != null)
@@ -1863,16 +1864,16 @@ public class BillingServiceImpl implements BillingService {
 		UserCollection user = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
-			doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findOne(new ObjectId(invoiceId));
+			doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findById(new ObjectId(invoiceId)).orElse(null);
 			if (doctorPatientInvoiceCollection != null) {
 				if (doctorPatientInvoiceCollection.getDoctorId() != null
 						&& doctorPatientInvoiceCollection.getHospitalId() != null
 						&& doctorPatientInvoiceCollection.getLocationId() != null) {
-					if (doctorPatientInvoiceCollection.getDoctorId().equals(doctorId)
-							&& doctorPatientInvoiceCollection.getHospitalId().equals(hospitalId)
-							&& doctorPatientInvoiceCollection.getLocationId().equals(locationId)) {
+					if (doctorPatientInvoiceCollection.getDoctorId().toString().equals(doctorId)
+							&& doctorPatientInvoiceCollection.getHospitalId().toString().equals(hospitalId)
+							&& doctorPatientInvoiceCollection.getLocationId().toString().equals(locationId)) {
 
-						user = userRepository.findOne(doctorPatientInvoiceCollection.getPatientId());
+						user = userRepository.findById(doctorPatientInvoiceCollection.getPatientId()).orElse(null);
 						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 								doctorPatientInvoiceCollection.getPatientId(),
 								doctorPatientInvoiceCollection.getLocationId(),
@@ -1893,8 +1894,8 @@ public class BillingServiceImpl implements BillingService {
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
-						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+						UserCollection doctorUser = userRepository.findById(new ObjectId(doctorId)).orElse(null);
+						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
 
 						mailResponse = new MailResponse();
 						mailResponse.setMailAttachment(mailAttachment);
@@ -1969,16 +1970,16 @@ public class BillingServiceImpl implements BillingService {
 		UserCollection user = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
-			doctorPatientReceiptCollection = doctorPatientReceiptRepository.findOne(new ObjectId(receiptId));
+			doctorPatientReceiptCollection = doctorPatientReceiptRepository.findById(new ObjectId(receiptId)).orElse(null);
 			if (doctorPatientReceiptCollection != null) {
 				if (doctorPatientReceiptCollection.getDoctorId() != null
 						&& doctorPatientReceiptCollection.getHospitalId() != null
 						&& doctorPatientReceiptCollection.getLocationId() != null) {
-					if (doctorPatientReceiptCollection.getDoctorId().equals(doctorId)
-							&& doctorPatientReceiptCollection.getHospitalId().equals(hospitalId)
-							&& doctorPatientReceiptCollection.getLocationId().equals(locationId)) {
+					if (doctorPatientReceiptCollection.getDoctorId().toString().equals(doctorId)
+							&& doctorPatientReceiptCollection.getHospitalId().toString().equals(hospitalId)
+							&& doctorPatientReceiptCollection.getLocationId().toString().equals(locationId)) {
 
-						user = userRepository.findOne(doctorPatientReceiptCollection.getPatientId());
+						user = userRepository.findById(doctorPatientReceiptCollection.getPatientId()).orElse(null);
 						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 								doctorPatientReceiptCollection.getPatientId(),
 								doctorPatientReceiptCollection.getLocationId(),
@@ -1999,8 +2000,8 @@ public class BillingServiceImpl implements BillingService {
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
-						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+						UserCollection doctorUser = userRepository.findById(new ObjectId(doctorId)).orElse(null);
+						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
 
 						mailResponse = new MailResponse();
 						mailResponse.setMailAttachment(mailAttachment);
@@ -2076,9 +2077,9 @@ public class BillingServiceImpl implements BillingService {
 					new ObjectId(patientId), new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId));
 			if (doctorPatientDueAmountCollection != null) {
-				UserCollection patient = userRepository.findOne(new ObjectId(patientId));
+				UserCollection patient = userRepository.findById(new ObjectId(patientId)).orElse(null);
 
-				LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
 				smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
@@ -2159,12 +2160,12 @@ public class BillingServiceImpl implements BillingService {
 			List<DoctorPatientReceiptLookupResponse> doctorPatientReceiptLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(ids)),
 							Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoiceCollection"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$invoiceCollection").append("preserveNullAndEmptyArrays",
 											true))),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"),
-							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
+							new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$eq",
 													Arrays.asList("$patient.locationId", "$locationId")))
@@ -2332,12 +2333,12 @@ public class BillingServiceImpl implements BillingService {
 			List<DoctorPatientReceiptLookupResponse> doctorPatientReceiptLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(ids)),
 							Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoiceCollection"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$invoiceCollection").append("preserveNullAndEmptyArrays",
 											true))),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"),
-							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
+							new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$eq",
 													Arrays.asList("$patient.locationId", "$locationId")))
@@ -2370,9 +2371,9 @@ public class BillingServiceImpl implements BillingService {
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-				UserCollection doctorUser = userRepository.findOne(emailTrackCollection.getDoctorId());
+				UserCollection doctorUser = userRepository.findById(emailTrackCollection.getDoctorId()).orElse(null);
 				LocationCollection locationCollection = locationRepository
-						.findOne(emailTrackCollection.getLocationId());
+						.findById(emailTrackCollection.getLocationId()).orElse(null);
 
 				mailResponse = new MailResponse();
 				mailResponse.setMailAttachment(mailAttachment);
@@ -2436,7 +2437,7 @@ public class BillingServiceImpl implements BillingService {
 		DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = null;
 		try {
 			doctorPatientInvoiceCollection = doctorPatientInvoiceRepository
-					.findOne(new ObjectId(request.getInvoiceId()));
+					.findById(new ObjectId(request.getInvoiceId())).orElse(null);
 			if (doctorPatientInvoiceCollection != null) {
 				for (InvoiceItem invoiceItem : doctorPatientInvoiceCollection.getInvoiceItems()) {
 					if (invoiceItem.getItemId().equals(new ObjectId(request.getItemId()))) {
@@ -2462,7 +2463,7 @@ public class BillingServiceImpl implements BillingService {
 			DoctorExpenseCollection expenseCollection = null;
 			UserCollection userCollection = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				expenseCollection = doctorExpenseRepository.findOne(new ObjectId(request.getId()));
+				expenseCollection = doctorExpenseRepository.findById(new ObjectId(request.getId())).orElse(null);
 				if (expenseCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Doctor Expense not found with Id");
 				}
@@ -2472,7 +2473,7 @@ public class BillingServiceImpl implements BillingService {
 				request.setUpdatedTime(new Date());
 				BeanUtil.map(request, expenseCollection);
 			} else {
-				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Doctor found with DoctorId");
 				}
@@ -2560,7 +2561,7 @@ public class BillingServiceImpl implements BillingService {
 			}
 			DoctorExpense doctorExpense = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("_id",
 											new BasicDBObject("locationId", "$locationId").append("hospitalId",
 													"hospitalId")).append("cost",
@@ -2582,7 +2583,7 @@ public class BillingServiceImpl implements BillingService {
 		DoctorExpense response = null;
 		try {
 
-			DoctorExpenseCollection expenseCollection = doctorExpenseRepository.findOne(new ObjectId(expenseId));
+			DoctorExpenseCollection expenseCollection = doctorExpenseRepository.findById(new ObjectId(expenseId)).orElse(null);
 			if (expenseCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Doctor Expense not found with Id");
 			}
@@ -2603,7 +2604,7 @@ public class BillingServiceImpl implements BillingService {
 		DoctorExpense response = null;
 		try {
 
-			DoctorExpenseCollection expenseCollection = doctorExpenseRepository.findOne(new ObjectId(expenseId));
+			DoctorExpenseCollection expenseCollection = doctorExpenseRepository.findById(new ObjectId(expenseId)).orElse(null);
 			response = new DoctorExpense();
 			BeanUtil.map(expenseCollection, response);
 
@@ -2621,7 +2622,7 @@ public class BillingServiceImpl implements BillingService {
 			ExpenseTypeCollection expenseTypeCollection = null;
 			UserCollection userCollection = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				expenseTypeCollection = expenseTypeRepository.findOne(new ObjectId(request.getId()));
+				expenseTypeCollection = expenseTypeRepository.findById(new ObjectId(request.getId())).orElse(null);
 				if (expenseTypeCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Expense Not Found with Id");
 				}
@@ -2631,7 +2632,7 @@ public class BillingServiceImpl implements BillingService {
 				BeanUtil.map(request, expenseTypeCollection);
 
 			} else {
-				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Doctor found with DoctorId");
 				}
@@ -2661,7 +2662,7 @@ public class BillingServiceImpl implements BillingService {
 		ExpenseType response = null;
 		try {
 
-			ExpenseTypeCollection expenseTypeCollection = expenseTypeRepository.findOne(new ObjectId(expenseTypeId));
+			ExpenseTypeCollection expenseTypeCollection = expenseTypeRepository.findById(new ObjectId(expenseTypeId)).orElse(null);
 			response = new ExpenseType();
 			BeanUtil.map(expenseTypeCollection, response);
 
@@ -2691,7 +2692,7 @@ public class BillingServiceImpl implements BillingService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -2712,7 +2713,7 @@ public class BillingServiceImpl implements BillingService {
 	public Boolean deleteExpenseType(String expenseTypeId, Boolean discarded) {
 		Boolean response = false;
 		try {
-			ExpenseTypeCollection expenseTypeCollection = expenseTypeRepository.findOne(new ObjectId(expenseTypeId));
+			ExpenseTypeCollection expenseTypeCollection = expenseTypeRepository.findById(new ObjectId(expenseTypeId)).orElse(null);
 			if (expenseTypeCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Expense Type Not Found with Id");
 			}

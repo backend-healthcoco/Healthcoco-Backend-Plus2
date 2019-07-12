@@ -99,7 +99,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService {
 							HashSet<String> parentspecialities = new HashSet<String>();
 							for (ObjectId specialityId : doctorDocument.getDoctor().getSpecialities()) {
 								ESSpecialityDocument specialityCollection = esSpecialityRepository
-										.findOne(specialityId.toString());
+										.findById(specialityId.toString()).orElse(null);
 								if (specialityCollection != null) {
 									specialities.add(specialityCollection.getSuperSpeciality());
 									parentspecialities.add(specialityCollection.getSpeciality());

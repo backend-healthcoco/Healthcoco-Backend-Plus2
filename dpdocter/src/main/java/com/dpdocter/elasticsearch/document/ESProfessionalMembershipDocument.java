@@ -13,7 +13,7 @@ public class ESProfessionalMembershipDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String membership;
 
     @Field(type = FieldType.Date)

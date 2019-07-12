@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -168,7 +169,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	@Transactional
 	public DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId,
-			String updatedTime, boolean discarded, int page, int size, String role) {
+			String updatedTime, boolean discarded, long page, int size, String role) {
 		DoctorContactsResponse response = null;
 		try {
 			response = getSpecifiedPatientCards(null, doctorId, locationId, hospitalId, page, size, updatedTime,
@@ -184,7 +185,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	@Transactional
 	public DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, int page, int size, String role) {
+			String updatedTime, Boolean discarded, long page, int size, String role) {
 		DoctorContactsResponse response = null;
 		try {
 			response = getSpecifiedPatientCards(null, doctorId, locationId, hospitalId, page, size, updatedTime,
@@ -201,7 +202,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	@Transactional
 	public DoctorContactsResponse getSpecifiedPatientCards(Collection<ObjectId> patientIds, String doctorId,
-			String locationId, String hospitalId, int page, int size, String updatedTime, Boolean discarded,
+			String locationId, String hospitalId, long page, int size, String updatedTime, Boolean discarded,
 			Boolean sortByFirstName, String role) throws Exception {
 		DoctorContactsResponse response = null;
 		List<PatientCard> patientCards = null;
@@ -238,7 +239,7 @@ public class ContactsServiceImpl implements ContactsService {
 		Aggregation aggregation = null;
 		if (sortByFirstName) {
 
-			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("_id", "$_id").append("userId", "$userId").append("firstName", "$firstName")
 							.append("localPatientName", "$localPatientName")
 							.append("insensitiveLocalPatientName", new BasicDBObject("$toLower", "$localPatientName"))
@@ -258,7 +259,7 @@ public class ContactsServiceImpl implements ContactsService {
 							.append("registrationDate", "$registrationDate").append("createdTime", "$createdTime")
 							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
 
-			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("id", "$_id").append("userId", new BasicDBObject("$first", "$userId"))
 							.append("firstName", new BasicDBObject("$first", "$firstName"))
 							.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
@@ -297,13 +298,13 @@ public class ContactsServiceImpl implements ContactsService {
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 						projectOperations, groupOperations,
 						new CustomAggregationOperation(
-								new BasicDBObject("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))),
+								new Document("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 						projectOperations, groupOperations, new CustomAggregationOperation(
-								new BasicDBObject("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))));
+								new Document("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))));
 		} else {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -380,14 +381,14 @@ public class ContactsServiceImpl implements ContactsService {
 			BeanUtil.map(group, groupCollection);
 			if (DPDoctorUtils.allStringsEmpty(groupCollection.getId())) {
 				groupCollection.setCreatedTime(new Date());
-				UserCollection userCollection = userRepository.findOne(groupCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findById(groupCollection.getDoctorId()).orElse(null);
 				if (userCollection != null) {
 					groupCollection
 							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 									+ userCollection.getFirstName());
 				}
 			} else {
-				GroupCollection oldGroupCollection = groupRepository.findOne(groupCollection.getId());
+				GroupCollection oldGroupCollection = groupRepository.findById(groupCollection.getId()).orElse(null);
 				groupCollection.setCreatedTime(oldGroupCollection.getCreatedTime());
 				groupCollection.setCreatedBy(oldGroupCollection.getCreatedBy());
 				groupCollection.setDiscarded(oldGroupCollection.getDiscarded());
@@ -440,7 +441,7 @@ public class ContactsServiceImpl implements ContactsService {
 		GroupCollection groupCollection = null;
 		List<PatientGroupCollection> patientGroupCollection = null;
 		try {
-			groupCollection = groupRepository.findOne(new ObjectId(groupId));
+			groupCollection = groupRepository.findById(new ObjectId(groupId)).orElse(null);
 			if (groupCollection != null) {
 				groupCollection.setDiscarded(discarded);
 				groupCollection.setUpdatedTime(new Date());
@@ -510,8 +511,6 @@ public class ContactsServiceImpl implements ContactsService {
 			String updatedTime, boolean discarded) {
 		Response<Object> response = new Response<Object>();
 		List<Group> groups = null;
-		List<GroupCollection> groupCollections = null;
-
 		try {
 			String packageType = "ADVANCE";
 
@@ -553,7 +552,7 @@ public class ContactsServiceImpl implements ContactsService {
 							Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorClinic"),
 							Aggregation.unwind("doctorClinic"), Aggregation.match(criteriasecond), projectList,
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
-							Aggregation.skip((page) * size), Aggregation.limit(size));
+							Aggregation.skip((long)(page) * size), Aggregation.limit(size));
 
 				} else {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteriafirst),
@@ -780,7 +779,7 @@ public class ContactsServiceImpl implements ContactsService {
 
 					Reference reference = new Reference();
 					if (referredBy != null) {
-						ReferencesCollection referencesCollection = referenceRepository.findOne(referredBy);
+						ReferencesCollection referencesCollection = referenceRepository.findById(referredBy).orElse(null);
 						if (referencesCollection != null)
 							BeanUtil.map(referencesCollection, reference);
 					}
@@ -859,11 +858,9 @@ public class ContactsServiceImpl implements ContactsService {
 		PatientGroupAddEditRequest response = new PatientGroupAddEditRequest();
 
 		try {
-			ObjectId patientObjecId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			ObjectId patientObjecId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
 				patientObjecId = new ObjectId(request.getPatientId());
-			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))
-				doctorObjectId = new ObjectId(request.getDoctorId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
 				locationObjectId = new ObjectId(request.getLocationId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
@@ -983,7 +980,6 @@ public class ContactsServiceImpl implements ContactsService {
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return status;
@@ -997,14 +993,14 @@ public class ContactsServiceImpl implements ContactsService {
 			BeanUtil.map(branch, branchCollection);
 			if (DPDoctorUtils.allStringsEmpty(branchCollection.getId())) {
 				branchCollection.setCreatedTime(new Date());
-				UserCollection userCollection = userRepository.findOne(branchCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findById(branchCollection.getDoctorId()).orElse(null);
 				if (userCollection != null) {
 					branchCollection
 							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 									+ userCollection.getFirstName());
 				}
 			} else {
-				BranchCollection oldBranchCollection = branchRepository.findOne(branchCollection.getId());
+				BranchCollection oldBranchCollection = branchRepository.findById(branchCollection.getId()).orElse(null);
 				branchCollection.setCreatedTime(oldBranchCollection.getCreatedTime());
 				branchCollection.setCreatedBy(oldBranchCollection.getCreatedBy());
 				branchCollection.setDiscarded(oldBranchCollection.getDiscarded());
@@ -1055,7 +1051,7 @@ public class ContactsServiceImpl implements ContactsService {
 		Branch response = null;
 		BranchCollection branchCollection = null;
 		try {
-			branchCollection = branchRepository.findOne(new ObjectId(branchId));
+			branchCollection = branchRepository.findById(new ObjectId(branchId)).orElse(null);
 			if (branchCollection != null) {
 				branchCollection.setDiscarded(discarded);
 				branchCollection.setUpdatedTime(new Date());
@@ -1080,7 +1076,7 @@ public class ContactsServiceImpl implements ContactsService {
 		Branch response = null;
 		BranchCollection branchCollection = null;
 		try {
-			branchCollection = branchRepository.findOne(new ObjectId(branchId));
+			branchCollection = branchRepository.findById(new ObjectId(branchId)).orElse(null);
 			if (branchCollection != null) {
 				response = new Branch();
 				BeanUtil.map(branchCollection, response);

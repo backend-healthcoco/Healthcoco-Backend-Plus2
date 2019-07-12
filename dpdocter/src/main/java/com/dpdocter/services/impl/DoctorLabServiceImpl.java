@@ -15,6 +15,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -194,12 +195,12 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			BeanUtil.map(request, doctorLabReportCollection);
 
 			LocationCollection locationCollection = locationRepository
-					.findOne(doctorLabReportCollection.getUploadedByLocationId());
+					.findById(doctorLabReportCollection.getUploadedByLocationId()).orElse(null);
 			if (locationCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No Lab found with UploadedByLocationId");
 			}
 			if (!DPDoctorUtils.anyStringEmpty(doctorLabReportCollection.getDoctorId())) {
-				doctor = userRepository.findOne(doctorLabReportCollection.getDoctorId());
+				doctor = userRepository.findById(doctorLabReportCollection.getDoctorId()).orElse(null);
 				if (doctor == null) {
 					throw new BusinessException(ServiceError.NoRecord, " Doctor not found with doctorId");
 				}
@@ -207,7 +208,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				DoctorLabReportCollection oldDoctorLabReportCollection = doctorLabReportRepository
-						.findOne(doctorLabReportCollection.getId());
+						.findById(doctorLabReportCollection.getId()).orElse(null);
 				if (oldDoctorLabReportCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "No record found");
 				}
@@ -226,7 +227,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				}
 				if (!DPDoctorUtils.anyStringEmpty(request.getUploadedByDoctorId())) {
 					UserCollection userCollection = userRepository
-							.findOne(new ObjectId(request.getUploadedByDoctorId()));
+							.findById(new ObjectId(request.getUploadedByDoctorId())).orElse(null);
 					if (userCollection == null) {
 						throw new BusinessException(ServiceError.NoRecord, "No Doctor found by uploadedBydoctorId");
 					}
@@ -303,7 +304,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		try {
 			Date createdTime = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId())).orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
@@ -358,7 +359,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			Date createdTime = new Date();
 			Double fileSizeInMB = 0.0;
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId())).orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
@@ -396,7 +397,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	}
 
 	@Override
-	public List<DoctorLabReportResponse> getDoctorLabReport(int page, int size, String patientId, String doctorId,
+	public List<DoctorLabReportResponse> getDoctorLabReport(long page, int size, String patientId, String doctorId,
 			String locationId, String hospitalId, String searchTerm, Boolean discarded, Boolean doctorLab) {
 		List<DoctorLabReportResponse> response = null;
 		ProjectionOperation projectList = null;
@@ -481,9 +482,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
 						Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
 						Aggregation.match(criteria), projectList,
@@ -495,9 +496,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
 						Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
 
 						Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
@@ -574,9 +575,9 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 					Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
 					Aggregation.lookup("location_cl", "uploadedByLocationId", "_id", "uploadedByLocation"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.unwind("uploadedByDoctor"), Aggregation.unwind("uploadedByLocation"),
 					Aggregation.match(criteria), projectList);
@@ -617,7 +618,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			DoctorLabFavouriteDoctorCollection favouriteDoctorCollection = null;
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 
-				UserCollection fevDoctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection fevDoctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (fevDoctor == null) {
 					throw new BusinessException(ServiceError.NoRecord, "user not Found");
 				}
@@ -627,7 +628,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 						.is(new ObjectId(request.getFavouriteDoctorId())).and("favouriteLocationId")
 						.is(new ObjectId(request.getFavouriteDoctorId())).and("favouriteHospitalId")
 						.is(new ObjectId(request.getFavouriteHospitalId()));
-				favouriteDoctorCollection = mongoTemplate.findOne(new Query(criteria),
+				favouriteDoctorCollection = mongoTemplate.findById(new Query(criteria),
 						DoctorLabFavouriteDoctorCollection.class);
 				if (favouriteDoctorCollection == null) {
 					favouriteDoctorCollection = new DoctorLabFavouriteDoctorCollection();
@@ -655,7 +656,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	}
 
 	@Override
-	public List<DoctorLabFavouriteDoctorResponse> getFavouriteList(int size, int page, String searchTerm,
+	public List<DoctorLabFavouriteDoctorResponse> getFavouriteList(int size, long page, String searchTerm,
 			String doctorId, String locationId, String hospitalId, String city) {
 		List<DoctorLabFavouriteDoctorResponse> response = null;
 		ProjectionOperation projectList = null;
@@ -766,8 +767,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("firstName", searchTerm));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(latitude) && !DPDoctorUtils.anyStringEmpty(longitude)) {
-				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
-						.lon(Double.parseDouble(longitude)).distance(30 + "km"));
+				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").point(Double.parseDouble(latitude),
+						Double.parseDouble(longitude)).distance(30 + "km"));
 
 			}
 
@@ -779,7 +780,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("firstName").order(SortOrder.ASC))
-						.withPageable(new PageRequest(page, size)).build();
+						.withPageable(PageRequest.of(page, size)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("firstName").order(SortOrder.ASC)).build();
@@ -809,7 +810,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 								.and("favouriteLocationId").is(new ObjectId(doctorSearchResponse.getLocationId()))
 								.and("favouriteHospitalId").is(new ObjectId(doctorSearchResponse.getHospitalId()))
 								.and("discarded").is(false);
-						fevDoctorCollection = mongoTemplate.findOne(new Query(criteria),
+						fevDoctorCollection = mongoTemplate.findById(new Query(criteria),
 								DoctorLabFavouriteDoctorCollection.class);
 						if (fevDoctorCollection != null) {
 							doctorSearchResponse.setIsFavourite(true);
@@ -833,8 +834,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		try {
 			DoctorLabDoctorReferenceCollection referenceCollection = new DoctorLabDoctorReferenceCollection();
 			BeanUtil.map(request, referenceCollection);
-			LocationCollection locationCollection = locationRepository.findOne(referenceCollection.getLocationId());
-			UserCollection userCollection = userRepository.findOne(referenceCollection.getDoctorId());
+			LocationCollection locationCollection = locationRepository.findById(referenceCollection.getLocationId()).orElse(null);
+			UserCollection userCollection = userRepository.findById(referenceCollection.getDoctorId()).orElse(null);
 			if (userCollection == null && locationCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "User not found");
 			}
@@ -886,7 +887,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		Boolean response = false;
 		try {
 			DoctorLabReportCollection doctorLabReportCollection = doctorLabReportRepository
-					.findOne(new ObjectId(reportId));
+					.findById(new ObjectId(reportId)).orElse(null);
 			if (doctorLabReportCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No report fount with reportId");
 			}
@@ -898,7 +899,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				doctorLabReportCollection.setShareWithDoctor(!doctorLabReportCollection.getShareWithDoctor());
 			}
 			LocationCollection locationCollection = locationRepository
-					.findOne(doctorLabReportCollection.getUploadedByLocationId());
+					.findById(doctorLabReportCollection.getUploadedByLocationId()).orElse(null);
 			if (locationCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No Lab found with UploadedByLocationId");
 			}
@@ -944,7 +945,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		Boolean response = false;
 		try {
 			DoctorLabReportCollection doctorLabReportCollection = doctorLabReportRepository
-					.findOne(new ObjectId(reportId));
+					.findById(new ObjectId(reportId)).orElse(null);
 			if (doctorLabReportCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No report fount with reportId");
 			}
@@ -956,7 +957,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 				doctorLabReportCollection.setShareWithPatient(!doctorLabReportCollection.getShareWithPatient());
 			}
 			LocationCollection locationCollection = locationRepository
-					.findOne(doctorLabReportCollection.getUploadedByLocationId());
+					.findById(doctorLabReportCollection.getUploadedByLocationId()).orElse(null);
 			if (locationCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No Lab found with UploadedByLocationId");
 			}
@@ -994,7 +995,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		Boolean response = false;
 		try {
 			DoctorLabFavouriteDoctorCollection favouriteDoctorCollection = doctorLabFevouriteDoctorRepository
-					.findOne(new ObjectId(id));
+					.findById(new ObjectId(id)).orElse(null);
 			if (favouriteDoctorCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No Fevourite Doctor found with Id");
 			}
@@ -1018,7 +1019,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 		Boolean response = false;
 		try {
 			DoctorLabReportCollection doctorLabReportCollection = doctorLabReportRepository
-					.findOne(new ObjectId(reportId));
+					.findById(new ObjectId(reportId)).orElse(null);
 			if (doctorLabReportCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No report found with reportId");
 			}

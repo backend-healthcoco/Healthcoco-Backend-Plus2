@@ -109,11 +109,11 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		List<Map<String, ProcedureSheetField>> procedureSheetFields = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				procedureSheetCollection = procedureSheetRepository.findOne(new ObjectId(request.getId()));
+				procedureSheetCollection = procedureSheetRepository.findById(new ObjectId(request.getId())).orElse(null);
 			} else {
 				procedureSheetCollection = new ProcedureSheetCollection();
 				procedureSheetCollection.setCreatedTime(new Date());
-				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				procedureSheetCollection.setCreatedBy(userCollection.getFirstName());
 			}
 
@@ -181,7 +181,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		List<Map<String, ProcedureSheetField>> procedureSheetFields = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
-				procedureSheetCollection = procedureSheetRepository.findOne(new ObjectId(id));
+				procedureSheetCollection = procedureSheetRepository.findById(new ObjectId(id)).orElse(null);
 			} else {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
@@ -334,7 +334,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		ProcedureSheetCollection procedureSheetCollection = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
-				procedureSheetCollection = procedureSheetRepository.findOne(new ObjectId(id));
+				procedureSheetCollection = procedureSheetRepository.findById(new ObjectId(id)).orElse(null);
 				procedureSheetCollection.setDiscarded(discarded);
 				procedureSheetCollection = procedureSheetRepository.save(procedureSheetCollection);
 			} else {
@@ -373,11 +373,11 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				procedureSheetStructureCollection = procedureSheetStructureRepository
-						.findOne(new ObjectId(request.getId()));
+						.findById(new ObjectId(request.getId())).orElse(null);
 			} else {
 				procedureSheetStructureCollection = new ProcedureSheetStructureCollection();
 				procedureSheetStructureCollection.setCreatedTime(new Date());
-				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				procedureSheetStructureCollection.setCreatedBy(userCollection.getFirstName());
 			}
 
@@ -457,7 +457,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		ProcedureConsentFormStructure procedureConsentFormStructure = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
-				procedureSheetStructureCollection = procedureSheetStructureRepository.findOne(new ObjectId(id));
+				procedureSheetStructureCollection = procedureSheetStructureRepository.findById(new ObjectId(id)).orElse(null);
 			} else {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
@@ -497,7 +497,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		ProcedureSheetStructureCollection procedureSheetStructureCollection = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
-				procedureSheetStructureCollection = procedureSheetStructureRepository.findOne(new ObjectId(id));
+				procedureSheetStructureCollection = procedureSheetStructureRepository.findById(new ObjectId(id)).orElse(null);
 				procedureSheetStructureCollection.setDiscarded(discarded);
 				procedureSheetStructureCollection = procedureSheetStructureRepository
 						.save(procedureSheetStructureCollection);
@@ -613,7 +613,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 	public String downloadProcedureSheet(String id) {
 		String response = null;
 		try {
-			ProcedureSheetCollection procedureSheetCollection = procedureSheetRepository.findOne(new ObjectId(id));
+			ProcedureSheetCollection procedureSheetCollection = procedureSheetRepository.findById(new ObjectId(id)).orElse(null);
 
 			if (procedureSheetCollection != null) {
 				JasperReportResponse jasperReportResponse = createProcedureSheetJasper(procedureSheetCollection);

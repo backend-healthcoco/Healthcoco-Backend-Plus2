@@ -27,25 +27,25 @@ public class ESIngredientDocument {
 	@Field(type = FieldType.Nested)
 	private List<EquivalentQuantities> equivalentMeasurements;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String name;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String locationId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String doctorId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String hospitalId;
 
 	@Field(type = FieldType.Double)
 	private Double cost = 0.0;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private LevelType costType;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String note;
 
 	@Field(type = FieldType.Date)

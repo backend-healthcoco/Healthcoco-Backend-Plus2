@@ -168,7 +168,7 @@ public class RecordsApi {
 	@Path(value = PathProxy.RecordsUrls.GET_RECORDS_DOCTOR_ID)
 	@GET
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_RECORDS_DOCTOR_ID, notes = PathProxy.RecordsUrls.GET_RECORDS_DOCTOR_ID)
-	public Response<Records> getRecordsByDoctorId(@PathParam("doctorId") String doctorId, @QueryParam("page") int page,
+	public Response<Records> getRecordsByDoctorId(@PathParam("doctorId") String doctorId, @QueryParam("page") long page,
 			@QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
@@ -473,7 +473,7 @@ public class RecordsApi {
 	@Path(value = PathProxy.RecordsUrls.GET_USER_RECORDS)
 	@GET
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_USER_RECORDS, notes = PathProxy.RecordsUrls.GET_USER_RECORDS)
-	public Response<Object> getUserRecords(@QueryParam("patientId") String patientId, @QueryParam("page") int page,
+	public Response<Object> getUserRecords(@QueryParam("patientId") String patientId, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,

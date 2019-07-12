@@ -19,7 +19,7 @@ public class ESRecipeDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String name;
 
 	@Field(type = FieldType.Nested)
@@ -28,7 +28,7 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Nested)
 	private List<EquivalentQuantities> equivalentMeasurements;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String videoUrl;
 
 	@Field(type = FieldType.Nested)
@@ -40,22 +40,22 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Nested)
 	private List<RecipeAddItem> excludeIngredients;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String locationId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String doctorId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String hospitalId;
 
 	@Field(type = FieldType.Nested)
 	private List<RecipeAddItem> ingredients;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String dishType;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String technique;
 
 	@Field(type = FieldType.Boolean)
@@ -67,10 +67,10 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Boolean)
 	private Boolean discarded = false;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String direction;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String dietaryConcerns;
 
 	@Field(type = FieldType.Integer)
@@ -79,16 +79,16 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Double)
 	private Double cost = 0.0;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private LevelType costType;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String meal;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private List<String> cuisine;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private List<String> course;
 
 	@Field(type = FieldType.Integer)
@@ -100,7 +100,7 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String createdBy;
 
 	@Field(type = FieldType.Nested)

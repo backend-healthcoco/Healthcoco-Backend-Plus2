@@ -8,7 +8,7 @@ public class FeedbackGetRequest {
 	private String patientId;
 	// private FeedbackType type;
 	private int size;
-	private int page;
+	private long page;
 
 	public String getDoctorId() {
 		return doctorId;
@@ -54,11 +54,11 @@ public class FeedbackGetRequest {
 		this.size = size;
 	}
 
-	public int getPage() {
+	public long getPage() {
 		return page;
 	}
 
-	public void setPage(int page) {
+	public void setPage(long page) {
 		this.page = page;
 	}
 

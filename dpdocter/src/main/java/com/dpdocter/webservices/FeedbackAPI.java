@@ -208,7 +208,7 @@ public class FeedbackAPI {
 	@GET
 	@Path(PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
-	public Response<DailyImprovementFeedbackResponse> getDailyImprovementFeedback( @QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<DailyImprovementFeedbackResponse> getDailyImprovementFeedback( @QueryParam("page") long page, @QueryParam("size") int size,
 		    @QueryParam(value = "prescriptionId") String prescriptionId, @QueryParam(value = "doctorId") String doctorId,
 		    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId) {
 		Response<DailyImprovementFeedbackResponse> response = new Response<>();

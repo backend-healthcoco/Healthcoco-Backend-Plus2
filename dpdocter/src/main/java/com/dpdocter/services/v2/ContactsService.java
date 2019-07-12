@@ -6,8 +6,8 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.Group;
-import com.dpdocter.beans.v2.RegisteredPatientDetails;
 import com.dpdocter.beans.v2.DoctorContactsResponse;
+import com.dpdocter.beans.v2.RegisteredPatientDetails;
 import com.dpdocter.request.BulkSMSRequest;
 import com.dpdocter.request.ExportRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
@@ -43,7 +43,7 @@ public interface ContactsService {
 			String updatedTime, Boolean discarded, int page, int size, String role);
 
 	DoctorContactsResponse getSpecifiedPatientCards(Collection<ObjectId> patientIds, String doctorId, String locationId,
-			String hospitalId, int page, int size, String updatedTime, Boolean discarded, Boolean sortByFirstName,
+			String hospitalId, long page, int size, String updatedTime, Boolean discarded, Boolean sortByFirstName,
 			String role) throws Exception;
 
 	Boolean sendSMSToGroup(BulkSMSRequest request);

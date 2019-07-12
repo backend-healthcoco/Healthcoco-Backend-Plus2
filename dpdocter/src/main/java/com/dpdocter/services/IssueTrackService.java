@@ -8,7 +8,7 @@ public interface IssueTrackService {
 
     IssueTrack addEditIssue(IssueTrack request);
 
-    List<IssueTrack> getIssues(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean dicarded,
+    List<IssueTrack> getIssues(long page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean dicarded,
 	    List<String> scope);
 
     Boolean updateIssueStatus(String issueId, String status, String doctorId, String locationId, String hospitalId);

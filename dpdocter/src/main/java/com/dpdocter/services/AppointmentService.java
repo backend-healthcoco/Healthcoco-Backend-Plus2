@@ -93,7 +93,7 @@ public interface AppointmentService {
 
 	public CustomAppointment getCustomAppointmentById(String appointmentId);
 
-	public List<CustomAppointment> getCustomAppointments(int page, int size, String locationId, String hospitalId,
+	public List<CustomAppointment> getCustomAppointments(long page, int size, String locationId, String hospitalId,
 			String doctorId, String updatedTime, Boolean discarded);
 
 	public AVGTimeDetail getCustomAppointmentAVGTimeDetail(String locationId, String hospitalId, String doctorId);

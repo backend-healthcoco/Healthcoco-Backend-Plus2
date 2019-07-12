@@ -1059,6 +1059,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean notifyRefreshAll(RoleEnum role, List<ObjectId> LocaleIds, String message,
 			ComponentType componentType) {

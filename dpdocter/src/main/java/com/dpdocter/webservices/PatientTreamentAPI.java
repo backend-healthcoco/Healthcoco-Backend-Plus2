@@ -173,7 +173,7 @@ public class PatientTreamentAPI {
 	@GET
 	@ApiOperation(value = PathProxy.PatientTreatmentURLs.GET_SERVICES, notes = PathProxy.PatientTreatmentURLs.GET_SERVICES)
 	public Response<Object> getServices(@PathParam("type") String type, @PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
@@ -297,7 +297,7 @@ public class PatientTreamentAPI {
 	@GET
 	@ApiOperation(value = PathProxy.PatientTreatmentURLs.GET_PATIENT_TREATMENT_PATIENT_ID, notes = PathProxy.PatientTreatmentURLs.GET_PATIENT_TREATMENT_PATIENT_ID)
 	public Response<PatientTreatmentResponse> getPatientTreatmentByPatientId(@PathParam("patientId") String patientId,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("locationId") String locationId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
@@ -314,7 +314,7 @@ public class PatientTreamentAPI {
 
 	@GET
 	@ApiOperation(value = "GET_PATIENT_TREATMENTS", notes = "GET_PATIENT_TREATMENTS")
-	public Response<PatientTreatmentResponse> getPatientTreatments(@QueryParam("page") int page,
+	public Response<PatientTreatmentResponse> getPatientTreatments(@QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
 			@QueryParam("patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,

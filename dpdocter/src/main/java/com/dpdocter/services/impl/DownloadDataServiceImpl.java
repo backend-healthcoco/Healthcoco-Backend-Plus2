@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -151,7 +152,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "userId", "_id", "user"),
 							Aggregation.unwind("user"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
 							Aggregation.match(new Criteria().orOperator(
@@ -159,22 +160,22 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									new Criteria("patientGroupCollections").size(0))),
 							
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$patientGroupCollections")
+									new Document("$unwind", new BasicDBObject("path", "$patientGroupCollections")
 											.append("preserveNullAndEmptyArrays", true))),
 									
 							
 							Aggregation.lookup("group_cl", "patientGroupCollections.groupId", "_id", "groups"),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$groups")
+									new Document("$unwind", new BasicDBObject("path", "$groups")
 											.append("preserveNullAndEmptyArrays", true))),
 							
 							
 							Aggregation.lookup("referrences_cl", "referredBy", "_id", "reference"),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$reference")
+									new Document("$unwind", new BasicDBObject("path", "$reference")
 											.append("preserveNullAndEmptyArrays", true))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+							new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 									.append("registrationDate", "$registrationDate")
 									.append("patientId", "$PID")
 									.append("localPatientName", "$localPatientName")
@@ -198,7 +199,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("referredBy", "$reference.reference")
 									.append("groups", "$groups.name"))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+							new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 									.append("registrationDate", new BasicDBObject("$first","$registrationDate"))
 									.append("patientId", new BasicDBObject("$first","$patientId"))
 									.append("localPatientName", new BasicDBObject("$first","$localPatientName"))
@@ -222,7 +223,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("referredBy", new BasicDBObject("$first","$referredBy"))
 									.append("groups", new BasicDBObject("$push","$groups")))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("date", 1)))
+							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("date", 1)))
 							);
 
 			List<PatientDownloadData> patientDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), PatientCollection.class, PatientDownloadData.class).getMappedResults();
@@ -407,16 +408,16 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
 							Aggregation.unwind("user"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$patient")
+									new Document("$unwind", new BasicDBObject("path", "$patient")
 											.append("preserveNullAndEmptyArrays", true))),
 							
 							new CustomAggregationOperation(
-									new BasicDBObject("$redact",
+									new Document("$redact",
 											new BasicDBObject("$cond",
 													new BasicDBObject("if", new BasicDBObject("$eq",
 															Arrays.asList("$patient.locationId",
@@ -425,15 +426,15 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 																			.append("else",
 																					"$$PRUNE")))),
 																
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 											.append("includeArrayIndex", "arrayIndex1"))),
 							Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$drug")
+									new Document("$unwind", new BasicDBObject("path", "$drug")
 											.append("preserveNullAndEmptyArrays", true))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+							new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 									.append("doctorName", "$user.firstName")
 									.append("patientName", "$patient.localPatientName")
 									.append("patientId", "$patient.PID")
@@ -448,7 +449,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("advice", "$advice")
 									.append("date", new BasicDBObject("$dateToString", new BasicDBObject("format", "%Y-%m-%d").append("date","$createdTime"))))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("date", 1))));
+							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("date", 1))));
 
 			List<PrescriptionDownloadData> prescriptionDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), PrescriptionCollection.class, PrescriptionDownloadData.class).getMappedResults();
 			
@@ -461,7 +462,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 		    		if(prescriptionDownloadData.getDiagnosticTests() != null && !prescriptionDownloadData.getDiagnosticTests().isEmpty()) {
 		    			String test ="";
 		    			for(TestAndRecordData tests : prescriptionDownloadData.getDiagnosticTests()) {
-		    				DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(tests.getTestId());
+		    				DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findById(tests.getTestId()).orElse(null);
 		    				if(diagnosticTestCollection != null) {
 		    					if(DPDoctorUtils.anyStringEmpty(test))test = "'"+diagnosticTestCollection.getTestName();
 		    					else test = test +","+diagnosticTestCollection.getTestName();
@@ -501,15 +502,15 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
 							Aggregation.unwind("user"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$patient")
+									new Document("$unwind", new Document("path", "$patient")
 											.append("preserveNullAndEmptyArrays", true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$redact",
+									new Document("$redact",
 											new BasicDBObject("$cond",
 													new BasicDBObject("if", new BasicDBObject("$eq",
 															Arrays.asList("$patient.locationId",
@@ -518,7 +519,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 																			.append("else",
 																					"$$PRUNE")))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+							new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 									.append("doctorName", "$user.firstName")
 									.append("patientName", "$patient.localPatientName")
 									.append("patientId", "$patient.PID")
@@ -528,7 +529,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("status", "$state")
 									.append("explanation", "$explanation"))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("date", 1))));
+							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("date", 1))));
 
 			List<AppointmentDownloadData> appointmentDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), AppointmentCollection.class, AppointmentDownloadData.class).getMappedResults();
 			
@@ -569,15 +570,15 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
 							Aggregation.unwind("user"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$patient")
+									new Document("$unwind", new BasicDBObject("path", "$patient")
 											.append("preserveNullAndEmptyArrays", true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$redact",
+									new Document("$redact",
 											new BasicDBObject("$cond",
 													new BasicDBObject("if", new BasicDBObject("$eq",
 															Arrays.asList("$patient.locationId",
@@ -586,15 +587,15 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 																			.append("else",
 																					"$$PRUNE")))),
 																
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$treatments").append("preserveNullAndEmptyArrays", true)
 											.append("includeArrayIndex", "arrayIndex1"))),
 							Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id","treatmentService"),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$treatmentService")
+									new Document("$unwind", new BasicDBObject("path", "$treatmentService")
 											.append("preserveNullAndEmptyArrays", true))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+							new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 									.append("doctorName", "$user.firstName")
 									.append("patientName", "$patient.localPatientName")
 									.append("patientId", "$patient.PID")
@@ -609,7 +610,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("finalCost", "$treatments.finalCost")
 									.append("note", "$treatments.note"))),
 														
-							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("date", 1))));
+							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("date", 1))));
 
 			List<TreatmentDownloadData> treatmentDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), PatientTreatmentCollection.class, TreatmentDownloadData.class).getMappedResults();
 			
@@ -657,14 +658,14 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
 							Aggregation.unwind("user"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$patient")
+									new Document("$unwind", new BasicDBObject("path", "$patient")
 											.append("preserveNullAndEmptyArrays", true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$redact",
+									new Document("$redact",
 											new BasicDBObject("$cond",
 													new BasicDBObject("if", new BasicDBObject("$eq",
 															Arrays.asList("$patient.locationId",
@@ -672,7 +673,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 																			.append("then", "$$KEEP")
 																			.append("else",
 																					"$$PRUNE")))),
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+							new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 									.append("doctorName", "$user.firstName")
 									.append("patientName", "$patient.localPatientName")
 									.append("patientId", "$patient.PID")
@@ -716,7 +717,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("indirectLarygoscopyExam","$indirectLarygoscopyExam")
 									.append("neckExam", "$neckExam")
 									.append("earsExam", "$earsExam"))),
-							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("date", 1))));
+							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("date", 1))));
 
 			List<ClinicalNotesDownloadData> clinicalNotesDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), ClinicalNotesCollection.class, ClinicalNotesDownloadData.class).getMappedResults();
 			
@@ -867,14 +868,14 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
 							Aggregation.unwind("user"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$patient")
+									new Document("$unwind", new BasicDBObject("path", "$patient")
 											.append("preserveNullAndEmptyArrays", true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$redact",
+									new Document("$redact",
 											new BasicDBObject("$cond",
 													new BasicDBObject("if", new BasicDBObject("$eq",
 															Arrays.asList("$patient.locationId",
@@ -884,11 +885,11 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 																					"$$PRUNE")))),
 							
 																
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$invoiceItems").append("preserveNullAndEmptyArrays", true)
 											.append("includeArrayIndex", "arrayIndex1"))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+							new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 									.append("doctorName", "$user.firstName")
 									.append("patientName", "$patient.localPatientName")
 									.append("patientId", "$patient.PID")
@@ -905,7 +906,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("finalCost", "$invoiceItems.finalCost")
 									.append("note", "$invoiceItems.note"))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("date", 1))));
+							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("date", 1))));
 
 			List<InvoiceDownloadData> treatmentDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), DoctorPatientInvoiceCollection.class, InvoiceDownloadData.class).getMappedResults();
 			
@@ -946,14 +947,14 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
 							Aggregation.unwind("user"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$patient")
+									new Document("$unwind", new BasicDBObject("path", "$patient")
 											.append("preserveNullAndEmptyArrays", true))),
 							new CustomAggregationOperation(
-									new BasicDBObject("$redact",
+									new Document("$redact",
 											new BasicDBObject("$cond",
 													new BasicDBObject("if", new BasicDBObject("$eq",
 															Arrays.asList("$patient.locationId",
@@ -962,7 +963,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 																			.append("else",
 																					"$$PRUNE")))),									
 							
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+							new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 									.append("doctorName", "$user.firstName")
 									.append("patientName", "$patient.localPatientName")
 									.append("patientId", "$patient.PID")
@@ -972,7 +973,7 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 									.append("modeOfPayment", "$modeOfPayment")
 									.append("amountPaid", "$amountPaid"))),
 							
-							new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("date", 1))));
+							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("date", 1))));
 
 			List<ReceiptDownloadData> receiptDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), DoctorPatientReceiptCollection.class, ReceiptDownloadData.class).getMappedResults();
 			

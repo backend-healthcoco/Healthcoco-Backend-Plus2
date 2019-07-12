@@ -28,7 +28,6 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.DoctorOTPRepository;
 import com.dpdocter.repository.OTPRepository;
-import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
@@ -46,9 +45,6 @@ public class OTPServiceImpl implements OTPService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private PatientRepository patientRepository;
 
     @Autowired
     private SMSServices sMSServices;
@@ -95,8 +91,8 @@ public class OTPServiceImpl implements OTPService {
     		if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
     	
 	    OTP = LoginUtils.generateOTP();
-	    UserCollection userCollection = userRepository.findOne(new ObjectId(doctorId));
-	    //UserCollection patient = userRepository.findOne(patientObjectId);
+	    UserCollection userCollection = userRepository.findById(new ObjectId(doctorId)).orElse(null);
+	    //UserCollection patient = userRepository.findById(patientObjectId);
 	    //PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
 	    PatientCard patientCard = null;
 	    
@@ -165,8 +161,8 @@ public class OTPServiceImpl implements OTPService {
     	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
     	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
     	
-	    UserCollection userCollection = userRepository.findOne(doctorObjectId);
-	   // UserCollection patient = userRepository.findOne(patientObjectId);
+	    UserCollection userCollection = userRepository.findById(doctorObjectId).orElse(null);
+	   // UserCollection patient = userRepository.findById(patientObjectId);
 
 	    //PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
 	    PatientCard patientCard = null;
@@ -176,9 +172,9 @@ public class OTPServiceImpl implements OTPService {
 	    if(patientCards != null && !patientCards.isEmpty())patientCard = patientCards.get(0);
 	    if (userCollection != null && patientCard != null && patientId != null) {
 		String doctorName = (userCollection.getTitle() != null ? userCollection.getTitle() : "") + " " + userCollection.getFirstName();
-		List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(doctorObjectId, locationObjectId, patientObjectId, new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "createdTime")));
+		List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(doctorObjectId, locationObjectId, patientObjectId, PageRequest.of(0, 1, new Sort(Sort.Direction.DESC, "createdTime")));
 		if (doctorOTPCollection != null) {
-		    OTPCollection otpCollection = otpRepository.findOne(doctorOTPCollection.get(0).getOtpId());
+		    OTPCollection otpCollection = otpRepository.findById(doctorOTPCollection.get(0).getOtpId()).orElse(null);
 		    if (otpCollection != null) {
 			if (otpCollection.getOtpNumber().equals(otpNumber)) {
 			    if (isOTPValid(otpCollection.getCreatedTime())) {
@@ -220,9 +216,9 @@ public class OTPServiceImpl implements OTPService {
 		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
     	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
     	
-	    List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(doctorObjectId, locationObjectId, patientObjectId, new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "createdTime")));
+	    List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(doctorObjectId, locationObjectId, patientObjectId, PageRequest.of(0, 1, new Sort(Sort.Direction.DESC, "createdTime")));
 		if (doctorOTPCollection != null && !doctorOTPCollection.isEmpty() && doctorOTPCollection.size() > 0) {
-		    OTPCollection otpCollection = otpRepository.findOne(doctorOTPCollection.get(0).getOtpId());
+		    OTPCollection otpCollection = otpRepository.findById(doctorOTPCollection.get(0).getOtpId()).orElse(null);
 		    if (otpCollection != null && otpCollection.getState().equals(OTPState.VERIFIED)) {
 			if (isOTPValid(otpCollection.getCreatedTime()))
 			    response = true;
@@ -289,7 +285,7 @@ public class OTPServiceImpl implements OTPService {
     public boolean verifyOTP(String mobileNumber, String otpNumber) {
 	Boolean response = false;
 	try {
-	    OTPCollection otpCollection = otpRepository.findOne(mobileNumber, otpNumber, mobileNumber);
+	    OTPCollection otpCollection = otpRepository.findById(mobileNumber, otpNumber, mobileNumber);
 	    if (otpCollection != null) {
 		if (isOTPValid(otpCollection.getCreatedTime())) {
 		    otpCollection.setState(OTPState.VERIFIED);
@@ -317,7 +313,7 @@ public class OTPServiceImpl implements OTPService {
     public Boolean checkOTPVerifiedForPatient(String mobileNumber, String otpNumber) {
 	Boolean response = false;
 	try {
-	        OTPCollection otpCollection = otpRepository.findOne(mobileNumber, otpNumber, mobileNumber);
+	        OTPCollection otpCollection = otpRepository.findById(mobileNumber, otpNumber, mobileNumber);
 		    if (otpCollection != null && otpCollection.getState().equals(OTPState.VERIFIED)) response = true;
 		
 	} catch (Exception e) {

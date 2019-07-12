@@ -63,14 +63,14 @@ public interface PrescriptionServices {
 	Prescription deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId,
 			String patientId, Boolean discarded);
 
-	List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId,
+	List<Prescription> getPrescriptions(long page, int size, String doctorId, String hospitalId, String locationId,
 			String patientId, String updatedTime, boolean isOTPVerified, boolean discarded, boolean inHistory);
 
 	List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds, ObjectId visitId);
 
 	Prescription getPrescriptionById(String prescriptionId);
 
-	List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId,
+	List<TemplateAddEditResponseDetails> getTemplates(long page, int size, String doctorId, String hospitalId,
 			String locationId, String updatedTime, boolean discarded);
 
 	Integer getPrescriptionCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
@@ -128,7 +128,7 @@ public interface PrescriptionServices {
 
 	List<DiagnosticTestCollection> getDiagnosticTest();
 
-	Response<Object> getPrescriptions(String patientId, int page, int size, String updatedTime, Boolean discarded);
+	Response<Object> getPrescriptions(String patientId, long page, int size, String updatedTime, Boolean discarded);
 
 	DiagnosticTest addEditDiagnosticTest(DiagnosticTest request);
 
@@ -164,7 +164,7 @@ public interface PrescriptionServices {
 
 	Boolean addFavouritesToDrug();
 
-	List<GenericCodesAndReaction> getGenericCodeWithReactionForAdmin(int page, int size, String updatedTime,Boolean discarded,
+	List<GenericCodesAndReaction> getGenericCodeWithReactionForAdmin(long page, int size, String updatedTime,Boolean discarded,
 			String searchTerm);
 	
 	Boolean addGenericCodeWithReaction(GenericCodesAndReaction request);
@@ -179,7 +179,7 @@ public interface PrescriptionServices {
 
 	EyePrescription getEyePrescription(String id);
 
-	List<EyePrescription> getEyePrescriptions(int page, int size, String doctorId, String locationId, String hospitalId,
+	List<EyePrescription> getEyePrescriptions(long page, int size, String doctorId, String locationId, String hospitalId,
 			String patientId, String updatedTime, Boolean discarded, Boolean isOTPVerified);
 
 	String downloadEyePrescription(String prescriptionId);

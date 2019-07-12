@@ -12,19 +12,19 @@ public class ESSpecialityDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String speciality;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String superSpeciality;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String formattedSpeciality;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String formattedSuperSpeciality;
     
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String code;
     
     @Field(type = FieldType.Date)

@@ -20,6 +20,7 @@ public class InventoryItem extends GenericCollection {
 	private Double retailPrice;
 	private String itemType;
 	private String drugType;
+	private String doctorId;
 	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
 
 	public String getId() {
@@ -126,13 +127,20 @@ public class InventoryItem extends GenericCollection {
 		this.retailPrice = retailPrice;
 	}
 
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
 	public String getItemType() {
 		return itemType;
 	}
 
 	public void setItemType(String itemType) {
 		this.itemType = itemType;
-
 	}
 
 	public String getDrugType() {

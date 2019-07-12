@@ -75,7 +75,7 @@ public class DentalImagingAPI {
 	public Response<DentalImagingResponse> getPickupRequests(@QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
 			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") long page,
 			@QueryParam("type") String type) {
 
 		Response<DentalImagingResponse> response = new Response<DentalImagingResponse>();
@@ -90,7 +90,7 @@ public class DentalImagingAPI {
 	public Response<DentalImagingLocationResponse> getServiceLocations(
 			@MatrixParam(value = "dentalImagingServiceId") List<String> dentalImagingServiceId,
 			@QueryParam("doctorId") String doctorId, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("size") int size, @QueryParam("page") int page) {
+			@QueryParam("size") int size, @QueryParam("page") long page) {
 
 		Response<DentalImagingLocationResponse> response = new Response<DentalImagingLocationResponse>();
 		response.setDataList(
@@ -102,7 +102,7 @@ public class DentalImagingAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_SERVICES, notes = PathProxy.DentalImagingUrl.GET_SERVICES)
 	public Response<DentalDiagnosticService> getPickupRequests(@QueryParam("searchTerm") String searchTerm,
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("type") String type) {
+			@QueryParam("size") int size, @QueryParam("page") long page, @QueryParam("type") String type) {
 
 		Response<DentalDiagnosticService> response = new Response<DentalDiagnosticService>();
 		response.setDataList(dentalImagingService.getServices(searchTerm, type, page, size));
@@ -128,7 +128,7 @@ public class DentalImagingAPI {
 	@ApiOperation(value = PathProxy.DentalImagingUrl.GET_LOCATION_ASSOCIATED_SERVICES, notes = PathProxy.DentalImagingUrl.GET_LOCATION_ASSOCIATED_SERVICES)
 	public Response<DentalImagingLocationServiceAssociationLookupResponse> getLocationAssociatedServices(
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") long page,
 			@QueryParam("type") String type, @QueryParam("discarded") Boolean discarded) {
 		Response<DentalImagingLocationServiceAssociationLookupResponse> response = new Response<DentalImagingLocationServiceAssociationLookupResponse>();
 		response.setDataList(dentalImagingService.getLocationAssociatedServices(locationId, hospitalId, searchTerm,
@@ -242,7 +242,7 @@ public class DentalImagingAPI {
 			@QueryParam("dentalImagingLocationId") String dentalImagingLocationId,
 			@QueryParam("dentalImagingHospitalId") String dentalImagingHospitalId,
 			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") long page,
 			@QueryParam("isPaid") Boolean isPaid) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId, dentalImagingLocationId,
 				dentalImagingHospitalId)) {
@@ -353,7 +353,7 @@ public class DentalImagingAPI {
 			@QueryParam("dentalImagingHospitalId") String dentalImagingHospitalId,
 			@QueryParam("patientId") String patientId, @DefaultValue("0") @QueryParam("from") Long from,
 			@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size,
-			@QueryParam("page") int page) {
+			@QueryParam("page") long page) {
 
 		Response<DentalImagingReports> response = new Response<DentalImagingReports>();
 		response.setDataList(dentalImagingService.getReports(doctorId, locationId, hospitalId, dentalImagingLocationId,

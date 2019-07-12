@@ -13,7 +13,7 @@ public class ESMedicalCouncilDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String medicalCouncil;
 
     @Field(type = FieldType.Date)

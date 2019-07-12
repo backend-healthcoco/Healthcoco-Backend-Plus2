@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -162,7 +163,7 @@ public class ReportsServiceImpl implements ReportsService {
 	public IPDReports submitIPDReport(IPDReports ipdReports) {
 		IPDReports response = null;
 		IPDReportsCollection ipdReportsCollection = new IPDReportsCollection();
-		UserCollection userCollection = userRepository.findOne(new ObjectId(ipdReports.getDoctorId()));
+		UserCollection userCollection = userRepository.findById(new ObjectId(ipdReports.getDoctorId())).orElse(null);
 
 		if (ipdReports != null) {
 			BeanUtil.map(ipdReports, ipdReportsCollection);
@@ -219,7 +220,7 @@ public class ReportsServiceImpl implements ReportsService {
 					opdReportsCollection = opdReportsRepository.save(opdReportsCollectionOld);
 				} else {
 					opdReportsCollection = new OPDReportsCollection();
-					UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
+					UserCollection userCollection = userRepository.findById(new ObjectId(opdReports.getDoctorId())).orElse(null);
 					BeanUtil.map(opdReports, opdReportsCollection);
 					opdReportsCollection.setCreatedBy(
 							(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
@@ -250,7 +251,7 @@ public class ReportsServiceImpl implements ReportsService {
 	public OTReports submitOTReport(OTReports otReports) {
 		OTReports response = null;
 		OTReportsCollection otReportsCollection = new OTReportsCollection();
-		UserCollection userCollection = userRepository.findOne(new ObjectId(otReports.getDoctorId()));
+		UserCollection userCollection = userRepository.findById(new ObjectId(otReports.getDoctorId())).orElse(null);
 		if (otReports != null) {
 			BeanUtil.map(otReports, otReportsCollection);
 			try {
@@ -289,7 +290,7 @@ public class ReportsServiceImpl implements ReportsService {
 	public DeliveryReports submitDeliveryReport(DeliveryReports deliveryReports) {
 		DeliveryReports response = null;
 		DeliveryReportsCollection deliveryReportsCollection = new DeliveryReportsCollection();
-		UserCollection userCollection = userRepository.findOne(new ObjectId(deliveryReports.getDoctorId()));
+		UserCollection userCollection = userRepository.findById(new ObjectId(deliveryReports.getDoctorId())).orElse(null);
 		if (deliveryReports != null) {
 			BeanUtil.map(deliveryReports, deliveryReportsCollection);
 			try {
@@ -325,7 +326,7 @@ public class ReportsServiceImpl implements ReportsService {
 	@Override
 	@Transactional
 	public IPDReportsResponse getIPDReportsList(String locationId, String doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime) {
+			String to, long page, int size, String updatedTime) {
 		List<IPDReports> response = null;
 		IPDReportsResponse ipdReportsResponse = null;
 		List<IPDReportLookupResponse> ipdReportLookupResponses = null;
@@ -437,8 +438,7 @@ public class ReportsServiceImpl implements ReportsService {
 	@Override
 	@Transactional
 	public OPDReportsResponse getOPDReportsList(String locationId, String doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime) {
-		// TODO Auto-generated method stub
+			String to, long page, int size, String updatedTime) {
 		List<OPDReportCustomResponse> response = null;
 		OPDReportsResponse opdReportsResponse = null;
 		List<OPDReportsLookupResponse> opdReportsLookupResponses = null;
@@ -546,7 +546,7 @@ public class ReportsServiceImpl implements ReportsService {
 							for (PrescriptionItem prescriptionItem : items) {
 								OPDPrescriptionItemResponse prescriptionItemDetail = new OPDPrescriptionItemResponse();
 								BeanUtil.map(prescriptionItem, prescriptionItemDetail);
-								DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+								DrugCollection drugCollection = drugRepository.findById(prescriptionItem.getDrugId()).orElse(null);
 								if (drugCollection != null) {
 									Drug drug = new Drug();
 									BeanUtil.map(drugCollection, drug);
@@ -597,7 +597,7 @@ public class ReportsServiceImpl implements ReportsService {
 							for (TestAndRecordData data : tests) {
 								if (data.getTestId() != null) {
 									DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-											.findOne(data.getTestId());
+											.findById(data.getTestId()).orElse(null);
 									DiagnosticTest diagnosticTest = new DiagnosticTest();
 									if (diagnosticTestCollection != null) {
 										BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -651,8 +651,7 @@ public class ReportsServiceImpl implements ReportsService {
 	@Override
 	@Transactional
 	public OTReportsResponse getOTReportsList(String locationId, String doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime) {
-		// TODO Auto-generated method stub
+			String to, long page, int size, String updatedTime) {
 		List<OTReports> response = null;
 		OTReportsResponse otReportsResponse = null;
 		List<OTReportsLookupResponse> otReportsLookupResponses = null;
@@ -780,8 +779,7 @@ public class ReportsServiceImpl implements ReportsService {
 	@Override
 	@Transactional
 	public DeliveryReportsResponse getDeliveryReportsList(String locationId, String doctorId, String patientId,
-			String from, String to, int page, int size, String updatedTime) {
-		// TODO Auto-generated method stub
+			String from, String to, long page, int size, String updatedTime) {
 		List<DeliveryReports> response = null;
 		DeliveryReportsResponse deliveryReportsResponse = null;
 		List<DeliveryReportsLookupResponse> deliveryReportsLookupResponses = null;
@@ -942,11 +940,11 @@ public class ReportsServiceImpl implements ReportsService {
 									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 									Aggregation.unwind("location"),
 									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new CustomAggregationOperation(new Document("$unwind",
 											new BasicDBObject("path", "$patientCollection")
 													.append("preserveNullAndEmptyArrays", true))),
 									new CustomAggregationOperation(
-											new BasicDBObject("$redact",
+											new Document("$redact",
 													new BasicDBObject("$cond",
 															new BasicDBObject("if", new BasicDBObject("$eq",
 																	Arrays.asList("$patientCollection.locationId",
@@ -1195,10 +1193,10 @@ public class ReportsServiceImpl implements ReportsService {
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 							Aggregation.unwind("location"),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$patientCollection").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
+							new CustomAggregationOperation(new Document("$redact",
 									new BasicDBObject("$cond", new BasicDBObject("if",
 											new BasicDBObject("$eq",
 													Arrays.asList("$patientCollection.locationId", "$locationId")))

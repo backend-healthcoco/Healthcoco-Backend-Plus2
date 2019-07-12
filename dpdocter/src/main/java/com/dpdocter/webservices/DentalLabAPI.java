@@ -101,7 +101,7 @@ public class DentalLabAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_WORKS, notes = PathProxy.DentalLabUrls.GET_DENTAL_WORKS)
 	public Response<DentalWork> getDentalWorks(@QueryParam("locationId") String locationId,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		Response<DentalWork> response = new Response<DentalWork>();
 		response.setDataList(dentalLabService.getCustomWorks(page, size, searchTerm));
 		return response;
@@ -162,7 +162,7 @@ public class DentalLabAPI {
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION)
 	public Response<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociationForLocation(
 			@QueryParam("locationId") String locationId, @QueryParam("doctorId") String doctorId,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		Response<DentalLabDoctorAssociationLookupResponse> response = new Response<DentalLabDoctorAssociationLookupResponse>();
 		response.setDataList(
 				dentalLabService.getDentalLabDoctorAssociations(locationId, doctorId, page, size, searchTerm));
@@ -173,7 +173,7 @@ public class DentalLabAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION_FOR_DOCTOR, notes = PathProxy.DentalLabUrls.GET_DENTAL_LAB_DOCTOR_ASSOCIATION_FOR_DOCTOR)
 	public Response<Location> getDentalLabDoctorAssociationForDoctor(@QueryParam("doctorId") String doctorId,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		Response<Location> response = new Response<Location>();
 		response.setDataList(
 				dentalLabService.getDentalLabDoctorAssociationsForDoctor(doctorId, page, size, searchTerm));
@@ -201,7 +201,7 @@ public class DentalLabAPI {
 			@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("status") String status,
 			@QueryParam("isAcceptedAtLab") Boolean isAcceptedAtLab, @QueryParam("isCompleted") Boolean isCompleted,
 			@QueryParam("isCollectedAtDoctor") Boolean isCollectedAtDoctor, @QueryParam("size") int size,
-			@QueryParam("page") int page, @QueryParam("fromETA") Long fromETA, @QueryParam("toETA") Long toETA,
+			@QueryParam("page") long page, @QueryParam("fromETA") Long fromETA, @QueryParam("toETA") Long toETA,
 			@QueryParam("isTrailsRequired") Boolean isTrailsRequired) {
 
 		Response<DentalLabPickupResponse> response = new Response<DentalLabPickupResponse>();
@@ -226,7 +226,7 @@ public class DentalLabAPI {
 	@Path(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS)
-	public Response<RateCardDentalWorkAssociation> getRateCardWorks(@QueryParam("page") int page,
+	public Response<RateCardDentalWorkAssociation> getRateCardWorks(@QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("dentalLabId") String dentalLabId, @QueryParam("doctorId") String doctorId,
 			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
@@ -256,7 +256,7 @@ public class DentalLabAPI {
 	@Path(value = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_DOCTOR_ASSOCIATION)
-	public Response<RateCardDentalWorkAssociation> getRateCards(@QueryParam("page") int page,
+	public Response<RateCardDentalWorkAssociation> getRateCards(@QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("doctorId") String doctorId, @QueryParam("dentalLabId") String dentalLabId,
 			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
@@ -285,7 +285,7 @@ public class DentalLabAPI {
 	@Path(value = PathProxy.DentalLabUrls.GET_COLLECTION_BOY_DOCTOR_ASSOCIATION)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_COLLECTION_BOY_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.GET_COLLECTION_BOY_DOCTOR_ASSOCIATION)
-	public Response<RateCardDentalWorkAssociation> getCBDoctorAssociation(@QueryParam("page") int page,
+	public Response<RateCardDentalWorkAssociation> getCBDoctorAssociation(@QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@QueryParam("dentalLabId") String dentalLabId, @QueryParam("collectionBoyId") String collectionBoyId) {
 		if (collectionBoyId == null) {
@@ -302,7 +302,7 @@ public class DentalLabAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_CB_LIST_FOR_DENTAL_LAB, notes = PathProxy.DentalLabUrls.GET_CB_LIST_FOR_DENTAL_LAB)
 	public Response<Object> getCBListByParentLab(@QueryParam("dentalLabId") String locationId,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -390,7 +390,7 @@ public class DentalLabAPI {
 	@Path(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS_BY_RATE_CARD)
 	@GET
 	@ApiOperation(value = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS_BY_RATE_CARD, notes = PathProxy.DentalLabUrls.GET_RATE_CARD_WORKS)
-	public Response<RateCardDentalWorkAssociation> getRateCardWorks(@QueryParam("page") int page,
+	public Response<RateCardDentalWorkAssociation> getRateCardWorks(@QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("rateCardId") String rateCardId,
 			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
@@ -548,7 +548,7 @@ public class DentalLabAPI {
 			@QueryParam("dentalLabLocationId") String dentalLabLocationId,
 			@QueryParam("dentalLabHospitalId") String dentalLabHospitalId,
 			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page) {
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") long page) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId, dentalLabHospitalId, dentalLabLocationId)) {
 
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -568,7 +568,7 @@ public class DentalLabAPI {
 			@QueryParam("dentalLabLocationId") String dentalLabLocationId,
 			@QueryParam("dentalLabHospitalId") String dentalLabHospitalId,
 			@DefaultValue("0") @QueryParam("from") Long from, @QueryParam("to") Long to,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") int page) {
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size, @QueryParam("page") long page) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId, dentalLabHospitalId, dentalLabLocationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}

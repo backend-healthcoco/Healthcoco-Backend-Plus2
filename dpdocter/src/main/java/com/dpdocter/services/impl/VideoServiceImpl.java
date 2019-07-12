@@ -76,7 +76,6 @@ public class VideoServiceImpl implements VideoService {
 			BeanUtil.map(videoCollection, response);
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -84,7 +83,7 @@ public class VideoServiceImpl implements VideoService {
 
 	@Override
 	@Transactional
-	public List<Video> getVideos(String doctorId, String searchTerm, int page, int size) {
+	public List<Video> getVideos(String doctorId, String searchTerm, long page, int size) {
 		Aggregation aggregation = null;
 		List<String> specialities = null;
 		List<Video> response = null;
@@ -96,7 +95,7 @@ public class VideoServiceImpl implements VideoService {
 				if (doctorCollection.getSpecialities() != null || !doctorCollection.getSpecialities().isEmpty()) {
 					specialities = new ArrayList<>();
 					for (ObjectId specialityId : doctorCollection.getSpecialities()) {
-						SpecialityCollection specialityCollection = specialityRepository.findOne(specialityId);
+						SpecialityCollection specialityCollection = specialityRepository.findById(specialityId).orElse(null);
 						if (specialityCollection != null) {
 							speciality = specialityCollection.getSpeciality();
 							specialities.add(speciality);
@@ -112,7 +111,6 @@ public class VideoServiceImpl implements VideoService {
 					Video.class);
 			response = aggregationResults.getMappedResults();
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;

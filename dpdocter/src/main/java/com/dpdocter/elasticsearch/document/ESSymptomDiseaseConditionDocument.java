@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldIndex;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.MultiField;
 
@@ -15,22 +14,22 @@ public class ESSymptomDiseaseConditionDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String name;
     
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String type;
     
     @Field(type = FieldType.Date)
     private Date updatedTime = new Date();
 
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	@MultiField(mainField = @Field(type = FieldType.Text))
     private List<String> specialities;
     
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	@MultiField(mainField = @Field(type = FieldType.Text))
     private List<String> formattedSpecialities;
     
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
     private List<String> specialityIds;
 
 	public String getId() {

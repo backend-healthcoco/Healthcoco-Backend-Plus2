@@ -12,22 +12,22 @@ public class ESDiagramsDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String diagramUrl;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String tags;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String speciality;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String doctorId;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String locationId;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String hospitalId;
 
     @Field(type = FieldType.Boolean)

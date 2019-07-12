@@ -13,13 +13,13 @@ public class ESLabTestDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String testId;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String locationId;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String hospitalId;
 
     @Field(type = FieldType.Integer)
