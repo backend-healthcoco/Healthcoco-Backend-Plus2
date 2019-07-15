@@ -43,6 +43,9 @@ public class SubscriptionNutritionPlanCollection extends GenericCollection {
 	@Field
 	private PlanDuration duration;
 
+	@Field
+	private String countryCode;
+
 	public PlanDuration getDuration() {
 		return duration;
 	}
@@ -129,6 +132,14 @@ public class SubscriptionNutritionPlanCollection extends GenericCollection {
 
 	public void setNutritionPlanId(ObjectId nutritionPlanId) {
 		this.nutritionPlanId = nutritionPlanId;
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 	@Override

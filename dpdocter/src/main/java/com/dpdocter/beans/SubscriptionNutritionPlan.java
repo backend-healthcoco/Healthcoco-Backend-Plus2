@@ -26,6 +26,8 @@ public class SubscriptionNutritionPlan {
 
 	private PlanDuration duration;
 
+	private String countryCode;
+
 	public PlanDuration getDuration() {
 		return duration;
 	}
@@ -114,6 +116,14 @@ public class SubscriptionNutritionPlan {
 		this.discountedAmount = discountedAmount;
 	}
 
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
+
 	@Override
 	public String toString() {
 		return "SubscriptionNutritionPlan [id=" + id + ", title=" + title + ", backgroundImage=" + backgroundImage
@@ -121,7 +131,7 @@ public class SubscriptionNutritionPlan {
 				+ discount + ", discountedAmount=" + discountedAmount + ", discarded=" + discarded
 				+ ", nutritionPlanId=" + nutritionPlanId + ", duration=" + duration + "]";
 	}
-	
+
 	public static void main(String[] args) {
 		System.out.println(JacksonUtil.obj2Json(new SubscriptionNutritionPlan()));
 	}
