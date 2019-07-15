@@ -14,7 +14,15 @@ import org.springframework.ui.velocity.VelocityEngineUtils;
 import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.URLShortnerResponse;
 import com.dpdocter.services.MailBodyGenerator;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+
+import common.util.web.JacksonUtil;
 
 @Service
 public class MailBodyGeneratorImpl implements MailBodyGenerator {
@@ -442,5 +450,6 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 		return text;
 	}
+
 
 }

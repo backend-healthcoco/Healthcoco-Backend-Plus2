@@ -200,6 +200,9 @@ public class SignUpServiceImpl implements SignUpService {
 
 	@Autowired
 	private SubscriptionService subscriptionService;
+	
+	@Value(value = "${welcome.link}")
+	private String welcomeLink;
 
 	@Autowired
 	private DoctorContactUsRepository doctorContactUsRepository;

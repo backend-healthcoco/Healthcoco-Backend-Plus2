@@ -825,6 +825,7 @@ public class ContactsServiceImpl implements ContactsService {
 						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
 						Aggregation.sort(Direction.DESC, "updatedTime"), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
+
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),

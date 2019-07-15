@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.collections.ConfexUserCollection;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.OAuth2AuthenticationAccessTokenCollection;
 import com.dpdocter.collections.OAuth2AuthenticationRefreshTokenCollection;
 import com.dpdocter.collections.OTPCollection;
@@ -23,6 +27,7 @@ import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -96,6 +101,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 	@Value(value = "${forgot.password.link}")
 	private String forgotPasswordLink;
+	
+	@Value(value = "${reset.password.link}")
+	private String RESET_PASSWORD_LINK;
 
 	@Override
 	@Transactional
@@ -124,8 +132,11 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 								userCollection.getTitle() + " " + userCollection.getFirstName(),
 								tokenCollection.getId());
 						mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
+						
+						sendForgotPasswordMessage(userCollection.getMobileNumber(), tokenCollection.getId());
 						response = new ForgotPasswordResponse(userCollection.getUserName(),
 								userCollection.getMobileNumber(), userCollection.getEmailAddress(), RoleEnum.DOCTOR);
+						
 					} else {
 						logger.warn("Email address is empty.");
 						throw new BusinessException(ServiceError.InvalidInput, "Email address is empty.");
@@ -526,4 +537,33 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 	}
 
+
+    
+    private void sendForgotPasswordMessage(String mobileNumber , String tokenId) {
+		try {
+				String link = RESET_PASSWORD_LINK + "?uid=" + tokenId;
+				String shortUrl = DPDoctorUtils.urlShortner(link);
+				String message = "Please click on the button below and follow the subsequent instructions to reset your account’s password. "+shortUrl;
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				smsTrackDetail.setType("RESET_PASSWORD_SMS");
+				SMSDetail smsDetail = new SMSDetail();
+				SMS sms = new SMS();
+				sms.setSmsText(message);
+
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(mobileNumber);
+				sms.setSmsAddress(smsAddress);
+
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				sMSServices.sendSMS(smsTrackDetail, true);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
 }

@@ -1,9 +1,11 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
@@ -16,17 +18,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.DoctorContactUs;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.DoctorContactUsCollection;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TokenCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.DoctorContactStateType;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorContactUsRepository;
 import com.dpdocter.repository.TokenRepository;
+import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.services.DoctorContactUsService;
+import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.SMSServices;
 
 import common.util.web.DPDoctorUtils;
 
@@ -61,6 +73,15 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 	
 	@Autowired
 	private TokenRepository tokenRepository;
+	
+	@Autowired
+	private SMSServices smsServices;
+	
+	@Value(value = "${welcome.link}")
+	private String welcomeLink;
+	
+	@Autowired
+	private ForgotPasswordService forgotPasswordService;
 
 	@Override
 	@Transactional
@@ -85,7 +106,9 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 						"doctorWelcomeTemplate.vm", null, null);
 				mailService.sendEmail(doctorContactUs.getEmailAddress(), doctorWelcomeSubject, body, null);
 
-				
+				if (doctorContactUs.getMobileNumber() != null) {
+					sendWelcomeMessage(doctorContactUs.getMobileNumber(), tokenCollection.getId());
+				}
 				
 				body = mailBodyGenerator.generateContactEmailBody(doctorContactUs, "Doctor");
 				mailService.sendEmail(mailTo, signupRequestSubject, body, null);
@@ -95,6 +118,11 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 				}
 			} catch (DuplicateKeyException de) {
 				logger.error(de);
+				ForgotUsernamePasswordRequest request = new ForgotUsernamePasswordRequest();
+				request.setEmailAddress(doctorContactUs.getEmailAddress());
+				request.setMobileNumber(doctorContactUs.getMobileNumber());
+				request.setUsername(doctorContactUs.getUserName());
+				forgotPasswordService.forgotPasswordForDoctor(request);
 				throw new BusinessException(ServiceError.Unknown,
 						"An account already exists with " + doctorContactUs.getEmailAddress()+" .Please use another email address to register.");
 			} catch (BusinessException be) {
@@ -174,5 +202,33 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 			}
 		}
 		return response;
+	}
+	
+	private void sendWelcomeMessage(String mobileNumber , String tokenId) {
+		try {
+				String link = welcomeLink + "/" + tokenId;
+				String shortUrl = DPDoctorUtils.urlShortner(link);
+				String message = "Thank you for joining the Healthcoco community. Kindly set the new password by clicking on the link below, and login to enjoy our services. "+shortUrl;
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				smsTrackDetail.setType("WELCOME_SMS");
+				SMSDetail smsDetail = new SMSDetail();
+				SMS sms = new SMS();
+				sms.setSmsText(message);
+
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(mobileNumber);
+				sms.setSmsAddress(smsAddress);
+
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				smsServices.sendSMS(smsTrackDetail, true);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 }

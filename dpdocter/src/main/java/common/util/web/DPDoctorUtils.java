@@ -58,6 +58,10 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.URLShortnerResponse;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
 
 public class DPDoctorUtils {
 
@@ -806,4 +810,34 @@ public class DPDoctorUtils {
 			return null;
 		}
 	}
+	
+	
+	public static String urlShortner(String link)
+	{
+		String shortUrl = null;
+		
+		try {
+			HttpResponse<JsonNode> response = Unirest.post("https://url-shortener-service.p.rapidapi.com/shorten")
+					.header("X-RapidAPI-Host", "url-shortener-service.p.rapidapi.com")
+					.header("X-RapidAPI-Key", "75cbae716dmsh3e15bc0ab75221ep189f87jsnf7a1406117b4")
+					.header("Content-Type", "application/x-www-form-urlencoded")
+					.field("url", link)
+					.asJson();
+		URLShortnerResponse shortnerResponse = JacksonUtil.json2Object(response.getBody().toString(), URLShortnerResponse.class);
+		//System.out.println(shortnerResponse.getResult_url());
+		if(shortnerResponse != null)
+		{
+			shortUrl = shortnerResponse.getResult_url();
+		}
+		else{
+			throw new BusinessException(ServiceError.Unknown , "Something went wrong");
+		}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return shortUrl;
+	}
+		
 }
