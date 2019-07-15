@@ -1,9 +1,11 @@
 package com.dpdocter.beans.v2;
 
 import java.util.Date;
+import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
@@ -98,6 +100,8 @@ public class Appointment extends GenericCollection {
 	private String localPatientName;
 
 	private Boolean isCreatedByPatient = false;
+
+	private List<Fields> treatmentFields;
 
 	public String getId() {
 		return id;
@@ -435,6 +439,14 @@ public class Appointment extends GenericCollection {
 		this.branch = branch;
 	}
 
+	public List<Fields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<Fields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
+
 	@Override
 	public String toString() {
 		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
@@ -451,15 +463,7 @@ public class Appointment extends GenericCollection {
 				+ engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt="
 				+ checkedOutAt + ", count=" + count + ", category=" + category + ", branch=" + branch
 				+ ", cancelledByProfile=" + cancelledByProfile + ", localPatientName=" + localPatientName
-				+ ", isCreatedByPatient=" + isCreatedByPatient + "]";
+				+ ", isCreatedByPatient=" + isCreatedByPatient + ", treatmentFields=" + treatmentFields + "]";
 	}
-
-	/*public RegisteredPatientDetails getRegisteredPatientDetails() {
-		return registeredPatientDetails;
-	}
-
-	public void setRegisteredPatientDetails(RegisteredPatientDetails registeredPatientDetails) {
-		this.registeredPatientDetails = registeredPatientDetails;
-	}*/
 
 }
