@@ -316,14 +316,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
 		this.isVaccinationModuleOn = isVaccinationModuleOn;
 	}
-
-	public String getFeedbackURL() {
-		return feedbackURL;
-	}
-
-	public void setFeedbackURL(String feedbackURL) {
-		this.feedbackURL = feedbackURL;
-	}
 	
 	public Boolean getIskiosk() {
 		return iskiosk;
@@ -347,6 +339,14 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	public void setIsSuperAdmin(Boolean isSuperAdmin) {
 		this.isSuperAdmin = isSuperAdmin;
+	}
+	
+	public String getFeedbackURL() {
+		return feedbackURL;
+	}
+
+	public void setFeedbackURL(String feedbackURL) {
+		this.feedbackURL = feedbackURL;
 	}
 
 	public Boolean getIsAdminNutritionist() {

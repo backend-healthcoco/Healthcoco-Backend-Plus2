@@ -662,6 +662,14 @@ public class DoctorClinicProfile {
 	public void setHasBillingAccess(Boolean hasBillingAccess) {
 		this.hasBillingAccess = hasBillingAccess;
 	}
+	
+	public String getFeedbackURL() {
+		return feedbackURL;
+	}
+
+	public void setFeedbackURL(String feedbackURL) {
+		this.feedbackURL = feedbackURL;
+	}
 
 	public Boolean getIsAdminNutritionist() {
 		return isAdminNutritionist;
