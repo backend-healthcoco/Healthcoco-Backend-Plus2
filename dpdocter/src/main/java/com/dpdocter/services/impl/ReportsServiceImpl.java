@@ -1957,4 +1957,69 @@ public class ReportsServiceImpl implements ReportsService {
 		}
 		return response;
 	}
+
+	@Override
+	public IPDReports getIPDReportById(String reportId) {
+		IPDReports response = null;
+		try {
+			IPDReportsCollection ipdReportsCollection = ipdReportsRepository.findOne(new ObjectId(reportId));
+			if(ipdReportsCollection!= null) {
+				response = new IPDReports();
+				BeanUtil.map(ipdReportsCollection, response);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public OPDReportCustomResponse getOPDReportById(String reportId) {
+		OPDReportCustomResponse response = null;
+		try {
+			OPDReportsCollection opdReportsCollection = opdReportsRepository.findOne(new ObjectId(reportId));
+			if(opdReportsCollection!= null) {
+				response = new OPDReportCustomResponse();
+				BeanUtil.map(opdReportsCollection, response);
+			}		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public OTReports getOTReportById(String reportId) {
+		OTReports response = null;
+		try {
+			OTReportsCollection otReportsCollection = otReportsRepository.findOne(new ObjectId(reportId));
+			if(otReportsCollection!= null) {
+				response = new OTReports();
+				BeanUtil.map(otReportsCollection, response);
+			}		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public DeliveryReports getDeliveryReportById(String reportId) {
+		DeliveryReports response = null;
+		try {
+			DeliveryReportsCollection deliveryReportsCollection = deliveryReportsRepository.findOne(new ObjectId(reportId));
+			if(deliveryReportsCollection!= null) {
+				response = new DeliveryReports();
+				BeanUtil.map(deliveryReportsCollection, response);
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
 }

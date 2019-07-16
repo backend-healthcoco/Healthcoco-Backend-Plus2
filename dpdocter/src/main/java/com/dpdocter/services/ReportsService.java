@@ -13,6 +13,7 @@ import com.dpdocter.beans.OTReports;
 import com.dpdocter.beans.RepairRecordsOrComplianceBook;
 import com.dpdocter.response.DeliveryReportsResponse;
 import com.dpdocter.response.IPDReportsResponse;
+import com.dpdocter.response.OPDReportCustomResponse;
 import com.dpdocter.response.OPDReportsResponse;
 import com.dpdocter.response.OTReportsResponse;
 
@@ -85,4 +86,12 @@ public interface ReportsService {
 	public String getDeliveryReportsFile(String reportId);
 
 	Boolean updateOTReports();
+
+	public IPDReports getIPDReportById(String reportId);
+
+	public OPDReportCustomResponse getOPDReportById(String reportId);
+
+	public OTReports getOTReportById(String reportId);
+
+	public DeliveryReports getDeliveryReportById(String reportId);
 }

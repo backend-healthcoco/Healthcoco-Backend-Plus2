@@ -139,6 +139,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private Boolean isPidHasDate = true;
 
+	@Field
+	private String feedbackURL;
+
 	public Boolean getIsNutritionist() {
 		return isNutritionist;
 	}
@@ -459,6 +462,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.isPidHasDate = isPidHasDate;
 	}
 
+	public String getFeedbackURL() {
+		return feedbackURL;
+	}
+
+	public void setFeedbackURL(String feedbackURL) {
+		this.feedbackURL = feedbackURL;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", doctorId="
@@ -473,6 +484,10 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 				+ checkUpTypeEnum + ", packageType=" + packageType + ", doctorSlugURL=" + doctorSlugURL
 				+ ", showInventoryCount=" + showInventoryCount + ", showInventory=" + showInventory
 				+ ", saveToInventory=" + saveToInventory + ", iskiosk=" + iskiosk + ", labType=" + labType
-				+ ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + "]";
+				+ ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + ", isNutritionist="
+				+ isNutritionist + ", isSuperAdmin=" + isSuperAdmin + ", mrCode=" + mrCode + ", divisionIds="
+				+ divisionIds + ", cityId=" + cityId + ", isVaccinationModuleOn=" + isVaccinationModuleOn
+				+ ", defaultDoctorId=" + defaultDoctorId + ", isPidHasDate=" + isPidHasDate + ", feedbackURL="
+				+ feedbackURL + "]";
 	}
 }

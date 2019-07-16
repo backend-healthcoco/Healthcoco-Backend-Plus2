@@ -80,6 +80,8 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	private Boolean isVaccinationModuleOn = false;
 
+	private String feedbackURL;
+
 	public Boolean getIsSuperAdmin() {
 		return isSuperAdmin;
 	}
@@ -336,6 +338,14 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.isVaccinationModuleOn = isVaccinationModuleOn;
 	}
 
+	public String getFeedbackURL() {
+		return feedbackURL;
+	}
+
+	public void setFeedbackURL(String feedbackURL) {
+		this.feedbackURL = feedbackURL;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileLookupResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -349,6 +359,7 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 				+ ", isSendBirthdaySMS=" + isSendBirthdaySMS + ", location=" + location + ", hospital=" + hospital
 				+ ", doctor=" + doctor + ", user=" + user + ", packageType=" + packageType + ", hasLoginAccess="
 				+ hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + ", iskiosk=" + iskiosk
-				+ ", isNutritionist=" + isNutritionist + ", isSuperAdmin=" + isSuperAdmin + "]";
+				+ ", isNutritionist=" + isNutritionist + ", isSuperAdmin=" + isSuperAdmin + ", isVaccinationModuleOn="
+				+ isVaccinationModuleOn + ", feedbackURL=" + feedbackURL + "]";
 	}
 }
