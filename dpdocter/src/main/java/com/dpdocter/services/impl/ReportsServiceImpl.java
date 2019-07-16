@@ -1464,4 +1464,123 @@ public class ReportsServiceImpl implements ReportsService {
 		return response;
 	}
 
+	@Override
+	@Transactional
+	public Boolean updateOTReports() {
+		Boolean response = false;
+		try {
+			List<OTReportsCollection> otReportsCollections = otReportsRepository.findAll();
+			for (OTReportsCollection otReportsCollection : otReportsCollections) {
+				if (otReportsCollection.getAssitingDoctorsAndCost() == null) {
+					if (otReportsCollection.getAssitingDoctors() != null) {
+						List<DoctorAndCost> doctorAndCosts = new ArrayList<>();
+						for (String assistingDoctors : otReportsCollection.getAssitingDoctors()) {
+							DoctorAndCost doctorAndCost = new DoctorAndCost();
+							doctorAndCost.setDoctor(assistingDoctors);
+							doctorAndCosts.add(doctorAndCost);
+						}
+						otReportsCollection.setAssitingDoctorsAndCost(doctorAndCosts);
+					}
+				}
+
+				if (otReportsCollection.getAssitingNursesAndCost() == null) {
+					if (otReportsCollection.getAssitingNurses() != null) {
+						List<DoctorAndCost> doctorAndCosts = new ArrayList<>();
+						for (String assistingDoctors : otReportsCollection.getAssitingNurses()) {
+							DoctorAndCost doctorAndCost = new DoctorAndCost();
+							doctorAndCost.setDoctor(assistingDoctors);
+							doctorAndCosts.add(doctorAndCost);
+						}
+						otReportsCollection.setAssitingNursesAndCost(doctorAndCosts);
+					}
+				}
+
+				if (otReportsCollection.getAnaesthetistAndCost() == null) {
+					if (otReportsCollection.getAnaesthetist() != null) {
+						DoctorAndCost doctorAndCost = new DoctorAndCost();
+						doctorAndCost.setDoctor(otReportsCollection.getAnaesthetist());
+						otReportsCollection.setAnaesthetistAndCost(doctorAndCost);
+					}
+				}
+
+				if (otReportsCollection.getOperatingSurgeonAndCost() == null) {
+					if (otReportsCollection.getOperatingSurgeon() != null) {
+						DoctorAndCost doctorAndCost = new DoctorAndCost();
+						doctorAndCost.setDoctor(otReportsCollection.getOperatingSurgeon());
+						otReportsCollection.setOperatingSurgeonAndCost(doctorAndCost);
+					}
+				}
+
+			}
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	public IPDReports getIPDReportById(String reportId) {
+		IPDReports response = null;
+		try {
+			IPDReportsCollection ipdReportsCollection = ipdReportsRepository.findOne(new ObjectId(reportId));
+			if(ipdReportsCollection!= null) {
+				response = new IPDReports();
+				BeanUtil.map(ipdReportsCollection, response);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public OPDReportCustomResponse getOPDReportById(String reportId) {
+		OPDReportCustomResponse response = null;
+		try {
+			OPDReportsCollection opdReportsCollection = opdReportsRepository.findOne(new ObjectId(reportId));
+			if(opdReportsCollection!= null) {
+				response = new OPDReportCustomResponse();
+				BeanUtil.map(opdReportsCollection, response);
+			}		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public OTReports getOTReportById(String reportId) {
+		OTReports response = null;
+		try {
+			OTReportsCollection otReportsCollection = otReportsRepository.findOne(new ObjectId(reportId));
+			if(otReportsCollection!= null) {
+				response = new OTReports();
+				BeanUtil.map(otReportsCollection, response);
+			}		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public DeliveryReports getDeliveryReportById(String reportId) {
+		DeliveryReports response = null;
+		try {
+			DeliveryReportsCollection deliveryReportsCollection = deliveryReportsRepository.findOne(new ObjectId(reportId));
+			if(deliveryReportsCollection!= null) {
+				response = new DeliveryReports();
+				BeanUtil.map(deliveryReportsCollection, response);
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
 }

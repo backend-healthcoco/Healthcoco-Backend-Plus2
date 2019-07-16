@@ -21,6 +21,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.DeliveryReportsResponse;
 import com.dpdocter.response.IPDReportsResponse;
+import com.dpdocter.response.OPDReportCustomResponse;
 import com.dpdocter.response.OPDReportsResponse;
 import com.dpdocter.response.OTReportsResponse;
 import com.dpdocter.services.ReportsService;
@@ -180,4 +181,54 @@ public class ReportsAPI {
 		response.setData(reportsService.getDeliveryReportsFile(reportId));
 		return response;
 	}
+	
+	@Path(value = PathProxy.ReportsUrls.UPDATE_OT_REPORTS)
+	@POST
+	@ApiOperation(value = PathProxy.ReportsUrls.UPDATE_OT_REPORTS, notes = PathProxy.ReportsUrls.UPDATE_OT_REPORTS)
+	public Response<Boolean> updateOTReports() {
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(reportsService.updateOTReports());
+		return response;
+	}
+
+	@Path(value = PathProxy.ReportsUrls.GET_IPD_REPORT)
+	@GET
+	@ApiOperation(value = PathProxy.ReportsUrls.GET_IPD_REPORT, notes = PathProxy.ReportsUrls.GET_IPD_REPORT)
+	public Response<IPDReports> getIPDReportById(@PathParam("id") String reportId) {
+		IPDReports ipdReports = reportsService.getIPDReportById(reportId);
+		Response<IPDReports> response = new Response<IPDReports>();
+		response.setData(ipdReports);
+		return response;
+	}
+
+	@Path(value = PathProxy.ReportsUrls.GET_OPD_REPORT)
+	@GET
+	@ApiOperation(value = PathProxy.ReportsUrls.GET_OPD_REPORT, notes = PathProxy.ReportsUrls.GET_OPD_REPORT)
+	public Response<OPDReportCustomResponse> getOPDReportById(@PathParam("id") String reportId) {
+		OPDReportCustomResponse opdReports = reportsService.getOPDReportById(reportId);
+		Response<OPDReportCustomResponse> response = new Response<OPDReportCustomResponse>();
+		response.setData(opdReports);
+		return response;
+	}
+
+	@Path(value = PathProxy.ReportsUrls.GET_OT_REPORT)
+	@GET
+	@ApiOperation(value = PathProxy.ReportsUrls.GET_OT_REPORT, notes = PathProxy.ReportsUrls.GET_OT_REPORT)
+	public Response<OTReports> getOTReportById(@PathParam("id") String reportId) {
+		OTReports otReports = reportsService.getOTReportById(reportId);
+		Response<OTReports> response = new Response<OTReports>();
+		response.setData(otReports);
+		return response;
+	}
+
+	@Path(value = PathProxy.ReportsUrls.GET_DELIVERY_REPORT)
+	@GET
+	@ApiOperation(value = PathProxy.ReportsUrls.GET_DELIVERY_REPORT, notes = PathProxy.ReportsUrls.GET_DELIVERY_REPORT)
+	public Response<DeliveryReports> getDeliveryReportById(@PathParam("id") String reportId) {
+		DeliveryReports deliveryReports = reportsService.getDeliveryReportById(reportId);
+		Response<DeliveryReports> response = new Response<DeliveryReports>();
+		response.setData(deliveryReports);
+		return response;
+	}
+
 }

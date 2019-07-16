@@ -139,6 +139,8 @@ public class DoctorClinicProfile {
 
 	private Boolean isVaccinationModuleOn = false;
 
+	private String feedbackURL;
+
 	public Boolean getIsSuperAdmin() {
 		return isSuperAdmin;
 	}
@@ -650,6 +652,14 @@ public class DoctorClinicProfile {
 	public void setHasBillingAccess(Boolean hasBillingAccess) {
 		this.hasBillingAccess = hasBillingAccess;
 	}
+	
+	public String getFeedbackURL() {
+		return feedbackURL;
+	}
+
+	public void setFeedbackURL(String feedbackURL) {
+		this.feedbackURL = feedbackURL;
+	}
 
 	@Override
 	public String toString() {
@@ -673,7 +683,10 @@ public class DoctorClinicProfile {
 				+ checkUpTypeEnum + ", packageType=" + packageType + ", doctorSlugURL=" + doctorSlugURL
 				+ ", showInventoryCount=" + showInventoryCount + ", showInventory=" + showInventory
 				+ ", saveToInventory=" + saveToInventory + ", isMobileNumberOptional=" + isMobileNumberOptional
-				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + ", isPidHasDate="
-				+ isPidHasDate + "]";
+				+ ", iskiosk=" + iskiosk + ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess="
+				+ hasBillingAccess + ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter
+				+ ", isPidHasDate=" + isPidHasDate + ", isNutritionist=" + isNutritionist + ", isSuperAdmin="
+				+ isSuperAdmin + ", mrCode=" + mrCode + ", divisionIds=" + divisionIds + ", cityId=" + cityId
+				+ ", isVaccinationModuleOn=" + isVaccinationModuleOn + ", feedbackURL=" + feedbackURL + "]";
 	}
 }
