@@ -209,7 +209,7 @@ public class NutritionAPI {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
-		if (DPDoctorUtils.anyStringEmpty(request.getNutritionPlanId(), request.getSubscriptionPlanId(),
+		if (DPDoctorUtils.anyStringEmpty(request.getNutritionPlanId(),
 				request.getUserId())) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}

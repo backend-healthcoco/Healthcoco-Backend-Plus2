@@ -32,9 +32,13 @@ public class UserNutritionSubscriptionCollection extends GenericCollection {
 	@Field
 	private Date toDate;
 	@Field
-	private Boolean discarded = false;	
+	private Boolean discarded = false;
 	@Field
 	private Boolean isExpired = false;
+	@Field
+	private String countryCode;
+	@Field
+	private Double discountedAmount = 0.0;
 
 	public Boolean getIsExpired() {
 		return isExpired;
@@ -138,6 +142,22 @@ public class UserNutritionSubscriptionCollection extends GenericCollection {
 
 	public void setSubscriptionPlanId(ObjectId subscriptionPlanId) {
 		this.subscriptionPlanId = subscriptionPlanId;
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
+
+	public Double getDiscountedAmount() {
+		return discountedAmount;
+	}
+
+	public void setDiscountedAmount(Double discountedAmount) {
+		this.discountedAmount = discountedAmount;
 	}
 
 	@Override

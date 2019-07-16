@@ -56,6 +56,10 @@ public class UserNutritionSubscription extends GenericCollection {
 
 	private Boolean isExpired = false;
 
+	private Double discountedAmount = 0.0;
+
+	private String countryCode;
+
 	public Boolean getIsExpired() {
 		return isExpired;
 	}
@@ -158,6 +162,22 @@ public class UserNutritionSubscription extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public Double getDiscountedAmount() {
+		return discountedAmount;
+	}
+
+	public void setDiscountedAmount(Double discountedAmount) {
+		this.discountedAmount = discountedAmount;
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 	@Override

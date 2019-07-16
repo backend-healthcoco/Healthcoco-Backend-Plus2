@@ -266,7 +266,7 @@ public class AsyncService {
 				smsDetail.setUserName(userCollection.getFirstName());
 				sms.setSmsText(message
 						.replace("{amount}", "Rs." + userNutritionSubscriptionResponse.getAmount().toString())
-						.replace("{PlanName}", userNutritionSubscriptionResponse.getSubscriptionPlan().getTitle()));
+						.replace("{PlanName}", userNutritionSubscriptionResponse.getNutritionPlan().getTitle()));
 
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(userCollection.getMobileNumber());

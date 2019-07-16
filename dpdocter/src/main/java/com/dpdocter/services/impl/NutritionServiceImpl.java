@@ -416,7 +416,7 @@ public class NutritionServiceImpl implements NutritionService {
 			if (nutritionPlanCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Nutrition Plan not found By Id ");
 			}
-			SubscriptionNutritionPlanCollection subscriptionNutritionPlanCollection = subscritptionNutritionPlanRepository
+			/*SubscriptionNutritionPlanCollection subscriptionNutritionPlanCollection = subscritptionNutritionPlanRepository
 					.findOne(nutritionSubscriptionCollection.getSubscriptionPlanId());
 
 			if (subscriptionNutritionPlanCollection == null) {
@@ -452,23 +452,23 @@ public class NutritionServiceImpl implements NutritionService {
 							subscriptionNutritionPlanCollection.getDuration().getValue().intValue()); // to get next
 																										// week add 1
 				nutritionSubscriptionCollection.setToDate(cal.getTime());
-			}
+			}*/
 			nutritionSubscriptionCollection.setAdminCreatedTime(new Date());
 			nutritionSubscriptionCollection.setCreatedTime(new Date());
 			nutritionSubscriptionCollection.setCreatedBy(
 					(DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? "" : userCollection.getTitle())
 							+ userCollection.getFirstName());
-			nutritionSubscriptionCollection.setDiscount(subscriptionNutritionPlanCollection.getDiscount());
-			nutritionSubscriptionCollection.setAmount(subscriptionNutritionPlanCollection.getAmount());
+			nutritionSubscriptionCollection.setDiscount(request.getDiscount());
+			nutritionSubscriptionCollection.setAmount(request.getAmount());
 			nutritionSubscriptionCollection
-					.setDiscountAmount(subscriptionNutritionPlanCollection.getDiscountedAmount());
+					.setDiscountAmount(request.getDiscountedAmount());
 			nutritionSubscriptionCollection = userNutritionSubscriptionRepository.save(nutritionSubscriptionCollection);
 
 			response = new UserNutritionSubscriptionResponse();
 			NutritionPlan nutritionPlan = new NutritionPlan();
 			SubscriptionNutritionPlan subscriptionNutritionPlan = new SubscriptionNutritionPlan();
 			User user = new User();
-			BeanUtil.map(subscriptionNutritionPlanCollection, subscriptionNutritionPlan);
+			BeanUtil.map(request, subscriptionNutritionPlan);
 			BeanUtil.map(nutritionPlanCollection, nutritionPlan);
 			BeanUtil.map(nutritionSubscriptionCollection, response);
 			BeanUtil.map(userCollection, user);
