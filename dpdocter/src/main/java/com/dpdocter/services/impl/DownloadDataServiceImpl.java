@@ -439,76 +439,87 @@ public class DownloadDataServiceImpl implements DownloadDataService{
 		MailAttachment mailAttachment = new MailAttachment();
 		CSVWriter csvWriter = null;
 		try {
-			Criteria criteria = new Criteria("locationId").is(locationId).and("hospitalId").is(hospitalId).and("doctorId").is(doctorId);
-			
-			Aggregation aggregation = Aggregation
-					.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
-							Aggregation.unwind("user"),
-							new CustomAggregationOperation(new Document("$unwind",
-									new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
-							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-							
-							new CustomAggregationOperation(
-									new Document("$unwind", new BasicDBObject("path", "$patient")
-											.append("preserveNullAndEmptyArrays", true))),
-							
-							new CustomAggregationOperation(
-									new Document("$redact",
-											new BasicDBObject("$cond",
-													new BasicDBObject("if", new BasicDBObject("$eq",
-															Arrays.asList("$patient.locationId",
-																	locationId)))
-																			.append("then", "$$KEEP")
-																			.append("else",
-																					"$$PRUNE")))),
-																
-							new CustomAggregationOperation(new Document("$unwind",
-									new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
-											.append("includeArrayIndex", "arrayIndex1"))),
-							Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
-							new CustomAggregationOperation(
-									new Document("$unwind", new BasicDBObject("path", "$drug")
-											.append("preserveNullAndEmptyArrays", true))),
-							
-							new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
-									.append("doctorName", "$user.firstName")
-									.append("patientName", "$patient.localPatientName")
-									.append("patientId", "$patient.PID")
-									.append("drugName", "$drug.drugName")
-									.append("drugType", "$drug.drugType.type")
-									.append("duration", new BasicDBObject("$concat", Arrays.asList("$items.duration.value"," ","$items.duration.durationUnit.unit")))
-									.append("dosage", "$items.dosage")
-									.append("explanation", "$explanation")
-									.append("direction", "$items.direction.direction")
-									.append("instructions", "$instructions")
-									.append("diagnosticTests", "$diagnosticTests")
-									.append("advice", "$advice")
-									.append("date", new BasicDBObject("$dateToString", new BasicDBObject("format", "%Y-%m-%d").append("date","$createdTime"))))),
-							
-							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("date", 1))));
-
-			List<PrescriptionDownloadData> prescriptionDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), PrescriptionCollection.class, PrescriptionDownloadData.class).getMappedResults();
-			
 			csvWriter = new CSVWriter(new FileWriter("/home/ubuntu/Prescriptions.csv"));
-			
-			
-		    writeHeader(PrescriptionDownloadData.class, csvWriter, ComponentType.PRESCRIPTIONS, null);
+			writeHeader(PrescriptionDownloadData.class, csvWriter, ComponentType.PRESCRIPTIONS, null);
 		    
-		    for (PrescriptionDownloadData prescriptionDownloadData : prescriptionDownloadDatas) {
-		    		if(prescriptionDownloadData.getDiagnosticTests() != null && !prescriptionDownloadData.getDiagnosticTests().isEmpty()) {
-		    			String test ="";
-		    			for(TestAndRecordData tests : prescriptionDownloadData.getDiagnosticTests()) {
-		    				DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findById(tests.getTestId()).orElse(null);
-		    				if(diagnosticTestCollection != null) {
-		    					if(DPDoctorUtils.anyStringEmpty(test))test = "'"+diagnosticTestCollection.getTestName();
-		    					else test = test +","+diagnosticTestCollection.getTestName();
-		    				}
-		    			}
-		    			test = test + "'";
-		    			prescriptionDownloadData.setTests(test);
-		    		}
-		    		writeData(prescriptionDownloadData, csvWriter, ComponentType.PRESCRIPTIONS, null);
-		    }
+			Boolean isMorePresent = true;
+			int size = 5000;
+			int page=0;
+			while(isMorePresent) {
+				
+				Criteria criteria = new Criteria("locationId").is(locationId).and("hospitalId").is(hospitalId).and("doctorId").is(doctorId);
+				
+				Aggregation aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+								Aggregation.unwind("user"),
+								new CustomAggregationOperation(new Document("$unwind",
+										new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
+								Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+								
+								new CustomAggregationOperation(
+										new Document("$unwind", new BasicDBObject("path", "$patient")
+												.append("preserveNullAndEmptyArrays", true))),
+								
+								new CustomAggregationOperation(
+										new Document("$redact",
+												new BasicDBObject("$cond",
+														new BasicDBObject("if", new BasicDBObject("$eq",
+																Arrays.asList("$patient.locationId",
+																		locationId)))
+																				.append("then", "$$KEEP")
+																				.append("else",
+																						"$$PRUNE")))),
+																	
+								new CustomAggregationOperation(new Document("$unwind",
+										new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
+												.append("includeArrayIndex", "arrayIndex1"))),
+								Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+								new CustomAggregationOperation(
+										new Document("$unwind", new BasicDBObject("path", "$drug")
+												.append("preserveNullAndEmptyArrays", true))),
+								
+								new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
+										.append("doctorName", "$user.firstName")
+										.append("patientName", "$patient.localPatientName")
+										.append("patientId", "$patient.PID")
+										.append("drugName", "$drug.drugName")
+										.append("drugType", "$drug.drugType.type")
+										.append("duration", new BasicDBObject("$concat", Arrays.asList("$items.duration.value"," ","$items.duration.durationUnit.unit")))
+										.append("dosage", "$items.dosage")
+										.append("explanation", "$explanation")
+										.append("direction", "$items.direction.direction")
+										.append("instructions", "$instructions")
+										.append("diagnosticTests", "$diagnosticTests")
+										.append("advice", "$advice")
+										.append("date", new BasicDBObject("$dateToString", new BasicDBObject("format", "%Y-%m-%d").append("date","$createdTime"))))),
+								Aggregation.skip(page*size), Aggregation.limit(size),
+								new CustomAggregationOperation(new Document("$sort", new BasicDBObject("date", 1))));
+
+				
+				List<PrescriptionDownloadData> prescriptionDownloadDatas = mongoTemplate.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), PrescriptionCollection.class, PrescriptionDownloadData.class).getMappedResults();
+				if(prescriptionDownloadDatas!= null && !prescriptionDownloadDatas.isEmpty()) {
+					if(prescriptionDownloadDatas.size() < size) {
+						isMorePresent = false;
+					}else {
+						page = page + 1;
+					}
+					for (PrescriptionDownloadData prescriptionDownloadData : prescriptionDownloadDatas) {
+			    		if(prescriptionDownloadData.getDiagnosticTests() != null && !prescriptionDownloadData.getDiagnosticTests().isEmpty()) {
+			    			String test ="";
+			    			for(TestAndRecordData tests : prescriptionDownloadData.getDiagnosticTests()) {
+			    				DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findById(tests.getTestId()).orElse(null);
+			    				if(diagnosticTestCollection != null) {
+			    					if(DPDoctorUtils.anyStringEmpty(test))test = "'"+diagnosticTestCollection.getTestName();
+			    					else test = test +","+diagnosticTestCollection.getTestName();
+			    				}
+			    			}
+			    			test = test + "'";
+			    			prescriptionDownloadData.setTests(test);
+			    		}
+			    		writeData(prescriptionDownloadData, csvWriter, ComponentType.PRESCRIPTIONS, null);
+					}
+				}else isMorePresent = false;
+			}
 		 
 		}catch (Exception e) {
 			e.printStackTrace();
