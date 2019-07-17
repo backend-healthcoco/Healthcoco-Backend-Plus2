@@ -10,6 +10,8 @@ public class ESRecipeUserAppResponse {
 
 	private String name;
 
+	private String description;
+
 	private MealQuantity quantity;
 
 	private List<EquivalentQuantities> equivalentMeasurements;
@@ -25,8 +27,6 @@ public class ESRecipeUserAppResponse {
 	private MealQuantity protein;
 
 	private MealQuantity carbohydreate;
-	
-	
 
 	public String getId() {
 		return id;
@@ -106,6 +106,14 @@ public class ESRecipeUserAppResponse {
 
 	public void setCarbohydreate(MealQuantity carbohydreate) {
 		this.carbohydreate = carbohydreate;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

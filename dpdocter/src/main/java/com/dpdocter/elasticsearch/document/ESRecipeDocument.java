@@ -21,6 +21,9 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.String)
 	private String name;
+	
+	@Field(type = FieldType.String)
+	private String description;
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity quantity;
@@ -487,6 +490,14 @@ public class ESRecipeDocument {
 
 	public void setFiber(MealQuantity fiber) {
 		this.fiber = fiber;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

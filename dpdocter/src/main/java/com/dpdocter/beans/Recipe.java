@@ -14,6 +14,8 @@ public class Recipe extends GenericCollection {
 	private List<EquivalentQuantities> equivalentMeasurements;
 
 	private String name;
+	
+	private String description;
 
 	private String videoUrl;
 
@@ -416,5 +418,14 @@ public class Recipe extends GenericCollection {
 	public void setCostType(LevelType costType) {
 		this.costType = costType;
 	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 
 }
