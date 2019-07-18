@@ -21,9 +21,9 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.String)
 	private String name;
-	
+
 	@Field(type = FieldType.String)
-	private String description;
+	private String recipeDescription;
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity quantity;
@@ -120,7 +120,7 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity carbohydreate;
-	
+
 	@Field(type = FieldType.Nested)
 	private MealQuantity fiber;
 
@@ -492,12 +492,12 @@ public class ESRecipeDocument {
 		this.fiber = fiber;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getRecipeDescription() {
+		return recipeDescription;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setRecipeDescription(String recipeDescription) {
+		this.recipeDescription = recipeDescription;
 	}
 
 }

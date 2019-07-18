@@ -15,7 +15,7 @@ public class Recipe extends GenericCollection {
 
 	private String name;
 	
-	private String description;
+	private String recipeDescription;
 
 	private String videoUrl;
 
@@ -419,13 +419,15 @@ public class Recipe extends GenericCollection {
 		this.costType = costType;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getRecipeDescription() {
+		return recipeDescription;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setRecipeDescription(String recipeDescription) {
+		this.recipeDescription = recipeDescription;
 	}
+
+	
 	
 
 }
