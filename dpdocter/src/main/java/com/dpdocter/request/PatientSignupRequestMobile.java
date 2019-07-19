@@ -22,7 +22,7 @@ public class PatientSignupRequestMobile {
 	private String internalPromoCode;
 
 	private boolean isNewPatientNeedToBeCreated;
-
+	
 	private String emailAddress;
 
 	private PersonalInformation personalInformation;

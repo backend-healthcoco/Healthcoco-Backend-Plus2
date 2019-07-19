@@ -95,6 +95,7 @@ public class CounterServiceImpl implements CounterService {
 			}
 
 			counterCollection = waterCounterRepository.save(counterCollection);
+
 			if (counterCollection != null) {
 				response = new WaterCounter();
 				BeanUtil.map(counterCollection, response);
@@ -135,7 +136,8 @@ public class CounterServiceImpl implements CounterService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "date")), Aggregation.skip((page) * size),
+
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "date")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -160,7 +162,7 @@ public class CounterServiceImpl implements CounterService {
 	public WaterCounter getWaterCounterById(String counterId) {
 		WaterCounter response = null;
 		try {
-			WaterCounterCollection counterCollection = waterCounterRepository.findOne(new ObjectId(counterId));
+			WaterCounterCollection counterCollection = waterCounterRepository.findById(new ObjectId(counterId)).orElse(null);
 			if (counterCollection != null) {
 				response = new WaterCounter();
 				BeanUtil.map(counterCollection, response);
@@ -179,7 +181,7 @@ public class CounterServiceImpl implements CounterService {
 	public WaterCounter deleteWaterCounter(String counterId, Boolean discarded) {
 		WaterCounter response = null;
 		try {
-			WaterCounterCollection trackerCollection = waterCounterRepository.findOne(new ObjectId(counterId));
+			WaterCounterCollection trackerCollection = waterCounterRepository.findById(new ObjectId(counterId)).orElse(null);
 			if (trackerCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, " water tracker not found with Id ");
 			}
@@ -261,7 +263,9 @@ public class CounterServiceImpl implements CounterService {
 			counterSettingCollection = weightCounterSettingRepository.findByuserId(new ObjectId(request.getUserId()));
 			if (counterSettingCollection != null) {
 				request.setCreatedTime(counterSettingCollection.getCreatedTime());
+
 				request.setId(counterSettingCollection.getId().toString());
+
 				counterSettingCollection = new WeightCounterSettingCollection();
 				BeanUtil.map(request, counterSettingCollection);
 			} else {
@@ -367,7 +371,7 @@ public class CounterServiceImpl implements CounterService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "date")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "date")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -392,7 +396,7 @@ public class CounterServiceImpl implements CounterService {
 		WeightCounter response = null;
 		try {
 
-			WeightCounterCollection counterCollection = weightCounterRepository.findOne(new ObjectId(counterId));
+			WeightCounterCollection counterCollection = weightCounterRepository.findById(new ObjectId(counterId)).orElse(null);
 			if (counterCollection != null) {
 				response = new WeightCounter();
 				BeanUtil.map(counterCollection, response);
@@ -411,7 +415,7 @@ public class CounterServiceImpl implements CounterService {
 	public WeightCounter deleteWeightCounter(String trackerId, Boolean discarded) {
 		WeightCounter response = null;
 		try {
-			WeightCounterCollection counterCollection = weightCounterRepository.findOne(new ObjectId(trackerId));
+			WeightCounterCollection counterCollection = weightCounterRepository.findById(new ObjectId(trackerId)).orElse(null);
 			if (counterCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, " Weight Counter not found with Id ");
 			}
@@ -498,7 +502,7 @@ public class CounterServiceImpl implements CounterService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "date")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "date")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -523,7 +527,7 @@ public class CounterServiceImpl implements CounterService {
 		MealCounter response = null;
 		try {
 
-			MealCounterCollection counterCollection = mealCounterRepository.findOne(new ObjectId(counterId));
+			MealCounterCollection counterCollection = mealCounterRepository.findById(new ObjectId(counterId)).orElse(null);
 			if (counterCollection != null) {
 				response = new MealCounter();
 				BeanUtil.map(counterCollection, response);
@@ -542,7 +546,7 @@ public class CounterServiceImpl implements CounterService {
 	public MealCounter deleteMealCounter(String counterId, Boolean discarded) {
 		MealCounter response = null;
 		try {
-			MealCounterCollection counterCollection = mealCounterRepository.findOne(new ObjectId(counterId));
+			MealCounterCollection counterCollection = mealCounterRepository.findById(new ObjectId(counterId)).orElse(null);
 			if (counterCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Meal Counter not found with Id ");
 			}
@@ -627,7 +631,7 @@ public class CounterServiceImpl implements CounterService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "date")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "date")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -652,7 +656,7 @@ public class CounterServiceImpl implements CounterService {
 		ExerciseCounter response = null;
 		try {
 
-			ExerciseCounterCollection counterCollection = exerciseCounterRepository.findOne(new ObjectId(counterId));
+			ExerciseCounterCollection counterCollection = exerciseCounterRepository.findById(new ObjectId(counterId)).orElse(null);
 			if (counterCollection != null) {
 				response = new ExerciseCounter();
 				BeanUtil.map(counterCollection, response);
@@ -671,7 +675,7 @@ public class CounterServiceImpl implements CounterService {
 	public ExerciseCounter deleteExerciseCounter(String trackerId, Boolean discarded) {
 		ExerciseCounter response = null;
 		try {
-			ExerciseCounterCollection counterCollection = exerciseCounterRepository.findOne(new ObjectId(trackerId));
+			ExerciseCounterCollection counterCollection = exerciseCounterRepository.findById(new ObjectId(trackerId)).orElse(null);
 			if (counterCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "counter not found with Id ");
 			}
@@ -756,7 +760,7 @@ public class CounterServiceImpl implements CounterService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "date")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "date")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -780,8 +784,7 @@ public class CounterServiceImpl implements CounterService {
 	public CaloriesCounter getCaloriesCounterById(String counterId) {
 		CaloriesCounter response = null;
 		try {
-
-			CaloriesCounterCollection counterCollection = caloriesCounterRepository.findOne(new ObjectId(counterId));
+			CaloriesCounterCollection counterCollection = caloriesCounterRepository.findById(new ObjectId(counterId)).orElse(null);
 			if (counterCollection != null) {
 				response = new CaloriesCounter();
 				BeanUtil.map(counterCollection, response);
@@ -800,7 +803,7 @@ public class CounterServiceImpl implements CounterService {
 	public CaloriesCounter deleteColariesCounter(String counterId, Boolean discarded) {
 		CaloriesCounter response = null;
 		try {
-			CaloriesCounterCollection counterCollection = caloriesCounterRepository.findOne(new ObjectId(counterId));
+			CaloriesCounterCollection counterCollection = caloriesCounterRepository.findById(new ObjectId(counterId)).orElse(null);
 			if (counterCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Calorie counter not found with Id ");
 			}

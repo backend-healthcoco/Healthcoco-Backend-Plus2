@@ -61,7 +61,7 @@ public class LocaleCollection extends GenericCollection {
 	@Field
 	private Boolean isLocaleListed = true;
 	@Field
-	private long localeRankingCount = 0;
+	private long localeRankingCount = 1000;
 	@Field
 	private long noOfLocaleRecommendation = 0;
 	@Field

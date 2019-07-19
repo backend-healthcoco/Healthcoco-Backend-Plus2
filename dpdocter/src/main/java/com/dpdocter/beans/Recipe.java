@@ -105,7 +105,7 @@ public class Recipe extends GenericCollection {
 		this.calories = calories;
 	}
 
-	public boolean getVerified() {
+	public boolean isVerified() {
 		return verified;
 	}
 

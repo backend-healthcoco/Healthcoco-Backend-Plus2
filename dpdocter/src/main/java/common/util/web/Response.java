@@ -12,9 +12,9 @@ public class Response<T> {
 
 	private T data;
 
-	private List<?> dataList;
-
-	private Integer count = 0;
+    private List<?> dataList;
+    
+    private Integer count=0;
 
 	public Response() {
 	}
@@ -35,7 +35,7 @@ public class Response<T> {
 		this.dataList = dataList;
 	}
 
-	public Integer getCount() {
+    public Integer getCount() {
 		return count;
 	}
 
@@ -44,8 +44,8 @@ public class Response<T> {
 	}
 
 	@Override
-	public String toString() {
-		return "Response [data=" + data + ", dataList=" + dataList + "]";
-	}
+    public String toString() {
+	return "Response [data=" + data + ", dataList=" + dataList + "]";
+    }
 
 }

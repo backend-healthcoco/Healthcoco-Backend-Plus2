@@ -12,7 +12,6 @@ public class QuestionCollection extends GenericCollection {
 	private ObjectId id;
 	@Field
 	private String type = "CONFERENCE_SESSION";
-
 	@Field
 	private String question;
 	@Field
@@ -78,5 +77,13 @@ public class QuestionCollection extends GenericCollection {
 	public String toString() {
 		return "QuestionCollection [id=" + id + ", type=" + type + ", sessionId=" + sessionId + ", questionerId="
 				+ questionerId + ", noOfLikes=" + noOfLikes + ", discarded=" + discarded + "]";
+	}
+
+	public String getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(String question) {
+		this.question = question;
 	}
 }

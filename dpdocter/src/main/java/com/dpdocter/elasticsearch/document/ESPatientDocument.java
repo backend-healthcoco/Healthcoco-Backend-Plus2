@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldIndex;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import com.dpdocter.beans.DOB;
@@ -17,93 +16,102 @@ public class ESPatientDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String userId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String PID;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String PNUM;
 	
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String userName;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String firstName;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String localPatientName;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String localPatientNameFormatted;
 	
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String gender;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String bloodGroup;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String emailAddress;
 
 	@Field(type = FieldType.Nested)
 	private DOB dob;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String city;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String locality;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String postalCode;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String mobileNumber;
 
-	@Field(type = FieldType.String, index = FieldIndex.not_analyzed)
+	@Field(type = FieldType.Text)
 	private String profession;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String doctorId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String locationId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String hospitalId;
 
-	@Field(type = FieldType.String, index = FieldIndex.not_analyzed)
+	@Field(type = FieldType.Text)
 	private String referredBy;
 
 	@Field(type = FieldType.Date)
 	private Date createdTime;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String imageUrl;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String thumbnailUrl;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String colorCode;
 
 	@Field(type = FieldType.Long)
 	private Long registrationDate;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String userUId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private List<String> consultantDoctorIds;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isPatientDiscarded = false;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean discarded = false;
-	
+
+	@Field(type = FieldType.Boolean)
+	private Boolean isChild = false;
+
+	@Field(type = FieldType.Text)
+	private String fatherName;
+
+	@Field(type = FieldType.Text)
+	private String motherName;
+
 	public String getId() {
 		return id;
 	}
@@ -344,6 +352,30 @@ public class ESPatientDocument {
 
 	public void setPNUM(String pNUM) {
 		PNUM = pNUM;
+	}
+
+	public Boolean getIsChild() {
+		return isChild;
+	}
+
+	public void setIsChild(Boolean isChild) {
+		this.isChild = isChild;
+	}
+
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public String getMotherName() {
+		return motherName;
+	}
+
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
 	}
 
 	@Override

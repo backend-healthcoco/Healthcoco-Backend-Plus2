@@ -108,11 +108,11 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		List<Map<String, ProcedureSheetField>> procedureSheetFields = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				procedureSheetCollection = procedureSheetRepository.findOne(new ObjectId(request.getId()));
+				procedureSheetCollection = procedureSheetRepository.findById(new ObjectId(request.getId())).orElse(null);
 			} else {
 				procedureSheetCollection = new ProcedureSheetCollection();
 				procedureSheetCollection.setCreatedTime(new Date());
-				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				procedureSheetCollection.setCreatedBy(userCollection.getFirstName());
 			}
 
@@ -155,9 +155,9 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				response.setProcedureSheetFields(procedureSheetFields);
 				response.setProcedureConsentForm(procedureConsentForm);
 				response.setDiagrams(procedureSheetCollection.getDiagrams());
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-						procedureSheetCollection.getPatientId(), procedureSheetCollection.getLocationId(),
-						procedureSheetCollection.getHospitalId());
+
+				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(procedureSheetCollection.getPatientId(),
+						procedureSheetCollection.getLocationId(), procedureSheetCollection.getHospitalId());
 				if (patientCollection != null) {
 					PatientShortCard patientShortCard = new PatientShortCard();
 					BeanUtil.map(patientCollection, patientShortCard);
@@ -166,7 +166,6 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			// e.printStackTrace();
 			logger.warn(e);
 		}
 		return response;
@@ -180,24 +179,23 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		List<Map<String, ProcedureSheetField>> procedureSheetFields = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
-				procedureSheetCollection = procedureSheetRepository.findOne(new ObjectId(id));
+				procedureSheetCollection = procedureSheetRepository.findById(new ObjectId(id)).orElse(null);
 			} else {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
 			if (procedureSheetCollection != null) {
-
+				
 				response = new ProcedureSheetResponse();
 				procedureSheetFields = procedureSheetCollection.getProcedureSheetFields();
-
+				
 				procedureSheetCollection.setProcedureSheetFields(null);
-				// BeanUtil.map(procedureSheetCollection, response);
+				//BeanUtil.map(procedureSheetCollection, response);
 				response.setId(String.valueOf(procedureSheetCollection.getId()));
 				response.setDoctorId(String.valueOf(procedureSheetCollection.getDoctorId()));
 				response.setLocationId(String.valueOf(procedureSheetCollection.getLocationId()));
 				response.setHospitalId(String.valueOf(procedureSheetCollection.getHospitalId()));
 				response.setPatientId(String.valueOf(procedureSheetCollection.getPatientId()));
-				response.setProcedureSheetStructureId(
-						String.valueOf(procedureSheetCollection.getProcedureSheetStructureId()));
+				response.setProcedureSheetStructureId(String.valueOf(procedureSheetCollection.getProcedureSheetStructureId()));
 				response.setProcedureName(procedureSheetCollection.getProcedureName());
 				response.setProcedureConsentForm(procedureSheetCollection.getProcedureConsentForm());
 				response.setDiscarded(procedureSheetCollection.getDiscarded());
@@ -206,9 +204,9 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				response.setCreatedBy(procedureSheetCollection.getCreatedBy());
 				response.setProcedureSheetFields(procedureSheetFields);
 				response.setDiagrams(procedureSheetCollection.getDiagrams());
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-						procedureSheetCollection.getPatientId(), procedureSheetCollection.getLocationId(),
-						procedureSheetCollection.getHospitalId());
+
+				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(procedureSheetCollection.getPatientId(),
+						procedureSheetCollection.getLocationId(), procedureSheetCollection.getHospitalId());
 				if (patientCollection != null) {
 					PatientShortCard patientShortCard = new PatientShortCard();
 					BeanUtil.map(patientCollection, patientShortCard);
@@ -217,7 +215,6 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			// e.printStackTrace();
 			logger.warn(e);
 		}
 		return response;
@@ -263,7 +260,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -287,10 +284,13 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 	}
 
+	
+	
 	@Override
 	@Transactional
-	public Integer getProcedureSheetListCount(String doctorId, String hospitalId, String locationId, String patientId,
-			String searchTerm, Long from, Long to, Boolean discarded, String type) {
+	public Integer getProcedureSheetListCount(String doctorId, String hospitalId, String locationId,
+			String patientId, String searchTerm, Long from, Long to, Boolean discarded,
+			String type) {
 		Integer count = 0;
 		try {
 			Aggregation aggregation = null;
@@ -337,7 +337,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		ProcedureSheetCollection procedureSheetCollection = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
-				procedureSheetCollection = procedureSheetRepository.findOne(new ObjectId(id));
+				procedureSheetCollection = procedureSheetRepository.findById(new ObjectId(id)).orElse(null);
 				procedureSheetCollection.setDiscarded(discarded);
 				procedureSheetCollection = procedureSheetRepository.save(procedureSheetCollection);
 			} else {
@@ -346,9 +346,8 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			if (procedureSheetCollection != null) {
 				response = new ProcedureSheetResponse();
 				BeanUtil.map(procedureSheetCollection, response);
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-						procedureSheetCollection.getPatientId(), procedureSheetCollection.getLocationId(),
-						procedureSheetCollection.getHospitalId());
+				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(procedureSheetCollection.getPatientId(),
+						procedureSheetCollection.getLocationId(), procedureSheetCollection.getHospitalId());
 				if (patientCollection != null) {
 					PatientShortCard patientShortCard = new PatientShortCard();
 					BeanUtil.map(patientCollection, patientShortCard);
@@ -377,11 +376,11 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				procedureSheetStructureCollection = procedureSheetStructureRepository
-						.findOne(new ObjectId(request.getId()));
+						.findById(new ObjectId(request.getId())).orElse(null);
 			} else {
 				procedureSheetStructureCollection = new ProcedureSheetStructureCollection();
 				procedureSheetStructureCollection.setCreatedTime(new Date());
-				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				procedureSheetStructureCollection.setCreatedBy(userCollection.getFirstName());
 			}
 
@@ -461,7 +460,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		ProcedureConsentFormStructure procedureConsentFormStructure = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
-				procedureSheetStructureCollection = procedureSheetStructureRepository.findOne(new ObjectId(id));
+				procedureSheetStructureCollection = procedureSheetStructureRepository.findById(new ObjectId(id)).orElse(null);
 			} else {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
@@ -500,7 +499,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		ProcedureSheetStructureCollection procedureSheetStructureCollection = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
-				procedureSheetStructureCollection = procedureSheetStructureRepository.findOne(new ObjectId(id));
+				procedureSheetStructureCollection = procedureSheetStructureRepository.findById(new ObjectId(id)).orElse(null);
 				procedureSheetStructureCollection.setDiscarded(discarded);
 				procedureSheetStructureCollection = procedureSheetStructureRepository
 						.save(procedureSheetStructureCollection);
@@ -576,11 +575,13 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 		return responses;
 
 	}
-
+	
+	
 	@Override
 	@Transactional
-	public Integer getProcedureSheetStructureListCount(String doctorId, String hospitalId, String locationId,
-			String searchTerm, Long from, Long to, Boolean discarded, String type) {
+	public Integer getProcedureSheetStructureListCount(String doctorId, String hospitalId,
+			String locationId, String searchTerm, Long from, Long to, Boolean discarded, 
+			String type) {
 		Integer count = 0;
 		try {
 			Aggregation aggregation = null;
@@ -619,7 +620,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 	public String downloadProcedureSheet(String id) {
 		String response = null;
 		try {
-			ProcedureSheetCollection procedureSheetCollection = procedureSheetRepository.findOne(new ObjectId(id));
+			ProcedureSheetCollection procedureSheetCollection = procedureSheetRepository.findById(new ObjectId(id)).orElse(null);
 
 			if (procedureSheetCollection != null) {
 				JasperReportResponse jasperReportResponse = createProcedureSheetJasper(procedureSheetCollection);
@@ -742,16 +743,16 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				keys = new ArrayList<String>(fields.keySet());
 				field = "";
 				String i = "";
-				String[] fieldList = null;
+				String [] fieldList = null;
 				if (keys != null && !keys.isEmpty()) {
-					fieldList = new String[fields.keySet().size()+1];
+					fieldList = new String [fields.keySet().size()];
 					for (int index = 0; index < fields.keySet().size(); index++) {
 						i = keys.get(index);
 						value = fields.get(i).getValue();
 						if (!DPDoctorUtils.anyStringEmpty(i, value)) {
 							field = "<b>" + i + " : </b>" + value;
 							if (fields.get(i).getSequenceNo() != null) {
-								fieldList[fields.get(i).getSequenceNo().intValue()] = field;
+								fieldList[fields.get(i).getSequenceNo().intValue()]= field;
 							}
 						}
 
@@ -759,7 +760,6 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 					for (int index = 0; index < fieldList.length; index++) {
 						item = new BasicDBObject();
 						if (!DPDoctorUtils.anyStringEmpty(fieldList[index])) {
-
 							item.put("fieldOne", fieldList[index]);
 
 						}
@@ -767,21 +767,18 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 						if (index < fieldList.length) {
 
 							if (!DPDoctorUtils.anyStringEmpty(fieldList[index]))
-
 								item.put("fieldTwo", fieldList[index]);
 						}
 						index++;
 						if (index < fieldList.length) {
 
 							if (!DPDoctorUtils.anyStringEmpty(fieldList[index]))
-
 								item.put("fieldThree", fieldList[index]);
 						}
 						index++;
 						if (index < fields.size()) {
 
 							if (!DPDoctorUtils.anyStringEmpty(fieldList[index]))
-
 								item.put("fieldFour", fieldList[index]);
 						}
 

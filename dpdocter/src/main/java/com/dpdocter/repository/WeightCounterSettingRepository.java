@@ -8,7 +8,7 @@ import com.dpdocter.collections.WeightCounterSettingCollection;
 
 public interface WeightCounterSettingRepository extends MongoRepository<WeightCounterSettingCollection, ObjectId> {
 
-	@Query("{'userId' : ?0}")
+	@Query("{'userId' : ?0,'discarded' : false }")
 	public WeightCounterSettingCollection findByuserId(ObjectId userId);
 
 }

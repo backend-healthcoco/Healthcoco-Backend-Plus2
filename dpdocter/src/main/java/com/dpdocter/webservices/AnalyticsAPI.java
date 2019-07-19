@@ -602,19 +602,20 @@ public class AnalyticsAPI {
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_TREATMENT_SERVICE_PIE_CHART, notes = PathProxy.AnalyticsUrls.GET_TREATMENT_SERVICE_PIE_CHART)
 	public Response<DoctorAnalyticPieChartResponse> getTreatmentAnalyticForPieChart(
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,	@QueryParam("doctorId") String doctorId,
-			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
-			@QueryParam("searchTerm") String searchTerm) {
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("doctorId") String doctorId, @QueryParam("fromDate") String fromDate,
+			@QueryParam("toDate") String toDate, @QueryParam("searchTerm") String searchTerm) {
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, " locationId, hospitalId should not be empty");
 		}
 		Response<DoctorAnalyticPieChartResponse> response = new Response<DoctorAnalyticPieChartResponse>();
 		Integer count = 0;
-		count = treatmentAnalyticsService.countTreatments(doctorId, locationId, hospitalId, fromDate, toDate, searchTerm,
-				null);
+		count = treatmentAnalyticsService.countTreatments(doctorId, locationId, hospitalId, fromDate, toDate,
+				searchTerm, null);
 		List<DoctorAnalyticPieChartResponse> data = null;
 		if (count > 0) {
-			data = treatmentAnalyticsService.getTreatmentAnalyticForPieChart(doctorId,locationId, hospitalId, fromDate, toDate);
+			data = treatmentAnalyticsService.getTreatmentAnalyticForPieChart(doctorId, locationId, hospitalId, fromDate,
+					toDate);
 		}
 		response.setDataList(data);
 		response.setCount(count);

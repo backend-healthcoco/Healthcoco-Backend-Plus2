@@ -16,16 +16,16 @@ public class ESTrendingDocument {
 	@Id
 	private String id;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> type;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String resourceType = "BLOG";
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String offerId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String blogId;
 
 	@Field(type = FieldType.Integer)

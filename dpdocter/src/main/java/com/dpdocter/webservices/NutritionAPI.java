@@ -188,7 +188,6 @@ public class NutritionAPI {
 		}
 		Response<SubscriptionNutritionPlan> response = new Response<SubscriptionNutritionPlan>();
 		response.setDataList(nutritionService.getSubscritionPlans(page, size, nutritionplanId, discarded));
-
 		return response;
 	}
 
@@ -703,7 +702,6 @@ public class NutritionAPI {
 		}
 
 		Response<SugarMedicineReminder> response = new Response<SugarMedicineReminder>();
-
 		response.setData(nutritionService.addEditSugarMedicineReminder(request));
 
 		return response;

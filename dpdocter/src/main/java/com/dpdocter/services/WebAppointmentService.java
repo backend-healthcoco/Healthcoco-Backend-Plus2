@@ -8,5 +8,4 @@ public interface WebAppointmentService {
 	WebAppointmentSlotDataResponse getTimeSlots(String doctorId, String locationId, String hospitalId, String date);
 
 	WebDoctorClinicsResponse getClinicsByDoctorSlugURL(String doctorSlugUrl);
-
 }

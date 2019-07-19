@@ -133,6 +133,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 					jasperReportResponse.getFileSystemResource().getFile());
 			putObjectRequest.setMetadata(metadata);
 			s3client.putObject(putObjectRequest);
+
 			if (mongoConnection != null)
 				mongoConnection.close();
 			return jasperReportResponse;
@@ -142,6 +143,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			if (mongoConnection != null)
 				mongoConnection.close();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+
 		}
 	}
 
@@ -218,8 +220,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			leftMargin = 0;
 			rightMargin = 0;
 			topMargin = 0;
-		} else if (parameters.get("headerImage") != null && !parameters.get("headerImage").toString().isEmpty()) {
-			topMargin = 25;
+		} else if (parameters.get("headerImage") != null
+				&& !DPDoctorUtils.allStringsEmpty(parameters.get("headerImage").toString())) {
+			topMargin = topMargin - 45;
 		}
 
 		int columnWidth = pageWidth - leftMargin - rightMargin;
@@ -249,8 +252,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.addStyle(normalStyle);
 
 		JRDesignDatasetRun dsr = new JRDesignDatasetRun();
-		if (!componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())
+		if (!componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CALENDER_APPOINTMENT.getType())
@@ -415,8 +417,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
 
-		if (!componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
-				&& !componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())
+		if (!componentType.getType().equalsIgnoreCase(ComponentType.LAB_REQUISATION_FORM.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.DENTAL_LAB_INSPECTION_REPORT.getType())
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.PATIENT_CARD.getType())
@@ -720,17 +721,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(2);
-		band.setPrintWhenExpression(new JRDesignExpression("(!$P{PH}.equals( null ) && ! $P{PH}.isEmpty())"
-				+ "||(!$P{priorConsultations}.equals( null ) && ! $P{priorConsultations}.isEmpty())"
-				+ "||(!$P{complaints}.equals( null ) && ! $P{complaints}.isEmpty())"
-				+ "||(!$P{presentComplaintHistory}.equals( null ) && ! $P{presentComplaintHistory}.isEmpty())"
-				+ "||(!$P{menstrualHistory}.equals( null ) && ! $P{menstrualHistory}.isEmpty())"
-				+ "||(!$P{obstetricHistory}.equals( null ) && ! $P{obstetricHistory}.isEmpty())"
-				+ "||(!$P{generalExam}.equals( null ) && ! $P{generalExam}.isEmpty())"
-				+ "||(!$P{earsExam}.equals( null ) && ! $P{earsExam}.isEmpty())"
-				+ "||(!$P{neckExam}.equals( null ) && ! $P{neckExam}.isEmpty())"
-				+ "||(!$P{indirectLarygoscopyExam}.equals( null ) && ! $P{indirectLarygoscopyExam}.isEmpty())"
-				+ "||(!$P{oralCavityThroatExam}.equals( null ) && ! $P{oralCavityThroatExam}.isEmpty())"
+		band.setPrintWhenExpression(new JRDesignExpression(" (!$P{earsExam}.equals( null ) && ! $P{earsExam}.isEmpty())"
+				+ " ||(!$P{neckExam}.equals( null ) && ! $P{neckExam}.isEmpty())"
+				+ " ||(!$P{indirectLarygoscopyExam}.equals( null ) && ! $P{indirectLarygoscopyExam}.isEmpty())"
+				+ " ||(!$P{oralCavityThroatExam}.equals( null ) && ! $P{oralCavityThroatExam}.isEmpty())"
 				+ " ||(!$P{noseExam}.equals( null ) && ! $P{noseExam}.isEmpty())"));
 
 		jrDesignLine = new JRDesignLine();
@@ -1243,6 +1237,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(2);
+
 		band.setPrintWhenExpression(
 
 				new JRDesignExpression("!$F{pcEars}.equals( null ) && !$F{pcEars}.isEmpty() "
@@ -1393,19 +1388,13 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(2);
-		band.setPrintWhenExpression(
-				new JRDesignExpression("!$F{pastHistory}.equals( null ) && ! $F{pastHistory} .isEmpty() "
-						+ "|| !$F{priorConsultations}.equals( null ) && ! $F{priorConsultations} .isEmpty() "
-						+ "|| !$F{complaints}.equals( null ) && ! $F{complaints} .isEmpty() "
-						+ "|| !$F{presentComplaintHistory}.equals( null ) && ! $F{presentComplaintHistory} .isEmpty() "
-						+ "|| !$F{menstrualHistory}.equals( null ) && ! $F{menstrualHistory} .isEmpty() "
-						+ "|| !$F{obstetricHistory}.equals( null ) && ! $F{obstetricHistory} .isEmpty() "
-						+ "|| !$F{generalExam}.equals( null ) && ! $F{generalExam} .isEmpty() "
-						+ "|| !$F{earsExam}.equals( null ) && ! $F{earsExam} .isEmpty() "
-						+ "|| !$F{noseExam}.equals( null ) && ! $F{noseExam} .isEmpty() "
-						+ "|| !$F{oralCavityThroatExam}.equals( null ) && ! $F{oralCavityThroatExam} .isEmpty() "
-						+ "|| !$F{indirectLarygoscopyExam}.equals( null ) && ! $F{indirectLarygoscopyExam} .isEmpty() "
-						+ "|| !$F{neckExam}.equals( null ) && ! $F{neckExam} .isEmpty()"));
+
+		band.setPrintWhenExpression(new JRDesignExpression("!$F{earsExam}.equals( null ) && ! $F{earsExam} .isEmpty()"
+				+ "|| !$F{noseExam}.equals( null ) && ! $F{noseExam} .isEmpty() "
+				+ "|| !$F{oralCavityThroatExam}.equals( null ) && ! $F{oralCavityThroatExam} .isEmpty() "
+				+ "|| !$F{indirectLarygoscopyExam}.equals( null ) && ! $F{indirectLarygoscopyExam} .isEmpty() "
+				+ "|| !$F{neckExam}.equals( null ) && ! $F{neckExam} .isEmpty()"));
+
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
@@ -1800,7 +1789,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{SNo}"));
-		jrDesignTextField.setX(0);
+		jrDesignTextField.setX(5);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(35);
@@ -1926,7 +1915,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{no}"));
-		jrDesignTextField.setX(0);
+		jrDesignTextField.setX(8);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(35);
@@ -2151,7 +2140,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 
-		int Startwith = 2;
 		band.setSplitType(SplitTypeEnum.IMMEDIATE);
 
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
@@ -2187,12 +2175,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
-			jrDesignTextField.setFontSize(new Float(9));
+			jrDesignTextField.setFontSize(new Float(12));
 			jrDesignTextField.setX(0);
 			jrDesignTextField.setY(Startwith);
 			jrDesignTextField.setHeight(18);
 			jrDesignTextField.setWidth(175);
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 			jrDesignTextField.setMarkup("html");
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 			jrDesignTextField.setStretchWithOverflow(true);
@@ -2207,7 +2195,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setY(Startwith);
 			jrDesignTextField.setHeight(22);
 			jrDesignTextField.setWidth(columnWidth - 176);
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
@@ -2261,6 +2249,23 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		int Startwith = 2;
 		band.setSplitType(SplitTypeEnum.STRETCH);
+
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
+			jrDesignTextField.setFontSize(new Float(9));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(Startwith);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(175);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+		}
+
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerSignature}"));
@@ -8032,7 +8037,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
 		jrDesignImage.setPrintWhenExpression(new JRDesignExpression("$F{isImage}"));
 		jrDesignImage.setExpression(new JRDesignExpression("$F{value}"));
-		jrDesignImage.setX(0);
+		jrDesignImage.setX(50);
 		jrDesignImage.setY(20);
 		jrDesignImage.setHeight(20);
 		jrDesignImage.setWidth(100);
@@ -8390,7 +8395,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
-		jrDesignLine.setHeight(1);
+		jrDesignLine.setHeight(5);
 		jrDesignLine.setWidth(columnWidth);
 		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
 		band.addElement(jrDesignLine);

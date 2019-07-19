@@ -22,12 +22,12 @@ public interface DoctorLabService {
 
 	public RecordsFile uploadDoctorLabReportMultipart(FormDataBodyPart file, MyFiileRequest request);
 
-	public List<DoctorLabReportResponse> getDoctorLabReport(int page, int size, String patientId, String doctorId,
+	public List<DoctorLabReportResponse> getDoctorLabReport(long page, int size, String patientId, String doctorId,
 			String locationId, String hospitalId, String searchTerm, Boolean discarded, Boolean doctorLab);
 
 	public Boolean addDoctorToFavouriteList(DoctorLabFavouriteDoctorRequest request);
 
-	public List<DoctorLabFavouriteDoctorResponse> getFavouriteList(int size, int page, String searchTerm,
+	public List<DoctorLabFavouriteDoctorResponse> getFavouriteList(int size, long page, String searchTerm,
 			String doctorId, String locationId, String hospitalId, String city);
 
 	public List<DoctorLabSearchDoctorResponse> searchDoctor(int size, int page, String searchTerm, String doctorId,

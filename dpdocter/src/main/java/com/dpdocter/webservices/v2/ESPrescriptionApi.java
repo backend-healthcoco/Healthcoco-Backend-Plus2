@@ -43,7 +43,7 @@ public class ESPrescriptionApi {
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
 			@QueryParam(value = "searchTerm") String searchTerm, @QueryParam(value = "category") String category,
-			@DefaultValue("false")  @QueryParam(value = "searchByGenericName") Boolean searchByGenericName) {
+			@DefaultValue("false") @QueryParam(value = "searchByGenericName") Boolean searchByGenericName) {
 
 		if (DPDoctorUtils.anyStringEmpty(range)) {
 			logger.warn("Invalid Input");

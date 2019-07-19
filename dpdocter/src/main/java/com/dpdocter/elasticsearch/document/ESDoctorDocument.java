@@ -7,7 +7,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldIndex;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.MultiField;
 
@@ -26,28 +25,28 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String userId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String title;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String firstName;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String gender;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String emailAddress;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String mobileNumber;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String imageUrl;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String thumbnailUrl;
 
 	@Field(type = FieldType.Nested)
@@ -59,37 +58,37 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@Field(type = FieldType.Nested)
 	private List<WorkingSchedule> workingSchedules;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> specialities;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> services;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> parentSpecialities;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> specialitiesValue;//value
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> servicesValue;//value
 	
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> formattedParentSpecialities;
 
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> formattedSpecialitiesValue;//value
 
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> formattedServicesValue;//value
 	
 	@Field(type = FieldType.Nested)
 	private DoctorExperience experience;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String facility;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> appointmentBookingNumber;
 
 	@Field(type = FieldType.Nested)
@@ -101,19 +100,19 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@Field(type = FieldType.Boolean)
 	private Boolean isVerified = false;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String coverImageUrl;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String coverThumbnailImageUrl;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String colorCode;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String userState;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String registerNumber;
 
 	@Field(type = FieldType.Nested)
@@ -122,7 +121,7 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@Field(type = FieldType.Nested)
 	private List<DoctorRegistrationDetail> registrationDetails;
 	
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> professionalMemberships;
 
 	@Field(type = FieldType.Nested)
@@ -131,13 +130,13 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@Transient
 	private Double distance;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String userUId;
 
 	@Field(type = FieldType.Boolean)
 	private Boolean isDoctorListed = false;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String timeZone = "IST";
 
 	@Field(type = FieldType.Long)
@@ -151,10 +150,10 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@Field(type = FieldType.Boolean)
 	private Boolean isNutritionist = false;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String mrCode;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> divisionIds;
 	
 	public String getDoctorSlugURL() {
@@ -488,22 +487,6 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 		this.formattedServicesValue = formattedServicesValue;
 	}
 	
-	public List<DoctorRegistrationDetail> getRegistrationDetails() {
-		return registrationDetails;
-	}
-
-	public void setRegistrationDetails(List<DoctorRegistrationDetail> registrationDetails) {
-		this.registrationDetails = registrationDetails;
-	}
-
-	public List<String> getProfessionalMemberships() {
-		return professionalMemberships;
-	}
-
-	public void setProfessionalMemberships(List<String> professionalMemberships) {
-		this.professionalMemberships = professionalMemberships;
-	}
-
 	public Boolean getIsNutritionist() {
 		return isNutritionist;
 	}
@@ -533,6 +516,22 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 		if(this.rankingCount < o.rankingCount)return 0;
 		else if(this.rankingCount < o.rankingCount)return -1;
 		else return 1;
+	}
+
+	public List<DoctorRegistrationDetail> getRegistrationDetails() {
+		return registrationDetails;
+	}
+
+	public void setRegistrationDetails(List<DoctorRegistrationDetail> registrationDetails) {
+		this.registrationDetails = registrationDetails;
+	}
+
+	public List<String> getProfessionalMemberships() {
+		return professionalMemberships;
+	}
+
+	public void setProfessionalMemberships(List<String> professionalMemberships) {
+		this.professionalMemberships = professionalMemberships;
 	}
 
 	@Override

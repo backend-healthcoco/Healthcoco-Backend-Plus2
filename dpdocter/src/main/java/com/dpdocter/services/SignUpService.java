@@ -45,9 +45,9 @@ public interface SignUpService {
 	String verifyLocale(String tokenId);
 
 	DoctorSignUp doctorSignUp(DoctorSignupRequest request);
-
-	DoctorContactUs welcomeUser(String tokenId);
 	
 	public String verifyConfexAdmin(String tokenId);
+
+	DoctorContactUs welcomeUser(String tokenId);
 
 }

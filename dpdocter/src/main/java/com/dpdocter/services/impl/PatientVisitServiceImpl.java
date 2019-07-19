@@ -21,6 +21,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -100,6 +101,7 @@ import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.EyePrescriptionRepository;
 import com.dpdocter.repository.HistoryRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
@@ -216,7 +218,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private AppointmentRepository appointmentRepository;
 
 	@Autowired
-	PushNotificationServices pushNotificationServices;
+	private PushNotificationServices pushNotificationServices;
+
+	@Autowired
+	private PatientRepository patientRepository;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -267,14 +272,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			ObjectId id = patientVisitCollection.getId();
 
 			if (visitId != null)
-				patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+				patientVisitCollection = patientVisitRepository.findById(new ObjectId(visitId)).orElse(null);
 			else
 				patientVisitCollection.setId(null);
 
 			if (patientVisitCollection.getId() == null) {
 				patientVisitCollection
 						.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
-				UserCollection userCollection = userRepository.findOne(patientVisitCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findById(patientVisitCollection.getDoctorId()).orElse(null);
 				if (userCollection != null) {
 					patientVisitCollection
 							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -369,7 +374,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			PatientVisitCollection patientTrackCollection = patientVisitRepository.find(doctorObjectId,
 					locationObjectId, hospitalObjectId, patientObjectId);
-			UserCollection userCollection = userRepository.findOne(doctorObjectId);
+			UserCollection userCollection = userRepository.findById(doctorObjectId).orElse(null);
 
 			if (patientTrackCollection == null) {
 				patientTrackCollection = new PatientVisitCollection();
@@ -409,7 +414,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	@Transactional
-	public DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page,
+	public DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, long page,
 			int size, String role) {
 		DoctorContactsResponse response = null;
 		try {
@@ -434,7 +439,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
-					redactOperations = new CustomAggregationOperation(new BasicDBObject("$redact",
+					redactOperations = new CustomAggregationOperation(new Document("$redact",
 							new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$and", Arrays.asList(
 									new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 									new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)),
@@ -443,7 +448,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 													.append("then", "$$KEEP").append("else", "$$PRUNE"))));
 					criteria2.and("consultantDoctorIds").is(doctorObjectId);
 				} else {
-					redactOperations = new CustomAggregationOperation(new BasicDBObject("$redact",
+					redactOperations = new CustomAggregationOperation(new Document("$redact",
 							new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$and", Arrays.asList(
 									new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 									new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)),
@@ -452,14 +457,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					criteria2.and("doctorId").is(doctorObjectId);
 				}
 			} else {
-				redactOperations = new CustomAggregationOperation(new BasicDBObject("$redact",
+				redactOperations = new CustomAggregationOperation(new Document("$redact",
 						new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$and", Arrays.asList(
 								new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 								new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)))))
 										.append("then", "$$KEEP").append("else", "$$PRUNE"))));
 			}
 
-			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("patientId", "$patientId").append("userId", "$patient.userId")
 							.append("firstName", "$patient.firstName")
 							.append("localPatientName", "$patient.localPatientName")
@@ -479,7 +484,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							.append("createdTime", "$patient.createdTime").append("updatedTime", "$patient.updatedTime")
 							.append("createdBy", "$patient.createdBy").append("visitedTime", "$visitedTime")));
 
-			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", new BasicDBObject("patientId", "$patientId"))
 							.append("userId", new BasicDBObject("$first", "$userId"))
 							.append("firstName", new BasicDBObject("$first", "$firstName"))
@@ -517,32 +522,32 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.group("$patientId").max("$visitedTime").as("visitedTime"),
 						new CustomAggregationOperation(
-								new BasicDBObject("$sort", new BasicDBObject("visitedTime", -1))),
+								new Document("$sort", new BasicDBObject("visitedTime", -1))),
 						Aggregation.skip(page * size), Aggregation.limit(size),
 
 						Aggregation.lookup("patient_cl", "_id", "userId", "patient"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
 
 						redactOperations, Aggregation.lookup("user_cl", "_id", "_id", "user"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 						projectOperations, groupOperations, new CustomAggregationOperation(
-								new BasicDBObject("$sort", new BasicDBObject("visitedTime", -1))));
+								new Document("$sort", new BasicDBObject("visitedTime", -1))));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.group("$patientId").max("$visitedTime").as("visitedTime"),
 						new CustomAggregationOperation(
-								new BasicDBObject("$sort", new BasicDBObject("visitedTime", -1))),
+								new Document("$sort", new BasicDBObject("visitedTime", -1))),
 						Aggregation.lookup("patient_cl", "_id", "userId", "patient"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
 
 						redactOperations, Aggregation.lookup("user_cl", "_id", "_id", "user"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 						projectOperations, groupOperations, new CustomAggregationOperation(
-								new BasicDBObject("$sort", new BasicDBObject("visitedTime", -1))));
+								new Document("$sort", new BasicDBObject("visitedTime", -1))));
 			}
 
 			List<PatientCard> patientCards = mongoTemplate
@@ -576,7 +581,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	@Transactional
-	public DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size,
+	public DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, long page, int size,
 			String role) {
 		DoctorContactsResponse response = null;
 		try {
@@ -601,7 +606,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
-					redactOperations = new CustomAggregationOperation(new BasicDBObject("$redact",
+					redactOperations = new CustomAggregationOperation(new Document("$redact",
 							new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$and", Arrays.asList(
 									new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 									new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)),
@@ -610,7 +615,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 													.append("then", "$$KEEP").append("else", "$$PRUNE"))));
 					criteria2.and("consultantDoctorIds").is(doctorObjectId);
 				} else {
-					redactOperations = new CustomAggregationOperation(new BasicDBObject("$redact",
+					redactOperations = new CustomAggregationOperation(new Document("$redact",
 							new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$and", Arrays.asList(
 									new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 									new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)),
@@ -619,14 +624,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					criteria2.and("doctorId").is(doctorObjectId);
 				}
 			} else {
-				redactOperations = new CustomAggregationOperation(new BasicDBObject("$redact",
+				redactOperations = new CustomAggregationOperation(new Document("$redact",
 						new BasicDBObject("$cond", new BasicDBObject("if", new BasicDBObject("$and", Arrays.asList(
 								new BasicDBObject("$eq", Arrays.asList("$patient.locationId", locationObjectId)),
 								new BasicDBObject("$eq", Arrays.asList("$patient.hospitalId", hospitalObjectId)))))
 										.append("then", "$$KEEP").append("else", "$$PRUNE"))));
 			}
 
-			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("patientId", "$patientId").append("userId", "$patient.userId")
 							.append("firstName", "$patient.firstName")
 							.append("localPatientName", "$patient.localPatientName")
@@ -646,7 +651,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							.append("createdTime", "$patient.createdTime").append("updatedTime", "$patient.updatedTime")
 							.append("createdBy", "$patient.createdBy").append("count", "$count")));
 
-			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", new BasicDBObject("patientId", "$patientId"))
 							.append("userId", new BasicDBObject("$first", "$userId"))
 							.append("firstName", new BasicDBObject("$first", "$firstName"))
@@ -684,31 +689,31 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.group("$patientId").count().as("count"),
 						// Aggregation.project("total").and("patientId").previousOperation(),
-						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("count", -1))),
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("count", -1))),
 						Aggregation.skip(page * size), Aggregation.limit(size),
 
 						Aggregation.lookup("patient_cl", "_id", "userId", "patient"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
 
 						redactOperations, Aggregation.lookup("user_cl", "_id", "_id", "user"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 						projectOperations, groupOperations,
-						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("count", -1))));
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("count", -1))));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.group("$patientId").count().as("count"),
-						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("count", -1))),
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("count", -1))),
 						Aggregation.lookup("patient_cl", "_id", "userId", "patient"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
 
 						redactOperations, Aggregation.lookup("user_cl", "_id", "_id", "user"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 						projectOperations, groupOperations,
-						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("count", -1))));
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("count", -1))));
 			}
 
 			List<PatientCard> patientCards = mongoTemplate
@@ -750,7 +755,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		try {
 
 			if (!DPDoctorUtils.anyStringEmpty(visitId)) {
-				patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+				patientVisitCollection = patientVisitRepository.findById(new ObjectId(visitId)).orElse(null);
 				patientVisitCollection.setUpdatedTime(new Date());
 				if (request.getCreatedTime() != null) {
 					patientVisitCollection.setCreatedTime(request.getCreatedTime());
@@ -786,7 +791,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 				patientVisitCollection
 						.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
-				UserCollection userCollection = userRepository.findOne(patientVisitCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findById(patientVisitCollection.getDoctorId()).orElse(null);
 				if (userCollection != null) {
 					patientVisitCollection
 							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -850,7 +855,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							patientVisitCollection.getTreatmentId(), patientVisitCollection.getId());
 					response.setPatientTreatment(list);
 				}
-
 				pushNotificationServices.notifyUser(patientVisitCollection.getDoctorId().toString(),
 						"Patient Visit Added", ComponentType.PATIENT_VISIT_REFRESH.getType(),
 						patientVisitCollection.getPatientId().toString(), null);
@@ -976,6 +980,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private void addClinicalNotes(AddMultipleDataRequest request, PatientVisitResponse response,
 			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment, String createdBy) {
 
+		request.getClinicalNote().setSendNotificationToDoctor(false);
 		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote(), false, createdBy,
 				appointment);
 		if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
@@ -1006,7 +1011,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	// @Transactional
 	// public List<PatientVisitResponse> getVisit(String doctorId, String
 	// locationId, String hospitalId, String patientId,
-	// int page, int size, Boolean isOTPVerified, String updatedTime, String
+	// long page, int size, Boolean isOTPVerified, String updatedTime, String
 	// visitFor) {
 	// List<PatientVisitResponse> response = null;
 	// List<PatientVisitLookupBean> patientVisitlookupbeans = null;
@@ -1059,7 +1064,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	// aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 	// Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
 	// "appointmentRequest"),
-	// new CustomAggregationOperation(new BasicDBObject("$unwind",
+	// new CustomAggregationOperation(new Document("$unwind",
 	// new BasicDBObject("path",
 	// "$appointmentRequest").append("preserveNullAndEmptyArrays",
 	// true))),
@@ -1150,7 +1155,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	@Transactional
 	public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor) {
+			long page, int size, Boolean isOTPVerified, String updatedTime, String visitFor) {
 		List<PatientVisitResponse> response = null;
 		List<PatientVisitLookupBean> patientVisitlookupbeans = null;
 		try {
@@ -1198,7 +1203,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
 
@@ -1209,7 +1214,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 
 						new CustomAggregationOperation(
-								new BasicDBObject("$unwind",
+								new Document("$unwind",
 										new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
@@ -1276,7 +1281,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation prescriptionFirstProjectAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+		return new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 				.append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId").append("doctorId", "$doctorId")
 				.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
 				.append("visitedTime", "$visitedTime").append("visitedFor", "$visitedFor")
@@ -1314,7 +1319,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation prescriptionGroupAggregationOperationForDrugs() {
-		return new CustomAggregationOperation(new BasicDBObject("$group",
+		return new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", new BasicDBObject("_id", "$_id"))
 						.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -1359,7 +1364,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation prescriptionProjectAggregationOperationForDiagnosticTests() {
-		return new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+		return new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 				.append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId").append("doctorId", "$doctorId")
 				.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
 				.append("visitedTime", "$visitedTime").append("visitedFor", "$visitedFor")
@@ -1392,7 +1397,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation prescriptionFirstGroupAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$group",
+		return new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", new BasicDBObject("_id", "$_id"))
 						.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -1438,7 +1443,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation prescriptionSecondProjectAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$project",
+		return new CustomAggregationOperation(new Document("$project",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId")
 						.append("doctorId", "$doctorId").append("locationId", "$locationId")
 						.append("hospitalId", "$hospitalId").append("visitedTime", "$visitedTime")
@@ -1471,7 +1476,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation prescriptionSecondGroupAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$group",
+		return new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
 						.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1493,7 +1498,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation clinicalNotesFirstProjectAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+		return new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 				.append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId").append("doctorId", "$doctorId")
 				.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
 				.append("visitedTime", "$visitedTime").append("visitedFor", "$visitedFor")
@@ -1516,7 +1521,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation clinicalNotesFirstGroupAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$group",
+		return new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
 						.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1539,7 +1544,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation clinicalNotesSecondProjectAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$project",
+		return new CustomAggregationOperation(new Document("$project",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId")
 						.append("doctorId", "$doctorId").append("locationId", "$locationId")
 						.append("hospitalId", "$hospitalId").append("visitedTime", "$visitedTime")
@@ -1554,7 +1559,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation clinicalNotesSecondGroupAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$group",
+		return new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
 						.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1577,7 +1582,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation patientTreatmentFirstProjectAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$project",
+		return new CustomAggregationOperation(new Document("$project",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId")
 						.append("doctorId", "$doctorId").append("locationId", "$locationId")
 						.append("hospitalId", "$hospitalId").append("visitedTime", "$visitedTime")
@@ -1619,7 +1624,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation patientTreatmentFirstGroupAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+		return new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 				.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 				.append("patientId", new BasicDBObject("$first", "$patientId"))
 				.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1661,7 +1666,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation patientTreatmentSecondProjectAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$project",
+		return new CustomAggregationOperation(new Document("$project",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId")
 						.append("doctorId", "$doctorId").append("locationId", "$locationId")
 						.append("hospitalId", "$hospitalId").append("visitedTime", "$visitedTime")
@@ -1695,7 +1700,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation patientTreatmentSecondGroupAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$group",
+		return new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
 						.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1718,7 +1723,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation recordsProjectAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+		return new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 				.append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId").append("doctorId", "$doctorId")
 				.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
 				.append("visitedTime", "$visitedTime").append("visitedFor", "$visitedFor")
@@ -1749,7 +1754,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private AggregationOperation recordsGroupAggregationOperation() {
-		return new CustomAggregationOperation(new BasicDBObject("$group",
+		return new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 						.append("patientId", new BasicDBObject("$first", "$patientId"))
 						.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1792,10 +1797,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 							Aggregation.unwind("location"),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-							new CustomAggregationOperation(new BasicDBObject(
+							new CustomAggregationOperation(new Document(
 									"$unwind",
 									new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
+							new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
 									new BasicDBObject("if",
 											new BasicDBObject("$eq",
 													Arrays.asList("$patient.locationId", "$locationId")))
@@ -1810,7 +1815,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				UserCollection user = patientVisitLookupResponse.getPatientUser();
 				user.setFirstName(patient.getLocalPatientName());
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,
-						null, false, false, false, false, false, false, false, false, false, false, false, false, false,
+						null, false, false, false, false, false, false, false, false, false, false, true, true, true,
 						false);
 				if (jasperReportResponse != null) {
 					if (user != null) {
@@ -1920,7 +1925,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			parameters.put("isEnableTreatmentcost", true);
 		}
 		List<DBObject> prescriptions = null;
-		if (!showUSG && !showPrescription) {
+		if (!showUSG && showPrescription) {
 			if (patientVisitLookupResponse.getPrescriptionId() != null) {
 				prescriptions = new ArrayList<DBObject>();
 				for (ObjectId prescriptionId : patientVisitLookupResponse.getPrescriptionId()) {
@@ -1939,7 +1944,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		List<ClinicalNotesJasperDetails> clinicalNotes = null;
 
-		if (!isLabPrint && !showclinicalNotes) {
+		if (!isLabPrint && showclinicalNotes) {
 			if (patientVisitLookupResponse.getClinicalNotesId() != null) {
 				clinicalNotes = new ArrayList<ClinicalNotesJasperDetails>();
 				String contentLineStyle = (printSettings != null
@@ -1957,7 +1962,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 		}
 		List<DBObject> patientTreatments = null;
-		if (!showUSG && !isLabPrint && !showTreatment) {
+		if (!showUSG && !isLabPrint && showTreatment) {
 			if (patientVisitLookupResponse.getTreatmentId() != null) {
 				patientTreatments = new ArrayList<DBObject>();
 				for (ObjectId treatmentId : patientVisitLookupResponse.getTreatmentId()) {
@@ -1971,10 +1976,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 		}
-		if (!showUSG && !isLabPrint && !showPrescription) {
+		if (!showUSG && !isLabPrint && showPrescription) {
 			if (patientVisitLookupResponse.getEyePrescriptionId() != null) {
 				EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository
-						.findOne(patientVisitLookupResponse.getEyePrescriptionId());
+						.findById(patientVisitLookupResponse.getEyePrescriptionId()).orElse(null);
 				EyeTestJasperResponse eyResponse = new EyeTestJasperResponse();
 				if (eyePrescriptionCollection.getLeftEyeTest() != null) {
 
@@ -2155,7 +2160,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
 		try {
 			Boolean showTreatmentQuantity = false, showTreatmentDiscount = false;
-			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
+			patientTreatmentCollection = patientTreamentRepository.findById(new ObjectId(treatmentId)).orElse(null);
 			if (patientTreatmentCollection != null) {
 				if (patientTreatmentCollection.getDoctorId() != null
 						&& patientTreatmentCollection.getHospitalId() != null
@@ -2168,7 +2173,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
 							PatientTreatmentJasperDetails patientTreatments = new PatientTreatmentJasperDetails();
 							TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-									.findOne(treatment.getTreatmentServiceId());
+									.findById(treatment.getTreatmentServiceId()).orElse(null);
 							patientTreatments.setNo(++no);
 							if (!DPDoctorUtils.anyStringEmpty(treatment.getStatus())) {
 								String status = treatment.getStatus().replaceAll("_", " ");
@@ -2292,6 +2297,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		if (showFH && historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty())
 			parameters.put("FH", getDiseases(historyCollection.getFamilyhistory()));
+
 		if (showDA && historyCollection.getDrugsAndAllergies() != null) {
 			String drugs = null;
 			if (historyCollection.getDrugsAndAllergies().getDrugs() != null
@@ -2314,7 +2320,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@SuppressWarnings("unchecked")
 	private String getDiseases(List<ObjectId> medicalhistory) {
 		List<DiseasesCollection> diseasesCollections = IteratorUtils
-				.toList(diseasesRepository.findAll(medicalhistory).iterator());
+				.toList(diseasesRepository.findAllById(medicalhistory).iterator());
 		Collection<String> diseases = CollectionUtils.collect(diseasesCollections,
 				new BeanToPropertyValueTransformer("disease"));
 		if (diseases != null && !diseases.isEmpty())
@@ -2397,8 +2403,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						&& printSettings.getClinicLogoUrl() != null
 						&& !printSettings.getHeaderSetup().getShowHeaderImage()) {
 					logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
-				} else if (!DPDoctorUtils.anyStringEmpty(printSettings.getHeaderSetup().getHeaderImageUrl())) {
+				} else if (!DPDoctorUtils.anyStringEmpty(printSettings.getHeaderSetup().getHeaderImageUrl())
+						&& printSettings.getHeaderSetup().getShowHeaderImage()) {
 					headerImageUrl = getFinalImageURL(printSettings.getHeaderSetup().getHeaderImageUrl());
+					headerHeight = printSettings.getHeaderSetup().getHeaderHeight();
 				}
 			}
 
@@ -2425,9 +2433,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 
 			if (printSettings.getFooterSetup() != null) {
-				if (printSettings.getFooterSetup().getShowSignature() && !DPDoctorUtils.anyStringEmpty(doctorId)
-						) {
-					UserCollection doctorUser = userRepository.findOne(doctorId);
+				if (printSettings.getFooterSetup().getShowSignature() && !DPDoctorUtils.anyStringEmpty(doctorId)) {
+					UserCollection doctorUser = userRepository.findById(doctorId).orElse(null);
 					if (doctorUser != null)
 						footerSignature = doctorUser.getTitle() + " " + doctorUser.getFirstName();
 				}
@@ -2442,6 +2449,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				if (printSettings.getFooterSetup().getShowImageFooter()
 						&& printSettings.getFooterSetup().getShowImageFooter()) {
 					footerImageUrl = getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl());
+				}
+				if (printSettings.getFooterSetup().getShowImageFooter()
+						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getFooterImageUrl())) {
+					footerImageUrl = getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl());
+					footerHeight = printSettings.getFooterSetup().getFooterHeight();
 				}
 			}
 
@@ -2565,7 +2577,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientDetailList.add("<b>City: </b>" + patientCard.getAddress().getCity());
 			}
 			if (patientDetails.getShowReferedBy() && patientCard != null && patientCard.getReferredBy() != null) {
-				ReferencesCollection referencesCollection = referenceRepository.findOne(patientCard.getReferredBy());
+				ReferencesCollection referencesCollection = referenceRepository.findById(patientCard.getReferredBy()).orElse(null);
 				if (referencesCollection != null && !DPDoctorUtils.allStringsEmpty(referencesCollection.getReference()))
 					patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
 
@@ -2621,267 +2633,277 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
 		Boolean showTitle = false;
 		try {
-			if (clinicalNotesCollection == null)
-				clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
-			if (clinicalNotesCollection != null) {
-				if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
-						&& clinicalNotesCollection.getLocationId() != null) {
+			if (clinicalNotesId != null) {
+				clinicalNotesCollection = clinicalNotesRepository.findById(new ObjectId(clinicalNotesId)).orElse(null);
+				if (clinicalNotesCollection != null) {
+					if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
+							&& clinicalNotesCollection.getLocationId() != null) {
 
-					clinicalNotesJasperDetails = new ClinicalNotesJasperDetails();
-					if (clinicalNotesCollection.getVitalSigns() != null && !showVitalSign) {
-						String vitalSigns = null;
+						clinicalNotesJasperDetails = new ClinicalNotesJasperDetails();
+						if (clinicalNotesCollection.getVitalSigns() != null && !showVitalSign) {
+							String vitalSigns = null;
 
-						String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
-						pulse = (pulse != null && !pulse.isEmpty()
-								? "Pulse: " + pulse + " " + VitalSignsUnit.PULSE.getUnit()
-								: "");
-						if (!DPDoctorUtils.allStringsEmpty(pulse))
-							vitalSigns = pulse;
+							String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
+							pulse = (pulse != null && !pulse.isEmpty()
+									? "Pulse: " + pulse + " " + VitalSignsUnit.PULSE.getUnit()
+									: "");
+							if (!DPDoctorUtils.allStringsEmpty(pulse))
+								vitalSigns = pulse;
 
-						String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
-						temp = (temp != null && !temp.isEmpty()
-								? "Temperature: " + temp + " " + VitalSignsUnit.TEMPERATURE.getUnit()
-								: "");
-						if (!DPDoctorUtils.allStringsEmpty(temp)) {
-							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-								vitalSigns = vitalSigns + ",  " + temp;
-							else
-								vitalSigns = temp;
-						}
-
-						String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
-						breathing = (breathing != null && !breathing.isEmpty()
-								? "Breathing: " + breathing + " " + VitalSignsUnit.BREATHING.getUnit()
-								: "");
-						if (!DPDoctorUtils.allStringsEmpty(breathing)) {
-							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-								vitalSigns = vitalSigns + ",  " + breathing;
-							else
-								vitalSigns = breathing;
-						}
-
-						String weight = clinicalNotesCollection.getVitalSigns().getWeight();
-						weight = (weight != null && !weight.isEmpty()
-								? "Weight: " + weight + " " + VitalSignsUnit.WEIGHT.getUnit()
-								: "");
-						if (!DPDoctorUtils.allStringsEmpty(weight)) {
-							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-								vitalSigns = vitalSigns + ",  " + weight;
-							else
-								vitalSigns = weight;
-						}
-
-						String bloodPressure = "";
-						if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
-							String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getSystolic();
-							systolic = systolic != null && !systolic.isEmpty() ? systolic : "";
-
-							String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure()
-									.getDiastolic();
-							diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
-
-							if (!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
-								bloodPressure = "B.P: " + systolic + "/" + diastolic + " "
-										+ VitalSignsUnit.BLOODPRESSURE.getUnit();
-							if (!DPDoctorUtils.allStringsEmpty(bloodPressure)) {
+							String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
+							temp = (temp != null && !temp.isEmpty()
+									? "Temperature: " + temp + " " + VitalSignsUnit.TEMPERATURE.getUnit()
+									: "");
+							if (!DPDoctorUtils.allStringsEmpty(temp)) {
 								if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-									vitalSigns = vitalSigns + ",  " + bloodPressure;
+									vitalSigns = vitalSigns + ",  " + temp;
 								else
-									vitalSigns = bloodPressure;
+									vitalSigns = temp;
 							}
-						}
 
-						String spo2 = clinicalNotesCollection.getVitalSigns().getSpo2();
-						spo2 = (spo2 != null && !spo2.isEmpty() ? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit()
-								: "");
-						if (!DPDoctorUtils.allStringsEmpty(spo2)) {
-							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-								vitalSigns = vitalSigns + ",  " + spo2;
-							else
-								vitalSigns = spo2;
-						}
-						String height = clinicalNotesCollection.getVitalSigns().getHeight();
-						height = (height != null && !height.isEmpty()
-								? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
-								: "");
-						if (!DPDoctorUtils.allStringsEmpty(height)) {
-							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-								vitalSigns = vitalSigns + ",  " + height;
-							else
-								vitalSigns = spo2;
-						}
+							String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
+							breathing = (breathing != null && !breathing.isEmpty()
+									? "Breathing: " + breathing + " " + VitalSignsUnit.BREATHING.getUnit()
+									: "");
+							if (!DPDoctorUtils.allStringsEmpty(breathing)) {
+								if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+									vitalSigns = vitalSigns + ",  " + breathing;
+								else
+									vitalSigns = breathing;
+							}
 
-						String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
-						if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-							if (bmi.equalsIgnoreCase("nan")) {
+							String weight = clinicalNotesCollection.getVitalSigns().getWeight();
+							weight = (weight != null && !weight.isEmpty()
+									? "Weight: " + weight + " " + VitalSignsUnit.WEIGHT.getUnit()
+									: "");
+							if (!DPDoctorUtils.allStringsEmpty(weight)) {
+								if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+									vitalSigns = vitalSigns + ",  " + weight;
+								else
+									vitalSigns = weight;
+							}
+
+							String bloodPressure = "";
+							if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
+								String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure()
+										.getSystolic();
+								systolic = systolic != null && !systolic.isEmpty() ? systolic : "";
+
+								String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure()
+										.getDiastolic();
+								diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
+
+								if (!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
+									bloodPressure = "B.P: " + systolic + "/" + diastolic + " "
+											+ VitalSignsUnit.BLOODPRESSURE.getUnit();
+								if (!DPDoctorUtils.allStringsEmpty(bloodPressure)) {
+									if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+										vitalSigns = vitalSigns + ",  " + bloodPressure;
+									else
+										vitalSigns = bloodPressure;
+								}
+							}
+
+							String spo2 = clinicalNotesCollection.getVitalSigns().getSpo2();
+							spo2 = (spo2 != null && !spo2.isEmpty()
+									? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit()
+									: "");
+							if (!DPDoctorUtils.allStringsEmpty(spo2)) {
+								if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+									vitalSigns = vitalSigns + ",  " + spo2;
+								else
+									vitalSigns = spo2;
+							}
+							String height = clinicalNotesCollection.getVitalSigns().getHeight();
+							height = (height != null && !height.isEmpty()
+									? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
+									: "");
+							if (!DPDoctorUtils.allStringsEmpty(height)) {
+								if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+									vitalSigns = vitalSigns + ",  " + height;
+								else
+									vitalSigns = spo2;
+							}
+
+							String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
+							if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+								if (bmi.equalsIgnoreCase("nan")) {
+									bmi = "";
+								}
+
+							} else {
 								bmi = "";
 							}
 
-						} else {
-							bmi = "";
-						}
-
-						if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-							bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
 							if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-								vitalSigns = vitalSigns + ",  " + bmi;
-							} else {
-								vitalSigns = bmi;
-							}
-						}
-
-						String bsa = clinicalNotesCollection.getVitalSigns().getBsa();
-						if (!DPDoctorUtils.allStringsEmpty(bsa)) {
-							if (bsa.equalsIgnoreCase("nan"))
-								bsa = "";
-
-						} else {
-							bsa = "";
-						}
-						if (!DPDoctorUtils.allStringsEmpty(bsa)) {
-							bsa = "Bsa: " + String.format("%.3f", Double.parseDouble(bsa));
-							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-								vitalSigns = vitalSigns + ",  " + bsa;
-							else
-								vitalSigns = bsa;
-						}
-						clinicalNotesJasperDetails
-								.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
-					}
-
-					clinicalNotesJasperDetails.setObservations(clinicalNotesCollection.getObservation());
-					clinicalNotesJasperDetails.setNotes(clinicalNotesCollection.getNote());
-					clinicalNotesJasperDetails.setInvestigations(clinicalNotesCollection.getInvestigation());
-					clinicalNotesJasperDetails.setDiagnosis(clinicalNotesCollection.getDiagnosis());
-
-					clinicalNotesJasperDetails.setComplaints(clinicalNotesCollection.getComplaint());
-					clinicalNotesJasperDetails.setPresentComplaint(clinicalNotesCollection.getPresentComplaint());
-					clinicalNotesJasperDetails
-							.setPresentComplaintHistory(clinicalNotesCollection.getPresentComplaintHistory());
-					clinicalNotesJasperDetails.setGeneralExam(clinicalNotesCollection.getGeneralExam());
-					clinicalNotesJasperDetails.setSystemExam(clinicalNotesCollection.getSystemExam());
-					clinicalNotesJasperDetails.setMenstrualHistory(clinicalNotesCollection.getMenstrualHistory());
-					clinicalNotesJasperDetails.setObstetricHistory(clinicalNotesCollection.getObstetricHistory());
-					clinicalNotesJasperDetails
-							.setProvisionalDiagnosis(clinicalNotesCollection.getProvisionalDiagnosis());
-
-					if (!isCustomPDF || showUSG) {
-						clinicalNotesJasperDetails.setIndicationOfUSG(clinicalNotesCollection.getIndicationOfUSG());
-					}
-					clinicalNotesJasperDetails.setPv(clinicalNotesCollection.getPv());
-					clinicalNotesJasperDetails.setPa(clinicalNotesCollection.getPa());
-					clinicalNotesJasperDetails.setPs(clinicalNotesCollection.getPs());
-					clinicalNotesJasperDetails.setEcgDetails(clinicalNotesCollection.getEcgDetails());
-					clinicalNotesJasperDetails.setxRayDetails(clinicalNotesCollection.getxRayDetails());
-					clinicalNotesJasperDetails.setEcho(clinicalNotesCollection.getEcho());
-					clinicalNotesJasperDetails.setHolter(clinicalNotesCollection.getHolter());
-					clinicalNotesJasperDetails.setProcedureNote(clinicalNotesCollection.getProcedureNote());
-					clinicalNotesJasperDetails.setNoseExam(clinicalNotesCollection.getNoseExam());
-					clinicalNotesJasperDetails
-							.setOralCavityThroatExam(clinicalNotesCollection.getOralCavityThroatExam());
-					clinicalNotesJasperDetails
-							.setIndirectLarygoscopyExam(clinicalNotesCollection.getIndirectLarygoscopyExam());
-					clinicalNotesJasperDetails.setEarsExam(clinicalNotesCollection.getEarsExam());
-					clinicalNotesJasperDetails.setNeckExam(clinicalNotesCollection.getNeckExam());
-					clinicalNotesJasperDetails.setPcNose(clinicalNotesCollection.getPcNose());
-					clinicalNotesJasperDetails.setPcOralCavity(clinicalNotesCollection.getPcOralCavity());
-					clinicalNotesJasperDetails.setPcThroat(clinicalNotesCollection.getPcThroat());
-					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
-					clinicalNotesJasperDetails
-							.setPersonalHistoryTobacco(clinicalNotesCollection.getPersonalHistoryTobacco());
-					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
-					clinicalNotesJasperDetails
-							.setPersonalHistoryAlcohol(clinicalNotesCollection.getPersonalHistoryAlcohol());
-					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
-					clinicalNotesJasperDetails
-							.setPersonalHistorySmoking(clinicalNotesCollection.getPersonalHistorySmoking());
-					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
-					clinicalNotesJasperDetails.setPersonalHistoryDiet(clinicalNotesCollection.getPersonalHistoryDiet());
-					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
-					clinicalNotesJasperDetails
-							.setPersonalHistoryOccupation(clinicalNotesCollection.getPersonalHistoryOccupation());
-					clinicalNotesJasperDetails.setGeneralHistoryDrugs(clinicalNotesCollection.getGeneralHistoryDrugs());
-					clinicalNotesJasperDetails
-							.setGeneralHistoryMedicine(clinicalNotesCollection.getGeneralHistoryMedicine());
-					clinicalNotesJasperDetails
-							.setGeneralHistoryAllergies(clinicalNotesCollection.getGeneralHistoryAllergies());
-					clinicalNotesJasperDetails
-							.setGeneralHistorySurgical(clinicalNotesCollection.getGeneralHistorySurgical());
-					clinicalNotesJasperDetails.setPastHistory(clinicalNotesCollection.getPastHistory());
-					clinicalNotesJasperDetails.setFamilyHistory(clinicalNotesCollection.getFamilyHistory());
-					clinicalNotesJasperDetails.setPainScale(clinicalNotesCollection.getPainScale());
-					clinicalNotesJasperDetails.setPriorConsultations(clinicalNotesCollection.getPriorConsultations());
-					if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcNose())
-							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcEars())
-							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcOralCavity())
-							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcThroat())) {
-						parameters.put("ComplaintsTitle", "Complaints :");
-						showTitle = true;
-					}
-					parameters.put("showPCTitle", showTitle);
-					showTitle = false;
-					if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getEarsExam())
-							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNeckExam())
-							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getIndirectLarygoscopyExam())
-							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getOralCavityThroatExam())
-							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNoseExam())) {
-						parameters.put("Examination", "Examination :");
-						showTitle = true;
-					}
-					parameters.put("showExamTitle", showTitle);
-
-					if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
-						clinicalNotesJasperDetails
-								.setLmp(new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
-					if (clinicalNotesCollection.getEdd() != null && (!isCustomPDF || showEDD))
-						clinicalNotesJasperDetails
-								.setEdd(new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getEdd()));
-					if ((!isCustomPDF || showNoOfChildren) && (clinicalNotesCollection.getNoOfMaleChildren() > 0
-							|| clinicalNotesCollection.getNoOfFemaleChildren() > 0)) {
-						clinicalNotesJasperDetails.setNoOfChildren(clinicalNotesCollection.getNoOfMaleChildren() + "|"
-								+ clinicalNotesCollection.getNoOfFemaleChildren());
-					}
-
-					List<DBObject> diagramIds = new ArrayList<DBObject>();
-					if (clinicalNotesCollection.getDiagrams() != null)
-						for (ObjectId diagramId : clinicalNotesCollection.getDiagrams()) {
-							DBObject diagram = new BasicDBObject();
-							DiagramsCollection diagramsCollection = diagramsRepository.findOne(diagramId);
-							if (diagramsCollection != null) {
-								if (diagramsCollection.getDiagramUrl() != null) {
-									diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
+								bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
+								if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+									vitalSigns = vitalSigns + ",  " + bmi;
+								} else {
+									vitalSigns = bmi;
 								}
-								diagram.put("tags", diagramsCollection.getTags());
-								diagramIds.add(diagram);
 							}
-						}
-					if (!diagramIds.isEmpty())
-						clinicalNotesJasperDetails.setDiagrams(diagramIds);
-					else
-						clinicalNotesJasperDetails.setDiagrams(null);
-				}
-				if (parameters.get("followUpAppointment") == null
-						&& !DPDoctorUtils.anyStringEmpty(clinicalNotesCollection.getAppointmentId())
-						&& clinicalNotesCollection.getTime() != null) {
-					SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-					String _24HourTime = String.format("%02d:%02d",
-							clinicalNotesCollection.getTime().getFromTime() / 60,
-							clinicalNotesCollection.getTime().getFromTime() % 60);
-					SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-					SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-					sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-					_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-					_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 
-					Date _24HourDt = _24HourSDF.parse(_24HourTime);
-					String dateTime = _12HourSDF.format(_24HourDt) + ", "
-							+ sdf.format(clinicalNotesCollection.getFromDate());
-					parameters.put("followUpAppointment", "Next Review on " + dateTime);
+							String bsa = clinicalNotesCollection.getVitalSigns().getBsa();
+							if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+								if (bsa.equalsIgnoreCase("nan"))
+									bsa = "";
+
+							} else {
+								bsa = "";
+							}
+							if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+								bsa = "Bsa: " + String.format("%.3f", Double.parseDouble(bsa));
+								if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+									vitalSigns = vitalSigns + ",  " + bsa;
+								else
+									vitalSigns = bsa;
+							}
+							clinicalNotesJasperDetails
+									.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
+						}
+
+						clinicalNotesJasperDetails.setObservations(clinicalNotesCollection.getObservation());
+						clinicalNotesJasperDetails.setNotes(clinicalNotesCollection.getNote());
+						clinicalNotesJasperDetails.setInvestigations(clinicalNotesCollection.getInvestigation());
+						clinicalNotesJasperDetails.setDiagnosis(clinicalNotesCollection.getDiagnosis());
+
+						clinicalNotesJasperDetails.setComplaints(clinicalNotesCollection.getComplaint());
+						clinicalNotesJasperDetails.setPresentComplaint(clinicalNotesCollection.getPresentComplaint());
+						clinicalNotesJasperDetails
+
+								.setPresentComplaintHistory(clinicalNotesCollection.getPresentComplaintHistory());
+						clinicalNotesJasperDetails.setGeneralExam(clinicalNotesCollection.getGeneralExam());
+						clinicalNotesJasperDetails.setSystemExam(clinicalNotesCollection.getSystemExam());
+						clinicalNotesJasperDetails.setMenstrualHistory(clinicalNotesCollection.getMenstrualHistory());
+						clinicalNotesJasperDetails.setObstetricHistory(clinicalNotesCollection.getObstetricHistory());
+						clinicalNotesJasperDetails
+								.setProvisionalDiagnosis(clinicalNotesCollection.getProvisionalDiagnosis());
+
+						if (!isCustomPDF || showUSG) {
+							clinicalNotesJasperDetails.setIndicationOfUSG(clinicalNotesCollection.getIndicationOfUSG());
+						}
+						clinicalNotesJasperDetails.setPv(clinicalNotesCollection.getPv());
+						clinicalNotesJasperDetails.setPa(clinicalNotesCollection.getPa());
+						clinicalNotesJasperDetails.setPs(clinicalNotesCollection.getPs());
+						clinicalNotesJasperDetails.setEcgDetails(clinicalNotesCollection.getEcgDetails());
+						clinicalNotesJasperDetails.setxRayDetails(clinicalNotesCollection.getxRayDetails());
+						clinicalNotesJasperDetails.setEcho(clinicalNotesCollection.getEcho());
+						clinicalNotesJasperDetails.setHolter(clinicalNotesCollection.getHolter());
+						clinicalNotesJasperDetails.setProcedureNote(clinicalNotesCollection.getProcedureNote());
+						clinicalNotesJasperDetails.setNoseExam(clinicalNotesCollection.getNoseExam());
+						clinicalNotesJasperDetails
+								.setOralCavityThroatExam(clinicalNotesCollection.getOralCavityThroatExam());
+						clinicalNotesJasperDetails
+								.setIndirectLarygoscopyExam(clinicalNotesCollection.getIndirectLarygoscopyExam());
+						clinicalNotesJasperDetails.setEarsExam(clinicalNotesCollection.getEarsExam());
+						clinicalNotesJasperDetails.setNeckExam(clinicalNotesCollection.getNeckExam());
+						clinicalNotesJasperDetails.setPcNose(clinicalNotesCollection.getPcNose());
+						clinicalNotesJasperDetails.setPcOralCavity(clinicalNotesCollection.getPcOralCavity());
+						clinicalNotesJasperDetails.setPcThroat(clinicalNotesCollection.getPcThroat());
+						clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+						clinicalNotesJasperDetails
+								.setPersonalHistoryTobacco(clinicalNotesCollection.getPersonalHistoryTobacco());
+						clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+						clinicalNotesJasperDetails
+								.setPersonalHistoryAlcohol(clinicalNotesCollection.getPersonalHistoryAlcohol());
+						clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+						clinicalNotesJasperDetails
+								.setPersonalHistorySmoking(clinicalNotesCollection.getPersonalHistorySmoking());
+						clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+						clinicalNotesJasperDetails
+								.setPersonalHistoryDiet(clinicalNotesCollection.getPersonalHistoryDiet());
+						clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+						clinicalNotesJasperDetails
+								.setPersonalHistoryOccupation(clinicalNotesCollection.getPersonalHistoryOccupation());
+						clinicalNotesJasperDetails
+								.setGeneralHistoryDrugs(clinicalNotesCollection.getGeneralHistoryDrugs());
+						clinicalNotesJasperDetails
+								.setGeneralHistoryMedicine(clinicalNotesCollection.getGeneralHistoryMedicine());
+						clinicalNotesJasperDetails
+								.setGeneralHistoryAllergies(clinicalNotesCollection.getGeneralHistoryAllergies());
+						clinicalNotesJasperDetails
+								.setGeneralHistorySurgical(clinicalNotesCollection.getGeneralHistorySurgical());
+						clinicalNotesJasperDetails
+								.setGeneralHistorySurgical(clinicalNotesCollection.getGeneralHistorySurgical());
+						clinicalNotesJasperDetails.setPastHistory(clinicalNotesCollection.getPastHistory());
+						clinicalNotesJasperDetails.setFamilyHistory(clinicalNotesCollection.getFamilyHistory());
+						clinicalNotesJasperDetails.setPainScale(clinicalNotesCollection.getPainScale());
+						clinicalNotesJasperDetails
+								.setPriorConsultations(clinicalNotesCollection.getPriorConsultations());
+						if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcNose())
+								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcEars())
+								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcOralCavity())
+								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcThroat())) {
+							parameters.put("ComplaintsTitle", "Complaints :");
+							showTitle = true;
+						}
+						parameters.put("showPCTitle", showTitle);
+						showTitle = false;
+						if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getEarsExam())
+								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNeckExam())
+								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getIndirectLarygoscopyExam())
+								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getOralCavityThroatExam())
+								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNoseExam())) {
+							parameters.put("Examination", "Examination :");
+							showTitle = true;
+						}
+						parameters.put("showExamTitle", showTitle);
+
+						if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
+							clinicalNotesJasperDetails.setLmp(
+									new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
+						if (clinicalNotesCollection.getEdd() != null && (!isCustomPDF || showEDD))
+							clinicalNotesJasperDetails.setEdd(
+									new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getEdd()));
+						if ((!isCustomPDF || showNoOfChildren) && (clinicalNotesCollection.getNoOfMaleChildren() > 0
+								|| clinicalNotesCollection.getNoOfFemaleChildren() > 0)) {
+							clinicalNotesJasperDetails.setNoOfChildren(clinicalNotesCollection.getNoOfMaleChildren()
+									+ "|" + clinicalNotesCollection.getNoOfFemaleChildren());
+						}
+
+						List<DBObject> diagramIds = new ArrayList<DBObject>();
+						if (clinicalNotesCollection.getDiagrams() != null)
+							for (ObjectId diagramId : clinicalNotesCollection.getDiagrams()) {
+								DBObject diagram = new BasicDBObject();
+								DiagramsCollection diagramsCollection = diagramsRepository.findById(diagramId).orElse(null);
+								if (diagramsCollection != null) {
+									if (diagramsCollection.getDiagramUrl() != null) {
+										diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
+									}
+									diagram.put("tags", diagramsCollection.getTags());
+									diagramIds.add(diagram);
+								}
+							}
+						if (!diagramIds.isEmpty())
+							clinicalNotesJasperDetails.setDiagrams(diagramIds);
+						else
+							clinicalNotesJasperDetails.setDiagrams(null);
+					}
+					if (parameters.get("followUpAppointment") == null
+							&& !DPDoctorUtils.anyStringEmpty(clinicalNotesCollection.getAppointmentId())
+							&& clinicalNotesCollection.getTime() != null) {
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+						String _24HourTime = String.format("%02d:%02d",
+								clinicalNotesCollection.getTime().getFromTime() / 60,
+								clinicalNotesCollection.getTime().getFromTime() % 60);
+						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+						_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+
+						Date _24HourDt = _24HourSDF.parse(_24HourTime);
+						String dateTime = _12HourSDF.format(_24HourDt) + ", "
+								+ sdf.format(clinicalNotesCollection.getFromDate());
+						parameters.put("followUpAppointment", "Next Review on " + dateTime);
+					}
+				} else {
+					logger.warn("Clinical Notes not found. Please check clinicalNotesId.");
+
+					throw new BusinessException(ServiceError.NotFound,
+							"Clinical Notes not found. Please check clinicalNotesId.");
 				}
-			} else {
-				logger.warn("Clinical Notes not found. Please check clinicalNotesId.");
-				throw new BusinessException(ServiceError.NotFound,
-						"Clinical Notes not found. Please check clinicalNotesId.");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2897,7 +2919,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		PrescriptionCollection prescriptionCollection = null;
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		try {
-			prescriptionCollection = prescriptionRepository.findOne(new ObjectId(prescriptionId));
+			prescriptionCollection = prescriptionRepository.findById(new ObjectId(prescriptionId)).orElse(null);
 			if (prescriptionCollection != null) {
 				prescriptionItemsObj.put("resourceId",
 						"<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null
@@ -2908,7 +2930,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					String labTest = "";
 					for (TestAndRecordData tests : prescriptionCollection.getDiagnosticTests()) {
 						DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-								.findOne(tests.getTestId());
+								.findById(tests.getTestId()).orElse(null);
 						if (diagnosticTestCollection != null) {
 							if (DPDoctorUtils.anyStringEmpty(labTest))
 								labTest = diagnosticTestCollection.getTestName();
@@ -2928,7 +2950,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					if (prescriptionCollection.getItems() != null)
 						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 							if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
-								DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
+								DrugCollection drug = drugRepository.findById(prescriptionItem.getDrugId()).orElse(null);
 								if (drug != null) {
 									String drugType = drug.getDrugType() != null
 											? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() : "")
@@ -3109,11 +3131,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			List<Records> records = new ArrayList<Records>();
 			List<PatientTreatment> patientTreatments = new ArrayList<PatientTreatment>();
 
-			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findById(new ObjectId(visitId)).orElse(null);
 			patientVisitCollection.setUpdatedTime(new Date());
 			patientVisitCollection.setDiscarded(discarded);
 			patientVisitRepository.save(patientVisitCollection);
-			// doctorPatientReceiptRepository.findOne(new ObjectId(receiptId));
+			// doctorPatientReceiptRepository.findById(new ObjectId(receiptId));
 
 			// discard treatment
 			if (patientVisitCollection.getTreatmentId() != null)
@@ -3155,7 +3177,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			if (patientVisitCollection.getEyePrescriptionId() != null) {
 				eyePrescriptionCollection = eyePrescriptionRepository
-						.findOne(patientVisitCollection.getEyePrescriptionId());
+						.findById(patientVisitCollection.getEyePrescriptionId()).orElse(null);
 				eyePrescriptionCollection.setDiscarded(discarded);
 
 				eyePrescriptionRepository.save(eyePrescriptionCollection);
@@ -3188,7 +3210,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			String mobileNumber) {
 		Boolean response = false;
 		try {
-			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findById(new ObjectId(visitId)).orElse(null);
 			if (patientVisitCollection != null) {
 				if (doctorId != null && hospitalId != null && locationId != null) {
 					if (patientVisitCollection.getPrescriptionId() != null) {
@@ -3232,7 +3254,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		PatientVisitResponse response = null;
 		try {
 			Appointment appointment = null;
-			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findById(new ObjectId(visitId)).orElse(null);
 			if (patientVisitCollection != null) {
 				List<Prescription> prescriptions = new ArrayList<Prescription>();
 				List<ClinicalNotes> clinicalNotes = new ArrayList<ClinicalNotes>();
@@ -3305,7 +3327,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	@Transactional
 	public List<PatientVisit> getVisitsHandheld(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, Boolean isOTPVerified, String updatedTime) {
+			long page, int size, Boolean isOTPVerified, String updatedTime) {
 		List<PatientVisit> response = null;
 		try {
 			List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
@@ -3440,22 +3462,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 							Aggregation.unwind("location"),
-							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-							new CustomAggregationOperation(new BasicDBObject(
-									"$unwind",
-									new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact", new BasicDBObject("$cond",
-									new BasicDBObject("if",
-											new BasicDBObject("$eq",
-													Arrays.asList("$patient.locationId", "$locationId")))
-															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
-
 							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
 							Aggregation.unwind("patientUser")),
 					PatientVisitCollection.class, PatientVisitLookupResponse.class).getUniqueMappedResult();
 
 			if (patientVisitLookupResponse != null) {
-				PatientCollection patient = patientVisitLookupResponse.getPatient();
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patientVisitLookupResponse.getPatientId(), patientVisitLookupResponse.getLocationId(),
+						patientVisitLookupResponse.getHospitalId());
 				UserCollection user = patientVisitLookupResponse.getPatientUser();
 
 				if (showPH || showPLH || showFH || showDA) {
@@ -3497,7 +3511,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	public void updateAppointmentTime(ObjectId visitId, String appointmentId, WorkingHours workingHours,
 			Date fromDate) {
 		try {
-			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(visitId);
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findById(visitId).orElse(null);
 			patientVisitCollection.setAppointmentId(appointmentId);
 			patientVisitCollection.setFromDate(fromDate);
 			patientVisitCollection.setTime(workingHours);
@@ -3507,7 +3521,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (patientVisitCollection.getClinicalNotesId() != null
 					&& !patientVisitCollection.getClinicalNotesId().isEmpty()) {
 				for (ObjectId clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
-					ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesId);
+					ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findById(clinicalNotesId).orElse(null);
 					clinicalNotesCollection.setAppointmentId(appointmentId);
 					clinicalNotesCollection.setFromDate(fromDate);
 					clinicalNotesCollection.setTime(workingHours);
@@ -3518,7 +3532,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (patientVisitCollection.getPrescriptionId() != null
 					&& !patientVisitCollection.getPrescriptionId().isEmpty()) {
 				for (ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()) {
-					PrescriptionCollection prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
+					PrescriptionCollection prescriptionCollection = prescriptionRepository.findById(prescriptionId).orElse(null);
 					prescriptionCollection.setAppointmentId(appointmentId);
 					prescriptionCollection.setFromDate(fromDate);
 					prescriptionCollection.setTime(workingHours);
@@ -3529,7 +3543,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (patientVisitCollection.getTreatmentId() != null && !patientVisitCollection.getTreatmentId().isEmpty()) {
 				for (ObjectId treatmentId : patientVisitCollection.getTreatmentId()) {
 					PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository
-							.findOne(treatmentId);
+							.findById(treatmentId).orElse(null);
 					patientTreatmentCollection.setAppointmentId(appointmentId);
 					patientTreatmentCollection.setFromDate(fromDate);
 					patientTreatmentCollection.setTime(workingHours);
@@ -3560,7 +3574,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 									true))),
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.limit(1));
@@ -3615,6 +3629,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					}
 					break;
 				}
+			} else {
+				throw new BusinessException(ServiceError.NotFound,
+						"Error while geting patient last Visit : Last Visit not found");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

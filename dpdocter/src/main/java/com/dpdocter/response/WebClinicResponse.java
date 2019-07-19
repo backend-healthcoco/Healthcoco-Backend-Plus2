@@ -122,5 +122,4 @@ public class WebClinicResponse {
 				+ ", locationName=" + locationName + ", streetAddress=" + streetAddress + ", consultationFee="
 				+ consultationFee + ", facility=" + facility + "]";
 	}
-
 }

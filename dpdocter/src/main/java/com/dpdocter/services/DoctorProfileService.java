@@ -46,7 +46,7 @@ public interface DoctorProfileService {
 
 	DoctorEducationAddEditRequest addEditEducation(DoctorEducationAddEditRequest request);
 
-	List<MedicalCouncil> getMedicalCouncils(int page, int size, String updatedTime);
+	List<MedicalCouncil> getMedicalCouncils(long page, int size, String updatedTime);
 
 	DoctorSpecialityAddEditRequest addEditSpeciality(DoctorSpecialityAddEditRequest request);
 
@@ -66,7 +66,7 @@ public interface DoctorProfileService {
 	DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, String patientId,
 			Boolean isMobileApp, Boolean isSearched);
 
-	List<ProfessionalMembership> getProfessionalMemberships(int page, int size, String updatedTime);
+	List<ProfessionalMembership> getProfessionalMemberships(long page, int size, String updatedTime);
 
 	DoctorProfessionalAddEditRequest addEditProfessionalMembership(DoctorProfessionalAddEditRequest request);
 
@@ -80,11 +80,11 @@ public interface DoctorProfileService {
 
 	DoctorGeneralInfo addEditGeneralInfo(DoctorGeneralInfo request);
 
-	List<Speciality> getSpecialities(int page, int size, String updatedTime);
+	List<Speciality> getSpecialities(long page, int size, String updatedTime);
 
-	List<EducationInstitute> getEducationInstitutes(int page, int size, String updatedTime);
+	List<EducationInstitute> getEducationInstitutes(long page, int size, String updatedTime);
 
-	List<EducationQualification> getEducationQualifications(int page, int size, String updatedTime);
+	List<EducationQualification> getEducationQualifications(long page, int size, String updatedTime);
 
 	DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request);
 
@@ -96,7 +96,7 @@ public interface DoctorProfileService {
 
 	public DoctorClinicProfile addEditRecommedation(String doctorId, String locationId, String patientId);
 
-	public DoctorContactsResponse getPatient(int page, int size, String doctorId, String locationId, String hospitalId,
+	public DoctorContactsResponse getPatient(long page, int size, String doctorId, String locationId, String hospitalId,
 			long from, long to);
 
 	DoctorClinicProfile addRegularCheckupMonths(RegularCheckUpAddEditRequest request);

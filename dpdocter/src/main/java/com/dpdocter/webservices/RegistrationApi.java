@@ -151,12 +151,13 @@ public class RegistrationApi {
 		}
 
 		if (request.getPastMedicalHistoryHandler() != null) {
-			request.getPastMedicalHistoryHandler().setPatientId(registeredPatientDetails.getUserId());
+			request.getPastMedicalHistoryHandler().setPatientId(registeredPatientDetails.getPatient().getPatientId());
 			historyServices.handleMedicalHistory(request.getPastMedicalHistoryHandler());
 		}
 
 		if (request.getPersonalHistoryAddRequest() != null) {
-			request.getPersonalHistoryAddRequest().setPatientId(registeredPatientDetails.getUserId());
+			request.getPersonalHistoryAddRequest().setPatientId(registeredPatientDetails.getPatient().getPatientId());
+
 			historyServices.assignPersonalHistory(request.getPersonalHistoryAddRequest());
 		}
 
@@ -338,7 +339,7 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.GET_REFERRENCES)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_REFERRENCES, notes = PathProxy.RegistrationUrls.GET_REFERRENCES, response = Response.class)
-	public Response<ReferenceDetail> getReferences(@PathParam("range") String range, @QueryParam("page") int page,
+	public Response<ReferenceDetail> getReferences(@PathParam("range") String range, @QueryParam("page") long page,
 			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -628,7 +629,7 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.GET_PROFESSION)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_PROFESSION, notes = PathProxy.RegistrationUrls.GET_PROFESSION)
-	public Response<Profession> getProfession(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<Profession> getProfession(@QueryParam("page") long page, @QueryParam("size") int size,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
 
 		List<Profession> professionResponse = registrationService.getProfession(page, size, updatedTime);
@@ -710,7 +711,7 @@ public class RegistrationApi {
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_ROLE, notes = PathProxy.RegistrationUrls.GET_ROLE)
 	public Response<Role> getRole(@PathParam(value = "range") String range,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
+			@QueryParam(value = "page") long page, @QueryParam(value = "size") int size,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "role") String role) {
 		if (DPDoctorUtils.anyStringEmpty(range, locationId, hospitalId)) {
@@ -728,7 +729,7 @@ public class RegistrationApi {
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_USERS, notes = PathProxy.RegistrationUrls.GET_USERS)
 	public Response<ClinicDoctorResponse> getUsers(@PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "page") int page,
+			@PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "page") long page,
 			@QueryParam(value = "size") int size,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "role") String role,
@@ -827,7 +828,7 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.GET_DOCTOR_FEEDBACK)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_DOCTOR_FEEDBACK, notes = PathProxy.RegistrationUrls.GET_DOCTOR_FEEDBACK)
-	public Response<Feedback> getFeedback(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<Feedback> getFeedback(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -912,7 +913,7 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.GET_SUGGESTION)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_SUGGESTION, notes = PathProxy.RegistrationUrls.GET_SUGGESTION)
-	public Response<Object> getSuggestion(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<Object> getSuggestion(@QueryParam("page") long page, @QueryParam("size") int size,
 			@PathParam("userId") String userId, @QueryParam("suggetionTypesuggetionType") String suggetionType,
 			@QueryParam("state") String state, @QueryParam("searchTerm") String searchTerm) {
 
@@ -980,7 +981,7 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.GET_CONSENT_FORM)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_CONSENT_FORM, notes = PathProxy.RegistrationUrls.GET_CONSENT_FORM)
-	public Response<ConsentForm> getConsentForm(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<ConsentForm> getConsentForm(@QueryParam("page") long page, @QueryParam("size") int size,
 			@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("PID") String PID, @QueryParam("searchTerm") String searchTerm,
@@ -1064,7 +1065,7 @@ public class RegistrationApi {
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_FORM_CONTENT, notes = PathProxy.RegistrationUrls.GET_FORM_CONTENT)
 	public Response<FormContent> getFormContents(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("type") String type,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam("type") String type,
 			@QueryParam("title") String title, @QueryParam("updatedTime") String updatedTime,
 			@QueryParam("discarded") boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {

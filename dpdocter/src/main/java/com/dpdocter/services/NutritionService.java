@@ -69,4 +69,5 @@ public interface NutritionService {
 	BloodGlucose addEditBloodGlucose(BloodGlucose request);
 
 	SugarSetting addEditSugarSetting(SugarSetting request);
+
 }

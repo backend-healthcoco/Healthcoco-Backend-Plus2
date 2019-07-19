@@ -222,7 +222,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Prescription prescription = null;
 			DischargeSummaryCollection dischargeSummaryCollection = null;
 			PrescriptionAddEditResponseDetails addEditResponseDetails = null;
-			UserCollection doctor = userRepository.findOne(new ObjectId(dischargeSummary.getDoctorId()));
+			UserCollection doctor = userRepository.findById(new ObjectId(dischargeSummary.getDoctorId())).orElse(null);
 			dischargeSummaryCollection = new DischargeSummaryCollection();
 			if (dischargeSummary.getId() == null) {
 				if (dischargeSummary.getCreatedTime() == null)
@@ -244,7 +244,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			}
 			if (!DPDoctorUtils.anyStringEmpty(dischargeSummary.getId())) {
 				oldDischargeSummaryCollection = dischargeSummaryRepository
-						.findOne(new ObjectId(dischargeSummary.getId()));
+						.findById(new ObjectId(dischargeSummary.getId())).orElse(null);
 
 				if (DPDoctorUtils.anyStringEmpty(oldDischargeSummaryCollection.getUniqueEmrId())) {
 					oldDischargeSummaryCollection.setUniqueEmrId(
@@ -358,7 +358,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	@Override
 	@Transactional
 	public List<DischargeSummaryResponse> getDischargeSummary(String doctorId, String locationId, String hospitalId,
-			String patientId, int page, int size, String updatedTime) {
+			String patientId, long page, int size, String updatedTime) {
 		List<DischargeSummaryResponse> response = null;
 		try {
 			DischargeSummaryResponse summaryResponse = null;
@@ -431,7 +431,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		DischargeSummaryResponse response = null;
 		try {
 			DischargeSummaryCollection dischargeSummaryCollection = dischargeSummaryRepository
-					.findOne(new ObjectId(dischargeSummeryId));
+					.findById(new ObjectId(dischargeSummeryId)).orElse(null);
 			if (dischargeSummaryCollection != null) {
 				response = new DischargeSummaryResponse();
 				BeanUtil.map(dischargeSummaryCollection, response);
@@ -502,7 +502,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		DischargeSummaryResponse response = null;
 		try {
 			DischargeSummaryCollection dischargeSummaryCollection = dischargeSummaryRepository
-					.findOne(new ObjectId(dischargeSummeryId));
+					.findById(new ObjectId(dischargeSummeryId)).orElse(null);
 			if (dischargeSummaryCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getDoctorId(),
 						dischargeSummaryCollection.getHospitalId(), dischargeSummaryCollection.getLocationId())) {
@@ -552,13 +552,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 		try {
 			DischargeSummaryCollection dischargeSummaryCollection = dischargeSummaryRepository
-					.findOne(new ObjectId(dischargeSummeryId));
+					.findById(new ObjectId(dischargeSummeryId)).orElse(null);
 			if (dischargeSummaryCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 						dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getLocationId(),
 						dischargeSummaryCollection.getHospitalId());
 
-				UserCollection user = userRepository.findOne(dischargeSummaryCollection.getPatientId());
+				UserCollection user = userRepository.findById(dischargeSummaryCollection.getPatientId()).orElse(null);
 				JasperReportResponse jasperReportResponse = null;
 
 				jasperReportResponse = createJasper(dischargeSummaryCollection, patient, user);
@@ -595,7 +595,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 			FlowsheetCollection flowsheetCollection = null;
 			if (byFlowsheetId) {
-				flowsheetCollection = flowsheetRepository.findOne(new ObjectId(id));
+				flowsheetCollection = flowsheetRepository.findById(new ObjectId(id)).orElse(null);
 			} else {
 				flowsheetCollection = flowsheetRepository.findByDischargeSummaryId(new ObjectId(id));
 			}
@@ -605,7 +605,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						flowsheetCollection.getPatientId(), flowsheetCollection.getLocationId(),
 						flowsheetCollection.getHospitalId());
 
-				UserCollection user = userRepository.findOne(flowsheetCollection.getPatientId());
+				UserCollection user = userRepository.findById(flowsheetCollection.getPatientId()).orElse(null);
 				JasperReportResponse jasperReportResponse = null;
 				jasperReportResponse = createJasperForFlowSheet(flowsheetCollection, patient, user);
 				if (jasperReportResponse != null)
@@ -763,7 +763,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getPrescriptionId())) {
 			PrescriptionCollection prescription = prescriptionRepository
-					.findOne(dischargeSummaryCollection.getPrescriptionId());
+					.findById(dischargeSummaryCollection.getPrescriptionId()).orElse(null);
 			int no = 0;
 			Boolean showIntructions = false, showDirection = false;
 
@@ -772,7 +772,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				for (PrescriptionItem prescriptionItem : prescription.getItems()) {
 
 					if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
-						DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
+						DrugCollection drug = drugRepository.findById(prescriptionItem.getDrugId()).orElse(null);
 						if (drug != null) {
 							String drugType = drug.getDrugType() != null
 									? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " " : "")
@@ -1184,16 +1184,16 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		PatientCollection patient = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
-			dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(dischargeSummeryId));
+			dischargeSummaryCollection = dischargeSummaryRepository.findById(new ObjectId(dischargeSummeryId)).orElse(null);
 			if (dischargeSummaryCollection != null) {
 				if (dischargeSummaryCollection.getDoctorId() != null
 						&& dischargeSummaryCollection.getHospitalId() != null
 						&& dischargeSummaryCollection.getLocationId() != null) {
-					if (dischargeSummaryCollection.getDoctorId().equals(doctorId)
-							&& dischargeSummaryCollection.getHospitalId().equals(hospitalId)
-							&& dischargeSummaryCollection.getLocationId().equals(locationId)) {
+					if (dischargeSummaryCollection.getDoctorId().toString().equals(doctorId)
+							&& dischargeSummaryCollection.getHospitalId().toString().equals(hospitalId)
+							&& dischargeSummaryCollection.getLocationId().toString().equals(locationId)) {
 
-						user = userRepository.findOne(dischargeSummaryCollection.getPatientId());
+						user = userRepository.findById(dischargeSummaryCollection.getPatientId()).orElse(null);
 						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 								dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getLocationId(),
 								dischargeSummaryCollection.getHospitalId());
@@ -1213,8 +1213,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
-						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+						UserCollection doctorUser = userRepository.findById(new ObjectId(doctorId)).orElse(null);
+						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
 
 						mailResponse = new MailResponse();
 						mailResponse.setMailAttachment(mailAttachment);
@@ -1305,7 +1305,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Criteria criteria = new Criteria("patientId").exists(true).and("locationId").exists(true).and("hospitalId")
 					.exists(true).and("doctorId").exists(true).and("_id").in(visitObjectIds);
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+					Aggregation.sort(new Sort.Order(Sort.Direction.DESC, "createdTime").withProperties("createdTime")));
 			AggregationResults<PatientVisitLookupBean> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientVisitCollection.class, PatientVisitLookupBean.class);
 			List<PatientVisitLookupBean> patientVisitLookupBeans = aggregationResults.getMappedResults();
@@ -1567,7 +1567,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				}
 			}
 
-			dischargeSummaryCollections = dischargeSummaryRepository.save(dischargeSummaryCollections);
+			dischargeSummaryCollections = (List<DischargeSummaryCollection>) dischargeSummaryRepository.saveAll(dischargeSummaryCollections);
 			response = dischargeSummaryCollections.size();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1587,7 +1587,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (DPDoctorUtils.anyStringEmpty(labourNote.getId())) {
 				labourNoteCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(labourNoteCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(labourNoteCollection.getDoctorId());
+					UserCollection userCollection = userRepository.findById(labourNoteCollection.getDoctorId()).orElse(null);
 					if (userCollection != null) {
 						labourNoteCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -1598,7 +1598,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				}
 			} else {
 				LabourNoteCollection oldLabourNoteCollection = labourNoteRepository
-						.findOne(labourNoteCollection.getId());
+						.findById(labourNoteCollection.getId()).orElse(null);
 				labourNoteCollection.setCreatedBy(oldLabourNoteCollection.getCreatedBy());
 				labourNoteCollection.setCreatedTime(oldLabourNoteCollection.getCreatedTime());
 				labourNoteCollection.setDiscarded(oldLabourNoteCollection.getDiscarded());
@@ -1619,7 +1619,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Boolean discarded) {
 		LabourNote response = null;
 		try {
-			LabourNoteCollection labourNoteCollection = labourNoteRepository.findOne(new ObjectId(id));
+			LabourNoteCollection labourNoteCollection = labourNoteRepository.findById(new ObjectId(id)).orElse(null);
 			if (labourNoteCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(labourNoteCollection.getDoctorId(),
 						labourNoteCollection.getHospitalId(), labourNoteCollection.getLocationId())) {
@@ -1665,7 +1665,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (DPDoctorUtils.anyStringEmpty(babyNote.getId())) {
 				babyNoteCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(babyNoteCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(babyNoteCollection.getDoctorId());
+					UserCollection userCollection = userRepository.findById(babyNoteCollection.getDoctorId()).orElse(null);
 					if (userCollection != null) {
 						babyNoteCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -1675,7 +1675,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					babyNoteCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				BabyNoteCollection oldBabyNoteCollection = babyNoteRepository.findOne(babyNoteCollection.getId());
+				BabyNoteCollection oldBabyNoteCollection = babyNoteRepository.findById(babyNoteCollection.getId()).orElse(null);
 				babyNoteCollection.setCreatedBy(oldBabyNoteCollection.getCreatedBy());
 				babyNoteCollection.setCreatedTime(oldBabyNoteCollection.getCreatedTime());
 				babyNoteCollection.setDiscarded(oldBabyNoteCollection.getDiscarded());
@@ -1696,7 +1696,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Boolean discarded) {
 		BabyNote response = null;
 		try {
-			BabyNoteCollection babyNoteCollection = babyNoteRepository.findOne(new ObjectId(id));
+			BabyNoteCollection babyNoteCollection = babyNoteRepository.findById(new ObjectId(id)).orElse(null);
 			if (babyNoteCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(babyNoteCollection.getDoctorId(), babyNoteCollection.getHospitalId(),
 						babyNoteCollection.getLocationId())) {
@@ -1742,7 +1742,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (DPDoctorUtils.anyStringEmpty(operationNote.getId())) {
 				operationNoteCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(operationNoteCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(operationNoteCollection.getDoctorId());
+					UserCollection userCollection = userRepository.findById(operationNoteCollection.getDoctorId()).orElse(null);
 					if (userCollection != null) {
 						operationNoteCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -1753,7 +1753,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				}
 			} else {
 				OperationNoteCollection oldoperationNoteCollection = operationNoteRepository
-						.findOne(operationNoteCollection.getId());
+						.findById(operationNoteCollection.getId()).orElse(null);
 				operationNoteCollection.setCreatedBy(oldoperationNoteCollection.getCreatedBy());
 				operationNoteCollection.setCreatedTime(oldoperationNoteCollection.getCreatedTime());
 				operationNoteCollection.setDiscarded(oldoperationNoteCollection.getDiscarded());
@@ -1774,7 +1774,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Boolean discarded) {
 		OperationNote response = null;
 		try {
-			OperationNoteCollection operationNoteCollection = operationNoteRepository.findOne(new ObjectId(id));
+			OperationNoteCollection operationNoteCollection = operationNoteRepository.findById(new ObjectId(id)).orElse(null);
 			if (operationNoteCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(operationNoteCollection.getDoctorId(),
 						operationNoteCollection.getHospitalId(), operationNoteCollection.getLocationId())) {
@@ -1812,7 +1812,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@Override
-	public List<?> getDischargeSummaryItems(String type, String range, int page, int size, String doctorId,
+	public List<?> getDischargeSummaryItems(String type, String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<?> response = new ArrayList<Object>();
 
@@ -1913,7 +1913,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<BabyNote> getCustomGlobalBabyNote(int page, int size, String doctorId, String locationId,
+	private List<BabyNote> getCustomGlobalBabyNote(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<BabyNote> response = new ArrayList<BabyNote>();
 		try {
@@ -1925,7 +1925,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Collection<String> specialities = null;
 			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 						new BeanToPropertyValueTransformer("speciality"));
 				specialities.add(null);
 				specialities.add("ALL");
@@ -1947,7 +1947,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<BabyNote> getGlobalBabyNote(int page, int size, String doctorId, String updatedTime,
+	private List<BabyNote> getGlobalBabyNote(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded) {
 		List<BabyNote> response = null;
 		try {
@@ -1959,7 +1959,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Collection<String> specialities = null;
 			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 						new BeanToPropertyValueTransformer("speciality"));
 				specialities.add("ALL");
 				specialities.add(null);
@@ -1978,7 +1978,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		return response;
 	}
 
-	private List<BabyNote> getCustomBabyNote(int page, int size, String doctorId, String locationId, String hospitalId,
+	private List<BabyNote> getCustomBabyNote(long page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded) {
 		List<BabyNote> response = null;
 		try {
@@ -1997,7 +1997,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<OperationNote> getCustomGlobalOperationNote(int page, int size, String doctorId, String locationId,
+	private List<OperationNote> getCustomGlobalOperationNote(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<OperationNote> response = new ArrayList<OperationNote>();
 		try {
@@ -2009,7 +2009,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Collection<String> specialities = null;
 			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 						new BeanToPropertyValueTransformer("speciality"));
 				specialities.add(null);
 				specialities.add("ALL");
@@ -2031,7 +2031,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<OperationNote> getGlobalOperationNote(int page, int size, String doctorId, String updatedTime,
+	private List<OperationNote> getGlobalOperationNote(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded) {
 		List<OperationNote> response = null;
 		try {
@@ -2043,7 +2043,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Collection<String> specialities = null;
 			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 						new BeanToPropertyValueTransformer("speciality"));
 				specialities.add("ALL");
 				specialities.add(null);
@@ -2062,7 +2062,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		return response;
 	}
 
-	private List<OperationNote> getCustomOperationNote(int page, int size, String doctorId, String locationId,
+	private List<OperationNote> getCustomOperationNote(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<OperationNote> response = null;
 		try {
@@ -2081,7 +2081,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<LabourNote> getCustomGlobalLabourNote(int page, int size, String doctorId, String locationId,
+	private List<LabourNote> getCustomGlobalLabourNote(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<LabourNote> response = new ArrayList<LabourNote>();
 		try {
@@ -2093,7 +2093,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Collection<String> specialities = null;
 			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 						new BeanToPropertyValueTransformer("speciality"));
 				specialities.add(null);
 				specialities.add("ALL");
@@ -2115,7 +2115,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<LabourNote> getGlobalLabourNote(int page, int size, String doctorId, String updatedTime,
+	private List<LabourNote> getGlobalLabourNote(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded) {
 		List<LabourNote> response = null;
 		try {
@@ -2127,7 +2127,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Collection<String> specialities = null;
 			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 						new BeanToPropertyValueTransformer("speciality"));
 				specialities.add("ALL");
 				specialities.add(null);
@@ -2146,7 +2146,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		return response;
 	}
 
-	private List<LabourNote> getCustomLabourNote(int page, int size, String doctorId, String locationId,
+	private List<LabourNote> getCustomLabourNote(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<LabourNote> response = null;
 		try {
@@ -2173,7 +2173,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (DPDoctorUtils.anyStringEmpty(implant.getId())) {
 				implantCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(implantCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(implantCollection.getDoctorId());
+					UserCollection userCollection = userRepository.findById(implantCollection.getDoctorId()).orElse(null);
 					if (userCollection != null) {
 						implantCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2183,7 +2183,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					implantCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				ImplantCollection oldImplantCollection = implantRepository.findOne(implantCollection.getId());
+				ImplantCollection oldImplantCollection = implantRepository.findById(implantCollection.getId()).orElse(null);
 				implantCollection.setCreatedBy(oldImplantCollection.getCreatedBy());
 				implantCollection.setCreatedTime(oldImplantCollection.getCreatedTime());
 				implantCollection.setDiscarded(oldImplantCollection.getDiscarded());
@@ -2199,7 +2199,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Implant> getCustomGlobalImplant(int page, int size, String doctorId, String locationId,
+	private List<Implant> getCustomGlobalImplant(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<Implant> response = null;
 		try {
@@ -2211,7 +2211,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Collection<String> specialities = null;
 			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 						new BeanToPropertyValueTransformer("speciality"));
 				specialities.add(null);
 				specialities.add("ALL");
@@ -2233,7 +2233,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Implant> getGlobalImplant(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+	private List<Implant> getGlobalImplant(long page, int size, String doctorId, String updatedTime, Boolean discarded) {
 		List<Implant> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -2244,7 +2244,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Collection<String> specialities = null;
 			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 						new BeanToPropertyValueTransformer("speciality"));
 				specialities.add("ALL");
 				specialities.add(null);
@@ -2263,7 +2263,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		return response;
 	}
 
-	private List<Implant> getCustomImplant(int page, int size, String doctorId, String locationId, String hospitalId,
+	private List<Implant> getCustomImplant(long page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded) {
 		List<Implant> response = null;
 		try {
@@ -2283,7 +2283,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	public Implant deleteImplant(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 		Implant response = null;
 		try {
-			ImplantCollection implantCollection = implantRepository.findOne(new ObjectId(id));
+			ImplantCollection implantCollection = implantRepository.findById(new ObjectId(id)).orElse(null);
 			if (implantCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(implantCollection.getDoctorId(), implantCollection.getHospitalId(),
 						implantCollection.getLocationId())) {
@@ -2328,7 +2328,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (DPDoctorUtils.anyStringEmpty(cement.getId())) {
 				cementCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(cementCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(cementCollection.getDoctorId());
+					UserCollection userCollection = userRepository.findById(cementCollection.getDoctorId()).orElse(null);
 					if (userCollection != null) {
 						cementCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2338,7 +2338,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					cementCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				CementCollection oldCementCollection = cementRepository.findOne(cementCollection.getId());
+				CementCollection oldCementCollection = cementRepository.findById(cementCollection.getId()).orElse(null);
 				cementCollection.setCreatedBy(oldCementCollection.getCreatedBy());
 				cementCollection.setCreatedTime(oldCementCollection.getCreatedTime());
 				cementCollection.setDiscarded(oldCementCollection.getDiscarded());
@@ -2357,7 +2357,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	public Cement deleteCement(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 		Cement response = null;
 		try {
-			CementCollection cementCollection = cementRepository.findOne(new ObjectId(id));
+			CementCollection cementCollection = cementRepository.findById(new ObjectId(id)).orElse(null);
 			if (cementCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(cementCollection.getDoctorId(), cementCollection.getHospitalId(),
 						cementCollection.getLocationId())) {
@@ -2395,7 +2395,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Cement> getCustomGlobalCement(int page, int size, String doctorId, String locationId,
+	private List<Cement> getCustomGlobalCement(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<Cement> response = null;
 		try {
@@ -2407,7 +2407,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Collection<String> specialities = null;
 			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 						new BeanToPropertyValueTransformer("speciality"));
 				specialities.add(null);
 				specialities.add("ALL");
@@ -2429,7 +2429,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Cement> getGlobalCement(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+	private List<Cement> getGlobalCement(long page, int size, String doctorId, String updatedTime, Boolean discarded) {
 		List<Cement> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -2440,7 +2440,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Collection<String> specialities = null;
 			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 						new BeanToPropertyValueTransformer("speciality"));
 				specialities.add("ALL");
 				specialities.add(null);
@@ -2459,7 +2459,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		return response;
 	}
 
-	private List<Cement> getCustomCement(int page, int size, String doctorId, String locationId, String hospitalId,
+	private List<Cement> getCustomCement(long page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded) {
 		List<Cement> response = null;
 		try {
@@ -2485,10 +2485,10 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		PatientCollection patient = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
-			dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(dischargeSummeryId));
+			dischargeSummaryCollection = dischargeSummaryRepository.findById(new ObjectId(dischargeSummeryId)).orElse(null);
 			if (dischargeSummaryCollection != null) {
 
-				user = userRepository.findOne(dischargeSummaryCollection.getPatientId());
+				user = userRepository.findById(dischargeSummaryCollection.getPatientId()).orElse(null);
 				patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 						dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getLocationId(),
 						dischargeSummaryCollection.getHospitalId());
@@ -2507,9 +2507,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-				UserCollection doctorUser = userRepository.findOne(dischargeSummaryCollection.getDoctorId());
+				UserCollection doctorUser = userRepository.findById(dischargeSummaryCollection.getDoctorId()).orElse(null);
 				LocationCollection locationCollection = locationRepository
-						.findOne(dischargeSummaryCollection.getLocationId());
+						.findById(dischargeSummaryCollection.getLocationId()).orElse(null);
 
 				mailResponse = new MailResponse();
 				mailResponse.setMailAttachment(mailAttachment);
@@ -2581,10 +2581,10 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		try {
 
 			if (request.getDoctorId() != null) {
-				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			}
 			if (request.getId() != null) {
-				flowsheetCollection = flowsheetRepository.findOne(new ObjectId(request.getId()));
+				flowsheetCollection = flowsheetRepository.findById(new ObjectId(request.getId())).orElse(null);
 				flowsheetCollection.setUpdatedTime(new Date());
 			} else if (request.getDischargeSummaryId() != null) {
 				flowsheetCollection = flowsheetRepository
@@ -2601,7 +2601,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					}
 				}
 				dischargeSummaryCollection = dischargeSummaryRepository
-						.findOne(new ObjectId(request.getDischargeSummaryId()));
+						.findById(new ObjectId(request.getDischargeSummaryId())).orElse(null);
 				dischargeSummaryCollection.setFlowSheets(request.getFlowSheets());
 				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
 				flowsheetCollection.setDischargeSummaryId(dischargeSummaryCollection.getId());
@@ -2622,7 +2622,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 			if (request.getDischargeSummaryId() != null) {
 				dischargeSummaryCollection = dischargeSummaryRepository
-						.findOne(new ObjectId(request.getDischargeSummaryId()));
+						.findById(new ObjectId(request.getDischargeSummaryId())).orElse(null);
 
 			} else {
 				dischargeSummaryCollection = new DischargeSummaryCollection();
@@ -2712,7 +2712,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				throw new BusinessException(ServiceError.InvalidInput, "Id is null");
 			}
 
-			flowsheetCollection = flowsheetRepository.findOne(new ObjectId(id));
+			flowsheetCollection = flowsheetRepository.findById(new ObjectId(id)).orElse(null);
 			if (flowsheetCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
@@ -2988,7 +2988,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (DPDoctorUtils.anyStringEmpty(diagramsCollection.getId())) {
 				diagramsCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(diagramsCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(diagramsCollection.getDoctorId());
+					UserCollection userCollection = userRepository.findById(diagramsCollection.getDoctorId()).orElse(null);
 					if (userCollection != null) {
 						diagramsCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2998,7 +2998,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					diagramsCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				DiagramsCollection oldDiagramsCollection = diagramsRepository.findOne(diagramsCollection.getId());
+				DiagramsCollection oldDiagramsCollection = diagramsRepository.findById(diagramsCollection.getId()).orElse(null);
 				diagramsCollection.setCreatedBy(oldDiagramsCollection.getCreatedBy());
 				diagramsCollection.setCreatedTime(oldDiagramsCollection.getCreatedTime());
 				diagramsCollection.setDiscarded(oldDiagramsCollection.getDiscarded());

@@ -14,16 +14,16 @@ public class ESAdvicesDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String advice;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String doctorId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String locationId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String hospitalId;
 
 	@Field(type = FieldType.Boolean)
@@ -31,7 +31,7 @@ public class ESAdvicesDocument {
 
 	@Field(type = FieldType.Date)
 	private Date updatedTime = new Date();
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	 private List<String> diseases;
 
 	public List<String> getDiseases() {

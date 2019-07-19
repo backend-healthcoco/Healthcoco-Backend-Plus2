@@ -70,17 +70,10 @@ import com.dpdocter.repository.SubscriptionDetailRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DoctorSMSResponse;
 import com.dpdocter.response.SMSResponse;
-import com.dpdocter.response.URLShortnerResponse;
 import com.dpdocter.services.SMSServices;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import com.squareup.okhttp.internal.spdy.ErrorCode;
 import com.twilio.sdk.TwilioRestException;
 
 import common.util.web.DPDoctorUtils;
-import common.util.web.JacksonUtil;
 
 @Service
 public class SMSServicesImpl implements SMSServices {
@@ -121,6 +114,9 @@ public class SMSServicesImpl implements SMSServices {
 
 	@Value(value = "${mobile.numbers.resource}")
 	private String MOBILE_NUMBERS_RESOURCE;
+	
+	@Value("${sms.tfactor.auth.key}")
+	private String tfactorAuthKey;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -156,7 +152,7 @@ public class SMSServicesImpl implements SMSServices {
 		try {
 			if(smsTrackDetail.getLocationId() != null)
 			{
-				locationCollection = locationRepository.findOne(smsTrackDetail.getLocationId());
+				locationCollection = locationRepository.findById(smsTrackDetail.getLocationId()).orElse(null);
 			}
 			
 			Message message = new Message();
@@ -164,7 +160,7 @@ public class SMSServicesImpl implements SMSServices {
 			message.setAuthKey(AUTH_KEY);
 			message.setCountryCode(COUNTRY_CODE);
 			message.setRoute(ROUTE);
-			if(locationCollection != null && DPDoctorUtils.anyStringEmpty(locationCollection.getSmsCode()))
+			if(locationCollection != null && !DPDoctorUtils.anyStringEmpty(locationCollection.getSmsCode()))
 			{
 				message.setSenderId(locationCollection.getSmsCode());
 			}
@@ -351,7 +347,7 @@ public class SMSServicesImpl implements SMSServices {
 			if (doctorObjectId == null) {
 				if (size > 0)
 					smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationObjectId, hospitalObjectId,
-							type, new PageRequest(page, size, Direction.DESC, "createdTime"));
+							type, PageRequest.of(page, size, Direction.DESC, "createdTime"));
 				else
 					smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationObjectId, hospitalObjectId,
 							type, new Sort(Sort.Direction.DESC, "createdTime"));
@@ -359,7 +355,7 @@ public class SMSServicesImpl implements SMSServices {
 				if (size > 0)
 					smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorObjectId,
 							locationObjectId, hospitalObjectId, type,
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
+							PageRequest.of(page, size, Direction.DESC, "createdTime"));
 				else
 					smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorObjectId,
 							locationObjectId, hospitalObjectId, type, new Sort(Sort.Direction.DESC, "createdTime"));
@@ -388,7 +384,7 @@ public class SMSServicesImpl implements SMSServices {
 		for (ObjectId doctorId : doctorIds) {
 			DoctorSMSResponse doctorSMSResponse = new DoctorSMSResponse();
 			int count = smsTrackRepository.getDoctorsSMSCount(doctorId, locationId, hospitalId);
-			UserCollection user = userRepository.findOne(doctorId);
+			UserCollection user = userRepository.findById(doctorId).orElse(null);
 			doctorSMSResponse.setDoctorId(doctorId.toString());
 			if (user != null)
 				doctorSMSResponse.setDoctorName(user.getFirstName());
@@ -400,7 +396,7 @@ public class SMSServicesImpl implements SMSServices {
 
 	@Override
 	@Transactional
-	public List<SMSTrack> getSMSDetails(int page, int size, String patientId, String doctorId, String locationId,
+	public List<SMSTrack> getSMSDetails(long page, int size, String patientId, String doctorId, String locationId,
 			String hospitalId) {
 		List<SMSTrack> response = null;
 		try {
@@ -731,7 +727,6 @@ public class SMSServicesImpl implements SMSServices {
 			// con.setRequestProperty("User-Agent", USER_AGENT);
 			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 			con.setRequestProperty("Accept-Charset", "UTF-8");
-			int responseCode = con.getResponseCode();
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
@@ -814,6 +809,40 @@ public class SMSServicesImpl implements SMSServices {
 		return response;
 	}
 	
+	@Override
+	public Boolean sendPatientOTP(String mobileNumber , String otp)
+	{
+		Boolean boolResponse = false;
+		//http://dndsms.resellergrow.com/api/otp.php?authkey=93114AV2rXJuxL56001692&mobile=9766914900&message=0808&sender=HTCOCO&otp=0808
+		StringBuffer response = new StringBuffer();
+		try {
+			String url = "https://2factor.in/API/V1/"+tfactorAuthKey+"/SMS/"+mobileNumber+"/"+otp+"/OTP";
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			// optional default is POST
+			con.setRequestMethod("GET");
+			// add request header
+			// con.setRequestProperty("User-Agent", USER_AGENT);
+			con.setRequestProperty("User-Agent",
+					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+			con.setRequestProperty("Accept-Charset", "UTF-8");
+			int responseCode = con.getResponseCode();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			while ((inputLine = in.readLine()) != null) {
+
+				response.append(inputLine);
+
+			}
+			in.close();			
+			if(responseCode == 200)boolResponse = true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return boolResponse;
+	}
+	
 	public static void main(String[] args) throws Exception {
 		
 		StringBuilder builder = new StringBuilder();
@@ -838,10 +867,10 @@ public class SMSServicesImpl implements SMSServices {
 		con.setRequestProperty("User-Agent",
 				"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 		con.setRequestProperty("Accept-Charset", "UTF-8");
-		int responseCode = con.getResponseCode();
-
-		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		String inputLine;
+//		int responseCode = con.getResponseCode();
+//
+//		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+//		String inputLine;
 		/* response = new StringBuffer(); */
 
 		

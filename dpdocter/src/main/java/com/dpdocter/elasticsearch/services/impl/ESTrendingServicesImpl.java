@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.search.join.ScoreMode;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -103,10 +104,10 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(productId)) {
-				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.termsQuery("drugIds", productId),
-						QueryBuilders.termsQuery("treatmentServiceIds", productId),
-						QueryBuilders.termsQuery("nutritionPlanIds", productId),
-						QueryBuilders.termsQuery("subscriptionPlanIds", productId)));
+				boolQueryBuilder.must(boolQuery().should(QueryBuilders.termsQuery("drugIds", productId))
+						.should(QueryBuilders.termsQuery("treatmentServiceIds", productId))
+						.should(QueryBuilders.termsQuery("nutritionPlanIds", productId))
+						.should(QueryBuilders.termsQuery("subscriptionPlanIds", productId))).minimumShouldMatch(1);
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(offerType)) {
@@ -176,7 +177,7 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 					BeanUtil.map(document, trending);
 					if (!DPDoctorUtils.anyStringEmpty(trending.getOfferId())) {
 						Offer offer = new Offer();
-						ESOfferDocument offerDocument = esOfferRepository.findOne(trending.getOfferId());
+						ESOfferDocument offerDocument = esOfferRepository.findById(trending.getOfferId()).orElse(null);
 						BeanUtil.map(offerDocument, offer);
 						if (offer != null) {
 							if (offer.getTitleImage() != null) {
@@ -193,7 +194,7 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 						}
 					} else if (!DPDoctorUtils.anyStringEmpty(trending.getBlogId())) {
 						Blog blog = new Blog();
-						BlogCollection blogCollection = blogRepository.findOne(new ObjectId(trending.getBlogId()));
+						BlogCollection blogCollection = blogRepository.findById(new ObjectId(trending.getBlogId())).orElse(null);
 						BeanUtil.map(blogCollection, blog);
 
 						if (blog != null && !DPDoctorUtils.anyStringEmpty(blog.getTitleImage())) {
@@ -229,30 +230,27 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 			if (maxTime == 0) {
 				maxTime = 1439;
 			}
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("time", boolQuery().must(QueryBuilders.andQuery(
-					nestedQuery("time.workingHours", QueryBuilders.orQuery(
-
-							QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(maxTime),
-
-							QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(minTime).lt(maxTime),
-							QueryBuilders.andQuery(
-									QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(1439),
-									QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(0).lt(maxTime)))),
-					QueryBuilders.termsQuery("time.workingDay", days)))));
+			boolQueryBuilder.must(QueryBuilders.nestedQuery("time",
+					boolQuery().must(nestedQuery("time.workingHours", 
+							boolQuery().should(QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(maxTime))
+							.should(QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(minTime).lt(maxTime))
+							.should(boolQuery().must(QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(1439))
+									.must(QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(0).lt(maxTime))
+									).minimumShouldMatch(1), ScoreMode.None))
+					.must(QueryBuilders.termsQuery("time.workingDay", days)), ScoreMode.None));
+			
 		} else {
 
 			if (maxTime == 0) {
 				maxTime = 1439;
 			}
 			boolQueryBuilder.must(QueryBuilders.nestedQuery("time",
-					boolQuery().must(nestedQuery("time.workingHours", QueryBuilders.orQuery(
-
-							QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(maxTime),
-
-							QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(minTime).lt(maxTime),
-							QueryBuilders.andQuery(
-									QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(1439),
-									QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(0).lt(maxTime)))))));
+					boolQuery().must(nestedQuery("time.workingHours", 
+							boolQuery().should(QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(maxTime))
+							.should(QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(minTime).lt(maxTime))
+							.should(boolQuery().must(QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(1439))
+									.must(QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(0).lt(maxTime))
+									).minimumShouldMatch(1), ScoreMode.None)), ScoreMode.None));
 		}
 	}
 

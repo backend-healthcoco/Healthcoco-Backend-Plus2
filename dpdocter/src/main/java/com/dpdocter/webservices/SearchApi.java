@@ -15,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.Blog;
 import com.dpdocter.beans.ClinicImage;
@@ -40,7 +40,7 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
+@RestController
 @Path(PathProxy.WEB_SEARCH_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -188,7 +188,7 @@ public class SearchApi {
 	@Path(value = PathProxy.BlogsUrls.GET_BLOGS)
 	@GET
 	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOGS, notes = PathProxy.BlogsUrls.GET_BLOGS)
-	public Response<BlogResponse> getBlogs(@QueryParam(value = "size") int size, @QueryParam(value = "page") int page,
+	public Response<BlogResponse> getBlogs(@QueryParam(value = "size") int size, @QueryParam(value = "page") long page,
 			@QueryParam(value = "userId") String userId, @QueryParam(value = "category") String category,
 			@QueryParam(value = "title") String title) {
 		BlogResponse blogresponse = blogService.getBlogs(size, page, category, userId, title);

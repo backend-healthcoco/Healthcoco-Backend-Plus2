@@ -9,6 +9,6 @@ public interface EmailTackService {
 
     void saveEmailTrack(EmailTrackCollection emailTrack);
 
-    List<EmailTrack> getEmailDetails(String patientId, String doctorId, String locationId, String hospitalId, int page, int size);
+    List<EmailTrack> getEmailDetails(String patientId, String doctorId, String locationId, String hospitalId, long page, int size);
 
 }

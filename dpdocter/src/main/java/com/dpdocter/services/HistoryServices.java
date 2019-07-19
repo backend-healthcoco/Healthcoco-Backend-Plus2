@@ -60,10 +60,10 @@ public interface HistoryServices {
     HistoryDetailsResponse removeFamilyHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
 
     List<HistoryDetailsResponse> getPatientHistoryDetailsWithoutVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
-	    List<String> historyFilter, int page, int size, String updatedTime);
+	    List<String> historyFilter, long page, int size, String updatedTime);
 
     List<HistoryDetailsResponse> getPatientHistoryDetailsWithVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
-	    List<String> historyFilter, int page, int size, String updatedTime);
+	    List<String> historyFilter, long page, int size, String updatedTime);
 
     Integer getHistoryCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, boolean isOTPVerified);
 
@@ -82,7 +82,7 @@ public interface HistoryServices {
     List<HistoryDetailsResponse> getMultipleData(String patientId, String doctorId, String hospitalId, String locationId, String updatedTime,
 	    Boolean inHistory, Boolean discarded);
 
-    List<HistoryDetailsResponse> getPatientHistory(String patientId, List<String> historyFilter, int page, int size, String updatedTime);
+    List<HistoryDetailsResponse> getPatientHistory(String patientId, List<String> historyFilter, long page, int size, String updatedTime);
 
     HistoryDetailsResponse getHistory(String patientId, String doctorId, String hospitalId, String locationId, List<String> type);
 

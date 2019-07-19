@@ -45,7 +45,7 @@ public class ESRegistrationApi {
     @GET
     @ApiOperation(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT, notes = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
     public Response<ESPatientResponseDetails> searchPatient(@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-	    @PathParam(value = "searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @PathParam(value = "searchTerm") String searchTerm, @QueryParam("page") long page, @QueryParam("size") int size,
 	    @QueryParam("doctorId") String doctorId, @QueryParam("role") String role) {
 	if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, searchTerm)) {
 	    logger.warn("Location Id, Hospital Id and Search Term Cannot Be Empty");
@@ -83,14 +83,12 @@ public class ESRegistrationApi {
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("sortBy") String sortBy) {
-
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId, hospitalId could not null");
-		}
 
+		}
 		Response<ESPatientDocument> response = new Response<ESPatientDocument>();
 		response.setDataList(solrRegistrationService.searchDeletedPatient(doctorId, locationId, hospitalId, page, size, searchTerm, sortBy));
 		return response;
-
 	}
 }

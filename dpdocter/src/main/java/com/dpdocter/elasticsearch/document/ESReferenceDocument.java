@@ -13,23 +13,23 @@ public class ESReferenceDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
-	private String reference;
-
-	@Field(type = FieldType.String)
-	private String explanation;
-
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String mobileNumber;
 
-	@Field(type = FieldType.String)
-	private String doctorId;
+    @Field(type = FieldType.Text)
+    private String reference;
 
-	@Field(type = FieldType.String)
-	private String locationId;
+    @Field(type = FieldType.Text)
+    private String explanation;
 
-	@Field(type = FieldType.String)
-	private String hospitalId;
+    @Field(type = FieldType.Text)
+    private String doctorId;
+
+    @Field(type = FieldType.Text)
+    private String locationId;
+
+    @Field(type = FieldType.Text)
+    private String hospitalId;
 
 	@Field(type = FieldType.Boolean)
 	private Boolean discarded = false;

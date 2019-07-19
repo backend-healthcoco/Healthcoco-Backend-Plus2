@@ -10,7 +10,8 @@ public class SessionQuestion extends GenericCollection {
 	private String userId;
 	private String questioner;
 	private String questionerId;
-	private Integer noOfLikes;
+	private Integer noOfLikes = 0;
+	private String question;
 	private Boolean discarded = false;
 	private Boolean isLiked = false;
 
@@ -82,6 +83,15 @@ public class SessionQuestion extends GenericCollection {
 		this.questionerId = questionerId;
 	}
 
+	public String getQuestion() {
+		return question;
+	}
+
+	public void setQuestion(String question) {
+		this.question = question;
+	}
+
+	
 	@Override
 	public String toString() {
 		return "SessionQuestion [id=" + id + ", type=" + type + ", sessionId=" + sessionId + ", userId=" + userId

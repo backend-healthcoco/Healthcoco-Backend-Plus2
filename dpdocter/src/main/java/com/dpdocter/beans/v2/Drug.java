@@ -14,6 +14,8 @@ public class Drug {
 
 	private DrugType drugType;
 
+	private String drTy;
+
 	private String drugName;
 
 	private String explanation;
@@ -236,6 +238,14 @@ public class Drug {
 
 	public void setDrugTypePlacement(String drugTypePlacement) {
 		this.drugTypePlacement = drugTypePlacement;
+	}
+
+	public String getDrTy() {
+		return drTy;
+	}
+
+	public void setDrTy(String drTy) {
+		this.drTy = drTy;
 	}
 
 	public String getDurationValue() {

@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.FieldsCollection;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentState;

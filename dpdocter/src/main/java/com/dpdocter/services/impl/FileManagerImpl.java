@@ -251,7 +251,6 @@ public class FileManagerImpl implements FileManager {
 		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 		AmazonS3 s3client = new AmazonS3Client(credentials);
 		ImageURLResponse response = new ImageURLResponse();
-		Double fileSizeInMB = 0.0;
 		try {
 			InputStream fis = file.getEntityAs(InputStream.class);
 			ObjectMetadata metadata = new ObjectMetadata();
@@ -390,7 +389,7 @@ public class FileManagerImpl implements FileManager {
 			fileDetail.setFileExtension("jpg");
 			imageURLResponse = saveImageAndReturnImageUrl(fileDetail, path, false);
 			if (imageURLResponse != null && !DPDoctorUtils.anyStringEmpty(imageURLResponse.getImageUrl()))
-				imagelist.add(imagePath+imageURLResponse.getImageUrl());
+				imagelist.add(imagePath + imageURLResponse.getImageUrl());
 		}
 		System.out.println(imagelist.size());
 		document.close();

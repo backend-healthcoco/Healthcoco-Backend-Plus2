@@ -14,7 +14,7 @@ public interface SMSServices {
 
     SMSResponse getSMS(int page, int size, String doctorId, String locationId, String hospitalId);
 
-    List<SMSTrack> getSMSDetails(int page, int size, String patientId, String doctorId, String locationId, String hospitalId);
+    List<SMSTrack> getSMSDetails(long page, int size, String patientId, String doctorId, String locationId, String hospitalId);
 
     void updateDeliveryReports(List<SMSDeliveryReports> request);
 
@@ -38,5 +38,7 @@ public interface SMSServices {
 	Boolean getOTPSMSResponse(String mobileNumber, String message, String otp);
 
 	Boolean sendAndSaveOTPSMS(String message, String mobileNumber, String otp);
+
+	Boolean sendPatientOTP(String mobileNumber, String otp);
 
 }

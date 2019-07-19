@@ -130,6 +130,29 @@ public class LoginApi {
 		return response;
 	}
 
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+
+	}
+
+	@Path(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
+	@POST
+	@ApiOperation(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN, notes = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
+	public Response<Boolean> isLocationAdmin(LoginRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUsername()) || request.getPassword() == null
+				|| request.getPassword().length == 0) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Boolean isLocationAdmin = loginService.isLocationAdmin(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(isLocationAdmin);
+		return response;
+	}
+
 	@Path(value = PathProxy.LoginUrls.ADD_EDIT_DOCTOR_LOGIN_PIN)
 	@POST
 	@ApiOperation(value = PathProxy.LoginUrls.ADD_EDIT_DOCTOR_LOGIN_PIN, notes = PathProxy.LoginUrls.ADD_EDIT_DOCTOR_LOGIN_PIN)
@@ -166,31 +189,9 @@ public class LoginApi {
 		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getPin())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
 		}
 		Boolean isLocationAdmin = loginService.checkLoginPin(request);
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(isLocationAdmin);
-		return response;
-	}
-
-	private String getFinalImageURL(String imageURL) {
-		if (imageURL != null) {
-			return imagePath + imageURL;
-		} else
-			return null;
-
-	}
-
-	@Path(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
-	@POST
-	@ApiOperation(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN, notes = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
-	public Response<Boolean> isLocationAdmin(LoginRequest request) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUsername()) || request.getPassword() == null
-				|| request.getPassword().length == 0) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-		Boolean isLocationAdmin = loginService.isLocationAdmin(request);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(isLocationAdmin);
 		return response;

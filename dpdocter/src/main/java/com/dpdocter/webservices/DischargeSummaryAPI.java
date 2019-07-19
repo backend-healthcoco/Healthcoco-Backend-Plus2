@@ -82,8 +82,8 @@ public class DischargeSummaryAPI {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
 		}
-		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+		if (DPDoctorUtils.anyStringEmpty(request.getPatientId(),request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+			throw new BusinessException(ServiceError.InvalidInput, "doctorId,patientId,locationId and hospitalId should not be null");
 		}
 		dischargeSummary = dischargeSummaryService.addEditDischargeSummary(request);
 		if (dischargeSummary != null) {
@@ -97,7 +97,7 @@ public class DischargeSummaryAPI {
 	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY)
 	@GET
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY)
-	public Response<DischargeSummaryResponse> getDischargeSummary(@QueryParam(value = "page") int page,
+	public Response<DischargeSummaryResponse> getDischargeSummary(@QueryParam(value = "page") long page,
 			@QueryParam(value = "size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@QueryParam(value = "patientId") String patientId,
@@ -469,7 +469,7 @@ public class DischargeSummaryAPI {
 	@GET
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_ITEMS, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_ITEMS)
 	public Response<Object> getDischargeSummaryItems(@PathParam("type") String type, @PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
@@ -555,13 +555,13 @@ public class DischargeSummaryAPI {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Id is null");
 		}
-
 		flowsheetResponses = dischargeSummaryService.getFlowSheetsById(id);
 		response = new Response<FlowsheetResponse>();
 		response.setData(flowsheetResponses);
 
 		return response;
 	}
+
 
 	@Path(value = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM)
 	@POST

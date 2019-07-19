@@ -44,12 +44,13 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Response<Object> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
+	public Response<Object> searchDrug(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category,
+			Boolean searchByGenericName) {
 		Response<Object> response = new Response<Object>();
 		Response<ESDrugDocument> esDrugDocuments = null;
 		Response<DrugDocument> drugDocuments = null;
-		
+
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 			searchTerm = searchTerm.toUpperCase();
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -57,31 +58,46 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		case GLOBAL:
 			esDrugDocuments = getGlobalDrugs(page, size, updatedTime, discarded, searchTerm, category,
 					searchByGenericName);
+			if (esDrugDocuments != null && esDrugDocuments.getDataList() != null
+					&& !esDrugDocuments.getDataList().isEmpty()) {
 			response.setDataList(addStockToDrug((List<ESDrugDocument>) esDrugDocuments.getDataList()));
+			}
 			response.setCount(esDrugDocuments.getCount());
 			break;
 		case CUSTOM:
 			esDrugDocuments = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 					searchTerm, category, searchByGenericName);
+			if (esDrugDocuments != null && esDrugDocuments.getDataList() != null
+					&& !esDrugDocuments.getDataList().isEmpty()) {
 			response.setDataList(addStockToDrug((List<ESDrugDocument>) esDrugDocuments.getDataList()));
+			}
 			response.setCount(esDrugDocuments.getCount());
 			break;
 		case BOTH:
 			esDrugDocuments = getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 					searchTerm, category, searchByGenericName);
+			if (esDrugDocuments != null && esDrugDocuments.getDataList() != null
+					&& !esDrugDocuments.getDataList().isEmpty()) {
 			response.setDataList(addStockToDrug((List<ESDrugDocument>) esDrugDocuments.getDataList()));
+			}
 			response.setCount(esDrugDocuments.getCount());
 			break;
 		case FAVOURITES:
 			drugDocuments = getFavouritesDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 					searchTerm, category, searchByGenericName);
-			response.setDataList(addStockToDrugWeb((List<DrugDocument>) drugDocuments.getDataList()));
+			if (drugDocuments != null && drugDocuments.getDataList() != null
+					&& !drugDocuments.getDataList().isEmpty()) {
+				response.setDataList(addStockToDrugWeb((List<DrugDocument>) drugDocuments.getDataList()));
+			}
 			response.setCount(drugDocuments.getCount());
 			break;
 		case WEBBOTH:
 			drugDocuments = getCustomGlobalDrugsForWeb(page, size, doctorId, locationId, hospitalId, updatedTime,
 					discarded, searchTerm, category, searchByGenericName);
-			response.setDataList(addStockToDrugWeb((List<DrugDocument>) drugDocuments.getDataList()));
+			if (drugDocuments != null && drugDocuments.getDataList() != null
+					&& !drugDocuments.getDataList().isEmpty()) {
+				response.setDataList(addStockToDrugWeb((List<DrugDocument>) drugDocuments.getDataList()));
+			}
 			response.setCount(drugDocuments.getCount());
 			break;
 		default:
@@ -101,7 +117,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			}
 			if (doctorId == null) {
 				response.setDataList(new ArrayList<DrugDocument>());
-			}else {
+			} else {
 				SearchQuery searchQuery = null;
 
 				if (searchByGenericName) {
@@ -175,12 +191,14 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 								updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
 
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDrugDocument.class);
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDrugDocument.class);
 
-				if(count > 0) {
-					List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+				if (count > 0) {
+					List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
+							ESDrugDocument.class);
 					List<DrugDocument> drugs = new ArrayList<DrugDocument>();
-					
+
 					for (ESDrugDocument esDrugDocument : esDrugDocuments) {
 						String drugTypeStr = esDrugDocument.getDrugType();
 						esDrugDocument.setDrugType(null);
@@ -220,8 +238,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 			}
 
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDrugDocument.class);
-			if(count > 0) {
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDrugDocument.class);
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class));
 			}
@@ -245,13 +264,13 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, page, size, updatedTime, discarded, null,
 						searchTerm, null, category, null, "drugName");
 			}
-			
-			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDrugDocument.class);
-			if(count > 0) {
+
+			Integer count = (int) elasticsearchTemplate.count(
+					new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDrugDocument.class);
+			if (count > 0) {
 				response.setCount(count);
 				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class));
 			}
-			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -269,7 +288,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			if (page > 0) {
 				response.setDataList(new ArrayList<DrugDocument>());
 			}
-			if (doctorId == null) 
+			if (doctorId == null)
 				response.setDataList(new ArrayList<DrugDocument>());
 			else {
 				SearchQuery searchQuery = null;
@@ -280,8 +299,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
 							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
-				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDrugDocument.class);
-				if(count > 0) {
+				Integer count = (int) elasticsearchTemplate.count(
+						new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESDrugDocument.class);
+				if (count > 0) {
 					response.setCount(count);
 					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class));
 				}
@@ -295,18 +315,18 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	private List<ESDrugDocument> addStockToDrug(List<ESDrugDocument> drugs) {
-
-		for (ESDrugDocument drug : drugs) {
-
-			if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getId())) {
-				InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
-						drug.getHospitalId(), drug.getDrugCode());
-				if (inventoryItem != null) {
-					InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
-							.getInventoryItem(inventoryItem.getId());
-					drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
-					drug.setRetailPrice(inventoryItemLookupResposne.getRetailPrice());
-					drug.setStockingUnit(inventoryItemLookupResposne.getStockingUnit());
+		if (drugs != null) {
+			for (ESDrugDocument drug : drugs) {
+				if (!DPDoctorUtils.anyStringEmpty(drug.getLocationId(), drug.getHospitalId(), drug.getId())) {
+					InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(drug.getLocationId(),
+							drug.getHospitalId(), drug.getDrugCode());
+					if (inventoryItem != null) {
+						InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
+								.getInventoryItem(inventoryItem.getId());
+						drug.setTotalStock(inventoryItemLookupResposne.getTotalStock());
+						drug.setRetailPrice(inventoryItemLookupResposne.getRetailPrice());
+						drug.setStockingUnit(inventoryItemLookupResposne.getStockingUnit());
+					}
 				}
 			}
 		}

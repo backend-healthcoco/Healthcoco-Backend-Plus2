@@ -13,7 +13,7 @@ public class GetDoctorContactsRequest {
 
     private Boolean discarded = true;
 
-    private int page;
+    private long page;
 
     private int size;
 
@@ -45,11 +45,11 @@ public class GetDoctorContactsRequest {
 	this.doctorId = doctorId;
     }
 
-    public int getPage() {
+    public long getPage() {
 	return page;
     }
 
-    public void setPage(int page) {
+    public void setPage(long page) {
 	this.page = page;
     }
 

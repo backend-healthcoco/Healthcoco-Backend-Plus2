@@ -21,7 +21,6 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.v2.PrescriptionServices;
-import com.dpdocter.webservices.v2.PathProxy;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;

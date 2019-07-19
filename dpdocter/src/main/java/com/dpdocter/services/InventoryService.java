@@ -16,9 +16,9 @@ public interface InventoryService {
 	InventoryItem addItem(InventoryItem inventoryItem);
 
 	List<InventoryItemLookupResposne> getInventoryItemList(String locationId, String hospitalId, String type, String searchTerm,
-			int page, int size);
+			long page, int size);
 
-	List<Manufacturer> getManufacturerList(String locationId, String hospitalId, String searchTerm, int page, int size);
+	List<Manufacturer> getManufacturerList(String locationId, String hospitalId, String searchTerm, long page, int size);
 
 	InventoryStock addInventoryStock(InventoryStock inventoryStock);
 
@@ -40,10 +40,10 @@ public interface InventoryService {
 	Integer getInventoryItemListCount(String locationId, String hospitalId, String type, String searchTerm);
 
 	List<InventoryBatch> getInventoryBatchList(String locationId, String hospitalId, String itemId, String searchTerm,
-			int page, int size);
+			long page, int size);
 
 	List<InventoryStockLookupResponse> getInventoryStockList(String locationId, String hospitalId, String itemId,
-			String stockType, String searchTerm, int page, int size);
+			String stockType, String searchTerm, long page, int size);
 
 	//InventorySettings getInventorySetting(String doctorId, String locationId, String hospitalId);
 

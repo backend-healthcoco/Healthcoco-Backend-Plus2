@@ -174,6 +174,8 @@ public class ClinicalNotesEditRequest {
 	private String painScale;
 
 	private Date createdTime;
+	
+	private String priorConsultations;
 
 	public Date getLmp() {
 		return lmp;
@@ -1140,6 +1142,14 @@ public class ClinicalNotesEditRequest {
 
 	public void setPainScale(String painScale) {
 		this.painScale = painScale;
+	}
+
+	public String getPriorConsultations() {
+		return priorConsultations;
+	}
+
+	public void setPriorConsultations(String priorConsultations) {
+		this.priorConsultations = priorConsultations;
 	}
 
 	@Override

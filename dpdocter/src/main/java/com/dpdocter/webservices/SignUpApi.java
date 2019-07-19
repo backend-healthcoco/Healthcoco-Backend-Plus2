@@ -340,6 +340,22 @@ public class SignUpApi {
 		return response;
 	}
 
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.WELCOME_USER)
+	@GET
+	@ApiOperation(value = PathProxy.SignUpUrls.WELCOME_USER, notes = PathProxy.SignUpUrls.WELCOME_USER)
+	public Response<DoctorContactUs> welcomeUser(@PathParam(value = "tokenId") String tokenId) {
+		if (tokenId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		DoctorContactUs contactUs = signUpService.welcomeUser(tokenId);
+		Response<DoctorContactUs> response = new Response<DoctorContactUs>();
+		response.setData(contactUs);
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
@@ -363,14 +379,12 @@ public class SignUpApi {
 					doctorSignUp.getUser().setThumbnailUrl(getFinalImageURL(doctorSignUp.getUser().getThumbnailUrl()));
 				}
 			}
-			
 			if (doctorSignUp.getHospital() != null) {
 				if (doctorSignUp.getHospital().getHospitalImageUrl() != null) {
 					doctorSignUp.getHospital()
 							.setHospitalImageUrl(getFinalImageURL(doctorSignUp.getHospital().getHospitalImageUrl()));
 				}
 			}
-			
 			transnationalService.checkDoctor(new ObjectId(doctorSignUp.getUser().getId()), null);
 
 		}
@@ -380,33 +394,5 @@ public class SignUpApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.WELCOME_USER)
-	@GET
-	@ApiOperation(value = PathProxy.SignUpUrls.WELCOME_USER, notes = PathProxy.SignUpUrls.WELCOME_USER)
-	public Response<DoctorContactUs> welcomeUser(@PathParam(value = "tokenId") String tokenId) {
-		if (tokenId == null) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-		DoctorContactUs contactUs = signUpService.welcomeUser(tokenId);
-		Response<DoctorContactUs> response = new Response<DoctorContactUs>();
-		response.setData(contactUs);
-		return response;
-	}
-
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.VERIFY_CONFERENCE_USER)
-	@GET
-	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_CONFERENCE_USER, notes = PathProxy.SignUpUrls.VERIFY_CONFERENCE_USER)
-	public Response<String> verifyConferenUser(@PathParam(value = "tokenId") String tokenId) {
-		if (tokenId == null) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-		String string = signUpService.verifyConfexAdmin(tokenId);
-		Response<String> response = new Response<String>();
-		response.setData(string);
-		return response;
-	}
+	
 }

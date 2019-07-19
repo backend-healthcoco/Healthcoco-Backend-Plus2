@@ -65,7 +65,8 @@ public class LoginServiceTest extends AbstractTestNGSpringContextTests {
 		String password = "admin";
 		request.setPassword(DPDoctorUtils.getSHA3SecurePassword(password.toCharArray()));
 
-		LoginResponse loginResponse = loginService.login(request, false, false);
+
+		LoginResponse loginResponse = loginService.login(request, false,false);
 
 		System.out.println();
 		AssertJUnit.assertEquals(loginResponse.getUser().getUserName(), request.getUsername());
@@ -74,8 +75,8 @@ public class LoginServiceTest extends AbstractTestNGSpringContextTests {
 
 	// @Test
 	public void testuser() {
-		UserCollection userCollection = userRepository.findOne(new ObjectId("5794af08e4b01f1d73f9b7c0"));
-		System.out.println(userCollection.getFirstName());
+//		UserCollection userCollection = userRepository.findById(new ObjectId("5794af08e4b01f1d73f9b7c0")).orElse(null);
+//		System.out.println(userCollection.getFirstName());
 
 	}
 

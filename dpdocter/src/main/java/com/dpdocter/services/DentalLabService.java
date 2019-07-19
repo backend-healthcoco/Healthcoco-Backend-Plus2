@@ -36,7 +36,7 @@ public interface DentalLabService {
 
 	DentalWork addEditCustomWork(AddEditCustomWorkRequest request);
 
-	List<DentalWork> getCustomWorks(int page, int size, String searchTerm);
+	List<DentalWork> getCustomWorks(long page, int size, String searchTerm);
 
 	DentalWork deleteCustomWork(String id, boolean discarded);
 
@@ -46,7 +46,25 @@ public interface DentalLabService {
 
 	Boolean addEditRateCardDentalWorkAssociation(List<RateCardDentalWorkAssociation> request);
 
+	/*
+	 * List<RateCardDentalWorkAssociation> getRateCardWorks(long page, int size,
+	 * String searchTerm, String rateCardId, Boolean discarded);
+	 */
+	// Boolean addEditRateCardDoctorAssociation(List<RateCardDoctorAssociation>
+	// request);
+
 	DentalLabDoctorAssociation addEditDentalLabDoctorAssociation(DentalLabDoctorAssociation request);
+
+	/*
+	 * List<DentalLabDoctorAssociationLookupResponse>
+	 * getDentalLabDoctorAssociations(String locationId, long page, int size, String
+	 * searchTerm);
+	 */
+
+	/*
+	 * List<RateCardDoctorAssociation> getRateCards(long page, int size, String
+	 * searchTerm, String doctorId, Boolean discarded);
+	 */
 
 	Boolean addEditCollectionBoyDoctorAssociation(List<CollectionBoyDoctorAssociation> request);
 
@@ -61,12 +79,35 @@ public interface DentalLabService {
 			String dentalLabId, Boolean discarded);
 
 	List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId, String doctorId,
-			int page, int size, String searchTerm);
+			long page, int size, String searchTerm);
 
 	List<Location> getDentalLabDoctorAssociationsForDoctor(String doctorId, int page, int size, String searchTerm);
+	/*
+	 * List<DentalLabPickupResponse> getRequests(String dentalLabId, String
+	 * doctorId, Long from, Long to, String searchTerm, String status, Boolean
+	 * isAcceptedAtLab, Boolean isCompleted, int size, long page);
+	 */
 
 	List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm, String dentalLabId,
 			String doctorId, Boolean discarded);
+
+
+	// Boolean changeStatus(String dentalLabPickupId, String status);
+
+	// Boolean changeStatus(String dentalLabPickupId, String status, Boolean
+	// isCollectedAtLab);
+
+	/*
+	 * List<DentalLabPickupResponse> getRequests(String dentalLabId, String
+	 * doctorId, Long from, Long to, String searchTerm, String status, Boolean
+	 * isAcceptedAtLab, Boolean isCompleted, Boolean isCollectedAtDoctor, int size,
+	 * long page);
+	 */
+
+	/*
+	 * Boolean changeStatus(String dentalLabPickupId, String status, Boolean
+	 * isCollectedAtDoctor, Boolean isCompleted, Boolean isAcceptedAtLab);
+	 */
 
 	ImageURLResponse addDentalImage(FormDataBodyPart file);
 
@@ -78,7 +119,7 @@ public interface DentalLabService {
 
 	Boolean updateETA(UpdateETARequest request);
 
-	List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm, String rateCardId,
+	List<RateCardDentalWorkAssociation> getRateCardWorks(long page, int size, String searchTerm, String rateCardId,
 			Boolean discarded);
 
 	Boolean cancelRequest(String requestId, String reasonOfCancellation, String cancelledBy);
@@ -89,7 +130,7 @@ public interface DentalLabService {
 
 	List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from, Long to,
 			String searchTerm, String status, Boolean isAcceptedAtLab, Boolean isCompleted, Boolean isCollectedAtDoctor,
-			int size, int page, Long fromETA, Long toETA, Boolean isTrailsRequired);
+			int size, long page, Long fromETA, Long toETA, Boolean isTrailsRequired);
 
 	Boolean changeStatus(DentalLabPickupChangeStatusRequest request);
 
@@ -107,7 +148,7 @@ public interface DentalLabService {
 
 	List<DentalWorksInvoiceResponse> getInvoices(String doctorId, String locationId, String hospitalId,
 			String dentalLabLocationId, String dentalLabHospitalId, Long from, Long to, String searchTerm, int size,
-			int page);
+			long page);
 
 	DentalWorksReceiptResponse getReceiptById(String id);
 
@@ -117,7 +158,7 @@ public interface DentalLabService {
 
 	List<DentalWorksReceiptResponse> getReceipts(String doctorId, String locationId, String hospitalId,
 			String dentalLabLocationId, String dentalLabHospitalId, Long from, Long to, String searchTerm, int size,
-			int page);
+			long page);
 
 	DentalWorksInvoice discardInvoice(String id, Boolean discarded);
 
@@ -129,5 +170,14 @@ public interface DentalLabService {
 	public String downloadDentalWorkInvoice(String invoiceId);
 
 	public String downloadDentalLabReceipt(String receiptId);
+
+	/*
+	 * DentalLabDoctorAssociation
+	 * addEditDentalLabDoctorAssociation(DentalLabDoctorAssociation request);
+	 * 
+	 * List<DentalLabDoctorAssociationLookupResponse>
+	 * getDentalLabDoctorAssociations(String locationId, long page, int size, String
+	 * searchTerm);
+	 */
 
 }

@@ -30,7 +30,7 @@ public class PatientMeasurementInfo extends GenericCollection {
 
 	private Integer bmr = 0;
 
-	private Double vfat = 0.0;
+	private Double vfat = 0.0;;
 
 	private BodyContent wholeBody;
 

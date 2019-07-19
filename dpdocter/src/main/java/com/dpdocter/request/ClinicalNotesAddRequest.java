@@ -265,6 +265,8 @@ public class ClinicalNotesAddRequest {
 	
 	private String priorConsultations;
 
+	private Boolean sendNotificationToDoctor = true;
+
 	public Date getCreatedTime() {
 		return createdTime;
 	}
@@ -1220,6 +1222,14 @@ public class ClinicalNotesAddRequest {
 		this.priorConsultations = priorConsultations;
 	}
 
+	public Boolean getSendNotificationToDoctor() {
+		return sendNotificationToDoctor;
+	}
+
+	public void setSendNotificationToDoctor(Boolean sendNotificationToDoctor) {
+		this.sendNotificationToDoctor = sendNotificationToDoctor;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", observation=" + observation
@@ -1266,7 +1276,13 @@ public class ClinicalNotesAddRequest {
 				+ globalIndirectLarygoscopyExam + ", globalNeckExam=" + globalNeckExam + ", globalEarsExam="
 				+ globalEarsExam + ", lmp=" + lmp + ", edd=" + edd + ", noOfFemaleChildren=" + noOfFemaleChildren
 				+ ", noOfMaleChildren=" + noOfMaleChildren + ", pastHistory=" + pastHistory + ", familyHistory="
-				+ familyHistory + "]";
+				+ familyHistory + ", personalHistoryTobacco=" + personalHistoryTobacco + ", personalHistoryAlcohol="
+				+ personalHistoryAlcohol + ", personalHistorySmoking=" + personalHistorySmoking
+				+ ", personalHistoryDiet=" + personalHistoryDiet + ", personalHistoryOccupation="
+				+ personalHistoryOccupation + ", generalHistoryDrugs=" + generalHistoryDrugs
+				+ ", generalHistoryMedicine=" + generalHistoryMedicine + ", generalHistoryAllergies="
+				+ generalHistoryAllergies + ", generalHistorySurgical=" + generalHistorySurgical + ", painScale="
+				+ painScale + ", createdTime=" + createdTime + ", sendNotificationToDoctor=" + sendNotificationToDoctor
+				+ "]";
 	}
-
 }

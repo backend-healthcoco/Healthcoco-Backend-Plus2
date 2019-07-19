@@ -65,7 +65,7 @@ public class ESDentalLabServiceImpl implements ESDentalLabService{
 	}
 	
 	@Override
-	public List<ESDentalWorksDocument> searchDentalworks(String range, int page, int size, String doctorId,
+	public List<ESDentalWorksDocument> searchDentalworks(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESDentalWorksDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -89,7 +89,7 @@ public class ESDentalLabServiceImpl implements ESDentalLabService{
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<ESDentalWorksDocument> getCustomGlobalDentalWorks(int page, int size, String doctorId,
+	private List<ESDentalWorksDocument> getCustomGlobalDentalWorks(long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESDentalWorksDocument> response = null;
 		try {
@@ -97,7 +97,7 @@ public class ESDentalLabServiceImpl implements ESDentalLabService{
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -109,7 +109,7 @@ public class ESDentalLabServiceImpl implements ESDentalLabService{
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -136,7 +136,7 @@ public class ESDentalLabServiceImpl implements ESDentalLabService{
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESDentalWorksDocument> getGlobalDentalWorks(int page, int size, String doctorId, String updatedTime,
+	private List<ESDentalWorksDocument> getGlobalDentalWorks(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESDentalWorksDocument> response = null;
 		try {
@@ -144,7 +144,7 @@ public class ESDentalLabServiceImpl implements ESDentalLabService{
 			Collection<String> specialities = Collections.EMPTY_LIST;
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
 				if (doctorCollections != null && !doctorCollections.isEmpty()) {
 					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
@@ -156,7 +156,7 @@ public class ESDentalLabServiceImpl implements ESDentalLabService{
 								ESSpecialityDocument.class);
 						if (count > 0) {
 							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withPageable(new PageRequest(0, count)).build();
+									.withPageable(PageRequest.of(0, count)).build();
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
@@ -180,7 +180,7 @@ public class ESDentalLabServiceImpl implements ESDentalLabService{
 		return response;
 	}
 
-	private List<ESDentalWorksDocument> getCustomDentalWorks(int page, int size, String doctorId, String locationId,
+	private List<ESDentalWorksDocument> getCustomDentalWorks(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESDentalWorksDocument> response = null;
 		try {

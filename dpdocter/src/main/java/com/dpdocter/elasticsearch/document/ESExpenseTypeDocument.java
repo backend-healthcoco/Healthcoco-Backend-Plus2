@@ -12,16 +12,16 @@ public class ESExpenseTypeDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String name;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	public String doctorId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	public String locationId;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	public String hospitalId;
 
 	@Field(type = FieldType.Boolean)

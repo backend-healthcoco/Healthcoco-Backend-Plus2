@@ -34,9 +34,6 @@ public interface RecipeService {
 
 	Recipe discardRecipe(String id, boolean discarded);
 
-	/*public List<Recipe> getRecipeList(int size, int page, boolean discarded, String searchTerm, String doctorId,
-			String locationId, String hospitalId);*/
-
 	List<RecipeCounterAddItem> getFavouriteRecipe(int size, int page, boolean discarded, String searchTerm, String userId);
 
 	Boolean addFavouriteRecipe(String userId, String recipeId);
@@ -49,6 +46,4 @@ public interface RecipeService {
 			String locationId, String hospitalId, String planId);
 
 	List<RecipeCardResponse> getRecipeByPlanId(int size, int page, String planId);
-
-
 }

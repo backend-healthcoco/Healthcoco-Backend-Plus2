@@ -605,22 +605,6 @@ public class DoctorClinicProfile {
 		this.isPidHasDate = isPidHasDate;
 	}
 
-	public Boolean getHasLoginAccess() {
-		return hasLoginAccess;
-	}
-
-	public void setHasLoginAccess(Boolean hasLoginAccess) {
-		this.hasLoginAccess = hasLoginAccess;
-	}
-
-	public Boolean getHasBillingAccess() {
-		return hasBillingAccess;
-	}
-
-	public void setHasBillingAccess(Boolean hasBillingAccess) {
-		this.hasBillingAccess = hasBillingAccess;
-	}
-
 	public String getMrCode() {
 		return mrCode;
 	}
@@ -659,6 +643,22 @@ public class DoctorClinicProfile {
 
 	public void setFeedbackURL(String feedbackURL) {
 		this.feedbackURL = feedbackURL;
+	}
+	
+	public Boolean getHasLoginAccess() {
+		return hasLoginAccess;
+	}
+
+	public void setHasLoginAccess(Boolean hasLoginAccess) {
+		this.hasLoginAccess = hasLoginAccess;
+	}
+
+	public Boolean getHasBillingAccess() {
+		return hasBillingAccess;
+	}
+
+	public void setHasBillingAccess(Boolean hasBillingAccess) {
+		this.hasBillingAccess = hasBillingAccess;
 	}
 
 	@Override

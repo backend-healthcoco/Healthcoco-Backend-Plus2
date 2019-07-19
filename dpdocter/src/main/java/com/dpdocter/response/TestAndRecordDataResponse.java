@@ -10,7 +10,7 @@ public class TestAndRecordDataResponse {
 	private DiagnosticTest test;
 
 	private String recordId;
-
+    
 	public TestAndRecordDataResponse(DiagnosticTest test, String recordId) {
 		this.test = test;
 		this.recordId = recordId;

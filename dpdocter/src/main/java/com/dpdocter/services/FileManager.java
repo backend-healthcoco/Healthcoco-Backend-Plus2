@@ -20,12 +20,12 @@ public interface FileManager {
 	public String saveThumbnailUrl(FormDataBodyPart file, String path);
 
 	public Double saveRecordBase64(FileDetails fileDetail, String recordPath);
+	
+	public List<String> convertPdfToImage(FileDetails fileDetails, String path, Boolean createThumbnail) throws Exception;
 
 	public String saveThumbnailAndReturnThumbNailUrl(String fileName, String path);
 
 	public ImageURLResponse saveImageAndReturnImageUrl(ByteArrayOutputStream outstream, String fileName, String path,
 			Boolean createThumbnail) throws Exception;
-
-	public List<String> convertPdfToImage(FileDetails fileDetails, String path, Boolean createThumbnail) throws Exception;
 
 }

@@ -78,11 +78,11 @@ public class PatientCard extends GenericCollection {
 	private List<Relations> relations;
 
 	private List<String> consultantDoctorIds;
-	
+
 	private Long registrationDate;
-	
+
 	private List<QuestionAnswers> medicalQuestionAnswers;
-	
+
 	private List<QuestionAnswers> lifestyleQuestionAnswers;
 
 	private PersonalInformation personalInformation;
@@ -90,6 +90,12 @@ public class PatientCard extends GenericCollection {
 	private String PNUM;
 
 	private PatientCollection patient;
+
+	private Boolean isChild = false;
+
+	private String fatherName;
+
+	private String motherName;
 		
 	private String backendPatientId;
 
@@ -102,7 +108,7 @@ public class PatientCard extends GenericCollection {
 	}
 
 	private Boolean isPatientDiscarded = false;
-	
+
 	public String getPatientId() {
 		return patientId;
 	}
@@ -503,6 +509,30 @@ public class PatientCard extends GenericCollection {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
+	public Boolean getIsChild() {
+		return isChild;
+	}
+
+	public void setIsChild(Boolean isChild) {
+		this.isChild = isChild;
+	}
+
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public String getMotherName() {
+		return motherName;
+	}
+
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
+	}
+	
 	public String getBackendPatientId() {
 		return backendPatientId;
 	}
@@ -527,9 +557,10 @@ public class PatientCard extends GenericCollection {
 				+ ", consultantDoctorIds=" + consultantDoctorIds + ", registrationDate=" + registrationDate
 				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
 				+ lifestyleQuestionAnswers + ", personalInformation=" + personalInformation + ", PNUM=" + PNUM
-				+ ", patient=" + patient + ", backendPatientId=" + backendPatientId + ", isPatientDiscarded="
-				+ isPatientDiscarded + ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId="
-				+ adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId
-				+ ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes + "]";
+				+ ", patient=" + patient + ", isChild=" + isChild + ", fatherName=" + fatherName + ", motherName="
+				+ motherName + ", backendPatientId=" + backendPatientId + ", isPatientDiscarded=" + isPatientDiscarded
+				+ ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
+				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
+				+ insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes + "]";
 	}
 }

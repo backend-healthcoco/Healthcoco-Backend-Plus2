@@ -188,7 +188,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			} else {
 				userDeviceCollections = userDevices;
 			}
-			System.out.println(userDeviceCollections);
 			if (userDeviceCollections != null && !userDeviceCollections.isEmpty()) {
 				for (UserDeviceCollection userDeviceCollection : userDeviceCollections) {
 					if (userDeviceCollection.getDeviceType() != null) {
@@ -469,6 +468,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				}
 			}
 
+			Boolean isSilent = false;
 			Map<String, Object> customValues = new HashMap<String, Object>();
 			if (!DPDoctorUtils.anyStringEmpty(componentType)) {
 				if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType())) {
@@ -499,10 +499,71 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DOCTOR_LAB_REPORTS.getType())) {
 					customValues.put("RI", componentTypeId);
 					customValues.put("T", "SI");
+					isSilent = true;
 				} else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
 
 					customValues.put("RI", componentTypeId);
 					customValues.put("T", "DW");
+				}
+				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
+					customValues.put("RI", componentTypeId);
+					customValues.put("T", "DI");
+				}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
+					customValues.put("EI", componentTypeId);
+					customValues.put("T", "E");
+				}
+				else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
+					customValues.put("RI", "SILENT");
+					customValues.put("T", "PR");
+					isSilent = true;
+				}else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
+					customValues.put("RI", "SILENT");
+					customValues.put("T", "RDI");
+					isSilent = true;
+				}else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
+					customValues.put("RI", "SILENT");
+					customValues.put("T", "DWR");
+					isSilent = true;
+				}else if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTION_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RX");
+					isSilent = true;
+				}else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_VISIT_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RPV");
+					isSilent = true;
+				}else if (componentType.equalsIgnoreCase(ComponentType.CLINICAL_NOTES_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RCN");
+					isSilent = true;
+				}else if (componentType.equalsIgnoreCase(ComponentType.TREATMENTS_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RT");
+					isSilent = true;
+				}else if (componentType.equalsIgnoreCase(ComponentType.RECORDS_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RR");
+					isSilent = true;
+				}else if (componentType.equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RDS");
+					isSilent = true;
+				}else if (componentType.equalsIgnoreCase(ComponentType.INVOICE_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RBI");
+					isSilent = true;
+				}else if (componentType.equalsIgnoreCase(ComponentType.RECEIPT_REFRESH.getType())) {
+					customValues.put("PI",componentTypeId);
+					customValues.put("T", "RBR");
+					isSilent = true;
+				}else if (componentType.equalsIgnoreCase(ComponentType.APPOINTMENT_REFRESH.getType())) {
+					customValues.put("AI",componentTypeId);
+					customValues.put("T", "AR");
+					isSilent = true;
+				}else if (componentType.equalsIgnoreCase(ComponentType.APPOINTMENT_STATUS_CHANGE.getType())) {
+					customValues.put("AI",componentTypeId);
+					customValues.put("T", "ASC");
+					isSilent = true;
 				}
 				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
 					customValues.put("RI", componentTypeId);
@@ -580,7 +641,13 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 //					customValues.put("T", "RR");
 //				}
 			}
-			String payload = APNS.newPayload().alertBody(message).sound("default").customFields(customValues).build();
+			String payload = null;
+			
+			if(isSilent) {
+				payload = APNS.newPayload().customFields(customValues).forNewsstand().build();
+			}else {
+				payload = APNS.newPayload().alertBody(message).sound("default").customFields(customValues).build();
+			}
 			service.push(pushToken, payload);
 			List<String> deviceIds = new ArrayList<String>();
 			deviceIds.add(deviceId);
@@ -1037,6 +1104,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Boolean notifyRefreshAll(RoleEnum role, List<ObjectId> LocaleIds, String message,
 			ComponentType componentType) {

@@ -32,7 +32,13 @@ public class ESPatientResponse {
 	private String colorCode;
 
 	private String PNUM;
-	
+
+	private Boolean isChild = false;
+
+	private String fatherName;
+
+	private String motherName;
+
 	private String doctorId;
 
 	public String getId() {
@@ -131,6 +137,30 @@ public class ESPatientResponse {
 		PNUM = pNUM;
 	}
 
+	public Boolean getIsChild() {
+		return isChild;
+	}
+
+	public void setIsChild(Boolean isChild) {
+		this.isChild = isChild;
+	}
+
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public String getMotherName() {
+		return motherName;
+	}
+
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
+	}
+
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -144,7 +174,7 @@ public class ESPatientResponse {
 		return "ESPatientResponse [id=" + id + ", userId=" + userId + ", PID=" + PID + ", firstName=" + firstName
 				+ ", localPatientName=" + localPatientName + ", gender=" + gender + ", emailAddress=" + emailAddress
 				+ ", dob=" + dob + ", mobileNumber=" + mobileNumber + ", thumbnailUrl=" + thumbnailUrl + ", colorCode="
-				+ colorCode + ", PNUM=" + PNUM + ", doctorId=" + doctorId + "]";
+				+ colorCode + ", PNUM=" + PNUM + ", isChild=" + isChild + ", fatherName=" + fatherName + ", motherName="
+				+ motherName + ", doctorId=" + doctorId + "]";
 	}
-
 }

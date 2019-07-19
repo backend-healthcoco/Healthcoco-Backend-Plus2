@@ -20,19 +20,19 @@ public interface ESDischargeSummaryService {
 
 	boolean addCement(ESCementDocument request);
 
-	List<ESBabyNoteDocument> searchBabyNotes(String range, int page, int size, String doctorId, String locationId,
+	List<ESBabyNoteDocument> searchBabyNotes(String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESOperationNoteDocument> searchOperationNotes(String range, int page, int size, String doctorId,
+	List<ESOperationNoteDocument> searchOperationNotes(String range, long page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<EsLabourNoteDocument> searchLabourNotes(String range, int page, int size, String doctorId, String locationId,
+	List<EsLabourNoteDocument> searchLabourNotes(String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESImplantDocument> searchImplant(String range, int page, int size, String doctorId, String locationId,
+	List<ESImplantDocument> searchImplant(String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-	List<ESCementDocument> searchCement(String range, int page, int size, String doctorId, String locationId,
+	List<ESCementDocument> searchCement(String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 }

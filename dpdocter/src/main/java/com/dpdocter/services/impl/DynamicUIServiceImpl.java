@@ -109,10 +109,10 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 	private KioskDynamicUiRepository kioskDynamicUiRepository;
 
 	@Autowired
-	private NutritionUIRepository nutritionUIRepository;
-	
-	@Autowired
 	private PushNotificationServices pushNotificationServices;
+
+	@Autowired
+	private NutritionUIRepository nutritionUIRepository;
 
 	@Override
 	@Transactional
@@ -137,7 +137,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			} else {
 				for (ObjectId specialityId : doctorCollection.getSpecialities()) {
 
-					SpecialityCollection specialityCollection = specialityRepository.findOne(specialityId);
+					SpecialityCollection specialityCollection = specialityRepository.findById(specialityId).orElse(null);
 					if (specialityCollection != null) {
 						speciality = specialityCollection.getSpeciality();
 					}
@@ -242,6 +242,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
 			uiPermissions.setAdmitCardPermissions(admitCardPermission);
 			uiPermissions.setPatientCertificatePermissions(patientCertificatePermissions);
+
 			break;
 		case "PEDIATRICIAN":
 			uiPermissions = new UIPermissions();
@@ -255,6 +256,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
 			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			patientCertificatePermissions = new ArrayList<String>(Arrays.asList(patientCertificatePermission()));
+
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -283,6 +285,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
 			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			patientCertificatePermissions = new ArrayList<String>(Arrays.asList(patientCertificatePermission()));
+
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -308,6 +311,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
 			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			patientCertificatePermissions = new ArrayList<String>(Arrays.asList(patientCertificatePermission()));
+
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -334,6 +338,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			dentalLabRequestPermission = new ArrayList<String>(Arrays.asList(dentalLabRequestPermission()));
 			dentalWorkSamplePermission = new ArrayList<String>(Arrays.asList(dentalWorkSamplePermission()));
 			patientCertificatePermissions = new ArrayList<String>(Arrays.asList(patientCertificatePermission()));
+
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -358,6 +363,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
 			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			patientCertificatePermissions = new ArrayList<String>(Arrays.asList(patientCertificatePermission()));
+
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -382,6 +388,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			dischargeSummaryPermission.addAll(orthoPermission);
 			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			patientCertificatePermissions = new ArrayList<String>(Arrays.asList(patientCertificatePermission()));
+
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -404,6 +411,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
 			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			patientCertificatePermissions = new ArrayList<String>(Arrays.asList(patientCertificatePermission()));
+
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -425,6 +433,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
 			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			patientCertificatePermissions = new ArrayList<String>(Arrays.asList(patientCertificatePermission()));
+
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -452,6 +461,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		ArrayList<String> dischargeSummaryPermission = null;
 		ArrayList<String> admitCardPermission = null;
 		ArrayList<String> patientCertificatePermissions = null;
+
 		uiPermissions = new UIPermissions();
 		clinicalNotesPermission = new ArrayList<String>();
 		clinicalNotesPermission.add(ClinicalNotesPermissionEnum.VITAL_SIGNS.getPermissions());
@@ -588,7 +598,11 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 				dataDynamicField.setPrescriptionDynamicField(new PrescriptionDynamicField());
 				dataDynamicField.setDischargeSummaryDynamicFields(new DischargeSummaryDynamicFields());
 				dataDynamicField.setTreatmentDynamicFields(new TreatmentDynamicFields());
+				// ClinicalNotesDynamicField clinicalNotesDynamicField = new
+				// ClinicalNotesDynamicField();
 				dataDynamicField.setClinicalNotesDynamicField(new ClinicalNotesDynamicField());
+				// PrescriptionDynamicField prescriptionDynamicField = new
+				// PrescriptionDynamicField();
 				dataDynamicField.setPrescriptionDynamicField(new PrescriptionDynamicField());
 				dataDynamicUI.setDataDynamicField(dataDynamicField);
 			}
@@ -617,10 +631,10 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			dataDynamicUI = new DataDynamicUI();
 			BeanUtil.map(dataDynamicUICollection, dataDynamicUI);
 		}
-		
+
 		pushNotificationServices.notifyUser(dynamicUIRequest.getDoctorId(), "",
 				ComponentType.REFRESH_DATA_SETTING.getType(), null, null);
-		
+
 		return dataDynamicUI;
 	}
 
@@ -657,7 +671,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			dentalLabDynamicField
 					.setDentalWorkSamplePermission(new ArrayList<String>(Arrays.asList(dentalWorkSamplePermission())));
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return dentalLabDynamicField;
 	}
@@ -667,10 +681,10 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 	public DentalLabDynamicUi getPermissionForDentalLab(String dentalLabId) {
 		DentalLabDynamicUi dentalLabDynamicUi = null;
 		try {
-
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(dentalLabId));
-			if (locationCollection == null) {
-				throw new BusinessException(ServiceError.NoRecord, "Lab not found");
+			LocationCollection locationCollection = locationRepository.findById(new ObjectId(dentalLabId)).orElse(null);
+			if(locationCollection == null)
+			{
+				throw new BusinessException(ServiceError.NoRecord , "Lab not found");
 			}
 			DentalLabDynamicUICollection dentalLabDynamicUICollection = dentalLabDynamicUIRepository
 					.findByDentalLabId(new ObjectId(dentalLabId));
@@ -683,7 +697,6 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 				dentalLabDynamicUi.setDentalLabDynamicField(getAllDentalLabPermissions());
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return dentalLabDynamicUi;
@@ -695,7 +708,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		KioskDynamicUi response = null;
 		try {
 			KioskDynamicUiCollection dynamicUiCollection = null;
-			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.NoRecord, "doctor not found By doctorId");
 			}
@@ -787,12 +800,12 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		NutritionUI response = null;
 		try {
 			NutritionUICollection nutritionUICollection = null;
-			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getAdminId()));
+			UserCollection userCollection = userRepository.findById(new ObjectId(request.getAdminId())).orElse(null);
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "admin not found By Id");
 			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				nutritionUICollection = nutritionUIRepository.findOne(new ObjectId(request.getId()));
+				nutritionUICollection = nutritionUIRepository.findById(new ObjectId(request.getId())).orElse(null);
 				if (nutritionUICollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "nutrition not found By Id");
 				}
@@ -822,7 +835,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 	public NutritionUI getNutritionUIPermission(String doctorId) {
 		NutritionUI response = null;
 		try {
-			NutritionUICollection nutritionUICollection = nutritionUIRepository.findOne(new ObjectId(doctorId));
+			NutritionUICollection nutritionUICollection = nutritionUIRepository.findById(new ObjectId(doctorId)).orElse(null);
 			response = new NutritionUI();
 			BeanUtil.map(nutritionUICollection, response);
 

@@ -92,7 +92,7 @@ public interface AppointmentService {
 
 	public CustomAppointment getCustomAppointmentById(String appointmentId);
 
-	public List<CustomAppointment> getCustomAppointments(int page, int size, String locationId, String hospitalId,
+	public List<CustomAppointment> getCustomAppointments(long page, int size, String locationId, String hospitalId,
 			String doctorId, String updatedTime, Boolean discarded);
 
 	public AVGTimeDetail getCustomAppointmentAVGTimeDetail(String locationId, String hospitalId, String doctorId);
@@ -118,6 +118,10 @@ public interface AppointmentService {
 	Response<Event> getEventsByMonth(String locationId, List<String> doctorId, String from, String to, int page, int size,
 			String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked, String state);
 
+	Boolean checkToday(int dayOfDate, int yearOfDate, String timeZone);
+
+	Integer getMinutesOfDay(Date date);
+
 	NutritionAppointment deleteNutritionAppointment(String appointmentId, Boolean discarded);
 
 	NutritionAppointment getNutritionAppointmentById(String appointmentId);
@@ -127,7 +131,5 @@ public interface AppointmentService {
 
 	Boolean addEditNutritionAppointment(NutritionAppointment request);
 
-	Boolean checkToday(int i, int yearOfDate, String timeZone);
-
-	Integer getMinutesOfDay(Date dateObj);
+	Boolean update();
 }

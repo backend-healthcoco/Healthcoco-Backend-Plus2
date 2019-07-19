@@ -47,6 +47,8 @@ public interface PaediatricService {
 
 	void sendBirthBabyVaccineReminder();
 
+	Boolean updateOldPatientData();
+
 	List<PatientVaccineGroupedResponse> getPatientGroupedVaccines(String patientId);
 
 	BirthAchievement addEditBirthAchievement(BirthAchievement birthAchievement);

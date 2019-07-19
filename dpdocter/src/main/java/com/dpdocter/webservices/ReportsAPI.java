@@ -68,7 +68,7 @@ public class ReportsAPI {
 	@GET
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_OPD_REPORTS, notes = PathProxy.ReportsUrls.GET_OPD_REPORTS)
 	public Response<OPDReportsResponse> getOPDReports(@QueryParam("locationId") String locationId,@QueryParam("doctorId") String doctorId,@QueryParam("patientId") String patientId,@QueryParam("from") String from,
-			@QueryParam("to")String to,@QueryParam("page")  int page, @QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
+			@QueryParam("to")String to,@QueryParam("page")  long page, @QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
 		OPDReportsResponse opdReports = reportsService.getOPDReportsList(locationId, doctorId, patientId, from, to, page,
 				size, updatedTime);
 		Response<OPDReportsResponse> response = new Response<OPDReportsResponse>();

@@ -84,10 +84,10 @@ public class DietPlansServiceImpl implements DietPlansService {
 		DietPlan response = null;
 		try {
 			DietPlanCollection dietPlanCollection = null;
-			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				dietPlanCollection = dietPlanRepository.findOne(new ObjectId(request.getId()));
+				dietPlanCollection = dietPlanRepository.findById(new ObjectId(request.getId())).orElse(null);
 				if (dietPlanCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, " No Diet Plan found with Id ");
 				}
@@ -130,7 +130,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 		List<DietPlan> response = null;
 		try {
 
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTime)).and("discarded").is(discarded);
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTime));
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
@@ -147,6 +147,9 @@ public class DietPlansServiceImpl implements DietPlansService {
 			if (!DPDoctorUtils.anyStringEmpty(patientObjectId))
 				criteria.and("patientId").is(patientObjectId);
 
+			if (!discarded) {
+				criteria.and("discarded").is(discarded);
+			}
 			Aggregation aggregation = null;
 
 			if (size > 0) {
@@ -183,21 +186,6 @@ public class DietPlansServiceImpl implements DietPlansService {
 				patientObjectId = new ObjectId(patientId);
 			if (!DPDoctorUtils.anyStringEmpty(patientObjectId))
 				criteria.and("patientId").is(patientObjectId);
-
-			Aggregation aggregation = null;
-
-			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
-			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-
-			}
-			AggregationResults<DietPlan> aggregationResults = mongoTemplate.aggregate(aggregation,
-					DietPlanCollection.class, DietPlan.class);
-			response = aggregationResults.getMappedResults();
 			
 			for (DietPlan dietPlan : response) {
 				for (DietplanAddItem dietplanAddItem : dietPlan.getItems()) {
@@ -226,7 +214,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 	public DietPlan getDietPlanById(String planId) {
 		DietPlan response = null;
 		try {
-			DietPlanCollection dietPlanCollection = dietPlanRepository.findOne(new ObjectId(planId));
+			DietPlanCollection dietPlanCollection = dietPlanRepository.findById(new ObjectId(planId)).orElse(null);
 			response = new DietPlan();
 			BeanUtil.map(dietPlanCollection, response);
 		} catch (Exception e) {
@@ -243,7 +231,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 	public DietPlan discardDietPlan(String planId, Boolean discarded) {
 		DietPlan response = null;
 		try {
-			DietPlanCollection dietPlanCollection = dietPlanRepository.findOne(new ObjectId(planId));
+			DietPlanCollection dietPlanCollection = dietPlanRepository.findById(new ObjectId(planId)).orElse(null);
 			if (dietPlanCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "Diet Plan not found with Id");
 			}
@@ -266,7 +254,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 	public String downloadDietPlan(String planId) {
 		String response = null;
 		try {
-			DietPlanCollection dietPlanCollection = dietPlanRepository.findOne(new ObjectId(planId));
+			DietPlanCollection dietPlanCollection = dietPlanRepository.findById(new ObjectId(planId)).orElse(null);
 			if (dietPlanCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "Diet Plan not found with Id");
 			}
@@ -420,7 +408,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 		MailResponse response = null;
 		MailAttachment mailAttachment = null;
 		try {
-			DietPlanCollection dietPlanCollection = dietPlanRepository.findOne(new ObjectId(planId));
+			DietPlanCollection dietPlanCollection = dietPlanRepository.findById(new ObjectId(planId)).orElse(null);
 			if (dietPlanCollection != null) {
 				JasperReportResponse jasperReportResponse = createJasper(dietPlanCollection);
 				mailAttachment = new MailAttachment();

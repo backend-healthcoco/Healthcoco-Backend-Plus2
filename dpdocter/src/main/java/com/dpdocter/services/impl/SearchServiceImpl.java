@@ -7,13 +7,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
+import org.apache.lucene.search.join.ScoreMode;
+import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortMode;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,17 +32,20 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DoctorRegistrationDetail;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.document.ESSymptomDiseaseConditionDocument;
+import com.dpdocter.elasticsearch.repository.ESCityRepository;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
+import com.dpdocter.elasticsearch.repository.ESLandmarkLocalityRepository;
 import com.dpdocter.elasticsearch.repository.ESSymptomDiseaseConditionRepository;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.exceptions.BusinessException;
@@ -66,6 +73,12 @@ public class SearchServiceImpl implements SearchService {
 	private ElasticsearchTemplate elasticsearchTemplate;
 
 	@Autowired
+	private ESCityRepository esCityRepository;
+	
+	@Autowired
+	private ESLandmarkLocalityRepository esLandmarkLocalityRepository;
+	
+	@Autowired
 	private ESDoctorRepository esDoctorRepository;
 	
 	@Autowired
@@ -83,8 +96,10 @@ public class SearchServiceImpl implements SearchService {
 			int maxFee, int minTime, int maxTime, List<String> days, String gender, int minExperience,
 			int maxExperience, String service, String locality, Boolean otherArea, String expertIn, String symptomDiseaseCondition) {
 		List<ESDoctorDocument> esDoctorDocuments = null;
-		List<ESDoctorDocument> nearByDoctors = null;
 		SearchDoctorResponse response = null;
+		String cityId = null;
+		Double latitudeDouble = null;
+		Double longitudeDouble = null;
 		try {
 			if (city.equalsIgnoreCase("undefined")) {
 				return null;
@@ -100,12 +115,17 @@ public class SearchServiceImpl implements SearchService {
 			if (!DPDoctorUtils.anyStringEmpty(city)) {
 				city = city.replaceAll("-", " ");
 				city = WordUtils.capitalizeFully(city);
-				long cityCount = elasticsearchTemplate.count(new CriteriaQuery(new Criteria("city").is(city).and("isActivated").is(true)),
-						ESCityDocument.class);
+				List<ESCityDocument> cityDocs = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(new BoolQueryBuilder().must(
+						QueryBuilders.matchPhrasePrefixQuery("city", city)).must(QueryBuilders.matchQuery("isActivated", true))).build(), ESCityDocument.class);
 
-				if (cityCount == 0) {
+				if (cityDocs == null || cityDocs.isEmpty()) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid City");
 				}
+				ESCityDocument cityDoc = cityDocs.get(0);
+				cityId = cityDoc.getId();
+				latitudeDouble = cityDoc.getLatitude();
+				longitudeDouble = cityDoc.getLongitude();
+				
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("city", city));
 				boolQueryBuilderForNearByDoctors.must(QueryBuilders.matchPhrasePrefixQuery("city", city));
 			}
@@ -128,17 +148,18 @@ public class SearchServiceImpl implements SearchService {
 				speciality = speciality.replaceAll("-", " ");
 				QueryBuilder specialityQueryBuilder = null;
 				
-				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")) {
-					speciality = "FAMILY PHYSICIAN";
-				} else if (speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
-					speciality = "GENERAL PHYSICIAN";
+				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN") || speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
+					specialityQueryBuilder = QueryBuilders.boolQuery()
+							.should(QueryBuilders.matchPhrasePrefixQuery("specialitiesValue", "GENERAL PHYSICIAN*"))
+							.should(QueryBuilders.matchPhrasePrefixQuery("specialitiesValue", "FAMILY PHYSICIAN*"))
+							.should(QueryBuilders.matchPhrasePrefixQuery("parentSpecialities", "GENERAL PHYSICIAN*"))
+							.should(QueryBuilders.matchPhrasePrefixQuery("parentSpecialities", "FAMILY PHYSICIAN*")).minimumShouldMatch(1);
+				} else {
+					specialityQueryBuilder = QueryBuilders.boolQuery().should(QueryBuilders.matchPhrasePrefixQuery("specialitiesValue", speciality+"*"))
+							.should(QueryBuilders.matchPhrasePrefixQuery("parentSpecialities", speciality+"*")).minimumShouldMatch(1);
 				}
-				
-				specialityQueryBuilder = QueryBuilders.boolQuery().should(QueryBuilders.matchPhrasePrefixQuery("specialitiesValue", speciality+"*"))
-							.should(QueryBuilders.matchPhrasePrefixQuery("parentSpecialities", speciality+"*")).minimumNumberShouldMatch(1);
-				
-
-						//createSpecialityFilter(speciality);
+	
+				//createSpecialityFilter(speciality);
 				if (specialityQueryBuilder != null) {
 					boolQueryBuilder.must(specialityQueryBuilder);
 					boolQueryBuilderForNearByDoctors.must(specialityQueryBuilder);
@@ -162,21 +183,16 @@ public class SearchServiceImpl implements SearchService {
 				symptomDiseaseCondition = null;
 			} else {
 				symptomDiseaseCondition = symptomDiseaseCondition.replace("treatments-for-","").replaceAll("-", " ");
-				
 				List<ESSymptomDiseaseConditionDocument> documents = esSymptomDiseaseConditionRepository.findByQueryAnnotation(symptomDiseaseCondition);
 				if(documents != null && !documents.isEmpty()) {
 					List<String> specialities = new ArrayList<>();
-					for(ESSymptomDiseaseConditionDocument document : documents) {
-						if(document.getSpecialities()!= null)specialities.addAll(document.getSpecialities());
-					}
+					for(ESSymptomDiseaseConditionDocument document: documents)
+						if(document.getSpecialityIds() != null && !document.getSpecialityIds().isEmpty())
+							specialities.addAll(document.getSpecialityIds());
+					
 					if(specialities != null && !specialities.isEmpty()) {
-						List<String> lowerStringSpecialities = new ArrayList<String>();
-						for(String lowerStringSpeciality : specialities)lowerStringSpecialities.add(lowerStringSpeciality.toLowerCase());
-						
 						QueryBuilder symptomDiseaseConditionBuilder = QueryBuilders.boolQuery()
-								.should(QueryBuilders.termsQuery("specialitiesValue", lowerStringSpecialities))
-								.should(QueryBuilders.termsQuery("parentSpecialities", lowerStringSpecialities)).minimumNumberShouldMatch(1);
-						
+								.must(QueryBuilders.termsQuery("specialities", specialities));						
 						boolQueryBuilder.must(symptomDiseaseConditionBuilder);
 						boolQueryBuilderForNearByDoctors.must(symptomDiseaseConditionBuilder);
 					}
@@ -212,7 +228,7 @@ public class SearchServiceImpl implements SearchService {
 					if (size > 0)
 						searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 								.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
-								.withPageable(new PageRequest(page, size)).build();
+								.withPageable(PageRequest.of(page, size)).build();
 					else
 						searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 								.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC)).build();
@@ -220,71 +236,42 @@ public class SearchServiceImpl implements SearchService {
 					esDoctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
 				} else {
 					locality = locality.replace("-", " ");
+
+					List<ESLandmarkLocalityDocument> esLandmarkLocalityDocument = null;
+					if(!DPDoctorUtils.anyStringEmpty(cityId))
+						esLandmarkLocalityDocument = elasticsearchTemplate.queryForList(new CriteriaQuery(new Criteria("cityId").is(cityId)
+								.and(new Criteria("landmark").is(locality).or(new Criteria("locality").is(locality)))), ESLandmarkLocalityDocument.class);
+					else
+						esLandmarkLocalityDocument = esLandmarkLocalityRepository.findByQueryAnnotation(locality);
+				
+					if(esLandmarkLocalityDocument != null) {
+						latitudeDouble = esLandmarkLocalityDocument.get(0).getLatitude();
+						longitudeDouble = esLandmarkLocalityDocument.get(0).getLongitude();
+					}
+					
 					if (!otherArea) {
+
 						if (size > 0)
 							searchQuery = new NativeSearchQueryBuilder()
-									.withQuery(boolQueryBuilder.must(QueryBuilders
-											.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality")
-											.type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
+									.withQuery(boolQueryBuilder)					
+									.withSort(SortBuilders.geoDistanceSort("geoPoint", latitudeDouble, longitudeDouble).order(SortOrder.ASC).unit(DistanceUnit.KILOMETERS).sortMode(SortMode.MIN))
 									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
-									.withPageable(new PageRequest(page, size)).build();
+									.withPageable(PageRequest.of(page, size)).build();
 						else
 							searchQuery = new NativeSearchQueryBuilder()
-									.withQuery(boolQueryBuilder.must(QueryBuilders
-											.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality")
-											.type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
-									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC)).build();
+									.withQuery(boolQueryBuilder)
+									.withSort(SortBuilders.geoDistanceSort("geoPoint", latitudeDouble, longitudeDouble).order(SortOrder.ASC).unit(DistanceUnit.KILOMETERS).sortMode(SortMode.MIN))
+									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+									.build();
 
 						esDoctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
 					}
-
-					if (esDoctorDocuments == null || esDoctorDocuments.isEmpty()) {
-						if (size > 0)
-							searchQuery = new NativeSearchQueryBuilder()
-									.withQuery(boolQueryBuilderForNearByDoctors.mustNot(QueryBuilders
-											.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality")
-											.type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
-									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
-									.withPageable(new PageRequest(page, size)).build();
-						else
-							searchQuery = new NativeSearchQueryBuilder()
-									.withQuery(boolQueryBuilderForNearByDoctors.mustNot(QueryBuilders
-											.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality")
-											.type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
-									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC)).build();
-						nearByDoctors = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
-					} else {
-						if (size > 0) {
-							size = size - esDoctorDocuments.size();
-							if (size > 0) {
-								if (size > 0)
-									searchQuery = new NativeSearchQueryBuilder()
-											.withQuery(
-													boolQueryBuilderForNearByDoctors
-															.mustNot(QueryBuilders
-																	.multiMatchQuery(locality, "landmarkDetails",
-																			"streetAddress", "locality")
-																	.type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
-											.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
-											.withPageable(new PageRequest(page, size)).build();
-								nearByDoctors = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
-							}
-						} else {
-							searchQuery = new NativeSearchQueryBuilder()
-									.withQuery(boolQueryBuilderForNearByDoctors.mustNot(QueryBuilders
-											.multiMatchQuery(locality, "landmarkDetails", "streetAddress", "locality")
-											.type(MatchQueryBuilder.Type.PHRASE_PREFIX)))
-									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC)).build();
-							nearByDoctors = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
-						}
-					}
 				}
 			}
-//			if (!(esDoctorDocuments == null && nearByDoctors == null)) {
+					
 				response = new SearchDoctorResponse();
 
 				if (!DPDoctorUtils.allStringsEmpty(locality) && !locality.equalsIgnoreCase("undefined")) {
-
 					response.setMetaData(response.getMetaData() + StringUtils.capitalize(locality) + ", ");
 					response.setLocality(StringUtils.capitalize(locality));
 					response.setSlugLocality(locality.toLowerCase().replaceAll(" ", "-"));
@@ -298,10 +285,7 @@ public class SearchServiceImpl implements SearchService {
 				response.setCount(count);
 
 				if (esDoctorDocuments != null) {
-					response.setDoctors(formatDoctorData(esDoctorDocuments, latitude, longitude));
-				}
-				if (nearByDoctors != null) {
-					response.setNearByDoctors(formatDoctorData(nearByDoctors, latitude, longitude));
+					formatDoctorData(esDoctorDocuments, latitude, longitude, response, locality);
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(speciality) && !speciality.equalsIgnoreCase("NAGPUR")) {
@@ -337,7 +321,6 @@ public class SearchServiceImpl implements SearchService {
 				} else {
 					response.setMetaData("Doctors in ");
 				}
-//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
@@ -346,61 +329,52 @@ public class SearchServiceImpl implements SearchService {
 		return response;
 	}
 
-	private List<ESDoctorWEbSearch> formatDoctorData(List<ESDoctorDocument> esDoctorDocuments, String latitude,
-			String longitude) {
-		List<ESDoctorWEbSearch> response = new ArrayList<ESDoctorWEbSearch>();
-
+	private void formatDoctorData(List<ESDoctorDocument> esDoctorDocuments, String latitude, String longitude, 
+			SearchDoctorResponse response, String locality) {
+		List<ESDoctorWEbSearch> doctors = new ArrayList<ESDoctorWEbSearch>();
+		List<ESDoctorWEbSearch> nearByDoctors = new ArrayList<ESDoctorWEbSearch>();
+	
 		if (esDoctorDocuments != null) {
-			for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
-				ESDoctorWEbSearch doctorWEbSearch = new ESDoctorWEbSearch();
-				BeanUtil.map(doctorDocument, doctorWEbSearch);
-//				if (doctorDocument.getSpecialities() != null) {
-//					if (doctorDocument.getSpecialities() != null) {
-//						Iterable<ESSpecialityDocument> specialities = esSpecialityRepository.findAll(doctorDocument.getSpecialities());
-//						if(specialities != null) {
-//							doctorWEbSearch.setSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("superSpeciality")));
-//							doctorWEbSearch.setParentSpecialities((List<String>)CollectionUtils.collect(specialities.iterator(), new BeanToPropertyValueTransformer("speciality")));
-//						}
-//					}
-//				}
-//
-//				if (doctorDocument.getServices() != null) {
-//					Iterable<ESServicesDocument> services = esServicesRepository.findAll(doctorDocument.getServices());
-//					if(services != null) {
-//						doctorWEbSearch.setServices((List<String>)CollectionUtils.collect(services.iterator(), new BeanToPropertyValueTransformer("service")));
-//					}					
-//				}
-				
-				doctorWEbSearch.setSpecialities(doctorDocument.getSpecialitiesValue());
-				if(doctorDocument.getServicesValue() != null && !doctorDocument.getServicesValue().isEmpty() && doctorDocument.getServicesValue().size()>3) {
-					doctorWEbSearch.setServices(doctorDocument.getServicesValue().subList(0, 3));
-				}else doctorWEbSearch.setServices(doctorDocument.getServicesValue());
-				if (doctorWEbSearch.getThumbnailUrl() != null)
-					doctorWEbSearch.setThumbnailUrl(getFinalImageURL(doctorWEbSearch.getThumbnailUrl()));
+			if (DPDoctorUtils.allStringsEmpty(locality) || locality.equalsIgnoreCase("undefined")) {
+				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
+					ESDoctorWEbSearch doctorWEbSearch = new ESDoctorWEbSearch();
+					BeanUtil.map(doctorDocument, doctorWEbSearch);
+					
+					doctorWEbSearch.setSpecialities(doctorDocument.getSpecialitiesValue());
+					if(doctorDocument.getServicesValue() != null && !doctorDocument.getServicesValue().isEmpty() && doctorDocument.getServicesValue().size()>3) {
+						doctorWEbSearch.setServices(doctorDocument.getServicesValue().subList(0, 3));
+					}else doctorWEbSearch.setServices(doctorDocument.getServicesValue());
+					if (doctorWEbSearch.getThumbnailUrl() != null)
+						doctorWEbSearch.setThumbnailUrl(getFinalImageURL(doctorWEbSearch.getThumbnailUrl()));
+	
+					doctors.add(doctorWEbSearch);
+					response.setDoctors(doctors);
+				}
+			}else {
+				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
+					ESDoctorWEbSearch doctorWEbSearch = new ESDoctorWEbSearch();
+					BeanUtil.map(doctorDocument, doctorWEbSearch);
+					
+					doctorWEbSearch.setSpecialities(doctorDocument.getSpecialitiesValue());
+					if(doctorDocument.getServicesValue() != null && !doctorDocument.getServicesValue().isEmpty() && doctorDocument.getServicesValue().size()>3) {
+						doctorWEbSearch.setServices(doctorDocument.getServicesValue().subList(0, 3));
+					}else doctorWEbSearch.setServices(doctorDocument.getServicesValue());
+					if (doctorWEbSearch.getThumbnailUrl() != null)
+						doctorWEbSearch.setThumbnailUrl(getFinalImageURL(doctorWEbSearch.getThumbnailUrl()));
+	
+					if((doctorDocument.getLocality()!= null && org.apache.commons.lang3.StringUtils.containsIgnoreCase(doctorDocument.getLocality(), locality))
+							|| (doctorDocument.getLandmarkDetails()!= null && org.apache.commons.lang3.StringUtils.containsIgnoreCase(doctorDocument.getLandmarkDetails(), locality)) 
+							||(doctorDocument.getStreetAddress()!= null && org.apache.commons.lang3.StringUtils.containsIgnoreCase(doctorDocument.getStreetAddress(), locality))) {
+						doctors.add(doctorWEbSearch);
+					}else {
+						nearByDoctors.add(doctorWEbSearch);
+					}
 
-//				String address = (!DPDoctorUtils.anyStringEmpty(doctorDocument.getStreetAddress())
-//						? doctorDocument.getStreetAddress() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLandmarkDetails())
-//								? doctorDocument.getLandmarkDetails() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLocality())
-//								? doctorDocument.getLocality() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCity()) ? doctorDocument.getCity() + ", "
-//								: "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getState())
-//								? doctorDocument.getState() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCountry())
-//								? doctorDocument.getCountry() + ", " : "")
-//						+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getPostalCode())
-//								? doctorDocument.getPostalCode() : "");
-//
-//				if (address.length()>1 && address.charAt(address.length() - 2) == ',') {
-//					address = address.substring(0, address.length() - 2);
-//				}
-//				doctorWEbSearch.setClinicAddress(address);
-				response.add(doctorWEbSearch);
+					response.setDoctors(doctors);
+					response.setNearByDoctors(nearByDoctors);
+				}
 			}
 		}
-		return response;
 	}
 	
 //	@SuppressWarnings("unchecked")
@@ -474,71 +448,78 @@ public class SearchServiceImpl implements SearchService {
 			}
 			boolQueryBuilder
 					.must(QueryBuilders.nestedQuery("workingSchedules",
-							boolQuery().must(QueryBuilders.andQuery(
-									nestedQuery("workingSchedules.workingHours", QueryBuilders.orQuery(
+							boolQuery().must(
+									boolQuery().must(QueryBuilders.nestedQuery("workingSchedules.workingHours", boolQuery()
 
-											QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
-													.lt(maxTime),
-
-											QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
-													.gt(minTime).lt(maxTime),
-											QueryBuilders.andQuery(
-													QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
-															.gt(maxTime).lt(1439),
-													QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
-															.gt(0).lt(minTime)))),
-									QueryBuilders.termsQuery("workingSchedules.workingDay", days)))));
+											.should(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
+													.lt(maxTime))
+											.should(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+													.gt(minTime).lt(maxTime))
+											.should(
+												boolQuery().must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
+															.gt(maxTime).lt(1439))
+												.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+															.gt(0).lt(minTime)).minimumShouldMatch(1)), ScoreMode.None))
+									
+									        .must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))), ScoreMode.None));
 
 			if (boolQueryBuilderForNearByDoctors != null)
-				boolQueryBuilder
-						.must(QueryBuilders.nestedQuery("workingSchedules",
-								boolQuery().must(QueryBuilders.andQuery(
-										nestedQuery("workingSchedules.workingHours", QueryBuilders.orQuery(
+				boolQueryBuilderForNearByDoctors
+				.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(
+								boolQuery().must(QueryBuilders.nestedQuery("workingSchedules.workingHours", boolQuery()
 
-												QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
-														.gt(minTime).lt(maxTime),
-
-												QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
-														.gt(minTime).lt(maxTime),
-												QueryBuilders.andQuery(
-														QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
-																.gt(maxTime).lt(1439),
-														QueryBuilders
-																.rangeQuery("workingSchedules.workingHours.fromTime")
-																.gt(0).lt(minTime)))),
-										QueryBuilders.termsQuery("workingSchedules.workingDay", days)))));
+										.should(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
+												.lt(maxTime))
+										.should(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+												.gt(minTime).lt(maxTime))
+										.should(
+											boolQuery().must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
+														.gt(maxTime).lt(1439))
+											.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+														.gt(0).lt(minTime)).minimumShouldMatch(1)), ScoreMode.None))
+								
+								        .must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))), ScoreMode.None));
 
 		} else {
 
 			if (maxTime == 0) {
 				maxTime = 1439;
 			}
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-					boolQuery().must(nestedQuery("workingSchedules.workingHours", QueryBuilders.orQuery(
+			
+			boolQueryBuilder
+			.must(QueryBuilders.nestedQuery("workingSchedules",
+					boolQuery().must(
+							boolQuery().must(QueryBuilders.nestedQuery("workingSchedules.workingHours", boolQuery()
 
-							QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime).lt(maxTime),
-
-							QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(minTime).lt(maxTime),
-							QueryBuilders.andQuery(
-									QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(maxTime)
-											.lt(1439),
-									QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(0)
-											.lt(minTime)))))));
+									.should(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime).lt(maxTime))
+									.should(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(minTime).lt(maxTime))
+									.should(
+										boolQuery().must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
+													.gt(maxTime).lt(1439))
+										.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+													.gt(0).lt(minTime)).minimumShouldMatch(1)), ScoreMode.None))
+							
+							        .must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))), ScoreMode.None));
 
 			if (boolQueryBuilderForNearByDoctors != null)
-				boolQueryBuilderForNearByDoctors.must(QueryBuilders.nestedQuery("workingSchedules",
-						boolQuery().must(nestedQuery("workingSchedules.workingHours", QueryBuilders.orQuery(
-
-								QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
-										.lt(maxTime),
-
-								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(minTime)
-										.lt(maxTime),
-								QueryBuilders.andQuery(
-										QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(maxTime)
-												.lt(1439),
-										QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(0)
-												.lt(minTime)))))));
+				boolQueryBuilderForNearByDoctors
+				.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(
+								boolQuery().must(QueryBuilders.nestedQuery("workingSchedules.workingHours", boolQuery()
+		
+										.should(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
+												.lt(maxTime))
+										.should(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+												.gt(minTime).lt(maxTime))
+										.should(
+											boolQuery().must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
+														.gt(maxTime).lt(1439))
+											.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+														.gt(0).lt(minTime)).minimumShouldMatch(1)), ScoreMode.None))
+								
+								        .must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))), ScoreMode.None));
+	
 		}
 	}
 
@@ -546,60 +527,53 @@ public class SearchServiceImpl implements SearchService {
 	private void createExperienceFilter(BoolQueryBuilder boolQueryBuilder, int maxExperience, int minExperience,
 			BoolQueryBuilder boolQueryBuilderForNearByDoctors) {
 		if (minExperience != 0 && maxExperience != 0) {
-			boolQueryBuilder.must(QueryBuilders.orQuery(
+			boolQueryBuilder.must(boolQuery().should(
 					QueryBuilders.nestedQuery("experience",
 							boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(minExperience)
-									.to(maxExperience))),
-					QueryBuilders.boolQuery().mustNot(
-							QueryBuilders.nestedQuery("experience", QueryBuilders.existsQuery("experience")))));
+									.to(maxExperience)), ScoreMode.None))
+					.should(QueryBuilders.boolQuery().mustNot(
+							QueryBuilders.nestedQuery("experience", QueryBuilders.existsQuery("experience"), ScoreMode.None)).minimumShouldMatch(1)));
 
 			if (boolQueryBuilderForNearByDoctors != null)
-				boolQueryBuilderForNearByDoctors.must(QueryBuilders.orQuery(
+				boolQueryBuilderForNearByDoctors.must(boolQuery().should(
 						QueryBuilders.nestedQuery("experience",
 								boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(minExperience)
-										.to(maxExperience))),
-						QueryBuilders.boolQuery().mustNot(
-								QueryBuilders.nestedQuery("experience", QueryBuilders.existsQuery("experience")))));
+										.to(maxExperience)), ScoreMode.None))
+						.should(QueryBuilders.boolQuery().mustNot(
+								QueryBuilders.nestedQuery("experience", QueryBuilders.existsQuery("experience"), ScoreMode.None)).minimumShouldMatch(1)));
 		}
 
 		else if (minExperience != 0) {
 			boolQueryBuilder
-					.must(QueryBuilders
-							.orQuery(
-									QueryBuilders.nestedQuery("experience",
+					.must(boolQuery().should(QueryBuilders.nestedQuery("experience",
 											boolQuery().must(QueryBuilders.rangeQuery("experience.experience")
-													.from(minExperience))),
-									QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("experience",
-											QueryBuilders.existsQuery("experience")))));
+													.from(minExperience)), ScoreMode.None))
+									.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("experience",
+											QueryBuilders.existsQuery("experience"), ScoreMode.None)).minimumShouldMatch(1)));
 
 			if (boolQueryBuilderForNearByDoctors != null)
-				boolQueryBuilderForNearByDoctors
-						.must(QueryBuilders
-								.orQuery(
-										QueryBuilders.nestedQuery("experience",
-												boolQuery().must(QueryBuilders.rangeQuery("experience.experience")
-														.from(minExperience))),
-										QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("experience",
-												QueryBuilders.existsQuery("experience")))));
+				boolQueryBuilderForNearByDoctors.must(boolQuery().should(QueryBuilders.nestedQuery("experience",
+																	boolQuery().must(QueryBuilders.rangeQuery("experience.experience")
+																			.from(minExperience)), ScoreMode.None))
+															.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("experience",
+																	QueryBuilders.existsQuery("experience"), ScoreMode.None)).minimumShouldMatch(1)));
 		}
 
 		else if (maxExperience != 0) {
-			boolQueryBuilder
-					.must(QueryBuilders.orQuery(
+			boolQueryBuilder.must(boolQuery().should(
 							QueryBuilders.nestedQuery("experience",
 									boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(0)
-											.to(maxExperience))),
-							QueryBuilders.boolQuery().mustNot(
-									QueryBuilders.nestedQuery("experience", QueryBuilders.existsQuery("experience")))));
+											.to(maxExperience)), ScoreMode.None))
+							.should(QueryBuilders.boolQuery().mustNot(
+									QueryBuilders.nestedQuery("experience", QueryBuilders.existsQuery("experience"), ScoreMode.None)).minimumShouldMatch(1)));
 
 			if (boolQueryBuilderForNearByDoctors != null)
-				boolQueryBuilderForNearByDoctors
-						.must(QueryBuilders.orQuery(
-								QueryBuilders.nestedQuery("experience",
-										boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(0)
-												.to(maxExperience))),
-								QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("experience",
-										QueryBuilders.existsQuery("experience")))));
+				boolQueryBuilderForNearByDoctors.must(boolQuery().should(
+						QueryBuilders.nestedQuery("experience",
+								boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(0)
+										.to(maxExperience)), ScoreMode.None))
+						.should(QueryBuilders.boolQuery().mustNot(
+								QueryBuilders.nestedQuery("experience", QueryBuilders.existsQuery("experience"), ScoreMode.None)).minimumShouldMatch(1)));
 		}
 
 	}
@@ -608,61 +582,53 @@ public class SearchServiceImpl implements SearchService {
 	private void createConsultationFeeFilter(BoolQueryBuilder boolQueryBuilder, int maxFee, int minFee,
 			BoolQueryBuilder boolQueryBuilderForNearByDoctors) {
 		if (minFee != 0 && maxFee != 0) {
-			boolQueryBuilder
-					.must(QueryBuilders.orQuery(
-							nestedQuery("consultationFee",
+			boolQueryBuilder.must(boolQuery().should(
+							QueryBuilders.nestedQuery("consultationFee",
 									boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee)
-											.to(maxFee))),
-							QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
-									QueryBuilders.existsQuery("consultationFee")))));
+											.to(maxFee)), ScoreMode.None))
+							.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
+									QueryBuilders.existsQuery("consultationFee"), ScoreMode.None)).minimumShouldMatch(1)));
 			if (boolQueryBuilderForNearByDoctors != null)
-				boolQueryBuilderForNearByDoctors
-						.must(QueryBuilders.orQuery(
-								nestedQuery("consultationFee",
-										boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee)
-												.to(maxFee))),
-								QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
-										QueryBuilders.existsQuery("consultationFee")))));
+				boolQueryBuilderForNearByDoctors.must(boolQuery().should(
+						QueryBuilders.nestedQuery("consultationFee",
+								boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee)
+										.to(maxFee)), ScoreMode.None))
+						.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
+								QueryBuilders.existsQuery("consultationFee"), ScoreMode.None)).minimumShouldMatch(1)));
 		}
 
 		else if (minFee != 0) {
-			boolQueryBuilder
-					.must(QueryBuilders
-							.orQuery(
-									QueryBuilders.nestedQuery("consultationFee",
+			boolQueryBuilder.must(boolQuery()
+							.should(QueryBuilders.nestedQuery("consultationFee",
 											boolQuery().must(
-													QueryBuilders.rangeQuery("consultationFee.amount").from(minFee))),
-									QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
-											QueryBuilders.existsQuery("consultationFee")))));
+													QueryBuilders.rangeQuery("consultationFee.amount").from(minFee)), ScoreMode.None))
+							.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
+											QueryBuilders.existsQuery("consultationFee"), ScoreMode.None)).minimumShouldMatch(1)));
 
 			if (boolQueryBuilderForNearByDoctors != null)
-				boolQueryBuilderForNearByDoctors
-						.must(QueryBuilders
-								.orQuery(
-										QueryBuilders.nestedQuery("consultationFee",
-												boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount")
-														.from(minFee))),
-										QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
-												QueryBuilders.existsQuery("consultationFee")))));
+				boolQueryBuilderForNearByDoctors.must(boolQuery()
+						.should(QueryBuilders.nestedQuery("consultationFee",
+								boolQuery().must(
+										QueryBuilders.rangeQuery("consultationFee.amount").from(minFee)), ScoreMode.None))
+				.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
+								QueryBuilders.existsQuery("consultationFee"), ScoreMode.None)).minimumShouldMatch(1)));
 		} else if (maxFee != 0) {
-			boolQueryBuilder
-					.must(QueryBuilders
-							.orQuery(
-									QueryBuilders.nestedQuery("consultationFee",
-											boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(0)
-													.to(maxFee))),
-									QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
-											QueryBuilders.existsQuery("consultationFee")))));
-
+			boolQueryBuilder.must(boolQuery()
+					.should(QueryBuilders.nestedQuery("consultationFee",
+							boolQuery().must(
+									QueryBuilders.rangeQuery("consultationFee.amount").from(0)
+									.to(maxFee)), ScoreMode.None))
+			.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
+							QueryBuilders.existsQuery("consultationFee"), ScoreMode.None)).minimumShouldMatch(1)));
+			
 			if (boolQueryBuilderForNearByDoctors != null)
-				boolQueryBuilderForNearByDoctors
-						.must(QueryBuilders
-								.orQuery(
-										QueryBuilders.nestedQuery("consultationFee",
-												boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount")
-														.from(0).to(maxFee))),
-										QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
-												QueryBuilders.existsQuery("consultationFee")))));
+				boolQueryBuilderForNearByDoctors.must(boolQuery()
+						.should(QueryBuilders.nestedQuery("consultationFee",
+								boolQuery().must(
+										QueryBuilders.rangeQuery("consultationFee.amount").from(0)
+										.to(maxFee)), ScoreMode.None))
+				.should(QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
+								QueryBuilders.existsQuery("consultationFee"), ScoreMode.None)).minimumShouldMatch(1)));
 		}
 
 	}
@@ -698,20 +664,20 @@ public class SearchServiceImpl implements SearchService {
 												"location.city").is(city)),
 										Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
 										Aggregation.unwind("doctor"), Aggregation.unwind("doctor.specialities"),
-										new CustomAggregationOperation(new BasicDBObject("$group",
+										new CustomAggregationOperation(new Document("$group",
 												new BasicDBObject("_id", "$doctor.specialities").append("count",
 														new BasicDBObject("$sum", 1)))),
 										Aggregation.lookup("speciality_cl", "_id", "_id", "speciality"),
 										Aggregation.unwind("speciality"),
-										new CustomAggregationOperation(new BasicDBObject("$project",
+										new CustomAggregationOperation(new Document("$project",
 												new BasicDBObject("fields.key", "$speciality.speciality")
 														.append("fields.value", "$count")
 														.append("resourceType",
 																new BasicDBObject("$concat", Arrays.asList("DOCTOR")))
 														.append("totalCount", "$count"))),
-										new CustomAggregationOperation(new BasicDBObject("$sort",
+										new CustomAggregationOperation(new Document("$sort",
 												new BasicDBObject("fields.value", -1))),
-										new CustomAggregationOperation(new BasicDBObject("$group",
+										new CustomAggregationOperation(new Document("$group",
 												new BasicDBObject("_id", "$resourceType")
 														.append("resourceType",
 																new BasicDBObject("$first", "$resourceType"))
@@ -758,7 +724,17 @@ public class SearchServiceImpl implements SearchService {
 					doctorProfile.setParentSpecialities(doctorDocument.getParentSpecialities());
 					doctorProfile.setServices(doctorDocument.getServicesValue());
 				}
-							
+				List<DoctorRegistrationDetail> registrationDetails = new ArrayList<DoctorRegistrationDetail>();
+				if (doctorProfile.getRegistrationDetails() != null
+						&& !doctorProfile.getRegistrationDetails().isEmpty()) {
+					for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
+						DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
+						BeanUtil.map(registrationDetail, doctorRegistrationDetail);
+						registrationDetails.add(doctorRegistrationDetail);
+					}
+				}
+				doctorProfile.setRegistrationDetails(registrationDetails);
+				
 				DoctorClinicProfileBySlugUrlResponse doctorClinic = new DoctorClinicProfileBySlugUrlResponse();
 				BeanUtil.map(doctorDocument, doctorClinic);
 				String address = (!DPDoctorUtils.anyStringEmpty(doctorDocument.getStreetAddress())

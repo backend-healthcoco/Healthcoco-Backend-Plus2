@@ -22,6 +22,7 @@ import javax.mail.MessagingException;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -333,7 +334,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			try {
 				mailService.sendExceptionMail("Backend Business Exception :: While adding city", e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -345,7 +345,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Boolean activateDeactivateCity(String cityId, boolean activate) {
 		try {
-			CityCollection cityCollection = cityRepository.findOne(new ObjectId(cityId));
+			CityCollection cityCollection = cityRepository.findById(new ObjectId(cityId)).orElse(null);
 			if (cityCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid city Id");
 			}
@@ -356,7 +356,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				mailService.sendExceptionMail("Backend Business Exception :: While activating/deactivating city",
 						be.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw be;
@@ -366,7 +365,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				mailService.sendExceptionMail("Backend Business Exception :: While activating/deactivating city",
 						e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
@@ -395,7 +393,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			try {
 				mailService.sendExceptionMail("Backend Business Exception :: While getting cities", e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -408,7 +405,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public City getCity(String cityId) {
 		City response = new City();
 		try {
-			CityCollection city = cityRepository.findOne(new ObjectId(cityId));
+			CityCollection city = cityRepository.findById(new ObjectId(cityId)).orElse(null);
 			if (city != null) {
 				BeanUtil.map(city, response);
 			}
@@ -417,7 +414,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			try {
 				mailService.sendExceptionMail("Backend Business Exception :: While getting city", e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -433,7 +429,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			LandmarkLocalityCollection landmarkLocalityCollection = new LandmarkLocalityCollection();
 			BeanUtil.map(landmarkLocality, landmarkLocalityCollection);
 			if (landmarkLocality.getCityId() != null) {
-				cityCollection = cityRepository.findOne(new ObjectId(landmarkLocality.getCityId()));
+				cityCollection = cityRepository.findById(new ObjectId(landmarkLocality.getCityId())).orElse(null);
 			}
 
 			List<GeocodedLocation> geocodedLocations = locationServices
@@ -465,7 +461,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 						"Backend Business Exception :: While activating/deactivating landmark locality",
 						e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -612,7 +607,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						if (doctorCollection.getSpecialities() != null
 								&& !doctorCollection.getSpecialities().isEmpty()) {
 							List<String> specialities = (List<String>) CollectionUtils.collect(
-									(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+									(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 									new BeanToPropertyValueTransformer("superSpeciality"));
 							doctor.setSpecialities(specialities);
 						}
@@ -779,7 +774,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					final String appointmentId = appointmentCollection.getAppointmentId();
 					final String dateTime = _12HourSDF.format(_24HourDt) + ", "
 							+ sdf.format(appointmentCollection.getFromDate());
-					final String branch = appointmentLookupResponse.getBranch();
+					final String branch = (!DPDoctorUtils.anyStringEmpty(appointmentLookupResponse.getBranch())) ? appointmentLookupResponse.getBranch() : "";
 					final String clinicName = appointmentLookupResponse.getLocation().getLocationName();
 					final String clinicContactNum = appointmentLookupResponse.getLocation().getClinicNumber() != null
 							? appointmentLookupResponse.getLocation().getClinicNumber()
@@ -914,8 +909,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			patientId = registerPatientIfNotRegistered(request, doctorId, locationId, hospitalId);
 
-			UserCollection userCollection = userRepository.findOne(doctorId);
-			LocationCollection locationCollection = locationRepository.findOne(locationId);
+			UserCollection userCollection = userRepository.findById(doctorId).orElse(null);
+			LocationCollection locationCollection = locationRepository.findById(locationId).orElse(null);
 			PatientCard patientCard = null;
 			List<PatientCard> patientCards = null;
 
@@ -1014,7 +1009,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						clinicContactNum = locationCollection.getClinicNumber() != null
 								? locationCollection.getClinicNumber()
 								: "";
-				final String branch = request.getBranch();
+				final String branch = (!DPDoctorUtils.anyStringEmpty(request.getBranch())) ? request.getBranch() : "";
 
 				if (request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)) {
 					appointmentCollection.setState(AppointmentState.CONFIRM);
@@ -1852,13 +1847,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 												Aggregation.unwind("location"),
 
 												Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-												new CustomAggregationOperation(new BasicDBObject(
+												new CustomAggregationOperation(new Document(
 														"$unwind",
 														new BasicDBObject(
 																"path", "$patientCard").append("preserveNullAndEmptyArrays",
 																		true))),
 												new CustomAggregationOperation(
-														new BasicDBObject("$redact",
+														new Document("$redact",
 																new BasicDBObject("$cond",
 																		new BasicDBObject("if", new BasicDBObject("$eq",
 																				Arrays.asList("$patientCard.locationId",
@@ -1869,7 +1864,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 												Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
 												Aggregation.unwind("patientCard.user"), sortOperation,
-												Aggregation.skip((page) * size), Aggregation.limit(size))
+												Aggregation.skip((long)(page) * size), Aggregation.limit(size))
 										.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
 								AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
 					} else {
@@ -1881,13 +1876,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 												Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 												Aggregation.unwind("location"),
 												Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-												new CustomAggregationOperation(new BasicDBObject(
+												new CustomAggregationOperation(new Document(
 														"$unwind",
 														new BasicDBObject(
 																"path", "$patientCard").append("preserveNullAndEmptyArrays",
 																		true))),
 												new CustomAggregationOperation(
-														new BasicDBObject("$redact",
+														new Document("$redact",
 																new BasicDBObject("$cond",
 																		new BasicDBObject("if", new BasicDBObject("$eq",
 																				Arrays.asList("$patientCard.locationId",
@@ -1964,7 +1959,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 								Reference reference = new Reference();
 								if (referredBy != null) {
-									ReferencesCollection referencesCollection = referenceRepository.findOne(referredBy);
+									ReferencesCollection referencesCollection = referenceRepository.findById(referredBy).orElse(null);
 									if (referencesCollection != null)
 										BeanUtil.map(referencesCollection, reference);
 								}
@@ -2035,7 +2030,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		Integer count = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
 		if(count > 0) {
 			response = new Response<Appointment>();
-			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("_id", "$_id").append("doctorId", "$doctorId").append("locationId", "$locationId")
 							.append("hospitalId", "$hospitalId").append("patientId", "$patientId").append("time", "$time")
 							.append("state", "$state").append("isRescheduled", "$isRescheduled")
@@ -2079,7 +2074,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.append("patient.mobileNumber", "$patientUser.mobileNumber")
 							.append("patient.colorCode", "$patientUser.colorCode")));
 
-			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
 							.append("locationId", new BasicDBObject("$first", "$locationId"))
 							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -2129,13 +2124,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 												Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 												Aggregation.unwind("doctor"),
 												Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-												new CustomAggregationOperation(new BasicDBObject(
+												new CustomAggregationOperation(new Document(
 														"$unwind",
 														new BasicDBObject(
 																"path", "$patientCard").append("preserveNullAndEmptyArrays",
 																		true))),
 												new CustomAggregationOperation(
-														new BasicDBObject("$redact",
+														new Document("$redact",
 																new BasicDBObject("$cond",
 																		new BasicDBObject("if", new BasicDBObject("$eq",
 																				Arrays.asList("$patientCard.locationId",
@@ -2146,7 +2141,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 												Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
 												Aggregation.unwind("patientUser"), projectOperation, groupOperation,
-												sortOperation, Aggregation.skip((page) * size), Aggregation.limit(size))
+												sortOperation, Aggregation.skip((long)(page) * size), Aggregation.limit(size))
 										.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
 								AppointmentCollection.class, Appointment.class)
 						.getMappedResults());
@@ -2158,13 +2153,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 												Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 												Aggregation.unwind("doctor"),
 												Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-												new CustomAggregationOperation(new BasicDBObject(
+												new CustomAggregationOperation(new Document(
 														"$unwind",
 														new BasicDBObject(
 																"path", "$patientCard").append("preserveNullAndEmptyArrays",
 																		true))),
 												new CustomAggregationOperation(
-														new BasicDBObject("$redact",
+														new Document("$redact",
 																new BasicDBObject("$cond",
 																		new BasicDBObject("if", new BasicDBObject("$eq",
 																				Arrays.asList("$patientCard.locationId",
@@ -2240,7 +2235,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 									Aggregation.unwind("location"),
 									Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime")),
-									Aggregation.skip((page) * size), Aggregation.limit(size)),
+									Aggregation.skip((long)(page) * size), Aggregation.limit(size)),
 							AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
 				} else {
 					appointmentLookupResponses = mongoTemplate.aggregate(
@@ -2414,7 +2409,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						if (doctorCollection.getSpecialities() != null
 								&& !doctorCollection.getSpecialities().isEmpty()) {
 							List<String> specialities = (List<String>) CollectionUtils.collect(
-									(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+									(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 									new BeanToPropertyValueTransformer("speciality"));
 							doctor.setSpecialities(specialities);
 						}
@@ -2521,7 +2516,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdLocationId(doctorObjectId,
 							locationObjectId);
 					if (userRoleCollection != null) {
-						RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getId());
+						RoleCollection roleCollection = roleRepository.findById(userRoleCollection.getId()).orElse(null);
 						if (roleCollection != null)
 							if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.RECEPTIONIST_NURSE.getRole())
 									|| roleCollection.getRole().equalsIgnoreCase("RECEPTIONIST")) {
@@ -2560,9 +2555,22 @@ public class AppointmentServiceImpl implements AppointmentService {
 								.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
 						DateTime end = new DateTime(yearOfDate, monthOfDate, dayOfDate, 23, 59, 59, DateTimeZone
 								.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
-						List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
-								.findByDoctorLocationId(doctorObjectId, locationObjectId, start, end,
-										new Sort(Direction.ASC, "time.fromTime"));
+						
+						List<AppointmentBookedSlotCollection> bookedSlots = mongoTemplate.aggregate(
+								Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)
+										.andOperator(
+												new Criteria().orOperator(new Criteria("doctorId").is(doctorObjectId).and("type").is(AppointmentType.APPOINTMENT.name()), 
+														new Criteria("doctorIds").in(Arrays.asList(doctorObjectId)).and("type").is(AppointmentType.EVENT.name())),										
+										new Criteria().orOperator(new Criteria("fromDate").gte(new Date(start.getMillis())).and("toDate").lte(new Date(end.getMillis())),
+												new Criteria("fromDate").lte(new Date(start.getMillis())).and("toDate").gte(new Date(start.getMillis())),
+																	new Criteria("fromDate").lte(new Date(end.getMillis())).and("toDate").gte(new Date(end.getMillis()))))
+										.and("isPatientDiscarded").ne(true)),
+										Aggregation.sort(new Sort(Direction.ASC, "time.fromTime"))), 
+								AppointmentBookedSlotCollection.class, AppointmentBookedSlotCollection.class).getMappedResults();
+								
+//								appointmentBookedSlotRepository
+//								.findByDoctorLocationId(doctorObjectId, locationObjectId, start, end,
+//										new Sort(Direction.ASC, "time.fromTime"));
 						int i = 0;
 						for (WorkingHours hours : workingHours) {
 							startTime = hours.getFromTime();
@@ -2646,7 +2654,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				locationObjectId = new ObjectId(request.getLocationId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
-			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 
 			AppointmentCollection appointmentCollection = null;
 
@@ -2659,43 +2667,98 @@ public class AppointmentServiceImpl implements AppointmentService {
 				for (String doctorId : request.getDoctorIds())
 					doctorIds.add(new ObjectId(doctorId));
 			}
-			List<AppointmentCollection> appointmentCollections = mongoTemplate
-					.aggregate(
+			
+			Aggregation aggregation = Aggregation
+					.newAggregation(
 							Aggregation
-									.newAggregation(
-											Aggregation
-													.match(new Criteria(
-															"locationId")
-																	.is(new ObjectId(request.getLocationId()))
-																	.orOperator(
-																			new Criteria("doctorId").in(doctorIds)
-																					.and("time.fromTime")
-																					.lte(request.getTime()
-																							.getFromTime())
-																					.and("time.toTime")
-																					.gt(request.getTime().getToTime()),
-																			new Criteria("doctorIds").is(doctorIds)
-																					.and("isCalenderBlocked").is(true)
-																					.and("time.fromTime")
-																					.lte(request.getTime()
-																							.getFromTime())
-																					.and("time.toTime")
-																					.gt(request.getTime().getToTime()),
-																			new Criteria("doctorId")
-																					.in(doctorIds).and("time.fromTime")
-																					.lt(request.getTime().getFromTime())
-																					.and("time.toTime")
-																					.gte(request.getTime().getToTime()),
-																			new Criteria("doctorIds").is(doctorIds)
-																					.and("isCalenderBlocked").is(true)
-																					.and("time.fromTime")
-																					.lt(request.getTime().getFromTime())
-																					.and("time.toTime")
-																					.gte(request.getTime().getToTime()))
-
-																	.and("fromDate").is(request.getFromDate())
-																	.and("toDate").is(request.getToDate()).and("state")
-																	.ne(AppointmentState.CANCEL.getState()))),
+									.match(new Criteria("locationId")
+											.is(new ObjectId(request.getLocationId()))
+											.andOperator(
+													new Criteria().orOperator(
+															new Criteria("doctorId")
+																	.is(new ObjectId(
+																			request.getDoctorId())),
+															new Criteria("doctorIds")
+																	.in(doctorIds)
+																	.and("isCalenderBlocked")
+																	.is(true)),
+													new Criteria().orOperator(
+															new Criteria("time.fromTime")															
+																	.lte(request.getTime()
+																			.getFromTime())
+																	.and("time.toTime")
+																	.gte(request.getTime()
+																			.getToTime()),
+															new Criteria("time.fromTime")
+																	.lte(request.getTime()
+																			.getFromTime())
+																	.and("time.toTime")
+																	.gte(request.getTime()
+																			.getFromTime()),
+																	new Criteria("time.fromTime")
+																	.lte(request.getTime()
+																			.getToTime())
+																	.and("time.toTime")
+																	.gte(request.getTime()
+																			.getToTime())		),
+//													new Criteria().orOperator(
+//															new Criteria("time.fromTime")
+//																	.lte(request.getTime()
+//																			.getFromTime())
+//																	.and("time.toTime")
+//																	.gte(request.getTime()
+//																			.getToTime()),
+//															new Criteria("time.fromTime")
+//																	.lte(request.getTime()
+//																			.getFromTime())
+//																	.and("time.toTime")
+//																	.gte(request.getTime()
+//																			.getToTime())),
+													new Criteria().orOperator(new Criteria("fromDate").gte(request.getFromDate()).and("toDate").lte(request.getToDate()),
+															new Criteria("fromDate").lte(request.getFromDate()).and("toDate").gte(request.getFromDate()),
+																				new Criteria("fromDate").lte(request.getToDate()).and("toDate").gte(request.getToDate()))
+													)
+//											.and("fromDate").gte(request.getFromDate())
+//											.and("toDate").lte(request.getToDate())
+											.and("state").ne(AppointmentState.CANCEL.getState())));
+			
+			List<AppointmentCollection> appointmentCollections = mongoTemplate
+					.aggregate(aggregation,
+//							Aggregation
+//									.newAggregation(
+//											Aggregation
+//													.match(new Criteria(
+//															"locationId")
+//																	.is(new ObjectId(request.getLocationId()))
+//																	.orOperator(
+//																			new Criteria("doctorId").in(doctorIds)
+//																					.and("time.fromTime")
+//																					.lte(request.getTime()
+//																							.getFromTime())
+//																					.and("time.toTime")
+//																					.gt(request.getTime().getToTime()),
+//																			new Criteria("doctorIds").is(doctorIds)
+//																					.and("isCalenderBlocked").is(true)
+//																					.and("time.fromTime")
+//																					.lte(request.getTime()
+//																							.getFromTime())
+//																					.and("time.toTime")
+//																					.gt(request.getTime().getToTime()),
+//																			new Criteria("doctorId")
+//																					.in(doctorIds).and("time.fromTime")
+//																					.lt(request.getTime().getFromTime())
+//																					.and("time.toTime")
+//																					.gte(request.getTime().getToTime()),
+//																			new Criteria("doctorIds").is(doctorIds)
+//																					.and("isCalenderBlocked").is(true)
+//																					.and("time.fromTime")
+//																					.lt(request.getTime().getFromTime())
+//																					.and("time.toTime")
+//																					.gte(request.getTime().getToTime()))
+//
+//																	.and("fromDate").is(request.getFromDate())
+//																	.and("toDate").is(request.getToDate()).and("state")
+//																	.ne(AppointmentState.CANCEL.getState()))),
 							AppointmentCollection.class, AppointmentCollection.class)
 					.getMappedResults();
 			if (userCollection != null) {
@@ -2738,7 +2801,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						bookedSlotCollection.setLocationId(locationObjectId);
 						bookedSlotCollection.setHospitalId(hospitalObjectId);
 						bookedSlotCollection.setDoctorIds(appointmentCollection.getDoctorIds());
-						appointmentBookedSlotRepository.save(bookedSlotCollection);
+						bookedSlotCollection = appointmentBookedSlotRepository.save(bookedSlotCollection);
 					}
 
 					final String createdBy = appointmentCollection.getCreatedBy(),
@@ -2778,64 +2841,66 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Event updateEvent(EventRequest request, Boolean forAllDoctors) {
 		Event response = null;
-		try {
-			
-			AppointmentCollection appointmentCollection = appointmentRepository.findOne(new ObjectId(request.getId()));
+		try {			
+			AppointmentCollection appointmentCollection = appointmentRepository.findById(new ObjectId(request.getId())).orElse(null);
 			if (appointmentCollection != null) {
 				
 				List<ObjectId> doctorIds = new ArrayList<ObjectId>();
-				if(forAllDoctors) {
-					List<DoctorClinicProfileCollection> doctors = doctorClinicProfileRepository.findByLocationId(appointmentCollection.getLocationId(), true);
-					doctorIds = (List<ObjectId>) CollectionUtils.collect(doctors, new BeanToPropertyValueTransformer("doctorId"));
-				}
-				else if (request.getDoctorIds() != null && !request.getDoctorIds().isEmpty()) {
+				if (request.getDoctorIds() != null && !request.getDoctorIds().isEmpty()) {
 					for (String doctorId : request.getDoctorIds())
 						doctorIds.add(new ObjectId(doctorId));
 				}
 				
 				if (request.getState().equals(AppointmentState.RESCHEDULE) && request.getIsCalenderBlocked()) {
+					
+					Aggregation aggregation = Aggregation
+							.newAggregation(
+									Aggregation
+											.match(new Criteria("locationId")
+													.is(new ObjectId(request.getLocationId()))
+													.and("id").ne(new ObjectId(request.getId()))
+													.andOperator(
+															new Criteria().orOperator(
+																	new Criteria("doctorId")
+																			.is(new ObjectId(
+																					request.getDoctorId())),
+																	new Criteria("doctorIds")
+																			.in(doctorIds)
+																			.and("isCalenderBlocked")
+																			.is(true)),
+															new Criteria().orOperator(
+																	new Criteria("time.fromTime")															
+																			.lte(request.getTime()
+																					.getFromTime())
+																			.and("time.toTime")
+																			.gte(request.getTime()
+																					.getToTime()),
+																	new Criteria("time.fromTime")
+																			.lte(request.getTime()
+																					.getFromTime())
+																			.and("time.toTime")
+																			.gte(request.getTime()
+																					.getFromTime()),
+																			new Criteria("time.fromTime")
+																			.lte(request.getTime()
+																					.getToTime())
+																			.and("time.toTime")
+																			.gte(request.getTime()
+																					.getToTime())		),
+															new Criteria().orOperator(new Criteria("fromDate").gte(request.getFromDate()).and("toDate").lte(request.getToDate()),
+																	new Criteria("fromDate").lte(request.getFromDate()).and("toDate").gte(request.getFromDate()),
+																						new Criteria("fromDate").lte(request.getToDate()).and("toDate").gte(request.getToDate()))
+															)
+//													.and("fromDate").gte(request.getFromDate())
+//													.and("toDate").lte(request.getToDate())
+													.and("state").ne(AppointmentState.CANCEL.getState())));
 					List<AppointmentCollection> appointmentCollections = mongoTemplate
-					.aggregate(
-							Aggregation
-									.newAggregation(
-											Aggregation
-													.match(new Criteria("locationId")
-															.is(new ObjectId(request.getLocationId()))
-															.and("id").ne(new ObjectId(request.getId()))
-															.andOperator(
-																	new Criteria().orOperator(
-																			new Criteria("doctorId")
-																					.is(new ObjectId(
-																							request.getDoctorId())),
-																			new Criteria("doctorIds")
-																					.in(doctorIds)
-																					.and("isCalenderBlocked")
-																					.is(true)),
-																	new Criteria().orOperator(
-																			new Criteria("time.fromTime")
-																					.lte(request.getTime()
-																							.getFromTime())
-																					.and("time.toTime")
-																					.gt(request.getTime()
-																							.getToTime()),
-																			new Criteria("time.fromTime")
-																					.lt(request.getTime()
-																							.getFromTime())
-																					.and("time.toTime")
-																					.gte(request.getTime()
-																							.getToTime())))
-															.and("fromDate").gte(request.getFromDate())
-															.and("toDate").lte(request.getToDate())
-															.and("state").ne(AppointmentState.CANCEL.getState()))),
-
-							AppointmentCollection.class, AppointmentCollection.class)
-					.getMappedResults();
+					.aggregate(aggregation, AppointmentCollection.class, AppointmentCollection.class).getMappedResults();
 					if (appointmentCollections != null && !appointmentCollections.isEmpty()) {
 						logger.error(timeSlotIsBooked);
 						throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
 					}
 			}
-
 					AppointmentWorkFlowCollection appointmentWorkFlowCollection = new AppointmentWorkFlowCollection();
 					BeanUtil.map(appointmentCollection, appointmentWorkFlowCollection);
 					appointmentWorkFlowRepository.save(appointmentWorkFlowCollection);
@@ -2854,24 +2919,33 @@ public class AppointmentServiceImpl implements AppointmentService {
 						appointmentCollection.setIsCalenderBlocked(request.getIsCalenderBlocked());
 						appointmentCollection.setExplanation(request.getExplanation());
 						appointmentCollection.setDoctorIds(doctorIds);
+						appointmentCollection.setSubject(request.getSubject());
+						appointmentCollection.setIsAllDayEvent(request.getIsAllDayEvent());
+						
 						if (request.getState().equals(AppointmentState.RESCHEDULE)) {
 							appointmentCollection.setIsRescheduled(true);
 							appointmentCollection.setState(AppointmentState.CONFIRM);
-							AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
-									.findByAppointmentId(appointmentCollection.getAppointmentId());
+						}
+						
+						AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
+								.findByAppointmentId(appointmentCollection.getAppointmentId());
 
-							if (request.getIsCalenderBlocked()) {
-								if (bookedSlotCollection != null) {
-									bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
-									bookedSlotCollection.setToDate(appointmentCollection.getToDate());
-									bookedSlotCollection.setTime(appointmentCollection.getTime());
-									bookedSlotCollection.setUpdatedTime(new Date());
-									appointmentBookedSlotRepository.save(bookedSlotCollection);
-								}
-							} else {
-								if (bookedSlotCollection != null)
-									appointmentBookedSlotRepository.delete(bookedSlotCollection);
+						if (request.getIsCalenderBlocked()) {
+							if (bookedSlotCollection == null) {
+								bookedSlotCollection = new AppointmentBookedSlotCollection();
+								BeanUtil.map(appointmentCollection, bookedSlotCollection);
+								bookedSlotCollection.setId(null);
 							}
+							bookedSlotCollection.setIsAllDayEvent(request.getIsAllDayEvent());
+							bookedSlotCollection.setDoctorIds(doctorIds);
+							bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
+							bookedSlotCollection.setToDate(appointmentCollection.getToDate());
+							bookedSlotCollection.setTime(appointmentCollection.getTime());
+							bookedSlotCollection.setUpdatedTime(new Date());
+							bookedSlotCollection = appointmentBookedSlotRepository.save(bookedSlotCollection);							
+						} else {
+							if (bookedSlotCollection != null)
+								appointmentBookedSlotRepository.delete(bookedSlotCollection);
 						}
 					}
 					appointmentCollection.setUpdatedTime(new Date());
@@ -3034,7 +3108,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 									.orOperator(new Criteria("patient.locationId").is(locationObjectId).and(
 											"patient.hospitalId").is(hospitalObjectId), new Criteria("patient.doctorId")
 													.is(doctorObjectId))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("_id", "$_id")
 											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -3457,7 +3531,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 
 		for (Entry<String, List<PatientQueueCollection>> entry : doctorsPatientQueue.entrySet()) {
-			patientQueueRepository.save(entry.getValue());
+			patientQueueRepository.saveAll(entry.getValue());
 		}
 
 	}
@@ -3724,7 +3798,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		try {
 
 			CustomAppointmentCollection appointmentCollection = null;
-			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (DPDoctorUtils.anyStringEmpty(request.getPatientName())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Patient Name should not Empty ");
 			}
@@ -3732,7 +3806,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid doctor Id");
 			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				appointmentCollection = customAppointmentRepository.findOne(new ObjectId(request.getId()));
+				appointmentCollection = customAppointmentRepository.findById(new ObjectId(request.getId())).orElse(null);
 				request.setUpdatedTime(new Date());
 				request.setCreatedBy(appointmentCollection.getCreatedBy());
 				request.setCreatedTime(appointmentCollection.getCreatedTime());
@@ -3759,7 +3833,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			String doctorId, Boolean discarded) {
 		CustomAppointment response = null;
 		try {
-			CustomAppointmentCollection customAppointmentCollection = customAppointmentRepository.findOne(
+			CustomAppointmentCollection customAppointmentCollection = customAppointmentRepository.findById(
 					new ObjectId(appointmentId), new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId));
 
@@ -3788,7 +3862,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		CustomAppointment response = null;
 		try {
 			CustomAppointmentCollection customAppointmentCollection = customAppointmentRepository
-					.findOne(new ObjectId(appointmentId));
+					.findById(new ObjectId(appointmentId)).orElse(null);
 			if (customAppointmentCollection == null) {
 				logger.warn("No Custom Appointment found for the given id");
 				throw new BusinessException(ServiceError.NotFound, "No Custom Appointment found for the given id");
@@ -3804,7 +3878,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public List<CustomAppointment> getCustomAppointments(int page, int size, String locationId, String hospitalId,
+	public List<CustomAppointment> getCustomAppointments(long page, int size, String locationId, String hospitalId,
 			String doctorId, String updatedTime, Boolean discarded) {
 
 		List<CustomAppointment> response = null;
@@ -4042,7 +4116,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								&& !doctorCollection.getSpecialities().isEmpty()) {
 							@SuppressWarnings("unchecked")
 							List<String> specialities = (List<String>) CollectionUtils.collect(
-									(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+									(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 									new BeanToPropertyValueTransformer("superSpeciality"));
 							doctor.setSpecialities(specialities);
 						}
@@ -4157,7 +4231,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								&& !doctorCollection.getSpecialities().isEmpty()) {
 							@SuppressWarnings("unchecked")
 							List<String> specialities = (List<String>) CollectionUtils.collect(
-									(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+									(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 									new BeanToPropertyValueTransformer("speciality"));
 							doctor.setSpecialities(specialities);
 						}
@@ -4351,7 +4425,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					jasperReportResponse.getFileSystemResource().getFile().delete();
 		} catch (Exception e) {
 			e.printStackTrace();
-			// TODO: handle exception
 		}
 		return response;
 
@@ -4494,7 +4567,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					Fields.field("status", "$status"), Fields.field("notes", "$explanation"),
 					Fields.field("state", "$state"), Fields.field("doctorId", "$doctorId")));
 
-			CustomAggregationOperation firstGroupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation firstGroupOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("time", new BasicDBObject("$first", "$time"))
 							.append("patientName", new BasicDBObject("$first", "$patientName"))
 							.append("PID", new BasicDBObject("$first", "$PID"))
@@ -4520,7 +4593,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			CustomAggregationOperation secondGroupOperation = null;
 			Aggregation aggregation = null;
 			if (isGroup) {
-				secondGroupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+				secondGroupOperation = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id", "$doctorId")
 								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 								.append("calenderResponse", new BasicDBObject("$push", "$calenderResponse"))));
@@ -4529,9 +4602,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"),
 						Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays", true))),
-						new CustomAggregationOperation(new BasicDBObject("$redact",
+						new CustomAggregationOperation(new Document("$redact",
 								new BasicDBObject("$cond",
 										new BasicDBObject("if",
 												new BasicDBObject("$eq",
@@ -4548,9 +4621,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"),
 						Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays", true))),
-						new CustomAggregationOperation(new BasicDBObject("$redact",
+						new CustomAggregationOperation(new Document("$redact",
 								new BasicDBObject("$cond",
 										new BasicDBObject("if",
 												new BasicDBObject("$eq",
@@ -4697,7 +4770,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (isGroupByDoctor) {
 				if (doctorList.contains(calenderResponseForJasper.getDoctorId())) {
 					doctors = "";
-					userCollection = userRepository.findOne(new ObjectId(calenderResponseForJasper.getDoctorId()));
+					userCollection = userRepository.findById(new ObjectId(calenderResponseForJasper.getDoctorId())).orElse(null);
 					if (userCollection != null) {
 						doctors = (!DPDoctorUtils.anyStringEmpty(doctors) ? "," : "") + " "
 								+ (!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
@@ -4709,7 +4782,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			} else {
 				for (String doctorId : doctorList) {
 
-					userCollection = userRepository.findOne(new ObjectId(doctorId));
+					userCollection = userRepository.findById(new ObjectId(doctorId)).orElse(null);
 					if (userCollection != null) {
 						doctors = doctors + (!DPDoctorUtils.anyStringEmpty(doctors) ? "," : "") + " "
 								+ (!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
@@ -4762,7 +4835,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	private List<GroupCollection> getPatientGroup(String locationId, String doctorId, String patirntId) {
 
-		CustomAggregationOperation GroupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+		CustomAggregationOperation GroupOperation = new CustomAggregationOperation(new Document("$group",
 				new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))));
 
 		Aggregation aggregation = Aggregation.newAggregation(
@@ -4847,7 +4920,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				response = new Response<>();
 				response.setCount(count);
 				
-				CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project",
+				CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
 						new BasicDBObject("id", "$_id").append("state", "$state").append("subject", "$subject")
 								.append("explanation", "$explanation").append("locationId", "$locationId")
 								.append("doctorId", "$doctorId").append("time", "$time")
@@ -4859,7 +4932,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
 								.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
 
-				CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
+				CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("id", "$_id").append("state", new BasicDBObject("$first", "$state"))
 								.append("subject", new BasicDBObject("$first", "$subject"))
 								.append("explanation", new BasicDBObject("$first", "$explanation"))
@@ -4883,22 +4956,22 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (size > 0) {
 					events = mongoTemplate.aggregate(
 							Aggregation.newAggregation(Aggregation.match(criteria),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new CustomAggregationOperation(new Document("$unwind",
 											new BasicDBObject("path", "$doctorIds")
 													.append("preserveNullAndEmptyArrays", true))),
 									Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new CustomAggregationOperation(new Document("$unwind",
 											new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
 													true))),
-							project, group, sortOperation, Aggregation.skip((page) * size),
+							project, group, sortOperation, Aggregation.skip((long)(page) * size),
 									Aggregation.limit(size)),
 							AppointmentCollection.class, Event.class).getMappedResults();
 				} else {
 					events = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 						project, group, sortOperation), AppointmentCollection.class, Event.class).getMappedResults();
 				}
@@ -4927,7 +5000,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Event getEventById(String eventId) {
 		Event response = null;
 		try {
-			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("id", "$_id").append("state", "$state").append("subject", "$subject")
 							.append("explanation", "$explanation").append("locationId", "$locationId")
 							.append("doctorId", "$doctorId").append("time", "$time")
@@ -4940,7 +5013,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
 							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
 
-			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("id", "$_id").append("state", new BasicDBObject("$first", "$state"))
 							.append("subject", new BasicDBObject("$first", "$subject"))
 							.append("explanation", new BasicDBObject("$first", "$explanation"))
@@ -4965,20 +5038,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 			response = mongoTemplate
 					.aggregate(
 							Aggregation.newAggregation(Aggregation.match(new Criteria("_id").is(new ObjectId(eventId))),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new CustomAggregationOperation(new Document("$unwind",
 											new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays",
 													true))),
 									Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
-									new CustomAggregationOperation(new BasicDBObject(
+									new CustomAggregationOperation(new Document(
 											"$unwind",
 											new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays",
 													true))),
 
 									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new CustomAggregationOperation(new Document("$unwind",
 											new BasicDBObject("path", "$patientCard")
 													.append("preserveNullAndEmptyArrays", true))),
-									new CustomAggregationOperation(new BasicDBObject("$redact",
+									new CustomAggregationOperation(new Document("$redact",
 											new BasicDBObject("$cond", new BasicDBObject("if",
 													new BasicDBObject("$ne", Arrays.asList("$patientCard", null)))
 															.append("then", new BasicDBObject("$cond",
@@ -5065,7 +5138,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 						Fields.field("createdBy", "$createdBy")));
 
-				CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project",
+				CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
 						new BasicDBObject("state", "$state").append("fromDateMonth", "$fromDateMonth")
 								.append("fromDateYear", "$fromDateYear").append("toDateMonth", "$toDateMonth")
 								.append("toDateYear", "$toDateYear").append("subject", "$subject")
@@ -5080,7 +5153,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
 								.append("patientCard", "$patientCard")));
 
-				CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
+				CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
 						new BasicDBObject("_id", "$_id")
 								.append("fromDateMonth", new BasicDBObject("$first", "$fromDateMonth"))
 								.append("fromDateYear", new BasicDBObject("$first", "$fromDateYear"))
@@ -5113,16 +5186,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.and("fromDate").extractMonth().as("fromDateMonth").and("fromDate").extractYear()
 							.as("fromDateYear").and("toDate").extractMonth().as("toDateMonth").and("toDate").extractYear()
 							.as("toDateYear"),
-
-							new CustomAggregationOperation(new BasicDBObject("$match",
+							new CustomAggregationOperation(new Document("$match",
 									new BasicDBObject("$or", Arrays.asList(
 											new BasicDBObject("fromDateMonth", dateMonth).append("fromDateYear", dateYear),
 											new BasicDBObject("toDateMonth", dateMonth).append("toDateYear", dateYear))))),
 
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 							project, group, sortOperation, Aggregation.skip((page) * size), Aggregation.limit(size)),
 							AppointmentCollection.class, Event.class).getMappedResults();
@@ -5133,15 +5205,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.as("fromDateYear").and("toDate").extractMonth().as("toDateMonth").and("toDate").extractYear()
 							.as("toDateYear"),
 
-							new CustomAggregationOperation(new BasicDBObject("$match",
+							new CustomAggregationOperation(new Document("$match",
 									new BasicDBObject("$or", Arrays.asList(
 											new BasicDBObject("fromDateMonth", dateMonth).append("fromDateYear", dateYear),
 											new BasicDBObject("toDateMonth", dateMonth).append("toDateYear", dateYear))))),
 
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$doctorIds").append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 							project, group, sortOperation), "appointment_cl", Event.class).getMappedResults();
 
@@ -5174,7 +5246,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			NutritionAppointmentCollection appointmentCollection = null;
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				appointmentCollection = nutritionAppointmentRepository.findOne(new ObjectId(request.getId()));
+				appointmentCollection = nutritionAppointmentRepository.findById(new ObjectId(request.getId())).orElse(null);
 				if (appointmentCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Appointment not found By Id ");
 				}
@@ -5186,7 +5258,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			} else {
 				appointmentCollection = new NutritionAppointmentCollection();
 				BeanUtil.map(request, appointmentCollection);
-				UserCollection userCollection = userRepository.findOne(appointmentCollection.getUserId());
+				UserCollection userCollection = userRepository.findById(appointmentCollection.getUserId()).orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "user not found By Id ");
 				}
@@ -5209,6 +5281,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 		return response;
 	}
+
 
 	@Override
 	public List<NutritionAppointment> getNutritionAppointments(int page, int size, String userId, String fromDate,
@@ -5262,7 +5335,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		try {
 
 			NutritionAppointmentCollection nutritionAppointmentCollection = nutritionAppointmentRepository
-					.findOne(new ObjectId(appointmentId));
+					.findById(new ObjectId(appointmentId)).orElse(null);
 			response = new NutritionAppointment();
 			BeanUtil.map(nutritionAppointmentCollection, response);
 		} catch (Exception e) {
@@ -5280,7 +5353,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		NutritionAppointment response = null;
 		try {
 			NutritionAppointmentCollection nutritionAppointmentCollection = nutritionAppointmentRepository
-					.findOne(new ObjectId(appointmentId));
+					.findById(new ObjectId(appointmentId)).orElse(null);
 			if (nutritionAppointmentCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Appointment not found with Id ");
 			}
@@ -5298,6 +5371,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		}
 		return response;
+	}
+
+	@Override
+	public Boolean update() {
+		List<AppointmentBookedSlotCollection> appointmentBookedSlotCollections = appointmentBookedSlotRepository.findAll();
+		for(AppointmentBookedSlotCollection appointmentBookedSlotCollection : appointmentBookedSlotCollections) {
+			AppointmentCollection appointmentCollection = appointmentRepository.findByAppointmentId(appointmentBookedSlotCollection.getAppointmentId());
+			if(appointmentCollection != null) {
+				appointmentBookedSlotCollection.setType(appointmentCollection.getType());
+				appointmentBookedSlotCollection = appointmentBookedSlotRepository.save(appointmentBookedSlotCollection);
+			}
+		}
+		return true;
 	}
 
 }

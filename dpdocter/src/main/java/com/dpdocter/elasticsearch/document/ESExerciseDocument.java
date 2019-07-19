@@ -10,12 +10,12 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import com.dpdocter.beans.Distance;
 import com.dpdocter.beans.MealQuantity;
 
-@Document(indexName = "exercises_in", type = "exercises")
+@Document(indexName = "exercises__in", type = "exercises")
 public class ESExerciseDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String name;
 
 	@Field(type = FieldType.Integer)

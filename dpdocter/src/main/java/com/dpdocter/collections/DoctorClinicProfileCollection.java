@@ -142,22 +142,6 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private String feedbackURL;
 
-	public Boolean getIsNutritionist() {
-		return isNutritionist;
-	}
-
-	public void setIsNutritionist(Boolean isNutritionist) {
-		this.isNutritionist = isNutritionist;
-	}
-
-	public Boolean getIsSuperAdmin() {
-		return isSuperAdmin;
-	}
-
-	public void setIsSuperAdmin(Boolean isSuperAdmin) {
-		this.isSuperAdmin = isSuperAdmin;
-	}
-
 	public ObjectId getId() {
 		return id;
 	}
@@ -438,12 +422,20 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.cityId = cityId;
 	}
 
-	public Boolean getIsVaccinationModuleOn() {
-		return isVaccinationModuleOn;
+	public Boolean getIsNutritionist() {
+		return isNutritionist;
 	}
 
-	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
-		this.isVaccinationModuleOn = isVaccinationModuleOn;
+	public void setIsNutritionist(Boolean isNutritionist) {
+		this.isNutritionist = isNutritionist;
+	}
+
+	public Boolean getIsSuperAdmin() {
+		return isSuperAdmin;
+	}
+
+	public void setIsSuperAdmin(Boolean isSuperAdmin) {
+		this.isSuperAdmin = isSuperAdmin;
 	}
 
 	public ObjectId getDefaultDoctorId() {
@@ -469,6 +461,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setFeedbackURL(String feedbackURL) {
 		this.feedbackURL = feedbackURL;
 	}
+	
+	public Boolean getIsVaccinationModuleOn() {
+		return isVaccinationModuleOn;
+	}
+
+	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
+		this.isVaccinationModuleOn = isVaccinationModuleOn;
+	}
 
 	@Override
 	public String toString() {
@@ -490,4 +490,5 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 				+ ", defaultDoctorId=" + defaultDoctorId + ", isPidHasDate=" + isPidHasDate + ", feedbackURL="
 				+ feedbackURL + "]";
 	}
+
 }

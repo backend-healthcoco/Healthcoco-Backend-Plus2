@@ -14,23 +14,22 @@ public class ESSymptomDiseaseConditionDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String name;
     
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String type;
     
     @Field(type = FieldType.Date)
     private Date updatedTime = new Date();
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
     private List<String> specialities;
     
-//	@MultiField(mainField = @Field(type = FieldType.String))
-//    private List<String> formattedSpecialities;
-//    
-
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
+    private List<String> formattedSpecialities;
+    
+	@MultiField(mainField = @Field(type = FieldType.Text))
     private List<String> specialityIds;
 
 	public String getId() {
@@ -73,6 +72,14 @@ public class ESSymptomDiseaseConditionDocument {
 		this.specialities = specialities;
 	}
 
+	public List<String> getFormattedSpecialities() {
+		return formattedSpecialities;
+	}
+
+	public void setFormattedSpecialities(List<String> formattedSpecialities) {
+		this.formattedSpecialities = formattedSpecialities;
+	}
+
 	public List<String> getSpecialityIds() {
 		return specialityIds;
 	}
@@ -84,7 +91,7 @@ public class ESSymptomDiseaseConditionDocument {
 	@Override
 	public String toString() {
 		return "ESSymptomDiseaseConditionDocument [id=" + id + ", name=" + name + ", type=" + type + ", updatedTime="
-				+ updatedTime + ", specialities=" + specialities
+				+ updatedTime + ", specialities=" + specialities + ", formattedSpecialities=" + formattedSpecialities
 				+ ", specialityIds=" + specialityIds + "]";
 	}
 }

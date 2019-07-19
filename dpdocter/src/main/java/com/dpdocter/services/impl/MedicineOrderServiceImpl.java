@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -160,7 +161,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 			if(request.getId() != null)
 			{
-				medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getId()));
+				medicineOrderCollection = medicineOrderRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 
 			if (medicineOrderCollection == null) {
@@ -207,7 +208,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 			if(request.getId() != null)
 			{
-				medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getId()));
+				medicineOrderCollection = medicineOrderRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 
 			if (medicineOrderCollection == null) {
@@ -242,7 +243,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 			if(request.getId() != null)
 			{
-				medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getId()));
+				medicineOrderCollection = medicineOrderRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			if (medicineOrderCollection == null) {
 				medicineOrderCollection = new MedicineOrderCollection();
@@ -281,7 +282,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 			if(request.getId() != null)
 			{
-				medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getId()));
+				medicineOrderCollection = medicineOrderRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			if (medicineOrderCollection == null) {
 				medicineOrderCollection = new MedicineOrderCollection();
@@ -323,7 +324,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 			if(request.getId() != null)
 			{
-				medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getId()));
+				medicineOrderCollection = medicineOrderRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			if (medicineOrderCollection == null) {
 				medicineOrderCollection = new MedicineOrderCollection();
@@ -356,7 +357,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 		TrackingOrder trackingOrder = null;
 		try {
 
-			medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(id));
+			medicineOrderCollection = medicineOrderRepository.findById(new ObjectId(id)).orElse(null);
 
 			if (medicineOrderCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
@@ -476,7 +477,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(request.getOrderId()));
+			medicineOrderCollection = medicineOrderRepository.findById(new ObjectId(request.getOrderId())).orElse(null);
 
 			if (medicineOrderCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
@@ -509,7 +510,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(id));
+			medicineOrderCollection = medicineOrderRepository.findById(new ObjectId(id)).orElse(null);
 
 			if (medicineOrderCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
@@ -538,7 +539,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			medicineOrderCollection = medicineOrderRepository.findOne(new ObjectId(id));
+			medicineOrderCollection = medicineOrderRepository.findById(new ObjectId(id)).orElse(null);
 
 			if (medicineOrderCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
@@ -586,7 +587,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			if (size > 0) {
 				aggregation =Aggregation.newAggregation(
 							Aggregation.lookup("vendor_cl", "vendorId", "_id", "vendor"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$vendor").append("preserveNullAndEmptyArrays",
 											true))),
 							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
@@ -595,7 +596,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			} else {
 				aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("vendor_cl", "vendorId", "_id", "vendor"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$vendor").append("preserveNullAndEmptyArrays",
 											true))),
 							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
@@ -625,7 +626,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 			if(request.getId() != null)
 			{
-				userCartCollection = userCartRepository.findOne(new ObjectId(request.getId()));
+				userCartCollection = userCartRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 
 			if (userCartCollection == null) {
@@ -665,7 +666,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			userCartCollection = userCartRepository.findOne(new ObjectId(id));
+			userCartCollection = userCartRepository.findById(new ObjectId(id)).orElse(null);
 
 			if (userCartCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
@@ -723,7 +724,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			userCartCollection = userCartRepository.findOne(new ObjectId(id));
+			userCartCollection = userCartRepository.findById(new ObjectId(id)).orElse(null);
 
 			if (userCartCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
@@ -761,7 +762,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 			if(request.getId() != null)
 			{
-				trackingOrderCollection = trackingOrderRepository.findOne(new ObjectId(request.getId()));
+				trackingOrderCollection = trackingOrderRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 
 			if (trackingOrderCollection == null) {

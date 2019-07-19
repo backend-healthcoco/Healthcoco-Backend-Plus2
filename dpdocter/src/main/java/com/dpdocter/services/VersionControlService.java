@@ -10,6 +10,6 @@ public interface VersionControlService {
 
 	public VersionControl changeVersion(VersionControl versionControl);
 
-	List<VersionControl> getVersionsList(int page, int size, String searchTerm);
+	List<VersionControl> getVersionsList(long page, int size, String searchTerm);
 
 }

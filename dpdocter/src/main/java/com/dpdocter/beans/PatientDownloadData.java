@@ -4,7 +4,11 @@ import java.util.List;
 
 public class PatientDownloadData {
 
-	private String PID;
+	private Long registrationDate;
+	
+	private String date;
+	
+	private String patientId;
 	
 	private String localPatientName;
 	
@@ -50,14 +54,22 @@ public class PatientDownloadData {
 
 	private DOB dob;
 	
-	public String getPID() {
-		return PID;
+	public String getDate() {
+		return date;
 	}
 
-	public void setPID(String pID) {
-		PID = pID;
+	public void setDate(String date) {
+		this.date = date;
 	}
 
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+	
 	public String getLocalPatientName() {
 		return localPatientName;
 	}
@@ -234,15 +246,24 @@ public class PatientDownloadData {
 		this.dob = dob;
 	}
 
+	public Long getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(Long registrationDate) {
+		this.registrationDate = registrationDate;
+	}
+
 	@Override
 	public String toString() {
-		return "PatientDownloadData [PID=" + PID + ", localPatientName=" + localPatientName + ", mobileNumber="
-				+ mobileNumber + ", emailAddress=" + emailAddress + ", secMobile=" + secMobile + ", gender=" + gender
-				+ ", country=" + country + ", city=" + city + ", state=" + state + ", postalCode=" + postalCode
-				+ ", locality=" + locality + ", landmarkDetails=" + landmarkDetails + ", streetAddress=" + streetAddress
-				+ ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId="
-				+ drivingLicenseId + ", insuranceId=" + insuranceId + ", dateOfBirth=" + dateOfBirth + ", age=" + age
-				+ ", bloodGroup=" + bloodGroup + ", referredBy=" + referredBy + ", groups=" + groups + ", dob=" + dob
-				+ "]";
+		return "PatientDownloadData [registrationDate=" + registrationDate + ", date=" + date + ", patientId="
+				+ patientId + ", localPatientName=" + localPatientName + ", mobileNumber=" + mobileNumber
+				+ ", emailAddress=" + emailAddress + ", secMobile=" + secMobile + ", gender=" + gender + ", country="
+				+ country + ", city=" + city + ", state=" + state + ", postalCode=" + postalCode + ", locality="
+				+ locality + ", landmarkDetails=" + landmarkDetails + ", streetAddress=" + streetAddress + ", adhaarId="
+				+ adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId
+				+ ", insuranceId=" + insuranceId + ", dateOfBirth=" + dateOfBirth + ", age=" + age + ", bloodGroup="
+				+ bloodGroup + ", referredBy=" + referredBy + ", groups=" + groups + ", dob=" + dob + "]";
 	}
+
 }

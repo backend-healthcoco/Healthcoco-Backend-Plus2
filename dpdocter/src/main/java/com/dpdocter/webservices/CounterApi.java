@@ -293,7 +293,7 @@ public class CounterApi {
 	public Response<MealCounter> getMealCounters(@PathParam("userId") String userId, @QueryParam("size") int size,
 			@QueryParam("page") int page, @QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@QueryParam("mealTime") String mealTime) {
-		if (DPDoctorUtils.anyStringEmpty(userId)) {
+		if (DPDoctorUtils.anyStringEmpty(userId, mealTime)) {
 			logger.warn("userId,mealtime must not null or empty");
 			throw new BusinessException(ServiceError.InvalidInput, "userId,mealtime must not null or empty");
 

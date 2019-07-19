@@ -69,6 +69,12 @@ public class Patient {
 
 	private String PNUM;
 
+	private Boolean isChild = false;
+
+	private String fatherName;
+
+	private String motherName;
+
 	private String backendPatientId;
 
 	public String getLocalPatientName() {
@@ -319,6 +325,30 @@ public class Patient {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
+	public Boolean getIsChild() {
+		return isChild;
+	}
+
+	public void setIsChild(Boolean isChild) {
+		this.isChild = isChild;
+	}
+
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public String getMotherName() {
+		return motherName;
+	}
+
+	public void setMotherName(String motherName) {
+		this.motherName = motherName;
+	}
+	
 	public String getBackendPatientId() {
 		return backendPatientId;
 	}
@@ -340,7 +370,7 @@ public class Patient {
 				+ ", consultantDoctorIds=" + consultantDoctorIds + ", medicalQuestionAnswers=" + medicalQuestionAnswers
 				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", personalInformation="
 				+ personalInformation + ", registrationDate=" + registrationDate + ", isPatientDiscarded="
-				+ isPatientDiscarded + ", PNUM=" + PNUM + ", backendPatientId=" + backendPatientId + "]";
+				+ isPatientDiscarded + ", PNUM=" + PNUM + ", isChild=" + isChild + ", fatherName=" + fatherName
+				+ ", motherName=" + motherName + ", backendPatientId=" + backendPatientId + "]";
 	}
-
 }

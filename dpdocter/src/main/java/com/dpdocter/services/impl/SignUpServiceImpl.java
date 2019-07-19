@@ -138,6 +138,9 @@ public class SignUpServiceImpl implements SignUpService {
 
 	@Autowired
 	private SMSServices smsServices;
+	
+	@Autowired
+	private DoctorContactUsRepository doctorContactUsRepository;
 
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
@@ -183,6 +186,9 @@ public class SignUpServiceImpl implements SignUpService {
 	@Autowired
 	private AccessControlServices accessControlServices;
 
+	@Autowired
+	private PCUserRepository pcUserRepository;
+	
 	@Value(value = "${Signup.role}")
 	private String role;
 
@@ -194,24 +200,15 @@ public class SignUpServiceImpl implements SignUpService {
 
 	@Value(value = "${Signup.unlockPatientBasedOn80PercentMatch}")
 	private String unlockPatientBasedOn80PercentMatch;
-
-	@Autowired
-	private PCUserRepository pcUserRepository;
-
-	@Autowired
-	private SubscriptionService subscriptionService;
-	
+		
 	@Value(value = "${welcome.link}")
 	private String welcomeLink;
-
-	@Autowired
-	private DoctorContactUsRepository doctorContactUsRepository;
 
 	@Override
 	@Transactional
 	public String verifyUser(String tokenId) {
 		try {
-			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(tokenId));
+			TokenCollection tokenCollection = tokenRepository.findById(new ObjectId(tokenId)).orElse(null);
 			if (tokenCollection == null) {
 				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
 			} else if (tokenCollection.getIsUsed()) {
@@ -222,11 +219,11 @@ public class SignUpServiceImpl implements SignUpService {
 					return "We were unable to verify your Healthcoco+ account."
 							+ " Please contact support@healthcoco.com for completing your account verification.";
 				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
-						.findOne(tokenCollection.getResourceId());
+						.findById(tokenCollection.getResourceId()).orElse(null);
 				if (doctorClinicProfileRepository == null) {
 					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
 				}
-				UserCollection userCollection = userRepository.findOne(doctorClinicProfileCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findById(doctorClinicProfileCollection.getDoctorId()).orElse(null);
 				userCollection.setIsVerified(true);
 				userCollection.setUserState(UserState.NOTACTIVATED);
 				userRepository.save(userCollection);
@@ -254,51 +251,9 @@ public class SignUpServiceImpl implements SignUpService {
 
 	@Override
 	@Transactional
-	public DoctorContactUs welcomeUser(String tokenId) {
-		DoctorContactUs doctorContactUs = null;
-		try {
-			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(tokenId));
-			if (tokenCollection == null) {
-				throw new BusinessException(ServiceError.NoRecord,
-						"Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the welcome email that we sent you.");
-			} /*
-				 * else if (tokenCollection.getIsUsed()) { throw new
-				 * BusinessException(ServiceError.Forbidden ,
-				 * "Your welcome link has already been used." +
-				 * " Please contact support@healthcoco.com for completing your email verification"
-				 * );
-				 * 
-				 * }
-				 */else {
-				DoctorContactUsCollection doctorContactUsCollection = doctorContactUsRepository
-						.findOne(tokenCollection.getResourceId());
-				if (doctorContactUsCollection != null) {
-					doctorContactUs = new DoctorContactUs();
-					BeanUtil.map(doctorContactUsCollection, doctorContactUs);
-				}
-				tokenCollection.setIsUsed(true);
-				tokenRepository.save(tokenCollection);
-				return doctorContactUs;
-			}
-		} catch (IllegalArgumentException argumentException) {
-			throw new BusinessException(ServiceError.Forbidden,
-					"Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the welcome email that we sent you.");
-		} catch (BusinessException be) {
-			logger.error(be);
-			throw be;
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error occured while registering user");
-			throw new BusinessException(ServiceError.Unknown, "Error occured while registerings user");
-		}
-
-	}
-
-	@Override
-	@Transactional
 	public String verifyLocale(String tokenId) {
 		try {
-			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(tokenId));
+			TokenCollection tokenCollection = tokenRepository.findById(new ObjectId(tokenId)).orElse(null);
 			if (tokenCollection == null) {
 				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification SMS that we sent you.";
 			} else if (tokenCollection.getIsUsed()) {
@@ -309,7 +264,7 @@ public class SignUpServiceImpl implements SignUpService {
 					return "We were unable to verify your Healthcoco account."
 							+ " Please contact support@healthcoco.com for completing your account verification.";
 
-				UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
+				UserCollection userCollection = userRepository.findById(tokenCollection.getResourceId()).orElse(null);
 				LocaleCollection localeCollection = localeRepository
 						.findByMobileNumber(userCollection.getMobileNumber());
 				userCollection.setIsVerified(true);
@@ -610,7 +565,7 @@ public class SignUpServiceImpl implements SignUpService {
 				}
 				// This batch update will unlock all the locked users.(make
 				// signedup flag =true)
-				userRepository.save(userCollections);
+				userRepository.saveAll(userCollections);
 				isUnlocked = true;
 			}
 		}
@@ -923,6 +878,7 @@ public class SignUpServiceImpl implements SignUpService {
 			userCollection.setCreatedTime(new Date());
 			userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
+
 			userCollection.setUserState(UserState.NOTACTIVATED);
 			userCollection.setIsVerified(true);
 			if (request.getPassword() != null) {
@@ -1009,16 +965,18 @@ public class SignUpServiceImpl implements SignUpService {
 
 			locationCollection = locationRepository.save(locationCollection);
 			// save user location.
+			
 			DoctorClinicProfileCollection doctorClinicProfileCollection = new DoctorClinicProfileCollection();
 			doctorClinicProfileCollection.setDoctorId(userCollection.getId());
 			doctorClinicProfileCollection.setLocationId(locationCollection.getId());
+			doctorClinicProfileCollection.setMrCode(request.getMrCode());
 			doctorClinicProfileCollection.setCreatedTime(new Date());
-			if (pcUserCollection != null) {
-				doctorClinicProfileCollection.setMrCode(pcUserCollection.getMrCode());
-				doctorClinicProfileCollection.setDivisionIds(pcUserCollection.getDivisionId());
-			}
-			if (request.getCityId() != null) {
-				doctorClinicProfileCollection.setCityId(new ObjectId(request.getCityId()));
+			if(request.getMrCode() != null){
+				pcUserCollection = pcUserRepository.findByMRCode(request.getMrCode());
+				if(pcUserCollection != null){
+					doctorClinicProfileCollection.setDivisionIds(pcUserCollection.getDivisionId());
+					doctorClinicProfileCollection.setMrCode(pcUserCollection.getMrCode());
+				}
 			}
 			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 
@@ -1031,7 +989,47 @@ public class SignUpServiceImpl implements SignUpService {
 				userRoleCollection.setCreatedTime(new Date());
 				userRoleCollections.add(userRoleCollection);
 			}
-			userRoleRepository.save(userRoleCollections);
+			
+		/*	if(request.getMrCode() != null)
+			{
+				pcUserCollection = pcUserRepository.findByMRCode(request.getMrCode());
+				List<PharmaLicenseResponse> pharmaLicenseResponses = pharmaService.getLicenses(pcUserCollection.getCompanyId().toString(), 0, 0);
+				for(PharmaLicenseResponse pharmaLicenseResponse : pharmaLicenseResponses)
+				{
+					if(pharmaLicenseResponse.getAvailable() > 0)
+					{
+						licenseResponse = pharmaLicenseResponse;
+						break;
+					}
+				}
+			}
+			
+			// Subscribe Doctor with Clinic
+			SubscriptionDetail detail = new SubscriptionDetail();
+			detail.setCreatedBy("Admin");
+			detail.setDoctorId(userCollection.getId().toString());
+			detail.setIsDemo(true);
+			detail.setMonthsforSms(1);
+			detail.setMonthsforSuscrption(1);
+			detail.setNoOfsms(500);
+			Set<String> locationSet = new HashSet<String>();
+			locationSet.add(locationCollection.getId().toString());
+			detail.setLocationIds(locationSet);
+			if(licenseResponse != null)
+			{
+				detail.setIsDemo(false);
+				detail.setFromDate(new Date());
+				detail.setToDate(DateUtils.addMonths(new Date(), licenseResponse.getDuration()));
+				detail.setLicenseId(licenseResponse.getId());
+				licenseResponse.setAvailable(licenseResponse.getAvailable() - 1);
+				licenseResponse.setConsumed(licenseResponse.getConsumed() + 1);
+				PharmaLicenseCollection pharmaLicenseCollection = new PharmaLicenseCollection();
+				BeanUtil.map(licenseResponse, pharmaL"isVerified" : falseicenseCollection);
+				pharmaLicenseRepository.save(pharmaLicenseCollection);
+				
+			}
+			subscriptionService.activate(detail);*/
+			userRoleRepository.saveAll(userRoleCollections);
 
 			/*
 			 * if(request.getMrCode() != null) { pcUserCollection =
@@ -1137,11 +1135,11 @@ public class SignUpServiceImpl implements SignUpService {
 				for (AccessControl accessControl : accessControls) {
 					Role role = new Role();
 					for (RoleCollection roleCollection : roleCollections) {
-						if (accessControl.getRoleOrUserId().equals(roleCollection.getId()))
+						if (accessControl.getRoleOrUserId().equals(roleCollection.getId().toString()))
 							role.setRole(RoleEnum.HOSPITAL_ADMIN.getRole());
-						if (accessControl.getRoleOrUserId().equals(roleCollection.getId()))
+						if (accessControl.getRoleOrUserId().equals(roleCollection.getId().toString()))
 							role.setRole(RoleEnum.LOCATION_ADMIN.getRole());
-						if (accessControl.getRoleOrUserId().equals(roleCollection.getId()))
+						if (accessControl.getRoleOrUserId().equals(roleCollection.getId().toString()))
 							role.setRole(RoleEnum.DOCTOR.getRole());
 					}
 					BeanUtil.map(accessControl.getAccessModules(), role);
@@ -1173,12 +1171,49 @@ public class SignUpServiceImpl implements SignUpService {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public DoctorContactUs welcomeUser(String tokenId) {
+		DoctorContactUs doctorContactUs = null;
+		try {
+			TokenCollection tokenCollection = tokenRepository.findById(new ObjectId(tokenId)).orElse(null);
+			if (tokenCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord , "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the welcome email that we sent you.");
+			}/* else if (tokenCollection.getIsUsed()) {
+				throw new BusinessException(ServiceError.Forbidden , "Your welcome link has already been used."
+						+ " Please contact support@healthcoco.com for completing your email verification");
+						
+			} */else {
+				DoctorContactUsCollection doctorContactUsCollection = doctorContactUsRepository.findById(tokenCollection.getResourceId()).orElse(null);
+				if(doctorContactUsCollection != null)
+				{
+					doctorContactUs = new DoctorContactUs();
+					BeanUtil.map(doctorContactUsCollection, doctorContactUs);
+				}
+				tokenCollection.setIsUsed(true);
+				tokenRepository.save(tokenCollection);
+				return doctorContactUs;
+			}
+		} catch (IllegalArgumentException argumentException) {
+			throw new BusinessException(ServiceError.Forbidden ,"Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the welcome email that we sent you.");
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while registering user");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while registerings user");
+		}
+
+	}
+
 
 	@Override
 	@Transactional
 	public String verifyConfexAdmin(String tokenId) {
 		try {
-			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(tokenId));
+			TokenCollection tokenCollection = tokenRepository.findById(new ObjectId(tokenId)).orElse(null);
 			if (tokenCollection == null) {
 				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification  that we sent you.";
 			} else if (tokenCollection.getIsUsed()) {
@@ -1188,7 +1223,7 @@ public class SignUpServiceImpl implements SignUpService {
 				if (!forgotPasswordService.isLinkValid(tokenCollection.getCreatedTime()))
 					return "We were unable to verify your Healthcoco+ account."
 							+ " Please contact support@healthcoco.com for completing your account verification.";
-				ConfexUserCollection userCollection = confexUserRepository.findOne(tokenCollection.getResourceId());
+				ConfexUserCollection userCollection = confexUserRepository.findById(tokenCollection.getResourceId()).orElse(null);
 				if (userCollection == null) {
 					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification  that we sent you.";
 				}

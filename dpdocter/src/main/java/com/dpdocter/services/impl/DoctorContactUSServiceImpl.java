@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
@@ -22,10 +21,8 @@ import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.DoctorContactUsCollection;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TokenCollection;
-import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
@@ -101,14 +98,11 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 				tokenCollection.setCreatedTime(new Date());
 				tokenCollection = tokenRepository.save(tokenCollection);
 				
-				String body = mailBodyGenerator.doctorWelcomeEmailBody(
+				String body = mailBodyGenerator.generateActivationEmailBody(
 						doctorContactUs.getTitle() + " " + doctorContactUs.getFirstName(), tokenCollection.getId(),
-						"doctorWelcomeTemplate.vm", null, null);
+						"doctorWelcomeTemplate.vm", null, null, null);
 				mailService.sendEmail(doctorContactUs.getEmailAddress(), doctorWelcomeSubject, body, null);
 
-				if (doctorContactUs.getMobileNumber() != null) {
-					sendWelcomeMessage(doctorContactUs.getMobileNumber(), tokenCollection.getId());
-				}
 				
 				body = mailBodyGenerator.generateContactEmailBody(doctorContactUs, "Doctor");
 				mailService.sendEmail(mailTo, signupRequestSubject, body, null);
@@ -139,7 +133,7 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 
 	@Override
 	@Transactional
-	public List<DoctorContactUs> getDoctorContactList(int page, int size, String searchTerm) {
+	public List<DoctorContactUs> getDoctorContactList(long page, int size, String searchTerm) {
 		List<DoctorContactUs> response = null;
 		// String searchTerm = null;
 		Criteria criteria = null;

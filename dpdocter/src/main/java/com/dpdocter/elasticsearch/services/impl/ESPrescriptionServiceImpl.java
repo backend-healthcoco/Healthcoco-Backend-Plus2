@@ -1,5 +1,7 @@
 package com.dpdocter.elasticsearch.services.impl;
 
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -129,13 +131,14 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	@Override
-	public List<?> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId,
+	public List<?> searchDrug(String range, long page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
 		List<?> response = null;
 		List<ESDrugDocument> esDrugDocuments = null;
 		List<DrugDocument> drugDocuments = null;
-		if (page > 0)
-			return response;
+		//Please remove this in next release. Its an hack for IOS 
+			searchByGenericName = false;
+		//
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 			searchTerm = searchTerm.toUpperCase();
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -172,7 +175,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 	}
 
-	private List<DrugDocument> getCustomGlobalDrugsForWeb(int page, int size, String doctorId, String locationId,
+	private List<DrugDocument> getCustomGlobalDrugsForWeb(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category,
 			Boolean searchByGenericName) {
 		List<DrugDocument> response = null;
@@ -220,7 +223,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<DrugDocument> getFavouritesDrugs(int page, int size, String doctorId, String locationId,
+	private List<DrugDocument> getFavouritesDrugs(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category,
 			Boolean searchByGenericName) {
 		List<DrugDocument> response = null;
@@ -264,7 +267,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<ESDrugDocument> getCustomGlobalDrugs(int page, int size, String doctorId, String locationId,
+	private List<ESDrugDocument> getCustomGlobalDrugs(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, boolean discarded, String searchTerm, String category,
 			Boolean searchByGenericName) {
 		List<ESDrugDocument> response = null;
@@ -292,7 +295,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<ESDrugDocument> getGlobalDrugs(int page, int size, String updatedTime, boolean discarded,
+	private List<ESDrugDocument> getGlobalDrugs(long page, int size, String updatedTime, boolean discarded,
 			String searchTerm, String category, Boolean searchByGenericName) {
 		List<ESDrugDocument> response = null;
 		try {
@@ -314,7 +317,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<ESDrugDocument> getCustomDrugs(int page, int size, String doctorId, String locationId,
+	private List<ESDrugDocument> getCustomDrugs(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, boolean discarded, String searchTerm, String category,
 			Boolean searchByGenericName) {
 		List<ESDrugDocument> response = null;
@@ -343,7 +346,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	@Override
-	public List<LabTest> searchLabTest(String range, int page, int size, String locationId, String hospitalId,
+	public List<LabTest> searchLabTest(String range, long page, int size, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		List<LabTest> response = null;
 		List<ESLabTestDocument> labTestDocuments = null;
@@ -370,7 +373,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				BeanUtil.map(labTestDocument, labTest);
 				if (labTestDocument.getTestId() != null) {
 					ESDiagnosticTestDocument diagnosticTestDocument = esDiagnosticTestRepository
-							.findOne(labTestDocument.getTestId());
+							.findById(labTestDocument.getTestId()).orElse(null);
 					if (diagnosticTestDocument != null) {
 						DiagnosticTest test = new DiagnosticTest();
 						BeanUtil.map(diagnosticTestDocument, test);
@@ -384,7 +387,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESLabTestDocument> getGlobalLabTests(int page, int size, String updatedTime, Boolean discarded,
+	private List<ESLabTestDocument> getGlobalLabTests(long page, int size, String updatedTime, Boolean discarded,
 			String searchTerm) {
 		List<ESLabTestDocument> response = null;
 		try {
@@ -410,7 +413,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESLabTestDocument> getCustomLabTests(int page, int size, String locationId, String hospitalId,
+	private List<ESLabTestDocument> getCustomLabTests(long page, int size, String locationId, String hospitalId,
 			String updatedTime, boolean discarded, String searchTerm) {
 		List<ESLabTestDocument> response = null;
 		try {
@@ -442,7 +445,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ESLabTestDocument> getCustomGlobalLabTests(int page, int size, String locationId, String hospitalId,
+	private List<ESLabTestDocument> getCustomGlobalLabTests(long page, int size, String locationId, String hospitalId,
 			String updatedTime, boolean discarded, String searchTerm) {
 		List<ESLabTestDocument> response = null;
 		try {
@@ -486,7 +489,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	@Override
-	public List<ESDiagnosticTestDocument> searchDiagnosticTest(String range, int page, int size, String locationId,
+	public List<ESDiagnosticTestDocument> searchDiagnosticTest(String range, long page, int size, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESDiagnosticTestDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -510,7 +513,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<ESDiagnosticTestDocument> getDiagnosticTestsForPatients(int page, int size, String updatedTime,
+	private List<ESDiagnosticTestDocument> getDiagnosticTestsForPatients(long page, int size, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESDiagnosticTestDocument> response = null;
 		try {
@@ -526,7 +529,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size))
+						.withPageable(PageRequest.of((int)page, size))
 						.withSort(SortBuilders.fieldSort("testName").order(SortOrder.ASC)).build();
 
 			else
@@ -544,7 +547,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	@Override
-	public Integer getDiagnosticTestCount(String range, int page, int size, String locationId, String hospitalId,
+	public Integer getDiagnosticTestCount(String range, long page, int size, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm) {
 		Integer count = null;
 		try {
@@ -558,7 +561,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return count;
 	}
 
-	private List<ESDiagnosticTestDocument> getGlobalDiagnosticTests(int page, int size, String updatedTime,
+	private List<ESDiagnosticTestDocument> getGlobalDiagnosticTests(long page, int size, String updatedTime,
 			Boolean discarded, String searchTerm) {
 		List<ESDiagnosticTestDocument> response = null;
 		try {
@@ -573,7 +576,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<ESDiagnosticTestDocument> getCustomDiagnosticTests(int page, int size, String locationId,
+	private List<ESDiagnosticTestDocument> getCustomDiagnosticTests(long page, int size, String locationId,
 			String hospitalId, String updatedTime, boolean discarded, String searchTerm) {
 		List<ESDiagnosticTestDocument> response = null;
 		try {
@@ -592,7 +595,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<ESDiagnosticTestDocument> getCustomGlobalDiagnosticTests(int page, int size, String locationId,
+	private List<ESDiagnosticTestDocument> getCustomGlobalDiagnosticTests(long page, int size, String locationId,
 			String hospitalId, String updatedTime, boolean discarded, String searchTerm) {
 		List<ESDiagnosticTestDocument> response = null;
 		try {
@@ -608,10 +611,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	@SuppressWarnings("unchecked")
-	public SearchQuery createGlobalQueryWithoutDoctorId(int page, int size, String updatedTime, Boolean discarded,
+	public SearchQuery createGlobalQueryWithoutDoctorId(long page, int size, String updatedTime, Boolean discarded,
 			String searchTermFieldName, String searchTerm, Collection<String> testIds, Boolean calculateCount,
-			Class classForCount, String sortBy) {
+			Class<?> classForCount, String sortBy) {
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime))
 						.to(new Date().getTime()))
@@ -630,7 +632,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		if (!DPDoctorUtils.anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of((int)page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
@@ -638,7 +640,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC))
-						.withPageable(new PageRequest(page, size)).build();
+						.withPageable(PageRequest.of((int)page, size)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
@@ -647,10 +649,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return searchQuery;
 	}
 
-	@SuppressWarnings("unchecked")
-	public SearchQuery createCustomQueryWithoutDoctorId(int page, int size, String locationId, String hospitalId,
+	public SearchQuery createCustomQueryWithoutDoctorId(long page, int size, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm,
-			Collection<String> testIds, Boolean calculateCount, Class classForCount, String sortBy) {
+			Collection<String> testIds, Boolean calculateCount, Class<?> classForCount, String sortBy) {
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime))
@@ -671,14 +672,14 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		if (!DPDoctorUtils.anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of((int)page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size))
+						.withPageable(PageRequest.of((int)page, size))
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -688,24 +689,22 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return searchQuery;
 	}
 
-	@SuppressWarnings({ "deprecation", "unchecked" })
-	public SearchQuery createCustomGlobalQueryWithoutDoctorId(int page, int size, String locationId, String hospitalId,
+	public SearchQuery createCustomGlobalQueryWithoutDoctorId(long page, int size, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm,
-			Collection<String> testIds, Boolean calculateCount, Class classForCount, String sortBy) {
+			Collection<String> testIds, Boolean calculateCount, Class<?> classForCount, String sortBy) {
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)).to(new Date().getTime()));
 
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			boolQueryBuilder
-					.must(QueryBuilders.orQuery(
-							QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")),
-							QueryBuilders.termQuery("locationId", locationId)))
-					.must(QueryBuilders.orQuery(
-							QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")),
-							QueryBuilders.termQuery("hospitalId", hospitalId)));
+			.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")))
+					 .should(QueryBuilders.termQuery("locationId", locationId))
+					 .minimumShouldMatch(1))
+			.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
+					 .should(QueryBuilders.termQuery("hospitalId", hospitalId))
+					 .minimumShouldMatch(1));
 		}
-
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName, searchTerm));
 		if (!discarded)
@@ -721,14 +720,14 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		if (!DPDoctorUtils.anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of((int)page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size))
+						.withPageable(PageRequest.of((int)page, size))
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -750,7 +749,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	@Override
-	public List<ESAdvicesDocument> searchAdvices(String range, int page, int size, String doctorId, String locationId,
+	public List<ESAdvicesDocument> searchAdvices(String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String disease, String searchTerm) {
 		List<ESAdvicesDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
@@ -772,7 +771,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<ESAdvicesDocument> getCustomGlobalAdvices(int page, int size, String doctorId, String locationId,
+	private List<ESAdvicesDocument> getCustomGlobalAdvices(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String disease, String searchTerm) {
 		List<ESAdvicesDocument> response = null;
 		try {
@@ -789,7 +788,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 	}
 
-	private List<ESAdvicesDocument> getGlobalAdvices(int page, int size, String doctorId, String updatedTime,
+	private List<ESAdvicesDocument> getGlobalAdvices(long page, int size, String doctorId, String updatedTime,
 			Boolean discarded, String disease, String searchTerm) {
 		List<ESAdvicesDocument> response = null;
 		try {
@@ -806,7 +805,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		return response;
 	}
 
-	private List<ESAdvicesDocument> getCustomAdvices(int page, int size, String doctorId, String locationId,
+	private List<ESAdvicesDocument> getCustomAdvices(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String disease, String searchTerm) {
 		List<ESAdvicesDocument> response = null;
 		try {

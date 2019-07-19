@@ -23,14 +23,14 @@ public interface BillingService {
 
 	DoctorPatientInvoice addEditInvoice(DoctorPatientInvoice request);
 
-	List<DoctorPatientInvoice> getInvoices(String type, int page, int size, String doctorId, String locationId,
+	List<DoctorPatientInvoice> getInvoices(String type, long page, int size, String doctorId, String locationId,
 			String hospitalId, String patientId, String updatedTime, Boolean discarded);
 
 	DoctorPatientInvoice deleteInvoice(String invoiceId, Boolean discarded);
 
 	DoctorPatientReceiptAddEditResponse addEditReceipt(DoctorPatientReceiptRequest request);
 
-	List<DoctorPatientReceipt> getReceipts(int page, int size, String doctorId, String locationId, String hospitalId,
+	List<DoctorPatientReceipt> getReceipts(long page, int size, String doctorId, String locationId, String hospitalId,
 			String patientId, String updatedTime, Boolean discarded);
 
 	DoctorPatientReceipt deleteReceipt(String receiptId, Boolean discarded);
@@ -44,7 +44,7 @@ public interface BillingService {
 	Double getTotalDueAmount(String doctorId, String locationId, String hospitalId, String patientId);
 
 	DoctorPatientLedgerResponse getLedger(String doctorId, String locationId, String hospitalId, String patientId,
-			String from, String to, int page, int size, String updatedTime);
+			String from, String to, long page, int size, String updatedTime);
 
 	AmountResponse getTotalDueAndAdvanceAmount(String doctorId, String locationId, String hospitalId, String patientId);
 

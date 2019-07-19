@@ -28,16 +28,16 @@ public interface ReportsService {
 	public DeliveryReports submitDeliveryReport(DeliveryReports deliveryReports);
 
 	IPDReportsResponse getIPDReportsList(String locationId, String doctorId, String patientId, String from, String to,
-			int page, int size, String updatedTime);
+			long page, int size, String updatedTime);
 
 	OPDReportsResponse getOPDReportsList(String locationId, String doctorId, String patientId, String from, String to,
-			int page, int size, String updatedTime);
+			long page, int size, String updatedTime);
 
 	OTReportsResponse getOTReportsList(String locationId, String doctorId, String patientId, String from, String to,
-			int page, int size, String updatedTime);
+			long page, int size, String updatedTime);
 
 	DeliveryReportsResponse getDeliveryReportsList(String locationId, String doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime);
+			String to, long page, int size, String updatedTime);
 
 	public Boolean addPrescriptionOPDReports();
 

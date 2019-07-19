@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,7 +130,7 @@ public class AsyncService {
 			Integer countfor24Hour = 0;
 			Integer countforHour = 0;
 			Criteria criteria = new Criteria();
-			UserCollection userCollection = userRepository.findOne(new ObjectId(userId));
+			UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 			}
@@ -137,7 +138,7 @@ public class AsyncService {
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.match(new Criteria("userName").regex("^" + userCollection.getMobileNumber(), "i")
 							.and("userState").is("USERSTATECOMPLETE")),
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", "$mobileNumber")
 									.append("userIds", new BasicDBObject("$push", "$_id"))
 									.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber")))));
@@ -157,7 +158,7 @@ public class AsyncService {
 					Aggregation.unwind("response"),
 					Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
 					Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
 									.append("uniqueRequestId", new BasicDBObject("$first", "$uniqueRequestId")))));
 
@@ -178,7 +179,7 @@ public class AsyncService {
 					Aggregation.unwind("response"),
 					Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
 					Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
 									.append("uniqueRequestId", new BasicDBObject("$first", "$uniqueRequestId")))));
 
@@ -214,7 +215,7 @@ public class AsyncService {
 			requestToPharmacyCollection.setReplyType(ReplyType.REQUEST_FULFILLED.getReplyType());
 		}
 		if (!LocaleIds.isEmpty() && LocaleIds != null) {
-			searchRequestToPharmacyRepository.save(searchRequestToPharmacyCollections);
+			searchRequestToPharmacyRepository.saveAll(searchRequestToPharmacyCollections);
 			pushNotificationServices.notifyRefreshAll(RoleEnum.PHARMIST, LocaleIds, "refresh",
 					ComponentType.REFRESH_REQUEST);
 		}
@@ -233,7 +234,7 @@ public class AsyncService {
 			requestToPharmacyCollection.setReplyType(ReplyType.ORDER_FULFILLED.getReplyType());
 		}
 		if (searchRequestToPharmacyCollections != null && !searchRequestToPharmacyCollections.isEmpty()) {
-			searchRequestToPharmacyRepository.save(searchRequestToPharmacyCollections);
+			searchRequestToPharmacyRepository.saveAll(searchRequestToPharmacyCollections);
 			pushNotificationServices.notifyRefresh(userId.toString(), "", "", RoleEnum.PATIENT, "refresh",
 					ComponentType.REFRESH_RESPONSE);
 
@@ -265,7 +266,7 @@ public class AsyncService {
 				SMS sms = new SMS();
 				smsDetail.setUserName(userCollection.getFirstName());
 				sms.setSmsText(message
-						.replace("{amount}", "Rs." + userNutritionSubscriptionResponse.getAmount().toString())
+						.replace("{amount}", "Rs. " + userNutritionSubscriptionResponse.getAmount().toString())
 						.replace("{PlanName}", userNutritionSubscriptionResponse.getSubscriptionPlan().getTitle()));
 
 				SMSAddress smsAddress = new SMSAddress();

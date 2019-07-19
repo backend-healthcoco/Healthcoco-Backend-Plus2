@@ -326,20 +326,20 @@ public class DrugCollection extends GenericCollection {
 		this.unsafeWith = unsafeWith;
 	}
 
-	public Long getInventoryQuantity() {
-		return inventoryQuantity;
-	}
-
-	public void setInventoryQuantity(Long inventoryQuantity) {
-		this.inventoryQuantity = inventoryQuantity;
-	}
-
 	public Long getTotalStock() {
 		return totalStock;
 	}
 
 	public void setTotalStock(Long totalStock) {
 		this.totalStock = totalStock;
+	}
+
+	public Long getInventoryQuantity() {
+		return inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(Long inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
 	}
 
 	public long getCompanyRankingCount() {

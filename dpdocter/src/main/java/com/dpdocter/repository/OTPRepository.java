@@ -11,7 +11,7 @@ import com.dpdocter.collections.OTPCollection;
 
 public interface OTPRepository extends MongoRepository<OTPCollection, ObjectId>, PagingAndSortingRepository<OTPCollection, ObjectId> {
     @Query("{'mobileNumber' : ?0, 'otpNumber' : ?1, 'generatorId':?2}")
-    OTPCollection findOne(String mobileNumber, String otpNumber, String generatorId);
+    OTPCollection findById(String mobileNumber, String otpNumber, String generatorId);
 
     @Query("{'state' : {'$ne' : ?0}}")
     List<OTPCollection> findNonExpiredOtp(String expired);

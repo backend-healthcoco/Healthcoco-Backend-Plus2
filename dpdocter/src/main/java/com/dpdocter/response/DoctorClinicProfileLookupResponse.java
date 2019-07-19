@@ -33,7 +33,7 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	private int patientCounter = 1;
 
 	private String doctorSlugURL;
-	
+
 	private List<String> appointmentBookingNumber;
 
 	private ConsultationFee consultationFee;
@@ -81,30 +81,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	private Boolean isVaccinationModuleOn = false;
 
 	private String feedbackURL;
-
-	public Boolean getIsSuperAdmin() {
-		return isSuperAdmin;
-	}
-
-	public void setIsSuperAdmin(Boolean isSuperAdmin) {
-		this.isSuperAdmin = isSuperAdmin;
-	}
-
-	public Boolean getIsNutritionist() {
-		return isNutritionist;
-	}
-
-	public void setIsNutritionist(Boolean isNutritionist) {
-		this.isNutritionist = isNutritionist;
-	}
-
-	public Boolean getIskiosk() {
-		return iskiosk;
-	}
-
-	public void setIskiosk(Boolean iskiosk) {
-		this.iskiosk = iskiosk;
-	}
 
 	public ObjectId getId() {
 		return id;
@@ -169,6 +145,7 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	public void setPatientCounter(int patientCounter) {
 		this.patientCounter = patientCounter;
 	}
+
 
 	public List<String> getAppointmentBookingNumber() {
 		return appointmentBookingNumber;
@@ -274,6 +251,14 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.location = location;
 	}
 
+	public HospitalCollection getHospital() {
+		return hospital;
+	}
+
+	public void setHospital(HospitalCollection hospital) {
+		this.hospital = hospital;
+	}
+
 	public DoctorCollection getDoctor() {
 		return doctor;
 	}
@@ -288,14 +273,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	public void setUser(UserCollection user) {
 		this.user = user;
-	}
-
-	public HospitalCollection getHospital() {
-		return hospital;
-	}
-
-	public void setHospital(HospitalCollection hospital) {
-		this.hospital = hospital;
 	}
 
 	public String getPackageType() {
@@ -344,6 +321,30 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	public void setFeedbackURL(String feedbackURL) {
 		this.feedbackURL = feedbackURL;
+	}
+	
+	public Boolean getIskiosk() {
+		return iskiosk;
+	}
+
+	public void setIskiosk(Boolean iskiosk) {
+		this.iskiosk = iskiosk;
+	}
+
+	public Boolean getIsNutritionist() {
+		return isNutritionist;
+	}
+
+	public void setIsNutritionist(Boolean isNutritionist) {
+		this.isNutritionist = isNutritionist;
+	}
+
+	public Boolean getIsSuperAdmin() {
+		return isSuperAdmin;
+	}
+
+	public void setIsSuperAdmin(Boolean isSuperAdmin) {
+		this.isSuperAdmin = isSuperAdmin;
 	}
 
 	@Override

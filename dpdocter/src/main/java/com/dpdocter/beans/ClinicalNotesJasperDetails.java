@@ -10,7 +10,7 @@ import com.mongodb.DBObject;
 public class ClinicalNotesJasperDetails {
 
 	private String title;
-	
+
 	private String complaints;
 
 	private String observations;

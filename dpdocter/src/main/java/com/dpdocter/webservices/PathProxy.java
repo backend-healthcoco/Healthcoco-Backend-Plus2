@@ -649,6 +649,8 @@ public interface PathProxy {
 
 		public static final String ADD_NUTRITION_REFERRAL = "/addNutritionReferral";
 
+		public static final String UPDATE_PRESCRIPTION_DRUG = "/updateDrugType";
+
 	}
 
 	public static final String HISTORY_BASE_URL = BASE_URL + "/history";
@@ -1054,6 +1056,8 @@ public interface PathProxy {
 		public static final String GET_EVENT_BY_ID = "/event/{eventId}";
 
 		public static final String ADD_NUTRITION_APPOINTMENT = "/nutrition/add";
+
+		public static final String UPDATE_BOOKED_SLOT = "/update";
 	}
 
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";
@@ -1739,7 +1743,11 @@ public interface PathProxy {
 
 		public static final String UPLOAD_IMAGES = "/images/{doctorId}/{locationId}/{hospitalId}/";
 
+		public static final String UPLOAD_REPORTS = "/reports/{doctorId}/{locationId}/{hospitalId}/";
+
 		public static final String UPDATE_TREATMENT_SERVICES = "/treatment/services/update";
+
+		public static final String UPDATE_BILLING = "/billing/{locationId}/{hospitalId}/update";
 
 	}
 
@@ -2071,7 +2079,6 @@ public interface PathProxy {
 		public static final String GET_MEAL_COUNTER = "meal/{counterId}/get";
 		public static final String DELETE_MEAL_COUNTER = "meal/{counterId}/delete";
 		public static final String GET_MEAL_COUNTERS = "meal/{userId}/list/get";
-
 		public static final String ADD_EDIT_EXERCISE_COUNTER = "exercise/addEdit";
 		public static final String GET_EXERCISE_COUNTER = "exercise/{counterId}/get";
 		public static final String DELETE_EXERCISE_COUNTER = "exercise/{counterId}/delete";
@@ -2106,6 +2113,7 @@ public interface PathProxy {
 		public static final String GET_MULTIPLE_VACCINE_BRAND_ASSOCIATION = "vaccine/getMultipleBrands";
 		public static final String ADD_EDIT_MULTIPLE_VACCINE = "vaccine/addEditMultiple";
 		public static final String ADD_EDIT_MULTIPLE_VACCINE_STATUS = "vaccine/addEditMultipleStatus";
+		public static final String UPDATE_OLD_DATA = "/updateOldData";
 		public static final String ADD_EDIT_ACHIEVEMENT = "achievement/addEdit";
 		public static final String GET_ACHIEVEMENT_BY_ID = "achievement/get/{id}";
 		public static final String GET_ACHIEVEMENTS = "achievement/getList/{patientId}";
@@ -2172,8 +2180,8 @@ public interface PathProxy {
 
 	public interface TrendingUrls {
 
-		public static final String GET_TRENDING = "{id}/get";
-		public static final String GET_OFFER = "/offer/{id}/get";
+		public static final String GET_TRENDING = "{id}/{userId}/get";
+		public static final String GET_OFFER = "{id}/get";
 
 	}
 

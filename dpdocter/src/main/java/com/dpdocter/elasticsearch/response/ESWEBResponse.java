@@ -84,4 +84,5 @@ public class ESWEBResponse {
 		return "ESWEBResponse [doctors=" + doctors + ", pharmacies=" + pharmacies + ", labs=" + labs + ", metaData="
 				+ metaData + ", Speciality=" + Speciality + ", count=" + count + ", city=" + city + "]";
 	}
+
 }

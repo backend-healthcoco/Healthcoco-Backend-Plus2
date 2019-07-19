@@ -48,4 +48,6 @@ public interface TransactionalManagementService {
 
 	void sendAppointmentScheduleToStaff();
 
+	void sendEventReminderToDoctor();
+
 }

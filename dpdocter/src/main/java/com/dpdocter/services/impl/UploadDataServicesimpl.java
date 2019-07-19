@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,8 @@ import java.util.TimeZone;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -140,6 +143,7 @@ import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.TreatmentServiceUpdateResponse;
+import com.dpdocter.services.FileManager;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PatientVisitService;
@@ -271,7 +275,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Value(value = "${patient.count}")
 	private String patientCount;
 
-	private static final String COMMA_DELIMITER = ",";
+//	private static final String COMMA_DELIMITER = ",";
 
 	private static final String NEW_LINE_SEPARATOR = "\n";
 
@@ -348,6 +352,18 @@ public class UploadDataServicesimpl implements UploadDateService {
 	@Value(value = "${list.images.result}")
 	private String LIST_IMAGES_RESULT;
 	
+//	@Autowired
+//	private ESDrugRepository esDrugRepository;
+//	
+//	@Autowired
+//	private ElasticsearchTemplate elasticsearchTemplate;
+	
+	@Autowired
+	private PatientVisitService patientTrackService;
+	
+	@Autowired
+	private FileManager fileManager;
+	
 	@Override
 	public Boolean deletePatients(String doctorId, String locationId, String hospitalId) {
 		try {
@@ -361,7 +377,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			// for(DrugCollection drugCollection : drugCollections) {
 			//
 			// ESDrugDocument document =
-			// esDrugRepository.findOne(drugCollection.getId().toString());
+			// esDrugRepository.findById(drugCollection.getId().toString());
 			// if(document != null)esDrugRepository.delete(document);
 			// drugRepository.delete(drugCollection);
 			// }
@@ -390,7 +406,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			// treatmentServicesCollections) {
 			//
 			// ESTreatmentServiceDocument document =
-			// esTreatmentServiceRepository.findOne(treatmentServicesCollection.getId().toString());
+			// esTreatmentServiceRepository.findById(treatmentServicesCollection.getId().toString());
 			// if(document !=
 			// null)esTreatmentServiceRepository.delete(document.getId());
 			// treatmentServicesRepository.delete(treatmentServicesCollection);
@@ -415,10 +431,10 @@ public class UploadDataServicesimpl implements UploadDateService {
 					new Date(Long.parseLong("0")), new Sort(Direction.ASC, "createdTime"));
 			for (PatientCollection patientCollection : patientCollections) {
 
-				ESPatientDocument document = esPatientRepository.findOne(patientCollection.getId().toString());
+				ESPatientDocument document = esPatientRepository.findById(patientCollection.getId().toString()).orElse(null);
 				if (document != null)
 					esPatientRepository.delete(document);
-				userRepository.delete(patientCollection.getUserId());
+				userRepository.deleteById(patientCollection.getUserId());
 				patientRepository.delete(patientCollection);
 			}
 			
@@ -632,7 +648,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 
 			PatientRegistrationRequest request = null;
 			
@@ -931,7 +947,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			PrescriptionCollection prescriptionCollection = null;
 
 			Map<String, DrugType> drugTypesMap = new HashMap<String, DrugType>();
@@ -1217,7 +1233,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			doctors.put(drCollection.getFirstName().toLowerCase(), drCollection);
 
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
@@ -1287,7 +1303,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName,"i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -1392,7 +1408,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			doctors.put(drCollection.getFirstName(), drCollection);
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)),
@@ -1430,7 +1446,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName, "i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -1512,11 +1528,17 @@ public class UploadDataServicesimpl implements UploadDateService {
 									quantity.setType(QuantityEnum.QTY);
 									quantity.setValue(Integer.parseInt(line.get(6).replace("'", "")));
 									treatment.setQuantity(quantity);
+								}else {
+									Quantity quantity = new Quantity();
+									quantity.setType(QuantityEnum.QTY);
+									quantity.setValue(1);
+									treatment.setQuantity(quantity);
 								}
 
 								//treatment.setFinalCost();
 
 								if (checkIfNotNullOrNone(line.get(7))) {
+																		
 									Discount discount = new Discount();
 									if (!checkIfNotNullOrNone(line.get(8))) {
 										discount.setUnit(UnitType.INR);
@@ -1528,24 +1550,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 									discount.setValue(Double.parseDouble(line.get(7).replace("'", "")));
 									treatment.setDiscount(discount);
 
-//									if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-//										treatment.setFinalCost(treatment.getCost()
-//												- (treatment.getCost() * (discount.getValue() / 100)));
-//									} else {
-//										treatment.setFinalCost(treatment.getCost() - discount.getValue());
-//									}
-
-									if (totalDiscount == null) {
-										if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-											totalDiscount = new Discount();
-											totalDiscount.setUnit(UnitType.INR);
-											totalDiscount.setValue(treatment.getCost() * (discount.getValue() / 100));
-										} else {
-											totalDiscount = discount;
-										}
-									} else {
-										totalDiscount.setValue(totalDiscount.getValue() + discount.getValue());
-									}
 								}
 							
 								
@@ -1559,6 +1563,13 @@ public class UploadDataServicesimpl implements UploadDateService {
 										} else {
 											treatment.setFinalCost(cost - treatment.getDiscount().getValue());
 										}
+										if(totalDiscount == null){
+											totalDiscount = new Discount();
+											totalDiscount.setUnit(UnitType.INR);
+											totalDiscount.setValue(0.0);
+										}
+										Double totaldiscountValue = totalDiscount.getValue() + (cost - treatment.getFinalCost());
+										totalDiscount.setValue(totaldiscountValue);
 									}else {
 										treatment.setFinalCost(cost);
 									}										
@@ -1646,7 +1657,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			doctors.put(drCollection.getFirstName().toLowerCase(), drCollection);
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)),
@@ -1683,7 +1694,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName, "i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -1770,9 +1781,12 @@ public class UploadDataServicesimpl implements UploadDateService {
 									if (checkIfNotNullOrNone(line.get(5)))
 										treatment.setNote(line.get(5).replace("'", ""));
 
-									treatment.setFinalCost(treatment.getCost());
+									treatment.setFinalCost(treatment.getCost() * treatment.getQuantity().getValue());
 
 									if (checkIfNotNullOrNone(line.get(7))) {
+										
+										double cost =  treatment.getCost() * treatment.getQuantity().getValue();
+										
 										Discount discount = new Discount();
 										if (!checkIfNotNullOrNone(line.get(8))) {
 											discount.setUnit(UnitType.INR);
@@ -1785,22 +1799,18 @@ public class UploadDataServicesimpl implements UploadDateService {
 										treatment.setDiscount(discount);
 
 										if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-											treatment.setFinalCost(
-													treatment.getCost() - (treatment.getCost() * (discount.getValue() / 100)));
+											treatment.setFinalCost(cost
+													- (cost * (discount.getValue() / 100)));
 										} else {
-											treatment.setFinalCost(treatment.getCost() - discount.getValue());
+											treatment.setFinalCost(cost - discount.getValue());
 										}
 
 										if (totalDiscount == null) {
-											if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-												totalDiscount = new Discount();
-												totalDiscount.setUnit(UnitType.INR);
-												totalDiscount.setValue(treatment.getCost() * (discount.getValue() / 100));
-											} else {
-												totalDiscount = discount;
-											}
+											totalDiscount = new Discount();
+											totalDiscount.setUnit(UnitType.INR);
+											totalDiscount.setValue(treatment.getFinalCost() - treatment.getCost());
 										} else {
-											totalDiscount.setValue(totalDiscount.getValue() + discount.getValue());
+											totalDiscount.setValue(totalDiscount.getValue() + (treatment.getFinalCost() - treatment.getCost()));
 										}
 									}
 
@@ -1964,52 +1974,52 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 				patientVisitCollection.setAdminCreatedTime(patientVisitCollection.getCreatedTime());
 			}
-			patientVisitRepository.save(patientVisitCollections);
+			patientVisitRepository.saveAll(patientVisitCollections);
 
 			List<PatientTreatmentCollection> patientTreatmentCollections = patientTreamentRepository.findAll();
 			for (PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections) {
 
 				patientTreatmentCollection.setAdminCreatedTime(patientTreatmentCollection.getCreatedTime());
 			}
-			patientTreamentRepository.save(patientTreatmentCollections);
+			patientTreamentRepository.saveAll(patientTreatmentCollections);
 			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository.findAll();
 			for (ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
 
 				clinicalNotesCollection.setAdminCreatedTime(clinicalNotesCollection.getCreatedTime());
 			}
-			clinicalNotesRepository.save(clinicalNotesCollections);
+			clinicalNotesRepository.saveAll(clinicalNotesCollections);
 			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findAll();
 			for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 
 				prescriptionCollection.setAdminCreatedTime(prescriptionCollection.getCreatedTime());
 			}
-			prescriptionRepository.save(prescriptionCollections);
+			prescriptionRepository.saveAll(prescriptionCollections);
 			List<OTReportsCollection> otReportsCollections = otReportsRepository.findAll();
 			for (OTReportsCollection otReportsCollection : otReportsCollections) {
 
 				otReportsCollection.setAdminCreatedTime(otReportsCollection.getCreatedTime());
 			}
-			otReportsRepository.save(otReportsCollections);
+			otReportsRepository.saveAll(otReportsCollections);
 			List<DeliveryReportsCollection> deliveryReportsCollections = deliveryReportsRepository.findAll();
 			for (DeliveryReportsCollection deliveryReportsCollection : deliveryReportsCollections) {
 
 				deliveryReportsCollection.setAdminCreatedTime(deliveryReportsCollection.getCreatedTime());
 			}
-			deliveryReportsRepository.save(deliveryReportsCollections);
+			deliveryReportsRepository.saveAll(deliveryReportsCollections);
 
 			List<OPDReportsCollection> opdReportsCollections = opdReportsRepository.findAll();
 			for (OPDReportsCollection opdReportsCollection : opdReportsCollections) {
 
 				opdReportsCollection.setAdminCreatedTime(opdReportsCollection.getCreatedTime());
 			}
-			opdReportsRepository.save(opdReportsCollections);
+			opdReportsRepository.saveAll(opdReportsCollections);
 
 			List<IPDReportsCollection> ipdReportsCollections = ipdReportsRepository.findAll();
 			for (IPDReportsCollection ipdReportsCollection : ipdReportsCollections) {
 
 				ipdReportsCollection.setAdminCreatedTime(ipdReportsCollection.getCreatedTime());
 			}
-			ipdReportsRepository.save(ipdReportsCollections);
+			ipdReportsRepository.saveAll(ipdReportsCollections);
 
 			List<DoctorPatientInvoiceCollection> doctorPatientInvoiceCollections = doctorPatientInvoiceRepository
 					.findAll();
@@ -2017,21 +2027,21 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 				doctorPatientInvoiceCollection.setAdminCreatedTime(doctorPatientInvoiceCollection.getCreatedTime());
 			}
-			doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollections);
+			doctorPatientInvoiceRepository.saveAll(doctorPatientInvoiceCollections);
 
 			List<AdmitCardCollection> admitCardCollections = admitCardRepository.findAll();
 			for (AdmitCardCollection admitCardCollection : admitCardCollections) {
 
 				admitCardCollection.setAdminCreatedTime(admitCardCollection.getCreatedTime());
 			}
-			admitCardRepository.save(admitCardCollections);
+			admitCardRepository.saveAll(admitCardCollections);
 
 			List<DischargeSummaryCollection> dischargeSummaryCollections = dischargeSummaryRepository.findAll();
 			for (DischargeSummaryCollection dischargeSummaryCollection : dischargeSummaryCollections) {
 
 				dischargeSummaryCollection.setAdminCreatedTime(dischargeSummaryCollection.getCreatedTime());
 			}
-			dischargeSummaryRepository.save(dischargeSummaryCollections);
+			dischargeSummaryRepository.saveAll(dischargeSummaryCollections);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2056,7 +2066,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			
 			List<TreatmentServicesCollection> treatmentServicesCollections = null;
 
@@ -2126,7 +2136,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			doctors.put(drCollection.getFirstName().toLowerCase(), drCollection);
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)),
@@ -2166,7 +2176,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName,"i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -2321,7 +2331,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			doctors.put(drCollection.getFirstName().toLowerCase(), drCollection);
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)),
@@ -2362,7 +2372,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName,"i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -2437,29 +2447,44 @@ public class UploadDataServicesimpl implements UploadDateService {
 									discount.setValue(Double.parseDouble(line.get(8).replace("'", "")));
 									invoiceItem.setDiscount(discount);
 
-									if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-										invoiceItem.setFinalCost(
-												invoiceItem.getCost() - (invoiceItem.getCost() * (discount.getValue() / 100)));
-									} else {
-										invoiceItem.setFinalCost(invoiceItem.getCost() - discount.getValue());
-									}
+									double cost = invoiceItem.getCost();
+//									if(invoiceItem.getQuantity().getValue()>0) {
+//										cost =  cost * invoiceItem.getQuantity().getValue();
+//									}
+//									
+//
+//									if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
+//										invoiceItem.setFinalCost(
+//												cost - (cost * (discount.getValue() / 100)));
+//									} else {
+//										invoiceItem.setFinalCost(cost - discount.getValue());
+//									}
 
-									if (totalDiscount == null) {
-										if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-											totalDiscount = new Discount();
-											totalDiscount.setUnit(UnitType.INR);
-											totalDiscount.setValue(invoiceItem.getCost() * (discount.getValue() / 100));
-										} else {
-											totalDiscount = discount;
-										}
-									} else {
-										double value = 0;
-										if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-											value = invoiceItem.getCost() * (discount.getValue() / 100);
-										} 
+									if(invoiceItem.getQuantity().getValue() > 0) {
 										
-										totalDiscount.setValue(totalDiscount.getValue() + value);
-									}
+										cost =  cost * invoiceItem.getQuantity().getValue();
+										
+										if(invoiceItem.getDiscount() != null) {
+											if (invoiceItem.getDiscount().getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
+												invoiceItem.setFinalCost(cost - (cost * (invoiceItem.getDiscount().getValue() / 100)));
+											} else {
+												invoiceItem.setFinalCost(cost - invoiceItem.getDiscount().getValue());
+											}
+											if(totalDiscount == null){
+												totalDiscount = new Discount();
+												totalDiscount.setUnit(UnitType.INR);
+												totalDiscount.setValue(0.0);
+											}
+											Double totaldiscountValue = totalDiscount.getValue() + (cost - invoiceItem.getFinalCost());
+											totalDiscount.setValue(totaldiscountValue);
+										}else {
+											invoiceItem.setFinalCost(cost);
+										}										
+									}else {
+										invoiceItem.setFinalCost(0.0);
+								}
+									
+									
 								}
 								
 								if (checkIfNotNullOrNone(line.get(16)))
@@ -2574,8 +2599,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			LocationCollection  locationCollection = locationRepository.findOne(locationObjectId);
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			LocationCollection  locationCollection = locationRepository.findById(locationObjectId).orElse(null);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			DoctorPatientReceiptCollection doctorPatientReceiptCollection = null;
 
 			scanner = new Scanner(new File(UPLOAD_PAYMENTS_DATA_FILE));
@@ -2767,10 +2792,6 @@ public class UploadDataServicesimpl implements UploadDateService {
 			long count = mongoTemplate.count(new Query(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)), PatientTreatmentCollection.class);
 			
 			if(count > 0) {
-//				float j = count/2000;
-//				int i = (int) Math.ceil(j);
-//				
-//				for(int k = 0; k <= i; k++) {
 					List<PatientTreatmentCollection> patientTreatmentCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
 							Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId))), PatientTreatmentCollection.class, PatientTreatmentCollection.class).getMappedResults();
 					if(patientTreatmentCollections != null) {
@@ -2853,8 +2874,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 				hospitalObjectId = new ObjectId(hospitalId);
 			
 			
-			UserCollection userCollection = userRepository.findOne(doctorObjectId);
-			LocationCollection locationCollection = locationRepository.findOne(locationObjectId);
+			UserCollection userCollection = userRepository.findById(doctorObjectId).orElse(null);
+			LocationCollection locationCollection = locationRepository.findById(locationObjectId).orElse(null);
 			
 			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 			AmazonS3 s3client = new AmazonS3Client(credentials);
@@ -3073,7 +3094,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 		Boolean response = false;
 		try {
 			List<TreatmentServiceUpdateResponse> treatmentServiceUpdateResponses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$group",  
+					Aggregation.newAggregation(new CustomAggregationOperation(new Document("$group",  
 							new BasicDBObject("_id", new BasicDBObject("name", "$name")
 									                .append("locationId", "$locationId"))
 							.append("count", new BasicDBObject("$sum", 1))
@@ -3128,10 +3149,10 @@ public class UploadDataServicesimpl implements UploadDateService {
 									}
 								}
 								
-							 ESTreatmentServiceDocument esTreatmentServiceDocument = 	eSTreatmentServiceRepository.findOne(serviceId.toString());
+							 ESTreatmentServiceDocument esTreatmentServiceDocument = 	eSTreatmentServiceRepository.findById(serviceId.toString()).orElse(null);
 							 if(esTreatmentServiceDocument != null)eSTreatmentServiceRepository.delete(esTreatmentServiceDocument);
 							 
-							 TreatmentServicesCollection servicesCollection = treatmentServicesRepository.findOne(serviceId);
+							 TreatmentServicesCollection servicesCollection = treatmentServicesRepository.findById(serviceId).orElse(null);
 							 if(servicesCollection != null)treatmentServicesRepository.delete(servicesCollection);
 							}
 						
@@ -3144,6 +3165,248 @@ public class UploadDataServicesimpl implements UploadDateService {
 			response = false;
 			e.printStackTrace();
 		}
+		return response;
+	}
+
+	@Override
+	public Boolean updateBillingData(String locationId, String hospitalId) {
+		Boolean response = false;
+		try {
+			ObjectId locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			
+			List<DoctorPatientInvoiceCollection> doctorPatientInvoiceCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+							Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId))), DoctorPatientInvoiceCollection.class, DoctorPatientInvoiceCollection.class).getMappedResults();
+			if(doctorPatientInvoiceCollections != null) {
+						for(DoctorPatientInvoiceCollection doctorPatientInvoiceCollection : doctorPatientInvoiceCollections) {
+							if(!doctorPatientInvoiceCollection.getUniqueInvoiceId().startsWith("INV"))
+								doctorPatientInvoiceCollection.setUniqueInvoiceId("INV"+doctorPatientInvoiceCollection.getUniqueInvoiceId());
+							
+							double totalCost = 0.0;
+							double grandTotal = 0.0;
+							Discount totalDiscount = null;
+							List<InvoiceItem> treatments = doctorPatientInvoiceCollection.getInvoiceItems();
+							if(treatments != null && !treatments.isEmpty()) {
+								for(InvoiceItem treatment : treatments) {
+									
+									double cost = treatment.getCost();
+									if(treatment.getQuantity() == null) {
+										Quantity quantity = new Quantity();
+										quantity.setType(QuantityEnum.QTY);
+										quantity.setValue(1);
+										treatment.setQuantity(quantity);
+									}
+									if(treatment.getQuantity().getValue() > 0) {
+											
+											cost =  cost * treatment.getQuantity().getValue();
+											
+											if(treatment.getDiscount() != null) {
+												if (treatment.getDiscount().getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
+													treatment.setFinalCost(cost - (cost * (treatment.getDiscount().getValue() / 100)));
+												} else {
+													treatment.setFinalCost(cost - treatment.getDiscount().getValue());
+												}
+												if(totalDiscount == null){
+													totalDiscount = new Discount();
+													totalDiscount.setUnit(UnitType.INR);
+													totalDiscount.setValue(0.0);
+												}
+												Double totaldiscountValue = totalDiscount.getValue() + (cost - treatment.getFinalCost());
+												totalDiscount.setValue(totaldiscountValue);
+											}else {
+												treatment.setFinalCost(cost);
+											}										
+										}else {
+											treatment.setFinalCost(0.0);
+									}
+									
+									totalCost = totalCost + cost;
+									grandTotal = grandTotal + treatment.getFinalCost();
+								}
+								doctorPatientInvoiceCollection.setInvoiceItems(null);
+								doctorPatientInvoiceCollection.setInvoiceItems(treatments);
+						   }
+							doctorPatientInvoiceCollection.setTotalDiscount(totalDiscount);
+							doctorPatientInvoiceCollection.setTotalCost(totalCost);
+							doctorPatientInvoiceCollection.setGrandTotal(grandTotal);
+							doctorPatientInvoiceCollection.setBalanceAmount(grandTotal);
+							doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+
+							DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository
+									.find(doctorPatientInvoiceCollection.getPatientId(),
+											doctorPatientInvoiceCollection.getDoctorId(),
+											doctorPatientInvoiceCollection.getLocationId(),
+											doctorPatientInvoiceCollection.getHospitalId());
+							doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() + doctorPatientInvoiceCollection.getBalanceAmount());
+							doctorPatientDueAmountCollection = doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
+							
+							DoctorPatientLedgerCollection doctorPatientLedgerCollection = doctorPatientLedgerRepository
+									.findByInvoiceId(doctorPatientInvoiceCollection.getId());
+							doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
+							doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
+						}
+						response = true;
+			}
+			
+			List<DoctorPatientReceiptCollection> doctorPatientReceiptCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId))), DoctorPatientReceiptCollection.class, DoctorPatientReceiptCollection.class).getMappedResults();
+			if(doctorPatientReceiptCollections != null) {
+					for(DoctorPatientReceiptCollection doctorPatientReceiptCollection : doctorPatientReceiptCollections) {
+						if(doctorPatientReceiptCollection.getUniqueInvoiceId() != null && !doctorPatientReceiptCollection.getUniqueInvoiceId().startsWith("INV"))
+							doctorPatientReceiptCollection.setUniqueInvoiceId("INV"+doctorPatientReceiptCollection.getUniqueInvoiceId());
+							
+						if(doctorPatientReceiptCollection.getUniqueReceiptId() != null && !doctorPatientReceiptCollection.getUniqueReceiptId().startsWith("RC"))
+							doctorPatientReceiptCollection.setUniqueReceiptId("RC"+doctorPatientReceiptCollection.getUniqueReceiptId());
+						
+
+						DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = null;
+						if(doctorPatientReceiptCollection.getInvoiceId() != null) {
+							doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findById(doctorPatientReceiptCollection.getInvoiceId()).orElse(null);
+							doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount() - doctorPatientReceiptCollection.getAmountPaid());
+						}
+
+						doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
+
+						if(doctorPatientInvoiceCollection != null) {
+							doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientReceiptCollection.getBalanceAmount());
+							doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+						}
+						
+						
+						DoctorPatientLedgerCollection doctorPatientLedgerCollection = doctorPatientLedgerRepository.findByReceiptId(doctorPatientReceiptCollection.getId());
+						if(doctorPatientLedgerCollection != null) {
+							doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
+							doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
+						}
+						
+						DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository
+								.find(doctorPatientReceiptCollection.getPatientId(),
+										doctorPatientReceiptCollection.getDoctorId(),
+										doctorPatientReceiptCollection.getLocationId(),
+										doctorPatientReceiptCollection.getHospitalId());
+						if(doctorPatientDueAmountCollection != null) {
+							doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - doctorPatientReceiptCollection.getAmountPaid());
+							doctorPatientDueAmountCollection = doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
+						}
+						
+					}
+					response = true;
+		}
+
+	}catch(Exception e) {
+		response = false;
+		e.printStackTrace();
+	}
+	return response;
+	}
+
+	@Override
+	public Boolean upploadReports(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		try {
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+
+			
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
+			String createdBy = (drCollection.getTitle() != null ? drCollection.getTitle() + " " : "")+ drCollection.getFirstName();
+			
+			LocationCollection locationCollection = locationRepository.findById(locationObjectId).orElse(null);
+
+			File dir = new File("/home/ubuntu/Reports");
+			File[] directoryListing = dir.listFiles();
+			if (directoryListing != null) {
+			    for (File child : directoryListing) {
+			    	
+			      int indexOfPID = child.getName().indexOf("GDSC");
+			      System.out.println(child.getName());
+			      if(indexOfPID>0) {
+			    	  String[] string = child.getName().substring(indexOfPID).split("_");
+				      String PID = string[0];
+				      
+				      PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
+				    		  locationObjectId, hospitalObjectId, PID);
+						if (patientCollection != null) {
+							 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+							format.setTimeZone(TimeZone.getTimeZone("IST"));
+						    
+							Date createdTime = format.parse(string[1] +" "+string[2]);
+						    RecordsCollection recordsCollection = new RecordsCollection();
+						
+						    recordsCollection.setDoctorId(doctorObjectId);
+						    recordsCollection.setLocationId(locationObjectId);
+						    recordsCollection.setHospitalId(hospitalObjectId);
+						    recordsCollection.setPatientId(patientCollection.getUserId());
+						    recordsCollection.setAdminCreatedTime(createdTime);
+						    recordsCollection.setCreatedTime(createdTime);
+						    recordsCollection.setUpdatedTime(new Date());
+							recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
+							recordsCollection.setCreatedBy(createdBy);
+							recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
+							recordsCollection.setRecordsLabel(FilenameUtils.getBaseName(child.getName()));
+							String path = "records" + File.separator + recordsCollection.getPatientId();
+
+							String recordPath = path + File.separator + child.getName();
+
+							recordsCollection.setRecordsUrl(recordPath);
+							recordsCollection.setRecordsPath(recordPath);
+							
+							
+							//save image
+							BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+							AmazonS3 s3client = new AmazonS3Client(credentials);
+							
+							FileInputStream inputStream =  new FileInputStream(child);
+							byte[] byteArray = IOUtils.toByteArray(inputStream);
+							Long contentLength = Long.valueOf(byteArray.length);
+							inputStream.close();
+							FileInputStream fis = new FileInputStream(child);
+							String contentType = URLConnection.guessContentTypeFromStream(fis);
+							
+							ObjectMetadata metadata = new ObjectMetadata();
+
+							metadata.setContentLength(contentLength);
+							metadata.setContentEncoding(FilenameUtils.getExtension(child.getName()));
+							metadata.setContentType(contentType);
+							metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+
+							s3client.putObject(new PutObjectRequest(bucketName, recordPath, fis, metadata));
+							
+							recordsCollection.setRecordsType("IMAGE");
+							
+							if(FilenameUtils.getExtension(child.getName()).contains("pptx")) {
+								recordsCollection.setRecordsType("PPT");
+						     }else if(FilenameUtils.getExtension(child.getName()).contains("pdf")) {
+									recordsCollection.setRecordsType("PDF");
+						     }
+							
+							recordsCollection = recordsRepository.save(recordsCollection);
+							
+							Records records = new Records();
+							BeanUtil.map(recordsCollection, records);
+							String visitId = patientTrackService.addRecord(records, VisitedFor.REPORTS, null);
+							System.out.println(visitId);
+							fis.close();
+							response = true;
+						}
+			      }else {
+			    	  System.out.println("Patient Id is missing");
+			      }
+			      
+			    }
+			  }
+		}catch(Exception e) {
+			response = false;
+			e.printStackTrace();
+		}	
 		return response;
 	}
 }

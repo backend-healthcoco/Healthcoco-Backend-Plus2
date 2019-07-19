@@ -72,7 +72,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				labPrintSettingCollection = labPrintSettingRepository.findOne(new ObjectId(request.getId()));
+				labPrintSettingCollection = labPrintSettingRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			if (labPrintSettingCollection == null) {
 				labPrintSettingCollection = labPrintSettingRepository.findBylocationIdAndhospitalId(locationObjectId,
@@ -100,7 +100,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 				request.setCreatedTime(new Date());
 			}
 
-			UserCollection userCollection = userRepository.findOne(doctorObjectId);
+			UserCollection userCollection = userRepository.findById(doctorObjectId).orElse(null);
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Doctor not found with Id ");
 			}
@@ -145,21 +145,21 @@ public class LabPrintServicesImpl implements LabPrintServices {
 			if (labPrintSettingCollection != null) {
 				response = new LabPrintSetting();
 				BeanUtil.map(labPrintSettingCollection, response);
-			
-			if (response.getFooterSetup() != null) {
-				response.getFooterSetup()
-						.setImageurl(!DPDoctorUtils.anyStringEmpty(response.getFooterSetup().getImageurl())
-								? getFinalImageURL(response.getFooterSetup().getImageurl())
-								: "");
 
-			}
-			if (response.getHeaderSetup() != null) {
-				response.getHeaderSetup()
-						.setImageurl(!DPDoctorUtils.anyStringEmpty(response.getHeaderSetup().getImageurl())
-								? getFinalImageURL(response.getHeaderSetup().getImageurl())
-								: "");
+				if (response.getFooterSetup() != null) {
+					response.getFooterSetup()
+							.setImageurl(!DPDoctorUtils.anyStringEmpty(response.getFooterSetup().getImageurl())
+									? getFinalImageURL(response.getFooterSetup().getImageurl())
+									: "");
 
-			}
+				}
+				if (response.getHeaderSetup() != null) {
+					response.getHeaderSetup()
+							.setImageurl(!DPDoctorUtils.anyStringEmpty(response.getHeaderSetup().getImageurl())
+									? getFinalImageURL(response.getHeaderSetup().getImageurl())
+									: "");
+
+				}
 			}
 
 		} catch (BusinessException e) {
@@ -228,7 +228,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 				labPrintSettingCollection.setHeaderSetup(contentSetup);
 			}
 
-			UserCollection userCollection = userRepository.findOne(doctorObjectId);
+			UserCollection userCollection = userRepository.findById(doctorObjectId).orElse(null);
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Doctor not found with Id ");
 			}
@@ -456,7 +456,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 		LabPrintDocumentsCollection LabPrintDocumentsCollection = null;
 		try {
 			if (DPDoctorUtils.anyStringEmpty(id)) {
-				LabPrintDocumentsCollection = labPrintDocumentsRepository.findOne(new ObjectId(id));
+				LabPrintDocumentsCollection = labPrintDocumentsRepository.findById(new ObjectId(id)).orElse(null);
 			}
 			if (LabPrintDocumentsCollection != null) {
 				LabPrintDocumentsCollection.setDiscarded(discarded);
@@ -472,5 +472,4 @@ public class LabPrintServicesImpl implements LabPrintServices {
 		}
 		return response;
 	}
-
 }

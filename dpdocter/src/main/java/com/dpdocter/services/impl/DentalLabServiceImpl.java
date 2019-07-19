@@ -15,6 +15,7 @@ import java.util.TimeZone;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -126,7 +127,6 @@ import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.SignUpService;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -273,7 +273,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (DPDoctorUtils.anyStringEmpty(dentalWorkCollection.getId())) {
 				dentalWorkCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(dentalWorkCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(dentalWorkCollection.getDoctorId());
+					UserCollection userCollection = userRepository.findById(dentalWorkCollection.getDoctorId()).orElse(null);
 					if (userCollection != null) {
 						dentalWorkCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -284,7 +284,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				}
 			} else {
 				DentalWorkCollection oldDentalWorkCollection = dentalWorkRepository
-						.findOne(dentalWorkCollection.getId());
+						.findById(dentalWorkCollection.getId()).orElse(null);
 				dentalWorkCollection.setCreatedBy(oldDentalWorkCollection.getCreatedBy());
 				dentalWorkCollection.setCreatedTime(oldDentalWorkCollection.getCreatedTime());
 				dentalWorkCollection.setDiscarded(oldDentalWorkCollection.getDiscarded());
@@ -302,7 +302,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Override
 	@Transactional
-	public List<DentalWork> getCustomWorks(int page, int size, String searchTerm) {
+	public List<DentalWork> getCustomWorks(long page, int size, String searchTerm) {
 		List<DentalWork> customWorks = null;
 		try {
 			Aggregation aggregation = null;
@@ -337,7 +337,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		DentalWorkCollection customWorkCollection = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(id)) {
-				customWorkCollection = dentalWorkRepository.findOne(new ObjectId(id));
+				customWorkCollection = dentalWorkRepository.findById(new ObjectId(id)).orElse(null);
 			}
 			if (customWorkCollection != null) {
 				customWorkCollection.setDiscarded(discarded);
@@ -384,7 +384,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			} else {
 				DentalLabDoctorAssociationCollection oldDentalLabDoctorAssociation = dentalLabDoctorAssociationRepository
-						.findOne(dentalLabDoctorAssociationCollection.getId());
+						.findById(dentalLabDoctorAssociationCollection.getId()).orElse(null);
 				dentalLabDoctorAssociationCollection.setCreatedBy(oldDentalLabDoctorAssociation.getCreatedBy());
 				dentalLabDoctorAssociationCollection.setCreatedTime(oldDentalLabDoctorAssociation.getCreatedTime());
 			}
@@ -413,7 +413,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 				} else {
 					DentalLabDoctorAssociationCollection oldDentalLabDoctorAssociation = dentalLabDoctorAssociationRepository
-							.findOne(dentalLabDoctorAssociationCollection.getId());
+							.findById(dentalLabDoctorAssociationCollection.getId()).orElse(null);
 					dentalLabDoctorAssociationCollection.setCreatedBy(oldDentalLabDoctorAssociation.getCreatedBy());
 					dentalLabDoctorAssociationCollection.setCreatedTime(oldDentalLabDoctorAssociation.getCreatedTime());
 				}
@@ -435,7 +435,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Override
 	@Transactional
 	public List<DentalLabDoctorAssociationLookupResponse> getDentalLabDoctorAssociations(String locationId,
-			String doctorId, int page, int size, String searchTerm) {
+			String doctorId, long page, int size, String searchTerm) {
 		List<DentalLabDoctorAssociationLookupResponse> responses = null;
 		try {
 			Aggregation aggregation = null;
@@ -550,7 +550,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 		try {
 			LocationCollection locationCollection = locationRepository
-					.findOne(new ObjectId(request.getDentalLabLocationId()));
+					.findById(new ObjectId(request.getDentalLabLocationId())).orElse(null);
 			if (locationCollection != null) {
 				String locationName = locationCollection.getLocationName();
 
@@ -561,7 +561,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				}
 			}
 			if (request.getId() != null) {
-				dentalLabPickupCollection = dentalLabTestPickupRepository.findOne(new ObjectId(request.getId()));
+				dentalLabPickupCollection = dentalLabTestPickupRepository.findById(new ObjectId(request.getId())).orElse(null);
 				if (dentalLabPickupCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Record not found");
 				}
@@ -655,7 +655,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						.setCollectionBoyId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
 
 				CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-						.findOne(dynamicCollectionBoyAllocationCollection.getCollectionBoyId());
+						.findById(dynamicCollectionBoyAllocationCollection.getCollectionBoyId()).orElse(null);
 				pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null, null,
 						RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
 
@@ -668,7 +668,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 							.setCollectionBoyId(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
 
 					CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-							.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+							.findById(collectionBoyDoctorAssociationCollection.getCollectionBoyId()).orElse(null);
 					pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null, null,
 							RoleEnum.DENTAL_COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);
 				}
@@ -800,7 +800,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Override
 	@Transactional
-	public List<RateCardDentalWorkAssociation> getRateCardWorks(int page, int size, String searchTerm,
+	public List<RateCardDentalWorkAssociation> getRateCardWorks(long page, int size, String searchTerm,
 			String rateCardId, Boolean discarded) {
 		List<RateCardDentalWorkAssociation> rateCardTests = null;
 
@@ -949,9 +949,9 @@ public class DentalLabServiceImpl implements DentalLabService {
 							.equals(new ObjectId(collectionBoyDoctorAssociation.getCollectionBoyId()))
 							&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-								.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+								.findById(collectionBoyDoctorAssociationCollection.getCollectionBoyId()).orElse(null);
 						UserCollection userCollection = userRepository
-								.findOne(collectionBoyDoctorAssociationCollection.getDoctorId());
+								.findById(collectionBoyDoctorAssociationCollection.getDoctorId()).orElse(null);
 						throw new BusinessException(ServiceError.Unknown,
 								"Collection boy " + collectionBoyCollection.getName() + " is already assigned to Dr. "
 										+ userCollection.getFirstName()
@@ -1025,7 +1025,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	public List<DentalLabPickupResponse> getRequests(String dentalLabId, String doctorId, Long from, Long to,
 			String searchTerm, String status, Boolean isAcceptedAtLab, Boolean isCompleted, Boolean isCollectedAtDoctor,
-			int size, int page, Long fromETA, Long toETA, Boolean isTrailsRequired) {
+			int size, long page, Long fromETA, Long toETA, Boolean isTrailsRequired) {
 
 		List<DentalLabPickupResponse> response = null;
 		List<DentalLabPickupLookupResponse> lookupResponses = null;
@@ -1075,7 +1075,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			 * criteria.and("updatedTime").lt(DPDoctorUtils.getEndTime(new Date(to))); }
 			 */
 
-			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("patientId", new BasicDBObject("$first", "$patientId"))
 							.append("patientName", new BasicDBObject("$first", "$patientName"))
 							.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
@@ -1130,26 +1130,26 @@ public class DentalLabServiceImpl implements DentalLabService {
 			 * String processStatus;
 			 */
 
-			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(new BasicDBObject(
-					"$group",
-					new BasicDBObject("uniqueWorkId", "$uniqueWorkId")
-							.append("dentalWork", new BasicDBObject("$first", "$dentalWork"))
-							.append("dentalToothNumbers", new BasicDBObject("$first", "$dentalToothNumbers"))
-							.append("dentalStagesForLab", new BasicDBObject("$first", "$dentalStagesForLab"))
-							.append("dentalStagesForDoctor", new BasicDBObject("$push", "$dentalStagesForDoctor"))
-							.append("etaInDate", new BasicDBObject("$first", "$etaInDate"))
-							.append("etaInHour", new BasicDBObject("$first", "$etaInHour"))
-							.append("instructions", new BasicDBObject("$first", "$instructions"))
-							.append("occlusalStaining", new BasicDBObject("$first", "$occlusalStaining"))
-							.append("ponticDesign", new BasicDBObject("$first", "$ponticDesign"))
-							.append("collarAndMetalDesign", new BasicDBObject("$first", "$collarAndMetalDesign"))
-							.append("dentalImages", new BasicDBObject("$first", "$dentalImages"))
-							.append("dentalWorkCardValues", new BasicDBObject("$first", "$dentalWorkCardValues"))
-							.append("shade", new BasicDBObject("$first", "$shade"))
-							.append("material", new BasicDBObject("$first", "$material"))
-							.append("rateCardDentalWorkAssociation",
-									new BasicDBObject("$first", "$rateCardDentalWorkAssociation"))
-							.append("processStatus", new BasicDBObject("$first", "$processStatus"))));
+//			CustomAggregationOperation aggregationOperation2 = new CustomAggregationOperation(new Document(
+//					"$group",
+//					new BasicDBObject("uniqueWorkId", "$uniqueWorkId")
+//							.append("dentalWork", new BasicDBObject("$first", "$dentalWork"))
+//							.append("dentalToothNumbers", new BasicDBObject("$first", "$dentalToothNumbers"))
+//							.append("dentalStagesForLab", new BasicDBObject("$first", "$dentalStagesForLab"))
+//							.append("dentalStagesForDoctor", new BasicDBObject("$push", "$dentalStagesForDoctor"))
+//							.append("etaInDate", new BasicDBObject("$first", "$etaInDate"))
+//							.append("etaInHour", new BasicDBObject("$first", "$etaInHour"))
+//							.append("instructions", new BasicDBObject("$first", "$instructions"))
+//							.append("occlusalStaining", new BasicDBObject("$first", "$occlusalStaining"))
+//							.append("ponticDesign", new BasicDBObject("$first", "$ponticDesign"))
+//							.append("collarAndMetalDesign", new BasicDBObject("$first", "$collarAndMetalDesign"))
+//							.append("dentalImages", new BasicDBObject("$first", "$dentalImages"))
+//							.append("dentalWorkCardValues", new BasicDBObject("$first", "$dentalWorkCardValues"))
+//							.append("shade", new BasicDBObject("$first", "$shade"))
+//							.append("material", new BasicDBObject("$first", "$material"))
+//							.append("rateCardDentalWorkAssociation",
+//									new BasicDBObject("$first", "$rateCardDentalWorkAssociation"))
+//							.append("processStatus", new BasicDBObject("$first", "$processStatus"))));
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("dentalLab.locationName").regex("^" + searchTerm, "i"),
@@ -1173,14 +1173,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("dentalWorksSamples"),
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.match(criteria), aggregationOperation,
@@ -1190,14 +1190,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("dentalWorksSamples"),
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 
 						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.match(criteria), aggregationOperation,
@@ -1286,7 +1286,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 		try {
 			dentalLabPickupCollection = dentalLabTestPickupRepository
-					.findOne(new ObjectId(request.getDentalLabPickupId()));
+					.findById(new ObjectId(request.getDentalLabPickupId())).orElse(null);
 			if (dentalLabPickupCollection != null) {
 				if (request.getStatus() != null) {
 					dentalLabPickupCollection.setStatus(request.getStatus());
@@ -1308,7 +1308,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 							if (collectionBoyDoctorAssociationCollection != null
 									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
 								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+										.findById(collectionBoyDoctorAssociationCollection.getCollectionBoyId()).orElse(null);
 								if (collectionBoyCollection != null
 										&& collectionBoyCollection.getDiscarded() == false) {
 									pushNotificationServices.notifyPharmacy(
@@ -1342,7 +1342,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 							if (collectionBoyDoctorAssociationCollection != null
 									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
 								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+										.findById(collectionBoyDoctorAssociationCollection.getCollectionBoyId()).orElse(null);
 								if (collectionBoyCollection != null
 										&& collectionBoyCollection.getDiscarded() == false) {
 									pushNotificationServices.notifyPharmacy(
@@ -1367,7 +1367,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 							if (collectionBoyDoctorAssociationCollection != null
 									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
 								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+										.findById(collectionBoyDoctorAssociationCollection.getCollectionBoyId()).orElse(null);
 								if (collectionBoyCollection != null
 										&& collectionBoyCollection.getDiscarded() == false) {
 									pushNotificationServices.notifyPharmacy(
@@ -1392,7 +1392,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 							if (collectionBoyDoctorAssociationCollection != null
 									&& collectionBoyDoctorAssociationCollection.getIsActive() == true) {
 								CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-										.findOne(collectionBoyDoctorAssociationCollection.getCollectionBoyId());
+										.findById(collectionBoyDoctorAssociationCollection.getCollectionBoyId()).orElse(null);
 								if (collectionBoyCollection != null
 										&& collectionBoyCollection.getDiscarded() == false) {
 									pushNotificationServices.notifyPharmacy(
@@ -1495,7 +1495,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 		try {
 			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository
-					.findOne(new ObjectId(request.getRequestId()));
+					.findById(new ObjectId(request.getRequestId())).orElse(null);
 			if (dentalLabPickupCollection != null) {
 				List<DentalWorksSample> dentalWorksSamples = dentalLabPickupCollection.getDentalWorksSamples();
 
@@ -1532,7 +1532,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						}
 
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-								.findOne(dentalLabPickupCollection.getCollectionBoyId());
+								.findById(dentalLabPickupCollection.getCollectionBoyId()).orElse(null);
 						CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
 								.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
 										dentalLabPickupCollection.getDoctorId(),
@@ -1554,7 +1554,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						}
 
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-								.findOne(dentalLabPickupCollection.getCollectionBoyId());
+								.findById(dentalLabPickupCollection.getCollectionBoyId()).orElse(null);
 						CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
 								.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
 										dentalLabPickupCollection.getDoctorId(),
@@ -1575,7 +1575,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
 							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-									.findOne(dentalLabPickupCollection.getCollectionBoyId());
+									.findById(dentalLabPickupCollection.getCollectionBoyId()).orElse(null);
 							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
 									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
 											dentalLabPickupCollection.getDoctorId(),
@@ -1595,7 +1595,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -1607,7 +1606,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		Boolean response = false;
 		try {
 			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository
-					.findOne(new ObjectId(request.getRequestId()));
+					.findById(new ObjectId(request.getRequestId())).orElse(null);
 			if (dentalLabPickupCollection != null) {
 				List<DentalWorksSample> dentalWorksSamples = dentalLabPickupCollection.getDentalWorksSamples();
 				dentalLabPickupCollection.setStatus(request.getStatus());
@@ -1650,7 +1649,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						}
 
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-								.findOne(dentalLabPickupCollection.getCollectionBoyId());
+								.findById(dentalLabPickupCollection.getCollectionBoyId()).orElse(null);
 						CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
 								.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
 										dentalLabPickupCollection.getDoctorId(),
@@ -1678,7 +1677,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 						}
 
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-								.findOne(dentalLabPickupCollection.getCollectionBoyId());
+								.findById(dentalLabPickupCollection.getCollectionBoyId()).orElse(null);
 						CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
 								.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
 										dentalLabPickupCollection.getDoctorId(),
@@ -1699,7 +1698,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 						if (dentalLabPickupCollection.getCollectionBoyId() != null) {
 							CollectionBoyCollection collectionBoyCollection = collectionBoyRepository
-									.findOne(dentalLabPickupCollection.getCollectionBoyId());
+									.findById(dentalLabPickupCollection.getCollectionBoyId()).orElse(null);
 							CollectionBoyDoctorAssociationCollection collectionBoyDoctorAssociationCollection = collectionBoyDoctorAssociationRepository
 									.getByLocationDoctorCollectionBoy(dentalLabPickupCollection.getDentalLabId(),
 											dentalLabPickupCollection.getDoctorId(),
@@ -1719,7 +1718,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -1731,7 +1729,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		Boolean response = false;
 		try {
 			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository
-					.findOne(new ObjectId(requestId));
+					.findById(new ObjectId(requestId)).orElse(null);
 			if (dentalLabPickupCollection != null) {
 				// dentalLabPickupCollection.setStatus("CANCELLED");
 				dentalLabPickupCollection.setReasonForCancel(reasonOfCancellation);
@@ -1757,7 +1755,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -1770,7 +1767,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 		try {
 			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository
-					.findOne(new ObjectId(request.getRequestId()));
+					.findById(new ObjectId(request.getRequestId())).orElse(null);
 			if (dentalLabPickupCollection != null) {
 				List<DentalWorksSample> dentalWorksSamples = dentalLabPickupCollection.getDentalWorksSamples();
 				for (DentalWorksSample dentalWorksSample : dentalWorksSamples) {
@@ -1801,14 +1798,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 		Boolean response = false;
 		try {
 			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository
-					.findOne(new ObjectId(requestId));
+					.findById(new ObjectId(requestId)).orElse(null);
 			if (dentalLabPickupCollection != null) {
 				dentalLabPickupCollection.setDiscarded(discarded);
 				response = true;
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -1829,7 +1825,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 					Aggregation.unwind("dentalLab"), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"),
 					Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.match(criteria));
 			AggregationResults<DentalLabPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -1870,7 +1866,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 				}
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, " Error while getting Dental Lab Report By Ids");
 		}
@@ -1891,13 +1886,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$collectionBoy").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.match(criteria));
 			AggregationResults<DentalLabPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -2022,21 +2017,21 @@ public class DentalLabServiceImpl implements DentalLabService {
 		JasperReportResponse response = null;
 		String pattern = "dd/MM/yyyy";
 		String labName = "";
-		String locationId = null, hospitalId = null;
-		int sNo = 0;
+		String locationId = null;// hospitalId = null;
+//		int sNo = 0;
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		UserCollection userCollection = null;
 		List<DentalStagejasperBean> dentalStage = null;
 
-		DBObject labReportItems = null;
-		List<DBObject> labreports = new ArrayList<DBObject>();
+//		DBObject labReportItems = null;
+//		List<DBObject> labreports = new ArrayList<DBObject>();
 
-		labReportItems = new BasicDBObject();
+//		labReportItems = new BasicDBObject();
 
 		if (dentalLabPickupResponse.getDentalLab() != null) {
 			locationId = dentalLabPickupResponse.getDentalLab().getId();
-			hospitalId = dentalLabPickupResponse.getDentalLab().getHospitalId();
+//			hospitalId = dentalLabPickupResponse.getDentalLab().getHospitalId();
 			labName = dentalLabPickupResponse.getDentalLab().getLocationName();
 			parameters.put("dentalLab", "<b>Dental Lab :- </b> " + labName);
 		} else {
@@ -2045,7 +2040,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		if (dentalLabPickupResponse.getDoctor() != null) {
 			parameters.put("doctor", "<b>Doctor :- </b>Dr. " + dentalLabPickupResponse.getDoctor().getFirstName());
 		} else if (!DPDoctorUtils.anyStringEmpty(dentalLabPickupResponse.getDoctorId())) {
-			userCollection = userRepository.findOne(new ObjectId(dentalLabPickupResponse.getDoctorId()));
+			userCollection = userRepository.findById(new ObjectId(dentalLabPickupResponse.getDoctorId())).orElse(null);
 			if (userCollection != null)
 				parameters.put("doctor", "<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
 			else
@@ -2224,7 +2219,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		if (dentalLabPickupResponse.getDoctor() != null) {
 			parameters.put("doctor", "<b>Doctor :- </b>Dr. " + dentalLabPickupResponse.getDoctor().getFirstName());
 		} else if (!DPDoctorUtils.anyStringEmpty(dentalLabPickupResponse.getDoctorId())) {
-			userCollection = userRepository.findOne(new ObjectId(dentalLabPickupResponse.getDoctorId()));
+			userCollection = userRepository.findById(new ObjectId(dentalLabPickupResponse.getDoctorId())).orElse(null);
 			if (userCollection != null)
 				parameters.put("doctor", "<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
 			else
@@ -2351,7 +2346,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 								if (!DPDoctorUtils.anyStringEmpty(dentalStageRequest.getStaffId())) {
 									userCollection = userRepository
-											.findOne(new ObjectId(dentalStageRequest.getStaffId()));
+											.findById(new ObjectId(dentalStageRequest.getStaffId())).orElse(null);
 									if (userCollection != null) {
 										dentalStagejasperBean.setInspectedBy(
 												(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
@@ -2415,7 +2410,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		JasperReportResponse response = null;
 		String pattern = "dd/MM/yyyy";
 		String labName = "";
-		String locationId = null, hospitalId = null;
+		String locationId = null;// hospitalId = null;
 		String workId = " ";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
@@ -2428,7 +2423,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 			if (dentalLabPickupResponse.getDentalLab() != null) {
 				locationId = dentalLabPickupResponse.getDentalLab().getId();
-				hospitalId = dentalLabPickupResponse.getDentalLab().getHospitalId();
+//				hospitalId = dentalLabPickupResponse.getDentalLab().getHospitalId();
 				labName = dentalLabPickupResponse.getDentalLab().getLocationName();
 				jasperBean.setDentalLab("<b>Dental Lab :- </b> " + labName);
 			} else {
@@ -2438,7 +2433,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (dentalLabPickupResponse.getDoctor() != null) {
 				jasperBean.setDoctor("<b>Doctor :- </b>Dr. " + dentalLabPickupResponse.getDoctor().getFirstName());
 			} else if (!DPDoctorUtils.anyStringEmpty(dentalLabPickupResponse.getDoctorId())) {
-				userCollection = userRepository.findOne(new ObjectId(dentalLabPickupResponse.getDoctorId()));
+				userCollection = userRepository.findById(new ObjectId(dentalLabPickupResponse.getDoctorId())).orElse(null);
 				if (userCollection != null)
 					jasperBean.setDoctor("<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
 				else
@@ -2566,7 +2561,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 									if (!DPDoctorUtils.anyStringEmpty(dentalStageRequest.getStaffId())) {
 										userCollection = userRepository
-												.findOne(new ObjectId(dentalStageRequest.getStaffId()));
+												.findById(new ObjectId(dentalStageRequest.getStaffId())).orElse(null);
 										if (userCollection != null) {
 											dentalStagejasperBean.setInspectedBy(
 													(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())
@@ -2633,7 +2628,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	private void sendDownloadAppMessage(ObjectId doctorId, String locationName) {
 		try {
-			UserCollection userCollection = userRepository.findOne(doctorId);
+			UserCollection userCollection = userRepository.findById(doctorId).orElse(null);
 
 			if (userCollection != null) {
 				String message = dentalLabSMSToDoctor;
@@ -2675,7 +2670,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			if (DPDoctorUtils.anyStringEmpty(taxCollection.getId())) {
 				taxCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(taxCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(taxCollection.getDoctorId());
+					UserCollection userCollection = userRepository.findById(taxCollection.getDoctorId()).orElse(null);
 					if (userCollection != null) {
 						taxCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2685,7 +2680,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 					taxCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				TaxCollection oldTaxCollection = taxRepository.findOne(taxCollection.getId());
+				TaxCollection oldTaxCollection = taxRepository.findById(taxCollection.getId()).orElse(null);
 				taxCollection.setCreatedBy(oldTaxCollection.getCreatedBy());
 				taxCollection.setCreatedTime(oldTaxCollection.getCreatedTime());
 				taxCollection.setDiscarded(oldTaxCollection.getDiscarded());
@@ -2734,7 +2729,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 			response = true;
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -2747,7 +2741,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		DentalWorksInvoiceCollection dentalWorksInvoiceCollection = null;
 		try {
 
-			dentalWorksInvoiceCollection = dentalWorksInvoiceRepository.findOne(new ObjectId(invoiceId));
+			dentalWorksInvoiceCollection = dentalWorksInvoiceRepository.findById(new ObjectId(invoiceId)).orElse(null);
 
 			if (dentalWorksInvoiceCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, " No Dental Work Invoivce found with id");
@@ -2812,8 +2806,8 @@ public class DentalLabServiceImpl implements DentalLabService {
 			dentalWorkInvoiceJasperResponses.add(dentalWorkInvoiceJasperResponse);
 		}
 		parameters.put("items", dentalWorkInvoiceJasperResponses);
-		LocationCollection location = locationRepository.findOne(locationId);
-		UserCollection doctor = userRepository.findOne(doctorId);
+		LocationCollection location = locationRepository.findById(locationId).orElse(null);
+		UserCollection doctor = userRepository.findById(doctorId).orElse(null);
 
 		doctorName = "<b>" + (!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "") + " "
 				+ doctor.getFirstName() + "</b><br>" + location.getLocationName() + ",<br>" + location.getCity()
@@ -2835,6 +2829,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			BeanUtil.map(defaultPrintSettings, printSettings);
 
 		}
+
 		patientVisitService.generatePrintSetup(parameters, printSettings, null);
 		parameters.put("followUpAppointment", null);
 
@@ -2875,7 +2870,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				BeanUtil.map(request, dentalWorksInvoiceCollection);
 
 				LocationCollection locationCollection = locationRepository
-						.findOne(new ObjectId(request.getDentalLabLocationId()));
+						.findById(new ObjectId(request.getDentalLabLocationId())).orElse(null);
 				if (locationCollection == null)
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid Location Id");
 				dentalWorksInvoiceCollection.setUniqueInvoiceId(locationCollection.getInvoiceInitial()
@@ -2910,7 +2905,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalWorksAmountRepository.save(dentalWorksAmountCollection);
 
 			} else {
-				dentalWorksInvoiceCollection = dentalWorksInvoiceRepository.findOne(new ObjectId(request.getId()));
+				dentalWorksInvoiceCollection = dentalWorksInvoiceRepository.findById(new ObjectId(request.getId())).orElse(null);
 				Double OldCost = dentalWorksInvoiceCollection.getTotalCost();
 				BeanUtil.map(request, dentalWorksInvoiceCollection);
 				if (request.getCreatedTime() != null) {
@@ -2941,7 +2936,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 			}
 
 			DentalLabPickupCollection dentalLabPickupCollection = dentalLabTestPickupRepository
-					.findOne(new ObjectId(request.getDentalWorksId()));
+					.findById(new ObjectId(request.getDentalWorksId())).orElse(null);
 			if (dentalLabPickupCollection != null) {
 				invoiceItems = new ArrayList<DentalWorksInvoiceItem>();
 				for (DentalWorksSample dentalWorksSample : dentalLabPickupCollection.getDentalWorksSamples()) {
@@ -2990,7 +2985,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				BeanUtil.map(request, dentalWorksReceiptCollection);
 
 				LocationCollection locationCollection = locationRepository
-						.findOne(new ObjectId(request.getDentalLabLocationId()));
+						.findById(new ObjectId(request.getDentalLabLocationId())).orElse(null);
 				if (locationCollection == null)
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid Location Id");
 				dentalWorksReceiptCollection.setUniqueReceiptId(locationCollection.getReceiptInitial()
@@ -3006,7 +3001,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 				dentalWorksReceiptCollection.setUpdatedTime(new Date());
 
 			} else {
-				dentalWorksReceiptCollection = dentalWorksReceiptRepository.findOne(new ObjectId(request.getId()));
+				dentalWorksReceiptCollection = dentalWorksReceiptRepository.findById(new ObjectId(request.getId())).orElse(null);
 				oldCost = dentalWorksReceiptCollection.getAmountPaid();
 				BeanUtil.map(request, dentalWorksReceiptCollection);
 				dentalWorksReceiptCollection.setUpdatedTime(new Date());
@@ -3043,7 +3038,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Transactional
 	public List<DentalWorksInvoiceResponse> getInvoices(String doctorId, String locationId, String hospitalId,
 			String dentalLabLocationId, String dentalLabHospitalId, Long from, Long to, String searchTerm, int size,
-			int page) {
+			long page) {
 
 		List<DentalWorksInvoiceResponse> response = null;
 		try {
@@ -3093,13 +3088,13 @@ public class DentalLabServiceImpl implements DentalLabService {
 				aggregation = Aggregation.newAggregation(
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$clinic").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
@@ -3108,14 +3103,14 @@ public class DentalLabServiceImpl implements DentalLabService {
 				aggregation = Aggregation.newAggregation(
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$clinic").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
 
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
@@ -3125,7 +3120,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			response = aggregationResults.getMappedResults();
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -3135,7 +3129,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Transactional
 	public List<DentalWorksReceiptResponse> getReceipts(String doctorId, String locationId, String hospitalId,
 			String dentalLabLocationId, String dentalLabHospitalId, Long from, Long to, String searchTerm, int size,
-			int page) {
+			long page) {
 
 		List<DentalWorksReceiptResponse> response = null;
 		try {
@@ -3185,11 +3179,11 @@ public class DentalLabServiceImpl implements DentalLabService {
 				aggregation = Aggregation.newAggregation(
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$clinic").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
@@ -3197,10 +3191,10 @@ public class DentalLabServiceImpl implements DentalLabService {
 				aggregation = Aggregation.newAggregation(
 						// Aggregation.unwind("dentalWorksSamples.dentalStagesForDoctor"),
 						Aggregation.lookup("location_cl", "dentalLabLocationId", "_id", "dentalLab"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$dentalLab").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("location_cl", "locationId", "_id", "clinic"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$clinic").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 
@@ -3211,7 +3205,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			response = aggregationResults.getMappedResults();
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -3235,7 +3228,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 					DentalWorksInvoiceCollection.class, DentalWorksInvoiceResponse.class);
 			response = aggregationResults.getUniqueMappedResult();
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, " Error while getting Invoice By Ids");
 		}
@@ -3260,7 +3252,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 					DentalWorksReceiptCollection.class, DentalWorksReceiptResponse.class);
 			response = aggregationResults.getUniqueMappedResult();
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, " Error while getting Receipt By Ids");
 		}
@@ -3274,7 +3265,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		DentalWorksInvoiceCollection dentalWorksInvoiceCollection = null;
 		DentalWorksAmountCollection dentalWorksAmountCollection = null;
 		try {
-			dentalWorksInvoiceCollection = dentalWorksInvoiceRepository.findOne(new ObjectId(id));
+			dentalWorksInvoiceCollection = dentalWorksInvoiceRepository.findById(new ObjectId(id)).orElse(null);
 			if (dentalWorksInvoiceCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
@@ -3315,7 +3306,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			response = new DentalWorksInvoice();
 			BeanUtil.map(dentalWorksInvoiceCollection, response);
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, " Error while getting Invoice By Id");
 		}
@@ -3329,7 +3319,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		DentalWorksReceiptCollection dentalWorksReceiptCollection = null;
 		DentalWorksAmountCollection dentalWorksAmountCollection = null;
 		try {
-			dentalWorksReceiptCollection = dentalWorksReceiptRepository.findOne(new ObjectId(id));
+			dentalWorksReceiptCollection = dentalWorksReceiptRepository.findById(new ObjectId(id)).orElse(null);
 			if (dentalWorksReceiptCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
@@ -3370,7 +3360,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 			response = new DentalWorksReceipt();
 			BeanUtil.map(dentalWorksReceiptCollection, response);
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, " Error while getting Invoice By Id");
 		}
@@ -3411,7 +3400,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 					DentalWorksAmountCollection.class, DentalWorksAmount.class);
 			response = aggregationResults.getUniqueMappedResult();
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		return response;
@@ -3436,7 +3424,6 @@ public class DentalLabServiceImpl implements DentalLabService {
 					jasperReportResponse.getFileSystemResource().getFile().delete();
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while download dental Lab Receipt");
 		}
@@ -3463,7 +3450,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 		parameters.put("date", "<b>Date : </b>" + simpleDateFormat.format(new Date()));
 
 		LocationCollection location = locationRepository
-				.findOne(new ObjectId(dentalWorksReceiptResponse.getLocationId()));
+				.findById(new ObjectId(dentalWorksReceiptResponse.getLocationId())).orElse(null);
 		String doctorName = "<b>" + (!DPDoctorUtils.anyStringEmpty(user.getTitle()) ? user.getTitle() : "") + " "
 				+ user.getFirstName() + "</b><br>" + location.getLocationName() + ",<br>" + location.getCity()
 				+ (!DPDoctorUtils.anyStringEmpty(location.getState()) ? ",<br>" + location.getState() : "");

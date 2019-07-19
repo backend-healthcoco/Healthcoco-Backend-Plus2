@@ -13,19 +13,19 @@ public class ESDiseasesDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String doctorId;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String locationId;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String hospitalId;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String disease;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String explanation;
 
     @Field(type = FieldType.Boolean)

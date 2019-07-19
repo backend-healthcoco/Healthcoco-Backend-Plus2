@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,6 +45,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BloodGlucoseRepository;
 import com.dpdocter.repository.NutritionPlanRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.SubscritptionNutritionPlanRepository;
 import com.dpdocter.repository.SugarMedicineReminderRepository;
 import com.dpdocter.repository.SugarSettingRepository;
@@ -71,6 +73,9 @@ public class NutritionServiceImpl implements NutritionService {
 	private MongoTemplate mongoTemplate;
 
 	@Autowired
+	private PatientRepository patientRepository;
+
+	@Autowired
 	private NutritionPlanRepository nutritionPlanRepository;
 
 	@Autowired
@@ -79,20 +84,20 @@ public class NutritionServiceImpl implements NutritionService {
 	@Autowired
 	private UserNutritionSubscriptionRepository userNutritionSubscriptionRepository;
 
+	@Autowired
+	private BloodGlucoseRepository bloodGlucoseRepository;
+
+	@Autowired
+	private SugarSettingRepository sugarSettingRepository;
+
+	@Autowired
+	private SugarMedicineReminderRepository sugarMedicineReminderRepository;
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
 	@Autowired
 	private AsyncService asyncService;
-	
-	@Autowired
-	private SugarSettingRepository sugarSettingRepository;
-	
-	@Autowired
-	private BloodGlucoseRepository bloodGlucoseRepository;
-	
-	@Autowired
-	private SugarMedicineReminderRepository sugarMedicineReminderRepository;
 
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null)
@@ -168,7 +173,7 @@ public class NutritionServiceImpl implements NutritionService {
 
 						Aggregation.sort(Sort.Direction.DESC, "createdTime"),
 
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+						Aggregation.skip((long)(page) * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 
@@ -202,7 +207,7 @@ public class NutritionServiceImpl implements NutritionService {
 		SubscriptionNutritionPlan response = null;
 		try {
 			SubscriptionNutritionPlanCollection subscriptionNutritionPlanCollection = subscritptionNutritionPlanRepository
-					.findOne(new ObjectId(id));
+					.findById(new ObjectId(id)).orElse(null);
 			response = new SubscriptionNutritionPlan();
 			if (!DPDoctorUtils.anyStringEmpty(subscriptionNutritionPlanCollection.getBackgroundImage())) {
 				subscriptionNutritionPlanCollection
@@ -257,7 +262,6 @@ public class NutritionServiceImpl implements NutritionService {
 			}
 
 		} catch (BusinessException e) {
-
 			logger.error("Error while getting Subscrition Plan " + e.getMessage());
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting Subscrition Plan " + e.getMessage());
@@ -403,17 +407,17 @@ public class NutritionServiceImpl implements NutritionService {
 
 			UserNutritionSubscriptionCollection nutritionSubscriptionCollection = new UserNutritionSubscriptionCollection();
 			BeanUtil.map(request, nutritionSubscriptionCollection);
-			UserCollection userCollection = userRepository.findOne(nutritionSubscriptionCollection.getUserId());
+			UserCollection userCollection = userRepository.findById(nutritionSubscriptionCollection.getUserId()).orElse(null);
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "user not found By Id ");
 			}
 			NutritionPlanCollection nutritionPlanCollection = nutritionPlanRepository
-					.findOne(nutritionSubscriptionCollection.getNutritionPlanId());
+					.findById(nutritionSubscriptionCollection.getNutritionPlanId()).orElse(null);
 			if (nutritionPlanCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Nutrition Plan not found By Id ");
 			}
 			SubscriptionNutritionPlanCollection subscriptionNutritionPlanCollection = subscritptionNutritionPlanRepository
-					.findOne(nutritionSubscriptionCollection.getSubscriptionPlanId());
+					.findById(nutritionSubscriptionCollection.getSubscriptionPlanId()).orElse(null);
 
 			if (subscriptionNutritionPlanCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "subscription Plan not found By Id ");
@@ -512,7 +516,7 @@ public class NutritionServiceImpl implements NutritionService {
 		UserNutritionSubscription response = null;
 		try {
 			UserNutritionSubscriptionCollection nutritionSubscriptionCollection = userNutritionSubscriptionRepository
-					.findOne(new ObjectId(id));
+					.findById(new ObjectId(id)).orElse(null);
 			if (nutritionSubscriptionCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Subscrition Plan not found By Id ");
 			}
@@ -537,7 +541,7 @@ public class NutritionServiceImpl implements NutritionService {
 		try {
 			Aggregation aggregation = null;
 
-			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("nutritionPlan.title", "$title").append("nutritionPlan._id", "$_id")
 							.append("nutritionPlan.id", "$_id")
 							.append("nutritionPlan.planImage", new BasicDBObject("$cond",
@@ -565,7 +569,7 @@ public class NutritionServiceImpl implements NutritionService {
 							.append("nutritionPlan.updatedTime", "$updatedTime")
 							.append("nutritionPlan.createdBy", "$createdBy")));
 
-			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$category").append("category", new BasicDBObject("$first", "$category"))
 							.append("rank", new BasicDBObject("$first", "$rank"))
 							.append("nutritionPlan", new BasicDBObject("$push", "$nutritionPlan"))));
@@ -682,7 +686,6 @@ public class NutritionServiceImpl implements NutritionService {
 			}
 
 		} catch (BusinessException e) {
-
 			logger.error("Error while getting Subscrition Plan " + e.getMessage());
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting Subscrition Plan " + e.getMessage());
@@ -690,14 +693,14 @@ public class NutritionServiceImpl implements NutritionService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public List<NutritionPlanWithCategoryShortResponse> getNutritionPlanDetailsByCategory(NutritionPlanRequest request) {
 		List<NutritionPlanWithCategoryShortResponse> response = null;
 		try {
 			Aggregation aggregation = null;
 
-			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectOperation = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("nutritionPlan.title", "$title").append("nutritionPlan._id", "$_id")
 							.append("nutritionPlan.id", "$_id")
 							.append("nutritionPlan.planImage", new BasicDBObject("$cond",
@@ -726,7 +729,7 @@ public class NutritionServiceImpl implements NutritionService {
 							.append("nutritionPlan.updatedTime", "$updatedTime")
 							.append("nutritionPlan.createdBy", "$createdBy")));
 
-			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$category").append("category", new BasicDBObject("$first", "$category"))
 							.append("rank", new BasicDBObject("$first", "$rank"))
 							.append("nutritionPlan", new BasicDBObject("$push", "$nutritionPlan"))));
@@ -753,7 +756,6 @@ public class NutritionServiceImpl implements NutritionService {
 			logger.error("Error while getting nutrition Plan " + e.getMessage());
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting nutrition Plan " + e.getMessage());
-
 		}
 		return response;
 	}
@@ -803,7 +805,7 @@ public class NutritionServiceImpl implements NutritionService {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						 Aggregation.sort(Sort.Direction.DESC, "createdTime"),
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+						Aggregation.skip((long)(page) * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						 Aggregation.sort(Sort.Direction.DESC, "createdTime"));
@@ -831,7 +833,7 @@ public class NutritionServiceImpl implements NutritionService {
 		try {
 			if(!DPDoctorUtils.anyStringEmpty(request.getId()))
 			{
-				sugarSettingCollection = sugarSettingRepository.findOne(new ObjectId(request.getId()));
+				sugarSettingCollection = sugarSettingRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			else
 			{
@@ -895,7 +897,7 @@ public class NutritionServiceImpl implements NutritionService {
 		try {
 			if(!DPDoctorUtils.anyStringEmpty(request.getId()))
 			{
-				bloodGlucoseCollection = bloodGlucoseRepository.findOne(new ObjectId(request.getId()));
+				bloodGlucoseCollection = bloodGlucoseRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			else
 			{
@@ -974,7 +976,6 @@ public class NutritionServiceImpl implements NutritionService {
 			logger.error("Error while getting Blood Glucose " + e.getMessage());
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting Blood GLucose " + e.getMessage());
-
 		}
 		return response;
 	}
@@ -988,7 +989,7 @@ public class NutritionServiceImpl implements NutritionService {
 		try {
 			if(!DPDoctorUtils.anyStringEmpty(request.getId()))
 			{
-				sugarMedicineReminderCollection = sugarMedicineReminderRepository.findOne(new ObjectId(request.getId()));
+				sugarMedicineReminderCollection = sugarMedicineReminderRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			else
 			{
@@ -1021,7 +1022,6 @@ public class NutritionServiceImpl implements NutritionService {
 	public SugarMedicineReminder getSugarMedicineReminderById(String id) {
 		SugarMedicineReminder response = null;
 		try {
-
 			Aggregation aggregation = null;
 
 			Criteria criteria = new Criteria("id").is(new ObjectId(id));
@@ -1071,7 +1071,6 @@ public class NutritionServiceImpl implements NutritionService {
 		}
 		return response;
 	}
-	
 }
 
 

@@ -300,5 +300,4 @@ public class PatientFeedbackCollection extends GenericCollection {
 				+ ", appointmentId=" + appointmentId + ", prescriptionId=" + prescriptionId + ", questionAnswers="
 				+ questionAnswers + ", isPatientDiscarded=" + isPatientDiscarded + "]";
 	}
-
 }

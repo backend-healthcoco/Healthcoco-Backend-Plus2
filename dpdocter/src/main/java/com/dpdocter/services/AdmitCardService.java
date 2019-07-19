@@ -12,7 +12,7 @@ public interface AdmitCardService {
 	AdmitCardResponse getAdmitCard(String cardId);
 
 	List<AdmitCardResponse> getAdmitCards(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, long updatedTime, Boolean discarded);
+			long page, int size, long updatedTime, Boolean discarded);
 
 	AdmitCardResponse deleteAdmitCard(String cardId, String doctorId, String hospitalId, String locationId,
 			Boolean discarded);

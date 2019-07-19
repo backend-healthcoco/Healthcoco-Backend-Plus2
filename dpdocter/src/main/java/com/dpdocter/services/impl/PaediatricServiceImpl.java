@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -49,6 +50,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BirthAchievementRepository;
 import com.dpdocter.repository.GrowthChartRepository;
+import com.dpdocter.repository.MasterBabyImmunizationRepository;
 import com.dpdocter.repository.UserDeviceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.VaccineRepository;
@@ -68,11 +70,11 @@ import com.mongodb.BasicDBObject;
 import common.util.web.DPDoctorUtils;
 
 @Service
-public class PaediatricServiceImpl implements PaediatricService{
-	
+public class PaediatricServiceImpl implements PaediatricService {
+
 	@Autowired
 	private GrowthChartRepository growthChartRepository;
-	
+
 	@Autowired
 	private BirthAchievementRepository birthAchievementRepository;
 	
@@ -81,42 +83,42 @@ public class PaediatricServiceImpl implements PaediatricService{
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
-	
+
 	@Autowired
 	private SMSServices smsServices;
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private UserDeviceRepository userDeviceRepository;
-	
+
+	@Autowired
+	private MasterBabyImmunizationRepository masterBabyImmunizationRepository;
+
 	@Value(value = "${patient.app.bit.link}")
 	private String patientAppBitLink;
+
 	
 	@Autowired
 	PushNotificationServices pushNotificationServices;
 	
 	@Override
 	@Transactional
-	public GrowthChart addEditGrowthChart(GrowthChart growthChart)
-	{
+	public GrowthChart addEditGrowthChart(GrowthChart growthChart) {
 		GrowthChart response = null;
 		GrowthChartCollection growthChartCollection = null;
 		try {
-			if(growthChart.getId() != null)
-			{
-				growthChartCollection = growthChartRepository.findOne(new ObjectId(growthChart.getId()));
-			}
-			else
-			{
+			if (growthChart.getId() != null) {
+				growthChartCollection = growthChartRepository.findById(new ObjectId(growthChart.getId())).orElse(null);
+			} else {
 				growthChartCollection = new GrowthChartCollection();
 			}
 			BeanUtil.map(growthChart, growthChartCollection);
 			growthChartCollection = growthChartRepository.save(growthChartCollection);
-			if(growthChartCollection != null){
+			if (growthChartCollection != null) {
 				response = new GrowthChart();
-				 BeanUtil.map(growthChartCollection, response);
+				BeanUtil.map(growthChartCollection, response);
 			}
 			if (growthChart.getDoctorId() != null) {
 			pushNotificationServices.notifyUser(growthChart.getDoctorId(), "Growth chart updated",
@@ -129,18 +131,18 @@ public class PaediatricServiceImpl implements PaediatricService{
 			// TODO: handle exception
 			e.printStackTrace();
 			throw e;
-			
+
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public GrowthChart getGrowthChartById(String id) {
 		GrowthChart response = null;
 		GrowthChartCollection growthChartCollection = null;
 		try {
-			growthChartCollection = growthChartRepository.findOne(new ObjectId(id));
+			growthChartCollection = growthChartRepository.findById(new ObjectId(id)).orElse(null);
 			if (growthChartCollection != null) {
 				response = new GrowthChart();
 				BeanUtil.map(growthChartCollection, response);
@@ -155,7 +157,21 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 		return response;
 	}
-	
+
+	/*
+	 * public List<GrowthChart> getGrowthChartById(String patientId, String
+	 * doctorId, String locationId, String hospitalId, int page, int size) {
+	 * List<GrowthChart> growthCharts = null; GrowthChartCollection
+	 * growthChartCollection = null; try { growthChartCollection =
+	 * growthChartRepository.findById(new ObjectId(id)); if
+	 * (growthChartCollection != null) { response = new GrowthChart();
+	 * BeanUtil.map(growthChartCollection, response); } else { throw new
+	 * BusinessException(ServiceError.NoRecord, "Record not found"); } } catch
+	 * (Exception e) { // TODO: handle exception e.printStackTrace(); throw e;
+	 * 
+	 * } return response; }
+	 */
+
 	@Override
 	@Transactional
 	public List<GrowthChart> getGrowthChartList(String patientId, String doctorId, String locationId, String hospitalId,
@@ -166,7 +182,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp));
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
@@ -183,12 +199,11 @@ public class PaediatricServiceImpl implements PaediatricService{
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				criteria.and("patientId").is(new ObjectId(patientId));
 			}
-			
 			criteria.and("discarded").is(false);
-			
+
 			responses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(
-							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
 					GrowthChartCollection.class, GrowthChart.class).getMappedResults();
 
 		} catch (Exception e) {
@@ -205,7 +220,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		Boolean response = false;
 		GrowthChartCollection growthChartCollection = null;
 		try {
-			growthChartCollection = growthChartRepository.findOne(new ObjectId(id));
+			growthChartCollection = growthChartRepository.findById(new ObjectId(id)).orElse(null);
 			if (growthChartCollection != null) {
 				growthChartCollection.setDiscarded(discarded);
 				growthChartRepository.save(growthChartCollection);
@@ -227,29 +242,23 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 		return response;
 	}
-	
 
 	@Override
 	@Transactional
-	public VaccineResponse addEditVaccine(VaccineRequest request)
-	{
-		 VaccineResponse response = null;
-		 VaccineCollection vaccineCollection = null;
+	public VaccineResponse addEditVaccine(VaccineRequest request) {
+		VaccineResponse response = null;
+		VaccineCollection vaccineCollection = null;
 		try {
-			if(request.getId() != null)
-			{
-				vaccineCollection = vaccineRepository.findOne(new ObjectId(request.getId()));
-			}
-			else
-			{
+			if (request.getId() != null) {
+				vaccineCollection = vaccineRepository.findById(new ObjectId(request.getId())).orElse(null);
+			} else {
 				vaccineCollection = new VaccineCollection();
 			}
 			BeanUtil.map(request, vaccineCollection);
-			vaccineCollection.setUpdatedTime(new Date());
 			vaccineCollection = vaccineRepository.save(vaccineCollection);
-			if(vaccineCollection != null){
+			if (vaccineCollection != null) {
 				response = new VaccineResponse();
-				 BeanUtil.map(vaccineCollection, response);
+				BeanUtil.map(vaccineCollection, response);
 			}
 			if (request.getDoctorId() != null) {
 				pushNotificationServices.notifyUser(request.getDoctorId(), "Vaccination updated",
@@ -263,7 +272,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public Boolean addEditMultipleVaccine(List<VaccineRequest> requests) {
@@ -272,34 +281,29 @@ public class PaediatricServiceImpl implements PaediatricService{
 		try {
 			for (VaccineRequest request : requests) {
 				if (request.getId() != null) {
-					vaccineCollection = vaccineRepository.findOne(new ObjectId(request.getId()));
+					vaccineCollection = vaccineRepository.findById(new ObjectId(request.getId())).orElse(null);
 				} else {
 					vaccineCollection = new VaccineCollection();
 				}
 				BeanUtil.map(request, vaccineCollection);
 				vaccineCollection.setUpdatedTime(new Date());
-				if(request.getIsUpdatedByPatient() == true)
-				{
+				if (request.getIsUpdatedByPatient() == true) {
 					vaccineCollection.setCreatedBy("PATIENT");
-				}
-				else
-				{
-					if(request.getDoctorId() != null)
-					{
-						UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
-						if(userCollection != null)
-						{
+				} else {
+					if (request.getDoctorId() != null) {
+						UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+						if (userCollection != null) {
 							vaccineCollection.setCreatedBy(userCollection.getFirstName());
 						}
 					}
 				}
-				
+
 				sendVaccinationMessage(request.getPatientId());
-				
+
 				vaccineCollection = vaccineRepository.save(vaccineCollection);
 				response = true;
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -315,29 +319,27 @@ public class PaediatricServiceImpl implements PaediatricService{
 		try {
 			for (String id : request.getIds()) {
 				if (id != null) {
-					vaccineCollection = vaccineRepository.findOne(new ObjectId(id));
+					vaccineCollection = vaccineRepository.findById(new ObjectId(id)).orElse(null);
 					vaccineCollection.setStatus(request.getStatus());
-					vaccineCollection.setUpdatedTime(new Date());
 					vaccineCollection = vaccineRepository.save(vaccineCollection);
 					response = true;
 				}
 
 			}
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public VaccineResponse getVaccineById(String id) {
 		VaccineResponse response = null;
 		VaccineCollection vaccineCollection = null;
 		try {
-			vaccineCollection = vaccineRepository.findOne(new ObjectId(id));
+			vaccineCollection = vaccineRepository.findById(new ObjectId(id)).orElse(null);
 			if (vaccineCollection != null) {
 				response = new VaccineResponse();
 				BeanUtil.map(vaccineCollection, response);
@@ -352,22 +354,23 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<VaccineResponse> getVaccineList(String patientId , String doctorId, String locationId, String hospitalId , String updatedTime) {
+	public List<VaccineResponse> getVaccineList(String patientId, String doctorId, String locationId, String hospitalId,
+			String updatedTime) {
 		List<VaccineResponse> responses = null;
 		try {
-			//Criteria criteria = new Criteria();
-			
+			// Criteria criteria = new Criteria();
+
 			long createdTimestamp = Long.parseLong(updatedTime);
-			
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
-			
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp));
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
@@ -375,24 +378,30 @@ public class PaediatricServiceImpl implements PaediatricService{
 			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				criteria.and("patientId").is(new ObjectId(patientId));
 			}
-		/*	
-			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", new BasicDBObject("dueDate", "$vaccineResponses.dueDate"))
-							.append("vaccineResponses", new BasicDBObject("$push", "$vaccineResponses")).append("dueDate",
-									new BasicDBObject("$first", "$diagnosticTest.dueDate"))));
-			
-			*/
+			/*
+			 * AggregationOperation aggregationOperation = new
+			 * CustomAggregationOperation(new BasicDBObject("$group", new
+			 * BasicDBObject("_id", new BasicDBObject("duration",
+			 * "$vaccineResponses.duration")) .append("vaccineResponses", new
+			 * BasicDBObject("$push", "$vaccineResponses")).append("dueDate",
+			 * new BasicDBObject("$first", "$diagnosticTest.dueDate"))));
+			 * 
+			 */
 			responses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(
 							Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$vaccineBrand").append("preserveNullAndEmptyArrays",
 											true))),
-							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+							Aggregation.lookup("master_baby_immunization_cl", "vaccineId", "_id", "vaccine"),
+							new CustomAggregationOperation(new Document("$unwind",
+									new BasicDBObject("path", "$vaccine").append("preserveNullAndEmptyArrays",
+											true))),
+							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "vaccine.id"))),
 					VaccineCollection.class, VaccineResponse.class).getMappedResults();
 
 		} catch (Exception e) {
@@ -402,7 +411,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 		return responses;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<MasterVaccineResponse> getMasterVaccineList(String searchTerm, Boolean isChartVaccine, int page,
@@ -424,12 +433,10 @@ public class PaediatricServiceImpl implements PaediatricService{
 			}
 
 			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						 Aggregation.skip((page) * size),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria)
-						);
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
 			}
 
 			AggregationResults<MasterVaccineResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -443,7 +450,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		}
 		return responses;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<VaccineBrandAssociationResponse> getVaccineBrandAssociation(String vaccineId, String vaccineBrandId) {
@@ -464,15 +471,16 @@ public class PaediatricServiceImpl implements PaediatricService{
 					.aggregate(
 							Aggregation.newAggregation(
 									Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new CustomAggregationOperation(new Document("$unwind",
 											new BasicDBObject("path", "$vaccineBrand")
 													.append("preserveNullAndEmptyArrays", true))),
 									Aggregation.lookup("master_baby_immunization_cl", "vaccineId", "_id", "vaccine"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new CustomAggregationOperation(new Document("$unwind",
 											new BasicDBObject("path", "$vaccine").append("preserveNullAndEmptyArrays",
 													true))),
 									Aggregation.match(criteria),
-									Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+									Aggregation.sort(new Sort(Direction.DESC, "id"))/*
+									Aggregation.sort(new Sort(Direction.DESC, "createdTime"))*/),
 							VaccineBrandAssociationCollection.class, VaccineBrandAssociationResponse.class)
 					.getMappedResults();
 
@@ -483,69 +491,43 @@ public class PaediatricServiceImpl implements PaediatricService{
 
 		return responses;
 	}
-	
-	
+
 	@Override
 	@Transactional
-	public List<GroupedVaccineBrandAssociationResponse> getGroupedVaccineBrandAssociation(List<String> vaccineIds)
-	{
+	public List<GroupedVaccineBrandAssociationResponse> getGroupedVaccineBrandAssociation(List<String> vaccineIds) {
 		List<ObjectId> vaccineObjectIds = null;
 		List<GroupedVaccineBrandAssociationResponse> responses = null;
 		try {
 			Criteria criteria = new Criteria();
-			
-			
-			if(vaccineIds != null)
-			{
+
+			if (vaccineIds != null) {
 				vaccineObjectIds = new ArrayList<>();
 				for (String id : vaccineIds) {
 					vaccineObjectIds.add(new ObjectId(id));
 				}
 			}
-			
+
 			if (vaccineIds != null) {
 				criteria.and("vaccineId").in(vaccineObjectIds);
 			}
-			
-			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("id", "$id"), Fields.field("daughterLabCRN", "$daughterLabCRN"),
-							Fields.field("pickupTime", "$pickupTime"), Fields.field("deliveryTime", "$deliveryTime"),
-							Fields.field("patientLabTestSamples.uid", "$patientLabTestSamples.uid"),
-							Fields.field("patientLabTestSamples.patientName", "$patientLabTestSamples.patientName"),
-							Fields.field("patientLabTestSamples.mobileNumber", "$patientLabTestSamples.mobileNumber"),
-							Fields.field("patientLabTestSamples.age", "$patientLabTestSamples.age"),
-							Fields.field("patientLabTestSamples.gender", "$patientLabTestSamples.gender"),
-							Fields.field("patientLabTestSamples.labTestSamples", "$labTestSamples"),
-							Fields.field("status", "$status"), Fields.field("doctorId", "$doctorId"),
-							Fields.field("parentLabLocationId", "$parentLabLocationId"),
-							Fields.field("collectionBoyId", "$collectionBoyId"),
-							Fields.field("daughterLabLocationId", "$daughterLabLocationId"),
-							Fields.field("discarded", "$discarded"),
-							Fields.field("numberOfSamplesRequested", "$numberOfSamplesRequested"),
-							Fields.field("numberOfSamplesPicked", "$numberOfSamplesPicked"),
-							Fields.field("requestId", "$requestId"), Fields.field("isCompleted", "$isCompleted"),
-							Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
-							Fields.field("createdBy", "$createdBy")));
 
-			
-			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id", new BasicDBObject("duration", "$vaccine.duration"))
-							.append("vaccineBrandAssociationResponses", new BasicDBObject("$push", "$vaccineBrandAssociationResponses")).append("name",
-									new BasicDBObject("$first", "$vaccine.duration"))
-							.append("id",
-									new BasicDBObject("$first", "$vaccine.id"))));
-			
-			responses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(
-							Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$vaccineBrand").append("preserveNullAndEmptyArrays",
-											true))),Aggregation.lookup("master_baby_immunization_cl", "vaccineId", "_id", "vaccine"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$vaccine").append("preserveNullAndEmptyArrays",
-											true))),
-							Aggregation.match(criteria),aggregationOperation, Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
-					VaccineCollection.class, GroupedVaccineBrandAssociationResponse.class).getMappedResults();
+			AggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
+					new BasicDBObject("_id", new BasicDBObject("name", "$vaccine.name"))
+							.append("vaccine", new BasicDBObject("$push", "$vaccine"))
+							.append("name", new BasicDBObject("$first", "$vaccine.name"))
+							.append("id", new BasicDBObject("$first", "$vaccine.id"))));
+
+			responses = mongoTemplate
+					.aggregate(
+							Aggregation.newAggregation(
+									Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
+									new CustomAggregationOperation(new Document("$unwind",
+											new BasicDBObject("path", "$vaccineBrand")
+													.append("preserveNullAndEmptyArrays", true))),
+									Aggregation.match(criteria), aggregationOperation,
+									Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+							VaccineBrandAssociationCollection.class, GroupedVaccineBrandAssociationResponse.class)
+					.getMappedResults();
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -565,7 +547,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		try {
 			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId));
 			
-			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			AggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", new BasicDBObject("duration", "$duration")).
 					append("vaccines",
 							new BasicDBObject("$push", "$vaccine")).append("duration",
@@ -574,6 +556,10 @@ public class PaediatricServiceImpl implements PaediatricService{
 			aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("vaccine_cl", "_id", "_id", "vaccine"),
 					Aggregation.unwind("vaccine"),
+					Aggregation.lookup("vaccine_brand_cl", "vaccine.vaccineBrandId", "_id", "vaccine.vaccineBrand"),
+					new CustomAggregationOperation(new Document("$unwind",
+							new BasicDBObject("path", "$vaccine.vaccineBrand")
+									.append("preserveNullAndEmptyArrays", true))),
 					Aggregation.match(criteria),aggregationOperation, Aggregation.sort(new Sort(Direction.ASC, "periodTime")));
 			
 			responses = mongoTemplate
@@ -593,47 +579,51 @@ public class PaediatricServiceImpl implements PaediatricService{
 
 	@Scheduled(cron = "0 30 6 * * ?", zone = "IST")
 	@Override
+	//@Scheduled(fixedDelay = 25000)
 	public void sendBabyVaccineReminder() {
 		// TODO Auto-generated method stub
 		List<BabyVaccineReminderResponse> response = null;
-		
-		DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy");
+
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
 		Aggregation aggregation = null;
 		AggregationOperation aggregationOperation = null;
-		
-		Criteria criteria = new Criteria("dueDate").gte(DPDoctorUtils.getStartTime(new Date())).lte(DPDoctorUtils.getEndTime(new Date()));
+
+		Criteria criteria = new Criteria("dueDate").gte(DPDoctorUtils.getStartTimeUTC(new Date()))
+				.lte(DPDoctorUtils.getEndTimeUTC(new Date()));
 
 		try {
-			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("patientName", "$patient.firstName"),
-							Fields.field("mobileNumber", "$patient.mobileNumber"),
-							Fields.field("doctorName", "$doctor.firstName"),
-							Fields.field("locationName", "$location.locationName"),
-							Fields.field("clinicNumber", "$location.clinicNumber"),
-							Fields.field("vaccines", "$vaccines")));
-			
-			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id",
-							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
-									.append("patientId", "$patientId"))
-											.append("doctorName", new BasicDBObject("$first", "$doctorName"))
-											.append("locationName", new BasicDBObject("$first", "$locationName"))
-											.append("patientName", new BasicDBObject("$first", "$patientName"))
-											.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
-											.append("clinicNumber", new BasicDBObject("$first", "$clinicNumber"))
-											.append("vaccines", new BasicDBObject("$push", "$vaccines"))));
-			
-			
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
+					Fields.field("patientName", "$patient.firstName"),
+					Fields.field("mobileNumber", "$patient.mobileNumber"),
+					Fields.field("doctorName", "$doctor.firstName"),
+					Fields.field("locationName", "$location.locationName"),
+					Fields.field("clinicNumber", "$location.clinicNumber"), Fields.field("vaccines", "$vaccines")));
+
+			aggregationOperation = new CustomAggregationOperation(
+					new Document("$group",
+							new BasicDBObject("_id",
+									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
+											.append("patientId", "$patientId"))
+													.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+													.append("locationName",
+															new BasicDBObject("$first", "$locationName"))
+													.append("patientName", new BasicDBObject("$first", "$patientName"))
+													.append("mobileNumber",
+															new BasicDBObject("$first", "$mobileNumber"))
+													.append("clinicNumber",
+															new BasicDBObject("$first", "$clinicNumber"))
+													.append("vaccines", new BasicDBObject("$push", "$vaccines"))));
+
 			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"), Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
 					Aggregation.unwind("patient"), Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 					Aggregation.unwind("location"), Aggregation.lookup("vaccine_cl", "_id", "_id", "vaccines"),
 					Aggregation.unwind("vaccines"), Aggregation.match(criteria),
-					projectList.and("dueDate").extractDayOfMonth().as("day").and("dueDate").extractMonth()
-							.as("month").and("dueDate").extractYear().as("year").and("dueDate").extractWeek()
-							.as("week"),
+					projectList.and("dueDate").extractDayOfMonth().as("day").and("dueDate").extractMonth().as("month")
+							.and("dueDate").extractYear().as("year").and("dueDate").extractWeek().as("week"),
 					aggregationOperation);
-		AggregationResults<BabyVaccineReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+
+			AggregationResults<BabyVaccineReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					VaccineCollection.class, BabyVaccineReminderResponse.class);
 			response = aggregationResults.getMappedResults();
 
@@ -676,82 +666,90 @@ public class PaediatricServiceImpl implements PaediatricService{
 						smsDetails.add(smsDetail);
 						smsTrackDetail.setSmsDetails(smsDetails);
 						smsServices.sendSMS(smsTrackDetail, true);
-		
+
 				}
+
 			}
-		} catch (Exception e) {
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	@Scheduled(cron = "0 30 6 * * ?", zone = "IST")
+
+	@Scheduled(cron = "0 45 6 * * ?", zone = "IST")
 	@Override
+	//@Scheduled(fixedDelay = 15000)
 	public void sendBirthBabyVaccineReminder() {
 		// TODO Auto-generated method stub
 		List<BabyVaccineReminderResponse> response = null;
-		DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy");
-		
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+
 		Aggregation aggregation = null;
 		AggregationOperation aggregationOperation = null;
-		DateTime previousdate = DPDoctorUtils.getStartTime(new Date()).minusDays(3);
-		
-		Criteria criteria = new Criteria("dueDate").gte(previousdate).lt(DPDoctorUtils.getStartTime(new Date()));
-		
+		DateTime previousdate = DPDoctorUtils.getStartTimeUTC(new Date()).minusDays(3);
+
+		Criteria criteria = new Criteria("dueDate").gte(previousdate).lte(DPDoctorUtils.getEndTimeUTC(new Date()));
+
 		criteria.and("status").is(VaccineStatus.PLANNED);
 		criteria.and("periodTime").is(0);
 
 		try {
-			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("patientName", "$patient.firstName"),
-							Fields.field("mobileNumber", "$patient.mobileNumber"),
-							Fields.field("doctorName", "$doctor.firstName"),
-							Fields.field("locationName", "$location.locationName"),
-							Fields.field("clinicNumber", "$location.clinicNumber"),
-							Fields.field("vaccines", "$vaccines")));
-			
-			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id",
-							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
-									.append("patientId", "$patientId"))
-											.append("doctorName", new BasicDBObject("$first", "$doctorName"))
-											.append("locationName", new BasicDBObject("$first", "$locationName"))
-											.append("patientName", new BasicDBObject("$first", "$patientName"))
-											.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
-											.append("clinicNumber", new BasicDBObject("$first", "$clinicNumber"))
-											.append("vaccines", new BasicDBObject("$push", "$vaccines"))));
-			
-			
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
+					Fields.field("patientName", "$patient.firstName"),
+					Fields.field("mobileNumber", "$patient.mobileNumber"),
+					Fields.field("doctorName", "$doctor.firstName"),
+					Fields.field("locationName", "$location.locationName"),
+					Fields.field("clinicNumber", "$location.clinicNumber"), Fields.field("vaccines", "$vaccines")));
+
+			aggregationOperation = new CustomAggregationOperation(
+					new Document("$group",
+							new BasicDBObject("_id",
+									new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
+											.append("patientId", "$patientId"))
+													.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+													.append("locationName",
+															new BasicDBObject("$first", "$locationName"))
+													.append("patientName", new BasicDBObject("$first", "$patientName"))
+													.append("mobileNumber",
+															new BasicDBObject("$first", "$mobileNumber"))
+													.append("clinicNumber",
+															new BasicDBObject("$first", "$clinicNumber"))
+													.append("vaccines", new BasicDBObject("$push", "$vaccines"))));
+
 			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 					Aggregation.unwind("doctor"), Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
 					Aggregation.unwind("patient"), Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 					Aggregation.unwind("location"), Aggregation.lookup("vaccine_cl", "_id", "_id", "vaccines"),
 					Aggregation.unwind("vaccines"), Aggregation.match(criteria),
-					projectList.and("dueDate").extractDayOfMonth().as("day").and("dueDate").extractMonth()
-							.as("month").and("dueDate").extractYear().as("year").and("dueDate").extractWeek()
-							.as("week"),
+					projectList.and("dueDate").extractDayOfMonth().as("day").and("dueDate").extractMonth().as("month")
+							.and("dueDate").extractYear().as("year").and("dueDate").extractWeek().as("week"),
 					aggregationOperation);
+
+			
 			AggregationResults<BabyVaccineReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					VaccineCollection.class, BabyVaccineReminderResponse.class);
 			response = aggregationResults.getMappedResults();
+
 			for (BabyVaccineReminderResponse vaccineReminderResponse : response) {
 
 				if (vaccineReminderResponse.getMobileNumber() != null) {
 
 					String vaccineNames = "";
 					String dateTime = "";
-
+					List<String> vaccineList = new ArrayList<>();
 					for (Vaccine vaccine : vaccineReminderResponse.getVaccines()) {
-						vaccineNames = vaccine.getName() + " ";
+						vaccineList.add(vaccine.getName());
 					}
+					vaccineNames = StringUtils.join(vaccineList, ",");
 
-					dateTime = formatter.print(vaccineReminderResponse.getVaccines().get(0).getDueDate().getTime());
+
+					//dateTime = formatter.print(vaccineReminderResponse.getVaccines().get(0).getDueDate().getTime());
+					dateTime = formatter.print(new DateTime());
 
 					String message = "Your vaccination for " + vaccineNames + " is due with "
 							+ vaccineReminderResponse.getDoctorName()
 							+ (vaccineReminderResponse.getLocationName() != ""
 									? ", " + vaccineReminderResponse.getLocationName() : "")
-							+ (vaccineReminderResponse.getClinicNumber() != ""
+							+ ((vaccineReminderResponse.getClinicNumber() != "" || vaccineReminderResponse.getClinicNumber() != null )
 									? ", " + vaccineReminderResponse.getClinicNumber() : "")
 							+ " on " + dateTime + ". Download Healthcoco App- " + patientAppBitLink;
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
@@ -779,134 +777,19 @@ public class PaediatricServiceImpl implements PaediatricService{
 			e.printStackTrace();
 		}
 	}
-	
-	
-/*
-	@Scheduled(cron = "0 30 6 * * ?", zone = "IST")
-	//@Scheduled(fixedDelay = 15000)
-	@Transactional
-	@Override
-	public void sendBabyVaccineReminder() {
-		System.out.println("IN baby vaccine reminder scheduler");
-		List<BabyVaccineReminderResponse> response = null;
 
-<<<<<<< HEAD
-		Aggregation aggregation = null;
-		AggregationOperation aggregationOperation = null;
-		
-		Criteria criteria = new Criteria("dueDate").gte(DPDoctorUtils.getStartTime(new Date())).lte(DPDoctorUtils.getEndTime(new Date()));
-=======
-	/*
-	 * @Scheduled(cron = "0 30 6 * * ?", zone = "IST") >>>>>>> a4614e5...
-	 * HAPPY-833 patient app changes in paeda moodule //@Scheduled(fixedDelay =
-	 * 15000)
-	 * 
-	 * @Transactional
-	 * 
-	 * @Override public void sendBabyVaccineReminder() {
-	 * List<BabyVaccineReminderResponse> response = null;
-	 * 
-	 * Aggregation aggregation = null; AggregationOperation aggregationOperation
-	 * = null;
-	 * 
-	 * Criteria criteria = new
-	 * Criteria("dueDate").gte(DPDoctorUtils.getStartTime(new
-	 * Date())).lte(DPDoctorUtils.getEndTime(new Date()));
-	 * 
-	 * try { ProjectionOperation projectList = new ProjectionOperation(
-	 * Fields.from(Fields.field("patientName", "$patient.firstName"),
-	 * Fields.field("doctorName", "$doctor.firstName"),
-	 * Fields.field("locationName", "$location.locationName"),
-	 * Fields.field("vaccines", "$vaccines")));
-	 * 
-	 * aggregationOperation = new CustomAggregationOperation(new
-	 * BasicDBObject("$group", new BasicDBObject("_id", new BasicDBObject("day",
-	 * "$day").append("month", "$month").append("year", "$year")
-	 * .append("patientId", "$patientId")) .append("doctorName", new
-	 * BasicDBObject("$first", "$doctorName")) .append("locationName", new
-	 * BasicDBObject("$first", "$locationName")) .append("patientName", new
-	 * BasicDBObject("$first", "$patientName")) .append("vaccines", new
-	 * BasicDBObject("$push", "$vaccines"))));
-	 * 
-	 * 
-	 * aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl",
-	 * "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-	 * Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
-	 * Aggregation.unwind("patient"), Aggregation.lookup("location_cl",
-	 * "locationId", "_id", "location"), Aggregation.unwind("location"),
-	 * Aggregation.lookup("vaccine_cl", "_id", "_id", "vaccines"),
-	 * Aggregation.unwind("vaccines"), Aggregation.match(criteria),
-	 * projectList.and("dueDate").extractDayOfMonth().as("day").and("dueDate").
-	 * extractMonth()
-	 * .as("month").and("dueDate").extractYear().as("year").and("dueDate").
-	 * extractWeek() .as("week"), aggregationOperation);
-	 * 
-	 * AggregationResults<BabyVaccineReminderResponse> aggregationResults =
-	 * mongoTemplate.aggregate(aggregation, VaccineCollection.class,
-	 * BabyVaccineReminderResponse.class); response =
-	 * aggregationResults.getMappedResults();
-	 * 
-	 * // TODO: handle exception e.printStackTrace(); }
-	 * 
-	 * }
-	 * 
 
-		try {
-			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("patientName", "$patient.firstName"),
-							Fields.field("doctorName", "$doctor.firstName"),
-							Fields.field("locationName", "$location.locationName"),
-							Fields.field("vaccines", "$vaccines")));
-			
-			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("_id",
-							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
-									.append("patientId", "$patientId"))
-											.append("doctorName", new BasicDBObject("$first", "$doctorName"))
-											.append("locationName", new BasicDBObject("$first", "$locationName"))
-											.append("patientName", new BasicDBObject("$first", "$patientName"))
-											.append("vaccines", new BasicDBObject("$push", "$vaccines"))));
-			
-			
-			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-					Aggregation.unwind("doctor"), Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
-					Aggregation.unwind("patient"), Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-					Aggregation.unwind("location"), Aggregation.lookup("vaccine_cl", "_id", "_id", "vaccines"),
-					Aggregation.unwind("vaccines"), Aggregation.match(criteria),
-					projectList.and("dueDate").extractDayOfMonth().as("day").and("dueDate").extractMonth()
-							.as("month").and("dueDate").extractYear().as("year").and("dueDate").extractWeek()
-							.as("week"),
-					aggregationOperation);
-			
-			//System.out.println(aggregation);
-			AggregationResults<BabyVaccineReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					VaccineCollection.class, BabyVaccineReminderResponse.class);
-			response = aggregationResults.getMappedResults();
-			
-			//System.out.println(" response :: " + response);
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
-
-	}
-
->>>>>>> Stashed changes*/
-	
 	@Async
 	@Transactional
-	private void sendVaccinationMessage(String userId)
-	{
-		UserDeviceCollection userDeviceCollection =userDeviceRepository.findByDeviceId(userId);
-		if(userDeviceCollection != null)
-		{
-			UserCollection userCollection = userRepository.findOne(new ObjectId(userId));
+	private void sendVaccinationMessage(String userId) {
+		UserDeviceCollection userDeviceCollection = userDeviceRepository.findByDeviceId(userId);
+		if (userDeviceCollection != null) {
+			UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
 			if (userCollection != null && userCollection.getMobileNumber() != null) {
 
-			
+				String message = "Your vaccines can now be tracked on Healthcoco App. Download Healthcoco App- "
+						+ patientAppBitLink;
 
-				String message = "Your vaccines can now be tracked on Healthcoco App. Download Healthcoco App- " + patientAppBitLink;
-				
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 				smsTrackDetail.setType("Vaccination_SMS");
@@ -928,6 +811,30 @@ public class PaediatricServiceImpl implements PaediatricService{
 
 		}
 	}
+
+	@Override
+	@Transactional
+	public Boolean updateOldPatientData() {
+		Boolean status = false;
+		List<VaccineCollection> vaccineCollections = vaccineRepository.findAll();
+		for (VaccineCollection vaccineCollection : vaccineCollections) {
+			if (vaccineCollection.getVaccineId() != null) {
+				MasterBabyImmunizationCollection babyImmunizationCollection = masterBabyImmunizationRepository
+						.findById(vaccineCollection.getVaccineId()).orElse(null);
+				if (babyImmunizationCollection != null) {
+					vaccineCollection.setName(babyImmunizationCollection.getName());
+					vaccineCollection.setDuration(babyImmunizationCollection.getDuration());
+					vaccineCollection.setPeriodTime(babyImmunizationCollection.getPeriodTime());
+					vaccineCollection.setLongName(babyImmunizationCollection.getLongName());
+					vaccineCollection = vaccineRepository.save(vaccineCollection);
+				}
+
+			}
+			status = true;
+		}
+		return status;
+	}
+
 	
 	
 	@Override
@@ -939,7 +846,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		try {
 			if(birthAchievement.getId() != null)
 			{
-				birthAchievementCollection = birthAchievementRepository.findOne(new ObjectId(birthAchievement.getId()));
+				birthAchievementCollection = birthAchievementRepository.findById(new ObjectId(birthAchievement.getId())).orElse(null);
 			}
 			else
 			{
@@ -973,7 +880,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		BirthAchievement response = null;
 		BirthAchievementCollection birthAchievementCollection = null;
 		try {
-			birthAchievementCollection = birthAchievementRepository.findOne(new ObjectId(id));
+			birthAchievementCollection = birthAchievementRepository.findById(new ObjectId(id)).orElse(null);
 			if (birthAchievementCollection != null) {
 				response = new BirthAchievement();
 				BeanUtil.map(birthAchievementCollection, response);
@@ -1008,7 +915,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						 Aggregation.sort(new Sort(Direction.ASC, "id")),
-						 Aggregation.skip((page) * size),
+						 Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1043,7 +950,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 			}
 		}
 
-		vaccineRepository.save(vaccineCollections);
+		vaccineRepository.saveAll(vaccineCollections);
 		status = true;
 		return status;
 	}

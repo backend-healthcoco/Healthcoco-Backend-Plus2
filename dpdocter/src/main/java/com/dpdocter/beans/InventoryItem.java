@@ -1,4 +1,4 @@
-package com.dpdocter.beans;
+ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.DrugTypePlacement;
@@ -141,8 +141,8 @@ public class InventoryItem extends GenericCollection {
 
 	public void setItemType(String itemType) {
 		this.itemType = itemType;
-		
 	}
+
 	public String getDrugType() {
 		return drugType;
 	}

@@ -1370,4 +1370,15 @@ public class PrescriptionApi {
 		response.setData(removeDuplicateDrugs);
 		return response;
 	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.UPDATE_PRESCRIPTION_DRUG)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.UPDATE_PRESCRIPTION_DRUG, notes = PathProxy.PrescriptionUrls.UPDATE_PRESCRIPTION_DRUG)
+	public Response<Boolean> updatePrescriptionDrugType() {
+		
+		Boolean removeDuplicateDrugs = prescriptionServices.updatePrescriptionDrugType();
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(removeDuplicateDrugs);
+		return response;
+	}
 }

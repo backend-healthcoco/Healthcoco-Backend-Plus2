@@ -10,36 +10,39 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "drug_dosage_cl")
 public class DrugDosageCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String dosage;
+	@Field
+	private String dosage;
 
-    @Field
-    private List<Long> dosageTime;
-    
-    @Field
-    private ObjectId doctorId;
+	@Field
+	private List<Long> dosageTime;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId doctorId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private ObjectId hospitalId;
 
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private Boolean discarded = false;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	@Field
+	private Integer quantity = 0;
 
-    public String getDosage() {
+	public ObjectId getId() {
+		return id;
+	}
+
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
+
+	public String getDosage() {
 		return dosage;
 	}
 
@@ -56,36 +59,44 @@ public class DrugDosageCollection extends GenericCollection {
 	}
 
 	public ObjectId getDoctorId() {
-	return doctorId;
-    }
+		return doctorId;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
 
 	@Override
 	public String toString() {

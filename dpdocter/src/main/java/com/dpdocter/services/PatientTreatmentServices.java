@@ -32,19 +32,19 @@ public interface PatientTreatmentServices {
 	TreatmentServiceCost deleteServiceCost(String treatmentServiceId, String doctorId, String locationId,
 			String hospitalId, Boolean discarded);
 
-	List<?> getServices(String type, String range, int page, int size, String doctorId, String locationId,
+	List<?> getServices(String type, String range, long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded);
 
 	PatientTreatmentResponse changePatientTreatmentStatus(String treatmentId, String doctorId, String locationId,
 			String hospitalId, Treatment treatment);
 
-	List<PatientTreatmentResponse> getPatientTreatments(int page, int size, String doctorId, String locationId,
+	List<PatientTreatmentResponse> getPatientTreatments(long page, int size, String doctorId, String locationId,
 			String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded,
 			Boolean inHistory, String status);
 
 	List<PatientTreatment> getPatientTreatmentByIds(List<ObjectId> treatmentId, ObjectId visitId);
 
-	public List<PatientTreatmentResponse> getPatientTreatmentByPatientId(int page, int size, String doctorId,
+	public List<PatientTreatmentResponse> getPatientTreatmentByPatientId(long page, int size, String doctorId,
 			String locationId, String hospitalId, String patientId, String updatedTime, Boolean discarded,
 			Boolean inHistory, String status);
 

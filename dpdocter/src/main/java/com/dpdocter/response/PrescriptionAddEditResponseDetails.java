@@ -3,10 +3,11 @@ package com.dpdocter.response;
 import java.util.Date;
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrescriptionAddEditResponseDetails extends GenericCollection {

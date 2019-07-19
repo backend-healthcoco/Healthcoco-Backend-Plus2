@@ -120,7 +120,7 @@ public class LoginServiceImpl implements LoginService {
 			Criteria criteria = new Criteria("userName").is(request.getUsername());
 			Query query = new Query();
 			query.addCriteria(criteria);
-			UserCollection userCollection = mongoTemplate.findOne(query, UserCollection.class);
+			UserCollection userCollection = mongoTemplate.findById(query, UserCollection.class);
 
 			if (userCollection == null) {
 				logger.warn(login);
@@ -198,9 +198,11 @@ public class LoginServiceImpl implements LoginService {
 									DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 							.getMappedResults();
 					if (doctorClinicProfileLookupResponses == null || doctorClinicProfileLookupResponses.isEmpty()) {
-						logger.warn("None of your clinic is active or you don't have login access");
-						throw new BusinessException(ServiceError.NotAuthorized,
-								"None of your clinic is active or you don't have login access");
+
+						logger.warn("None of your clinic is active");
+						// user.setUserState(UserState.NOTACTIVATED);
+						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active");
+
 					}
 					if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
 						List<Hospital> hospitals = new ArrayList<Hospital>();
@@ -285,8 +287,7 @@ public class LoginServiceImpl implements LoginService {
 									hospital.setHospitalUId(hospitalCollection.getHospitalUId());
 									hospitals.add(hospital);
 								} else {
-									Hospital hospital = checkHospitalId
-											.get(locationCollection.getHospitalId().toString());
+									Hospital hospital = checkHospitalId.get(locationCollection.getHospitalId().toString());
 									hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
 									hospital.setHospitalUId(hospitalCollection.getHospitalUId());
 									checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
@@ -299,7 +300,7 @@ public class LoginServiceImpl implements LoginService {
 
 						if (doctorCollection.getSpecialities() != null) {
 							List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository
-									.findAll(doctorCollection.getSpecialities());
+									.findAllById(doctorCollection.getSpecialities());
 							List<String> specialities = (List<String>) CollectionUtils.collect(specialityCollections,
 									new BeanToPropertyValueTransformer("superSpeciality"));
 							user.setSpecialities(specialities);
@@ -454,15 +455,14 @@ public class LoginServiceImpl implements LoginService {
 	public List<RegisteredPatientDetails> loginPatientByOtp(LoginPatientRequest request) {
 		List<RegisteredPatientDetails> response = null;
 		try {
-			Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber()).and("userState")
-					.is("USERSTATECOMPLETE");
+			Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber()).and("userState").is("USERSTATECOMPLETE");
 			Query query = new Query();
 			query.addCriteria(criteria);
 			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
 			if (userCollections != null && !userCollections.isEmpty()) {
 				for (UserCollection userCollection : userCollections) {
 					if (userCollection.getEmailAddress() != null) {
-						if (!DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
+						if(!userCollection.getEmailAddress().equalsIgnoreCase(userCollection.getUserName()) && !DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
 							Boolean verifyOTPResponse = false;
 							if (!verifyOTPResponse) {
 								verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(),
@@ -493,7 +493,7 @@ public class LoginServiceImpl implements LoginService {
 
 						}
 
-					}else {
+					} else {
 
 						RegisteredPatientDetails user = new RegisteredPatientDetails();
 						if (!DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
@@ -506,34 +506,34 @@ public class LoginServiceImpl implements LoginService {
 									throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 								}
 							}
-						}
-						PatientCollection patientCollection = patientRepository
-								.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
-						if (patientCollection != null) {
-							Patient patient = new Patient();
-							BeanUtil.map(patientCollection, patient);
-							BeanUtil.map(patientCollection, user);
-							patient.setPatientId(patientCollection.getUserId().toString());
-							user.setPatient(patient);
-						}
-						BeanUtil.map(userCollection, user);
-						user.setUserNutritionSubscriptions(addUserNutritionSubscriptionResponse(userCollection));
-						user.setUserId(userCollection.getId().toString());
+							PatientCollection patientCollection = patientRepository
+									.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null,
+											null);
+							if (patientCollection != null) {
+								Patient patient = new Patient();
+								BeanUtil.map(patientCollection, patient);
+								BeanUtil.map(patientCollection, user);
+								patient.setPatientId(patientCollection.getUserId().toString());
+								user.setPatient(patient);
+							}
+							BeanUtil.map(userCollection, user);
+							user.setUserNutritionSubscriptions(addUserNutritionSubscriptionResponse(userCollection));
+							user.setUserId(userCollection.getId().toString());
 
-						if (response == null)
-							response = new ArrayList<RegisteredPatientDetails>();
-						response.add(user);
+							if (response == null)
+								response = new ArrayList<RegisteredPatientDetails>();
+							response.add(user);
 
-					
-						
+						}
 					}
 				}
 			} else {
-				Boolean verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(), request.getOtpNumber());
+				boolean verifyOTPResponse = otpService.verifyOTP(request.getMobileNumber(), request.getOtpNumber());
 				if (!verifyOTPResponse) {
 					logger.warn(loginPatient);
-					throw new BusinessException(ServiceError.InvalidInput, "Invalid Mobile Number ");
+					throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 				}
+
 			}
 		} catch (BusinessException be) {
 			logger.error(be);
@@ -619,7 +619,7 @@ public class LoginServiceImpl implements LoginService {
 			Criteria criteria = new Criteria("userName").is(request.getUsername());
 			Query query = new Query();
 			query.addCriteria(criteria);
-			UserCollection userCollection = mongoTemplate.findOne(query, UserCollection.class);
+			UserCollection userCollection = mongoTemplate.findById(query, UserCollection.class);
 
 			if (userCollection == null) {
 				return response;
@@ -658,6 +658,7 @@ public class LoginServiceImpl implements LoginService {
 		return response;
 	}
 
+
 	@Override
 	public DoctorLoginPin AddEditLoginPin(DoctorLoginPin request) {
 		DoctorLoginPin response = null;
@@ -665,7 +666,7 @@ public class LoginServiceImpl implements LoginService {
 		DoctorLoginPinCollection olddoctorLoginPinCollection = null;
 
 		try {
-			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "invalid DoctorId");
 			}

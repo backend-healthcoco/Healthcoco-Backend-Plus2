@@ -38,7 +38,7 @@ public class TemplateCollection extends GenericCollection {
 	private List<TemplateItem> items;
 
 	@Field
-	private Boolean isDefault = true;
+	private Boolean isDefault = false;
 
 	public ObjectId getId() {
 		return id;

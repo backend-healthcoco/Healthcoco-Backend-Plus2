@@ -23,24 +23,24 @@ public interface ESMasterService {
     Response<Reference> searchReference(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm);
 
-    List<DiseaseListResponse> searchDisease(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    List<DiseaseListResponse> searchDisease(String range, long page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm);
 
     List<BloodGroup> searchBloodGroup();
 
-    List<Profession> searchProfession(String searchTerm, String updatedTime, int page, int size);
+    List<Profession> searchProfession(String searchTerm, String updatedTime, long page, int size);
 
     Boolean add();
 
-    List<ProfessionalMembership> searchProfessionalMembership(String searchTerm, String updatedTime, int page, int size);
+    List<ProfessionalMembership> searchProfessionalMembership(String searchTerm, String updatedTime, long page, int size);
 
-    List<EducationInstitute> searchEducationInstitute(String searchTerm, String updatedTime, int page, int size);
+    List<EducationInstitute> searchEducationInstitute(String searchTerm, String updatedTime, long page, int size);
 
-    List<EducationQualification> searchEducationQualification(String searchTerm, String updatedTime, int page, int size);
+    List<EducationQualification> searchEducationQualification(String searchTerm, String updatedTime, long page, int size);
 
-    List<MedicalCouncil> searchMedicalCouncil(String searchTerm, String updatedTime, int page, int size);
+    List<MedicalCouncil> searchMedicalCouncil(String searchTerm, String updatedTime, long page, int size);
 
-    List<Speciality> searchSpeciality(String searchTerm, String updatedTime, int page, int size);
+    List<Speciality> searchSpeciality(String searchTerm, String updatedTime, long page, int size);
 
     void addEditDisease(ESDiseasesDocument esDiseasesDocument);
 

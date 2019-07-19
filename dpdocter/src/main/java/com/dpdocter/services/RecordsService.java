@@ -29,7 +29,7 @@ public interface RecordsService {
 
 	List<Records> searchRecords(RecordsSearchRequest request);
 
-	List<Records> getRecords(int page, int size, String doctorId, String hospitalId, String locationId,
+	List<Records> getRecords(long page, int size, String doctorId, String hospitalId, String locationId,
 			String patientId, String updatedTime, boolean isOTPVerified, boolean discarded, boolean inHistory);
 
 	List<Records> getRecordsByIds(List<ObjectId> recordIds, ObjectId visitId);
@@ -76,7 +76,7 @@ public interface RecordsService {
 	UserRecords getUserRecordById(String recordId);
 
 	Response<Object> getUserRecordsByuserId(String patientId, String doctorId, String locationId, String hospitalId,
-			int page, int size, String updatedTime, Boolean discarded);
+			long page, int size, String updatedTime, Boolean discarded);
 
 	UserAllowanceDetails getUserRecordAllowance(String userId, String mobileNumber);
 
@@ -88,11 +88,11 @@ public interface RecordsService {
 
 	RecordsFile uploadUserRecord(FormDataBodyPart file, MyFiileRequest request);
 
-	List<Records> getRecordsByDoctorId(String doctorId, int page, int size, String updatedTime, Boolean discarded);
+	List<Records> getRecordsByDoctorId(String doctorId, long page, int size, String updatedTime, Boolean discarded);
 
 	public Boolean updateShareWithPatient(String recordId);
 
 	Integer getUserRecordsByuserIdCount(String patientId, String doctorId, String locationId, String hospitalId,
-			int page, int size, String updatedTime, Boolean discarded);
+			long page, int size, String updatedTime, Boolean discarded);
 
 }

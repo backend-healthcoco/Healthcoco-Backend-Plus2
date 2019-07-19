@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -35,6 +36,7 @@ import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
 import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.enums.LocaleType;
+import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.RankingCountParatmeter;
 import com.dpdocter.enums.ReplyType;
 import com.dpdocter.enums.Resource;
@@ -98,7 +100,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 	@Autowired
 	private ESUserLocaleRepository esUserLocaleRepository;
 	
-	@Scheduled(cron = "0 0/30 2 * * SAT", zone = "IST")
+	@Scheduled(cron = "0 0/30 2 * * MON,WED,FRI", zone = "IST")
 	@Transactional
 	@Override
 	public void calculateRankingOfResources() {
@@ -126,9 +128,9 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 					Aggregation.lookup("search_request_to_pharmacy_cl", "_id", "localeId", "indirectSearchRequestToPharmacy"),
 					
 					Aggregation.lookup("search_request_to_pharmacy_cl", "_id", "localeId", "responseFromPharmacy"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$responseFromPharmacy").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$responseFromPharmacy").append("preserveNullAndEmptyArrays", true))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 						    new BasicDBObject("genericMedicineCount", new BasicDBObject(
 						        "$cond", new BasicDBObject(
 						          "if", new BasicDBObject("$eq", Arrays.asList("$isGenericMedicineAvailable", true)))
@@ -145,7 +147,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 									        .append("then", 1)
 									        .append("else", 0))))),
 										
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 						    new BasicDBObject("_id", new BasicDBObject("localeId","$localeId"))
 						    .append("localeId", new BasicDBObject("$first","$localeId"))
 						    .append("genericMedicineCount", new BasicDBObject("$first","$genericMedicineCount"))
@@ -155,9 +157,9 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("responseCount", new BasicDBObject("$sum","$responseCount")))),
 					
 					Aggregation.lookup("recommendation_cl", "localeId", "localeId", "likes"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$likes").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$likes").append("preserveNullAndEmptyArrays", true))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 						    new BasicDBObject("genericMedicineCount", "$genericMedicineCount")
 						    .append("localeId", "$localeId")
 						    .append("resourceName", "$resourceName")
@@ -170,7 +172,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 									        .append("then", 1)
 									        .append("else", 0))))),
 										
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 						    new BasicDBObject("_id", new BasicDBObject("localeId","$localeId"))
 						    .append("localeId", new BasicDBObject("$first","$localeId"))
 						    .append("genericMedicineCount", new BasicDBObject("$first","$genericMedicineCount"))
@@ -180,7 +182,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("responseCount", new BasicDBObject("$first","$responseCount"))
 						    .append("noOfLikes", new BasicDBObject("$sum","$noOfLikes")))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 						    new BasicDBObject("localeId", "$localeId")
 						    .append("genericMedicineCount", "$genericMedicineCount")
 						    .append("resourceName", "$resourceName")
@@ -188,7 +190,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("responseCount", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$responseCount", responseCount)), noOfResponseFromPharmacyWeightageInPercentage)))
 						    .append("noOfLikes", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$noOfLikes", likesCount)), noOfLikesToPharmacyWeightageInPercentage))))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("localeId","$localeId"))
 						    .append("localeId", new BasicDBObject("$first","$localeId"))
 						    .append("genericMedicineCount", new BasicDBObject("$first","$genericMedicineCount"))
@@ -197,7 +199,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("responseCount", new BasicDBObject("$first","$responseCount"))
 						    .append("noOfLikes", new BasicDBObject("$first","$noOfLikes")))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 						    new BasicDBObject("localeId", "$localeId")
 						    .append("genericMedicineCount", "$genericMedicineCount")
 						    .append("resourceName", "$resourceName")
@@ -206,7 +208,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("noOfLikes", "$noOfLikes")
 						    .append("totalCount", new BasicDBObject("$add", Arrays.asList("$genericMedicineCount", "$requestCount", "$responseCount", "$noOfLikes"))))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("localeId","$localeId"))
 							.append("genericMedicineCount", new BasicDBObject("$first","$genericMedicineCount"))
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
@@ -215,7 +217,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("noOfLikes", new BasicDBObject("$first","$noOfLikes"))
 						    .append("totalCount", new BasicDBObject("$first","$totalCount")))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("totalCount", -1))));
+					new CustomAggregationOperation(new Document("$sort", new BasicDBObject("totalCount", -1))));
 					
 			List<PharmacyWithRankingDetailResponse> pharmacyWithRankingDetailResponses = mongoTemplate.aggregate(aggregation, LocaleCollection.class, PharmacyWithRankingDetailResponse.class).getMappedResults();
 			int i = 1;
@@ -241,12 +243,12 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 				
 				rankingCountCollection = rankingCountRepository.save(rankingCountCollection);
 				
-				LocaleCollection localeCollection = localeRepository.findOne(rankingCountCollection.getResourceId());
+				LocaleCollection localeCollection = localeRepository.findById(rankingCountCollection.getResourceId()).orElse(null);
 				localeCollection.setLocaleRankingCount(rankingCountCollection.getRankingCount());
 				localeCollection.setUpdatedTime(new Date());
 				localeCollection = localeRepository.save(localeCollection);
 				
-				ESUserLocaleDocument esUserLocaleDocument = esUserLocaleRepository.findOne(detailResponse.getLocaleId());
+				ESUserLocaleDocument esUserLocaleDocument = esUserLocaleRepository.findById(detailResponse.getLocaleId()).orElse(null);
 				esUserLocaleDocument.setLocaleRankingCount(localeCollection.getLocaleRankingCount());
 				esUserLocaleRepository.save(esUserLocaleDocument);
 			}		
@@ -274,9 +276,9 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 					Aggregation.match(new Criteria("isDoctorListed").is(true)),
 					
 					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "prescription"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$prescription").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$prescription").append("preserveNullAndEmptyArrays", true))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 						    new BasicDBObject("doctor.experience.experience", new BasicDBObject(
 						        "$cond", new BasicDBObject(
 						          "if", new BasicDBObject("$eq", Arrays.asList("$experience.period", DoctorExperienceUnit.MONTH.name())))
@@ -285,6 +287,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
 						    .append("isActive", "$user.isActive")
+						    .append("packageType", "$packageType")
 						    .append("resourceName", "$user.firstName")
 						    .append("rxCount", new BasicDBObject(
 							        "$cond", new BasicDBObject(
@@ -292,19 +295,20 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 									        .append("then", 1)
 									        .append("else", 0))))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 						    new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
 						    .append("experienceInYear", new BasicDBObject("$first","$doctor.experience.experience"))
 						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
 						    .append("locationId", new BasicDBObject("$first","$locationId"))
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
 						    .append("isActive", new BasicDBObject("$first","$isActive"))
+						    .append("packageType", new BasicDBObject("$first","$packageType"))
 						    .append("rxCount", new BasicDBObject("$sum","$rxCount")))),
 					
 					Aggregation.lookup("patient_cl", "doctorId", "doctorId", "patient"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 						    new BasicDBObject("experienceInYear", new BasicDBObject(
 							        "$cond", new BasicDBObject(
 									          "if", new BasicDBObject("$gte", Arrays.asList("$experienceInYear", 20)))
@@ -322,6 +326,11 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
 						    .append("resourceName", "$resourceName")
+						    .append("pointIfAdvance", new BasicDBObject(
+							        "$cond", new BasicDBObject(
+									          "if", new BasicDBObject("$eq", Arrays.asList("$packageType", PackageType.ADVANCE.getType())))
+									        .append("then", 20)
+									        .append("else", 0)))
 						    .append("pointIfActive", new BasicDBObject(
 							        "$cond", new BasicDBObject(
 									          "if", new BasicDBObject("$eq", Arrays.asList("$isActive", true)))
@@ -334,25 +343,27 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 									        .append("then", 1)
 									        .append("else", 0))))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 						    new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
 						    .append("experienceInYear", new BasicDBObject("$first","$experienceInYear"))
 						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
 						    .append("locationId", new BasicDBObject("$first","$locationId"))
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
 						    .append("pointIfActive", new BasicDBObject("$first","$pointIfActive"))
+						    .append("pointIfAdvance", new BasicDBObject("$first","$pointIfAdvance"))
 						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
 						    .append("patientCount", new BasicDBObject("$sum","$patientCount")))),
 					
 					Aggregation.lookup("recommendation_cl", "doctorId", "doctorId", "likes"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$likes").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$likes").append("preserveNullAndEmptyArrays", true))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 						    new BasicDBObject("experienceInYear", "$experienceInYear")
 						    .append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
 						    .append("resourceName", "$resourceName")
 						    .append("pointIfActive", "$pointIfActive")
+						    .append("pointIfAdvance", "$pointIfAdvance")
 						    .append("rxCount", "$rxCount")
 						    .append("patientCount", "$patientCount")
 						    .append("patientCountAdditionalIncrement", new BasicDBObject(
@@ -366,40 +377,43 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 									        .append("then", 1)
 									        .append("else", 0))))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 						    new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
 						    .append("experienceInYear", new BasicDBObject("$first","$experienceInYear"))
 						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
 						    .append("locationId", new BasicDBObject("$first","$locationId"))
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
 						    .append("pointIfActive", new BasicDBObject("$first","$pointIfActive"))
+						    .append("pointIfAdvance", new BasicDBObject("$first","$pointIfAdvance"))
 						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
 						    .append("patientCount", new BasicDBObject("$first","$patientCount"))
 						    .append("patientCountAdditionalIncrement", new BasicDBObject("$first","$patientCountAdditionalIncrement"))
 						    .append("noOfLikes", new BasicDBObject("$sum","$noOfLikes")))),				
 					
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 						    new BasicDBObject("experienceInYear", "$experienceInYear")
 						    	.append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
 						    .append("resourceName", "$resourceName")
 						    .append("pointIfActive", "$pointIfActive")
+						    .append("pointIfAdvance", "$pointIfAdvance")
 						    .append("rxCount", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$rxCount", rxCount)), noOfRxByDoctorWeightageInPercentage)))
 						    .append("patientCount", new BasicDBObject("$add", Arrays.asList("$patientCountAdditionalIncrement", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$patientCount", patientCount)), noOfPatientsOfDoctorWeightageInPercentage)))))
 						    .append("noOfLikes", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$noOfLikes", likesCount)), noOfLikesToDoctorWeightageInPercentage))))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
 						    .append("experienceInYear", new BasicDBObject("$first","$experienceInYear"))
 						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
 						    .append("locationId", new BasicDBObject("$first","$locationId"))
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
 						    .append("pointIfActive", new BasicDBObject("$first","$pointIfActive"))
+						    .append("pointIfAdvance", new BasicDBObject("$first","$pointIfAdvance"))
 						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
 						    .append("patientCount", new BasicDBObject("$first","$patientCount"))
 						    .append("noOfLikes", new BasicDBObject("$first","$noOfLikes")))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$project",
+					new CustomAggregationOperation(new Document("$project",
 						    new BasicDBObject("experienceInYear", "$experienceInYear")
 						    .append("doctorId", "$doctorId")
 						    .append("locationId", "$locationId")
@@ -409,9 +423,9 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("rxCount", "$rxCount")
 						    .append("patientCount", "$patientCount")
 						    .append("noOfLikes", "$noOfLikes")
-						    .append("totalCount", new BasicDBObject("$add", Arrays.asList("$experienceInYear", "$rxCount", "$patientCount", "$noOfLikes", "$pointIfActive"))))),
+						    .append("totalCount", new BasicDBObject("$add", Arrays.asList("$experienceInYear", "$rxCount", "$patientCount", "$noOfLikes", "$pointIfActive", "$pointIfAdvance"))))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
 						    .append("experienceInYear", new BasicDBObject("$first","$experienceInYear"))
 						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
@@ -425,7 +439,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("noOfLikes", new BasicDBObject("$first","$noOfLikes"))
 						    .append("totalCount", new BasicDBObject("$first","$totalCount")))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("totalCount", -1))));
+					new CustomAggregationOperation(new Document("$sort", new BasicDBObject("totalCount", -1))));
 			
 			List<DoctorWithRankingDetailResponse> doctorWithRankingDetailResponses = mongoTemplate.aggregate(aggregation, DoctorClinicProfileCollection.class, DoctorWithRankingDetailResponse.class).getMappedResults();
 			int i = 1;
@@ -452,6 +466,8 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_LIKES, detailResponse.getNoOfLikes()));
 					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_PATIENTS, detailResponse.getPatientCount()));
 					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_RX, detailResponse.getRxCount()));
+					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.POINT_FOR_PAYMENT_TYPE, detailResponse.getPointIfAdvance()));
+					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.POINT_IF_ACTIVE, detailResponse.getPointIfActive()));
 					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.RECOMMENDATIONS, 0));
 					rankingCountCollection.setParameters(parameters);
 					
@@ -476,7 +492,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 	}
 
 	@Override
-	public List<RankingCount> getDoctorsRankingCount(int page, int size) {
+	public List<RankingCount> getDoctorsRankingCount(long page, int size) {
 		List<RankingCount> response = null;
 		try {
 			Aggregation aggregation = null;

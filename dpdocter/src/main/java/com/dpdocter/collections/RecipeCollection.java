@@ -317,7 +317,7 @@ public class RecipeCollection extends GenericCollection {
 		this.equivalentMeasurements = equivalentMeasurements;
 	}
 
-	public boolean getVerified() {
+	public boolean isVerified() {
 		return verified;
 	}
 

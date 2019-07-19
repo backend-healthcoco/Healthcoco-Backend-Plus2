@@ -19,22 +19,22 @@ public class ESOfferDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String title;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String description;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String promoCode;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private String colorCode;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> type;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> productType;
 
 	@Field(type = FieldType.Object)
@@ -46,7 +46,7 @@ public class ESOfferDocument {
 	@Field(type = FieldType.Boolean)
 	private Boolean discarded = false;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private ImageURLResponse titleImage;
 
 	@Field(type = FieldType.Date)
@@ -64,16 +64,16 @@ public class ESOfferDocument {
 	@Field(type = FieldType.Date)
 	private Integer noOfTime = 0;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> drugIds;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> treatmentServiceIds;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> nutritionPlanIds;
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> subscriptionPlanIds;
 
 	@Field(type = FieldType.Date)

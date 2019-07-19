@@ -57,13 +57,13 @@ public class TrendingServiceImpl implements TrendingService {
 		TrendingResponse response = null;
 		try {
 			response = new TrendingResponse();
-			TrendingCollection trendingCollection = trendingRepository.findOne(new ObjectId(id));
+			TrendingCollection trendingCollection = trendingRepository.findById(new ObjectId(id)).orElse(null);
 			BeanUtil.map(trendingCollection, response);
 			if (response != null) {
 				if (!DPDoctorUtils.anyStringEmpty(trendingCollection.getBlogId())) {
 					response.setBlog(blogService.getBlog(response.getBlogId(), null, null));
 				} else if (!DPDoctorUtils.anyStringEmpty(trendingCollection.getOfferId())) {
-					OfferCollection offerCollection = offerRepository.findOne(trendingCollection.getOfferId());
+					OfferCollection offerCollection = offerRepository.findById(trendingCollection.getOfferId()).orElse(null);
 					Offer offer = new Offer();
 					BeanUtil.map(offerCollection, offer);
 					response.setOffer(offer);
@@ -96,7 +96,7 @@ public class TrendingServiceImpl implements TrendingService {
 		OfferResponse response = null;
 		try {
 
-			OfferCollection offerCollection = offerRepository.findOne(new ObjectId(id));
+			OfferCollection offerCollection = offerRepository.findById(new ObjectId(id)).orElse(null);
 			response = new OfferResponse();
 
 			BeanUtil.map(offerCollection, response);

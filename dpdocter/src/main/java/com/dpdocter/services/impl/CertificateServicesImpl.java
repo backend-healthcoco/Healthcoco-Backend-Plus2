@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,11 +28,16 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.dpdocter.beans.CertificateTemplate;
 import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.Fields;
+import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.collections.CertificateTemplateCollection;
 import com.dpdocter.collections.ConsentFormCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.FONTSTYLE;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -42,8 +48,6 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.ConsentFormCollectionLookupResponse;
 import com.dpdocter.services.CertificatesServices;
 import com.dpdocter.services.FileManager;
-import com.dpdocter.services.JasperReportService;
-import com.dpdocter.services.PatientVisitService;
 import com.mongodb.BasicDBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -67,11 +71,11 @@ public class CertificateServicesImpl implements CertificatesServices {
 	@Autowired
 	private PrintSettingsRepository printSettingsRepository;
 	
-	@Autowired
-	private PatientVisitService patientVisitService;
-	
-	@Autowired
-	private JasperReportService jasperReportService;
+//	@Autowired
+//	private PatientVisitService patientVisitService;
+//	
+//	@Autowired
+//	private JasperReportService jasperReportService;
 	
 	@Value(value = "${jasper.print.patient.certificate.fileName}")
 	private String patientCertificateFileName;
@@ -111,11 +115,11 @@ public class CertificateServicesImpl implements CertificatesServices {
 				certificateTemplateCollection.setCreatedTime(new Date());
 				if(DPDoctorUtils.anyStringEmpty(request.getDoctorId())) certificateTemplateCollection.setCreatedBy("ADMIN");
 				else {
-					UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+					UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 					certificateTemplateCollection.setCreatedBy(userCollection.getTitle() +" "+userCollection.getFirstName());
 				}
 			}else {
-				CertificateTemplateCollection oldCertificateTemplateCollection = certificateTemplateRepository.findOne(new ObjectId(request.getId()));
+				CertificateTemplateCollection oldCertificateTemplateCollection = certificateTemplateRepository.findById(new ObjectId(request.getId())).orElse(null);
 				certificateTemplateCollection.setUpdatedTime(new Date());
 				certificateTemplateCollection.setCreatedBy(oldCertificateTemplateCollection.getCreatedBy());
 				certificateTemplateCollection.setCreatedTime(oldCertificateTemplateCollection.getCreatedTime());
@@ -149,7 +153,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 	}
 
 	@Override
-	public List<CertificateTemplate> getCertificateTemplates(int page, int size, String doctorId, String locationId, Boolean discarded, List<String> specialities, String type) {
+	public List<CertificateTemplate> getCertificateTemplates(long page, int size, String doctorId, String locationId, Boolean discarded, List<String> specialities, String type) {
 		List<CertificateTemplate> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -185,7 +189,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 	public Boolean discardCertificateTemplates(String templateId, Boolean discarded) {
 		Boolean response = false;
 		try {
-			CertificateTemplateCollection certificateTemplateCollection = certificateTemplateRepository.findOne(new ObjectId(templateId));
+			CertificateTemplateCollection certificateTemplateCollection = certificateTemplateRepository.findById(new ObjectId(templateId)).orElse(null);
 			if(certificateTemplateCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "No Certificate template is found with this Id");
 			}
@@ -212,11 +216,11 @@ public class CertificateServicesImpl implements CertificatesServices {
 				consentFormCollection.setCreatedTime(new Date());
 				if(DPDoctorUtils.anyStringEmpty(request.getDoctorId())) consentFormCollection.setCreatedBy("ADMIN");
 				else {
-					UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+					UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 					consentFormCollection.setCreatedBy(userCollection.getTitle() +" "+userCollection.getFirstName());
 				}
 			}else {
-				ConsentFormCollection oldConsentFormCollection = consentFormRepository.findOne(new ObjectId(request.getId()));
+				ConsentFormCollection oldConsentFormCollection = consentFormRepository.findById(new ObjectId(request.getId())).orElse(null);
 				consentFormCollection.setUpdatedTime(new Date());
 				consentFormCollection.setCreatedBy(oldConsentFormCollection.getCreatedBy());
 				consentFormCollection.setCreatedTime(oldConsentFormCollection.getCreatedTime());
@@ -278,7 +282,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 	}
 
 	@Override
-	public List<ConsentForm> getPatientCertificates(int page, int size, String patientId, String doctorId,
+	public List<ConsentForm> getPatientCertificates(long page, int size, String patientId, String doctorId,
 			String locationId, String hospitalId, boolean discarded, String updatedTime, String type) {
 		List<ConsentForm> response = null;
 		try {
@@ -299,7 +303,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 			
 			if (!discarded)criteria.and("discarded").is(discarded);
 			
-			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 					.append("doctorId", "$doctorId")
 					.append("locationId", "$locationId")
 					.append("hospitalId", "$hospitalId")
@@ -316,7 +320,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 					.append("updatedTime", "$updatedTime")
 					.append("createdBy", "$createdBy")));
 			
-			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 					.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 					.append("locationId", new BasicDBObject("$first", "$locationId"))
 					.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -338,7 +342,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
+							new CustomAggregationOperation(new Document("$redact",
 									new BasicDBObject("$cond", new BasicDBObject("if", 
 											new BasicDBObject("$eq", 
 													Arrays.asList("$patient.locationId", "$locationId")))
@@ -353,7 +357,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
+							new CustomAggregationOperation(new Document("$redact",
 									new BasicDBObject("$cond", new BasicDBObject("if", 
 											new BasicDBObject("$eq", 
 													Arrays.asList("$patient.locationId", "$locationId")))
@@ -388,7 +392,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 	public ConsentForm deletePatientCertificate(String certificateId, Boolean discarded) {
 		ConsentForm response = null;
 		try {
-			ConsentFormCollection consentFormCollection = consentFormRepository.findOne(new ObjectId(certificateId));
+			ConsentFormCollection consentFormCollection = consentFormRepository.findById(new ObjectId(certificateId)).orElse(null);
 			if(consentFormCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "No patient certificate is found with this Id");
 			}
@@ -413,7 +417,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 					Aggregation.newAggregation(Aggregation.match(new Criteria("_id").is(new ObjectId(certificateId))),
 							Aggregation.lookup("patient_cl","patientId", "userId", "patientCollection"),
 							Aggregation.unwind("patientCollection"),
-							new CustomAggregationOperation(new BasicDBObject("$redact", 
+							new CustomAggregationOperation(new Document("$redact", 
 									new BasicDBObject("$cond",
 											new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patientCollection.locationId", "$locationId")))
 											.append("then", "$$KEEP")
@@ -426,6 +430,17 @@ public class CertificateServicesImpl implements CertificatesServices {
 				PatientCollection patient = consentFormCollection.getPatientCollection();
 //				UserCollection user = consentFormCollection.getPatientUser();
 
+				PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+						new ObjectId(consentFormCollection.getDoctorId()), new ObjectId(consentFormCollection.getLocationId()),
+								new ObjectId(consentFormCollection.getHospitalId()), ComponentType.ALL.getType());
+
+				if (printSettings == null) {
+					printSettings = new PrintSettingsCollection();
+					DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+					BeanUtil.map(defaultPrintSettings, printSettings);
+				}
+				
+				String header = createCertificateHeader(printSettings);
 				String htmlText = consentFormCollection.getTemplateHtmlText();
 				if(consentFormCollection.getInputElements() != null && !consentFormCollection.getInputElements().isEmpty()) {
 					for(Fields field : consentFormCollection.getInputElements()) {
@@ -442,7 +457,8 @@ public class CertificateServicesImpl implements CertificatesServices {
 				
 				if(!htmlText.startsWith("<html>"))htmlText = "<html>"+htmlText+"</html>";
 				if(!htmlText.endsWith("</html>"))htmlText = htmlText+"</html>";
-				htmlText = "<!DOCTYPE html PUBLIC \'-//W3C//DTD XHTML 1.0 Strict//EN\' \'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\'>" + htmlText;
+				htmlText = "<!DOCTYPE html PUBLIC \'-//W3C//DTD XHTML 1.0 Strict//EN\' \'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\'><html>" + header + htmlText+"</html>";
+				
 				
 				String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "CERTIFICATE-"+ new Date().getTime();
 				pdfName = pdfName.replaceAll("\\s+", "");
@@ -487,6 +503,74 @@ public class CertificateServicesImpl implements CertificatesServices {
 			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Certificate PDF");
 		}
 		return response;
+	}
+
+     private String createCertificateHeader(PrintSettingsCollection printSettings) {
+		String header = "";
+		
+		
+		if (printSettings != null) {
+			String headerLeftText = "", headerRightText = "", logoURL = "";
+			
+			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getCustomHeader()) {
+				if(printSettings.getHeaderSetup().getHeaderHtml() != null) {
+					header = printSettings.getHeaderSetup().getHeaderHtml();
+				}else {
+					if (printSettings.getHeaderSetup().getTopLeftText() != null)
+						for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
+							boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
+							boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
+							if (!DPDoctorUtils.anyStringEmpty(str.getText())) {
+								String text = str.getText();
+								if (isItalic)
+									text = "<i>" + text + "</i>";
+								if (isBold)
+									text = "<b>" + text + "</b>";
+
+								if (headerLeftText.isEmpty())
+									headerLeftText = "<span style='font-size:" + str.getFontSize() + "'>" + text
+											+ "</span>";
+								else
+									headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:"
+											+ str.getFontSize() + "'>" + text + "</span>";
+							}
+						}
+					if (printSettings.getHeaderSetup().getTopRightText() != null)
+						for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
+
+							boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
+							boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
+
+							if (!DPDoctorUtils.anyStringEmpty(str.getText())) {
+								String text = str.getText();
+								if (isItalic)
+									text = "<i>" + text + "</i>";
+								if (isBold)
+									text = "<b>" + text + "</b>";
+
+								if (headerRightText.isEmpty())
+									headerRightText = "<span style='font-size:" + str.getFontSize() + "'>" + text
+											+ "</span>";
+								else
+									headerRightText = headerRightText + "<br/>" + "<span style='font-size:"
+											+ str.getFontSize() + "'>" + text + "</span>";
+							}
+						}
+					
+					
+				}
+
+				if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getCustomHeader()
+						&& printSettings.getHeaderSetup().getCustomLogo() && printSettings.getClinicLogoUrl() != null) {
+					logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
+				}
+				
+				header = "<div style = 'width:100%;'> <div style='width:38%; display:inline-block;'>"+headerLeftText+"</div>"
+						+ "<div style='width:24%;display:inline-block;vertical-align: top;'><img style='width:50px;height:40px;' src='"+logoURL+"'/></div>"
+						+ "<div style='width:38%; display:inline-block;'>"+headerRightText+"</div></div>";
+			}
+		}
+		return header;
 	}
 
 //	private JasperReportResponse createJasper(ConsentFormCollectionLookupResponse consentFormCollection, PatientCollection patient,
@@ -579,5 +663,14 @@ public class CertificateServicesImpl implements CertificatesServices {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return recordPath;
+	}
+	
+	public boolean containsIgnoreCase(String str, List<String> list) {
+		if (list != null && !list.isEmpty())
+			for (String i : list) {
+				if (i.equalsIgnoreCase(str))
+					return true;
+			}
+		return false;
 	}
 }

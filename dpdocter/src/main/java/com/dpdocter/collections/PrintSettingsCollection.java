@@ -72,7 +72,7 @@ public class PrintSettingsCollection extends GenericCollection {
 	private String generalNotes;
 
 	@Field
-	private boolean isLab = false;
+	private Boolean isLab = false;
 
 	@Field
 	private Boolean isPidHasDate = true;
@@ -213,20 +213,20 @@ public class PrintSettingsCollection extends GenericCollection {
 		this.generalNotes = generalNotes;
 	}
 
-	public boolean getIsLab() {
-		return isLab;
-	}
-
-	public void setIsLab(boolean isLab) {
-		this.isLab = isLab;
-	}
-
 	public Boolean getIsPidHasDate() {
 		return isPidHasDate;
 	}
 
 	public void setIsPidHasDate(Boolean isPidHasDate) {
 		this.isPidHasDate = isPidHasDate;
+	}
+	
+	public Boolean getIsLab() {
+		return isLab;
+	}
+
+	public void setIsLab(Boolean isLab) {
+		this.isLab = isLab;
 	}
 
 	@Override

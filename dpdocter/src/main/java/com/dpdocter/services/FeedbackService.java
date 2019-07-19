@@ -39,7 +39,7 @@ public interface FeedbackService {
 	List<PatientFeedbackResponse> getPatientFeedbackList(FeedbackGetRequest request, String type);
 
 	List<DailyImprovementFeedbackResponse> getDailyImprovementFeedbackList(String prescriptionId, String doctorId,
-			String locationId, String hospitalId, int page, int size);
+			String locationId, String hospitalId, long page, int size);
 
 	PatientFeedbackResponse addPatientFeedbackReply(PatientFeedbackReplyRequest request);
 
