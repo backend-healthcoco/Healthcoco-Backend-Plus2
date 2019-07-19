@@ -16,6 +16,8 @@ public class ESRecipeResponse {
 
 	private MealQuantity quantity;
 
+	private String recipeDescription;
+
 	private List<EquivalentQuantities> equivalentMeasurements;
 
 	private List<RecipeItemResponse> ingredients;
@@ -228,6 +230,14 @@ public class ESRecipeResponse {
 
 	public void setCostType(LevelType costType) {
 		this.costType = costType;
+	}
+
+	public String getRecipeDescription() {
+		return recipeDescription;
+	}
+
+	public void setRecipeDescription(String recipeDescription) {
+		this.recipeDescription = recipeDescription;
 	}
 
 }

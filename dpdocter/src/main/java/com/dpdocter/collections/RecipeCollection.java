@@ -22,6 +22,9 @@ public class RecipeCollection extends GenericCollection {
 	private String name;
 
 	@Field
+	private String recipeDescription;
+
+	@Field
 	private MealQuantity quantity;
 
 	@Field
@@ -475,6 +478,14 @@ public class RecipeCollection extends GenericCollection {
 
 	public void setPlanIds(List<ObjectId> planIds) {
 		this.planIds = planIds;
+	}
+
+	public String getRecipeDescription() {
+		return recipeDescription;
+	}
+
+	public void setRecipeDescription(String recipeDescription) {
+		this.recipeDescription = recipeDescription;
 	}
 
 }

@@ -22,6 +22,9 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Text)
 	private String name;
 
+	@Field(type = FieldType.Text)
+	private String recipeDescription;
+
 	@Field(type = FieldType.Nested)
 	private MealQuantity quantity;
 
@@ -117,7 +120,7 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity carbohydreate;
-	
+
 	@Field(type = FieldType.Nested)
 	private MealQuantity fiber;
 
@@ -506,6 +509,13 @@ public class ESRecipeDocument {
 				+ lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", vitaminNutrients="
 				+ vitaminNutrients + ", mineralNutrients=" + mineralNutrients + ", otherNutrients=" + otherNutrients
 				+ ", nutrientValueAtRecipeLevel=" + nutrientValueAtRecipeLevel + "]";
+	}
+		public String getRecipeDescription() {
+		return recipeDescription;
+	}
+
+	public void setRecipeDescription(String recipeDescription) {
+		this.recipeDescription = recipeDescription;
 	}
 
 }
