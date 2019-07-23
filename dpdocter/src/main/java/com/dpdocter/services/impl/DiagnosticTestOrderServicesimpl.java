@@ -547,7 +547,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(orderId))),
 						Aggregation.lookup("user_cl", "userId", "_id", "user"),
 						new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
-//						new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+//						*new CustomAggregationOperation(new Document("$redact",new BasicDBObject("$cond",
 //								new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
 //								.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 						

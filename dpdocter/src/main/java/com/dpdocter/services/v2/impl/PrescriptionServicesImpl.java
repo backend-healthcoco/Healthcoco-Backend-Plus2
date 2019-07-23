@@ -777,9 +777,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),*/
 						/*Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"),*/
-						/*new CustomAggregationOperation(new BasicDBObject("$unwind",
+						/**new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),*/
-						/*new CustomAggregationOperation(new BasicDBObject("$unwind",
+						/**new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
 						new CustomAggregationOperation(
@@ -825,9 +825,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						/*Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),*/
 						/*Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"),*/
-					/*	new CustomAggregationOperation(new BasicDBObject("$unwind",
+					/*	*new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),*/
-						/*new CustomAggregationOperation(new BasicDBObject("$unwind",
+						/**new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),*/
 						/*new CustomAggregationOperation(
@@ -931,12 +931,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			
 			
 			/*Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					*new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 									.append("includeArrayIndex", "arrayIndex1"))),
 					Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
 					Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					*new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
 									.append("includeArrayIndex", "arrayIndex3"))),
 					new CustomAggregationOperation(
@@ -945,7 +945,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 											.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
 													"arrayIndex5"))),
 					projectList,
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					*new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
 									.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 									.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -979,9 +979,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					/*Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),*/
 					/*Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 					Aggregation.unwind("location"),*/
-				/*	new CustomAggregationOperation(new BasicDBObject("$unwind",
+				/*	*new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),*/
-					/*new CustomAggregationOperation(new BasicDBObject("$unwind",
+					/**new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 									true))),*/
 					/*new CustomAggregationOperation(

@@ -61,7 +61,7 @@ public class ESPatientDocument {
 	@Field(type = FieldType.Text)
 	private String mobileNumber;
 
-	@Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
 	private String profession;
 
 	@Field(type = FieldType.Text)
@@ -73,7 +73,7 @@ public class ESPatientDocument {
 	@Field(type = FieldType.Text)
 	private String hospitalId;
 
-	@Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
 	private String referredBy;
 
 	@Field(type = FieldType.Date)

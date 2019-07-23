@@ -19,7 +19,7 @@ public class ESDrugDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Keyword)
 	private String drugName;
 
 	@Field(type = FieldType.Text)
