@@ -105,6 +105,7 @@ public class LoginApi {
 		}
 		List<RegisteredPatientDetails> users = null;
 		if (!DPDoctorUtils.anyStringEmpty(request.getOtpNumber())) {
+			request.setMobileNumber(request.getCountryCode() + request.getMobileNumber());
 			users = loginService.loginPatientByOtp(request);
 		} else {
 			users = loginService.loginPatient(request);

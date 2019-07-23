@@ -192,9 +192,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 					OTPCollection otpCollection = new OTPCollection();
 					otpCollection.setCreatedTime(new Date());
 					otpCollection.setOtpNumber(OTP);
-					otpCollection.setMobileNumber(request.getMobileNumber());
-					otpCollection.setGeneratorId(request.getMobileNumber());
-					otpCollection.setCreatedBy(request.getMobileNumber());
+					otpCollection.setMobileNumber(request.getCountryCode() + request.getMobileNumber());
+					otpCollection.setGeneratorId(request.getCountryCode() + request.getMobileNumber());
+					otpCollection.setCreatedBy(request.getCountryCode() + request.getMobileNumber());
 					otpCollection = otpRepository.save(otpCollection);
 
 					flag = true;

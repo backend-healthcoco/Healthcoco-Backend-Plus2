@@ -2,6 +2,8 @@ package com.dpdocter.request;
 
 public class LoginPatientRequest {
 
+	private String countryCode = "+91";
+
 	private String mobileNumber;
 
 	private String otpNumber;
@@ -30,6 +32,14 @@ public class LoginPatientRequest {
 
 	public void setOtpNumber(String otpNumber) {
 		this.otpNumber = otpNumber;
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 	@Override
