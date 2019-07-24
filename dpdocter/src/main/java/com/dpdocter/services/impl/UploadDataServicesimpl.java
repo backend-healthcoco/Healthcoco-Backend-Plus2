@@ -23,6 +23,7 @@ import java.util.TimeZone;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FilenameUtils;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -361,7 +362,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			// for(DrugCollection drugCollection : drugCollections) {
 			//
 			// ESDrugDocument document =
-			// esDrugRepository.findOne(drugCollection.getId().toString());
+			// esDrugRepository.findById(drugCollection.getId().toString());
 			// if(document != null)esDrugRepository.delete(document);
 			// drugRepository.delete(drugCollection);
 			// }
@@ -390,7 +391,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			// treatmentServicesCollections) {
 			//
 			// ESTreatmentServiceDocument document =
-			// esTreatmentServiceRepository.findOne(treatmentServicesCollection.getId().toString());
+			// esTreatmentServiceRepository.findById(treatmentServicesCollection.getId().toString());
 			// if(document !=
 			// null)esTreatmentServiceRepository.delete(document.getId());
 			// treatmentServicesRepository.delete(treatmentServicesCollection);
@@ -415,10 +416,10 @@ public class UploadDataServicesimpl implements UploadDateService {
 					new Date(Long.parseLong("0")), new Sort(Direction.ASC, "createdTime"));
 			for (PatientCollection patientCollection : patientCollections) {
 
-				ESPatientDocument document = esPatientRepository.findOne(patientCollection.getId().toString());
+				ESPatientDocument document = esPatientRepository.findById(patientCollection.getId().toString()).orElse(null);
 				if (document != null)
 					esPatientRepository.delete(document);
-				userRepository.delete(patientCollection.getUserId());
+				userRepository.deleteById(patientCollection.getUserId());
 				patientRepository.delete(patientCollection);
 			}
 			
@@ -426,8 +427,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 //			List<PatientCollection> patientCollections = patientRepository.findByDoctorId(doctorObjectId,
 //					new Date(Long.parseLong("0")), new Sort(Direction.ASC, "createdTime"));
 //			for(PatientCollection patientCollection : patientCollections) {
-//				ESPatientDocument esPatientDocument = esPatientRepository.findOne(patientCollection.getId().toString());
-//				UserCollection user = userRepository.findOne(patientCollection.getUserId());
+//				ESPatientDocument esPatientDocument = esPatientRepository.findById(patientCollection.getId().toString());
+//				UserCollection user = userRepository.findById(patientCollection.getUserId());
 //				if(!DPDoctorUtils.anyStringEmpty(user.getMobileNumber()) && user.getMobileNumber().length()==12) {
 //					String mobileNumber = user.getMobileNumber().substring(2, 12);
 //					user.setMobileNumber(mobileNumber);
@@ -632,7 +633,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 
 			PatientRegistrationRequest request = null;
 			
@@ -931,7 +932,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			PrescriptionCollection prescriptionCollection = null;
 
 			Map<String, DrugType> drugTypesMap = new HashMap<String, DrugType>();
@@ -1217,7 +1218,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			doctors.put(drCollection.getFirstName().toLowerCase(), drCollection);
 
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
@@ -1287,7 +1288,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName,"i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -1392,7 +1393,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			doctors.put(drCollection.getFirstName(), drCollection);
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)),
@@ -1430,7 +1431,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName, "i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -1646,7 +1647,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			doctors.put(drCollection.getFirstName().toLowerCase(), drCollection);
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)),
@@ -1683,7 +1684,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName, "i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -1964,52 +1965,52 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 				patientVisitCollection.setAdminCreatedTime(patientVisitCollection.getCreatedTime());
 			}
-			patientVisitRepository.save(patientVisitCollections);
+			patientVisitRepository.saveAll(patientVisitCollections);
 
 			List<PatientTreatmentCollection> patientTreatmentCollections = patientTreamentRepository.findAll();
 			for (PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections) {
 
 				patientTreatmentCollection.setAdminCreatedTime(patientTreatmentCollection.getCreatedTime());
 			}
-			patientTreamentRepository.save(patientTreatmentCollections);
+			patientTreamentRepository.saveAll(patientTreatmentCollections);
 			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository.findAll();
 			for (ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
 
 				clinicalNotesCollection.setAdminCreatedTime(clinicalNotesCollection.getCreatedTime());
 			}
-			clinicalNotesRepository.save(clinicalNotesCollections);
+			clinicalNotesRepository.saveAll(clinicalNotesCollections);
 			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findAll();
 			for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 
 				prescriptionCollection.setAdminCreatedTime(prescriptionCollection.getCreatedTime());
 			}
-			prescriptionRepository.save(prescriptionCollections);
+			prescriptionRepository.saveAll(prescriptionCollections);
 			List<OTReportsCollection> otReportsCollections = otReportsRepository.findAll();
 			for (OTReportsCollection otReportsCollection : otReportsCollections) {
 
 				otReportsCollection.setAdminCreatedTime(otReportsCollection.getCreatedTime());
 			}
-			otReportsRepository.save(otReportsCollections);
+			otReportsRepository.saveAll(otReportsCollections);
 			List<DeliveryReportsCollection> deliveryReportsCollections = deliveryReportsRepository.findAll();
 			for (DeliveryReportsCollection deliveryReportsCollection : deliveryReportsCollections) {
 
 				deliveryReportsCollection.setAdminCreatedTime(deliveryReportsCollection.getCreatedTime());
 			}
-			deliveryReportsRepository.save(deliveryReportsCollections);
+			deliveryReportsRepository.saveAll(deliveryReportsCollections);
 
 			List<OPDReportsCollection> opdReportsCollections = opdReportsRepository.findAll();
 			for (OPDReportsCollection opdReportsCollection : opdReportsCollections) {
 
 				opdReportsCollection.setAdminCreatedTime(opdReportsCollection.getCreatedTime());
 			}
-			opdReportsRepository.save(opdReportsCollections);
+			opdReportsRepository.saveAll(opdReportsCollections);
 
 			List<IPDReportsCollection> ipdReportsCollections = ipdReportsRepository.findAll();
 			for (IPDReportsCollection ipdReportsCollection : ipdReportsCollections) {
 
 				ipdReportsCollection.setAdminCreatedTime(ipdReportsCollection.getCreatedTime());
 			}
-			ipdReportsRepository.save(ipdReportsCollections);
+			ipdReportsRepository.saveAll(ipdReportsCollections);
 
 			List<DoctorPatientInvoiceCollection> doctorPatientInvoiceCollections = doctorPatientInvoiceRepository
 					.findAll();
@@ -2017,21 +2018,21 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 				doctorPatientInvoiceCollection.setAdminCreatedTime(doctorPatientInvoiceCollection.getCreatedTime());
 			}
-			doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollections);
+			doctorPatientInvoiceRepository.saveAll(doctorPatientInvoiceCollections);
 
 			List<AdmitCardCollection> admitCardCollections = admitCardRepository.findAll();
 			for (AdmitCardCollection admitCardCollection : admitCardCollections) {
 
 				admitCardCollection.setAdminCreatedTime(admitCardCollection.getCreatedTime());
 			}
-			admitCardRepository.save(admitCardCollections);
+			admitCardRepository.saveAll(admitCardCollections);
 
 			List<DischargeSummaryCollection> dischargeSummaryCollections = dischargeSummaryRepository.findAll();
 			for (DischargeSummaryCollection dischargeSummaryCollection : dischargeSummaryCollections) {
 
 				dischargeSummaryCollection.setAdminCreatedTime(dischargeSummaryCollection.getCreatedTime());
 			}
-			dischargeSummaryRepository.save(dischargeSummaryCollections);
+			dischargeSummaryRepository.saveAll(dischargeSummaryCollections);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2056,7 +2057,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			
 			List<TreatmentServicesCollection> treatmentServicesCollections = null;
 
@@ -2126,7 +2127,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			doctors.put(drCollection.getFirstName().toLowerCase(), drCollection);
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)),
@@ -2166,7 +2167,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName,"i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -2321,7 +2322,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			doctors.put(drCollection.getFirstName().toLowerCase(), drCollection);
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationObjectId)),
@@ -2362,7 +2363,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								List<UserCollection> collections = mongoTemplate.aggregate(
 										Aggregation.newAggregation(
 												Aggregation.match(new Criteria("firstName").regex(drName,"i")),
-												new CustomAggregationOperation(new BasicDBObject("$redact",
+												new CustomAggregationOperation(new Document("$redact",
 														new BasicDBObject("$cond",
 																new BasicDBObject("if",
 																		new BasicDBObject("$eq",
@@ -2574,8 +2575,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			LocationCollection  locationCollection = locationRepository.findOne(locationObjectId);
-			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			LocationCollection  locationCollection = locationRepository.findById(locationObjectId).orElse(null);
+			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			DoctorPatientReceiptCollection doctorPatientReceiptCollection = null;
 
 			scanner = new Scanner(new File(UPLOAD_PAYMENTS_DATA_FILE));
@@ -2853,8 +2854,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 				hospitalObjectId = new ObjectId(hospitalId);
 			
 			
-			UserCollection userCollection = userRepository.findOne(doctorObjectId);
-			LocationCollection locationCollection = locationRepository.findOne(locationObjectId);
+			UserCollection userCollection = userRepository.findById(doctorObjectId).orElse(null);
+			LocationCollection locationCollection = locationRepository.findById(locationObjectId).orElse(null);
 			
 			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 			AmazonS3 s3client = new AmazonS3Client(credentials);
@@ -3073,7 +3074,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 		Boolean response = false;
 		try {
 			List<TreatmentServiceUpdateResponse> treatmentServiceUpdateResponses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$group",  
+					Aggregation.newAggregation(new CustomAggregationOperation(new Document("$group",  
 							new BasicDBObject("_id", new BasicDBObject("name", "$name")
 									                .append("locationId", "$locationId"))
 							.append("count", new BasicDBObject("$sum", 1))
@@ -3128,10 +3129,10 @@ public class UploadDataServicesimpl implements UploadDateService {
 									}
 								}
 								
-							 ESTreatmentServiceDocument esTreatmentServiceDocument = 	eSTreatmentServiceRepository.findOne(serviceId.toString());
+							 ESTreatmentServiceDocument esTreatmentServiceDocument = 	eSTreatmentServiceRepository.findById(serviceId.toString()).orElse(null);
 							 if(esTreatmentServiceDocument != null)eSTreatmentServiceRepository.delete(esTreatmentServiceDocument);
 							 
-							 TreatmentServicesCollection servicesCollection = treatmentServicesRepository.findOne(serviceId);
+							 TreatmentServicesCollection servicesCollection = treatmentServicesRepository.findById(serviceId).orElse(null);
 							 if(servicesCollection != null)treatmentServicesRepository.delete(servicesCollection);
 							}
 						

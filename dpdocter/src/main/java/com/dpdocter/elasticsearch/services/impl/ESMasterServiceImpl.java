@@ -367,7 +367,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	   if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("profession", searchTerm));
 	   
        SearchQuery searchQuery = null;
-       if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, "profession")).build();
+       if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of(page, size, Direction.ASC, "profession")).build();
        else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("profession").order(SortOrder.ASC)).build();
        
 	   professionDocuments = elasticsearchTemplate.queryForList(searchQuery, ESProfessionDocument.class);
@@ -428,7 +428,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("membership", searchTerm));
 		   
 	    SearchQuery searchQuery = null;
-	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, "membership")).build();
+	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of(page, size, Direction.ASC, "membership")).build();
 	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("membership").order(SortOrder.ASC)).build();
 	       
 	    professionalMembershipDocuments = elasticsearchTemplate.queryForList(searchQuery, ESProfessionalMembershipDocument.class);
@@ -454,7 +454,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
 		   
 	    SearchQuery searchQuery = null;
-	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, "name")).build();
+	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of(page, size, Direction.ASC, "name")).build();
 	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("name").order(SortOrder.ASC)).build();
 	       
 	    educationInstituteDocuments = elasticsearchTemplate.queryForList(searchQuery, ESEducationInstituteDocument.class);
@@ -480,7 +480,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm));
 		   
 	    SearchQuery searchQuery = null;
-	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, "name")).build();
+	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of(page, size, Direction.ASC, "name")).build();
 	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("name").order(SortOrder.ASC)).build();
 	       
 	    educationQualificationDocuments = elasticsearchTemplate.queryForList(searchQuery, ESEducationQualificationDocument.class);
@@ -506,7 +506,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("medicalCouncil", searchTerm));
 		   
 	    SearchQuery searchQuery = null;
-	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, "medicalCouncil")).build();
+	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of(page, size, Direction.ASC, "medicalCouncil")).build();
 	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("medicalCouncil").order(SortOrder.ASC)).build();
 	       
 	    medicalCouncilDocuments = elasticsearchTemplate.queryForList(searchQuery, ESMedicalCouncilDocument.class);
@@ -532,7 +532,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("superSpeciality", searchTerm));
 		   
 	    SearchQuery searchQuery = null;
-	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, "superSpeciality")).build();
+	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of(page, size, Direction.ASC, "superSpeciality")).build();
 	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("superSpeciality").order(SortOrder.ASC)).build();
 	       
 	    specialityDocuments = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);

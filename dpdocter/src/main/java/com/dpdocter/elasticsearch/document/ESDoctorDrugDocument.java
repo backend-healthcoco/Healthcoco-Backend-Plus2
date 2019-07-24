@@ -20,25 +20,25 @@ public class ESDoctorDrugDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String, index = FieldIndex.not_analyzed)
+    @Field(type = FieldType.Text, index = FieldIndex.not_analyzed)
     private String drugName;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String explanation;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String drugCode;
 
     @Field(type = FieldType.Nested)
     private DrugType drugType;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String doctorId;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String locationId;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String hospitalId;
 
     @Field(type = FieldType.Boolean)
@@ -47,22 +47,22 @@ public class ESDoctorDrugDocument {
     @Field(type = FieldType.Date)
     private Date updatedTime = new Date();
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String companyName;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String packSize;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String MRP;
 
-    @MultiField(mainField = @Field(type = FieldType.String))
+    @MultiField(mainField = @Field(type = FieldType.Text))
     private List<String> genericCodes;
 
     @Field(type = FieldType.Nested)
     private Duration duration;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String dosage;
 
     @MultiField(mainField = @Field(type = FieldType.Long))
@@ -71,7 +71,7 @@ public class ESDoctorDrugDocument {
     @Field(type = FieldType.Nested)
     private List<DrugDirection> direction;
 
-    @MultiField(mainField = @Field(type = FieldType.String))
+    @MultiField(mainField = @Field(type = FieldType.Text))
     private List<String> categories;
     
     @Field(type = FieldType.Long)

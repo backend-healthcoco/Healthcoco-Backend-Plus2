@@ -10,5 +10,5 @@ import com.dpdocter.collections.AdviceCollection;
 public interface AdviceRepository
 		extends MongoRepository<AdviceCollection, ObjectId>, PagingAndSortingRepository<AdviceCollection, ObjectId> {
 	@Query("{'id':?0,'discarded':false}")
-	AdviceCollection findOne(ObjectId adviceId);
+	AdviceCollection findById(ObjectId adviceId);
 }

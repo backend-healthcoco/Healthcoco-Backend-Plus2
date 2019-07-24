@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -106,7 +107,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		try {
 			if(growthChart.getId() != null)
 			{
-				growthChartCollection = growthChartRepository.findOne(new ObjectId(growthChart.getId()));
+				growthChartCollection = growthChartRepository.findById(new ObjectId(growthChart.getId())).orElse(null);
 			}
 			else
 			{
@@ -140,7 +141,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		GrowthChart response = null;
 		GrowthChartCollection growthChartCollection = null;
 		try {
-			growthChartCollection = growthChartRepository.findOne(new ObjectId(id));
+			growthChartCollection = growthChartRepository.findById(new ObjectId(id)).orElse(null);
 			if (growthChartCollection != null) {
 				response = new GrowthChart();
 				BeanUtil.map(growthChartCollection, response);
@@ -205,7 +206,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		Boolean response = false;
 		GrowthChartCollection growthChartCollection = null;
 		try {
-			growthChartCollection = growthChartRepository.findOne(new ObjectId(id));
+			growthChartCollection = growthChartRepository.findById(new ObjectId(id)).orElse(null);
 			if (growthChartCollection != null) {
 				growthChartCollection.setDiscarded(discarded);
 				growthChartRepository.save(growthChartCollection);
@@ -238,7 +239,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		try {
 			if(request.getId() != null)
 			{
-				vaccineCollection = vaccineRepository.findOne(new ObjectId(request.getId()));
+				vaccineCollection = vaccineRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			else
 			{
@@ -272,7 +273,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		try {
 			for (VaccineRequest request : requests) {
 				if (request.getId() != null) {
-					vaccineCollection = vaccineRepository.findOne(new ObjectId(request.getId()));
+					vaccineCollection = vaccineRepository.findById(new ObjectId(request.getId())).orElse(null);
 				} else {
 					vaccineCollection = new VaccineCollection();
 				}
@@ -286,7 +287,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 				{
 					if(request.getDoctorId() != null)
 					{
-						UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+						UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 						if(userCollection != null)
 						{
 							vaccineCollection.setCreatedBy(userCollection.getFirstName());
@@ -315,7 +316,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		try {
 			for (String id : request.getIds()) {
 				if (id != null) {
-					vaccineCollection = vaccineRepository.findOne(new ObjectId(id));
+					vaccineCollection = vaccineRepository.findById(new ObjectId(id)).orElse(null);
 					vaccineCollection.setStatus(request.getStatus());
 					vaccineCollection = vaccineRepository.save(vaccineCollection);
 					response = true;
@@ -335,7 +336,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		VaccineResponse response = null;
 		VaccineCollection vaccineCollection = null;
 		try {
-			vaccineCollection = vaccineRepository.findOne(new ObjectId(id));
+			vaccineCollection = vaccineRepository.findById(new ObjectId(id)).orElse(null);
 			if (vaccineCollection != null) {
 				response = new VaccineResponse();
 				BeanUtil.map(vaccineCollection, response);
@@ -379,7 +380,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 				criteria.and("patientId").is(new ObjectId(patientId));
 			}
 		/*	
-			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			AggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", new BasicDBObject("dueDate", "$vaccineResponses.dueDate"))
 							.append("vaccineResponses", new BasicDBObject("$push", "$vaccineResponses")).append("dueDate",
 									new BasicDBObject("$first", "$diagnosticTest.dueDate"))));
@@ -388,7 +389,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 			responses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(
 							Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$vaccineBrand").append("preserveNullAndEmptyArrays",
 											true))),
 							Aggregation.match(criteria), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
@@ -423,7 +424,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						 Aggregation.skip((page) * size),
+						 Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria)
@@ -462,11 +463,11 @@ public class PaediatricServiceImpl implements PaediatricService{
 					.aggregate(
 							Aggregation.newAggregation(
 									Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new CustomAggregationOperation(new Document("$unwind",
 											new BasicDBObject("path", "$vaccineBrand")
 													.append("preserveNullAndEmptyArrays", true))),
 									Aggregation.lookup("master_baby_immunization_cl", "vaccineId", "_id", "vaccine"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new CustomAggregationOperation(new Document("$unwind",
 											new BasicDBObject("path", "$vaccine").append("preserveNullAndEmptyArrays",
 													true))),
 									Aggregation.match(criteria),
@@ -526,7 +527,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 							Fields.field("createdBy", "$createdBy")));
 
 			
-			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			AggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", new BasicDBObject("duration", "$vaccine.duration"))
 							.append("vaccineBrandAssociationResponses", new BasicDBObject("$push", "$vaccineBrandAssociationResponses")).append("name",
 									new BasicDBObject("$first", "$vaccine.duration"))
@@ -536,10 +537,10 @@ public class PaediatricServiceImpl implements PaediatricService{
 			responses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(
 							Aggregation.lookup("vaccine_brand_cl", "vaccineBrandId", "_id", "vaccineBrand"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$vaccineBrand").append("preserveNullAndEmptyArrays",
 											true))),Aggregation.lookup("master_baby_immunization_cl", "vaccineId", "_id", "vaccine"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$vaccine").append("preserveNullAndEmptyArrays",
 											true))),
 							Aggregation.match(criteria),aggregationOperation, Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
@@ -563,7 +564,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		try {
 			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId));
 			
-			AggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			AggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", new BasicDBObject("duration", "$duration")).
 					append("vaccines",
 							new BasicDBObject("$push", "$vaccine")).append("duration",
@@ -610,7 +611,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 							Fields.field("clinicNumber", "$location.clinicNumber"),
 							Fields.field("vaccines", "$vaccines")));
 			
-			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
 									.append("patientId", "$patientId"))
@@ -708,7 +709,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 							Fields.field("clinicNumber", "$location.clinicNumber"),
 							Fields.field("vaccines", "$vaccines")));
 			
-			aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year")
 									.append("patientId", "$patientId"))
@@ -870,7 +871,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 	private void sendVaccinationMessage(String userId) {
 		UserDeviceCollection userDeviceCollection = userDeviceRepository.findByDeviceId(userId);
 		if (userDeviceCollection != null) {
-			UserCollection userCollection = userRepository.findOne(new ObjectId(userId));
+			UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
 			if (userCollection != null && userCollection.getMobileNumber() != null) {
 
 				String message = "Your vaccines can now be tracked on Healthcoco App. Download Healthcoco App- "
@@ -908,7 +909,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		try {
 			if(birthAchievement.getId() != null)
 			{
-				birthAchievementCollection = birthAchievementRepository.findOne(new ObjectId(birthAchievement.getId()));
+				birthAchievementCollection = birthAchievementRepository.findById(new ObjectId(birthAchievement.getId())).orElse(null);
 			}
 			else
 			{
@@ -942,7 +943,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 		BirthAchievement response = null;
 		BirthAchievementCollection birthAchievementCollection = null;
 		try {
-			birthAchievementCollection = birthAchievementRepository.findOne(new ObjectId(id));
+			birthAchievementCollection = birthAchievementRepository.findById(new ObjectId(id)).orElse(null);
 			if (birthAchievementCollection != null) {
 				response = new BirthAchievement();
 				BeanUtil.map(birthAchievementCollection, response);
@@ -977,7 +978,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						 Aggregation.sort(new Sort(Direction.ASC, "id")),
-						 Aggregation.skip((page) * size),
+						 Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1012,7 +1013,7 @@ public class PaediatricServiceImpl implements PaediatricService{
 			}
 		}
 
-		vaccineRepository.save(vaccineCollections);
+		vaccineRepository.saveAll(vaccineCollections);
 		status = true;
 		return status;
 	}

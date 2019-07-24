@@ -152,7 +152,7 @@ public class SMSServicesImpl implements SMSServices {
 		try {
 			if(smsTrackDetail.getLocationId() != null)
 			{
-				locationCollection = locationRepository.findOne(smsTrackDetail.getLocationId());
+				locationCollection = locationRepository.findById(smsTrackDetail.getLocationId()).orElse(null);
 			}
 			
 			Message message = new Message();
@@ -347,7 +347,7 @@ public class SMSServicesImpl implements SMSServices {
 			if (doctorObjectId == null) {
 				if (size > 0)
 					smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationObjectId, hospitalObjectId,
-							type, new PageRequest(page, size, Direction.DESC, "createdTime"));
+							type, PageRequest.of(page, size, Direction.DESC, "createdTime"));
 				else
 					smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationObjectId, hospitalObjectId,
 							type, new Sort(Sort.Direction.DESC, "createdTime"));
@@ -355,7 +355,7 @@ public class SMSServicesImpl implements SMSServices {
 				if (size > 0)
 					smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorObjectId,
 							locationObjectId, hospitalObjectId, type,
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
+							PageRequest.of(page, size, Direction.DESC, "createdTime"));
 				else
 					smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorObjectId,
 							locationObjectId, hospitalObjectId, type, new Sort(Sort.Direction.DESC, "createdTime"));
@@ -384,7 +384,7 @@ public class SMSServicesImpl implements SMSServices {
 		for (ObjectId doctorId : doctorIds) {
 			DoctorSMSResponse doctorSMSResponse = new DoctorSMSResponse();
 			int count = smsTrackRepository.getDoctorsSMSCount(doctorId, locationId, hospitalId);
-			UserCollection user = userRepository.findOne(doctorId);
+			UserCollection user = userRepository.findById(doctorId).orElse(null);
 			doctorSMSResponse.setDoctorId(doctorId.toString());
 			if (user != null)
 				doctorSMSResponse.setDoctorName(user.getFirstName());
@@ -428,7 +428,7 @@ public class SMSServicesImpl implements SMSServices {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "smsDetails.sentTime")),
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+						Aggregation.skip((long)(page) * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "smsDetails.sentTime")));

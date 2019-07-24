@@ -1,17 +1,6 @@
 package com.dpdocter.services;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
-
-import com.dpdocter.response.AmountDueAnalyticsDataResponse;
-import com.dpdocter.response.AnalyticResponse;
-import com.dpdocter.response.DoctorVisitAnalyticResponse;
-import com.dpdocter.response.ExpenseCountResponse;
-import com.dpdocter.response.IncomeAnalyticsDataResponse;
-import com.dpdocter.response.InvoiceAnalyticsDataDetailResponse;
-import com.dpdocter.response.PaymentAnalyticsDataResponse;
-import com.dpdocter.response.PaymentDetailsAnalyticsDataResponse;
 
 @Service
 public interface AnalyticsService {

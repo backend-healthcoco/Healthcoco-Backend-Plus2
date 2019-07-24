@@ -140,7 +140,7 @@ public class VideoServiceImpl implements VideoService {
 				if (doctorCollection.getSpecialities() != null || !doctorCollection.getSpecialities().isEmpty()) {
 					specialities = new ArrayList<>();
 					for (ObjectId specialityId : doctorCollection.getSpecialities()) {
-						SpecialityCollection specialityCollection = specialityRepository.findOne(specialityId);
+						SpecialityCollection specialityCollection = specialityRepository.findById(specialityId).orElse(null);
 						if (specialityCollection != null) {
 							speciality = specialityCollection.getSpeciality();
 							specialities.add(speciality);

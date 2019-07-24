@@ -162,7 +162,7 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 				if (size > 0)
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-							Aggregation.skip((page) * size), Aggregation.limit(size));
+							Aggregation.skip((long)(page) * size), Aggregation.limit(size));
 				else
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
@@ -170,7 +170,7 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 				if (size > 0)
 					aggregation = Aggregation.newAggregation(
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-							Aggregation.skip((page) * size), Aggregation.limit(size));
+							Aggregation.skip((long)(page) * size), Aggregation.limit(size));
 				else
 					aggregation = Aggregation
 							.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));

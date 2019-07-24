@@ -73,7 +73,7 @@ public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 		ClinicContactUsCollection clinicContactUsCollection = new ClinicContactUsCollection();
 
 		try {
-			UserCollection userCollection = userRepository.findOne(new ObjectId(clinicContactUs.getDoctorId()));
+			UserCollection userCollection = userRepository.findById(new ObjectId(clinicContactUs.getDoctorId())).orElse(null);
 
 			if (userCollection != null)
 				doctorCollection = doctorRepository.findByUserId(userCollection.getId());
@@ -115,7 +115,7 @@ public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 		if (contactId != null && !(contactId.isEmpty())) {
 			try {
 				ClinicContactUsCollection clinicContactUsCollection = clinicContactUsRepository
-						.findOne(new ObjectId(contactId));
+						.findById(new ObjectId(contactId)).orElse(null);
 				if (clinicContactUsCollection != null) {
 					clinicContactUsCollection.setContactState(contactState);
 					clinicContactUsCollection = clinicContactUsRepository.save(clinicContactUsCollection);
@@ -147,7 +147,7 @@ public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 				if (size > 0)
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-							Aggregation.skip((page) * size), Aggregation.limit(size));
+							Aggregation.skip((long)(page) * size), Aggregation.limit(size));
 				else
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
@@ -155,7 +155,7 @@ public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 				if (size > 0)
 					aggregation = Aggregation.newAggregation(
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-							Aggregation.skip((page) * size), Aggregation.limit(size));
+							Aggregation.skip((long)(page) * size), Aggregation.limit(size));
 				else
 					aggregation = Aggregation
 							.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));

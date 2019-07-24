@@ -371,7 +371,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				BeanUtil.map(labTestDocument, labTest);
 				if (labTestDocument.getTestId() != null) {
 					ESDiagnosticTestDocument diagnosticTestDocument = esDiagnosticTestRepository
-							.findOne(labTestDocument.getTestId());
+							.findById(labTestDocument.getTestId()).orElse(null);
 					if (diagnosticTestDocument != null) {
 						DiagnosticTest test = new DiagnosticTest();
 						BeanUtil.map(diagnosticTestDocument, test);
@@ -527,7 +527,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size))
+						.withPageable(PageRequest.of(page, size))
 						.withSort(SortBuilders.fieldSort("testName").order(SortOrder.ASC)).build();
 
 			else
@@ -631,7 +631,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		if (!DPDoctorUtils.anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of(page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
@@ -639,7 +639,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC))
-						.withPageable(new PageRequest(page, size)).build();
+						.withPageable(PageRequest.of(page, size)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
@@ -672,14 +672,14 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		if (!DPDoctorUtils.anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of(page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size))
+						.withPageable(PageRequest.of(page, size))
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -699,12 +699,10 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			boolQueryBuilder
-					.must(QueryBuilders.orQuery(
-							QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")),
-							QueryBuilders.termQuery("locationId", locationId)))
-					.must(QueryBuilders.orQuery(
-							QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")),
-							QueryBuilders.termQuery("hospitalId", hospitalId)));
+					.must(QueryBuilders.boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")))
+							.should(QueryBuilders.termQuery("locationId", locationId)).minimumShouldMatch(1))
+					.must(QueryBuilders.boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
+							.should(QueryBuilders.termQuery("hospitalId", hospitalId)).minimumShouldMatch(1));
 		}
 
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
@@ -722,14 +720,14 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		if (!DPDoctorUtils.anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of(page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size))
+						.withPageable(PageRequest.of(page, size))
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)

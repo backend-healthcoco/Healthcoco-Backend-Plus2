@@ -57,7 +57,7 @@ public class EmailTrackServiceImpl implements EmailTackService {
 		    }
 		    Aggregation aggregation = null;
 		    if(size > 0){
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "sentTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "sentTime")), Aggregation.skip((long)(page) * size), Aggregation.limit(size));
 			}else{
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "sentTime")));
 			}

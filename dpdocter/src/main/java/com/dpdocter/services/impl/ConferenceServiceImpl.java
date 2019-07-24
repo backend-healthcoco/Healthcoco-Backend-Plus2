@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -115,7 +116,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 	public SessionTopic getTopic(String id) {
 		SessionTopic response = null;
 		try {
-			SessionTopicCollection sessionTopicCollection = sessionTopicRepository.findOne(new ObjectId(id));
+			SessionTopicCollection sessionTopicCollection = sessionTopicRepository.findById(new ObjectId(id)).orElse(null);
 			response = new SessionTopic();
 			if (sessionTopicCollection != null) {
 				BeanUtil.map(sessionTopicCollection, response);
@@ -170,7 +171,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 	public SpeakerProfile getSpeakerProfile(String id) {
 		SpeakerProfile response = null;
 		try {
-			SpeakerProfileCollection speakerProfileCollection = speakerProfileRepository.findOne(new ObjectId(id));
+			SpeakerProfileCollection speakerProfileCollection = speakerProfileRepository.findById(new ObjectId(id)).orElse(null);
 			response = new SpeakerProfile();
 
 			BeanUtil.map(speakerProfileCollection, response);
@@ -230,7 +231,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 				criteria.and("schedule.toTime").lte(toTime);
 
 			}
-			CustomAggregationOperation groupFirst = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupFirst = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
@@ -249,11 +250,11 @@ public class ConferenceServiceImpl implements ConferenceService {
 			if (size > 0) {
 				aggregation = Aggregation
 						.newAggregation(
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$topicIds").append("preserveNullAndEmptyArrays",
 												true))),
 								Aggregation.lookup("session_topic_cl", "topicIds", "_id", "topics"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays",
 												true))),
 								groupFirst, Aggregation.match(criteria),
@@ -262,11 +263,11 @@ public class ConferenceServiceImpl implements ConferenceService {
 			} else {
 				aggregation = Aggregation
 						.newAggregation(
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$topicIds").append("preserveNullAndEmptyArrays",
 												true))),
 								Aggregation.lookup("session_topic_cl", "topicIds", "_id", "topics"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays",
 												true))),
 								groupFirst, Aggregation.match(criteria),
@@ -296,7 +297,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 	public DoctorConferenceSession getConferenceSession(String id) {
 		DoctorConferenceSession response = null;
 		try {
-			CustomAggregationOperation groupFirst = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupFirst = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
@@ -323,7 +324,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 					Fields.field("speakers.profileImage", "$speaker.profileImage"),
 					Fields.field("speakers.role", "$speakers.role"), Fields.field("createdTime", "$createdTime"),
 					Fields.field("updatedTime", "$updatedTime"), Fields.field("createdBy", "$createdBy")));
-			CustomAggregationOperation groupThird = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupThird = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
@@ -341,16 +342,16 @@ public class ConferenceServiceImpl implements ConferenceService {
 			response = mongoTemplate.aggregate(Aggregation.newAggregation(
 
 					Aggregation.match(new Criteria("_id").is(new ObjectId(id)).and("discarded").is(false)),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$topicIds").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.lookup("session_topic_cl", "topicIds", "_id", "topics"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$topics").append("preserveNullAndEmptyArrays", true))),
 					groupFirst,
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$speakers").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.lookup("speaker_profile_cl", "$speakers.speakerId", "_id", "speaker"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$speaker").append("preserveNullAndEmptyArrays", true))),
 					projectListThird, groupThird),
 
@@ -383,7 +384,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 	public List<SessionDateResponse> getConferenceSessionDate(String conferenceId) {
 		List<SessionDateResponse> response = null;
 		try {
-			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id",
 							new BasicDBObject("day", "$day").append("month", "$month").append("year", "$year"))
 									.append("onDate", new BasicDBObject("$first", "$onDate"))
@@ -444,7 +445,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 				criteria = criteria.orOperator(new Criteria("address.city").regex("^" + searchTerm, "i"),
 						new Criteria("address.city").regex("^" + searchTerm));
 
-			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
@@ -461,11 +462,11 @@ public class ConferenceServiceImpl implements ConferenceService {
 			if (size > 0) {
 				aggregation = Aggregation
 						.newAggregation(
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$specialities").append("preserveNullAndEmptyArrays",
 												true))),
 								Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
-								new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new CustomAggregationOperation(new Document("$unwind",
 										new BasicDBObject("path", "$specialities").append("preserveNullAndEmptyArrays",
 												true))),
 								Aggregation.match(criteria), groupOperation,
@@ -473,10 +474,10 @@ public class ConferenceServiceImpl implements ConferenceService {
 								Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$specialities").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$specialities").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.match(criteria), groupOperation,
 						Aggregation.sort(new Sort(Direction.ASC, "fromDate")));
@@ -503,7 +504,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 		DoctorConference response = null;
 		try {
 
-			CustomAggregationOperation groupFirst = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupFirst = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
@@ -531,7 +532,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 					Fields.field("commiteeMember", "$commiteeMember"), Fields.field("createdTime", "$createdTime"),
 					Fields.field("updatedTime", "$updatedTime"), Fields.field("createdBy", "$createdBy")));
 
-			CustomAggregationOperation groupsecond = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupsecond = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
@@ -560,7 +561,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 							Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 							Fields.field("createdBy", "$createdBy")));
 
-			CustomAggregationOperation groupthird = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation groupthird = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("id", "$_id").append("title", new BasicDBObject("$first", "$title"))
 							.append("titleImage", new BasicDBObject("$first", "$titleImage"))
 							.append("description", new BasicDBObject("$first", "$description"))
@@ -576,17 +577,17 @@ public class ConferenceServiceImpl implements ConferenceService {
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.match(new Criteria("_id").is(new ObjectId(id))),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$specialities").append("preserveNullAndEmptyArrays", true))),
 
 					Aggregation.lookup("speciality_cl", "specialities", "_id", "specialities"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$specialities").append("preserveNullAndEmptyArrays", true))),
 					groupFirst,
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$speakers").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.lookup("speaker_profile_cl", "$speakers.speakerId", "_id", "speaker"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$speaker").append("preserveNullAndEmptyArrays", true))),
 					projectListsecond, groupsecond);
 			response = mongoTemplate.aggregate(aggregation, "doctor_conference_cl", DoctorConference.class)
@@ -604,7 +605,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 				for (OrganizingCommitteeResponse committeeResponse : response.getCommiteeMember()) {
 					if (!DPDoctorUtils.anyStringEmpty(committeeResponse.getSpeakerId())) {
 						SpeakerProfileCollection speakerProfileCollection = speakerProfileRepository
-								.findOne(new ObjectId(committeeResponse.getSpeakerId()));
+								.findById(new ObjectId(committeeResponse.getSpeakerId())).orElse(null);
 						committeeResponse.setFirstName(speakerProfileCollection.getFirstName());
 						if (!DPDoctorUtils.anyStringEmpty(speakerProfileCollection.getProfileImage())) {
 
@@ -685,7 +686,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 		DoctorConferenceAgenda response = null;
 		try {
 			DoctorConferenceAgendaCollection conferenceAgendaCollection = doctorConferenceAgendaRepository
-					.findOne(new ObjectId(id));
+					.findById(new ObjectId(id)).orElse(null);
 			response = new DoctorConferenceAgenda();
 			BeanUtil.map(conferenceAgendaCollection, response);
 			if (!DPDoctorUtils.anyStringEmpty(response.getTitleImage())) {
@@ -714,12 +715,12 @@ public class ConferenceServiceImpl implements ConferenceService {
 		SessionQuestion response = null;
 		try {
 			QuestionCollection questionCollection = null;
-			UserCollection user = userRepsitory.findOne(new ObjectId(request.getQuestionerId()));
+			UserCollection user = userRepsitory.findById(new ObjectId(request.getQuestionerId())).orElse(null);
 			if (user == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
 			}
 			DoctorConferenceSessionCollection conferenceSessionCollection = doctorConferenceSessionRepository
-					.findOne(new ObjectId(request.getSessionId()));
+					.findById(new ObjectId(request.getSessionId())).orElse(null);
 
 			if (conferenceSessionCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Doctor Conference Session not found");
@@ -731,7 +732,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 				BeanUtil.map(request, questionCollection);
 				conferenceSessionCollection.setNoOfQuestion(conferenceSessionCollection.getNoOfQuestion() + 1);
 			} else {
-				questionCollection = questionRepository.findOne(new ObjectId(request.getId()));
+				questionCollection = questionRepository.findById(new ObjectId(request.getId())).orElse(null);
 				request.setCreatedTime(questionCollection.getCreatedTime());
 				request.setCreatedBy((user.getTitle() != null ? user.getTitle() + " " : "") + user.getFirstName());
 				BeanUtil.map(request, questionCollection);
@@ -764,12 +765,12 @@ public class ConferenceServiceImpl implements ConferenceService {
 		SessionQuestion response = null;
 		try {
 			QuestionCollection questionCollection = null;
-			UserCollection user = userRepsitory.findOne(new ObjectId(userId));
+			UserCollection user = userRepsitory.findById(new ObjectId(userId)).orElse(null);
 			if (user == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
 			}
 
-			questionCollection = questionRepository.findOne(new ObjectId(id));
+			questionCollection = questionRepository.findById(new ObjectId(id)).orElse(null);
 
 			if (questionCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Doctor Question not found");
@@ -781,7 +782,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 
 			questionCollection = questionRepository.save(questionCollection);
 			DoctorConferenceSessionCollection conferenceSessionCollection = doctorConferenceSessionRepository
-					.findOne(questionCollection.getSessionId());
+					.findById(questionCollection.getSessionId()).orElse(null);
 			conferenceSessionCollection.setNoOfQuestion(conferenceSessionCollection.getNoOfQuestion() - 1);
 			conferenceSessionCollection = doctorConferenceSessionRepository.save(conferenceSessionCollection);
 			response = new SessionQuestion();
@@ -861,7 +862,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 		SessionQuestion response = null;
 		try {
 			QuestionLikeCollection likeCollection = null;
-			QuestionCollection questionCollection = questionRepository.findOne(new ObjectId(id));
+			QuestionCollection questionCollection = questionRepository.findById(new ObjectId(id)).orElse(null);
 			if (!DPDoctorUtils.anyStringEmpty(userId)) {
 				likeCollection = questionLikeRepository.findbyQuestionAndUserId(new ObjectId(id), new ObjectId(userId));
 			}
@@ -889,11 +890,11 @@ public class ConferenceServiceImpl implements ConferenceService {
 		try {
 			QuestionLikeCollection likeCollection = null;
 			QuestionCollection questionCollection = null;
-			UserCollection user = userRepsitory.findOne(new ObjectId(userId));
+			UserCollection user = userRepsitory.findById(new ObjectId(userId)).orElse(null);
 			if (user == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
 			}
-			questionCollection = questionRepository.findOne(new ObjectId(questionId));
+			questionCollection = questionRepository.findById(new ObjectId(questionId)).orElse(null);
 			if (questionCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Session Question not found");
 			}

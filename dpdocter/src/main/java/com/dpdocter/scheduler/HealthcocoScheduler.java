@@ -74,11 +74,11 @@ public class HealthcocoScheduler {
 						.equals(checkupResponse.getPatient().getLocationId())) {
 
 					UserCollection userCollection = userRepository
-							.findOne(new ObjectId(checkupResponse.getPatient().getUserId()));
+							.findById(new ObjectId(checkupResponse.getPatient().getUserId())).orElse(null);
 					
-					UserCollection doctorCollection = userRepository.findOne(checkupResponse.getDoctorId());
+					UserCollection doctorCollection = userRepository.findById(checkupResponse.getDoctorId()).orElse(null);
 					
-					LocationCollection locationCollection = locationRepository.findOne(checkupResponse.getLocationId());				
+					LocationCollection locationCollection = locationRepository.findById(checkupResponse.getLocationId()).orElse(null);				
 					
 					
 					String message = "You have regular check-up scheduled with Dr." + doctorCollection.getFirstName()+ " at " + locationCollection.getLocationName();

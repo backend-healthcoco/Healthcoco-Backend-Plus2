@@ -37,10 +37,10 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.search.join.ScoreMode;
 import org.bouncycastle.jcajce.provider.digest.SHA3.DigestSHA3;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.OrQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -208,7 +208,7 @@ public class DPDoctorUtils {
 
 			if (searchTermFieldName[0].equalsIgnoreCase("genericNames.name")) {
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("genericNames",
-						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm))));
+						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm)), ScoreMode.None));
 			} else {
 				if (searchTermFieldName.length == 1)
 					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
@@ -234,14 +234,13 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM)
 				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)) {
 			if (specialities != null && !specialities.isEmpty()) {
-				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
-				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
-				orQueryBuilder.add(QueryBuilders.boolQuery().must(QueryBuilders.existsQuery("speciality")));
+				BoolQueryBuilder shouldBuilder = QueryBuilders.boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
 					if(!DPDoctorUtils.anyStringEmpty(speciality))
-					orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
+						shouldBuilder.should(QueryBuilders.matchQuery("speciality", speciality));
 				}
-				boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder));
+				shouldBuilder.minimumShouldMatch(1);
+				boolQueryBuilder.must(shouldBuilder);
 			}
 		}
 
@@ -251,19 +250,19 @@ public class DPDoctorUtils {
 		SearchQuery searchQuery = null;
 		if (resource.getType().equalsIgnoreCase(Resource.DRUG.getType())) {
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(0, 15))
+					.withPageable(PageRequest.of(0, 15))
 					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
 		} else if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+						.withPageable(PageRequest.of(page, size, Direction.DESC, "updatedTime")).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of(page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
@@ -290,7 +289,7 @@ public class DPDoctorUtils {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0) {
 			if (searchTermFieldName[0].equalsIgnoreCase("genericNames.name")) {
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("genericNames",
-						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm))));
+						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm)), ScoreMode.None));
 			} else {
 				if (searchTermFieldName.length == 1)
 					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
@@ -308,7 +307,7 @@ public class DPDoctorUtils {
 		if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+						.withPageable(PageRequest.of(page, size, Direction.DESC, "updatedTime")).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
@@ -316,18 +315,18 @@ public class DPDoctorUtils {
 			if (sortBy.equalsIgnoreCase("rankingCount")) {
 				if (size > 0) {
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-							.withPageable(new PageRequest(page, size))
+							.withPageable(PageRequest.of(page, size))
 							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
 				} else {
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-							.withPageable(new PageRequest(0, 15))
+							.withPageable(PageRequest.of(0, 15))
 							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
 				}
 
 			} else {
 				if (size > 0)
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-							.withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+							.withPageable(PageRequest.of(page, size, Direction.ASC, sortBy)).build();
 				else
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
@@ -346,18 +345,15 @@ public class DPDoctorUtils {
 				.from(Long.parseLong(updatedTime)).to(new Date().getTime()));
 
 		if (!DPDoctorUtils.anyStringEmpty(doctorId))
-			boolQueryBuilder.must(
-					QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")),
-							QueryBuilders.termQuery("doctorId", doctorId)));
+			boolQueryBuilder.must(QueryBuilders.boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")))
+					.should(QueryBuilders.termQuery("doctorId", doctorId)).minimumShouldMatch(1));
 
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			boolQueryBuilder
-					.must(QueryBuilders.orQuery(
-							QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")),
-							QueryBuilders.termQuery("locationId", locationId)))
-					.must(QueryBuilders.orQuery(
-							QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")),
-							QueryBuilders.termQuery("hospitalId", hospitalId)));
+					.must(QueryBuilders.boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")))
+							.should(QueryBuilders.termQuery("locationId", locationId)).minimumShouldMatch(1))
+					.must(QueryBuilders.boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
+							.should(QueryBuilders.termQuery("hospitalId", hospitalId)).minimumShouldMatch(1));
 		}
 		if (!DPDoctorUtils.anyStringEmpty(disease))
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("diseases", disease));
@@ -365,7 +361,7 @@ public class DPDoctorUtils {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0) {
 			if (searchTermFieldName[0].equalsIgnoreCase("genericNames.name")) {
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("genericNames",
-						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm))));
+						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm)), ScoreMode.None));
 			} else {
 				if (searchTermFieldName.length == 1)
 					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
@@ -389,15 +385,13 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)
 				|| resource.equals(Resource.DENTAL_WORKS)) {
 			if (specialities != null && !specialities.isEmpty()) {
-				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
-				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
-				orQueryBuilder.add(QueryBuilders.boolQuery().must(QueryBuilders.existsQuery("speciality")));
+				BoolQueryBuilder shouldBuilder = QueryBuilders.boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
-					if (!DPDoctorUtils.anyStringEmpty(speciality)) {
-						orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
-					}
+					if(!DPDoctorUtils.anyStringEmpty(speciality))
+						shouldBuilder.should(QueryBuilders.matchQuery("speciality", speciality));
 				}
-				boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder)).minimumNumberShouldMatch(1);
+				shouldBuilder.minimumShouldMatch(1);
+				boolQueryBuilder.must(shouldBuilder);
 			}
 		}
 
@@ -408,19 +402,19 @@ public class DPDoctorUtils {
 		if (resource.getType().equalsIgnoreCase(Resource.DRUG.getType())
 				|| resource.getType().equalsIgnoreCase(Resource.TREATMENTSERVICE.getType())) {
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(0, 15))
+					.withPageable(PageRequest.of(0, 15))
 					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
 		} else if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+						.withPageable(PageRequest.of(page, size, Direction.DESC, "updatedTime")).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of(page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
@@ -446,7 +440,7 @@ public class DPDoctorUtils {
 		if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -454,7 +448,7 @@ public class DPDoctorUtils {
 		} else {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.ASC, sortBy)), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, sortBy)), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -486,7 +480,7 @@ public class DPDoctorUtils {
 		if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -494,7 +488,7 @@ public class DPDoctorUtils {
 		} else {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.ASC, sortBy)), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, sortBy)), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -538,7 +532,7 @@ public class DPDoctorUtils {
 		if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -551,7 +545,7 @@ public class DPDoctorUtils {
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.ASC, sortBy)), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, sortBy)), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -575,7 +569,7 @@ public class DPDoctorUtils {
 		Aggregation aggregation = null;
 		if (size > 0) {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long)(page) * size),
 					Aggregation.limit(size));
 		} else {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -598,7 +592,7 @@ public class DPDoctorUtils {
 		Aggregation aggregation = null;
 		if (size > 0) {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long)(page) * size),
 					Aggregation.limit(size));
 		} else {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -620,7 +614,7 @@ public class DPDoctorUtils {
 		Aggregation aggregation = null;
 		if (size > 0) {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long)(page) * size),
 					Aggregation.limit(size));
 		} else {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),

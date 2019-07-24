@@ -28,13 +28,23 @@
 					</resource>
 				</resources>
 				<plugins>
-					
-				</plugins>
+					<plugin>
+						<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
+						<!-- <dependency> -->
+						<groupId>org.apache.tomcat.embed</groupId>
+						<artifactId>tomcat-embed-core</artifactId>
+						<version>9.0.16</version>
+						<!-- </dependency> -->
 
+					</plugin>
+				</plugins>
 			</build>
 		</profile>
 		<profile>
 			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -75,9 +85,6 @@
 		</profile>
 		<profile>
 			<id>production</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -98,7 +105,6 @@
 		</profile>
 	</profiles>
 	<dependencies>
-
 		<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
@@ -125,98 +131,79 @@
 			<artifactId>mongeez</artifactId>
 			<version>0.9.3</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.integration</groupId>
-			<artifactId>spring-integration-core</artifactId>
-			<version>4.3.5.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.integration</groupId>
-			<artifactId>spring-integration-jmx</artifactId>
-			<version>4.3.5.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.integration</groupId>
-			<artifactId>spring-integration-jms</artifactId>
-			<version>4.3.5.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.integration</groupId>
-			<artifactId>spring-integration-ip</artifactId>
-			<version>4.3.5.RELEASE</version>
-		</dependency>
+		
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>6.9.4</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>4.1.3.RELEASE</version>
+			<version>5.0.8.RELEASE</version>
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- Jersey -->
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-server</artifactId>
-			<version>1.8</version>
-		</dependency>
+
 		<dependency>
 			<groupId>com.sun.jersey.contribs</groupId>
 			<artifactId>jersey-multipart</artifactId>
-			<version>1.8</version>
+			<version>1.19.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-json</artifactId>
-			<version>1.8</version>
+			<version>1.19.4</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-server -->
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>2.27</version>
+		</dependency>
+
 		<!-- Spring 4 dependencies -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>4.3.5.RELEASE</version>
+			<version>5.1.7.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>4.3.5.RELEASE</version>
+			<version>5.0.7.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>4.3.5.RELEASE</version>
+			<version>5.0.7.RELEASE</version>
 		</dependency>
 		<!-- Various Application Context utilities, including EhCache, JavaMail, 
 			Quartz, and Freemarker integration Define this if you need any of these integrations -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
-			<version>4.3.5.RELEASE</version>
+			<version>5.0.8.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
-			<version>4.3.5.RELEASE</version>
+			<version>5.0.8.RELEASE</version>
 		</dependency>
 		<!-- Jersey + Spring -->
 		<dependency>
 			<groupId>com.sun.jersey.contribs</groupId>
 			<artifactId>jersey-spring</artifactId>
-			<version>1.8</version>
+			<version>1.19.4</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework</groupId>
@@ -249,43 +236,28 @@
 			</exclusions>
 		</dependency>
 		<!-- Spring Integration -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework.integration</groupId> -->
-<!-- 			<artifactId>spring-integration-core</artifactId> -->
-<!-- 			<version>4.3.5.RELEASE</version> -->
-<!-- 		</dependency> -->
-
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework.integration</groupId> -->
-<!-- 			<artifactId>spring-integration-jmx</artifactId> -->
-<!-- 			<version>4.3.5.RELEASE</version> -->
-<!-- 		</dependency> -->
-
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework.integration</groupId> -->
-<!-- 			<artifactId>spring-integration-jms</artifactId> -->
-<!-- 			<version>4.3.5.RELEASE</version> -->
-<!-- 		</dependency> -->
-
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework.integration</groupId> -->
-<!-- 			<artifactId>spring-integration-ip</artifactId> -->
-<!-- 			<version>4.3.5.RELEASE</version> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.testng</groupId> -->
-<!-- 			<artifactId>testng</artifactId> -->
-<!-- 			<version>6.9.4</version> -->
-<!-- 			<scope>test</scope> -->
-
-<!-- 		</dependency> -->
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-core</artifactId>
+			<version>5.0.7.RELEASE</version>
+		</dependency>
 
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>4.1.3.RELEASE</version>
-			<type>jar</type>
-			<scope>test</scope>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-jmx</artifactId>
+			<version>5.0.7.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-jms</artifactId>
+			<version>5.0.7.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-ip</artifactId>
+			<version>5.0.7.RELEASE</version>
 		</dependency>
 
 		<!-- for OAuth 2.0 -->
@@ -320,46 +292,51 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<!-- Servlet -->
+		<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.1</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.servlet.jsp/jsp-api -->
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>jsp-api</artifactId>
-			<version>2.1</version>
+			<version>2.2.1-b03</version>
 			<scope>provided</scope>
 		</dependency>
+
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
-		<!-- Spring data mongodb -->
+		<!-- Spring data mongodb 2.0.9, 3.5.0-->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
-			<version>1.9.1.RELEASE</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>spring-data-commons</artifactId>
-					<groupId>org.springframework.data</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+			<version>2.1.1.RELEASE</version>
+	</dependency>
+
+		
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
-			<version>2.13.0</version>
+			<version>3.8.2</version>
 		</dependency>
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>2.2.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>asm</groupId>
+					<artifactId>asm</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- APACHE HTTP CLIENT -->
 		<dependency>
@@ -486,21 +463,6 @@
 			<groupId>xml-apis</groupId>
 			<artifactId>xml-apis</artifactId>
 			<version>1.4.01</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<version>5.4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers-common</artifactId>
-			<version>5.4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-queryparser</artifactId>
-			<version>5.4.1</version>
 		</dependency>
 		<dependency>
 			<groupId>ar.com.fdvs</groupId>
@@ -682,10 +644,6 @@
 					<artifactId>aws-java-sdk-kinesis</artifactId>
 					<groupId>com.amazonaws</groupId>
 				</exclusion>
-				<!-- <exclusion> -->
-				<!-- <artifactId>aws-java-sdk-sns</artifactId> -->
-				<!-- <groupId>com.amazonaws</groupId> -->
-				<!-- </exclusion> -->
 				<exclusion>
 					<artifactId>aws-java-sdk-codepipeline</artifactId>
 					<groupId>com.amazonaws</groupId>
@@ -883,9 +841,6 @@
 			<version>3.3.0</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.springframework/spring-aop -->
-
-
 		<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
@@ -903,25 +858,22 @@
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
-			<version>1.8.10</version>
+			<version>1.9.4</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
-			<version>1.8.10</version>
+			<version>1.9.4</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjtools -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjtools</artifactId>
-			<version>1.8.10</version>
+			<version>1.9.4</version>
 		</dependency>
-
-
-
 
 		<!-- For android GCM push notification services -->
 		<dependency>
@@ -1010,8 +962,21 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-elasticsearch</artifactId>
-			<version>2.0.2.RELEASE</version>
+			<version>3.2.0.M2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.data</groupId>
+					<artifactId>spring-data-commons</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-orm -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>5.0.8.RELEASE</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/com.twilio.sdk/twilio-java-sdk -->
 		<dependency>
 			<groupId>com.twilio.sdk</groupId>
@@ -1043,20 +1008,56 @@
 			<artifactId>poi</artifactId>
 			<version>3.17</version>
 		</dependency>
-		<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>4.1</version>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/se.jiderhamn/classloader-leak-prevention -->
 		<dependency>
 			<groupId>se.jiderhamn</groupId>
 			<artifactId>classloader-leak-prevention</artifactId>
 			<version>1.15.4</version>
 		</dependency>
-
-
+		<!-- https://mvnrepository.com/artifact/com.mashape.unirest/unirest-java -->
+		<dependency>
+			<groupId>com.mashape.unirest</groupId>
+			<artifactId>unirest-java</artifactId>
+			<version>1.4.9</version>
+		</dependency>
+		<dependency> 
+			<groupId>com.opencsv</groupId> 
+			<artifactId>opencsv</artifactId> 
+			<version>4.1</version> 
+		</dependency> 
+		
+		<!-- https://mvnrepository.com/artifact/org.ow2.asm/asm -->
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
+			<version>6.2.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.jboss.spec.javax.net.ssl/jboss-jsse-api_8.0_spec -->
+		<dependency>
+			<groupId>org.jboss.spec.javax.net.ssl</groupId>
+			<artifactId>jboss-jsse-api_8.0_spec</artifactId>
+			<version>1.0.0.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver</artifactId>
+			<version>3.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.jkutner</groupId>
+			<artifactId>env-keystore</artifactId>
+			<version>0.1.2</version>
+		</dependency>
+		<dependency>
+			    <groupId>javax.xml.parsers</groupId>
+			    <artifactId>jaxp-api</artifactId>
+			    <version>1.4.5</version>
+			</dependency>
+			<dependency>
+		        <groupId>sax</groupId>
+			    <artifactId>sax</artifactId>
+			    <version>2.0.1</version>
+			</dependency>
 	</dependencies>
 	<build>
 		<testResources>
@@ -1070,53 +1071,25 @@
 			</testResource>
 
 		</testResources>
-
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 			</plugin>
-			<!-- <plugin> -->
-			<!-- <groupId>org.apache.maven.plugins</groupId> -->
-			<!-- <artifactId>maven-install-plugin</artifactId> -->
-			<!-- <version>2.3.1</version> -->
-			<!-- <executions> -->
-			<!-- <execution> -->
-			<!-- <id>install-external</id> -->
-			<!-- <phase>clean</phase> -->
-			<!-- <configuration> -->
-			<!-- <file>${basedir}/WEB-INF/lib/jasperreports-htmlcomponent-5.0.1.jar</file> -->
-			<!-- <repositoryLayout>default</repositoryLayout> -->
-			<!-- <groupId>net.sf.jasperreports</groupId> -->
-			<!-- <artifactId>jasperreports-htmlcomponent</artifactId> -->
-			<!-- <version>5.0.1</version> -->
-			<!-- <packaging>jar</packaging> -->
-			<!-- <generatePom>true</generatePom> -->
-			<!-- </configuration> -->
-			<!-- <goals> -->
-			<!-- <goal>install-file</goal> -->
-			<!-- </goals> -->
-			<!-- </execution> -->
-			<!-- </executions> -->
-			<!-- </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>10</source>
+					<target>10</target>
 				</configuration>
 			</plugin>
-		<plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.0.0-M1</version>
-				<configuration>
-					<testFailureIgnore>true</testFailureIgnore>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -1138,10 +1111,5 @@
 			<id>jaspersoft-third-party</id>
 			<url>http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/</url>
 		</repository>
-		<!-- <repository> -->
-		<!-- <id>project.local</id> -->
-		<!-- <name>project</name> -->
-		<!-- <url>file:${project.basedir}/repo</url> -->
-		<!-- </repository> -->
 	</repositories>
 </project>

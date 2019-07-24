@@ -72,7 +72,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				labPrintSettingCollection = labPrintSettingRepository.findOne(new ObjectId(request.getId()));
+				labPrintSettingCollection = labPrintSettingRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			if (labPrintSettingCollection == null) {
 				labPrintSettingCollection = labPrintSettingRepository.findBylocationIdAndhospitalId(locationObjectId,
@@ -100,7 +100,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 				request.setCreatedTime(new Date());
 			}
 
-			UserCollection userCollection = userRepository.findOne(doctorObjectId);
+			UserCollection userCollection = userRepository.findById(doctorObjectId).orElse(null);
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Doctor not found with Id ");
 			}
@@ -228,7 +228,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 				labPrintSettingCollection.setHeaderSetup(contentSetup);
 			}
 
-			UserCollection userCollection = userRepository.findOne(doctorObjectId);
+			UserCollection userCollection = userRepository.findById(doctorObjectId).orElse(null);
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Doctor not found with Id ");
 			}
@@ -277,12 +277,12 @@ public class LabPrintServicesImpl implements LabPrintServices {
 			 * LabPrintDocumentsCollection(); LabPrintDocumentsCollection
 			 * olddocumentsCollection = null; if
 			 * (!DPDoctorUtils.anyStringEmpty(request.getId())) { olddocumentsCollection =
-			 * labPrintDocumentsRepository.findOne(new ObjectId(request.getId())); if
+			 * labPrintDocumentsRepository.findById(new ObjectId(request.getId())); if
 			 * (olddocumentsCollection == null) { throw new
 			 * BusinessException(ServiceError.NoRecord,
 			 * " No Lab Print Document Present for Id"); }
 			 * 
-			 * } doctor = userRepository.findOne(new ObjectId(request.getDoctorId())); if
+			 * } doctor = userRepository.findById(new ObjectId(request.getDoctorId())); if
 			 * (doctor == null) { throw new BusinessException(ServiceError.NoRecord,
 			 * " No Doctor for DoctorId"); } BeanUtil.map(request, documentsCollection); if
 			 * (DPDoctorUtils.anyStringEmpty(request.getId())) {
@@ -415,7 +415,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("location"),
 						Aggregation.lookup("user_cl", "uploadedByDoctorId", "_id", "uploadedByDoctor"),
 						Aggregation.unwind("uploadedByDoctor"),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 
 			} else {
@@ -456,7 +456,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 		LabPrintDocumentsCollection LabPrintDocumentsCollection = null;
 		try {
 			if (DPDoctorUtils.anyStringEmpty(id)) {
-				LabPrintDocumentsCollection = labPrintDocumentsRepository.findOne(new ObjectId(id));
+				LabPrintDocumentsCollection = labPrintDocumentsRepository.findById(new ObjectId(id)).orElse(null);
 			}
 			if (LabPrintDocumentsCollection != null) {
 				LabPrintDocumentsCollection.setDiscarded(discarded);

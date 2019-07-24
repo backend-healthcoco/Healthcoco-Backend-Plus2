@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -94,12 +95,12 @@ public class RecipeServiceImpl implements RecipeService {
 		try {
 			NutrientCollection nutrientCollection = null;
 
-			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.NotFound, "doctor Not found with Id");
 			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				nutrientCollection = nutrientRepository.findOne(new ObjectId(request.getId()));
+				nutrientCollection = nutrientRepository.findById(new ObjectId(request.getId())).orElse(null);
 				if (nutrientCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "Nutrient Not found with Id");
 				}
@@ -176,14 +177,14 @@ public class RecipeServiceImpl implements RecipeService {
 		Nutrient response = null;
 		try {
 			ESNutrientDocument esNutrientDocument = null;
-			NutrientCollection nutrientCollection = nutrientRepository.findOne(new ObjectId(id));
+			NutrientCollection nutrientCollection = nutrientRepository.findById(new ObjectId(id)).orElse(null);
 			if (nutrientCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "Nutrient Not found with Id");
 			}
 			nutrientCollection.setDiscarded(discarded);
 			nutrientCollection.setUpdatedTime(new Date());
 			nutrientCollection = nutrientRepository.save(nutrientCollection);
-			esNutrientDocument = esNutrientRepository.findOne(id);
+			esNutrientDocument = esNutrientRepository.findById(id).orElse(null);
 			if (esNutrientDocument != null) {
 				esNutrientDocument.setUpdatedTime(new Date());
 				esNutrientDocument.setDiscarded(discarded);
@@ -205,7 +206,7 @@ public class RecipeServiceImpl implements RecipeService {
 	public Nutrient getNutrient(String id) {
 		Nutrient response = null;
 		try {
-			NutrientCollection nutrientCollection = nutrientRepository.findOne(new ObjectId(id));
+			NutrientCollection nutrientCollection = nutrientRepository.findById(new ObjectId(id)).orElse(null);
 			response = new Nutrient();
 			BeanUtil.map(nutrientCollection, response);
 		} catch (BusinessException e) {
@@ -235,12 +236,12 @@ public class RecipeServiceImpl implements RecipeService {
 				}
 
 				RecipeCollection recipeCollection = null;
-				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (doctor == null) {
 					throw new BusinessException(ServiceError.NotFound, "doctor Not found with Id");
 				}
 				if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-					recipeCollection = recipeRepository.findOne(new ObjectId(request.getId()));
+					recipeCollection = recipeRepository.findById(new ObjectId(request.getId())).orElse(null);
 					if (recipeCollection == null) {
 						throw new BusinessException(ServiceError.NotFound, "Recipe Not found with Id");
 					}
@@ -339,7 +340,7 @@ public class RecipeServiceImpl implements RecipeService {
 		Recipe response = null;
 		try {
 			ESRecipeDocument document = null;
-			RecipeCollection recipeCollection = recipeRepository.findOne(new ObjectId(id));
+			RecipeCollection recipeCollection = recipeRepository.findById(new ObjectId(id)).orElse(null);
 			if (recipeCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "recipe Not found with Id");
 			}
@@ -348,7 +349,7 @@ public class RecipeServiceImpl implements RecipeService {
 			recipeCollection.setUpdatedTime(new Date());
 			recipeCollection = recipeRepository.save(recipeCollection);
 			response = new Recipe();
-			document = eSRecipeRepository.findOne(id);
+			document = eSRecipeRepository.findById(id).orElse(null);
 			if (document != null) {
 				document.setUpdatedTime(new Date());
 				document.setDiscarded(discarded);
@@ -370,7 +371,7 @@ public class RecipeServiceImpl implements RecipeService {
 	public Recipe getRecipe(String id) {
 		Recipe response = null;
 		try {
-			RecipeCollection recipeCollection = recipeRepository.findOne(new ObjectId(id));
+			RecipeCollection recipeCollection = recipeRepository.findById(new ObjectId(id)).orElse(null);
 			response = new Recipe();
 			BeanUtil.map(recipeCollection, response);
 			if (response != null) {
@@ -398,12 +399,12 @@ public class RecipeServiceImpl implements RecipeService {
 		try {
 			IngredientCollection ingredientCollection = null;
 
-			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.NotFound, "doctor Not found with Id");
 			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				ingredientCollection = ingredientRepository.findOne(new ObjectId(request.getId()));
+				ingredientCollection = ingredientRepository.findById(new ObjectId(request.getId())).orElse(null);
 				if (ingredientCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "ingredient Not found with Id");
 				}
@@ -451,7 +452,7 @@ public class RecipeServiceImpl implements RecipeService {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			if (!DPDoctorUtils.allStringsEmpty(hospitalId))
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("quantity", new BasicDBObject("$first", "$quantity"))
 							.append("name", new BasicDBObject("$first", "$name"))
 							.append("note", new BasicDBObject("$first", "$note"))
@@ -491,14 +492,14 @@ public class RecipeServiceImpl implements RecipeService {
 		Ingredient response = null;
 		try {
 			ESIngredientDocument esIngredientDocument = null;
-			IngredientCollection ingredientCollection = ingredientRepository.findOne(new ObjectId(id));
+			IngredientCollection ingredientCollection = ingredientRepository.findById(new ObjectId(id)).orElse(null);
 			if (ingredientCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "Ingredients Not found with Id");
 			}
 			ingredientCollection.setDiscarded(discarded);
 			ingredientCollection.setUpdatedTime(new Date());
 			ingredientCollection = ingredientRepository.save(ingredientCollection);
-			esIngredientDocument = esIngredientRepository.findOne(id);
+			esIngredientDocument = esIngredientRepository.findById(id).orElse(null);
 			if (esIngredientDocument != null) {
 				esIngredientDocument.setUpdatedTime(new Date());
 				esIngredientDocument.setDiscarded(discarded);
@@ -520,7 +521,7 @@ public class RecipeServiceImpl implements RecipeService {
 	public Ingredient getIngredient(String id) {
 		Ingredient response = null;
 		try {
-			IngredientCollection ingredientCollection = ingredientRepository.findOne(new ObjectId(id));
+			IngredientCollection ingredientCollection = ingredientRepository.findById(new ObjectId(id)).orElse(null);
 			response = new Ingredient();
 			BeanUtil.map(ingredientCollection, response);
 		} catch (BusinessException e) {
@@ -552,7 +553,7 @@ public class RecipeServiceImpl implements RecipeService {
 			}
 
 			else {
-				UserCollection user = userRepository.findOne(new ObjectId(userId));
+				UserCollection user = userRepository.findById(new ObjectId(userId)).orElse(null);
 				recipeCollection = new FavouriteRecipeCollection();
 
 				recipeCollection.setCreatedBy((!DPDoctorUtils.anyStringEmpty(user.getTitle()) ? user.getTitle() : "")
@@ -620,7 +621,7 @@ public class RecipeServiceImpl implements RecipeService {
 			Criteria criteria = new Criteria("discarded").is(discarded);
 			if (!DPDoctorUtils.allStringsEmpty(userId))
 				criteria.and("userId").is(new ObjectId(userId));
-			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$racipe.id").append("name", new BasicDBObject("$first", "$racipe.name"))
 							.append("quantity", new BasicDBObject("$first", "$racipe.quantity"))
 							.append("note", new BasicDBObject("$first", "$racipe.note"))

@@ -128,7 +128,7 @@ public class AccessControlServicesImpl implements AccessControlServices {
 			}
 		    }
 		}
-		acosCollections = acosRepository.save(acosCollections);
+		acosCollections = acosRepository.saveAll(acosCollections);
 	    } else {
 		arosCollection = new ArosCollection();
 		acosCollections = new ArrayList<AcosCollection>();
@@ -144,7 +144,7 @@ public class AccessControlServicesImpl implements AccessControlServices {
 	    }
 
 	    arosCollection = arosRepository.save(arosCollection);
-	    acosCollections = acosRepository.save(acosCollections);
+	    acosCollections = acosRepository.saveAll(acosCollections);
 	    arosAcosCollection.setArosId(arosCollection.getId());
 	    List<ObjectId> acosIds = new ArrayList<ObjectId>(CollectionUtils.collect(acosCollections, new BeanToPropertyValueTransformer("id")));
 	    List<ObjectId> finalAcosIds = arosAcosCollection.getAcosIds();

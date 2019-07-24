@@ -166,7 +166,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		UserCollection userCollection = null;
 		DoctorNameAddEditRequest response = null;
 		try {
-			userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			BeanUtil.map(request, userCollection);
 			userRepository.save(userCollection);
 			response = new DoctorNameAddEditRequest();
@@ -214,7 +214,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		DoctorCollection doctorCollection = null;
 		DoctorContactAddEditRequest response = null;
 		try {
-			userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 			userCollection.setMobileNumber(request.getMobileNumber());
 			doctorCollection.setAdditionalNumbers(request.getAdditionalNumbers());
@@ -264,7 +264,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))),
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "medicalCouncil")),
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+						Aggregation.skip((long)(page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))),
@@ -353,7 +353,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			}
 			if (oldSpecialities != null && !oldSpecialities.isEmpty()) {
 				List<SpecialityCollection> oldSpecialityCollections = (List<SpecialityCollection>) specialityRepository
-						.findAll(oldSpecialities);
+						.findAllById(oldSpecialities);
 				@SuppressWarnings("unchecked")
 				Collection<String> specialities = CollectionUtils.collect(oldSpecialityCollections,
 						new BeanToPropertyValueTransformer("speciality"));
@@ -490,7 +490,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		UserCollection userCollection = null;
 		String response = "";
 		try {
-			userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (request.getImage() != null) {
 				String path = "profile-image";
 				// save image
@@ -517,7 +517,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		UserCollection userCollection = null;
 		String response = "";
 		try {
-			userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (request.getImage() != null) {
 				String path = "cover-image";
 				// save image
@@ -594,7 +594,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				// set specialities using speciality ids
 				if (doctorCollection.getSpecialities() != null) {
 					List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository
-							.findAll(doctorCollection.getSpecialities());
+							.findAllById(doctorCollection.getSpecialities());
 					specialities = (List<String>) CollectionUtils.collect(specialityCollections,
 							new BeanToPropertyValueTransformer("superSpeciality"));
 					if (isMobileApp) {
@@ -607,7 +607,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 				if (doctorCollection.getServices() != null && !doctorCollection.getServices().isEmpty()) {
 					services = (List<String>) CollectionUtils.collect(
-							(Collection<?>) servicesRepository.findAll(doctorCollection.getServices()),
+							(Collection<?>) servicesRepository.findAllById(doctorCollection.getServices()),
 							new BeanToPropertyValueTransformer("service"));
 				}
 				doctorProfile.setServices(services);
@@ -629,7 +629,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						&& !doctorCollection.getProfessionalMemberships().isEmpty()) {
 					professionalMemberships = (List<String>) CollectionUtils.collect(
 							(Collection<?>) professionalMembershipRepository
-									.findAll(doctorCollection.getProfessionalMemberships()),
+									.findAllById(doctorCollection.getProfessionalMemberships()),
 							new BeanToPropertyValueTransformer("membership"));
 				}
 				doctorProfile.setProfessionalMemberships(professionalMemberships);
@@ -795,7 +795,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))),
-						Aggregation.sort(new Sort(Sort.Direction.ASC, "membership")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "membership")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(
@@ -993,7 +993,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))),
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "superSpeciality")),
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+						Aggregation.skip((long)(page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))),
@@ -1019,7 +1019,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))),
-						Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(
@@ -1047,7 +1047,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))),
-						Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "name")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(
@@ -1074,7 +1074,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		List<String> parentSpecialitiesresponse = new ArrayList<>();
 		DoctorMultipleDataAddEditResponse response = null;
 		try {
-			userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 			if (userCollection != null && doctorCollection != null) {
 
@@ -1276,7 +1276,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(doctorObjectId,
 					locationObjectId);
 
-			UserCollection userCollection = userRepository.findOne(patientObjectId);
+			UserCollection userCollection = userRepository.findById(patientObjectId).orElse(null);
 			if (doctorClinicProfileCollection == null) {
 				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
 				doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
@@ -1353,7 +1353,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				criteria = criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(to)));
 
 			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1379,7 +1379,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	 * @Transactional public RegularCheckUpAddEditRequest
 	 * addRegularCheckupMonths(RegularCheckUpAddEditRequest request) {
 	 * UserCollection userCollection = null; RegularCheckUpAddEditRequest response =
-	 * null; try { userCollection = userRepository.findOne(new
+	 * null; try { userCollection = userRepository.findById(new
 	 * ObjectId(request.getDoctorId())); BeanUtil.map(request, userCollection);
 	 * userRepository.save(userCollection); response = new
 	 * RegularCheckUpAddEditRequest(); BeanUtil.map(request, response);
@@ -1396,7 +1396,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 		DoctorClinicProfile response = null;
 		try {
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findOne(new ObjectId(request.getDoctorId()));
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			doctorClinicProfileCollection.setRegularCheckUpMonths(request.getRegularCheckUpMonths());
 			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 			response = new DoctorClinicProfile();
@@ -1433,7 +1433,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	public Boolean updateEMRSetting(String doctorId, Boolean discarded) {
 		Boolean status = false;
 		try {
-			DoctorCollection doctorCollection = doctorRepository.findOne(new ObjectId(doctorId));
+			DoctorCollection doctorCollection = doctorRepository.findById(new ObjectId(doctorId)).orElse(null);
 			if (doctorCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
 			}
@@ -1516,7 +1516,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				// set specialities using speciality ids
 				if (doctorCollection.getSpecialities() != null) {
 					List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository
-							.findAll(doctorCollection.getSpecialities());
+							.findAllById(doctorCollection.getSpecialities());
 					specialities = (List<String>) CollectionUtils.collect(specialityCollections,
 							new BeanToPropertyValueTransformer("superSpeciality"));
 
@@ -1529,7 +1529,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 				if (doctorCollection.getServices() != null && !doctorCollection.getServices().isEmpty()) {
 					services = (List<String>) CollectionUtils.collect(
-							(Collection<?>) servicesRepository.findAll(doctorCollection.getServices()),
+							(Collection<?>) servicesRepository.findAllById(doctorCollection.getServices()),
 							new BeanToPropertyValueTransformer("service"));
 				}
 				doctorProfile.setServices(services);
@@ -1551,7 +1551,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						&& !doctorCollection.getProfessionalMemberships().isEmpty()) {
 					professionalMemberships = (List<String>) CollectionUtils.collect(
 							(Collection<?>) professionalMembershipRepository
-									.findAll(doctorCollection.getProfessionalMemberships()),
+									.findAllById(doctorCollection.getProfessionalMemberships()),
 							new BeanToPropertyValueTransformer("membership"));
 				}
 
@@ -1736,7 +1736,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(

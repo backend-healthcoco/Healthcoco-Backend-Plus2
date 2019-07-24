@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,8 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +43,7 @@ import com.dpdocter.request.BlogRequest;
 import com.dpdocter.response.BlogResponse;
 import com.dpdocter.services.BlogService;
 import com.mongodb.BasicDBObject;
+import com.mongodb.client.gridfs.model.GridFSFile;
 import com.mongodb.gridfs.GridFSDBFile;
 
 import common.util.web.DPDoctorUtils;
@@ -71,6 +75,9 @@ public class BlogServicesImpl implements BlogService {
 	@Autowired
 	private FevouriteBlogsRepository fevouriteBlogsRepository;
 
+	@Autowired
+	GridFsTemplate gridFsTemplate;
+	
 	@Override
 	public BlogResponse getBlogs(int size, int page, String category, String userId, String title) {
 		BlogResponse response = new BlogResponse();
@@ -91,7 +98,7 @@ public class BlogServicesImpl implements BlogService {
 			}
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(Sort.Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
+						Aggregation.sort(Sort.Direction.DESC, "createdTime"), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 
 			} else {
@@ -158,7 +165,7 @@ public class BlogServicesImpl implements BlogService {
 
 				if (size > 0) {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.skip((page) * size), Aggregation.limit(size),
+							Aggregation.skip((long)(page) * size), Aggregation.limit(size),
 							Aggregation.sort(Sort.Direction.DESC, "noOfLikes"));
 
 				} else {
@@ -168,7 +175,7 @@ public class BlogServicesImpl implements BlogService {
 			} else {
 				if (size > 0) {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.skip((page) * size), Aggregation.limit(size),
+							Aggregation.skip((long)(page) * size), Aggregation.limit(size),
 							Aggregation.sort(Sort.Direction.DESC, "views"));
 
 				} else {
@@ -208,11 +215,12 @@ public class BlogServicesImpl implements BlogService {
 		return response;
 	}
 
-	private String getBlogArticle(String id) {
+	public String getBlogArticle(String id) {
 
 		try {
-			GridFSDBFile file = gridfsRepository.read(new ObjectId(id));
-			InputStream inputStream = file.getInputStream();
+			GridFSFile file = gridfsRepository.read(new ObjectId(id));
+			GridFsResource resource = gridFsTemplate.getResource(file);
+			InputStream inputStream = resource.getInputStream();
 
 			return IOUtils.toString(inputStream);
 		} catch (Exception e) {
@@ -229,7 +237,7 @@ public class BlogServicesImpl implements BlogService {
 			if (!DPDoctorUtils.anyStringEmpty(slugUrl)) {
 				blogCollection = blogRepository.findBySlugURL(slugUrl);
 			} else {
-				blogCollection = blogRepository.findOne(new ObjectId(blogId));
+				blogCollection = blogRepository.findById(new ObjectId(blogId)).orElse(null);
 			}
 			if (blogCollection != null) {
 				blogCollection.setViews(blogCollection.getViews() + 1);
@@ -270,9 +278,9 @@ public class BlogServicesImpl implements BlogService {
 		Blog response = null;
 		try {
 			BlogLikesCollection blogLikesCollection = null;
-			UserCollection userCollection = userRepository.findOne(new ObjectId(userId));
+			UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
 
-			BlogCollection blogCollection = blogRepository.findOne(new ObjectId(blogId));
+			BlogCollection blogCollection = blogRepository.findById(new ObjectId(blogId)).orElse(null);
 			if (userCollection != null && blogCollection != null) {
 				blogLikesCollection = blogLikesRepository.findbyBlogIdAndUserId(new ObjectId(blogId),
 						new ObjectId(userId));
@@ -327,8 +335,8 @@ public class BlogServicesImpl implements BlogService {
 	public Boolean addFevouriteBlog(String blogId, String userId) {
 		try {
 			FavouriteBlogsCollection favouriteBlogsCollection = null;
-			UserCollection userCollection = userRepository.findOne(new ObjectId(userId));
-			BlogCollection blogCollection = blogRepository.findOne(new ObjectId(blogId));
+			UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
+			BlogCollection blogCollection = blogRepository.findById(new ObjectId(blogId)).orElse(null);
 			if (userCollection != null && blogCollection != null) {
 				favouriteBlogsCollection = fevouriteBlogsRepository.findbyBlogIdAndUserId(new ObjectId(blogId),
 						new ObjectId(userId));
@@ -383,7 +391,7 @@ public class BlogServicesImpl implements BlogService {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("fevourite_Blogs_cl", "_id", "blogId", "fevourite"),
-						Aggregation.unwind("fevourite"), Aggregation.match(criteria), Aggregation.skip((page) * size),
+						Aggregation.unwind("fevourite"), Aggregation.match(criteria), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "fevourite.createdTime"));
 
 			} else {
@@ -436,7 +444,7 @@ public class BlogServicesImpl implements BlogService {
 		try {
 			
 			CustomAggregationOperation projectOperation = new CustomAggregationOperation(
-					new BasicDBObject("$project", new BasicDBObject("title","$title")
+					new Document("$project", new BasicDBObject("title","$title")
 							.append("titleImage", new BasicDBObject("$cond", 
 									new BasicDBObject("if", new BasicDBObject("eq", Arrays.asList("$titleImage", null)))
 									          .append("then", new BasicDBObject("$concat", Arrays.asList(imagePath, "$titleImage")))
@@ -455,7 +463,7 @@ public class BlogServicesImpl implements BlogService {
 										
 			
 			CustomAggregationOperation groupOperation = new CustomAggregationOperation(
-					new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+					new Document("$group", new BasicDBObject("id", "$_id")
 							.append("title", new BasicDBObject("$first","$title"))
 							.append("titleImage", new BasicDBObject("$first","$titleImage"))
 							.append("superCategory", new BasicDBObject("$first","$superCategory"))

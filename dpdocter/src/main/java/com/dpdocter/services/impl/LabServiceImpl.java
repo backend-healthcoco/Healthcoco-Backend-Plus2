@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.util.List;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -52,7 +53,7 @@ public class LabServiceImpl implements LabService {
 									.lookup("user_cl", "prescribedByDoctorId", "_id",
 											"user"),
 							Aggregation.match(criteria),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("_id", "$_id")
 											.append("location", new BasicDBObject("$first", "$location"))
 											.append("hospital", new BasicDBObject("$first", "$hospital"))
@@ -64,7 +65,7 @@ public class LabServiceImpl implements LabService {
 											.append("user", new BasicDBObject("$first", "$user")))),
 							Aggregation.unwind("user"),
 
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("_id",
 											new BasicDBObject("id1", "$prescribedByLocationId").append("id2",
 													"$prescribedByDoctorId"))
@@ -75,13 +76,13 @@ public class LabServiceImpl implements LabService {
 															.append("records", new BasicDBObject("$first", "$records"))
 															.append("users", new BasicDBObject("$push", "$user"))
 															.append("user", new BasicDBObject("$first", "$user")))),
-							new CustomAggregationOperation(new BasicDBObject("$project",
+							new CustomAggregationOperation(new Document("$project",
 									new BasicDBObject("location", "$location").append("hospital", "$hospital")
 											.append("reportCount", new BasicDBObject("$size", "$records"))
 											.append("user", new BasicDBObject("firstName", "$user.firstName")
 													.append("id", "$user._id").append("title", "$user.title").append(
 															"reportCount", new BasicDBObject("$size", "$users"))))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("_id", "$_id.id1")
 											.append("location", new BasicDBObject("$first", "$location"))
 											.append("hospital", new BasicDBObject("$first", "$hospital"))
@@ -119,7 +120,7 @@ public class LabServiceImpl implements LabService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -154,7 +155,7 @@ public class LabServiceImpl implements LabService {
 									.lookup("user_cl", "doctorId", "_id",
 											"user"),
 							Aggregation.match(criteria),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("_id", "$_id")
 											.append("location", new BasicDBObject("$first", "$location"))
 											.append("hospital", new BasicDBObject("$first", "$hospital"))
@@ -164,7 +165,7 @@ public class LabServiceImpl implements LabService {
 											.append("user", new BasicDBObject("$first", "$user")))),
 							Aggregation.unwind("user"),
 
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("_id",
 											new BasicDBObject("id1", "$locationId").append("id2", "$doctorId"))
 													.append("location", new BasicDBObject("$first", "$location"))
@@ -172,13 +173,13 @@ public class LabServiceImpl implements LabService {
 													.append("records", new BasicDBObject("$first", "$records"))
 													.append("users", new BasicDBObject("$push", "$user"))
 													.append("user", new BasicDBObject("$first", "$user")))),
-							new CustomAggregationOperation(new BasicDBObject("$project",
+							new CustomAggregationOperation(new Document("$project",
 									new BasicDBObject("location", "$location").append("hospital", "$hospital")
 											.append("reportCount", new BasicDBObject("$size", "$records"))
 											.append("user", new BasicDBObject("firstName", "$user.firstName")
 													.append("id", "$user._id").append("title", "$user.title").append(
 															"reportCount", new BasicDBObject("$size", "$users"))))),
-							new CustomAggregationOperation(new BasicDBObject("$group",
+							new CustomAggregationOperation(new Document("$group",
 									new BasicDBObject("_id", "$_id.id1")
 											.append("location", new BasicDBObject("$first", "$location"))
 											.append("hospital", new BasicDBObject("$first", "$hospital"))

@@ -39,7 +39,7 @@ public class OphthalmologyServiceImpl implements OphthalmologyService {
 		EyeObservationCollection eyeObservationCollection = null;
 		if(eyeObservation.getId() != null)
 		{
-			eyeObservationCollection = eyeObservationRepository.findOne(new ObjectId(eyeObservation.getId()));
+			eyeObservationCollection = eyeObservationRepository.findById(new ObjectId(eyeObservation.getId())).orElse(null);
 			BeanUtil.map(eyeObservation, eyeObservationCollection);
 			eyeObservationCollection.setVisualAcuities(eyeObservation.getVisualAcuities());
 			eyeObservationCollection.setEyeTests(eyeObservation.getEyeTests());
@@ -70,7 +70,7 @@ public class OphthalmologyServiceImpl implements OphthalmologyService {
 			throw new BusinessException(ServiceError.NoRecord,"Record not found");
 		}
 		
-		eyeObservationCollection = eyeObservationRepository.findOne(new ObjectId(id));
+		eyeObservationCollection = eyeObservationRepository.findById(new ObjectId(id)).orElse(null);
 		eyeObservationCollection.setDiscarded(discarded);
 		eyeObservationCollection.setUpdatedTime(new Date());
 		eyeObservationCollection = eyeObservationRepository.save(eyeObservationCollection);
@@ -111,7 +111,7 @@ public class OphthalmologyServiceImpl implements OphthalmologyService {
 		
 		Aggregation aggregation = null;
 		
-		if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+		if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size), Aggregation.limit(size));
 		else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 		
 		AggregationResults<EyeObservation> aggregationResults = mongoTemplate.aggregate(aggregation, EyeObservationCollection.class, EyeObservation.class);
@@ -153,7 +153,7 @@ public class OphthalmologyServiceImpl implements OphthalmologyService {
 		
 		Aggregation aggregation = null;
 		
-		if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+		if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size), Aggregation.limit(size));
 		else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 		
 		AggregationResults<EyeObservation> aggregationResults = mongoTemplate.aggregate(aggregation, EyeObservationCollection.class, EyeObservation.class);

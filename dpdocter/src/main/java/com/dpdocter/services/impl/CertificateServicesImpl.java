@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -116,11 +117,11 @@ public class CertificateServicesImpl implements CertificatesServices {
 				certificateTemplateCollection.setCreatedTime(new Date());
 				if(DPDoctorUtils.anyStringEmpty(request.getDoctorId())) certificateTemplateCollection.setCreatedBy("ADMIN");
 				else {
-					UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+					UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 					certificateTemplateCollection.setCreatedBy(userCollection.getTitle() +" "+userCollection.getFirstName());
 				}
 			}else {
-				CertificateTemplateCollection oldCertificateTemplateCollection = certificateTemplateRepository.findOne(new ObjectId(request.getId()));
+				CertificateTemplateCollection oldCertificateTemplateCollection = certificateTemplateRepository.findById(new ObjectId(request.getId())).orElse(null);
 				certificateTemplateCollection.setUpdatedTime(new Date());
 				certificateTemplateCollection.setCreatedBy(oldCertificateTemplateCollection.getCreatedBy());
 				certificateTemplateCollection.setCreatedTime(oldCertificateTemplateCollection.getCreatedTime());
@@ -190,7 +191,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 	public Boolean discardCertificateTemplates(String templateId, Boolean discarded) {
 		Boolean response = false;
 		try {
-			CertificateTemplateCollection certificateTemplateCollection = certificateTemplateRepository.findOne(new ObjectId(templateId));
+			CertificateTemplateCollection certificateTemplateCollection = certificateTemplateRepository.findById(new ObjectId(templateId)).orElse(null);
 			if(certificateTemplateCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "No Certificate template is found with this Id");
 			}
@@ -217,11 +218,11 @@ public class CertificateServicesImpl implements CertificatesServices {
 				consentFormCollection.setCreatedTime(new Date());
 				if(DPDoctorUtils.anyStringEmpty(request.getDoctorId())) consentFormCollection.setCreatedBy("ADMIN");
 				else {
-					UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+					UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 					consentFormCollection.setCreatedBy(userCollection.getTitle() +" "+userCollection.getFirstName());
 				}
 			}else {
-				ConsentFormCollection oldConsentFormCollection = consentFormRepository.findOne(new ObjectId(request.getId()));
+				ConsentFormCollection oldConsentFormCollection = consentFormRepository.findById(new ObjectId(request.getId())).orElse(null);
 				consentFormCollection.setUpdatedTime(new Date());
 				consentFormCollection.setCreatedBy(oldConsentFormCollection.getCreatedBy());
 				consentFormCollection.setCreatedTime(oldConsentFormCollection.getCreatedTime());
@@ -304,7 +305,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 			
 			if (!discarded)criteria.and("discarded").is(discarded);
 			
-			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 					.append("doctorId", "$doctorId")
 					.append("locationId", "$locationId")
 					.append("hospitalId", "$hospitalId")
@@ -321,7 +322,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 					.append("updatedTime", "$updatedTime")
 					.append("createdBy", "$createdBy")));
 			
-			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 					.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 					.append("locationId", new BasicDBObject("$first", "$locationId"))
 					.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -343,7 +344,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
+							new CustomAggregationOperation(new Document("$redact",
 									new BasicDBObject("$cond", new BasicDBObject("if", 
 											new BasicDBObject("$eq", 
 													Arrays.asList("$patient.locationId", "$locationId")))
@@ -351,14 +352,14 @@ public class CertificateServicesImpl implements CertificatesServices {
 							Aggregation.lookup("user_cl", "patientId", "_id", "user"),
 							Aggregation.unwind("user"),
 							project, group,
-							Aggregation.skip((page) * size),
+							Aggregation.skip((long)(page) * size),
 							Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "createdTime")
 							), ConsentFormCollection.class, ConsentForm.class).getMappedResults();
 				}else {
 					response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
+							new CustomAggregationOperation(new Document("$redact",
 									new BasicDBObject("$cond", new BasicDBObject("if", 
 											new BasicDBObject("$eq", 
 													Arrays.asList("$patient.locationId", "$locationId")))
@@ -393,7 +394,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 	public ConsentForm deletePatientCertificate(String certificateId, Boolean discarded) {
 		ConsentForm response = null;
 		try {
-			ConsentFormCollection consentFormCollection = consentFormRepository.findOne(new ObjectId(certificateId));
+			ConsentFormCollection consentFormCollection = consentFormRepository.findById(new ObjectId(certificateId)).orElse(null);
 			if(consentFormCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "No patient certificate is found with this Id");
 			}
@@ -418,7 +419,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 					Aggregation.newAggregation(Aggregation.match(new Criteria("_id").is(new ObjectId(certificateId))),
 							Aggregation.lookup("patient_cl","patientId", "userId", "patientCollection"),
 							Aggregation.unwind("patientCollection"),
-							new CustomAggregationOperation(new BasicDBObject("$redact", 
+							new CustomAggregationOperation(new Document("$redact", 
 									new BasicDBObject("$cond",
 											new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patientCollection.locationId", "$locationId")))
 											.append("then", "$$KEEP")

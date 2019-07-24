@@ -1,15 +1,16 @@
 package com.dpdocter.services.impl;
 
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.beans.MailAttachment;
@@ -21,6 +22,9 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
 	@Value(value = "${verify.link}")
 	private String link;
+
+	@Value(value = "${welcome.link}")
+	private String welcomeLink;
 
 	@Value(value = "${login.link}")
 	private String loginLink;
@@ -54,70 +58,70 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
 	@Value(value = "${set.password.link}")
 	private String setPasswordLink;
-	
-	@Value(value = "${welcome.link}")
-	private String welcomeLink;
 
 	@Override
 	@Transactional
-	public String generateActivationEmailBody(String fName, String tokenId, String templatePath, String doctorName,
-			String clinicName, String addedBy) throws Exception {
-
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("fName", fName);
-		model.put("doctorName", doctorName);
-		model.put("addedBy", addedBy);
-		model.put("clinicName", clinicName);
-		model.put("link", welcomeLink + "/" + tokenId);
-		model.put("loginLink", loginLink);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
-		model.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+	public String generateActivationEmailBody(String fName, String tokenId, String templatePath, String doctorName, String clinicName, String addedBy) throws Exception {
+		VelocityContext context = new VelocityContext();		
+		context.put("fName", fName);
+		context.put("doctorName", doctorName);
+		context.put("clinicName", clinicName);
+		context.put("addedBy", addedBy);
+		context.put("link", welcomeLink + "/" + tokenId);
+		context.put("loginLink", loginLink);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		context.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
+		StringWriter stringWriter = new StringWriter();
+		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 	}
 
-	
 	@Override
 	@Transactional
 	public String doctorWelcomeEmailBody(String fName, String tokenId, String templatePath, String doctorName,
 			String clinicName) throws Exception {
 
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("fName", fName);
-		model.put("doctorName", doctorName);
-		model.put("clinicName", clinicName);
-		model.put("link", welcomeLink + "/" + tokenId);
-		model.put("loginLink", loginLink);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
-		// model.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		VelocityContext context = new VelocityContext();
+		context.put("fName", fName);
+		context.put("doctorName", doctorName);
+		context.put("clinicName", clinicName);
+		context.put("link", welcomeLink + "/" + tokenId);
+		context.put("loginLink", loginLink);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		
+		StringWriter stringWriter = new StringWriter();
+		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 	}
 
 	@Override
 	@Transactional
 	public String generateForgotPasswordEmailBody(String fName, String tokenId) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("fName", fName);
-		model.put("link", RESET_PASSWORD_LINK + "?uid=" + tokenId);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "forgotPasswordTemplate.vm", "UTF-8",
-				model);
+		VelocityContext context = new VelocityContext();
+		context.put("fName", fName);
+		context.put("link", RESET_PASSWORD_LINK + "?uid=" + tokenId);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+	  
+		StringWriter stringWriter = new StringWriter();
+		velocityEngine.mergeTemplate("forgotPasswordTemplate.vm", "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 	}
 
@@ -125,60 +129,66 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Transactional
 	public String generateContactEmailBody(String fName, String type, String mobileNumber, String emailAddress,
 			String city) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("fName", fName);
-		model.put("city", city);
-		model.put("type", type);
-		model.put("mobileNumber", mobileNumber);
-		model.put("emailAddress", emailAddress);
+		VelocityContext context = new VelocityContext();
+		context.put("fName", fName);
+		context.put("city", city);
+		context.put("type", type);
+		context.put("mobileNumber", mobileNumber);
+		context.put("emailAddress", emailAddress);
+	    StringWriter stringWriter = new StringWriter();
 
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "contactmail.vm", "UTF-8", model);
+		velocityEngine.mergeTemplate("contactmail.vm", "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	@Transactional
 	public String generateContactEmailBody(DoctorContactUs contactUs, String type) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("fName", contactUs.getTitle() + " " + contactUs.getFirstName());
-		model.put("city", contactUs.getCity());
-		model.put("type", type);
-		model.put("mobileNumber", contactUs.getMobileNumber());
-		model.put("emailAddress", contactUs.getEmailAddress());
-		model.put("deviceType", contactUs.getDeviceType());
-		model.put("specialities", contactUs.getSpecialities());
+		VelocityContext context = new VelocityContext();
+		context.put("fName", contactUs.getTitle() + " " + contactUs.getFirstName());
+		context.put("city", contactUs.getCity());
+		context.put("type", type);
+		context.put("mobileNumber", contactUs.getMobileNumber());
+		context.put("emailAddress", contactUs.getEmailAddress());
+		context.put("deviceType", contactUs.getDeviceType());
+		context.put("specialities", contactUs.getSpecialities());
+	    StringWriter stringWriter = new StringWriter();
 
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "contactmail.vm", "UTF-8", model);
+		velocityEngine.mergeTemplate("contactmail.vm", "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	@Transactional
-	public String generateDoctorReferenceEmailBody(String fName, String mobileNumber, String locationName,
-			String labName) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("fName", "Dr." + " " + fName);
-		model.put("locationName", locationName);
-		model.put("mobileNumber", mobileNumber);
-		model.put("labName", labName);
+	public String generateDoctorReferenceEmailBody(String fName, String mobileNumber, String locationName,String labName) {
+		VelocityContext context = new VelocityContext();
+		context.put("fName", "Dr." + " " + fName);
+		context.put("locationName", locationName);
+		context.put("mobileNumber", mobileNumber);
+		context.put("labName", labName);
+	    StringWriter stringWriter = new StringWriter();
 
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "doctorReferenceMail.vm", "UTF-8",
-				model);
+		velocityEngine.mergeTemplate("doctorReferenceMail.vm", "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	@Transactional
 	public String generatePrescriptionListMail(String collectionBody, String requestBody) {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("collectionBody", collectionBody);
 		model.put("requestBody", requestBody);
-
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "prescriptionListMail.vm", "UTF-8",
-				model);
+		
+		VelocityContext context = new VelocityContext();
+		context.put("collectionBody", collectionBody);
+		context.put("requestBody", requestBody);
+		
+	    StringWriter stringWriter = new StringWriter();
+	    velocityEngine.mergeTemplate("prescriptionListMail.vm", "UTF-8", context, stringWriter);
+	    String text = stringWriter.toString();
 		return text;
 	}
 
@@ -205,8 +215,21 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("twitterLink", twitterLink);
 		model.put("linkedInLink", linkedInLink);
 		model.put("googlePlusLink", googlePlusLink);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "addIssueTemplate.vm", "UTF-8",
-				model);
+		
+		VelocityContext context = new VelocityContext();
+		context.put("fName", firstName);
+		context.put("link", RESET_PASSWORD_WEB_LINK);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		
+	    StringWriter stringWriter = new StringWriter();
+
+		velocityEngine.mergeTemplate("addIssueTemplate.vm", "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 	}
 
@@ -222,8 +245,21 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("twitterLink", twitterLink);
 		model.put("linkedInLink", linkedInLink);
 		model.put("googlePlusLink", googlePlusLink);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "resetPasswordSuccess.vm", "UTF-8",
-				model);
+		
+		VelocityContext context = new VelocityContext();
+		context.put("fName", firstName);
+		context.put("link", RESET_PASSWORD_WEB_LINK);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		
+	    StringWriter stringWriter = new StringWriter();
+
+		velocityEngine.mergeTemplate("resetPasswordSuccess.vm", "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 	}
 
@@ -240,8 +276,21 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("twitterLink", twitterLink);
 		model.put("linkedInLink", linkedInLink);
 		model.put("googlePlusLink", googlePlusLink);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
-				"recordShareOtpBeforeVerificationTemplate.vm", "UTF-8", model);
+		
+		VelocityContext context = new VelocityContext();
+		context.put("fName", firstName);
+		context.put("doctorName", doctorName);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		
+	    StringWriter stringWriter = new StringWriter();
+
+		velocityEngine.mergeTemplate("recordShareOtpBeforeVerificationTemplate.vm", "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 	}
 
@@ -258,8 +307,21 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("twitterLink", twitterLink);
 		model.put("linkedInLink", linkedInLink);
 		model.put("googlePlusLink", googlePlusLink);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
-				"recordShareOtpAfterVerificationTemplate.vm", "UTF-8", model);
+		
+		VelocityContext context = new VelocityContext();
+		context.put("fName", firstName);
+		context.put("doctorName", doctorName);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		
+	    StringWriter stringWriter = new StringWriter();
+
+		velocityEngine.mergeTemplate("recordShareOtpAfterVerificationTemplate.vm", "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 	}
 
@@ -279,7 +341,23 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("twitterLink", twitterLink);
 		model.put("linkedInLink", linkedInLink);
 		model.put("googlePlusLink", googlePlusLink);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		
+		VelocityContext context = new VelocityContext();
+		context.put("doctorName", doctorName);
+		context.put("patientName", patientName);
+		context.put("dateTime", dateTime);
+		context.put("clinicName", clinicName);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		
+	    StringWriter stringWriter = new StringWriter();
+
+		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 	}
 
@@ -296,7 +374,21 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("twitterLink", twitterLink);
 		model.put("linkedInLink", linkedInLink);
 		model.put("googlePlusLink", googlePlusLink);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		
+		VelocityContext context = new VelocityContext();
+		context.put("fName", userName);
+		context.put("resumeType", resumeType);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		
+	    StringWriter stringWriter = new StringWriter();
+
+		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 	}
 
@@ -316,38 +408,69 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("twitterLink", twitterLink);
 		model.put("linkedInLink", linkedInLink);
 		model.put("googlePlusLink", googlePlusLink);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		
+		VelocityContext context = new VelocityContext();
+		context.put("fName", patientName);
+		context.put("doctorName", doctorName);
+		context.put("clinicName", clinicName);
+		context.put("clinicAddress", clinicAddress);
+		context.put("mailRecordCreatedDate", mailRecordCreatedDate);
+		context.put("medicalRecordType", medicalRecordType);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		
+	    StringWriter stringWriter = new StringWriter();
+
+		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 	}
 
 	public String generatePaymentEmailBody(String orderId, String planName, String amount, String patientName,
-
 			String time, String templatePath) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("orderId", orderId);
-		model.put("planName", planName);
-		model.put("amount", amount);
-		model.put("patientName", patientName);
-		model.put("time", time);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		VelocityContext context = new VelocityContext();
+		context.put("orderId", orderId);
+		context.put("planName", planName);
+		context.put("amount", amount);
+		context.put("patientName", patientName);
+		context.put("time", time);
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		StringWriter stringWriter = new StringWriter();
+
+		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
+		
 		return text;
 	}
 
 	@Override
 	public String generateFeedbackEmailBody(String patientName, String doctorName, String clinicName,
 			String uniqueFeedbackId, String templatePath) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("fName", patientName);
-		model.put("doctorName", doctorName);
-		model.put("clinicName", clinicName);
-		model.put("uniqueFeedbackId", uniqueFeedbackId);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		
+		VelocityContext context = new VelocityContext();
+		context.put("fName", patientName);
+		context.put("doctorName", doctorName);
+		context.put("clinicName", clinicName);
+		context.put("uniqueFeedbackId", uniqueFeedbackId);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		
+	    StringWriter stringWriter = new StringWriter();
+
+		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 
 	}
@@ -364,7 +487,22 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("twitterLink", twitterLink);
 		model.put("linkedInLink", linkedInLink);
 		model.put("googlePlusLink", googlePlusLink);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		
+		VelocityContext context = new VelocityContext();
+		context.put("appDeviceType", appDeviceType);
+		context.put("appType", appType);
+		context.put("bitLink", bitLink);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		
+	    StringWriter stringWriter = new StringWriter();
+
+		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 
 	}
@@ -384,39 +522,70 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("twitterLink", twitterLink);
 		model.put("linkedInLink", linkedInLink);
 		model.put("googlePlusLink", googlePlusLink);
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		
+		VelocityContext context = new VelocityContext();
+		context.put("doctorName", doctorName);
+		context.put("clinicName", clinicName);
+		context.put("patientName", patientName);
+		context.put("recordName", recordName);
+		context.put("uniqueRecordId", uniqueRecordId);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		
+	    StringWriter stringWriter = new StringWriter();
+
+	    velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	@Transactional
 	public String generateExceptionEmailBody(String exception) {
 		Map<String, Object> model = new HashMap<String, Object>();
-
 		model.put("exceptionMsg", exception);
 
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "exceptionMail.vm", "UTF-8", model);
+		VelocityContext context = new VelocityContext();
+		context.put("exceptionMsg", exception);
+
+	    StringWriter stringWriter = new StringWriter();
+
+		velocityEngine.mergeTemplate("exceptionMail.vm", "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
 		return text;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public String generateDentalImagingInvoiceEmailBody(String doctorName, String dentalImagingLab, String patientName,
 			List<MailAttachment> reports, String templatePath) {
 		String text = "";
 		try {
+			
 			Map<String, Object> model = new HashMap<String, Object>();
 			model.put("doctorName", doctorName);
 			model.put("dentalImagingLab", dentalImagingLab);
 			model.put("patientName", patientName);
 			model.put("reports", reports);
-			text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+			
+			VelocityContext context = new VelocityContext();
+			context.put("doctorName", doctorName);
+			context.put("dentalImagingLab", dentalImagingLab);
+			context.put("patientName", patientName);
+			context.put("reports", reports);
+			
+		    StringWriter stringWriter = new StringWriter();
+
+			velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
+		    text = stringWriter.toString();
+
 			return text;
 		} catch (Exception e) {
 			e.printStackTrace();
-			// TODO: handle exception
 		}
 		return text;
 
@@ -426,23 +595,24 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Transactional
 	public String nutritionReferenceEmailBody(String patientName, String mobileNumber, String birthDate,
 			String profession, String gender, String address, String city, String pinCode, String doctorName,
-			String planName, String subplan,String templatePath) throws Exception {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("patientName", patientName);
-		model.put("doctorName", doctorName);
-		model.put("mobileNumber", mobileNumber);
-		model.put("birthDate", birthDate);
-		model.put("profession", profession);
-		model.put("gender", gender);
-		model.put("address", address);
-		model.put("city", city);
-		model.put("pinCode", pinCode);
-		model.put("planName", planName);
-		model.put("subplan", subplan);
-		// model.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
-		@SuppressWarnings("deprecation")
-		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
-		return text;
+			String planName, String subplan, String templatePath) throws Exception {
+		VelocityContext context = new VelocityContext();
+		context.put("patientName", patientName);
+		context.put("doctorName", doctorName);
+		context.put("mobileNumber", mobileNumber);
+		context.put("birthDate", birthDate);
+		context.put("profession", profession);
+		context.put("gender", gender);
+		context.put("address", address);
+		context.put("city", city);
+		context.put("pinCode", pinCode);
+		context.put("planName", planName);
+		context.put("subplan", subplan);
+		StringWriter stringWriter = new StringWriter();
+
+		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
+		String text = stringWriter.toString();
+	    return text;
 	}
 
 }

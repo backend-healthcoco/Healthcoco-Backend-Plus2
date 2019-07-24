@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -185,7 +186,7 @@ public class ReportsServiceImpl implements ReportsService {
 	public IPDReports submitIPDReport(IPDReports ipdReports) {
 		IPDReports response = null;
 		IPDReportsCollection ipdReportsCollection = new IPDReportsCollection();
-		UserCollection userCollection = userRepository.findOne(new ObjectId(ipdReports.getDoctorId()));
+		UserCollection userCollection = userRepository.findById(new ObjectId(ipdReports.getDoctorId())).orElse(null);
 
 		if (ipdReports != null) {
 			BeanUtil.map(ipdReports, ipdReportsCollection);
@@ -239,7 +240,7 @@ public class ReportsServiceImpl implements ReportsService {
 					opdReportsCollection = opdReportsRepository.save(opdReportsCollectionOld);
 				} else {
 					opdReportsCollection = new OPDReportsCollection();
-					UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
+					UserCollection userCollection = userRepository.findById(new ObjectId(opdReports.getDoctorId())).orElse(null);
 					BeanUtil.map(opdReports, opdReportsCollection);
 					opdReportsCollection.setCreatedBy(
 							(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
@@ -270,7 +271,7 @@ public class ReportsServiceImpl implements ReportsService {
 	public OTReports submitOTReport(OTReports otReports) {
 		OTReports response = null;
 		OTReportsCollection otReportsCollection = new OTReportsCollection();
-		UserCollection userCollection = userRepository.findOne(new ObjectId(otReports.getDoctorId()));
+		UserCollection userCollection = userRepository.findById(new ObjectId(otReports.getDoctorId())).orElse(null);
 		if (otReports != null) {
 			BeanUtil.map(otReports, otReportsCollection);
 			try {
@@ -308,7 +309,7 @@ public class ReportsServiceImpl implements ReportsService {
 	public DeliveryReports submitDeliveryReport(DeliveryReports deliveryReports) {
 		DeliveryReports response = null;
 		DeliveryReportsCollection deliveryReportsCollection = new DeliveryReportsCollection();
-		UserCollection userCollection = userRepository.findOne(new ObjectId(deliveryReports.getDoctorId()));
+		UserCollection userCollection = userRepository.findById(new ObjectId(deliveryReports.getDoctorId())).orElse(null);
 		if (deliveryReports != null) {
 			BeanUtil.map(deliveryReports, deliveryReportsCollection);
 			try {
@@ -565,7 +566,7 @@ public class ReportsServiceImpl implements ReportsService {
 							for (PrescriptionItem prescriptionItem : items) {
 								OPDPrescriptionItemResponse prescriptionItemDetail = new OPDPrescriptionItemResponse();
 								BeanUtil.map(prescriptionItem, prescriptionItemDetail);
-								DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+								DrugCollection drugCollection = drugRepository.findById(prescriptionItem.getDrugId()).orElse(null);
 								if (drugCollection != null) {
 									Drug drug = new Drug();
 									BeanUtil.map(drugCollection, drug);
@@ -616,7 +617,7 @@ public class ReportsServiceImpl implements ReportsService {
 							for (TestAndRecordData data : tests) {
 								if (data.getTestId() != null) {
 									DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-											.findOne(data.getTestId());
+											.findById(data.getTestId()).orElse(null);
 									DiagnosticTest diagnosticTest = new DiagnosticTest();
 									if (diagnosticTestCollection != null) {
 										BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -953,7 +954,7 @@ public class ReportsServiceImpl implements ReportsService {
 		try {
 			ClinicalIndicatorCollection clinicalIndicatorCollection = null;
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
 				}
@@ -963,7 +964,7 @@ public class ReportsServiceImpl implements ReportsService {
 
 			} else {
 				ClinicalIndicatorCollection oldclinicalIndicatorCollection = clinicalIndicatorRepository
-						.findOne(new ObjectId(request.getId()));
+						.findById(new ObjectId(request.getId())).orElse(null);
 				request.setCreatedBy(oldclinicalIndicatorCollection.getCreatedBy());
 				request.setCreatedTime(oldclinicalIndicatorCollection.getCreatedTime());
 				request.setUpdatedTime(new Date());
@@ -987,7 +988,7 @@ public class ReportsServiceImpl implements ReportsService {
 		ClinicalIndicator response = null;
 		try {
 			ClinicalIndicatorCollection clinicalIndicatorCollection = clinicalIndicatorRepository
-					.findOne(new ObjectId(indicatorId));
+					.findById(new ObjectId(indicatorId)).orElse(null);
 			response = new ClinicalIndicator();
 			BeanUtil.map(clinicalIndicatorCollection, response);
 		} catch (Exception e) {
@@ -1035,7 +1036,7 @@ public class ReportsServiceImpl implements ReportsService {
 		ClinicalIndicator response = null;
 		try {
 			ClinicalIndicatorCollection clinicalIndicatorCollection = clinicalIndicatorRepository
-					.findOne(new ObjectId(indicatorId));
+					.findById(new ObjectId(indicatorId)).orElse(null);
 			if (clinicalIndicatorCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord,
 						"No any ClinicalIndicator record found for given indicatorId ");
@@ -1061,7 +1062,7 @@ public class ReportsServiceImpl implements ReportsService {
 		try {
 			EquipmentLogAMCAndServicingRegisterCollection equipmentLogAMCAndServicingRegisterCollection = null;
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
 				}
@@ -1071,7 +1072,7 @@ public class ReportsServiceImpl implements ReportsService {
 
 			} else {
 				EquipmentLogAMCAndServicingRegisterCollection oldequipmentLogAMCAndServicingRegisterCollection = equipmentLogAMCAndServicingRegisterRepository
-						.findOne(new ObjectId(request.getId()));
+						.findById(new ObjectId(request.getId())).orElse(null);
 				request.setCreatedBy(oldequipmentLogAMCAndServicingRegisterCollection.getCreatedBy());
 				request.setCreatedTime(oldequipmentLogAMCAndServicingRegisterCollection.getCreatedTime());
 				request.setUpdatedTime(new Date());
@@ -1096,7 +1097,7 @@ public class ReportsServiceImpl implements ReportsService {
 		EquipmentLogAMCAndServicingRegister response = null;
 		try {
 			EquipmentLogAMCAndServicingRegisterCollection equipmentLogAMCAndServicingRegisterCollection = equipmentLogAMCAndServicingRegisterRepository
-					.findOne(new ObjectId(registerid));
+					.findById(new ObjectId(registerid)).orElse(null);
 			response = new EquipmentLogAMCAndServicingRegister();
 			BeanUtil.map(equipmentLogAMCAndServicingRegisterCollection, response);
 		} catch (Exception e) {
@@ -1142,7 +1143,7 @@ public class ReportsServiceImpl implements ReportsService {
 		EquipmentLogAMCAndServicingRegister response = null;
 		try {
 			EquipmentLogAMCAndServicingRegisterCollection equipmentLogAMCAndServicingRegisterCollection = equipmentLogAMCAndServicingRegisterRepository
-					.findOne(new ObjectId(registerId));
+					.findById(new ObjectId(registerId)).orElse(null);
 			if (equipmentLogAMCAndServicingRegisterCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord,
 						"No any Equipment Log AMC And Servicing Register found for given registerId ");
@@ -1167,7 +1168,7 @@ public class ReportsServiceImpl implements ReportsService {
 		try {
 			RepairRecordsOrComplianceBookCollection bookCollection = null;
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
 				}
@@ -1177,7 +1178,7 @@ public class ReportsServiceImpl implements ReportsService {
 
 			} else {
 				RepairRecordsOrComplianceBookCollection oldComplianceBookCollection = repairRecordsOrComplianceBookRepository
-						.findOne(new ObjectId(request.getId()));
+						.findById(new ObjectId(request.getId())).orElse(null);
 				request.setCreatedBy(oldComplianceBookCollection.getCreatedBy());
 				request.setCreatedTime(oldComplianceBookCollection.getCreatedTime());
 				request.setUpdatedTime(new Date());
@@ -1202,7 +1203,7 @@ public class ReportsServiceImpl implements ReportsService {
 		RepairRecordsOrComplianceBook response = null;
 		try {
 			RepairRecordsOrComplianceBookCollection bookCollection = repairRecordsOrComplianceBookRepository
-					.findOne(new ObjectId(bookid));
+					.findById(new ObjectId(bookid)).orElse(null);
 			response = new RepairRecordsOrComplianceBook();
 			BeanUtil.map(bookCollection, response);
 		} catch (Exception e) {
@@ -1248,7 +1249,7 @@ public class ReportsServiceImpl implements ReportsService {
 		RepairRecordsOrComplianceBook response = null;
 		try {
 			RepairRecordsOrComplianceBookCollection repairRecordsOrComplianceBookCollection = repairRecordsOrComplianceBookRepository
-					.findOne(new ObjectId(bookId));
+					.findById(new ObjectId(bookId)).orElse(null);
 			if (repairRecordsOrComplianceBookCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord,
 						"No any Repair Records Or Compliance Book found for given registerId ");
@@ -1274,7 +1275,7 @@ public class ReportsServiceImpl implements ReportsService {
 		try {
 			BroakenAppointmentCollection appointmentCollection = null;
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
 				}
@@ -1284,7 +1285,7 @@ public class ReportsServiceImpl implements ReportsService {
 
 			} else {
 				BroakenAppointmentCollection oldroakenAppointmentCollection = brokenAppointmentRepository
-						.findOne(new ObjectId(request.getId()));
+						.findById(new ObjectId(request.getId())).orElse(null);
 				request.setCreatedBy(oldroakenAppointmentCollection.getCreatedBy());
 				request.setCreatedTime(oldroakenAppointmentCollection.getCreatedTime());
 				request.setUpdatedTime(new Date());
@@ -1308,7 +1309,7 @@ public class ReportsServiceImpl implements ReportsService {
 		BrokenAppointment response = null;
 		try {
 			BroakenAppointmentCollection appointmentCollection = brokenAppointmentRepository
-					.findOne(new ObjectId(appointmentId));
+					.findById(new ObjectId(appointmentId)).orElse(null);
 			response = new BrokenAppointment();
 			BeanUtil.map(appointmentCollection, response);
 		} catch (Exception e) {
@@ -1353,7 +1354,7 @@ public class ReportsServiceImpl implements ReportsService {
 		BrokenAppointment response = null;
 		try {
 			BroakenAppointmentCollection appointmentCollection = brokenAppointmentRepository
-					.findOne(new ObjectId(appointmentId));
+					.findById(new ObjectId(appointmentId)).orElse(null);
 			if (appointmentCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord,
 						"No any Broken Appointment found for given appointmentId ");
@@ -1383,11 +1384,11 @@ public class ReportsServiceImpl implements ReportsService {
 									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 									Aggregation.unwind("location"),
 									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
-									new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new CustomAggregationOperation(new Document("$unwind",
 											new BasicDBObject("path", "$patientCollection")
 													.append("preserveNullAndEmptyArrays", true))),
 									new CustomAggregationOperation(
-											new BasicDBObject("$redact",
+											new Document("$redact",
 													new BasicDBObject("$cond",
 															new BasicDBObject("if", new BasicDBObject("$eq",
 																	Arrays.asList("$patientCollection.locationId",
@@ -1636,10 +1637,10 @@ public class ReportsServiceImpl implements ReportsService {
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 							Aggregation.unwind("location"),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patientCollection"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$patientCollection").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$redact",
+							new CustomAggregationOperation(new Document("$redact",
 									new BasicDBObject("$cond", new BasicDBObject("if",
 											new BasicDBObject("$eq",
 													Arrays.asList("$patientCollection.locationId", "$locationId")))

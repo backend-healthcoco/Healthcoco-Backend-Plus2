@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.search.join.ScoreMode;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -103,10 +104,10 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(productId)) {
-				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.termsQuery("drugIds", productId),
-						QueryBuilders.termsQuery("treatmentServiceIds", productId),
-						QueryBuilders.termsQuery("nutritionPlanIds", productId),
-						QueryBuilders.termsQuery("subscriptionPlanIds", productId)));
+				boolQueryBuilder.must(boolQuery().should(QueryBuilders.termsQuery("drugIds", productId))
+						.should(QueryBuilders.termsQuery("treatmentServiceIds", productId))
+						.should(QueryBuilders.termsQuery("nutritionPlanIds", productId))
+						.should(QueryBuilders.termsQuery("subscriptionPlanIds", productId)).minimumShouldMatch(1));
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(offerType)) {
@@ -121,7 +122,7 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 				size = 15;
 
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(page, size, Direction.ASC, "updatedTime")).build();
+					.withPageable(PageRequest.of(page, size, Direction.ASC, "updatedTime")).build();
 			List<ESOfferDocument> documents = elasticsearchTemplate.queryForList(searchQuery, ESOfferDocument.class);
 			if (documents != null && !documents.isEmpty()) {
 				response = new ArrayList<Offer>();
@@ -165,7 +166,7 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 				size = 15;
 
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(page, size, Direction.ASC, "rank")).build();
+					.withPageable(PageRequest.of(page, size, Direction.ASC, "rank")).build();
 			List<ESTrendingDocument> documents = elasticsearchTemplate.queryForList(searchQuery,
 					ESTrendingDocument.class);
 			if (documents != null && !documents.isEmpty()) {
@@ -176,7 +177,7 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 					BeanUtil.map(document, trending);
 					if (!DPDoctorUtils.anyStringEmpty(trending.getOfferId())) {
 						Offer offer = new Offer();
-						ESOfferDocument offerDocument = esOfferRepository.findOne(trending.getOfferId());
+						ESOfferDocument offerDocument = esOfferRepository.findById(trending.getOfferId()).orElse(null);
 						BeanUtil.map(offerDocument, offer);
 						if (offer != null) {
 							if (offer.getTitleImage() != null) {
@@ -193,7 +194,7 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 						}
 					} else if (!DPDoctorUtils.anyStringEmpty(trending.getBlogId())) {
 						Blog blog = new Blog();
-						BlogCollection blogCollection = blogRepository.findOne(new ObjectId(trending.getBlogId()));
+						BlogCollection blogCollection = blogRepository.findById(new ObjectId(trending.getBlogId())).orElse(null);
 						BeanUtil.map(blogCollection, blog);
 
 						if (blog != null && !DPDoctorUtils.anyStringEmpty(blog.getTitleImage())) {
@@ -219,7 +220,6 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 			return null;
 	}
 
-	@SuppressWarnings("deprecation")
 	private void createTimeFilter(BoolQueryBuilder boolQueryBuilder, int maxTime, int minTime, List<String> days) {
 		if (days != null && !days.isEmpty()) {
 			for (int i = 0; i < days.size(); i++) {
@@ -229,30 +229,31 @@ public class ESTrendingServicesImpl implements ESTrendingServices {
 			if (maxTime == 0) {
 				maxTime = 1439;
 			}
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("time", boolQuery().must(QueryBuilders.andQuery(
-					nestedQuery("time.workingHours", QueryBuilders.orQuery(
-
-							QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(maxTime),
-
-							QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(minTime).lt(maxTime),
-							QueryBuilders.andQuery(
-									QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(1439),
-									QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(0).lt(maxTime)))),
-					QueryBuilders.termsQuery("time.workingDay", days)))));
-		} else {
+			boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+					boolQuery().must(boolQuery().should(
+							QueryBuilders.nestedQuery("workingSchedules.workingHours", 
+									boolQuery().should(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime).lt(maxTime))
+											   .should(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(minTime).lt(maxTime))
+											   .should(boolQuery().should(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(maxTime).lt(1439))
+													              .should(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(0).lt(minTime))
+													              .minimumShouldMatch(2))
+											   .minimumShouldMatch(1),
+									ScoreMode.None))
+							                 .should(QueryBuilders.termsQuery("workingSchedules.workingDay", days)).minimumShouldMatch(2)), ScoreMode.None));
+			} else {
 
 			if (maxTime == 0) {
 				maxTime = 1439;
 			}
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("time",
-					boolQuery().must(nestedQuery("time.workingHours", QueryBuilders.orQuery(
-
-							QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(maxTime),
-
-							QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(minTime).lt(maxTime),
-							QueryBuilders.andQuery(
-									QueryBuilders.rangeQuery("time.workingHours.toTime").gt(minTime).lt(1439),
-									QueryBuilders.rangeQuery("time.workingHours.fromTime").gt(0).lt(maxTime)))))));
+			boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules.workingHours", 
+					boolQuery().should(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime).lt(maxTime))
+					   .should(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(minTime).lt(maxTime))
+					   .should(boolQuery().should(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(maxTime).lt(1439))
+							              .should(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(0).lt(minTime))
+							              .minimumShouldMatch(2))
+					   .minimumShouldMatch(1),
+			                      ScoreMode.None));
+			
 		}
 	}
 

@@ -115,10 +115,10 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 		SearchQuery searchQuery = null;
 		if (size > 0)
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(page, size, Direction.ASC, "name")).build();
+					.withPageable(PageRequest.of(page, size, Direction.ASC, "name")).build();
 		else
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(0, 15, Direction.ASC, "name")).build();
+					.withPageable(PageRequest.of(0, 15, Direction.ASC, "name")).build();
 		recipes = elasticsearchTemplate.queryForList(searchQuery, ESRecipeDocument.class);
 		if (recipes != null && !recipes.isEmpty()) {
 			response = new ArrayList<ESRecipeResponse>();
@@ -147,7 +147,7 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 			size = 15;
 
 		searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-				.withPageable(new PageRequest(page, size, Direction.ASC, "name")).build();
+				.withPageable(PageRequest.of(page, size, Direction.ASC, "name")).build();
 		List<ESNutrientDocument> nutrients = elasticsearchTemplate.queryForList(searchQuery, ESNutrientDocument.class);
 		if (nutrients != null && !nutrients.isEmpty()) {
 			response = new ArrayList<ESNutrientResponse>();
@@ -174,7 +174,7 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 		if (size <= 0)
 			size = 15;
 		SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-				.withPageable(new PageRequest(page, size, Direction.ASC, "name")).build();
+				.withPageable(PageRequest.of(page, size, Direction.ASC, "name")).build();
 		List<ESIngredientDocument> ingrdients = elasticsearchTemplate.queryForList(searchQuery,
 				ESIngredientDocument.class);
 
@@ -206,7 +206,7 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 				size = 15;
 			List<ESExerciseDocument> exercises = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
 					.withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("name").order(SortOrder.ASC))
-					.withPageable(new PageRequest(page, size)).build(), ESExerciseDocument.class);
+					.withPageable(PageRequest.of(page, size)).build(), ESExerciseDocument.class);
 
 			if (exercises != null && !exercises.isEmpty()) {
 				response = new ArrayList<Exercise>();
@@ -244,10 +244,10 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 		SearchQuery searchQuery = null;
 		if (size > 0)
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(page, size, Direction.ASC, "name")).build();
+					.withPageable(PageRequest.of(page, size, Direction.ASC, "name")).build();
 		else
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(0, 15, Direction.ASC, "name")).build();
+					.withPageable(PageRequest.of(0, 15, Direction.ASC, "name")).build();
 		recipes = elasticsearchTemplate.queryForList(searchQuery, ESRecipeDocument.class);
 		if (recipes != null && !recipes.isEmpty()) {
 			response = new ArrayList<ESRecipeUserAppResponse>();

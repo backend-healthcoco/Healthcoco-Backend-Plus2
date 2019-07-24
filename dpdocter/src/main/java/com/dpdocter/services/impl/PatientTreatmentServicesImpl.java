@@ -16,6 +16,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -172,7 +173,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				treatmentServicesCollection.setTreatmentCode("TR" + DPDoctorUtils.generateRandomId());
 
 				if (!DPDoctorUtils.anyStringEmpty(treatmentServicesCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(treatmentServicesCollection.getDoctorId());
+					UserCollection userCollection = userRepository.findById(treatmentServicesCollection.getDoctorId()).orElse(null);
 					if (userCollection != null) {
 						treatmentServicesCollection.setRankingCount(1);
 
@@ -186,7 +187,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				treatmentServicesCollection = treatmentServicesRepository.save(treatmentServicesCollection);
 			} else {
 				treatmentServicesCollection = treatmentServicesRepository
-						.findOne(new ObjectId(treatmentService.getId()));
+						.findById(new ObjectId(treatmentService.getId())).orElse(null);
 				if (treatmentServicesCollection != null) {
 					if (!DPDoctorUtils.anyStringEmpty(treatmentService.getName())) {
 						treatmentServicesCollection.setName(treatmentService.getName());
@@ -221,7 +222,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		try {
 			UserCollection userCollection = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
-				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			}
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 				treatmentServicesCostCollection = new TreatmentServicesCostCollection();
@@ -238,7 +239,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 			} else {
 				treatmentServicesCostCollection = treatmentServicesCostRepository
-						.findOne(new ObjectId(request.getId()));
+						.findById(new ObjectId(request.getId())).orElse(null);
 				if (treatmentServicesCostCollection != null) {
 					treatmentServicesCostCollection.setCost(request.getCost());
 					treatmentServicesCostCollection.setUpdatedTime(new Date());
@@ -252,7 +253,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				TreatmentService treatmentService = null;
 				if (request.getTreatmentService().getId() != null)
 					treatmentServicesCollection = treatmentServicesRepository
-							.findOne(new ObjectId(request.getTreatmentService().getId()));
+							.findById(new ObjectId(request.getTreatmentService().getId())).orElse(null);
 				if (treatmentServicesCollection == null) {
 
 					if (request.getTreatmentService().getName() == null) {
@@ -334,7 +335,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				if (DPDoctorUtils.anyStringEmpty(createdBy)) {
 					UserCollection userCollection = null;
 					if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
-						userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+						userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 					}
 					if (userCollection != null)
 						createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -345,7 +346,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				}
 				patientTreatmentCollection.setCreatedBy(createdBy);
 			} else {
-				PatientTreatmentCollection oldPatientTreatmentCollection = patientTreamentRepository.findOne(
+				PatientTreatmentCollection oldPatientTreatmentCollection = patientTreamentRepository.findById(
 						new ObjectId(request.getId()), new ObjectId(request.getDoctorId()),
 						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 
@@ -384,7 +385,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					BeanUtil.map(treatmentRequest, treatment);
 					BeanUtil.map(treatmentRequest, treatmentResponse);
 					TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-							.findOne(new ObjectId(treatmentRequest.getTreatmentServiceId()));
+							.findById(new ObjectId(treatmentRequest.getTreatmentServiceId())).orElse(null);
 					if (treatmentServicesCollection != null) {
 						TreatmentService treatmentService = new TreatmentService();
 						BeanUtil.map(treatmentServicesCollection, treatmentService);
@@ -425,7 +426,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			String hospitalId, Treatment treatment) {
 		PatientTreatmentResponse response = null;
 		try {
-			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findOne(
+			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findById(
 					new ObjectId(treatmentId), new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId));
 			if (patientTreatmentCollection == null) {
@@ -446,7 +447,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				TreatmentResponse treatmentResponse = new TreatmentResponse();
 				BeanUtil.map(treatment, treatmentResponse);
 				TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-						.findOne(treatment.getTreatmentServiceId());
+						.findById(treatment.getTreatmentServiceId()).orElse(null);
 				if (treatmentServicesCollection != null) {
 					TreatmentService treatmentService = new TreatmentService();
 					BeanUtil.map(treatmentServicesCollection, treatmentService);
@@ -477,7 +478,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			String hospitalId, Boolean discarded) {
 		PatientTreatmentResponse response = null;
 		try {
-			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findOne(
+			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findById(
 					new ObjectId(treatmentId), new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId));
 
@@ -507,7 +508,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		PatientTreatmentResponse response = null;
 		try {
 			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository
-					.findOne(new ObjectId(treatmentId));
+					.findById(new ObjectId(treatmentId)).orElse(null);
 
 			if (patientTreatmentCollection != null) {
 				patientTreatmentCollection.setDiscarded(discarded);
@@ -544,7 +545,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	public PatientTreatmentResponse getPatientTreatmentById(String treatmentId) {
 		PatientTreatmentResponse response;
 		try {
-			CustomAggregationOperation projectList = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectList = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("patientId", "$patientId").append("locationId", "$locationId")
 							.append("hospitalId", "$hospitalId").append("doctorId", "$doctorId")
 							.append("visitId", "$patientVisit._id").append("uniqueEmrId", "$uniqueEmrId")
@@ -569,7 +570,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							.append("appointmentRequest", "$appointmentRequest")));
 			Aggregation aggregation = Aggregation
 					.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$treatments").append("includeArrayIndex",
 											"arrayIndex"))),
 							Aggregation.match(new Criteria("_id").is(new ObjectId(treatmentId))
@@ -580,19 +581,19 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							Aggregation
 									.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 							Aggregation.unwind("treatmentService"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$appointmentRequest")
 											.append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
 							Aggregation.unwind("patientVisit"),
 
 							Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$treatmentDoctor").append("preserveNullAndEmptyArrays",
 											true))),
 							projectList,
 
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+							new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$_id")
 									.append("patientId", new BasicDBObject("$first", "$patientId"))
 									.append("locationId", new BasicDBObject("$first", "$locationId"))
 									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -633,7 +634,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		List<PatientTreatment> response = null;
 
 		try {
-			CustomAggregationOperation projectList = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectList = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("patientId", "$patientId").append("locationId", "$locationId")
 							.append("hospitalId", "$hospitalId").append("doctorId", "$doctorId")
 							.append("visitId", "$patientVisit._id").append("uniqueEmrId", "$uniqueEmrId")
@@ -658,7 +659,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.match(new Criteria("_id").in(treatmentId).and("isPatientDiscarded").is(false)),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$treatments").append("includeArrayIndex", "arrayIndex"))),
 
 					Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
@@ -667,11 +668,11 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
 					Aggregation.unwind("patientVisit"),
 					Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
+					new CustomAggregationOperation(new Document("$unwind",
 							new BasicDBObject("path", "$treatmentDoctor").append("preserveNullAndEmptyArrays", true))),
 
 					projectList,
-					new CustomAggregationOperation(new BasicDBObject("$group",
+					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("id", "$_id")
 									.append("patientId", new BasicDBObject("$first", "$patientId"))
 									.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -738,7 +739,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			if (!DPDoctorUtils.anyStringEmpty(status))
 				criteria.and("treatments.status").is(status);
 			Aggregation aggregation = null;
-			CustomAggregationOperation projectList = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectList = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("patientId", "$patientId").append("locationId", "$locationId")
 							.append("hospitalId", "$hospitalId").append("doctorId", "$doctorId")
 							.append("visitId", "$patientVisit._id").append("uniqueEmrId", "$uniqueEmrId")
@@ -763,12 +764,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$treatments").append("includeArrayIndex", "arrayIndex"))),
 						Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 								"treatmentService"),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
 						Aggregation.unwind("treatmentService"),
@@ -776,12 +777,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 						Aggregation.unwind("patientVisit"),
 						Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path",
 										"$treatmentDoctor").append("preserveNullAndEmptyArrays",
 												true))),
 						projectList,
-						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+						new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$_id")
 								.append("patientId", new BasicDBObject("$first", "$patientId"))
 								.append("locationId", new BasicDBObject("$first", "$locationId"))
 								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -801,17 +802,17 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 								.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 								.append("treatments", new BasicDBObject("$push", "$treatments")))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$treatments").append("includeArrayIndex", "arrayIndex"))),
 						Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 								"treatmentService"),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
 
@@ -820,12 +821,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						Aggregation.unwind("patientVisit"),
 						Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
 
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$treatmentDoctor").append("preserveNullAndEmptyArrays",
 										true))),
 
 						projectList,
-						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+						new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$_id")
 								.append("patientId", new BasicDBObject("$first", "$patientId"))
 								.append("locationId", new BasicDBObject("$first", "$locationId"))
 								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -894,7 +895,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			if (!DPDoctorUtils.anyStringEmpty(status))
 				criteria.and("treatments.status").is(status);
 			Aggregation aggregation = null;
-			CustomAggregationOperation projectList = new CustomAggregationOperation(new BasicDBObject("$project",
+			CustomAggregationOperation projectList = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("patientId", "$patientId").append("locationId", "$locationId")
 							.append("hospitalId", "$hospitalId").append("doctorId", "$doctorId")
 							.append("visitId", "$patientVisit._id").append("uniqueEmrId", "$uniqueEmrId")
@@ -918,24 +919,24 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							.append("treatments.treatmentFields", "$treatments.treatmentFields")));
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$treatments").append("includeArrayIndex", "arrayIndex"))),
 						Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 								"treatmentService"),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
 
 						Aggregation.lookup("user_cl", "treatment.doctorId", "_id", "treatmentDoctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$treatmentDoctor").append("preserveNullAndEmptyArrays",
 										true))),
 						projectList, Aggregation.unwind("treatment"),
 						Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
 						Aggregation.unwind("patientVisit"),
 
-						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+						new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$_id")
 								.append("patientId", new BasicDBObject("$first", "$patientId"))
 								.append("locationId", new BasicDBObject("$first", "$locationId"))
 								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -955,16 +956,16 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 								.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 								.append("treatments", new BasicDBObject("$push", "$treatments")))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$treatments").append("includeArrayIndex", "arrayIndex"))),
 						Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 								"treatmentService"),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
 
@@ -973,12 +974,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 						Aggregation.unwind("patientVisit"),
 						Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
+						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path",
 										"$treatmentDoctor").append("preserveNullAndEmptyArrays",
 												true))),
 						projectList,
-						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+						new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$_id")
 								.append("patientId", new BasicDBObject("$first", "$patientId"))
 								.append("locationId", new BasicDBObject("$first", "$locationId"))
 								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -1018,7 +1019,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		TreatmentService response = null;
 		try {
 			TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-					.findOne(new ObjectId(treatmentServiceId));
+					.findById(new ObjectId(treatmentServiceId)).orElse(null);
 			if (treatmentServicesCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(treatmentServicesCollection.getDoctorId(),
 						treatmentServicesCollection.getHospitalId(), treatmentServicesCollection.getLocationId())) {
@@ -1054,7 +1055,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		TreatmentServiceCost response = null;
 		try {
 			TreatmentServicesCostCollection treatmentServicesCostCollection = treatmentServicesCostRepository
-					.findOne(new ObjectId(treatmentServiceId));
+					.findById(new ObjectId(treatmentServiceId)).orElse(null);
 			if (treatmentServicesCostCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(treatmentServicesCostCollection.getDoctorId(),
 						treatmentServicesCostCollection.getHospitalId(),
@@ -1138,7 +1139,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			Collection<String> specialities = null;
 			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 						new BeanToPropertyValueTransformer("speciality"));
 				specialities.add(null);
 				specialities.add("ALL");
@@ -1178,7 +1179,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("treatment_services_cl", "treatmentServiceId", "_id",
 								"treatmentServicesList"),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1211,7 +1212,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			Collection<String> specialities = null;
 			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 						new BeanToPropertyValueTransformer("speciality"));
 				specialities.add(null);
 				specialities.add("ALL");
@@ -1261,7 +1262,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			Collection<String> specialities = null;
 			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
 				specialities = CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						(Collection<?>) specialityRepository.findAllById(doctorCollection.getSpecialities()),
 						new BeanToPropertyValueTransformer("speciality"));
 				specialities.add("ALL");
 				specialities.add(null);
@@ -1311,13 +1312,13 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		HistoryCollection historyCollection = null;
 		try {
 			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository
-					.findOne(new ObjectId(treatmentId));
+					.findById(new ObjectId(treatmentId)).orElse(null);
 
 			if (patientTreatmentCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 						patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getLocationId(),
 						patientTreatmentCollection.getHospitalId());
-				UserCollection user = userRepository.findOne(patientTreatmentCollection.getPatientId());
+				UserCollection user = userRepository.findById(patientTreatmentCollection.getPatientId()).orElse(null);
 
 				if (showPH || showPLH || showFH || showDA) {
 					historyCollection = historyRepository.findHistory(patientTreatmentCollection.getLocationId(),
@@ -1350,7 +1351,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		UserCollection user = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
-			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
+			patientTreatmentCollection = patientTreamentRepository.findById(new ObjectId(treatmentId)).orElse(null);
 			if (patientTreatmentCollection != null) {
 				if (patientTreatmentCollection.getDoctorId() != null
 						&& patientTreatmentCollection.getHospitalId() != null
@@ -1359,7 +1360,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							&& patientTreatmentCollection.getHospitalId().toString().equals(hospitalId)
 							&& patientTreatmentCollection.getLocationId().toString().equals(locationId)) {
 
-						user = userRepository.findOne(patientTreatmentCollection.getPatientId());
+						user = userRepository.findById(patientTreatmentCollection.getPatientId()).orElse(null);
 						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 								patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getLocationId(),
 								patientTreatmentCollection.getHospitalId());
@@ -1379,8 +1380,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
-						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+						UserCollection doctorUser = userRepository.findById(new ObjectId(doctorId)).orElse(null);
+						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
 
 						response = new MailResponse();
 						response.setMailAttachment(mailAttachment);
@@ -1452,7 +1453,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
 				PatientTreatmentJasperDetails patientTreatments = new PatientTreatmentJasperDetails();
 				TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-						.findOne(treatment.getTreatmentServiceId());
+						.findById(treatment.getTreatmentServiceId()).orElse(null);
 				patientTreatments.setNo(++no);
 				if (!DPDoctorUtils.anyStringEmpty(treatment.getStatus())) {
 					String status = treatment.getStatus().replaceAll("_", " ");
@@ -1644,7 +1645,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				BeanUtil.map(treatmentServicesCollection, esTreatmentServiceDocument);
 				esTreatmentServiceRepository.save(esTreatmentServiceDocument);
 			}
-			treatmentServicesRepository.save(treatmentServicesCollections);
+			treatmentServicesRepository.saveAll(treatmentServicesCollections);
 			count = treatmentServicesCollections.size();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1667,7 +1668,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				treatmentServicesCollection.setTreatmentCode("TR" + DPDoctorUtils.generateRandomId());
 				if (DPDoctorUtils.anyStringEmpty(createdBy)
 						&& !DPDoctorUtils.anyStringEmpty(treatmentServicesCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(treatmentServicesCollection.getDoctorId());
+					UserCollection userCollection = userRepository.findById(treatmentServicesCollection.getDoctorId()).orElse(null);
 					if (userCollection != null)
 						createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 								+ userCollection.getFirstName();
@@ -1681,7 +1682,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			} else {
 
 				TreatmentServicesCollection originalTreatmentServicesCollection = treatmentServicesRepository
-						.findOne(new ObjectId(request.getId()));
+						.findById(new ObjectId(request.getId())).orElse(null);
 
 				if (originalTreatmentServicesCollection == null) {
 					logger.error("Invalid treatmentService Id");
@@ -1736,7 +1737,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		try {
 			ObjectId serviceObjectId = new ObjectId(serviceId), doctorObjectId = new ObjectId(doctorId),
 					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
-			TreatmentServicesCollection originalService = treatmentServicesRepository.findOne(serviceObjectId);
+			TreatmentServicesCollection originalService = treatmentServicesRepository.findById(serviceObjectId).orElse(null);
 			if (originalService == null) {
 				logger.error("Invalid Service Id");
 				throw new BusinessException(ServiceError.Unknown, "Invalid Service Id");
@@ -1793,10 +1794,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		UserCollection user = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
-			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
+			patientTreatmentCollection = patientTreamentRepository.findById(new ObjectId(treatmentId)).orElse(null);
 			if (patientTreatmentCollection != null) {
 
-				user = userRepository.findOne(patientTreatmentCollection.getPatientId());
+				user = userRepository.findById(patientTreatmentCollection.getPatientId()).orElse(null);
 				patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 						patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getLocationId(),
 						patientTreatmentCollection.getHospitalId());
@@ -1816,9 +1817,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-				UserCollection doctorUser = userRepository.findOne(patientTreatmentCollection.getDoctorId());
+				UserCollection doctorUser = userRepository.findById(patientTreatmentCollection.getDoctorId()).orElse(null);
 				LocationCollection locationCollection = locationRepository
-						.findOne(patientTreatmentCollection.getLocationId());
+						.findById(patientTreatmentCollection.getLocationId()).orElse(null);
 
 				response = new MailResponse();
 				response.setMailAttachment(mailAttachment);

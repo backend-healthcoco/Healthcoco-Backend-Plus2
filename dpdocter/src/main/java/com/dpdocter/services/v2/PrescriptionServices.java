@@ -1,13 +1,5 @@
 package com.dpdocter.services.v2;
 
-import java.util.List;
-
-import org.bson.types.ObjectId;
-
-import com.dpdocter.beans.EyePrescription;
-/*import com.dpdocter.beans.v2.Drug;
-import com.dpdocter.beans.v2.Prescription;*/
-
 public interface PrescriptionServices {
 	/*
 	 * Drug addDrug(DrugAddEditRequest request);

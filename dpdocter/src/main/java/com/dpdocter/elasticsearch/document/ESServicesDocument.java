@@ -14,25 +14,25 @@ public class ESServicesDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String service;
     
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String formattedService;
     
     @Field(type = FieldType.Date)
     private Date updatedTime = new Date();
 
-	@MultiField(mainField = @Field(type = FieldType.String))
+	@MultiField(mainField = @Field(type = FieldType.Text))
     private List<String> specialities;
 
 
 	/*
-	 * @MultiField(mainField = @Field(type = FieldType.String, index =
+	 * @MultiField(mainField = @Field(type = FieldType.Text, index =
 	 * FieldIndex.not_analyzed)) private List<String> formattedSpecialities;
 	 */
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
 	private List<String> specialityIds;
 
 	public String getId() {

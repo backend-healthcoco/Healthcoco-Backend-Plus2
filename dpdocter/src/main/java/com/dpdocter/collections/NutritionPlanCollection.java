@@ -8,8 +8,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.PlanDescriptionPrices;
-import com.dpdocter.beans.PlanPrice;
 import com.dpdocter.beans.PlanPriceDescription;
 import com.dpdocter.enums.NutritionPlanType;
 

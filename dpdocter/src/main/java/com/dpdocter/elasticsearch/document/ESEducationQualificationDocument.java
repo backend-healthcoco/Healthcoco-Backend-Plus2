@@ -13,7 +13,7 @@ public class ESEducationQualificationDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.Text)
     private String name;
 
     @Field(type = FieldType.Date)

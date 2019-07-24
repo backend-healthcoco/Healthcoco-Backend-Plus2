@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -83,24 +84,24 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 					Aggregation.match(new Criteria("isLab").is(true)),
 					
 					Aggregation.lookup("diagnostic_test_package_cl", "_id", "locationId", "package"), 
-					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$package").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$package").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.match(new Criteria("package.discarded").is(false)),
 					
-					new CustomAggregationOperation(new BasicDBObject("$project", 
+					new CustomAggregationOperation(new Document("$project", 
 							new BasicDBObject("_id", "$_id")
 							.append("hospitalId", "$hospitalId")
 							.append("locationName", "$locationName")
 							.append("isNABLAccredited", "$isNABLAccredited")
 							.append("package", "$package"))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$group", 
+					new CustomAggregationOperation(new Document("$group", 
 							new BasicDBObject("_id", "$_id")
 							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 							.append("locationName", new BasicDBObject("$first", "$locationName"))
 							.append("isNABLAccredited", new BasicDBObject("$first", "$isNABLAccredited"))
 							.append("packages", new BasicDBObject("$push", "$package")))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$project", 
+					new CustomAggregationOperation(new Document("$project", 
 							new BasicDBObject("_id", "$_id")
 							.append("hospitalId", "$hospitalId")
 							.append("locationName", "$locationName")
@@ -112,14 +113,14 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 					
 					Aggregation.match(new Criteria("isLocationRequired").is(1)),
 					
-					new CustomAggregationOperation(new BasicDBObject("$group", 
+					new CustomAggregationOperation(new Document("$group", 
 							new BasicDBObject("_id", "$_id")
 							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 							.append("locationName", new BasicDBObject("$first", "$locationName"))
 							.append("isNABLAccredited", new BasicDBObject("$first", "$isNABLAccredited")))),
 					(size > 0) ? Aggregation.skip(page * size) : Aggregation.match(new Criteria()),
 					(size > 0) ? Aggregation.limit(size) : Aggregation.match(new Criteria()),		
-					new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("localeRankingCount", -1))));
+					new CustomAggregationOperation(new Document("$sort", new BasicDBObject("localeRankingCount", -1))));
 			
 			response  = mongoTemplate.aggregate(aggregation, LocationCollection.class, LabSearchResponse.class).getMappedResults();
 		}catch(Exception e){
@@ -136,7 +137,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 		try {
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.match(new Criteria("testName").in(testNames).and("locationId").ne(null)),
-					new CustomAggregationOperation(new BasicDBObject("$project", 
+					new CustomAggregationOperation(new Document("$project", 
 							new BasicDBObject("locationId", "$locationId")
 							.append("hospitalId", "$hospitalId")
 							.append("test.testName", "$testName")
@@ -147,7 +148,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 							.append("totalCost", "$diagnosticTestCost")
 							.append("totalCostForPatient", "$diagnosticTestCostForPatient"))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$group", 
+					new CustomAggregationOperation(new Document("$group", 
 							new BasicDBObject("_id", "$locationId")
 							.append("locationId", new BasicDBObject("$first", "$locationId"))
 							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -155,7 +156,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 							.append("totalCost", new BasicDBObject("$sum", "$totalCost"))
 							.append("totalCostForPatient", new BasicDBObject("$sum", "$totalCostForPatient")))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$project", 
+					new CustomAggregationOperation(new Document("$project", 
 							new BasicDBObject("_id", "$locationId")
 							.append("locationId", "$locationId")
 							.append("hospitalId", "$hospitalId")
@@ -180,7 +181,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 					
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
 					
-					new CustomAggregationOperation(new BasicDBObject("$project", 
+					new CustomAggregationOperation(new Document("$project", 
 							new BasicDBObject("_id", "$locationId")
 							.append("locationId", "$locationId")
 							.append("hospitalId", "$hospitalId")
@@ -192,7 +193,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 							.append("totalCostForPatient", "$totalCostForPatient")
 							.append("totalSavingInPercentage", "$totalSavingInPercentage"))),
 					
-					new CustomAggregationOperation(new BasicDBObject("$group", 
+					new CustomAggregationOperation(new Document("$group", 
 							new BasicDBObject("_id", "$locationId")
 							.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 							.append("locationName", new BasicDBObject("$first", "$locationName"))
@@ -204,7 +205,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 							.append("totalSavingInPercentage", new BasicDBObject("$first", "$totalSavingInPercentage")))),
 					(size > 0) ? Aggregation.skip(page * size) : Aggregation.match(new Criteria()),
 					(size > 0) ? Aggregation.limit(size) : Aggregation.match(new Criteria()),		
-					new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("localeRankingCount", -1))));
+					new CustomAggregationOperation(new Document("$sort", new BasicDBObject("localeRankingCount", -1))));
 			
 			response  = mongoTemplate.aggregate(aggregation, DiagnosticTestCollection.class, LabSearchResponse.class).getMappedResults();
 		}catch(Exception e){
@@ -279,7 +280,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 			BeanUtil.map(request, orderDiagnosticTestCollection);
 			
 			if(!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				OrderDiagnosticTestCollection oldOrder = orderDiagnosticTestRepository.findOne(new ObjectId(request.getId()));
+				OrderDiagnosticTestCollection oldOrder = orderDiagnosticTestRepository.findById(new ObjectId(request.getId())).orElse(null);
 				orderDiagnosticTestCollection.setCreatedTime(oldOrder.getCreatedTime());
 				orderDiagnosticTestCollection.setUniqueOrderId(oldOrder.getUniqueOrderId());
 			}else {
@@ -304,8 +305,8 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 		try {
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(userId))),
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
-					new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+					new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 							.append("locationId","$locationId")
 							.append("userId","$userId")
 							.append("uniqueOrderId","$uniqueOrderId")
@@ -323,7 +324,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 							.append("updatedTime","$updatedTime")
 							.append("locationName","$location.locationName")
 							.append("isNABLAccredited","$location.isNABLAccredited"))),
-					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+					new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 							.append("locationId", new BasicDBObject("$first","$locationId"))
 							.append("userId", new BasicDBObject("$first","$userId"))
 							.append("uniqueOrderId", new BasicDBObject("$first","$uniqueOrderId"))
@@ -343,7 +344,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 							.append("isNABLAccredited", new BasicDBObject("$first","$isNABLAccredited")))),
 					(size > 0) ? Aggregation.skip(page * size) : Aggregation.match(new Criteria()),
 					(size > 0) ? Aggregation.limit(size) : Aggregation.match(new Criteria()),	
-					new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("updatedTime", -1)))
+					new CustomAggregationOperation(new Document("$sort", new BasicDBObject("updatedTime", -1)))
 					);
 			
 			response = mongoTemplate.aggregate(aggregation, OrderDiagnosticTestCollection.class, OrderDiagnosticTest.class).getMappedResults();
@@ -361,8 +362,8 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 		try {
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(new ObjectId(locationId))),
 					Aggregation.lookup("patient_cl", "userId", "userId", "patient"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
-					new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+					new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 							.append("locationId","$locationId")
 							.append("userId","$userId")
 							.append("uniqueOrderId","$uniqueOrderId")
@@ -379,7 +380,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 							.append("createdTime","$createdTime")
 							.append("updatedTime","$updatedTime")
 							.append("patientName","$patient.localPatientName"))),
-					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+					new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 							.append("locationId", new BasicDBObject("$first","$locationId"))
 							.append("userId", new BasicDBObject("$first","$userId"))
 							.append("uniqueOrderId", new BasicDBObject("$first","$uniqueOrderId"))
@@ -398,7 +399,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 							.append("createdTime", new BasicDBObject("$first","$createdTime")))),
 					(size > 0) ? Aggregation.skip(page * size) : Aggregation.match(new Criteria()),
 					(size > 0) ? Aggregation.limit(size) : Aggregation.match(new Criteria()),	
-					new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("updatedTime", -1)))
+					new CustomAggregationOperation(new Document("$sort", new BasicDBObject("updatedTime", -1)))
 					);
 			
 			response = mongoTemplate.aggregate(aggregation, OrderDiagnosticTestCollection.class, OrderDiagnosticTest.class).getMappedResults();
@@ -441,7 +442,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 			CustomAggregationOperation projectListForTestPackage = null, groupListForTestPackage = null, projectList = null, groupList= null;
 			
 			if(isLab || isUser) {
-				projectList = new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+				projectList = new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 						.append("locationId","$locationId")
 						.append("userId","$userId")
 						.append("uniqueOrderId","$uniqueOrderId")
@@ -468,7 +469,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 						.append("testsPackage.diagnosticTestPackageCost","$testsPackage.diagnosticTestPackageCost")
 						.append("testsPackage.diagnosticTestCostPackageForPatient", "$testsPackage.diagnosticTestCostPackageForPatient")));
 				
-				groupList = new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+				groupList = new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 						.append("locationId", new BasicDBObject("$first","$locationId"))
 						.append("userId", new BasicDBObject("$first","$userId"))
 						.append("uniqueOrderId", new BasicDBObject("$first","$uniqueOrderId"))
@@ -491,7 +492,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 						.append("updatedTime", new BasicDBObject("$first","$updatedTime"))
 						.append("createdTime", new BasicDBObject("$first","$createdTime"))));
 				
-				projectListForTestPackage = new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+				projectListForTestPackage = new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 						.append("locationId","$locationId")
 						.append("userId","$userId")
 						.append("uniqueOrderId","$uniqueOrderId")
@@ -519,7 +520,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 						.append("testsPackage.diagnosticTestCostPackageForPatient", "$testsPackage.diagnosticTestCostPackageForPatient")));
 				
 				
-				groupListForTestPackage = new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+				groupListForTestPackage = new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 						.append("locationId", new BasicDBObject("$first","$locationId"))
 						.append("userId", new BasicDBObject("$first","$userId"))
 						.append("uniqueOrderId", new BasicDBObject("$first","$uniqueOrderId"))
@@ -544,18 +545,18 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 			if(isLab) {
 				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(orderId))),
 						Aggregation.lookup("user_cl", "userId", "_id", "user"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
-//						new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+						new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
+//						new CustomAggregationOperation(new Document("$redact",new BasicDBObject("$cond",
 //								new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
 //								.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 						
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$testsPackageIds").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$testsPackageIds").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("diagnostic_test_package_cl", "testsPackageIds", "_id", "testsPackage"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$testsPackage").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$testsPackage").append("preserveNullAndEmptyArrays", true))),
 						
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$testsPackage.testIds").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$testsPackage.testIds").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("diagnostic_test_cl", "testsPackage.testIds", "_id", "tests"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$tests").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$tests").append("preserveNullAndEmptyArrays", true))),
 						
 						projectList,groupList,projectListForTestPackage, groupListForTestPackage);
 				
@@ -570,14 +571,14 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 			}else if(isUser) {
 				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(orderId))),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$testsPackageIds").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$testsPackageIds").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("diagnostic_test_package_cl", "testsPackageIds", "_id", "testsPackage"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$testsPackage").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$testsPackage").append("preserveNullAndEmptyArrays", true))),
 						
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$testsPackage.testIds").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$testsPackage.testIds").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.lookup("diagnostic_test_cl", "testsPackage.testIds", "_id", "tests"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$tests").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new Document("$unwind", new BasicDBObject("path", "$tests").append("preserveNullAndEmptyArrays", true))),
 						
 						projectList,groupList,projectListForTestPackage, groupListForTestPackage);
 						
@@ -591,7 +592,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid orderId");
 				}
 			}else {
-				orderDiagnosticTestCollection = orderDiagnosticTestRepository.findOne(new ObjectId(orderId));
+				orderDiagnosticTestCollection = orderDiagnosticTestRepository.findById(new ObjectId(orderId)).orElse(null);
 				if (orderDiagnosticTestCollection == null)
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid orderId");
 
@@ -618,7 +619,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("testIds"),
 										Aggregation.lookup("location_cl", "locationId", "_id", "location"),Aggregation.unwind("location"),
 										Aggregation.lookup("diagnostic_test_cl", "testIds", "_id", "tests"),Aggregation.unwind("tests"),
-										new CustomAggregationOperation(new BasicDBObject("$project", 
+										new CustomAggregationOperation(new Document("$project", 
 												new BasicDBObject("id", "$_id")
 												.append("locationId", "$locationId")
 												.append("locationName", "$location.locationName")
@@ -635,7 +636,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 												.append("createdTime", "$createdTime")
 												.append("updatedTime", "$updatedTime")
 												.append("createdBy", "$createdBy"))),
-										new CustomAggregationOperation(new BasicDBObject("$group", 
+										new CustomAggregationOperation(new Document("$group", 
 												new BasicDBObject("id", "$_id")
 												.append("locationId", new BasicDBObject("$first","$locationId"))
 												.append("hospitalId", new BasicDBObject("$first","$hospitalId"))
@@ -676,7 +677,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 				response = mongoTemplate.aggregate(Aggregation.newAggregation(
 						Aggregation.match(criteria),
 						
-						new CustomAggregationOperation(new BasicDBObject("$project", 
+						new CustomAggregationOperation(new Document("$project", 
 								new BasicDBObject("testId", "$_id").append("testName", "$testName")
 								.append("insensitiveTestName", new BasicDBObject("$toLower", "$testName"))
 								.append("explanation", "$explanation")
@@ -691,7 +692,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 								.append("adminCreatedTime", "$adminCreatedTime")
 								.append("createdBy", "$createdBy"))),
 								
-						new CustomAggregationOperation(new BasicDBObject("$group", 
+						new CustomAggregationOperation(new Document("$group", 
 								new BasicDBObject("_id", new BasicDBObject("testName", "$testName"))
 								.append("testId", new BasicDBObject("$first", "$testId"))
 								.append("testName", new BasicDBObject("$first", "$testName"))
@@ -708,7 +709,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 								.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 								.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 						
-						new CustomAggregationOperation(new BasicDBObject("$project", 
+						new CustomAggregationOperation(new Document("$project", 
 								new BasicDBObject("_id", "$testId")
 								.append("testName", "$testName")
 								.append("insensitiveTestName", "$insensitiveTestName")
@@ -724,14 +725,14 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 								.append("adminCreatedTime", "$adminCreatedTime")
 								.append("createdBy", "$createdBy"))),
 						
-						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("insensitiveTestName", 1))),
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("insensitiveTestName", 1))),
 						Aggregation.skip(page * size),
 						Aggregation.limit(size)), DiagnosticTestCollection.class, DiagnosticTest.class).getMappedResults();
 			}else {
 				response = mongoTemplate.aggregate(Aggregation.newAggregation(
 						Aggregation.match(criteria),
 						
-						new CustomAggregationOperation(new BasicDBObject("$project", 
+						new CustomAggregationOperation(new Document("$project", 
 								new BasicDBObject("_id", "$_id").append("testName", "$testName")
 								.append("insensitiveTestName", new BasicDBObject("$toLower", "$testName"))
 								.append("explanation", "$explanation")
@@ -746,7 +747,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 								.append("adminCreatedTime", "$adminCreatedTime")
 								.append("createdBy", "$createdBy"))),
 								
-						new CustomAggregationOperation(new BasicDBObject("$group", 
+						new CustomAggregationOperation(new Document("$group", 
 								new BasicDBObject("_id", new BasicDBObject("testName", "$testName"))
 								.append("id", new BasicDBObject("$first", "$id"))
 								.append("insensitiveTestName", new BasicDBObject("$first", "$testName"))
@@ -762,7 +763,7 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 								.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 								.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 						
-						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("insensitiveTestName", 1)))), DiagnosticTestCollection.class, DiagnosticTest.class).getMappedResults();
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("insensitiveTestName", 1)))), DiagnosticTestCollection.class, DiagnosticTest.class).getMappedResults();
 			}
 			
 		} catch (Exception e) {

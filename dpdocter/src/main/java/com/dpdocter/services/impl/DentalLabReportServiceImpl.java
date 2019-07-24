@@ -55,7 +55,7 @@ public class DentalLabReportServiceImpl implements DentalLabReportService{
 			}
 
 			LabTestSampleCollection labTestSampleCollection = labTestSampleRepository
-					.findOne(new ObjectId(request.getLabTestSampleId()));
+					.findById(new ObjectId(request.getLabTestSampleId()));
 			if (labTestSampleCollection != null) {
 				if (labTestSampleCollection.getIsCompleted() == true
 						&& !DPDoctorUtils.anyStringEmpty(labTestSampleCollection.getParentLabLocationId())
@@ -67,9 +67,9 @@ public class DentalLabReportServiceImpl implements DentalLabReportService{
 				labTestSampleCollection.setStatus("REPORTS UPLOADED");
 				labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 				LocationCollection daughterlocationCollection = locationRepository
-						.findOne(labReportsCollection.getLocationId());
+						.findById(labReportsCollection.getLocationId());
 				LocationCollection parentLocationCollection = locationRepository
-						.findOne(labReportsCollection.getUploadedByLocationId());
+						.findById(labReportsCollection.getUploadedByLocationId());
 				String message = labReportUploadMessage;
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setType("LAB REPORT UPLOAD");

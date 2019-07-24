@@ -59,7 +59,7 @@ public class SuggestionServiceImpl implements SuggestionService {
 						new Criteria("additionalInfo").regex("^" + searchTerm));
 			}
 			if (size < 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -82,7 +82,7 @@ public class SuggestionServiceImpl implements SuggestionService {
 	public Suggestion AddEditSuggestion(Suggestion request) {
 		Suggestion response = null;
 		try {
-			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getUserId()));
+			UserCollection userCollection = userRepository.findById(new ObjectId(request.getUserId())).orElse(null);
 			if (userCollection != null) {
 				SuggestionCollection suggestionCollection = new SuggestionCollection();
 				if (DPDoctorUtils.anyStringEmpty(request.getId()))

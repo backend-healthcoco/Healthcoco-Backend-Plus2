@@ -98,7 +98,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 							.equals(birthdaySMSDetailsForPatient.getPatient().getLocationId())) {
 
 						UserCollection userCollection = userRepository
-								.findOne(new ObjectId(birthdaySMSDetailsForPatient.getPatient().getUserId()));
+								.findById(new ObjectId(birthdaySMSDetailsForPatient.getPatient().getUserId())).orElse(null);
 						String message = birthdayWishSMStoPatient;
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 						smsTrackDetail.setDoctorId(birthdaySMSDetailsForPatient.getDoctorId());

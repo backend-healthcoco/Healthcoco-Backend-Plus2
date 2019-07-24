@@ -120,7 +120,7 @@ public class LoginServiceImpl implements LoginService {
 			Criteria criteria = new Criteria("userName").is(request.getUsername());
 			Query query = new Query();
 			query.addCriteria(criteria);
-			UserCollection userCollection = mongoTemplate.findOne(query, UserCollection.class);
+			UserCollection userCollection = mongoTemplate.findById(query, UserCollection.class);
 
 			if (userCollection == null) {
 				logger.warn(login);
@@ -299,7 +299,7 @@ public class LoginServiceImpl implements LoginService {
 
 						if (doctorCollection.getSpecialities() != null) {
 							List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository
-									.findAll(doctorCollection.getSpecialities());
+									.findAllById(doctorCollection.getSpecialities());
 							List<String> specialities = (List<String>) CollectionUtils.collect(specialityCollections,
 									new BeanToPropertyValueTransformer("superSpeciality"));
 							user.setSpecialities(specialities);
@@ -619,7 +619,7 @@ public class LoginServiceImpl implements LoginService {
 			Criteria criteria = new Criteria("userName").is(request.getUsername());
 			Query query = new Query();
 			query.addCriteria(criteria);
-			UserCollection userCollection = mongoTemplate.findOne(query, UserCollection.class);
+			UserCollection userCollection = mongoTemplate.findById(query, UserCollection.class);
 
 			if (userCollection == null) {
 				return response;
@@ -665,7 +665,7 @@ public class LoginServiceImpl implements LoginService {
 		DoctorLoginPinCollection olddoctorLoginPinCollection = null;
 
 		try {
-			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "invalid DoctorId");
 			}

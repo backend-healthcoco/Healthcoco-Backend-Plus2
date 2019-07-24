@@ -206,7 +206,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 			}
 
 			LabTestSampleCollection labTestSampleCollection = labTestSampleRepository
-					.findOne(new ObjectId(request.getLabTestSampleId()));
+					.findById(new ObjectId(request.getLabTestSampleId())).orElse(null);
 			if (labTestSampleCollection != null) {
 				if (labTestSampleCollection.getIsCompleted() == true
 						&& !DPDoctorUtils.anyStringEmpty(labTestSampleCollection.getParentLabLocationId())
@@ -218,9 +218,9 @@ public class LabReportsServiceImpl implements LabReportsService {
 				labTestSampleCollection.setStatus("REPORTS UPLOADED");
 				labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 				LocationCollection daughterlocationCollection = locationRepository
-						.findOne(labTestSampleCollection.getDaughterLabLocationId());
+						.findById(labTestSampleCollection.getDaughterLabLocationId()).orElse(null);
 				LocationCollection parentLocationCollection = locationRepository
-						.findOne(labTestSampleCollection.getParentLabLocationId());
+						.findById(labTestSampleCollection.getParentLabLocationId()).orElse(null);
 				String message = labReportUploadMessage;
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setType("LAB REPORT UPLOAD");
@@ -264,7 +264,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				locationObjectId = new ObjectId(locationId);
 
-			LocationCollection location = locationRepository.findOne(locationObjectId);
+			LocationCollection location = locationRepository.findById(locationObjectId).orElse(null);
 			if (location == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
 			}
@@ -327,16 +327,16 @@ public class LabReportsServiceImpl implements LabReportsService {
 
 			if (labReportsCollection != null) {
 
-				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 
 				if (request.getMobileNumber() != null) {
 					LocationCollection daughterlocationCollection = locationRepository
-							.findOne(labReportsCollection.getLocationId());
+							.findById(labReportsCollection.getLocationId()).orElse(null);
 					LocationCollection parentLocationCollection = locationRepository
-							.findOne(labReportsCollection.getUploadedByLocationId());
+							.findById(labReportsCollection.getUploadedByLocationId()).orElse(null);
 					String message = labReportUploadMessage;
 
-					UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
+					UserCollection userCollection = userRepository.findById(new ObjectId(request.getPatientId())).orElse(null);
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
 					smsTrackDetail.setType("LAB REPORT UPLOAD");
@@ -382,7 +382,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -419,7 +419,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
 						Aggregation.unwind("patient"), Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -454,7 +454,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
 						Aggregation.unwind("patient"), Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long)(page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -510,7 +510,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 	public LabReportsResponse changePatientShareStatus(String id, Boolean status) {
 		LabReportsResponse labReportsResponse = null;
 		try {
-			LabReportsCollection labReportsCollection = labReportsRepository.findOne(new ObjectId(id));
+			LabReportsCollection labReportsCollection = labReportsRepository.findById(new ObjectId(id)).orElse(null);
 
 			if (labReportsCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
@@ -598,7 +598,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(labTestPickupLookupResponse.getDoctorId())) {
-				userCollection = userRepository.findOne(new ObjectId(labTestPickupLookupResponse.getDoctorId()));
+				userCollection = userRepository.findById(new ObjectId(labTestPickupLookupResponse.getDoctorId())).orElse(null);
 				if (userCollection != null)
 					labReportItems.put("doctor", "<b>Doctor :- </b>Dr. " + userCollection.getFirstName());
 				else

@@ -16,6 +16,7 @@ import java.util.Set;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -724,15 +725,15 @@ public class AdminServicesImpl implements AdminServices {
 		List<ClinicalItemsResponse> items = mongoTemplate.aggregate(Aggregation.newAggregation(
 				Aggregation.match(new Criteria("doctorId").is(new ObjectId(doctorId)).and("discarded").is(false)),
 				Aggregation.sort(new Sort(Direction.ASC, "createdTime")),
-				new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+				new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 						.append("resourceIds", "$_id").append("resourceName", "$"+fieldName).append("resourceIdsForEs", "$_id"))),
-				new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$resourceName")
+				new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$resourceName")
 								.append("keepResourceId", new BasicDBObject("$first", "$resourceIds"))
 								.append("resourceIds", new BasicDBObject("$addToSet", "$resourceIds"))
 								.append("resourceIdsForEs", new BasicDBObject("$addToSet", "$resourceIdsForEs"))
 								.append("resourceName", new BasicDBObject("$first","$resourceName"))
 								.append("count", new BasicDBObject("$sum", 1)))),
-				new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+				new CustomAggregationOperation(new Document("$redact",new BasicDBObject("$cond",
 						new BasicDBObject("if", new BasicDBObject("$gt", Arrays.asList("$count", 1)))
 						.append("then", "$$KEEP").append("else", "$$PRUNE"))))), 
 				className, ClinicalItemsResponse.class).getMappedResults();
@@ -992,7 +993,7 @@ public class AdminServicesImpl implements AdminServices {
 			while (doctorDocuments.hasNext()) {
 				ESDoctorDocument doctorDocument = doctorDocuments.next();
 				if (doctorDocument.getSpecialities() != null && !doctorDocument.getSpecialities().isEmpty()) {
-					Iterable<ESSpecialityDocument>  iterableSpecialities = esSpecialityRepository.findAll(doctorDocument.getSpecialities());
+					Iterable<ESSpecialityDocument>  iterableSpecialities = esSpecialityRepository.findAllById(doctorDocument.getSpecialities());
 					List<String> specialities = new ArrayList<>();
 					List<String> parentSpecialities = new ArrayList<>();
 					if(iterableSpecialities != null) {
@@ -1007,7 +1008,7 @@ public class AdminServicesImpl implements AdminServices {
 			
 
 				if (doctorDocument.getServices() != null  && !doctorDocument.getServices().isEmpty()) {
-					Iterable<ESServicesDocument> iterableServices = esServicesRepository.findAll(doctorDocument.getServices());
+					Iterable<ESServicesDocument> iterableServices = esServicesRepository.findAllById(doctorDocument.getServices());
 					List<String> services = new ArrayList<>();
 					if(iterableServices != null) {
 						for(ESServicesDocument esServicesDocument : iterableServices) {
@@ -1063,7 +1064,7 @@ public class AdminServicesImpl implements AdminServices {
 	        		
 	        		SpecialityCollection specialityCollection = null;
 	        		System.out.println(line.get(3));
-	        		if(!(line.get(3) == "null" || DPDoctorUtils.anyStringEmpty(line.get(3))))specialityCollection = specialityRepository.findOne(new ObjectId(line.get(3)));
+	        		if(!(line.get(3) == "null" || DPDoctorUtils.anyStringEmpty(line.get(3))))specialityCollection = specialityRepository.findById(new ObjectId(line.get(3))).orElse(null);
 	        		if(specialityCollection == null) {
 	        			specialityCollection = new SpecialityCollection();
 	        			specialityCollection.setAdminCreatedTime(new Date());

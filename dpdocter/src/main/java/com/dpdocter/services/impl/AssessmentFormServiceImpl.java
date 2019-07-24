@@ -119,7 +119,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 		try {
 			AssessmentPersonalDetailCollection assessmentPersonalDetailCollection = null;
 			if (DPDoctorUtils.allStringsEmpty(request.getId())) {
-				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (doctor == null) {
 					throw new BusinessException(ServiceError.NotFound, "No Nutritionist found with doctorId");
 				}
@@ -147,7 +147,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				assessmentPersonalDetailCollection.setAssessmentUniqueId("NAF-" + DPDoctorUtils.generateRandomId());
 			} else {
 				assessmentPersonalDetailCollection = assessmentPersonalDetailRepository
-						.findOne(new ObjectId(request.getId()));
+						.findById(new ObjectId(request.getId())).orElse(null);
 				BeanUtil.map(request, assessmentPersonalDetailCollection);
 				assessmentPersonalDetailCollection.setUpdatedTime(new Date());
 			}
@@ -180,7 +180,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			PatientFoodAndExcerciseCollection patientFoodAndExcerciseCollection = null;
 
 			if (DPDoctorUtils.allStringsEmpty(request.getId())) {
-				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (doctor == null) {
 					throw new BusinessException(ServiceError.NotFound, "No Nutritionist found with doctorId");
 				}
@@ -192,7 +192,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 			} else {
 				patientFoodAndExcerciseCollection = patientFoodAndExerciseRepository
-						.findOne(new ObjectId(request.getId()));
+						.findById(new ObjectId(request.getId())).orElse(null);
 				BeanUtil.map(request, patientFoodAndExcerciseCollection);
 				patientFoodAndExcerciseCollection.setUpdatedTime(new Date());
 			}
@@ -221,7 +221,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			DiseaseListResponse diseaseListResponse = null;
 
 			if (DPDoctorUtils.allStringsEmpty(request.getId())) {
-				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (doctor == null) {
 					throw new BusinessException(ServiceError.NotFound, "No Nutritionist found with doctorId");
 				}
@@ -235,7 +235,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 								+ " " + doctor.getFirstName());
 
 			} else {
-				historyCollection = historyRepository.findOne(new ObjectId(request.getId()));
+				historyCollection = historyRepository.findById(new ObjectId(request.getId())).orElse(null);
 				request.setUpdatedTime(new Date());
 				request.setCreatedBy(historyCollection.getCreatedBy());
 				request.setCreatedTime(historyCollection.getCreatedTime());
@@ -272,7 +272,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 					BeanUtil.map(item, prescriptionItemDetail);
 					if (!DPDoctorUtils.allStringsEmpty(item.getDrugId())) {
-						drugCollection = drugRepository.findOne(item.getDrugId());
+						drugCollection = drugRepository.findById(item.getDrugId()).orElse(null);
 					} else {
 						drugCollection = new DrugCollection();
 					}
@@ -368,7 +368,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			PatientLifeStyleCollection patientLifeStyleCollection = null;
 
 			if (DPDoctorUtils.allStringsEmpty(request.getId())) {
-				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (doctor == null) {
 					throw new BusinessException(ServiceError.NotFound, "Nutritionist not found with doctorId");
 				}
@@ -379,7 +379,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				patientLifeStyleCollection.setCreatedBy(doctor.getFirstName());
 
 			} else {
-				patientLifeStyleCollection = patientLifeStyleRepository.findOne(new ObjectId(request.getId()));
+				patientLifeStyleCollection = patientLifeStyleRepository.findById(new ObjectId(request.getId())).orElse(null);
 				BeanUtil.map(request, patientLifeStyleCollection);
 				patientLifeStyleCollection.setUpdatedTime(new Date());
 			}
@@ -403,7 +403,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			PatientMeasurementCollection patientMeasurementCollection = null;
 
 			if (DPDoctorUtils.allStringsEmpty(request.getId())) {
-				UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
+				UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (doctor == null) {
 					throw new BusinessException(ServiceError.NotFound, "Nutritionist not found with doctorId");
 				}
@@ -414,7 +414,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				patientMeasurementCollection.setCreatedBy(doctor.getFirstName());
 
 			} else {
-				patientMeasurementCollection = patientMeasurementRepository.findOne(new ObjectId(request.getId()));
+				patientMeasurementCollection = patientMeasurementRepository.findById(new ObjectId(request.getId())).orElse(null);
 				BeanUtil.map(request, patientMeasurementCollection);
 				patientMeasurementCollection.setUpdatedTime(new Date());
 			}
@@ -507,7 +507,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 						Aggregation.unwind("patient"), Aggregation.match(secondCriteria), projectList,
 						Aggregation.sort(Sort.Direction.DESC, "createdTime"),
 
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+						Aggregation.skip((long)(page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("patient_cl", "userId", "patientId", "patient"),
