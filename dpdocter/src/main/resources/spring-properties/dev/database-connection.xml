@@ -16,7 +16,7 @@
 	<mongo:db-factory dbname="${db.name}" host="${db.host}" mongo-ref="mongo" port="${db.port}" />
 	
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
-		<constructor-arg name="mongoConverter" ref="mappingConverter" />
+		<constructor-arg name="mongoConverter" ref="converter" />
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
 	</bean>
 	
@@ -28,7 +28,7 @@
 <!-- 			<mongo:converter ref="readConverter" /> -->
 <!-- 		</mongo:custom-converters> -->
 <!-- 	</mongo:mapping-converter> -->
-	
+	<mongo:mapping-converter id="converter" />
 	
 	<bean id="mongoTypeMapper" class="org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper">
 		<constructor-arg name="typeKey"><null/></constructor-arg>
@@ -44,6 +44,6 @@
 	
 	<bean id="gridFsTemplate" class="org.springframework.data.mongodb.gridfs.GridFsTemplate">
 		<constructor-arg ref="mongoDbFactory" />
-		<constructor-arg ref="mappingConverter" />
+		<constructor-arg ref="converter" />
 	</bean>
 </beans>
