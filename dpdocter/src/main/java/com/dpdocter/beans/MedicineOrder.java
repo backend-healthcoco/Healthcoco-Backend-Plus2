@@ -15,6 +15,7 @@ public class MedicineOrder extends GenericCollection {
 	private String patientName;
 	private String mobileNumber;
 	private String emailAddress;
+	private String prescriptionId;
 	private String collectionBoyId;
 	private CollectionBoy collectionBoy;
 	private UserAddress shippingAddress;
@@ -37,6 +38,14 @@ public class MedicineOrder extends GenericCollection {
 	private Boolean discarded = false;
 	private Long cancellationDate;
 	private Boolean isPrescriptionRequired;
+
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
 
 	public String getId() {
 		return id;

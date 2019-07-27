@@ -741,6 +741,7 @@ public class NutritionServiceImpl implements NutritionService {
 															.append("else", null)))
 							.append("category", "$type").append("nutritionPlan.type", "$type").append("rank", "$rank")
 							.append("nutritionPlan.backgroundColor", "$backgroundColor")
+							.append("nutritionPlan.secondaryBackgroundColor", "$secondaryBackgroundColor")
 							.append("nutritionPlan.planDescription", "$planDescription")
 							.append("nutritionPlan.shortPlanDescription", "$shortPlanDescription")
 							.append("nutritionPlan.amount", "$amount")

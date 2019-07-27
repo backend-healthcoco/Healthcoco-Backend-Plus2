@@ -11,6 +11,7 @@ public class MedicineOrderRXAddEditRequest {
 	private String patientId;
 	private List<MedicineOrderAddEditItems> items;
 	private List<MedicineOrderImages> rxImage;
+	private String prescriptionId;
 	private Boolean isPrescriptionRequired;
 
 	public String getId() {
@@ -53,5 +54,12 @@ public class MedicineOrderRXAddEditRequest {
 		this.isPrescriptionRequired = isPrescriptionRequired;
 	}
 
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
 
 }

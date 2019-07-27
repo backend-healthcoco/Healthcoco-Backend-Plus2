@@ -10,6 +10,7 @@ public class MedicineOrderAddEditAddressRequest {
 	private UserAddress shippingAddress;
 	private UserAddress billingAddress;
 	private String patientName;
+	private String prescriptionId;
 	private String mobileNumber;
 	private String emailAddress;
 	private DeliveryPreferences deliveryPreference = DeliveryPreferences.ONE_TIME;
@@ -86,6 +87,14 @@ public class MedicineOrderAddEditAddressRequest {
 
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
+	}
+
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
 	}
 
 }
