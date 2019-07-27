@@ -165,7 +165,8 @@ public class AdminAPI {
 	public Response<Boolean> addServices() {
 		
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(adminServices.addServices());
+		response.setData(true);
+//		response.setData(adminServices.addServices());
 		return response;
 	}
 	

@@ -38,7 +38,6 @@
 	<import resource="mail-config.xml" />
 	<import resource="application-context-velocity.xml" />
 	<import resource="swagger.xml" />
-	<import resource="swagger.xml" />
 	<mongo:repositories
 		base-package="com.dpdocter.repository, com.dpdocter.sms.repository" />
 	<elasticsearch:repositories base-package="com.dpdocter.elasticsearch.repository" />
