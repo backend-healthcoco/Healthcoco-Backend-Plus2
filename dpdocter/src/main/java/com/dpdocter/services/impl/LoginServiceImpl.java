@@ -117,15 +117,20 @@ public class LoginServiceImpl implements LoginService {
 	public LoginResponse login(LoginRequest request, Boolean isMobileApp, Boolean isNutritionist) {
 		LoginResponse response = null;
 		try {
+			System.out.println("in login");
 			Criteria criteria = new Criteria("userName").is(request.getUsername());
 			Query query = new Query();
 			query.addCriteria(criteria);
-			UserCollection userCollection = mongoTemplate.findById(query, UserCollection.class);
+			UserCollection userCollection = userRepository.findByUserName(request.getUsername());
+					//mongoTemplate.find(query, UserCollection.class);
+			System.out.println("in findById");
 
 			if (userCollection == null) {
 				logger.warn(login);
 				throw new BusinessException(ServiceError.InvalidInput, login);
 			} else {
+				System.out.println("user found");
+
 				char[] salt = userCollection.getSalt();
 				if (salt != null && salt.length > 0) {
 					char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
@@ -152,6 +157,8 @@ public class LoginServiceImpl implements LoginService {
 				response.setUser(user);
 				return response;
 			}
+			System.out.println("user lookup");
+
 			List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(
 							Aggregation.match(new Criteria("userId").is(userCollection.getId()).and("locationId")

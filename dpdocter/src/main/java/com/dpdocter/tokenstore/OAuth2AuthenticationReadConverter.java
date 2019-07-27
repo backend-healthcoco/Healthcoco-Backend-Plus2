@@ -26,7 +26,12 @@ public class OAuth2AuthenticationReadConverter implements Converter<DBObject, OA
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public OAuth2Authentication convert(DBObject source) {
+		System.out.println("in convert");
+
 		DBObject storedRequest = (DBObject) source.get("storedRequest");
+		System.out.println(storedRequest);
+		System.out.println(storedRequest.get("requestParameters"));
+
 		OAuth2Request oAuth2Request = new OAuth2Request((Map<String, String>) storedRequest.get("requestParameters"),
 				(String) storedRequest.get("clientId"), null, true, new HashSet((List) storedRequest.get("scope")),
 				null, null, null, null);
@@ -39,6 +44,7 @@ public class OAuth2AuthenticationReadConverter implements Converter<DBObject, OA
 					getAuthorities((List) userAuthorization.get("authorities")));
 		}
 		OAuth2Authentication authentication = new OAuth2Authentication(oAuth2Request, userAuthentication);
+		System.out.println(authentication);
 
 		return authentication;
 	}

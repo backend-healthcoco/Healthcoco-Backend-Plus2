@@ -3361,6 +3361,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Appointment getAppointmentById(ObjectId appointmentId) {
 		Appointment appointment = null;
+try {
+		
 		AppointmentLookupResponse appointmentLookupResponse = mongoTemplate
 				.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(appointmentId)),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
@@ -3372,7 +3374,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		if (appointmentLookupResponse != null) {
 			appointment = new Appointment();
 			BeanUtil.map(appointmentLookupResponse, appointment);
-			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+			PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 					new ObjectId(appointmentLookupResponse.getPatientId()),
 					new ObjectId(appointmentLookupResponse.getLocationId()),
 					new ObjectId(appointmentLookupResponse.getHospitalId()));
@@ -3426,6 +3428,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 				appointment.setLongitude(appointmentLookupResponse.getLocation().getLongitude());
 			}
 		}
+} catch (Exception e) {
+	e.printStackTrace();
+	throw new BusinessException(ServiceError.Unknown, "Error while getting appointment");
+}
 		return appointment;
 	}
 

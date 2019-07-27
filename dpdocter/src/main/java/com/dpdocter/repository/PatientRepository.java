@@ -29,6 +29,8 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 	@Query("{'userId': ?0,'locationId': ?1,'hospitalId': ?2}")
 	PatientCollection findByUserIdLocationIdAndHospitalId(ObjectId userId, ObjectId locationId, ObjectId hospitalId);
 	
+	PatientCollection findByUserIdAndLocationIdAndHospitalId(ObjectId userId, ObjectId locationId, ObjectId hospitalId);
+
 	@Query("{'userId': ?0,'locationId': ?1,'hospitalId': ?2,'discarded': ?3}")
 	PatientCollection findByUserIdLocationIdAndHospitalId(ObjectId userId, ObjectId locationId, ObjectId hospitalId,Boolean discarded);
 

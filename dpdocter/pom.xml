@@ -27,24 +27,26 @@
 						<filtering>true</filtering>
 					</resource>
 				</resources>
-				<plugins>
-					<plugin>
-						<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
-						<!-- <dependency> -->
-						<groupId>org.apache.tomcat.embed</groupId>
-						<artifactId>tomcat-embed-core</artifactId>
-						<version>9.0.16</version>
-						<!-- </dependency> -->
+<!-- 				<plugins> -->
+<!-- 					<plugin> -->
+<!--     <groupId>org.apache.tomcat.maven</groupId> -->
+<!--     <artifactId>tomcat8-maven-plugin</artifactId> -->
+<!--     <version>2.2</version> -->
+					
+<!-- 						https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
+<!-- 						<dependency> -->
+<!-- 						<groupId>org.apache.tomcat.embed</groupId> -->
+<!-- 						<artifactId>tomcat-embed-core</artifactId> -->
+<!-- 						<version>9.0.16</version> -->
+<!-- 						</dependency> -->
 
-					</plugin>
-				</plugins>
+<!-- 					</plugin> -->
+<!-- 				</plugins> -->
 			</build>
 		</profile>
 		<profile>
 			<id>dev</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
+			<activation> <activeByDefault>true</activeByDefault></activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -105,21 +107,6 @@
 		</profile>
 	</profiles>
 	<dependencies>
-
-		<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
-		<dependency>
-			<groupId>org.apache.pdfbox</groupId>
-			<artifactId>pdfbox</artifactId>
-			<version>2.0.9</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox-tools -->
-		<dependency>
-			<groupId>org.apache.pdfbox</groupId>
-			<artifactId>pdfbox-tools</artifactId>
-			<version>2.0.9</version>
-		</dependency>
-
 		<!-- Integration test dependency -->
 		<dependency>
 			<groupId>de.flapdoodle.embedmongo</groupId>
@@ -336,11 +323,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity</artifactId>
-			<version>1.6.4</version>
-		</dependency>
+		
 		<!-- Servlet -->
 		<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
 		<dependency>
@@ -467,6 +450,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.12.0</version>
+</dependency>
 		<!-- Jasper -->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
@@ -933,15 +921,6 @@
 		<!-- <artifactId>spring-aop</artifactId> -->
 		<!-- <version>4.3.5.RELEASE</version> -->
 		<!-- </dependency> -->
-
-
-		<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aop</artifactId>
-			<version>5.0.8.RELEASE</version>
-		</dependency>
-
 
 		<!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
 		<dependency>
@@ -1456,11 +1435,6 @@
 
 		</testResources>
 		<plugins>
-	<plugin>
-						<groupId>org.apache.tomcat.maven</groupId>
-						<artifactId>tomcat7-maven-plugin</artifactId>
-						<version>2.2</version>
-					</plugin>
 			<!-- <plugin> -->
 			<!-- <groupId>org.apache.maven.plugins</groupId> -->
 			<!-- <artifactId>maven-install-plugin</artifactId> -->
