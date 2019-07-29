@@ -33,6 +33,8 @@ public class MedicineOrderCollection extends GenericCollection {
 	@Field
 	private CollectionBoy collectionBoy;
 	@Field
+	private ObjectId prescriptionId;
+	@Field
 	private String uniqueOrderId;
 	@Field
 	private ObjectId vendorId;
@@ -297,6 +299,14 @@ public class MedicineOrderCollection extends GenericCollection {
 
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
+	}
+
+	public ObjectId getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(ObjectId prescriptionId) {
+		this.prescriptionId = prescriptionId;
 	}
 
 }

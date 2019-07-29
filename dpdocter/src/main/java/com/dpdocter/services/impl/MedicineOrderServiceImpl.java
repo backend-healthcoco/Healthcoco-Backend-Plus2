@@ -178,7 +178,9 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				medicineOrderCollection.setItems(items);
 			}
 			medicineOrderCollection.setIsPrescriptionRequired(request.getIsPrescriptionRequired());
-
+			if (!DPDoctorUtils.anyStringEmpty(request.getPrescriptionId())) {
+				medicineOrderCollection.setPrescriptionId(new ObjectId(request.getPrescriptionId()));
+			}
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
 			
 			if (medicineOrderCollection != null) {
@@ -254,6 +256,9 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			medicineOrderCollection.setPatientName(request.getPatientName());
 			medicineOrderCollection.setMobileNumber(request.getMobileNumber());
 			medicineOrderCollection.setEmailAddress(request.getEmailAddress());
+			if (!DPDoctorUtils.anyStringEmpty(request.getPrescriptionId())) {
+				medicineOrderCollection.setPrescriptionId(new ObjectId(request.getPrescriptionId()));
+			}
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
 			if (medicineOrderCollection != null) {
 				medicineOrder = new MedicineOrder();
@@ -295,7 +300,21 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			medicineOrderCollection.setCallingPreference(request.getCallingPreference());
 			medicineOrderCollection.setOrderStatus(request.getOrderStatus());
 			medicineOrderCollection.setIsPrescriptionRequired(request.getIsPrescriptionRequired());
-			
+			if(request.getOrderStatus().equals(OrderStatus.PLACED))
+			{
+				String message = ORDER_PLACED_MESSAGE;
+				System.out.println(message);
+				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message,
+						ComponentType.ORDER_PLACED.getType(), request.getId(), null);
+				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()),
+						medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
+				TrackingOrder trackingOrder = new TrackingOrder();
+				trackingOrder.setOrderId(request.getId());
+				trackingOrder.setNote(message);
+				trackingOrder.setStatus(request.getOrderStatus());
+				trackingOrder.setTimestamp(System.currentTimeMillis());
+				addeditTrackingDetails(trackingOrder);
+			}
 			medicineOrderCollection = medicineOrderRepository.save(medicineOrderCollection);
 			if (medicineOrderCollection != null) {
 				medicineOrder = new MedicineOrder();
@@ -364,6 +383,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			case PLACED:
 				System.out.println("Inside Placed");
 				message = ORDER_PLACED_MESSAGE;
+				System.out.println(message);
 				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message,
 						ComponentType.ORDER_PLACED.getType(), id, null);
 				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()),
@@ -378,6 +398,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				
 			case CONFIRMED:
 				message = ORDER_CONFIRMED_MESSAGE;
+				System.out.println(message);
 				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message, ComponentType.ORDER_CONFIRMED.getType(), id, null);
 				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()), medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
 				trackingOrder = new TrackingOrder();
@@ -391,6 +412,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				
 			case PACKED:
 				message = ORDER_PACKED_MESSAGE;
+				System.out.println(message);
 				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message, ComponentType.ORDER_PACKED.getType(), id, null);
 				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()), medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
 				trackingOrder = new TrackingOrder();
@@ -404,6 +426,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				
 			case DISPATCHED:
 				message = ORDER_DISPATCHED_MESSAGE;
+				System.out.println(message);
 				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message, ComponentType.ORDER_DISPATCHED.getType(), id, null);
 				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()), medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
 				trackingOrder = new TrackingOrder();
@@ -417,6 +440,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				
 			case OUT_FOR_DELIVERY:
 				message = ORDER_OUT_OF_DELIVERY_MESSAGE;
+				System.out.println(message);
 				if(medicineOrderCollection.getCollectionBoy() != null)
 				{
 					message = message.replace("{deliveryBoy}", medicineOrderCollection.getCollectionBoy().getName());
@@ -436,6 +460,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				
 			case DELIVERED:
 				message = ORDER_DELIVERED_MESSAGE;
+				System.out.println(message);
 				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message, ComponentType.ORDER_OUT_FOR_DELIVERY.getType(), id, null);
 				sendStatusChangeMessage(String.valueOf(medicineOrderCollection.getPatientId()), medicineOrderCollection.getPatientName(), medicineOrderCollection.getMobileNumber(), message);
 				trackingOrder = new TrackingOrder();

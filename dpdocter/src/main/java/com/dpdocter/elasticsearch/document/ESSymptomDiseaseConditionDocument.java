@@ -23,8 +23,8 @@ public class ESSymptomDiseaseConditionDocument {
     @Field(type = FieldType.Date)
     private Date updatedTime = new Date();
 
-	@MultiField(mainField = @Field(type = FieldType.Text))
-    private List<String> specialities;
+	/*@MultiField(mainField = @Field(type = FieldType.String))
+    private List<String> specialities;*/
     
 //	@MultiField(mainField = @Field(type = FieldType.Text))
 //    private List<String> formattedSpecialities;
@@ -65,14 +65,12 @@ public class ESSymptomDiseaseConditionDocument {
 		this.updatedTime = updatedTime;
 	}
 
-	public List<String> getSpecialities() {
-		return specialities;
-	}
-
-	public void setSpecialities(List<String> specialities) {
-		this.specialities = specialities;
-	}
-
+	/*
+	 * public List<String> getSpecialities() { return specialities; }
+	 * 
+	 * public void setSpecialities(List<String> specialities) {
+	 * this.specialities = specialities; }
+	 */
 	public List<String> getSpecialityIds() {
 		return specialityIds;
 	}
@@ -84,7 +82,6 @@ public class ESSymptomDiseaseConditionDocument {
 	@Override
 	public String toString() {
 		return "ESSymptomDiseaseConditionDocument [id=" + id + ", name=" + name + ", type=" + type + ", updatedTime="
-				+ updatedTime + ", specialities=" + specialities
-				+ ", specialityIds=" + specialityIds + "]";
+				+ updatedTime + ", specialityIds=" + specialityIds + "]";
 	}
 }
