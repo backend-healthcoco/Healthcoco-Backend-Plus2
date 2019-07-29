@@ -31,7 +31,7 @@ public class GridFsRepository {
 
 	public com.mongodb.client.gridfs.model.GridFSFile read(ObjectId id) {
 
-		return gridFsTemplate.findById(new Query(new Criteria("_id").is(id)));
+		return gridFsTemplate.findOne(new Query(new Criteria("_id").is(id)));
 
 	}
 

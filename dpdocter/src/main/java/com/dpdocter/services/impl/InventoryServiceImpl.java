@@ -172,7 +172,7 @@ public class InventoryServiceImpl implements InventoryService {
 		List<InventoryBatch> inventoryBatchs = null;
 		Aggregation aggregation = null;
 		try {
-			InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findById(new ObjectId(id));
+			InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findById(new ObjectId(id)).orElse(null);
 			if (inventoryItemCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}

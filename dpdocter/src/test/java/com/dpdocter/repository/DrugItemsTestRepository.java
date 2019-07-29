@@ -42,7 +42,7 @@ public class DrugItemsTestRepository {
 	if (createdTime != null)
 	    query.put("createdTime", createdTime.getTime());
 
-	DBObject found = collection.findById(query);
+	DBObject found = collection.findOne(query);
 	if (found == null)
 	    return null;
 	else
@@ -52,7 +52,7 @@ public class DrugItemsTestRepository {
     public JSONObject findBy(String field, String value) throws JSONException {
 	BasicDBObject query = new BasicDBObject();
 	query.put(field, value);
-	DBObject found = collection.findById(query);
+	DBObject found = collection.findOne(query);
 	if (found == null)
 	    return null;
 	else

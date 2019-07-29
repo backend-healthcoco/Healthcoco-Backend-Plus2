@@ -4249,7 +4249,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					adviceCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				AdviceCollection oldAdviceCollection = adviceRepository.findById(adviceCollection.getId());
+				AdviceCollection oldAdviceCollection = adviceRepository.findById(adviceCollection.getId()).orElse(null);
 				adviceCollection.setCreatedBy(oldAdviceCollection.getCreatedBy());
 				adviceCollection.setCreatedTime(oldAdviceCollection.getCreatedTime());
 				adviceCollection.setDiscarded(oldAdviceCollection.getDiscarded());
@@ -4379,7 +4379,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Advice response = new Advice();
 		AdviceCollection adviceCollection = new AdviceCollection();
 		try {
-			adviceCollection = adviceRepository.findById(new ObjectId(adviceId));
+			adviceCollection = adviceRepository.findById(new ObjectId(adviceId)).orElse(null);
 			if (adviceCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(adviceCollection.getDoctorId(), adviceCollection.getHospitalId(),
 						adviceCollection.getLocationId())) {

@@ -1049,7 +1049,7 @@ public class ContactsServiceImpl implements ContactsService {
 		Branch response = null;
 		BranchCollection branchCollection = null;
 		try {
-			branchCollection = branchRepository.findById(new ObjectId(branchId));
+			branchCollection = branchRepository.findById(new ObjectId(branchId)).orElse(null);
 			if (branchCollection != null) {
 				branchCollection.setDiscarded(discarded);
 				branchCollection.setUpdatedTime(new Date());

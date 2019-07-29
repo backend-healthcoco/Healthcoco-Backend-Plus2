@@ -3611,7 +3611,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (patientVisitCollection.getTreatmentId() != null && !patientVisitCollection.getTreatmentId().isEmpty()) {
 				for (ObjectId treatmentId : patientVisitCollection.getTreatmentId()) {
 					PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository
-							.findById(treatmentId);
+							.findById(treatmentId).orElse(null);
 					patientTreatmentCollection.setAppointmentId(appointmentId);
 					patientTreatmentCollection.setFromDate(fromDate);
 					patientTreatmentCollection.setTime(workingHours);

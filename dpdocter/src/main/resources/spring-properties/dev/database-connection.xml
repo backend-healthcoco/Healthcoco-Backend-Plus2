@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/data/mongo
-    http://www.springframework.org/schema/data/mongo/spring-mongo-1.8.xsd">
-	<mongo:mongo id="mongo" host="${db.host}" port="${db.port}" write-concern="SAFE">
-		<mongo:options connect-timeout="${db.connectTimeout}"
+    http://www.springframework.org/schema/data/mongo/spring-mongo-1.10.2.xsd">
+	<mongo:mongo-client id="mongo" host="${db.host}" port="${db.port}">
+
+	<mongo:client-options connect-timeout="${db.connectTimeout}"
 			connections-per-host="${db.connectionPerHost}"
-			threads-allowed-to-block-for-connection-multiplier="${db.threadsAllowedTblockForConnectionMultiplier}" />
-	</mongo:mongo>
-	<mongo:db-factory dbname="${db.name}" host="${db.host}"
-		mongo-ref="mongo" port="${db.port}"/>
-		
+			threads-allowed-to-block-for-connection-multiplier="${db.threadsAllowedTblockForConnectionMultiplier}"/>
+	</mongo:mongo-client>
+	
+	<mongo:db-factory dbname="${db.name}" host="${db.host}" mongo-ref="mongo" port="${db.port}" />
+	
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongoConverter" ref="mappingConverter" />
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
-
 	</bean>
-
-	<bean id="readConverter"
+	
+<bean id="readConverter"
 		class="com.dpdocter.tokenstore.OAuth2AuthenticationReadConverter" />
 
 	<mongo:mapping-converter id="mappingConverter">
@@ -27,10 +28,9 @@
 			<mongo:converter ref="readConverter" />
 		</mongo:custom-converters>
 	</mongo:mapping-converter>
-
+	
 	<bean id="gridFsTemplate" class="org.springframework.data.mongodb.gridfs.GridFsTemplate">
-    <constructor-arg ref="mongoDbFactory" />
-    <constructor-arg ref="mappingConverter" />
-</bean>
-
+		<constructor-arg ref="mongoDbFactory" />
+		<constructor-arg ref="mappingConverter" />
+	</bean>
 </beans>

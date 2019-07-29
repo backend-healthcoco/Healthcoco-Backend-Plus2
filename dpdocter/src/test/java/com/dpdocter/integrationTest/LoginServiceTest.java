@@ -74,7 +74,7 @@ public class LoginServiceTest extends AbstractTestNGSpringContextTests {
 
 	// @Test
 	public void testuser() {
-		UserCollection userCollection = userRepository.findById(new ObjectId("5794af08e4b01f1d73f9b7c0"));
+		UserCollection userCollection = userRepository.findById(new ObjectId("5794af08e4b01f1d73f9b7c0")).orElse(null);
 		System.out.println(userCollection.getFirstName());
 
 	}
