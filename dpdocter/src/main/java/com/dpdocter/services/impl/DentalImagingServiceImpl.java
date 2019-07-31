@@ -462,7 +462,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				if (request.getType().equalsIgnoreCase("DOCTOR")) {
 					if (!DPDoctorUtils.anyStringEmpty(response.getPatientId(), response.getDoctorId(),
 							response.getHospitalId(), response.getLocationId())) {
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								new ObjectId(response.getPatientId()), new ObjectId(response.getLocationId()),
 								new ObjectId(response.getHospitalId()));
 						if (patientCollection != null) {
@@ -483,7 +483,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					if (!DPDoctorUtils.anyStringEmpty(response.getPatientId(), response.getLocationId(),
 							response.getHospitalId())) {
 
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								new ObjectId(response.getPatientId()),
 								new ObjectId(response.getDentalImagingLocationId()),
 								new ObjectId(response.getDentalImagingHospitalId()));
@@ -668,7 +668,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 							dentalImagingResponse.getDoctorId(), dentalImagingResponse.getHospitalId(),
 							dentalImagingResponse.getLocationId())) {
 						PatientCollection patientCollection = patientRepository
-								.findByUserIdDoctorIdLocationIdAndHospitalId(
+								.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
 										new ObjectId(dentalImagingResponse.getPatientId()),
 										new ObjectId(dentalImagingResponse.getDoctorId()),
 										new ObjectId(dentalImagingResponse.getLocationId()),
@@ -693,7 +693,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 					if (!DPDoctorUtils.anyStringEmpty(dentalImagingResponse.getPatientId(),
 							dentalImagingResponse.getLocationId(), dentalImagingResponse.getHospitalId())) {
 
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								new ObjectId(dentalImagingResponse.getPatientId()),
 								new ObjectId(dentalImagingResponse.getDentalImagingLocationId()),
 								new ObjectId(dentalImagingResponse.getDentalImagingHospitalId()));
@@ -715,7 +715,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				}
 
 				List<DentalImagingReportsCollection> dentalImagingReportsCollections = dentalImagingReportsRepository
-						.getReportsByRequestId(new ObjectId(dentalImagingResponse.getId()), false);
+						.findByRequestIdAndDiscarded(new ObjectId(dentalImagingResponse.getId()), false);
 				if (dentalImagingReportsCollections != null) {
 					List<DentalImagingReports> dentalImagingReports = new ArrayList<>();
 					for (DentalImagingReportsCollection dentalImagingReportsCollection : dentalImagingReportsCollections) {
@@ -788,7 +788,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		try {
 			for (DentalImagingLocationServiceAssociation dentalImagingLocationServiceAssociation : request) {
 				dentalImagingLocationServiceAssociationCollection = dentalImagingLocationServiceAssociationRepository
-						.findbyServiceLocationHospital(
+						.findByDentalDiagnosticServiceIdAndLocationIdAndHospitalId(
 								new ObjectId(dentalImagingLocationServiceAssociation.getDentalDiagnosticServiceId()),
 								new ObjectId(dentalImagingLocationServiceAssociation.getLocationId()),
 								new ObjectId(dentalImagingLocationServiceAssociation.getHospitalId()));
@@ -963,7 +963,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				serviceIds.add(new ObjectId(id));
 			}
 			dentalImagingLocationServiceAssociationCollections = dentalImagingLocationServiceAssociationRepository
-					.findbyHospital(hospitalObjectIds);
+					.findByHospitalIdIn(hospitalObjectIds);
 			if (dentalImagingLocationServiceAssociationCollections == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Association not found");
 			}
@@ -1074,7 +1074,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				dentalImagingRepository.save(dentalImagingCollection);
 
 				List<DentalImagingReportsCollection> reportsCollections = dentalImagingReportsRepository
-						.getReportsByRequestId(new ObjectId(request.getRequestId()), false);
+						.findByRequestIdAndDiscarded(new ObjectId(request.getRequestId()), false);
 				if (reportsCollections == null || reportsCollections.isEmpty()) {
 					UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 					LocationCollection locationCollection = locationRepository
@@ -1131,7 +1131,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		try {
 			for (DoctorHospitalDentalImagingAssociation doctorHospitalDentalImagingAssociation : request) {
 				doctorHospitalDentalImagingAssociationCollection = doctorHospitalDentalImagingAssociationRepository
-						.findbyDoctorHospital(new ObjectId(doctorHospitalDentalImagingAssociation.getDoctorId()),
+						.findByDoctorIdAndHospitalId(new ObjectId(doctorHospitalDentalImagingAssociation.getDoctorId()),
 								new ObjectId(doctorHospitalDentalImagingAssociation.getHospitalId()));
 
 				if (doctorHospitalDentalImagingAssociationCollection == null) {
@@ -1238,7 +1238,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 			if (dentalImagingReportsCollection.getRequestId() != null) {
 				List<DentalImagingReportsCollection> reports = dentalImagingReportsRepository
-						.getReportsByRequestId(dentalImagingReportsCollection.getRequestId(), false);
+						.findByRequestIdAndDiscarded(dentalImagingReportsCollection.getRequestId(), false);
 
 				if (reports == null || reports.isEmpty()) {
 					DentalImagingCollection dentalImagingCollection = dentalImagingRepository
@@ -1304,7 +1304,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				if (!DPDoctorUtils.anyStringEmpty(doctorHospitalDentalImagingAssociationResponse.getDoctorId(),
 						doctorHospitalDentalImagingAssociationResponse.getDoctorLocationId())) {
 					DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
-							.findByDoctorIdLocationId(
+							.findByDoctorIdAndLocationId(
 									new ObjectId(doctorHospitalDentalImagingAssociationResponse.getDoctorId()),
 									new ObjectId(doctorHospitalDentalImagingAssociationResponse.getDoctorLocationId()));
 					if (doctorClinicProfileCollection != null) {
@@ -1352,7 +1352,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 		} else if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
 
 			patientId = new ObjectId(request.getPatientId());
-			PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(patientId, locationId,
+			PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(patientId, locationId,
 					hospitalId);
 			if (patient == null) {
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
@@ -1883,7 +1883,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 		UserCollection dentalImagingDoctor = userRepository.findById(new ObjectId(imagingInvoiceResponse.getDentalImagingDoctorId())).orElse(null);
 		UserCollection doctor = userRepository.findById(new ObjectId(imagingInvoiceResponse.getDoctorId())).orElse(null);
-		PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+		PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 				new ObjectId(imagingInvoiceResponse.getPatientId()),
 				new ObjectId(imagingInvoiceResponse.getDentalImagingLocationId()),
 				new ObjectId(imagingInvoiceResponse.getDentalImagingHospitalId()));
@@ -1907,7 +1907,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 
 		String pdfName = "DENTAL-IMAGE-INVOICE-" + imagingInvoiceResponse.getUniqueInvoiceId() + new Date().getTime();
 
-		printSettings = printSettingsRepository.getSettings(
+		printSettings = printSettingsRepository.findByLocationIdAndHospitalId(
 				(!DPDoctorUtils.anyStringEmpty(imagingInvoiceResponse.getDentalImagingLocationId())
 						? new ObjectId(imagingInvoiceResponse.getDentalImagingLocationId())
 						: null),
@@ -2464,7 +2464,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			if (dentalImagingInvoiceCollection != null) {
 
 				user = userRepository.findById(dentalImagingInvoiceCollection.getPatientId()).orElse(null);
-				patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+				patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						dentalImagingInvoiceCollection.getPatientId(), dentalImagingInvoiceCollection.getLocationId(),
 						dentalImagingInvoiceCollection.getHospitalId());
 				user.setFirstName(patient.getLocalPatientName());
@@ -2571,7 +2571,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 			if (dentalImagingCollection != null) {
 
 				user = userRepository.findById(dentalImagingCollection.getPatientId()).orElse(null);
-				patient = patientRepository.findByUserIdLocationIdAndHospitalId(dentalImagingCollection.getPatientId(),
+				patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(dentalImagingCollection.getPatientId(),
 						dentalImagingCollection.getLocationId(), dentalImagingCollection.getHospitalId());
 				user.setFirstName(patient.getLocalPatientName());
 				emailTrackCollection.setDoctorId(dentalImagingCollection.getDoctorId());
@@ -2585,7 +2585,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 				}
 
 				List<DentalImagingReportsCollection> reports = dentalImagingReportsRepository
-						.getReportsByRequestId(new ObjectId(id), false);
+						.findByRequestIdAndDiscarded(new ObjectId(id), false);
 
 				if (reports != null && !reports.isEmpty()) {
 					mailAttachments = new ArrayList<>();

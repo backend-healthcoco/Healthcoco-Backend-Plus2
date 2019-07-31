@@ -10,7 +10,7 @@ import com.dpdocter.collections.SubscriptionDetailCollection;
 @Repository
 public interface SubscriptionDetailRepository extends MongoRepository<SubscriptionDetailCollection, ObjectId> {
 	@Query("{'doctorId': ?0}")
-	public SubscriptionDetailCollection findSuscriptionDetailByDoctorId(ObjectId doctorId);
+	public SubscriptionDetailCollection findByDoctorId(ObjectId doctorId);
 
 	@Query("{'locationIds': ?0}")
 	public SubscriptionDetailCollection findSuscriptionDetailBylocationId(ObjectId locationId);

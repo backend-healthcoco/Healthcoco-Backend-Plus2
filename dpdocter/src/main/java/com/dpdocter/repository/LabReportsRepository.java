@@ -10,8 +10,7 @@ import com.dpdocter.collections.LabReportsCollection;
 
 public interface LabReportsRepository extends MongoRepository<LabReportsCollection, ObjectId> {
 
-	@Query("{'labTestSampleId': ?0}")
-	public LabReportsCollection getByRequestIdandSAmpleId(ObjectId labTestSampleId);
+	public LabReportsCollection findByLabTestSampleId(ObjectId labTestSampleId);
 
 	@Query(value = "{'parentLabLocationId':?0, 'isCompleted':?1, 'updatedTime' : {'$gt' : ?2, '$lte' : ?3}}", count = true)
 	Integer findTodaysCompletedReport(ObjectId locationId, Boolean isCompleted, Date start, Date end);

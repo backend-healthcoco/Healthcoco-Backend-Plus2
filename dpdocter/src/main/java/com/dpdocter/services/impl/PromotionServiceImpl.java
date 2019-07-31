@@ -29,7 +29,7 @@ public class PromotionServiceImpl implements PromotionService{
 	public InternalPromotionGroup getPromotionGroup(String promocode)
 	{
 		InternalPromotionGroup response = null;
-		InternalPromotionGroupCollection internalPromotionGroupCollection = internalPromotionGroupRepository.getByPromoCode(promocode);
+		InternalPromotionGroupCollection internalPromotionGroupCollection = internalPromotionGroupRepository.findByPromoCode(promocode);
 	
 		if(internalPromotionGroupCollection != null)
 		{

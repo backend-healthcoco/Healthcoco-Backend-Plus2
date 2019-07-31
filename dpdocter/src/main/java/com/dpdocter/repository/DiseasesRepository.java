@@ -19,12 +19,10 @@ public interface DiseasesRepository extends MongoRepository<DiseasesCollection, 
 	List<DiseasesCollection> findCustomGlobalDiseases(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,
 			Date date, boolean[] discards, Pageable pageable);
 
-	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
-	List<DiseasesCollection> findCustomDiseases(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date,
+	List<DiseasesCollection> findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date,
 			boolean[] discards, Pageable pageable);
 
-	@Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
-	List<DiseasesCollection> findCustomDiseases(ObjectId doctorId, Date date, boolean[] discards, Pageable pageable);
+	List<DiseasesCollection> findByDoctorIdAndUpdatedTimeGreaterThanAndDiscardedIn(ObjectId doctorId, Date date, boolean[] discards, Pageable pageable);
 
 	@Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': {$in: ?2}}]}")
 	List<DiseasesCollection> findCustomGlobalDiseases(ObjectId doctorId, Date date, boolean[] discards,
@@ -34,33 +32,27 @@ public interface DiseasesRepository extends MongoRepository<DiseasesCollection, 
 	List<DiseasesCollection> findCustomGlobalDiseases(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,
 			Date date, boolean[] discards, Sort sort);
 
-	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-	List<DiseasesCollection> findGlobalDiseases(Date date, boolean[] discards, Pageable pageable);
+	List<DiseasesCollection> findByDoctorIdNullAndUpdatedTimeGreaterThanAndDiscardedIn(Date date, boolean[] discards, Pageable pageable);
 
-	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-	List<DiseasesCollection> findGlobalDiseases(Date date, boolean[] discards, Sort sort);
+	List<DiseasesCollection> findByDoctorIdNullAndUpdatedTimeGreaterThanAndDiscardedIn(Date date, boolean[] discards, Sort sort);
 
-	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
-	List<DiseasesCollection> findCustomDiseases(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date,
+	List<DiseasesCollection> findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date,
 			boolean[] discards, Sort sort);
 
-	@Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
-	List<DiseasesCollection> findCustomDiseases(ObjectId doctorId, Date date, boolean[] discards, Sort sort);
+	List<DiseasesCollection> findByDoctorIdAndUpdatedTimeGreaterThanAndDiscardedIn(ObjectId doctorId, Date date, boolean[] discards, Sort sort);
 
 	@Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': {$in: ?2}}]}")
 	List<DiseasesCollection> findCustomGlobalDiseases(ObjectId doctorId, Date date, boolean[] discards, Sort sort);
 
-	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-	List<DiseasesCollection> findCustomGlobalDiseases(Date date, boolean[] discards, Pageable pageable);
+	List<DiseasesCollection> findByUpdatedTimeGreaterThanAndDiscardedIn(Date date, boolean[] discards, Pageable pageable);
 
-	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-	List<DiseasesCollection> findCustomGlobalDiseases(Date date, boolean[] discards, Sort sort);
+	List<DiseasesCollection> findByUpdatedTimeGreaterThanAndDiscardedIn(Date date, boolean[] discards, Sort sort);
 
 	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-	List<DiseasesCollection> findCustomDiseasesForAdmin(Date date, boolean[] discards, Pageable pageable);
+	List<DiseasesCollection> findByDoctorIdNotNullAndUpdatedTimeGreaterThanAndDiscardedIn(Date date, boolean[] discards, Pageable pageable);
 
 	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-	List<DiseasesCollection> findCustomDiseasesForAdmin(Date date, boolean[] discards, Sort sort);
+	List<DiseasesCollection> findByDoctorIdNotNullAndUpdatedTimeGreaterThanAndDiscardedIn(Date date, boolean[] discards, Sort sort);
 
 	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'disease' : {$regex : '^?2', $options : 'i'}}")
 	List<DiseasesCollection> findCustomDiseasesForAdmin(Date date, boolean[] discards, String searchTerm,
@@ -69,24 +61,12 @@ public interface DiseasesRepository extends MongoRepository<DiseasesCollection, 
 	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'disease' : {$regex : '^?2', $options : 'i'}}")
 	List<DiseasesCollection> findCustomDiseasesForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 
-	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-	List<DiseasesCollection> findGlobalDiseasesForAdmin(Date date, boolean[] discards, Pageable pageable);
-
-	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-	List<DiseasesCollection> findGlobalDiseasesForAdmin(Date date, boolean[] discards, Sort sort);
-
 	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'disease' : {$regex : '^?2', $options : 'i'}}")
 	List<DiseasesCollection> findGlobalDiseasesForAdmin(Date date, boolean[] discards, String searchTerm,
 			Pageable pageable);
 
 	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'disease' : {$regex : '^?2', $options : 'i'}}")
 	List<DiseasesCollection> findGlobalDiseasesForAdmin(Date date, String searchTerm, boolean[] discards, Sort sort);
-
-	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-	List<DiseasesCollection> findCustomGlobalDiseasesForAdmin(Date date, boolean[] discards, Pageable pageable);
-
-	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-	List<DiseasesCollection> findCustomGlobalDiseasesForAdmin(Date date, boolean[] discards, Sort sort);
 
 	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'disease' : {$regex : '^?2', $options : 'i'}}")
 	List<DiseasesCollection> findCustomGlobalDiseasesForAdmin(Date date, boolean[] discards, String searchTerm,
@@ -96,8 +76,7 @@ public interface DiseasesRepository extends MongoRepository<DiseasesCollection, 
 	List<DiseasesCollection> findCustomGlobalDiseasesForAdmin(Date date, boolean[] discards, String searchTerm,
 			Sort sort);
 
-	@Query("{'id': {'$in': ?0}}")
-	List<DiseasesCollection> findAll(List<ObjectId> diseasesIds);
+	List<DiseasesCollection> findAllById(List<ObjectId> diseasesIds);
 
 	@Query("{'$or': [{'disease' : {$regex : '^?0', $options : 'i'}, 'doctorId': ?1,  'locationId': ?2, 'hospitalId': ?3, 'discarded': ?4},{'disease' : {$regex : '^?0', $options : 'i'}, 'doctorId': null, 'locationId': null, 'hospitalId': null, 'discarded': ?4}]}")
 	DiseasesCollection find(String disease, ObjectId doctorObjectId, ObjectId locationObjectId,

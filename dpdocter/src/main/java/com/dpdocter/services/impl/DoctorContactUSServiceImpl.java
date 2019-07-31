@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
@@ -179,7 +180,7 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 		if (contactId != null && !(contactId.isEmpty())) {
 			try {
 				DoctorContactUsCollection doctorContactUsCollection = doctorContactUsRepository
-						.findByContactId(contactId);
+						.findById(new ObjectId(contactId)).orElse(null);
 				if (doctorContactUsCollection != null) {
 					doctorContactUsCollection.setContactState(contactState);
 					doctorContactUsCollection = doctorContactUsRepository.save(doctorContactUsCollection);

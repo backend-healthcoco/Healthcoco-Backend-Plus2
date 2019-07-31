@@ -92,13 +92,16 @@ public class AccessControlServicesImpl implements AccessControlServices {
     	if(!DPDoctorUtils.anyStringEmpty(accessControl.getLocationId()))locationObjectId = new ObjectId(accessControl.getLocationId());
     	if(!DPDoctorUtils.anyStringEmpty(accessControl.getHospitalId()))hospitalObjectId = new ObjectId(accessControl.getHospitalId());
     	
-	    ArosCollection arosCollection = arosRepository.find(roleOrUserObjectId, locationObjectId, hospitalObjectId);
+    	List<ArosCollection> arosCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("roleOrUserId").is(roleOrUserObjectId)
+    			.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId))), ArosCollection.class, ArosCollection.class).getMappedResults();
+	    ArosCollection arosCollection = null;
+	    if(arosCollections!=null && !arosCollections.isEmpty())arosCollection = arosCollections.get(0);
 	    ArosAcosCollection arosAcosCollection = null;
 	    List<AcosCollection> acosCollections = null;
 	    if (arosCollection != null) {
 		arosAcosCollection = arosAcosRepository.findByArosId(arosCollection.getId());
 
-		Iterator<AcosCollection> acosCollectionIterator = acosRepository.findAll(arosAcosCollection.getAcosIds()).iterator();
+		Iterator<AcosCollection> acosCollectionIterator = acosRepository.findAllById(arosAcosCollection.getAcosIds()).iterator();
 
 		acosCollections = IteratorUtils.toList(acosCollectionIterator);
 
@@ -185,14 +188,20 @@ public class AccessControlServicesImpl implements AccessControlServices {
 	    		AccessControl accessControl = new AccessControl();
 	    		ArosAcosCollection arosAcosCollection = arosCollection.getArosAcosCollection();
 	    		if (arosAcosCollection != null && !arosAcosCollection.getAcosIds().isEmpty()) {
-	    			List<AcosCollection> acosCollections = acosRepository.findAll(arosAcosCollection.getAcosIds());
+	    			Iterator<AcosCollection> acosCollections = acosRepository.findAllById(arosAcosCollection.getAcosIds()).iterator();
 	    			List<AccessModule> accessModules = new ArrayList<AccessModule>();
 
-	    			for (AcosCollection acosCollection : acosCollections) {
-	    					AccessModule accessModule = new AccessModule();
-	    					BeanUtil.map(acosCollection, accessModule);
-	    					accessModules.add(accessModule);
+	    			while(acosCollections.hasNext()) {
+	    				AcosCollection acosCollection = acosCollections.next();
+	    				AccessModule accessModule = new AccessModule();
+	    				BeanUtil.map(acosCollection, accessModule);
+    					accessModules.add(accessModule);
 	    			}
+//	    			for (AcosCollection acosCollection : acosCollections.) {
+//	    					AccessModule accessModule = new AccessModule();
+//	    					BeanUtil.map(acosCollection, accessModule);
+//	    					accessModules.add(accessModule);
+//	    			}
 	    			accessControl.setAccessModules(accessModules);
 	    			accessControl.setId(arosAcosCollection.getId().toString());
 	    			accessControl.setRoleOrUserId(arosCollection.getRoleOrUserId().toString());

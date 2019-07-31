@@ -11,9 +11,6 @@ import com.dpdocter.collections.OAuth2AuthenticationRefreshTokenCollection;
 public interface OAuth2RefreshTokenRepository
 		extends MongoRepository<OAuth2AuthenticationRefreshTokenCollection, ObjectId> {
 
-	@Query("{'tokenId': ?0}")
-	public OAuth2AuthenticationRefreshTokenCollection findByTokenId(String tokenId);
-
 	@Query("{'authentication.userAuthentication.details.client_id':?0,    'authentication.userAuthentication.details.username':?1}")
 	public List<OAuth2AuthenticationRefreshTokenCollection> findByclientIdAndUserName(String clientId, String mobileNumber);
 

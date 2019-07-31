@@ -468,7 +468,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 			patientFeedbackCollection.setAdminUpdatedExperience(feedback.getExperience());
 		}
 		if (feedback.getServices() != null && !feedback.getServices().isEmpty()) {
-			List<ServicesCollection> servicesCollections = servicesRepository.findbyService(feedback.getServices());
+			List<ServicesCollection> servicesCollections = servicesRepository.findByServiceIn(feedback.getServices());
 			@SuppressWarnings("unchecked")
 			Set<ObjectId> serviceIds = (Set<ObjectId>) CollectionUtils.collect(servicesCollections,
 					new BeanToPropertyValueTransformer("id"));
@@ -528,7 +528,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
 				criteria.and("patientId").is(new ObjectId(request.getPatientId()));
-				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+				patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						new ObjectId(request.getPatientId()), new ObjectId(request.getLocationId()),
 						new ObjectId(request.getHospitalId()));
 			}

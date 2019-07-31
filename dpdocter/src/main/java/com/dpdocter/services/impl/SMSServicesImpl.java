@@ -346,18 +346,18 @@ public class SMSServicesImpl implements SMSServices {
 			String[] type = { "APPOINTMENT", "PRESCRIPTION", "VISITS" };
 			if (doctorObjectId == null) {
 				if (size > 0)
-					smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationObjectId, hospitalObjectId,
+					smsTrackDetails = smsTrackRepository.findByLocationIdAndHospitalIdAndTypeIn(locationObjectId, hospitalObjectId,
 							type, PageRequest.of(page, size, Direction.DESC, "createdTime"));
 				else
-					smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationObjectId, hospitalObjectId,
+					smsTrackDetails = smsTrackRepository.findByLocationIdAndHospitalIdAndTypeIn(locationObjectId, hospitalObjectId,
 							type, new Sort(Sort.Direction.DESC, "createdTime"));
 			} else {
 				if (size > 0)
-					smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorObjectId,
+					smsTrackDetails = smsTrackRepository.findByDoctorIdAndLocationIdAndHospitalIdAndTypeIn(doctorObjectId,
 							locationObjectId, hospitalObjectId, type,
 							PageRequest.of(page, size, Direction.DESC, "createdTime"));
 				else
-					smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorObjectId,
+					smsTrackDetails = smsTrackRepository.findByDoctorIdAndLocationIdAndHospitalIdAndTypeIn(doctorObjectId,
 							locationObjectId, hospitalObjectId, type, new Sort(Sort.Direction.DESC, "createdTime"));
 			}
 
@@ -571,7 +571,7 @@ public class SMSServicesImpl implements SMSServices {
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
 
-			smsFormatCollection = sMSFormatRepository.find(doctorObjectId, locationObjectId, hospitalObjectId,
+			smsFormatCollection = sMSFormatRepository.findByDoctorIdAndLocationIdAndHospitalIdAndType(doctorObjectId, locationObjectId, hospitalObjectId,
 					request.getType().getType());
 			if (smsFormatCollection == null) {
 				smsFormatCollection = new SMSFormatCollection();
@@ -606,14 +606,14 @@ public class SMSServicesImpl implements SMSServices {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			if (type != null) {
-				SMSFormatCollection smsFormatCollection = sMSFormatRepository.find(doctorObjectId, locationObjectId,
+				SMSFormatCollection smsFormatCollection = sMSFormatRepository.findByDoctorIdAndLocationIdAndHospitalIdAndType(doctorObjectId, locationObjectId,
 						hospitalObjectId, type);
 				if (smsFormatCollection != null) {
 					smsFormatCollections = new ArrayList<SMSFormatCollection>();
 					smsFormatCollections.add(smsFormatCollection);
 				}
 			} else
-				smsFormatCollections = sMSFormatRepository.find(doctorObjectId, locationObjectId, hospitalObjectId);
+				smsFormatCollections = sMSFormatRepository.findByDoctorIdAndLocationIdAndHospitalId(doctorObjectId, locationObjectId, hospitalObjectId);
 			if (smsFormatCollections != null) {
 				response = new ArrayList<SMSFormat>();
 				for (SMSFormatCollection smsFormatCollection : smsFormatCollections) {

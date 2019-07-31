@@ -30,6 +30,7 @@ import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DeviceType;
 import com.dpdocter.enums.PushNotificationType;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -146,7 +147,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				}
 				if (request.getRole().getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())
 						&& !DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
-					List<UserCollection> userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
+					List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(), UserState.USERSTATECOMPLETE.getState());
 					if (userCollections != null) {
 						List<ObjectId> userIds = new ArrayList<ObjectId>();
 						for (UserCollection userCollection : userCollections) {
@@ -184,7 +185,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(userId)) {
 				ObjectId userObjectId = new ObjectId(userId);
-				userDeviceCollections = userDeviceRepository.findByUserId(userObjectId);
+				userDeviceCollections = userDeviceRepository.findByUserIds(userObjectId);
 			} else {
 				userDeviceCollections = userDevices;
 			}
@@ -743,7 +744,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			Collection<String> deviceIds = null;
 			List<UserDeviceCollection> deviceCollections = null;
 			if (request.getUserType().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.DOCTOR.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.DOCTOR.getRole(),
 						DeviceType.ANDROID.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -754,7 +755,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							RoleEnum.DOCTOR.getRole(), DeviceType.ANDROID.getType());
 				}
 
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.DOCTOR.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.DOCTOR.getRole(),
 						DeviceType.ANDROID_PAD.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -765,7 +766,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							RoleEnum.DOCTOR.getRole(), DeviceType.ANDROID_PAD.getType());
 				}
 
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.DOCTOR.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.DOCTOR.getRole(),
 						DeviceType.IOS.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -776,7 +777,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							RoleEnum.DOCTOR.getRole());
 				}
 
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.DOCTOR.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.DOCTOR.getRole(),
 						DeviceType.IPAD.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -787,7 +788,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							DeviceType.IPAD.getType(), RoleEnum.DOCTOR.getRole());
 				}
 			} else if (request.getUserType().equalsIgnoreCase(RoleEnum.PATIENT.getRole())) {
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.PATIENT.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.PATIENT.getRole(),
 						DeviceType.ANDROID.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -798,7 +799,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							RoleEnum.PATIENT.getRole(), DeviceType.ANDROID.getType());
 				}
 
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.PATIENT.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.PATIENT.getRole(),
 						DeviceType.ANDROID_PAD.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -809,7 +810,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							RoleEnum.PATIENT.getRole(), DeviceType.ANDROID_PAD.getType());
 				}
 
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.PATIENT.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.PATIENT.getRole(),
 						DeviceType.IOS.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -820,7 +821,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							RoleEnum.PATIENT.getRole());
 				}
 
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.PATIENT.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.PATIENT.getRole(),
 						DeviceType.IPAD.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -831,7 +832,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							DeviceType.IPAD.getType(), RoleEnum.PATIENT.getRole());
 				}
 			} else {
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.DOCTOR.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.DOCTOR.getRole(),
 						DeviceType.ANDROID.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -842,7 +843,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							RoleEnum.DOCTOR.getRole(), DeviceType.ANDROID.getType());
 				}
 
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.DOCTOR.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.DOCTOR.getRole(),
 						DeviceType.ANDROID_PAD.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -853,7 +854,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							RoleEnum.DOCTOR.getRole(), DeviceType.ANDROID_PAD.getType());
 				}
 
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.DOCTOR.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.DOCTOR.getRole(),
 						DeviceType.IOS.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -864,7 +865,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							RoleEnum.DOCTOR.getRole());
 				}
 
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.DOCTOR.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.DOCTOR.getRole(),
 						DeviceType.IPAD.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -875,7 +876,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							DeviceType.IPAD.getType(), RoleEnum.DOCTOR.getRole());
 				}
 
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.PATIENT.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.PATIENT.getRole(),
 						DeviceType.ANDROID.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -886,7 +887,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							RoleEnum.PATIENT.getRole(), DeviceType.ANDROID.getType());
 				}
 
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.PATIENT.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.PATIENT.getRole(),
 						DeviceType.ANDROID_PAD.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -897,7 +898,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							RoleEnum.PATIENT.getRole(), DeviceType.ANDROID_PAD.getType());
 				}
 
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.PATIENT.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.PATIENT.getRole(),
 						DeviceType.IOS.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -908,7 +909,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							RoleEnum.PATIENT.getRole());
 				}
 
-				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.PATIENT.getRole(),
+				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.PATIENT.getRole(),
 						DeviceType.IPAD.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections,
 						new BeanToPropertyValueTransformer("pushToken"));
@@ -958,7 +959,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				userDeviceCollections = userDeviceRepository.findByLocaleId(new ObjectId(id));
 			}
 			if (role.equals(RoleEnum.PATIENT)) {
-				userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(id));
+				userDeviceCollections = userDeviceRepository.findByUserIds(new ObjectId(id));
 			}
 			if (userDeviceCollections != null && !userDeviceCollections.isEmpty()) {
 				for (UserDeviceCollection userDeviceCollection : userDeviceCollections) {
@@ -1070,10 +1071,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				userDeviceCollections = userDeviceRepository.findByLocaleId(new ObjectId(id));
 			}
 			if (role.equals(RoleEnum.PATIENT)) {
-				userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(id));
+				userDeviceCollections = userDeviceRepository.findByUserIds(new ObjectId(id));
 			}
 			if (role.equals(RoleEnum.PATIENT)) {
-				userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(id));
+				userDeviceCollections = userDeviceRepository.findByUserIds(new ObjectId(id));
 			}
 			if (userDeviceCollections != null && !userDeviceCollections.isEmpty()) {
 				for (UserDeviceCollection userDeviceCollection : userDeviceCollections) {

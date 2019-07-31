@@ -718,7 +718,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 
 					DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
-							.findByDoctorIdLocationId(appointmentCollection.getDoctorId(),
+							.findByDoctorIdAndLocationId(appointmentCollection.getDoctorId(),
 									appointmentCollection.getLocationId());
 
 					appointmentCollection.setCategory(request.getCategory());
@@ -972,7 +972,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			if (userCollection != null && locationCollection != null) {
 
-				clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(doctorId, locationId);
+				clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(doctorId, locationId);
 
 				appointmentCollection = new AppointmentCollection();
 				BeanUtil.map(request, appointmentCollection);
@@ -1171,7 +1171,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		} else if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
 
 			patientId = new ObjectId(request.getPatientId());
-			PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(patientId, locationId,
+			PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(patientId, locationId,
 					hospitalId);
 			if (patient == null) {
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
@@ -1608,7 +1608,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			String doctorName, String clinicName, String clinicContactNum, String branch) {
 		SMSFormatCollection smsFormatCollection = null;
 		if (formatType != null) {
-			smsFormatCollection = sMSFormatRepository.find(new ObjectId(doctorId), new ObjectId(locationId),
+			smsFormatCollection = sMSFormatRepository.findByDoctorIdAndLocationIdAndHospitalIdAndType(new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId), formatType);
 		}
 
@@ -2326,7 +2326,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				RecommendationsCollection recommendationsCollection = new RecommendationsCollection();
 				if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 					ObjectId patientObjectId = new ObjectId(patientId);
-					recommendationsCollection = recommendationsRepository.findByDoctorIdLocationIdAndPatientId(null,
+					recommendationsCollection = recommendationsRepository.findByDoctorIdAndLocationIdAndPatientId(null,
 							locationObjectId, patientObjectId);
 					if (recommendationsCollection != null)
 						location.setIsClinicRecommended(!recommendationsCollection.getDiscarded());
@@ -2508,12 +2508,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				locationObjectId = new ObjectId(locationId);
 
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(doctorObjectId,
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(doctorObjectId,
 					locationObjectId);
 			if (doctorClinicProfileCollection != null) {
 
 				if (!isPatient) {
-					UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdLocationId(doctorObjectId,
+					UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdAndLocationId(doctorObjectId,
 							locationObjectId);
 					if (userRoleCollection != null) {
 						RoleCollection roleCollection = roleRepository.findById(userRoleCollection.getId()).orElse(null);
@@ -2660,7 +2660,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			List<ObjectId> doctorIds = new ArrayList<ObjectId>();
 			if(forAllDoctors) {
-				List<DoctorClinicProfileCollection> doctors = doctorClinicProfileRepository.findByLocationId(locationObjectId, true);
+				List<DoctorClinicProfileCollection> doctors = doctorClinicProfileRepository.findByLocationIdAndIsActivate(locationObjectId, true);
 				doctorIds = (List<ObjectId>) CollectionUtils.collect(doctors, new BeanToPropertyValueTransformer("doctorId"));
 			}
 			else if (request.getDoctorIds() != null && !request.getDoctorIds().isEmpty()) {
@@ -2980,7 +2980,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (appointmentLookupResponse.getPatientId() != null) {
 					User doctor = appointmentLookupResponse.getDoctor();
 					User patient = appointmentLookupResponse.getPatient();
-					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+					PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 							new ObjectId(appointmentLookupResponse.getPatientId()),
 							new ObjectId(appointmentLookupResponse.getLocationId()),
 							new ObjectId(appointmentLookupResponse.getHospitalId()));
@@ -2988,7 +2988,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					Location locationCollection = appointmentLookupResponse.getLocation();
 					if (doctor != null && locationCollection != null && patient != null) {
 						DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
-								.findByDoctorIdLocationId(new ObjectId(appointmentLookupResponse.getDoctorId()),
+								.findByDoctorIdAndLocationId(new ObjectId(appointmentLookupResponse.getDoctorId()),
 										new ObjectId(appointmentLookupResponse.getLocationId()));
 
 						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
@@ -3156,9 +3156,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			PatientQueueCollection patientQueueCollection = null;
 
 			if (!DPDoctorUtils.anyStringEmpty(appointmentId))
-				patientQueueCollection = patientQueueRepository.find(appointmentId);
+				patientQueueCollection = patientQueueRepository.findByAppointmentId(appointmentId);
 			else
-				patientQueueCollection = patientQueueRepository.find(doctorObjectId, locationObjectId, hospitalObjectId,
+				patientQueueCollection = patientQueueRepository.findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndDateBetween(doctorObjectId, locationObjectId, hospitalObjectId,
 						patientObjectId, start, end);
 
 			if (patientQueueCollection == null)
@@ -3174,7 +3174,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			patientQueueCollection.setStartTime(startTime);
 			patientQueueCollection.setDiscarded(false);
 
-			patientQueueCollections = patientQueueRepository.find(doctorObjectId, locationObjectId, hospitalObjectId,
+			patientQueueCollections = patientQueueRepository.findByDoctorIdAndLocationIdAndHospitalIdAndDateBetweenAndDiscarded(doctorObjectId, locationObjectId, hospitalObjectId,
 					start, end, false, new Sort(Direction.DESC, "sequenceNo"));
 			if (startTime != null) {
 				if (patientQueueCollections == null || patientQueueCollections.isEmpty()) {
@@ -3302,7 +3302,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								.setThumbnailUrl(getFinalImageURL(collection.getPatient().getThumbnailUrl()));
 					}
 			} else {
-				patientQueueCollections = patientQueueRepository.find(doctorObjectId, locationObjectId,
+				patientQueueCollections = patientQueueRepository.findByDoctorIdAndLocationIdAndHospitalIdAndDateBetweenAndDiscarded(doctorObjectId, locationObjectId,
 						hospitalObjectId, start, end, false, new Sort(Direction.ASC, "sequenceNo"));
 				if (patientQueueCollections != null && !patientQueueCollections.isEmpty()) {
 					response = new ArrayList<PatientQueue>();
@@ -3745,7 +3745,7 @@ try {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
 
-			AppointmentCollection appointmentCollection = appointmentRepository.find(doctorObjectId, locationObjectId,
+			AppointmentCollection appointmentCollection = appointmentRepository.findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndAppointmentId(doctorObjectId, locationObjectId,
 					hospitalObjectId, patientObjectId, appointmentId);
 			if (appointmentCollection == null)
 				throw new BusinessException(ServiceError.InvalidInput, "Appointment Not Found");
@@ -3839,7 +3839,7 @@ try {
 			String doctorId, Boolean discarded) {
 		CustomAppointment response = null;
 		try {
-			CustomAppointmentCollection customAppointmentCollection = customAppointmentRepository.findById(
+			CustomAppointmentCollection customAppointmentCollection = customAppointmentRepository.findByIdAndDoctorIdAndLocationIdAndHospitalId(
 					new ObjectId(appointmentId), new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId));
 
@@ -4322,7 +4322,7 @@ try {
 
 		try {
 
-			PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+			PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 					new ObjectId(request.getHospitalId()), ComponentType.ALL.getType());
 			if (printSettings == null) {
@@ -4464,7 +4464,7 @@ try {
 					doctorList.add(new ObjectId(doctorId));
 			} else {
 				List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
-						.findByLocationId(new ObjectId(locationId), true);
+						.findByLocationIdAndIsActivate(new ObjectId(locationId), true);
 				doctorList = new ArrayList<ObjectId>();
 				doctorIds = new ArrayList<String>();
 				if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
@@ -4984,7 +4984,7 @@ try {
 				if (events != null) {
 					for (Event event : events) {
 						if (!DPDoctorUtils.anyStringEmpty(event.getPatientId())) {
-							PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+							PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 									new ObjectId(event.getPatientId()), new ObjectId(locationId),
 									new ObjectId(event.getHospitalId()));
 							if (patientCollection != null)
@@ -5227,7 +5227,7 @@ try {
 				if (events != null) {
 					for (Event event : events) {
 						if (!DPDoctorUtils.anyStringEmpty(event.getPatientId())) {
-							PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+							PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 									new ObjectId(event.getPatientId()), new ObjectId(locationId),
 									new ObjectId(event.getHospitalId()));
 							if (patientCollection != null)

@@ -222,7 +222,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 			List<PharmacyWithRankingDetailResponse> pharmacyWithRankingDetailResponses = mongoTemplate.aggregate(aggregation, LocaleCollection.class, PharmacyWithRankingDetailResponse.class).getMappedResults();
 			int i = 1;
 			for(PharmacyWithRankingDetailResponse detailResponse : pharmacyWithRankingDetailResponses) {
-				RankingCountCollection rankingCountCollection = rankingCountRepository.findByResourceIdAndLocationId(new ObjectId(detailResponse.getLocaleId()), null, Resource.PHARMACY.getType());
+				RankingCountCollection rankingCountCollection = rankingCountRepository.findByResourceIdAndLocationIdAndResourceType(new ObjectId(detailResponse.getLocaleId()), null, Resource.PHARMACY.getType());
 				if(rankingCountCollection == null) {
 					rankingCountCollection = new RankingCountCollection();
 					rankingCountCollection.setCreatedTime(new Date());
@@ -446,7 +446,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 			for(DoctorWithRankingDetailResponse detailResponse : doctorWithRankingDetailResponses) {
 				
 				if(!DPDoctorUtils.anyStringEmpty(detailResponse.getDoctorId(), detailResponse.getLocationId())) {
-					RankingCountCollection rankingCountCollection = rankingCountRepository.findByResourceIdAndLocationId(new ObjectId(detailResponse.getDoctorId()), new ObjectId(detailResponse.getLocationId()), Resource.DOCTOR.getType());
+					RankingCountCollection rankingCountCollection = rankingCountRepository.findByResourceIdAndLocationIdAndResourceType(new ObjectId(detailResponse.getDoctorId()), new ObjectId(detailResponse.getLocationId()), Resource.DOCTOR.getType());
 					if(rankingCountCollection == null) {
 						rankingCountCollection = new RankingCountCollection();
 						rankingCountCollection.setCreatedTime(new Date());
@@ -473,7 +473,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 					
 					rankingCountCollection = rankingCountRepository.save(rankingCountCollection);
 					
-					DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(rankingCountCollection.getResourceId(), rankingCountCollection.getLocationId());
+					DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(rankingCountCollection.getResourceId(), rankingCountCollection.getLocationId());
 					clinicProfileCollection.setRankingCount(rankingCountCollection.getRankingCount());
 					clinicProfileCollection.setUpdatedTime(new Date());
 					clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);

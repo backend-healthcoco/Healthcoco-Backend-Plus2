@@ -539,7 +539,7 @@ public class RecipeServiceImpl implements RecipeService {
 	public Boolean addFavouriteRecipe(String userId, String recipeId) {
 		Boolean response = true;
 		try {
-			FavouriteRecipeCollection recipeCollection = favouriteRecipeRepository.findByUserId(new ObjectId(userId),
+			FavouriteRecipeCollection recipeCollection = favouriteRecipeRepository.findByRecipeIdAndUserId(new ObjectId(userId),
 					new ObjectId(recipeId));
 
 			if (recipeCollection != null) {

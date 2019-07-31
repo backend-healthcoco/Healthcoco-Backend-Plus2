@@ -19,16 +19,13 @@ public interface AppointmentRepository extends MongoRepository<AppointmentCollec
 	AppointmentCollection findAppointmentbyUserLocationIdTimeDate(ObjectId doctorId, ObjectId locationId, int from,
 			int to, Date fromDate, Date toDate, String state);
 
-	@Query("{'appointmentId': ?0}")
 	AppointmentCollection findByAppointmentId(String appointmentId);
 
 	@Query("{'fromDate': {'$gte': ?0}, 'toDate': {'$lte': ?1}, 'state': {'$eq' : 'CONFIRM'}}")
 	List<AppointmentCollection> findConfirmAppointments(DateTime start, DateTime end, Sort sort);
 
-	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3, 'appointmentId': ?4}")
-	AppointmentCollection find(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId, String appointmentId);
+	AppointmentCollection findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndAppointmentId(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId, String appointmentId);
 	
-	@Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'patientId': ?3, 'time.fromTime': ?4, 'time.toTime': ?5, 'fromDate': ?6, 'toDate': ?7}")
-	AppointmentCollection find(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId, int from, int to, Date fromDate, Date toDate);
+	AppointmentCollection findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndTimeFromTimeAndTimeToTimeAndFromDateAndToDate(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId, int from, int to, Date fromDate, Date toDate);
 
 }

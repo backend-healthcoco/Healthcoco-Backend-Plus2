@@ -10,6 +10,6 @@ import com.dpdocter.collections.DynamicCollectionBoyAllocationCollection;
 public interface DynamicCollectionBoyAllocationRepository extends MongoRepository<DynamicCollectionBoyAllocationCollection, ObjectId>{
 	
 	@Query("{'assignorId':?0 , 'assigneeId':?1 }")
-	public DynamicCollectionBoyAllocationCollection getByAssignorAssignee( ObjectId assignorId , ObjectId assigneeId);
+	public DynamicCollectionBoyAllocationCollection findByAssignorIdAndAssigneeId( ObjectId assignorId , ObjectId assigneeId);
 
 }

@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -573,15 +575,20 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Override
 	@Transactional
 	public String generateExceptionEmailBody(String exception) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("exceptionMsg", exception);
-
+		 VelocityEngine ve = new VelocityEngine();
+		 ve.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,"org.apache.velocity.runtime.log.Log4JLogChute" );
+		 ve.setProperty("runtime.log", "/var/log/dpdocter/velocity.log");
+	     ve.init();
+	     
+	     
+	    Template t = ve.getTemplate( "exceptionMail.vm" );
 		VelocityContext context = new VelocityContext();
 		context.put("exceptionMsg", exception);
 
 	    StringWriter stringWriter = new StringWriter();
-
-		velocityEngine.mergeTemplate("exceptionMail.vm", "UTF-8", context, stringWriter);
+	
+		t.setEncoding("UTF-8");
+	    t.merge(context, stringWriter);
 		String text = stringWriter.toString();
 		return text;
 	}

@@ -111,6 +111,7 @@ import com.dpdocter.enums.ReceiptType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.UnitType;
+import com.dpdocter.enums.UserState;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AdmitCardRepository;
@@ -427,7 +428,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			//
 			//
 
-			List<PatientCollection> patientCollections = patientRepository.findByDoctorId(doctorObjectId,
+			List<PatientCollection> patientCollections = patientRepository.findByDoctorIdAndUpdatedTimeGreaterThan(doctorObjectId,
 					new Date(Long.parseLong("0")), new Sort(Direction.ASC, "createdTime"));
 			for (PatientCollection patientCollection : patientCollections) {
 
@@ -707,7 +708,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 							request.setMobileNumber(mobileNumberValue);
 							
 
-							List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumberValue);
+							List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(mobileNumberValue, UserState.USERSTATECOMPLETE.getState());
 							if (userCollections != null && !userCollections.isEmpty()) {
 								for (UserCollection userCollection : userCollections) {
 									if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress()))
@@ -793,7 +794,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								Reference reference = new Reference();
 								reference.setReference(referredBy);
 
-								ReferencesCollection referencesCollection = referenceRepository.find(referredBy,
+								ReferencesCollection referencesCollection = referenceRepository.findByReferenceAndDoctorIdAndLocationIdAndHospitalId(referredBy,
 										doctorObjectId, locationObjectId, hospitalObjectId);
 								if (referencesCollection != null)
 									reference.setId(referencesCollection.getId().toString());
@@ -803,7 +804,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 							if (groupsIndex != null && checkIfNotNullOrNone(line.get(groupsIndex).replaceAll("'", "").replaceAll("\"", ""))) {
 								String groupName = line.get(groupsIndex).replaceAll("'", "");
-								GroupCollection groupCollection = groupRepository.findByName(groupName, doctorObjectId,
+								GroupCollection groupCollection = groupRepository.findByNameAndDoctorIdAndLocationIdAndHospitalIdAndDiscarded(groupName, doctorObjectId,
 										locationObjectId, hospitalObjectId, false);
 								if (groupCollection == null) {
 									groupCollection = new GroupCollection();
@@ -989,7 +990,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 					Boolean createVisit = false;
 			
 					if (!DPDoctorUtils.anyStringEmpty(line.get(2), line.get(3))) {
-						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
+						PatientCollection patientCollection = patientRepository.findByLocationIdAndHospitalIdAndPNUM(
 								locationObjectId, hospitalObjectId, line.get(2).replace("'", ""));
 						if (patientCollection != null) {
 
@@ -1003,7 +1004,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								createdTime = dateFormat.parse(dateSTri);
 							}
 
-							prescriptionCollection = prescriptionRepository.find(doctorObjectId, locationObjectId,
+							prescriptionCollection = prescriptionRepository.findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndCreatedTime(doctorObjectId, locationObjectId,
 									hospitalObjectId, patientCollection.getUserId(), createdTime);
 							if (prescriptionCollection == null) {
 								createVisit = true;
@@ -1255,7 +1256,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 	            List<String> line = CSVUtils.parseLine(csvLine);
 				if (lineCount > 0) {
 					if (!DPDoctorUtils.anyStringEmpty(line.get(0), line.get(1))) {
-						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
+						PatientCollection patientCollection = patientRepository.findByLocationIdAndHospitalIdAndPNUM(
 								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));
 						if (patientCollection != null) {
 
@@ -1324,7 +1325,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								appointmentCollection.setDoctorId(userCollection.getId());
 
 								
-								AppointmentCollection appointmentToCheck = appointmentRepository.find(appointmentCollection.getDoctorId(), locationObjectId, hospitalObjectId, 
+								AppointmentCollection appointmentToCheck = appointmentRepository.findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndTimeFromTimeAndTimeToTimeAndFromDateAndToDate(appointmentCollection.getDoctorId(), locationObjectId, hospitalObjectId, 
 																	appointmentCollection.getPatientId(), appointmentCollection.getTime().getFromTime(), appointmentCollection.getTime().getToTime(),
 																	appointmentCollection.getFromDate(), appointmentCollection.getToDate());
 								if(appointmentToCheck == null) {
@@ -1431,7 +1432,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 				if (lineCount > 0) {
 					Boolean createVisit = false;
 					if (!DPDoctorUtils.anyStringEmpty(line.get(0), line.get(1))) {
-						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
+						PatientCollection patientCollection = patientRepository.findByLocationIdAndHospitalIdAndPNUM(
 								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));
 						if (patientCollection != null) {
 
@@ -1467,7 +1468,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								double totalCost = 0.0;
 								double grandTotal = 0.0;
 
-								patientTreatmentCollection = patientTreamentRepository.find(userCollection.getId(),
+								patientTreatmentCollection = patientTreamentRepository.findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndFromDate(userCollection.getId(),
 										locationObjectId, hospitalObjectId, patientCollection.getUserId(), fromDate);
 
 								if (patientTreatmentCollection == null) {
@@ -1679,7 +1680,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 				if (lineCount > 0) {
 					Boolean createVisit = false;
 					if (!DPDoctorUtils.anyStringEmpty(line.get(0), line.get(1))) {
-						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
+						PatientCollection patientCollection = patientRepository.findByLocationIdAndHospitalIdAndPNUM(
 								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));
 						if (patientCollection != null) {
 
@@ -1714,7 +1715,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 							if(userCollection != null) {
 									
 								String treatmentName = line.get(3).replace("'", "");
-								patientTreatmentCollection = patientTreamentRepository.find(userCollection.getId(),
+								patientTreatmentCollection = patientTreamentRepository.findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndFromDate(userCollection.getId(),
 											locationObjectId, hospitalObjectId, patientCollection.getUserId(), fromDate);
 
 									Discount totalDiscount = null;
@@ -1878,7 +1879,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			List<PatientCollection> patientCollections = patientRepository
-					.findByLocationIDHospitalIDAndNullPNUM(locationObjectId, hospitalObjectId);
+					.findByLocationIdAndHospitalIdAndPNUMNull(locationObjectId, hospitalObjectId);
 			Integer patientCount = patientRepository.findCountByLocationIDHospitalIDAndNotPNUM(locationObjectId,
 					hospitalObjectId, null);
 			if (patientCollections != null && !patientCollections.isEmpty()) {
@@ -2158,7 +2159,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 	            if (lineCount > 0) {
 					Boolean createVisit = false;
 					if (!DPDoctorUtils.anyStringEmpty(line.get(1), line.get(4))) {
-						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
+						PatientCollection patientCollection = patientRepository.findByLocationIdAndHospitalIdAndPNUM(
 								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));
 						if (patientCollection != null) {
 
@@ -2194,7 +2195,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 							}
 								
 							if(userCollection != null) {
-								clinicalNotesCollection = clinicalNotesRepository.find(userCollection.getId(), locationObjectId,
+								clinicalNotesCollection = clinicalNotesRepository.findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndCreatedTime(userCollection.getId(), locationObjectId,
 										hospitalObjectId, patientCollection.getUserId(), createdTime);
 								if (clinicalNotesCollection == null) {
 									createVisit = true;
@@ -2354,7 +2355,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 				if (lineCount > 0) {
 					if (!DPDoctorUtils.anyStringEmpty(line.get(1), line.get(5), line.get(4))) {
-						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
+						PatientCollection patientCollection = patientRepository.findByLocationIdAndHospitalIdAndPNUM(
 								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));	
 						if (patientCollection != null) {
 
@@ -2612,7 +2613,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 	            List<String> line = CSVUtils.parseLine(csvLine);
 				if (lineCount > 0) {
 					if (!DPDoctorUtils.anyStringEmpty(line.get(1))) {
-						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
+						PatientCollection patientCollection = patientRepository.findByLocationIdAndHospitalIdAndPNUM(
 								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));
 						if (patientCollection != null) {
 
@@ -2624,7 +2625,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								createdTime = dateFormat.parse(dateSTri);
 							}
 
-							doctorPatientReceiptCollection = doctorPatientReceiptRepository.findByUniqueInvoiceId(line.get(6).replace("'", ""), locationObjectId, hospitalObjectId);
+							doctorPatientReceiptCollection = doctorPatientReceiptRepository.findByUniqueInvoiceIdAndLocationIdAndHospitalId(line.get(6).replace("'", ""), locationObjectId, hospitalObjectId);
 
 							if (doctorPatientReceiptCollection == null) {
 								doctorPatientReceiptCollection = new DoctorPatientReceiptCollection();
@@ -2656,7 +2657,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 							DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = null;
 							if (line.get(14).equalsIgnoreCase("'1'")) {
 								doctorPatientReceiptCollection.setUniqueInvoiceId(line.get(6).replace("'", ""));
-								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find(line.get(6).replace("'", ""), locationObjectId, hospitalObjectId);
+								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findByUniqueInvoiceIdAndLocationIdAndHospitalId(line.get(6).replace("'", ""), locationObjectId, hospitalObjectId);
 								doctorPatientReceiptCollection.setDiscarded(true);
 								doctorPatientReceiptCollection.setAmountPaid(Double.parseDouble(line.get(5).replace("'", "")));
 								
@@ -2668,7 +2669,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								
 								if(checkIfNotNullOrNone(line.get(6))) {
 									doctorPatientReceiptCollection.setUniqueInvoiceId(line.get(6).replace("'", ""));
-									doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find(line.get(6).replace("'", ""), locationObjectId, hospitalObjectId);
+									doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findByUniqueInvoiceIdAndLocationIdAndHospitalId(line.get(6).replace("'", ""), locationObjectId, hospitalObjectId);
 									if(doctorPatientInvoiceCollection == null)save = false;
 									else {
 										doctorPatientReceiptCollection.setReceiptType(ReceiptType.INVOICE);
@@ -2901,7 +2902,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 						String dateStr = pNum;
 						pNum = pNum.substring(pNum.indexOf("MDC"), pNum.indexOf("_"));
 
-						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(locationObjectId, hospitalObjectId, pNum);
+						PatientCollection patientCollection = patientRepository.findByLocationIdAndHospitalIdAndPNUM(locationObjectId, hospitalObjectId, pNum);
 						
 						if(patientCollection != null) {
 							if(fileName.startsWith("Profile")) {
@@ -3332,7 +3333,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			    	  String[] string = child.getName().substring(indexOfPID).split("_");
 				      String PID = string[0];
 				      
-				      PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(
+				      PatientCollection patientCollection = patientRepository.findByLocationIdAndHospitalIdAndPNUM(
 				    		  locationObjectId, hospitalObjectId, PID);
 						if (patientCollection != null) {
 							 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

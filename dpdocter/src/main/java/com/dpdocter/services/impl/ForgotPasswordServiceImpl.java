@@ -171,7 +171,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			List<UserCollection> userCollections = null;
 
 			if (request.getMobileNumber() != null) {
-				userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
+				userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(), UserState.USERSTATECOMPLETE.getState());
 			}
 
 			if (userCollections != null) {
@@ -269,7 +269,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 					flag = true;
 				}
 			} else if (request.getMobileNumber() != null && !request.getMobileNumber().isEmpty()) {
-				userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
+				userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(), UserState.USERSTATECOMPLETE.getState());
 				if (userCollections != null) {
 					// SMS logic will go here.
 					flag = true;
@@ -374,7 +374,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	public Boolean resetPasswordPatient(ResetPasswordRequest request) {
 		Boolean response = false;
 		try {
-			List<UserCollection> userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
+			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(), UserState.USERSTATECOMPLETE.getState());
 			if (userCollections != null && !userCollections.isEmpty()) {
 				char[] salt = DPDoctorUtils.generateSalt();
 				char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
@@ -455,8 +455,11 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	public String resetPasswordCB(ResetPasswordRequest request) {
 		UserCollection userCollection = null;
 		try {
-			userCollection = userRepository.findAdminByMobileNumber(request.getMobileNumber(),
-					UserState.COLLECTION_BOY.getState());
+			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(), UserState.COLLECTION_BOY.getState());
+			if(userCollections== null || userCollections.isEmpty()) {
+				return "Sorry user not found with this mobile number.";
+			}
+			userCollection = userCollections.get(0);
 			userCollection.setSalt(DPDoctorUtils.generateSalt());
 			String salt = new String(userCollection.getSalt());
 			char[] sha3Password = request.getPassword();

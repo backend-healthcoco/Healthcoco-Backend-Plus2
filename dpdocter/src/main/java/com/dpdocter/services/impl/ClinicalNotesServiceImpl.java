@@ -3820,7 +3820,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 							&& clinicalNotesCollection.getLocationId().toString().equals(locationId)) {
 
 						user = userRepository.findById(clinicalNotesCollection.getPatientId()).orElse(null);
-						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								clinicalNotesCollection.getPatientId(), clinicalNotesCollection.getLocationId(),
 								clinicalNotesCollection.getHospitalId());
 
@@ -3992,12 +3992,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					.findById(new ObjectId(clinicalNotesId)).orElse(null);
 
 			if (clinicalNotesCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						clinicalNotesCollection.getPatientId(), clinicalNotesCollection.getLocationId(),
 						clinicalNotesCollection.getHospitalId());
 				UserCollection user = userRepository.findById(clinicalNotesCollection.getPatientId()).orElse(null);
 				if (showPH || showPLH || showFH || showDA) {
-					historyCollection = historyRepository.findHistory(clinicalNotesCollection.getLocationId(),
+					historyCollection = historyRepository.findByLocationIdAndHospitalIdAndPatientId(clinicalNotesCollection.getLocationId(),
 							clinicalNotesCollection.getHospitalId(), clinicalNotesCollection.getPatientId());
 				}
 				JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
@@ -4029,7 +4029,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		JasperReportResponse response = null;
 
 		Boolean showTitle = false;
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 				clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
 				clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
 
@@ -8295,7 +8295,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNotesCollection = clinicalNotesRepository.findById(new ObjectId(clinicalNotesId)).orElse(null);
 			if (clinicalNotesCollection != null) {
 				user = userRepository.findById(clinicalNotesCollection.getPatientId()).orElse(null);
-				patient = patientRepository.findByUserIdLocationIdAndHospitalId(clinicalNotesCollection.getPatientId(),
+				patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(clinicalNotesCollection.getPatientId(),
 						clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId());
 
 				emailTrackCollection.setDoctorId(clinicalNotesCollection.getDoctorId());
@@ -8382,9 +8382,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository
-					.getClinicalNotesByIds(objectIds);
+					.findAllByIds(objectIds);
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
-				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+				PatientCollection patient = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
 						clinicalNotesCollections.get(0).getPatientId(), clinicalNotesCollections.get(0).getDoctorId(),
 						clinicalNotesCollections.get(0).getLocationId(),
 						clinicalNotesCollections.get(0).getHospitalId());
@@ -8420,7 +8420,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 				clinicalNotesCollections.get(0).getDoctorId(), clinicalNotesCollections.get(0).getLocationId(),
 				clinicalNotesCollections.get(0).getHospitalId(), ComponentType.ALL.getType());
 
@@ -8503,9 +8503,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository
-					.getClinicalNotesByIds(objectIds);
+					.findAllByIds(objectIds);
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
-				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+				PatientCollection patient = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
 						clinicalNotesCollections.get(0).getPatientId(), clinicalNotesCollections.get(0).getDoctorId(),
 						clinicalNotesCollections.get(0).getLocationId(),
 						clinicalNotesCollections.get(0).getHospitalId());

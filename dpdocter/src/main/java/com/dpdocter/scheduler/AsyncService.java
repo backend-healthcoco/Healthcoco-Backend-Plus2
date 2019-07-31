@@ -227,7 +227,7 @@ public class AsyncService {
 			throws InterruptedException {
 
 		List<SearchRequestToPharmacyCollection> searchRequestToPharmacyCollections = searchRequestToPharmacyRepository
-				.findByUniqueRequestIdPharmacyIdAndReplyType(uniqueRequestId, "YES", localeId);
+				.findByUniqueRequestIdAndReplyTypeAndLocaleId(uniqueRequestId, "YES", localeId);
 
 		for (SearchRequestToPharmacyCollection requestToPharmacyCollection : searchRequestToPharmacyCollections) {
 

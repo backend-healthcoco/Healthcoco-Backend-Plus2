@@ -296,7 +296,7 @@ public class BillingServiceImpl implements BillingService {
 						- doctorPatientInvoiceCollection.getBalanceAmount();
 
 				List<DoctorPatientReceiptCollection> doPatientReceiptCollections = doctorPatientReceiptRepository
-						.findByInvoiceId(doctorPatientInvoiceCollection.getId(), false);
+						.findByInvoiceIdAndDiscarded(doctorPatientInvoiceCollection.getId(), false);
 
 				if (doPatientReceiptCollections != null && !doPatientReceiptCollections.isEmpty()) {
 					throw new BusinessException(ServiceError.Unknown,
@@ -629,7 +629,7 @@ public class BillingServiceImpl implements BillingService {
 
 			Double advanceAmount = 0.0;
 			List<DoctorPatientReceiptCollection> doPatientReceiptCollections = doctorPatientReceiptRepository
-					.findByInvoiceId(doctorPatientInvoiceCollection.getId(), false);
+					.findByInvoiceIdAndDiscarded(doctorPatientInvoiceCollection.getId(), false);
 			if (doPatientReceiptCollections != null && !doPatientReceiptCollections.isEmpty()) {
 				for (DoctorPatientReceiptCollection receiptCollection : doPatientReceiptCollections) {
 
@@ -782,11 +782,11 @@ public class BillingServiceImpl implements BillingService {
 					if (request.getUsedAdvanceAmount() != null && request.getUsedAdvanceAmount() > 0) {
 
 						List<DoctorPatientReceiptCollection> receiptsOfAdvancePayment = doctorPatientReceiptRepository
-								.findAvailableAdvanceReceipts(ReceiptType.ADVANCE.name(),
+								.findByReceiptTypeAndDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndRemainingAdvanceAmountAndDiscarded(ReceiptType.ADVANCE.name(),
 										doctorPatientInvoiceCollection.getDoctorId(),
 										doctorPatientInvoiceCollection.getLocationId(),
 										doctorPatientInvoiceCollection.getHospitalId(),
-										doctorPatientInvoiceCollection.getPatientId(),
+										doctorPatientInvoiceCollection.getPatientId(), 0.0, false,
 										new Sort(Direction.ASC, "createdTime"));
 						if (receiptsOfAdvancePayment == null || receiptsOfAdvancePayment.isEmpty())
 							throw new BusinessException(ServiceError.InvalidInput, "Advance Amount is not available");
@@ -1058,7 +1058,7 @@ public class BillingServiceImpl implements BillingService {
 
 			} else {
 				List<DoctorPatientReceiptCollection> patientReceiptCollections = doctorPatientReceiptRepository
-						.findAllByAdvanceId(doctorPatientReceiptCollection.getId());
+						.findByAdvanceReceiptIdWithAmountsReceiptId(doctorPatientReceiptCollection.getId());
 
 				if (patientReceiptCollections != null && !patientReceiptCollections.isEmpty())
 					for (DoctorPatientReceiptCollection receiptCollection : patientReceiptCollections) {
@@ -1224,11 +1224,11 @@ public class BillingServiceImpl implements BillingService {
 			if (request.getUsedAdvanceAmount() != null && request.getUsedAdvanceAmount() > 0) {
 
 				List<DoctorPatientReceiptCollection> receiptsOfAdvancePayment = doctorPatientReceiptRepository
-						.findAvailableAdvanceReceipts(ReceiptType.ADVANCE.name(),
+						.findByReceiptTypeAndDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndRemainingAdvanceAmountAndDiscarded(ReceiptType.ADVANCE.name(),
 								doctorPatientInvoiceCollection.getDoctorId(),
 								doctorPatientInvoiceCollection.getLocationId(),
 								doctorPatientInvoiceCollection.getHospitalId(),
-								doctorPatientInvoiceCollection.getPatientId(), new Sort(Direction.ASC, "createdTime"));
+								doctorPatientInvoiceCollection.getPatientId(),  0.0, false, new Sort(Direction.ASC, "createdTime"));
 				if (receiptsOfAdvancePayment == null || receiptsOfAdvancePayment.isEmpty())
 					throw new BusinessException(ServiceError.InvalidInput, "Advance Amount is not available");
 
@@ -1514,7 +1514,7 @@ public class BillingServiceImpl implements BillingService {
 			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository
 					.findById(new ObjectId(invoiceId)).orElse(null);
 			if (doctorPatientInvoiceCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						doctorPatientInvoiceCollection.getPatientId(), doctorPatientInvoiceCollection.getLocationId(),
 						doctorPatientInvoiceCollection.getHospitalId());
 				UserCollection user = userRepository.findById(doctorPatientInvoiceCollection.getPatientId()).orElse(null);
@@ -1657,7 +1657,7 @@ public class BillingServiceImpl implements BillingService {
 
 			total = "<b>Balance:</b>  ₹" + doctorPatientInvoiceCollection.getBalanceAmount() + "  &nbsp;";
 			parameters.put("balance", total);
-			PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+			PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 					doctorPatientInvoiceCollection.getDoctorId(), doctorPatientInvoiceCollection.getLocationId(),
 					doctorPatientInvoiceCollection.getHospitalId(), ComponentType.ALL.getType());
 
@@ -1722,7 +1722,7 @@ public class BillingServiceImpl implements BillingService {
 			DoctorPatientReceiptCollection doctorPatientReceiptCollection = doctorPatientReceiptRepository
 					.findById(new ObjectId(receiptId)).orElse(null);
 			if (doctorPatientReceiptCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						doctorPatientReceiptCollection.getPatientId(), doctorPatientReceiptCollection.getLocationId(),
 						doctorPatientReceiptCollection.getHospitalId());
 				UserCollection user = userRepository.findById(doctorPatientReceiptCollection.getPatientId()).orElse(null);
@@ -1763,7 +1763,7 @@ public class BillingServiceImpl implements BillingService {
 				+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate());
 		parameters.put("content", content);
 		parameters.put("paid", "Rs.&nbsp;" + doctorPatientReceiptCollection.getAmountPaid());
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 				doctorPatientReceiptCollection.getDoctorId(), doctorPatientReceiptCollection.getLocationId(),
 				doctorPatientReceiptCollection.getHospitalId(), ComponentType.ALL.getType());
 
@@ -1837,7 +1837,7 @@ public class BillingServiceImpl implements BillingService {
 							&& doctorPatientInvoiceCollection.getLocationId().toString().equals(locationId)) {
 
 						user = userRepository.findById(doctorPatientInvoiceCollection.getPatientId()).orElse(null);
-						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								doctorPatientInvoiceCollection.getPatientId(),
 								doctorPatientInvoiceCollection.getLocationId(),
 								doctorPatientInvoiceCollection.getHospitalId());
@@ -1943,7 +1943,7 @@ public class BillingServiceImpl implements BillingService {
 							&& doctorPatientReceiptCollection.getLocationId().toString().equals(locationId)) {
 
 						user = userRepository.findById(doctorPatientReceiptCollection.getPatientId()).orElse(null);
-						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								doctorPatientReceiptCollection.getPatientId(),
 								doctorPatientReceiptCollection.getLocationId(),
 								doctorPatientReceiptCollection.getHospitalId());
@@ -2173,7 +2173,7 @@ public class BillingServiceImpl implements BillingService {
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		List<ReceiptJasperDetails> receiptJasperDetails = new ArrayList<ReceiptJasperDetails>();
 
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 				new ObjectId(doctorPatientReceiptLookupResponses.get(0).getDoctorId()),
 				new ObjectId(doctorPatientReceiptLookupResponses.get(0).getLocationId()),
 				new ObjectId(doctorPatientReceiptLookupResponses.get(0).getHospitalId()), ComponentType.ALL.getType());

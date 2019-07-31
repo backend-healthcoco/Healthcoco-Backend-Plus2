@@ -224,7 +224,7 @@ public class LocationServiceImpl implements LocationServices {
 			UserCollection userCollection = userRepository.findById(patientObjectId).orElse(null);
 
 			if (userCollection != null & locationCollection != null) {
-				recommendationsCollection = recommendationsRepository.findByDoctorIdLocationIdAndPatientId(null,
+				recommendationsCollection = recommendationsRepository.findByDoctorIdAndLocationIdAndPatientId(null,
 						locationObjectId, patientObjectId);
 
 				if (recommendationsCollection != null) {
@@ -293,7 +293,7 @@ public class LocationServiceImpl implements LocationServices {
 
 		if (discarded == true) {
 			collectionBoyLabAssociationCollections = collectionBoyLabAssociationRepository
-					.findAllAssociationByCollectionBoyId(new ObjectId(collectionBoyId));
+					.findByCollectionBoyId(new ObjectId(collectionBoyId));
 			for (CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection : collectionBoyLabAssociationCollections) {
 				collectionBoyLabAssociationCollection.setIsActive(false);
 				collectionBoyLabAssociationCollection.setUpdatedTime(new Date());
@@ -304,7 +304,7 @@ public class LocationServiceImpl implements LocationServices {
 
 		else if (discarded == false) {
 			collectionBoyLabAssociationCollections = collectionBoyLabAssociationRepository
-					.findAllAssociationByCollectionBoyId(new ObjectId(collectionBoyId));
+					.findByCollectionBoyId(new ObjectId(collectionBoyId));
 			for (CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection : collectionBoyLabAssociationCollections) {
 				collectionBoyLabAssociationCollection.setIsActive(true);
 				collectionBoyLabAssociationCollection.setUpdatedTime(new Date());
@@ -1236,14 +1236,14 @@ public class LocationServiceImpl implements LocationServices {
 				labTestPickupCollection.setPatientLabTestSamples(items);
 
 				DynamicCollectionBoyAllocationCollection dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository
-						.getByAssignorAssignee(new ObjectId(request.getParentLabLocationId()),
+						.findByAssignorIdAndAssigneeId(new ObjectId(request.getParentLabLocationId()),
 								new ObjectId(request.getDaughterLabLocationId()));
 
 				if (dynamicCollectionBoyAllocationCollection != null && (dynamicCollectionBoyAllocationCollection
 						.getFromTime() <= System.currentTimeMillis()
 						&& System.currentTimeMillis() <= dynamicCollectionBoyAllocationCollection.getToTime())) {
 					CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
-							.findbyParentIdandDaughterId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId(),
+							.findByCollectionBoyIdAndParentLabIdAndDaughterLabId(dynamicCollectionBoyAllocationCollection.getCollectionBoyId(),
 									new ObjectId(request.getParentLabLocationId()),
 									new ObjectId(request.getDaughterLabLocationId()));
 					if (collectionBoyLabAssociationCollection != null
@@ -1261,7 +1261,7 @@ public class LocationServiceImpl implements LocationServices {
 
 				} else {
 					CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
-							.findbyParentIdandDaughterIdandIsActive(new ObjectId(request.getParentLabLocationId()),
+							.findByParentLabIdAndDaughterLabIdAndIsActive(new ObjectId(request.getParentLabLocationId()),
 									new ObjectId(request.getDaughterLabLocationId()), true);
 					if (collectionBoyLabAssociationCollection != null) {
 						labTestPickupCollection
@@ -1308,7 +1308,7 @@ public class LocationServiceImpl implements LocationServices {
 	@Transactional
 	public Boolean verifyCRN(String locationId, String crn, String requestId) {
 		boolean status = false;
-		CRNCollection crnCollection = crnRepository.getbylocationIdandCRN(new ObjectId(locationId), crn, requestId);
+		CRNCollection crnCollection = crnRepository.findByLocationIdAndCrnNumberAndRequestId(new ObjectId(locationId), crn, requestId);
 		if (crnCollection == null) {
 			throw new BusinessException(ServiceError.NoRecord, "CRN not found");
 		} else {
@@ -1407,7 +1407,7 @@ public class LocationServiceImpl implements LocationServices {
 							"Invalid Input - Parent & Daughter Lab ID cannot be null");
 				}
 				collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
-						.findbyParentIdandDaughterId(new ObjectId(collectionBoyLabAssociation.getParentLabId()),
+						.findByParentLabIdAndDaughterLabId(new ObjectId(collectionBoyLabAssociation.getParentLabId()),
 								new ObjectId(collectionBoyLabAssociation.getDaughterLabId()));
 				if (collectionBoyLabAssociationCollection == null) {
 					collectionBoyLabAssociationCollection = new CollectionBoyLabAssociationCollection();
@@ -1761,13 +1761,13 @@ public class LocationServiceImpl implements LocationServices {
 		List<RateCardTestAssociationByLBResponse> rateCardTestAssociationLookupResponses = null;
 		try {
 			RateCardLabAssociationCollection rateCardLabAssociationCollection = rateCardLabAssociationRepository
-					.getByLocation(new ObjectId(daughterLabId), new ObjectId(parentLabId));
+					.getByDaughterLabIdAndParentLabId(new ObjectId(daughterLabId), new ObjectId(parentLabId));
 			if (rateCardLabAssociationCollection == null) {
 				return rateCardTestAssociationLookupResponses;
 			} else {
 				if (rateCardLabAssociationCollection.getDiscarded() == true) {
 					RateCardCollection rateCardCollection = rateCardRepository
-							.getDefaultRateCard(new ObjectId(parentLabId));
+							.findByLocationIdAndIsDefaultIsTrue(new ObjectId(parentLabId));
 					if (rateCardCollection != null) {
 						rateCardId = rateCardCollection.getId();
 					} else {
@@ -1883,7 +1883,7 @@ public class LocationServiceImpl implements LocationServices {
 		ObjectId oldId = null;
 		RateCardLabAssociationCollection rateCardLabAssociationCollection = null;
 		try {
-			rateCardLabAssociationCollection = rateCardLabAssociationRepository.getByLocation(
+			rateCardLabAssociationCollection = rateCardLabAssociationRepository.getByDaughterLabIdAndParentLabId(
 					new ObjectId(rateCardLabAssociation.getDaughterLabId()),
 					new ObjectId(rateCardLabAssociation.getParentLabId()));
 			if (rateCardLabAssociationCollection == null) {
@@ -1913,11 +1913,11 @@ public class LocationServiceImpl implements LocationServices {
 		RateCardCollection rateCardCollection = null;
 		try {
 			rateCardLabAssociationCollection = rateCardLabAssociationRepository
-					.getByLocation(new ObjectId(daughterLabId), new ObjectId(parentLabId));
+					.getByDaughterLabIdAndParentLabId(new ObjectId(daughterLabId), new ObjectId(parentLabId));
 			if (rateCardLabAssociationCollection != null) {
 				rateCardCollection = rateCardRepository.findById(rateCardLabAssociationCollection.getId()).orElse(null);
 			} else {
-				rateCardCollection = rateCardRepository.getDefaultRateCard(new ObjectId(parentLabId));
+				rateCardCollection = rateCardRepository.findByLocationIdAndIsDefaultIsTrue(new ObjectId(parentLabId));
 			}
 
 		} catch (Exception e) {
@@ -2053,7 +2053,7 @@ public class LocationServiceImpl implements LocationServices {
 		RateCard response = null;
 		RateCardCollection rateCardCollection = null;
 		RateCardLabAssociationCollection rateCardLabAssociationCollection = rateCardLabAssociationRepository
-				.getByLocation(new ObjectId(daughterLabId), new ObjectId(parentLabId));
+				.getByDaughterLabIdAndParentLabId(new ObjectId(daughterLabId), new ObjectId(parentLabId));
 		if (rateCardLabAssociationCollection != null && rateCardLabAssociationCollection.getDiscarded() == false) {
 			rateCardCollection = rateCardRepository.findById(rateCardLabAssociationCollection.getRateCardId()).orElse(null);
 		}
@@ -2308,13 +2308,13 @@ public class LocationServiceImpl implements LocationServices {
 		try {
 
 			RateCardLabAssociationCollection rateCardLabAssociationCollection = rateCardLabAssociationRepository
-					.getByLocation(new ObjectId(daughterLabId), new ObjectId(parentLabId));
+					.getByDaughterLabIdAndParentLabId(new ObjectId(daughterLabId), new ObjectId(parentLabId));
 			if (rateCardLabAssociationCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Association not found");
 			} else {
 				if (rateCardLabAssociationCollection.getDiscarded() == true) {
 					RateCardCollection rateCardCollection = rateCardRepository
-							.getDefaultRateCard(new ObjectId(parentLabId));
+							.findByLocationIdAndIsDefaultIsTrue(new ObjectId(parentLabId));
 					if (rateCardCollection != null) {
 						rateCardId = rateCardCollection.getId();
 					} else {
@@ -2510,7 +2510,7 @@ public class LocationServiceImpl implements LocationServices {
 				}
 				if (request.getIsFuture() == true) {
 					dynamicCollectionBoyAllocationCollection = dynamicCollectionBoyAllocationRepository
-							.getByAssignorAssignee(new ObjectId(request.getAssignorId()),
+							.findByAssignorIdAndAssigneeId(new ObjectId(request.getAssignorId()),
 									new ObjectId(request.getAssigneeId()));
 					if (dynamicCollectionBoyAllocationCollection == null) {
 						dynamicCollectionBoyAllocationCollection = new DynamicCollectionBoyAllocationCollection();
@@ -2550,7 +2550,7 @@ public class LocationServiceImpl implements LocationServices {
 		try {
 
 			FavouriteRateCardTestCollection favouriteRateCardTestCollection = favouriteRateCardTestRepositoy
-					.findByLocationIdHospitalIdAndTestId(new ObjectId(locationId), new ObjectId(hospitalId),
+					.findByLocationIdAndHospitalIdAndDiagnosticTestId(new ObjectId(locationId), new ObjectId(hospitalId),
 							new ObjectId(diagnosticTestId));
 			if (favouriteRateCardTestCollection != null) {
 				favouriteRateCardTestCollection.setDiscarded(!favouriteRateCardTestCollection.getDiscarded());

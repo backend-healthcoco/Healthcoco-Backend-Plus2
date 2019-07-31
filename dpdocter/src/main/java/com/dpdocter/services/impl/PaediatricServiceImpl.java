@@ -940,7 +940,7 @@ public class PaediatricServiceImpl implements PaediatricService {
 	public Boolean updateImmunisationChart(String patientId, Long vaccineStartDate) {
 		List<VaccineCollection> vaccineCollections = null;
 		Boolean status = false;
-		vaccineCollections = vaccineRepository.findBypatientId(new ObjectId(patientId));
+		vaccineCollections = vaccineRepository.findByPatientId(new ObjectId(patientId));
 		
 		for (VaccineCollection vaccineCollection : vaccineCollections) {
 			if (vaccineCollection.getPeriodTime() != null && vaccineCollection.getStatus() != VaccineStatus.GIVEN) {

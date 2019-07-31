@@ -509,7 +509,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					}
 				} else {
 					DoctorDrugCollection doctorDrugCollection = doctorDrugRepository
-							.findByDrugIdDoctorIdLocaationIdHospitalId(drugCollection.getId(), new ObjectId(doctorId),
+							.findByDrugIdAndDoctorIdAndLocationIdAndHospitalId(drugCollection.getId(), new ObjectId(doctorId),
 									new ObjectId(locationId), new ObjectId(hospitalId));
 
 					if (doctorDrugCollection != null) {
@@ -1056,8 +1056,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	private void sendDownloadAppMessage(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,
 			String doctorName) {
 		try {
-			UserCollection userCollection = userRepository.findByIdAndNotSignedUp(patientId, false);
-			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(patientId,
+			UserCollection userCollection = userRepository.findByIdAndSignedUpNot(patientId, false);
+			PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(patientId,
 					locationId, hospitalId);
 			if (userCollection != null) {
 				String message = downloadAppMessageToPatient;
@@ -1092,8 +1092,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	private void sendDownloadAppMessageInHindi(ObjectId patientId, ObjectId doctorId, ObjectId locationId,
 			ObjectId hospitalId, String doctorName) {
 		try {
-			UserCollection userCollection = userRepository.findByIdAndNotSignedUp(patientId, false);
-			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(patientId,
+			UserCollection userCollection = userRepository.findByIdAndSignedUpNot(patientId, false);
+			PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(patientId,
 					locationId, hospitalId);
 			if (userCollection != null) {
 				String message = downloadAppMessageToPatientInHindi;
@@ -2499,11 +2499,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				labTestCollections = new ArrayList<LabTestCollection>();
 			} else {
 				if (size > 0)
-					labTestCollections = labTestRepository.getCustomLabTests(new ObjectId(hospitalId),
+					labTestCollections = labTestRepository.findByHospitalIdAndLocationIdAndUpdatedTimeGreaterThanAndDiscardedIn(new ObjectId(hospitalId),
 							new ObjectId(locationId), new Date(createdTimeStamp), discards,
 						    PageRequest.of((int) page, size, Direction.DESC, "updatedTime"));
 				else
-					labTestCollections = labTestRepository.getCustomLabTests(new ObjectId(hospitalId),
+					labTestCollections = labTestRepository.findByHospitalIdAndLocationIdAndUpdatedTimeGreaterThanAndDiscardedIn(new ObjectId(hospitalId),
 							new ObjectId(locationId), new Date(createdTimeStamp), discards,
 							new Sort(Sort.Direction.DESC, "updatedTime"));
 			}
@@ -2928,7 +2928,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							&& prescriptionCollection.getLocationId().toString().equals(locationId)) {
 
 						user = userRepository.findById(prescriptionCollection.getPatientId()).orElse(null);
-						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								prescriptionCollection.getPatientId(), prescriptionCollection.getLocationId(),
 								prescriptionCollection.getHospitalId());
 						user.setFirstName(patient.getLocalPatientName());
@@ -3023,7 +3023,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							&& prescriptionCollection.getLocationId().equals(new ObjectId(locationId))) {
 
 						UserCollection userCollection = userRepository.findById(prescriptionCollection.getPatientId()).orElse(null);
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								prescriptionCollection.getPatientId(), prescriptionCollection.getLocationId(),
 								prescriptionCollection.getHospitalId());
 						if (patientCollection != null) {
@@ -3870,13 +3870,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					.findById(new ObjectId(prescriptionId)).orElse(null);
 
 			if (prescriptionCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						prescriptionCollection.getPatientId(), prescriptionCollection.getLocationId(),
 						prescriptionCollection.getHospitalId());
 				UserCollection user = userRepository.findById(prescriptionCollection.getPatientId()).orElse(null);
 
 				if (showPH || showPLH || showFH || showDA) {
-					historyCollection = historyRepository.findHistory(prescriptionCollection.getLocationId(),
+					historyCollection = historyRepository.findByLocationIdAndHospitalIdAndPatientId(prescriptionCollection.getLocationId(),
 							prescriptionCollection.getHospitalId(), prescriptionCollection.getPatientId());
 				}
 				JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user,
@@ -3905,7 +3905,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		JasperReportResponse response = null;
 
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 				prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 				prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
 
@@ -4168,7 +4168,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				logger.error("Invalid drug Id");
 				throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
 			}
-			DrugCollection drugCollection = drugRepository.findByCodeAndDoctorId(originalDrug.getDrugCode(),
+			DrugCollection drugCollection = drugRepository.findByDrugCodeAndDoctorId(originalDrug.getDrugCode(),
 					doctorObjectId);
 			if (drugCollection == null) {
 				drugCollection = originalDrug;
@@ -4448,7 +4448,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						&& request.getDoctorId().equalsIgnoreCase(originalDrug.getDoctorId().toString())) {
 					drugCollection = originalDrug;
 				} else {
-					drugCollection = drugRepository.findByCodeAndDoctorId(originalDrug.getDrugCode(),
+					drugCollection = drugRepository.findByDrugCodeAndDoctorId(originalDrug.getDrugCode(),
 							new ObjectId(request.getDoctorId()));
 				}
 
@@ -5040,7 +5040,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		try {
 			List<DoctorDrugCollection> doctorDrugCollections = doctorDrugRepository.findAll();
 			for (DoctorDrugCollection doctorDrugCollection : doctorDrugCollections) {
-				DrugCollection drugCollection = drugRepository.find(doctorDrugCollection.getDrugId(),
+				DrugCollection drugCollection = drugRepository.findByIdAndDoctorIdAndLocationIdAndHospitalId(doctorDrugCollection.getDrugId(),
 						doctorDrugCollection.getDoctorId(), doctorDrugCollection.getLocationId(),
 						doctorDrugCollection.getHospitalId());
 				if (drugCollection != null) {
@@ -5147,7 +5147,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			if (request.getFirstGenericCode() != null && request.getSecondGenericCode() != null) {
 				List<GenericCodesAndReactionsCollection> genericCodesAndReactionsCollections = genericCodesAndReactionsRepository
-						.findbyGenericCodes(Arrays.asList(request.getFirstGenericCode().getCode(),
+						.findByGenericCodeIn(Arrays.asList(request.getFirstGenericCode().getCode(),
 								request.getSecondGenericCode().getCode()));
 				if (genericCodesAndReactionsCollections != null) {
 					for (GenericCodesAndReactionsCollection codesAndReactionsCollection : genericCodesAndReactionsCollections) {
@@ -5273,7 +5273,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		try {
 			if (request.getFirstGenericCode() != null && request.getSecondGenericCode() != null) {
 				List<GenericCodesAndReactionsCollection> genericCodesAndReactionsCollections = genericCodesAndReactionsRepository
-						.findbyGenericCodes(Arrays.asList(request.getFirstGenericCode().getCode(),
+						.findByGenericCodeIn(Arrays.asList(request.getFirstGenericCode().getCode(),
 								request.getSecondGenericCode().getCode()));
 				if (genericCodesAndReactionsCollections != null) {
 					for (GenericCodesAndReactionsCollection codesAndReactionsCollection : genericCodesAndReactionsCollections) {
@@ -5551,7 +5551,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					.findById(new ObjectId(prescriptionId)).orElse(null);
 
 			if (prescriptionCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						prescriptionCollection.getPatientId(), prescriptionCollection.getLocationId(),
 						prescriptionCollection.getHospitalId());
 				UserCollection user = userRepository.findById(prescriptionCollection.getPatientId()).orElse(null);
@@ -5701,7 +5701,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		parameters.put("lensColor", prescriptionCollection.getLensColor());
 		parameters.put("lensBrand", prescriptionCollection.getLensBrand());
 
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 				prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 				prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
 		if (printSettings == null) {
@@ -5778,7 +5778,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							&& prescriptionCollection.getLocationId().toString().equals(locationId)) {
 
 						user = userRepository.findById(prescriptionCollection.getPatientId()).orElse(null);
-						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								prescriptionCollection.getPatientId(), prescriptionCollection.getLocationId(),
 								prescriptionCollection.getHospitalId());
 						user.setFirstName(patient.getLocalPatientName());
@@ -5943,7 +5943,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 						UserCollection userCollection = userRepository
 								.findById(eyePrescriptionCollection.getPatientId()).orElse(null);
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								eyePrescriptionCollection.getPatientId(), eyePrescriptionCollection.getLocationId(),
 								eyePrescriptionCollection.getHospitalId());
 						if (patientCollection != null) {
@@ -6167,7 +6167,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			end.minusDays(1);
 
-			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findByCreatedTime(start, end);
+			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findByCreatedTimeBetween(start, end);
 			if (prescriptionCollections != null) {
 				for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 
@@ -6182,7 +6182,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 					if (prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
 						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
-							DrugCollection drugCollection = drugRepository.findByIdAndTime(prescriptionItem.getDrugId(),
+							DrugCollection drugCollection = drugRepository.findByIdAndCreatedTime(prescriptionItem.getDrugId(),
 									start);
 							if (drugCollection != null) {
 								drugCollection.setLocationId(prescriptionCollection.getLocationId());
@@ -6491,7 +6491,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptionCollection = prescriptionRepository.findById(new ObjectId(prescriptionId)).orElse(null);
 			if (prescriptionCollection != null) {
 				UserCollection userCollection = userRepository.findById(prescriptionCollection.getPatientId()).orElse(null);
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						prescriptionCollection.getPatientId(), prescriptionCollection.getLocationId(),
 						prescriptionCollection.getHospitalId());
 				if (patientCollection != null) {
@@ -6626,7 +6626,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (eyePrescriptionCollection != null) {
 
 				UserCollection userCollection = userRepository.findById(eyePrescriptionCollection.getPatientId()).orElse(null);
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						eyePrescriptionCollection.getPatientId(), eyePrescriptionCollection.getLocationId(),
 						eyePrescriptionCollection.getHospitalId());
 				if (patientCollection != null) {
@@ -6696,7 +6696,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (prescriptionCollection != null) {
 
 				user = userRepository.findById(prescriptionCollection.getPatientId()).orElse(null);
-				patient = patientRepository.findByUserIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(),
+				patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(prescriptionCollection.getPatientId(),
 						prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId());
 				user.setFirstName(patient.getLocalPatientName());
 				emailTrackCollection.setDoctorId(prescriptionCollection.getDoctorId());
@@ -6781,7 +6781,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (prescriptionCollection != null) {
 
 				user = userRepository.findById(prescriptionCollection.getPatientId()).orElse(null);
-				patient = patientRepository.findByUserIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(),
+				patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(prescriptionCollection.getPatientId(),
 						prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId());
 				user.setFirstName(patient.getLocalPatientName());
 				emailTrackCollection.setDoctorId(prescriptionCollection.getDoctorId());
@@ -7226,7 +7226,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		genericName = genericName.replaceAll("[^a-zA-Z0-9]", "");
 		String genericCode = "GEN" + genericName.substring(0, 3);
 
-		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByStartWithGenericCode(genericCode,
+		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByGenericCodeStartsWith(genericCode,
 				new Sort(Sort.Direction.DESC, "code"));
 		if (genericCodeCollection != null) {
 			Integer count = Integer.parseInt(genericCodeCollection.getCode().replace(genericCode, "")) + 1;
@@ -7245,7 +7245,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	private String updateIfGenericCodeExist(String genericCode) {
-		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByStartWithGenericCode(genericCode,
+		GenericCodeCollection genericCodeCollection = genericCodeRepository.findByGenericCodeStartsWith(genericCode,
 				new Sort(Sort.Direction.DESC, "createdTime"));
 		if (genericCodeCollection != null) {
 			genericCode = genericCode.substring(0, 6);
@@ -7307,7 +7307,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				if (nutritionReferralCollection != null) {
 					response = new NutritionReferral();
 					BeanUtil.map(nutritionReferralCollection, response);
-					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+					PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 							nutritionReferralCollection.getPatientId(), nutritionReferralCollection.getLocationId(),
 							nutritionReferralCollection.getHospitalId());
 					if (patientCollection != null) {

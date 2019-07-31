@@ -80,10 +80,10 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			PrintSettingsCollection oldPrintSettingsCollection = null;
 			if (request.getId() == null) {
 				if (!request.getIsLab()) {
-					oldPrintSettingsCollection = printSettingsRepository.getSettings(doctorObjectId, locationObjectId,
+					oldPrintSettingsCollection = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalId(doctorObjectId, locationObjectId,
 							hospitalObjectId);
 				} else {
-					oldPrintSettingsCollection = printSettingsRepository.getSettings(locationObjectId,
+					oldPrintSettingsCollection = printSettingsRepository.findByLocationIdAndHospitalId(locationObjectId,
 							hospitalObjectId);
 				}
 				if (oldPrintSettingsCollection != null)
@@ -181,25 +181,25 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			if (doctorObjectId == null) {
 
-				printSettingsCollections = printSettingsRepository.getSettings(locationObjectId, hospitalObjectId,
+				printSettingsCollections = printSettingsRepository.findByLocationIdAndHospitalIdAndUpdatedTimegreaterThanAndDiscardedIn(locationObjectId, hospitalObjectId,
 						new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 
 			} else {
 				if (locationObjectId == null && hospitalObjectId == null) {
 					if (size > 0)
-						printSettingsCollections = printSettingsRepository.getSettings(doctorObjectId,
+						printSettingsCollections = printSettingsRepository.findByDoctorIdAndUpdatedTimegreaterThanAndDiscardedIn(doctorObjectId,
 								new Date(createdTimeStamp), discards,
 								PageRequest.of(page, size, Direction.DESC, "createdTime"));
 					else
-						printSettingsCollections = printSettingsRepository.getSettings(doctorObjectId,
+						printSettingsCollections = printSettingsRepository.findByDoctorIdAndUpdatedTimegreaterThanAndDiscardedIn(doctorObjectId,
 								new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 				} else {
 					if (size > 0)
-						printSettingsCollections = printSettingsRepository.getSettings(doctorObjectId, locationObjectId,
+						printSettingsCollections = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimegreaterThanAndDiscardedIn(doctorObjectId, locationObjectId,
 								hospitalObjectId, new Date(createdTimeStamp), discards,
 								PageRequest.of(page, size, Direction.DESC, "createdTime"));
 					else
-						printSettingsCollections = printSettingsRepository.getSettings(doctorObjectId, locationObjectId,
+						printSettingsCollections = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimegreaterThanAndDiscardedIn(doctorObjectId, locationObjectId,
 								hospitalObjectId, new Date(createdTimeStamp), discards,
 								new Sort(Sort.Direction.DESC, "createdTime"));
 				}

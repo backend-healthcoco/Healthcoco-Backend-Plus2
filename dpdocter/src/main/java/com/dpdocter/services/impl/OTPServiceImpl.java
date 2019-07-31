@@ -186,7 +186,7 @@ public class OTPServiceImpl implements OTPService {
 			if (userCollection != null && patientCard != null && patientId != null) {
 				String doctorName = (userCollection.getTitle() != null ? userCollection.getTitle() : "") + " "
 						+ userCollection.getFirstName();
-				List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(doctorObjectId,
+				List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.findByDoctorIdAndLocationIdAndPatientId(doctorObjectId,
 						locationObjectId, patientObjectId, PageRequest.of(0, 1, new Sort(Sort.Direction.DESC, "createdTime")));
 				if (doctorOTPCollection != null) {
 					OTPCollection otpCollection = otpRepository.findById(doctorOTPCollection.get(0).getOtpId()).orElse(null);
@@ -242,7 +242,7 @@ public class OTPServiceImpl implements OTPService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				locationObjectId = new ObjectId(locationId);
 
-			List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(doctorObjectId, locationObjectId,
+			List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.findByDoctorIdAndLocationIdAndPatientId(doctorObjectId, locationObjectId,
 					patientObjectId, PageRequest.of(0, 1, new Sort(Sort.Direction.DESC, "createdTime")));
 			if (doctorOTPCollection != null && !doctorOTPCollection.isEmpty() && doctorOTPCollection.size() > 0) {
 				OTPCollection otpCollection = otpRepository.findById(doctorOTPCollection.get(0).getOtpId()).orElse(null);
@@ -312,7 +312,7 @@ public class OTPServiceImpl implements OTPService {
 	public boolean verifyOTP(String mobileNumber, String otpNumber) {
 		Boolean response = false;
 		try {
-			OTPCollection otpCollection = otpRepository.findById(mobileNumber, otpNumber, mobileNumber);
+			OTPCollection otpCollection = otpRepository.findByMobileNumberAndOtpNumberAndGeneratorId(mobileNumber, otpNumber, mobileNumber);
 			if (otpCollection != null) {
 				if (isOTPValid(otpCollection.getCreatedTime())) {
 					otpCollection.setState(OTPState.VERIFIED);
@@ -340,7 +340,7 @@ public class OTPServiceImpl implements OTPService {
 	public Boolean checkOTPVerifiedForPatient(String mobileNumber, String otpNumber) {
 		Boolean response = false;
 		try {
-			OTPCollection otpCollection = otpRepository.findById(mobileNumber, otpNumber, mobileNumber);
+			OTPCollection otpCollection = otpRepository.findByMobileNumberAndOtpNumberAndGeneratorId(mobileNumber, otpNumber, mobileNumber);
 			if (otpCollection != null && otpCollection.getState().equals(OTPState.VERIFIED))
 				response = true;
 

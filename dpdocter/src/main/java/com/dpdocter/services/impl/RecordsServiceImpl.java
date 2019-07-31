@@ -244,7 +244,7 @@ public class RecordsServiceImpl implements RecordsService {
 			String localPatientName = null, patientMobileNumber = null;
 			PrescriptionCollection prescriptionCollection = null;
 			if (request.getPrescriptionId() != null) {
-				prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(request.getPrescriptionId(),
+				prescriptionCollection = prescriptionRepository.findByUniqueEmrIdAndPatientId(request.getPrescriptionId(),
 						new ObjectId(request.getPatientId()));
 			}
 			if (request.getRegisterPatient()) {
@@ -1012,7 +1012,7 @@ public class RecordsServiceImpl implements RecordsService {
 				mailAttachment = new MailAttachment();
 				mailAttachment.setFileSystemResource(null);
 				mailAttachment.setInputStream(objectData);
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						recordsCollection.getPatientId(), new ObjectId(locationId), new ObjectId(hospitalId));
 				if (patient != null) {
 
@@ -1394,7 +1394,7 @@ public class RecordsServiceImpl implements RecordsService {
 			String localPatientName = null, patientMobileNumber = null;
 			PrescriptionCollection prescriptionCollection = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getPrescriptionId(), request.getPatientId())) {
-				prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(request.getPrescriptionId(),
+				prescriptionCollection = prescriptionRepository.findByUniqueEmrIdAndPatientId(request.getPrescriptionId(),
 						new ObjectId(request.getPatientId()));
 			}
 			if (request.getRegisterPatient()) {
@@ -1609,7 +1609,7 @@ public class RecordsServiceImpl implements RecordsService {
 			if (recordsState.equalsIgnoreCase(RecordsState.APPROVED_BY_DOCTOR.toString())
 					&& recordsCollection.getShareWithPatient()) {
 				UserCollection patientUserCollection = userRepository.findById(recordsCollection.getPatientId()).orElse(null);
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						recordsCollection.getPatientId(), recordsCollection.getLocationId(),
 						recordsCollection.getHospitalId());
 				sendRecordSmsToPatient(patientCollection.getLocalPatientName(), patientUserCollection.getMobileNumber(),
@@ -1621,11 +1621,11 @@ public class RecordsServiceImpl implements RecordsService {
 						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 			} else if (recordsState.equalsIgnoreCase(RecordsState.DECLINED_BY_DOCTOR.toString())) {
 				UserCollection userCollection = userRepository.findById(recordsCollection.getDoctorId()).orElse(null);
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						recordsCollection.getPatientId(), recordsCollection.getLocationId(),
 						recordsCollection.getHospitalId());
 
-				PrescriptionCollection prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(
+				PrescriptionCollection prescriptionCollection = prescriptionRepository.findByUniqueEmrIdAndPatientId(
 						recordsCollection.getPrescriptionId(), recordsCollection.getPatientId());
 				if (prescriptionCollection != null && (prescriptionCollection.getDiagnosticTests() != null
 						|| !prescriptionCollection.getDiagnosticTests().isEmpty())) {
@@ -1689,7 +1689,7 @@ public class RecordsServiceImpl implements RecordsService {
 				}
 				if (request.getRecordsFiles() != null && !request.getRecordsFiles().isEmpty()) {
 					UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
-							.findByUserId(new ObjectId(request.getPatientId()));
+							.findByUserIds(new ObjectId(request.getPatientId()));
 
 					if (userAllowanceDetailsCollection == null) {
 						userAllowanceDetailsCollection = new UserAllowanceDetailsCollection();
@@ -1940,7 +1940,7 @@ public class RecordsServiceImpl implements RecordsService {
 				if (userRecordsCollection.getUploadedBy().getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())) {
 
 					UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
-							.findByUserId(userRecordsCollection.getPatientId());
+							.findByUserIds(userRecordsCollection.getPatientId());
 					for (RecordsFile file : userRecordsCollection.getRecordsFiles()) {
 
 						userAllowanceDetailsCollection.setAvailableRecordsSizeInMB(
@@ -2021,7 +2021,7 @@ public class RecordsServiceImpl implements RecordsService {
 						&& !userRecordsCollection.getRecordsFiles().isEmpty()) {
 
 					UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
-							.findByUserId(userRecordsCollection.getPatientId());
+							.findByUserIds(userRecordsCollection.getPatientId());
 					for (int index = 0; userRecordsCollection.getRecordsFiles().size() > index; index++) {
 						for (String fileId : fileIds) {
 							if (userRecordsCollection.getRecordsFiles().get(index).getFileId().equals(fileId)) {
@@ -2083,7 +2083,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 			UserCollection doctor = userRepository.findById(userRecordsCollection.getDoctorId()).orElse(null);
 			if (doctor != null) {
-				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+				PatientCollection patientCollection = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
 						userRecordsCollection.getShareWith(), userRecordsCollection.getDoctorId(),
 						userRecordsCollection.getLocationId(), userRecordsCollection.getHospitalId());
 				UserCollection patient = userRepository.findById(userRecordsCollection.getPatientId()).orElse(null);
@@ -2146,7 +2146,7 @@ public class RecordsServiceImpl implements RecordsService {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
 				userAllowanceDetailsCollection = userAllowanceDetailsRepository
-						.findByUserId(new ObjectId(request.getPatientId()));
+						.findByUserIds(new ObjectId(request.getPatientId()));
 
 				if (userAllowanceDetailsCollection == null) {
 					userAllowanceDetailsCollection = new UserAllowanceDetailsCollection();

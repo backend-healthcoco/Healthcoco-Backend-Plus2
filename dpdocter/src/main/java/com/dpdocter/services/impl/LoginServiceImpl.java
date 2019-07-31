@@ -388,7 +388,7 @@ public class LoginServiceImpl implements LoginService {
 							throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 						}
 						PatientCollection patientCollection = patientRepository
-								.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
+								.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(userCollection.getId(), null, null, null);
 						if (patientCollection != null) {
 							Patient patient = new Patient();
 							BeanUtil.map(patientCollection, patient);
@@ -422,7 +422,7 @@ public class LoginServiceImpl implements LoginService {
 						throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 					}
 					PatientCollection patientCollection = patientRepository
-							.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
+							.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(userCollection.getId(), null, null, null);
 					if (patientCollection != null) {
 						Patient patient = new Patient();
 						BeanUtil.map(patientCollection, patient);
@@ -481,7 +481,7 @@ public class LoginServiceImpl implements LoginService {
 							}
 							RegisteredPatientDetails user = new RegisteredPatientDetails();
 							PatientCollection patientCollection = patientRepository
-									.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null,
+									.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(userCollection.getId(), null, null,
 											null);
 							if (patientCollection != null) {
 								Patient patient = new Patient();
@@ -514,7 +514,7 @@ public class LoginServiceImpl implements LoginService {
 								}
 							}
 							PatientCollection patientCollection = patientRepository
-									.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null,
+									.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(userCollection.getId(), null, null,
 											null);
 							if (patientCollection != null) {
 								Patient patient = new Patient();
@@ -603,8 +603,11 @@ public class LoginServiceImpl implements LoginService {
 			 * if(response == null){ logger.warn(login); throw new
 			 * BusinessException(ServiceError.Unknown, login); }
 			 */
-			UserCollection userCollection = userRepository.findAdminByMobileNumber(mobileNumber,
+			UserCollection userCollection = null;
+			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(mobileNumber,
 					UserState.ADMIN.getState());
+			if(userCollections!= null && !userCollections.isEmpty())userCollection = userCollections.get(0);
+
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.NotAuthorized, "Admin with provided mobile number not found");
 			} else {

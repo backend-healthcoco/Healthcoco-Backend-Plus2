@@ -142,7 +142,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				doctorClinicProfileCollection = doctorClinicProfileRepository
-						.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+						.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
 				defaultDoctorId = (!DPDoctorUtils.anyStringEmpty(doctorClinicProfileCollection.getDefaultDoctorId())
 						? doctorClinicProfileCollection.getDefaultDoctorId().toString()
 						: doctorClinicProfileCollection.getDoctorId().toString());

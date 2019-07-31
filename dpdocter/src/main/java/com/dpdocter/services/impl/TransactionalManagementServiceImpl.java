@@ -778,7 +778,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 				if (appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
 					for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses) {
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								new ObjectId(appointmentDoctorReminderResponse.getPatientId()),
 								appointmentDoctorReminderResponse.getLocationId(),
 								appointmentDoctorReminderResponse.getHospitalId());
@@ -1300,12 +1300,12 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 			for (PrescriptionCollection prescriptionCollection : prescriptions) {
 				UserCollection userCollection = userRepository
-						.findByIdAndNotSignedUp(prescriptionCollection.getPatientId(), false);
+						.findByIdAndSignedUpNot(prescriptionCollection.getPatientId(), false);
 				if (userCollection != null) {
 					String[] type = { "APP_LINK_THROUGH_PRESCRIPTION" };
 					Calendar cal = Calendar.getInstance();
 					cal.add(Calendar.DATE, -5);
-					List<SMSTrackDetail> smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalPatient(
+					List<SMSTrackDetail> smsTrackDetails = smsTrackRepository.findByDoctorIdAndLocationIdAndHospitalIdAndSmsDetailsUserIdAndTypeInAndCreatedTimeBetween(
 							prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 							prescriptionCollection.getHospitalId(), prescriptionCollection.getPatientId(), type,
 							cal.getTime(), new Date(), PageRequest.of(0, 1));
@@ -1460,7 +1460,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void updateActivePrescription() {
 		try {
-			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findActiveAndDrugExistRx();
+			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findByIsActiveAndItemsExists(true, true);
 			for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 				Boolean isActive = false;
 				for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
@@ -1526,7 +1526,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	public void checkOTP() {
 		try {
-			List<OTPCollection> otpCollections = otpRepository.findNonExpiredOtp(OTPState.EXPIRED.getState());
+			List<OTPCollection> otpCollections = otpRepository.findByStateNot(OTPState.EXPIRED.getState());
 			if (otpCollections != null) {
 				for (OTPCollection otpCollection : otpCollections) {
 					if (otpCollection.getState().equals(OTPState.VERIFIED)) {
@@ -1790,7 +1790,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorId(resourceId);
 				else {
 					DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
-							.findByDoctorIdLocationId(resourceId, locationId);
+							.findByDoctorIdAndLocationId(resourceId, locationId);
 					doctorClinicProfileCollections = new ArrayList<DoctorClinicProfileCollection>();
 					doctorClinicProfileCollections.add(doctorClinicProfileCollection);
 				}
@@ -2013,8 +2013,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			LocaleCollection localeCollection = localeRepository.findById(resourceId).orElse(null);
 			UserCollection userCollection = null;
 			if (localeCollection != null) {
-				userCollection = userRepository.findAdminByMobileNumber(localeCollection.getContactNumber(),
-						"PHARMACY");
+				List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(localeCollection.getContactNumber(), "PHARMACY");
+				if(userCollections!= null && !userCollections.isEmpty())userCollection = userCollections.get(0);
 			}
 
 			if (localeCollection != null && userCollection != null) {

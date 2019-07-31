@@ -16,9 +16,6 @@ public interface AppointmentBookedSlotRepository extends MongoRepository<Appoint
 	List<AppointmentBookedSlotCollection> findByDoctorLocationId(ObjectId doctorId, ObjectId locationId, DateTime start,
 			DateTime end, Sort sort);
 
-	@Query("{'appointmentId': ?0}")
 	AppointmentBookedSlotCollection findByAppointmentId(String appointmentId);
 
 }
-//'$or': [{'fromDate': {'$lte':?2}, 'toDate': {'$gte':?2}},"
-//		+ " {'fromDate': {'$lte':?3}, 'toDate': {'$gte':?3}}]

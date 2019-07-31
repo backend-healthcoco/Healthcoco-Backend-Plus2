@@ -16,64 +16,46 @@ import com.dpdocter.collections.BranchCollection;
 
 @Repository
 public interface BranchRepository extends MongoRepository<BranchCollection, ObjectId>, PagingAndSortingRepository<BranchCollection, ObjectId> {
-    @Query("{'doctorId': ?0}")
+
     public List<BranchCollection> findByDoctorId(ObjectId doctorId, Sort sort);
 
-    @Query("{'doctorId': ?0, 'discarded': ?1}")
-    public List<BranchCollection> findByDoctorId(ObjectId doctorId, boolean discarded, Sort sort);
+    public List<BranchCollection> findByDoctorIdAndDiscarded(ObjectId doctorId, boolean discarded, Sort sort);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}}")
-    public List<BranchCollection> findByDoctorId(ObjectId doctorId, Date date, Sort sort);
+    public List<BranchCollection> findByDoctorIdAndUpdatedTimeGreaterThan(ObjectId doctorId, Date date, Sort sort);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': ?2}")
-    public List<BranchCollection> findByDoctorId(ObjectId doctorId, Date date, boolean discarded, Sort sort);
+    public List<BranchCollection> findByDoctorIdAndUpdatedTimeGreaterThanAndDiscarded(ObjectId doctorId, Date date, boolean discarded, Sort sort);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
-    public List<BranchCollection> findByDoctorIdPatientIdHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Pageable pageRequest);
+    public List<BranchCollection> findByDoctorIdAndLocationIdAndHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Pageable pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3}")
-    public List<BranchCollection> findByDoctorIdPatientIdHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean discarded,
+    public List<BranchCollection> findByDoctorIdAndLocationIdAndHospitalIdAndDiscarded(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean discarded,
 	    Pageable pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}}")
-    public List<BranchCollection> findByDoctorIdPatientIdHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, Pageable pageRequest);
+    public List<BranchCollection> findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimeGreaterThan(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, Pageable pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3, 'updatedTime': {'$gt': ?4}}")
-    public List<BranchCollection> findByDoctorIdPatientIdHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean discarded, Date date,
+    public List<BranchCollection> findByDoctorIdAndLocationIdAndHospitalIdAndDiscardedAndUpdatedTimeGreaterThan(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean discarded, Date date,
 	    Pageable pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
-    public List<BranchCollection> findByDoctorIdPatientIdHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Sort sort);
+    public List<BranchCollection> findByDoctorIdAndLocationIdAndHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Sort sort);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3}")
-    public List<BranchCollection> findByDoctorIdPatientIdHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean discarded, Sort sort);
+    public List<BranchCollection> findByDoctorIdAndLocationIdAndHospitalIdAndDiscarded(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean discarded, Sort sort);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}}")
-    public List<BranchCollection> findByDoctorIdPatientIdHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, Sort sort);
+    public List<BranchCollection> findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimeGreaterThan(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, Sort sort);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3, 'updatedTime': {'$gt': ?4}}")
-    public List<BranchCollection> findByDoctorIdPatientIdHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean discarded, Date date,
+    public List<BranchCollection> findByDoctorIdAndLocationIdAndHospitalIdAndDiscardedAndUpdatedTimeGreaterThan(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean discarded, Date date,
 	    Sort sort);
 
-    @Query("{'name': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'discarded': ?4}")
-    public BranchCollection findByName(String name, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean discarded);
+    public BranchCollection findByNameAndDoctorIdAndLocationIdAndHospitalIdAndDiscarded(String name, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean discarded);
 
-    @Query("{'doctorId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gt': ?2}}")
-    public List<BranchCollection> findAll(ObjectId doctorId, boolean[] discarded, Date date, Pageable pageRequest);
+    public List<BranchCollection> findByDoctorIdAndDiscardedInAndUpdatedTimeGreaterThan(ObjectId doctorId, boolean[] discarded, Date date, Pageable pageRequest);
 
-    @Query("{'doctorId': ?0, 'discarded': {$in: ?1}, 'updatedTime': {'$gt': ?2}}")
-    public List<BranchCollection> findAll(ObjectId doctorId, boolean[] discarded, Date date, Sort sort);
+    public List<BranchCollection> findByDoctorIdAndDiscardedInAndUpdatedTimeGreaterThan(ObjectId doctorId, boolean[] discarded, Date date, Sort sort);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': {$in: ?3}, 'updatedTime': {'$gt': ?4}}")
-    public List<BranchCollection> findAll(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean[] discarded, Date date, Pageable pageRequest);
+    public List<BranchCollection> findByDoctorIdAndLocationIdAndHospitalIdAndDiscardedInAndUpdatedTimeGreaterThan(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean[] discarded, Date date, Pageable pageRequest);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': {$in: ?3}, 'updatedTime': {'$gt': ?4}}")
-    public List<BranchCollection> findAll(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean[] discarded, Date date, Sort sort);
+    public List<BranchCollection> findByDoctorIdAndLocationIdAndHospitalIdAndDiscardedInAndUpdatedTimeGreaterThan(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean[] discarded, Date date, Sort sort);
 
-    @Query("{'id': {'$in' : ?0}, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'discarded': ?4}")
-	public List<BranchCollection> find(Collection<ObjectId> groupIds, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean discarded);
+	public List<BranchCollection> findByIdInAndDoctorIdAndLocationIdAndHospitalIdAndDiscarded(Collection<ObjectId> groupIds, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, boolean discarded);
 
-    @Query("{'id': {'$in' : ?0}, 'doctorId': ?1, 'discarded': ?2}")
-	public List<BranchCollection> find(Collection<ObjectId> groupIds, ObjectId doctorId, boolean discarded);
+	public List<BranchCollection> findByIdInAndDoctorIdAndDiscarded(Collection<ObjectId> groupIds, ObjectId doctorId, boolean discarded);
 
 }

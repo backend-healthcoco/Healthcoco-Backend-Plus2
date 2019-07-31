@@ -9,7 +9,6 @@ import com.dpdocter.collections.FavouriteRateCardTestCollection;
 
 @Repository
 public interface FavouriteRateCardTestRepositoy extends MongoRepository<FavouriteRateCardTestCollection, ObjectId> {
-	@Query(value = "{'locationId' : ?0,'hospitalId': ?1,'diagnosticTestId': ?2}")
-	FavouriteRateCardTestCollection findByLocationIdHospitalIdAndTestId(ObjectId locationId, ObjectId hospitalId,
+	FavouriteRateCardTestCollection findByLocationIdAndHospitalIdAndDiagnosticTestId(ObjectId locationId, ObjectId hospitalId,
 			ObjectId diagnosticTestId);
 }

@@ -294,20 +294,20 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				response = new DoctorSpecialityAddEditRequest();
 				if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
 					List<SpecialityCollection> specialityCollections = specialityRepository
-							.findBySuperSpeciality(request.getSpeciality());
+							.findBySuperSpecialityIn(request.getSpeciality());
 					Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections,
 							new BeanToPropertyValueTransformer("id"));
 					if (specialityIds != null && !specialityIds.isEmpty()) {
 						doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
 						if (oldSpecialities != null && !oldSpecialities.isEmpty()) {
 							removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
-							List<ServicesCollection> servicesCollections = servicesRepository.findbySpeciality(oldSpecialities);
+							List<ServicesCollection> servicesCollections = servicesRepository.findBySpecialityIdsIn(oldSpecialities);
 							List<ObjectId> servicesIds = (List<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
 							Set<ObjectId> services = new HashSet<>(servicesIds);
 							if(doctorCollection.getServices()!= null)doctorCollection.getServices().removeAll(services);
 						}
 						if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-							List<ServicesCollection> servicesCollections = servicesRepository.findbySpeciality(doctorCollection.getSpecialities());
+							List<ServicesCollection> servicesCollections = servicesRepository.findBySpecialityIdsIn(doctorCollection.getSpecialities());
 							List<ObjectId> services = (List<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
 							Set<ObjectId> serviceIds = new HashSet<>(services);
 							
@@ -764,7 +764,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 				if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 					RecommendationsCollection recommendationsCollection = recommendationsRepository
-							.findByDoctorIdLocationIdAndPatientId(doctorClinicProfileLookupResponse.getDoctorId(),
+							.findByDoctorIdAndLocationIdAndPatientId(doctorClinicProfileLookupResponse.getDoctorId(),
 									doctorClinicProfileLookupResponse.getLocationId(), new ObjectId(patientId));
 					if (recommendationsCollection != null)
 						doctorClinic.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
@@ -822,7 +822,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 			if (request.getMembership() != null && !request.getMembership().isEmpty()) {
 				List<ProfessionalMembershipCollection> professionalMembershipCollections = professionalMembershipRepository
-						.find(request.getMembership());
+						.findByMembershipIn(request.getMembership());
 				professionalMembershipIds = (List<ObjectId>) CollectionUtils.collect(professionalMembershipCollections,
 						new BeanToPropertyValueTransformer("id"));
 				professionalMemberships = (List<String>) CollectionUtils.collect(professionalMembershipCollections,
@@ -847,7 +847,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 		DoctorAppointmentNumbersAddEditRequest response = null;
 		try {
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 			if (doctorClinicProfileCollection == null) {
 				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
@@ -874,7 +874,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 		DoctorVisitingTimeAddEditRequest response = null;
 		try {
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 			if (doctorClinicProfileCollection == null) {
 				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
@@ -902,7 +902,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 		DoctorConsultationFeeAddEditRequest response = null;
 		try {
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 			if (doctorClinicProfileCollection == null) {
 				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
@@ -930,7 +930,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 		DoctorAppointmentSlotAddEditRequest response = null;
 		try {
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 			if (doctorClinicProfileCollection == null) {
 				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
@@ -957,7 +957,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		DoctorGeneralInfo response = null;
 		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 		try {
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 			if (doctorClinicProfileCollection == null) {
 				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
@@ -1108,7 +1108,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
 					List<ObjectId> oldSpecialities = doctorCollection.getSpecialities();
 					List<SpecialityCollection> specialityCollections = specialityRepository
-							.findBySuperSpeciality(request.getSpeciality());
+							.findBySuperSpecialityIn(request.getSpeciality());
 					if (specialityCollections != null && !specialityCollections.isEmpty()) {
 						Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections,
 								new BeanToPropertyValueTransformer("id"));
@@ -1123,13 +1123,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 							parentSpecialitiesresponse.addAll(parentSpecialities);
 							if (oldSpecialities != null && !oldSpecialities.isEmpty()) {
 								removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
-								List<ServicesCollection> servicesCollections = servicesRepository.findbySpeciality(oldSpecialities);
+								List<ServicesCollection> servicesCollections = servicesRepository.findBySpecialityIdsIn(oldSpecialities);
 								List<ObjectId> servicesIds = (List<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
 								Set<ObjectId> services = new HashSet<>(servicesIds);
 								if(doctorCollection.getServices()!= null)doctorCollection.getServices().removeAll(services);
 						}
 						if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-							List<ServicesCollection> servicesCollections = servicesRepository.findbySpeciality(doctorCollection.getSpecialities());
+							List<ServicesCollection> servicesCollections = servicesRepository.findBySpecialityIdsIn(doctorCollection.getSpecialities());
 							List<ObjectId> servicesIds = (List<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
 							Set<ObjectId> services = new HashSet<>(servicesIds);
 							if(doctorCollection.getServices()!= null)doctorCollection.getServices().addAll(services);
@@ -1194,7 +1194,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 		DoctorAddEditFacilityRequest response = null;
 		try {
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 			if (doctorClinicProfileCollection == null) {
 				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
@@ -1272,7 +1272,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 			RecommendationsCollection recommendationsCollection = null;
 
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(doctorObjectId,
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(doctorObjectId,
 					locationObjectId);
 
 			UserCollection userCollection = userRepository.findById(patientObjectId).orElse(null);
@@ -1284,7 +1284,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			}
 			if (userCollection != null) {
 				recommendationsCollection = recommendationsRepository
-						.findByDoctorIdLocationIdAndPatientId(doctorObjectId, locationObjectId, patientObjectId);
+						.findByDoctorIdAndLocationIdAndPatientId(doctorObjectId, locationObjectId, patientObjectId);
 
 				if (recommendationsCollection != null) {
 					if (!recommendationsCollection.getDiscarded()) {
@@ -1597,7 +1597,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		Boolean response = false;
 		try {
 			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
-					.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+					.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
 			if (doctorClinicProfileCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No doctor clinic profile found");
 			}
@@ -1622,7 +1622,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		Boolean response = false;
 		try {
 			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
-					.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+					.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
 			if (doctorClinicProfileCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No doctor clinic profile found");
 			}
@@ -1647,7 +1647,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		Boolean response = false;
 		try {
 			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
-					.findByDoctorIdLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+					.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
 			if (doctorClinicProfileCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "No doctor clinic profile found");
 			}
@@ -1677,7 +1677,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				response = new DoctorServicesAddEditRequest();
 				if (request.getServices() != null && !request.getServices().isEmpty()) {
 					List<ServicesCollection> servicesCollections = servicesRepository
-							.findbyService(request.getServices());
+							.findByServiceIn(request.getServices());
 					@SuppressWarnings("unchecked")
 					List<ObjectId> serviceIds = (List<ObjectId>) CollectionUtils.collect(servicesCollections,
 							new BeanToPropertyValueTransformer("id"));

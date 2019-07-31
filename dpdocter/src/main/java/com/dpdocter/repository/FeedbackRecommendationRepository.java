@@ -6,7 +6,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import com.dpdocter.collections.FeedbackRecommendationCollection;
 
 public interface FeedbackRecommendationRepository extends MongoRepository<FeedbackRecommendationCollection, ObjectId> {
-
-	//public Integer getAppointmentGeneralFeedbackCount(ObjectId patientId, ObjectId doctorId, ObjectId locationId);
 	
 }

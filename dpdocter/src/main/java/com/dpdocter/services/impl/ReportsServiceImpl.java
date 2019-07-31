@@ -227,7 +227,7 @@ public class ReportsServiceImpl implements ReportsService {
 		try {
 			if (opdReports != null) {
 				OPDReportsCollection opdReportsCollectionOld = opdReportsRepository
-						.getOPDReportByPrescriptionId(new ObjectId(opdReports.getPrescriptionId()));
+						.findByPrescriptionId(new ObjectId(opdReports.getPrescriptionId()));
 				if (opdReportsCollectionOld != null) {
 					opdReportsCollectionOld.setAmountReceived(opdReports.getAmountReceived());
 					if (opdReports.getReceiptDate() != null) {
@@ -422,7 +422,7 @@ public class ReportsServiceImpl implements ReportsService {
 						}
 					}
 					if (collection.getPatientId() != null) {
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
 								new ObjectId(collection.getHospitalId()));
 						if (patientCollection != null) {
@@ -545,7 +545,7 @@ public class ReportsServiceImpl implements ReportsService {
 						}
 					}
 					if (collection.getPatientId() != null) {
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
 								new ObjectId(collection.getHospitalId()));
 						if (patientCollection != null) {
@@ -745,7 +745,7 @@ public class ReportsServiceImpl implements ReportsService {
 						otReports.setHospitalName(hospitalCollection.getHospitalName());
 					}
 					if (collection.getPatientId() != null) {
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
 								new ObjectId(collection.getHospitalId()));
 						if (patientCollection != null) {
@@ -880,7 +880,7 @@ public class ReportsServiceImpl implements ReportsService {
 						deliveryReports.setHospitalName(hospitalCollection.getHospitalName());
 					}
 					if (collection.getPatientId() != null) {
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
 								new ObjectId(collection.getHospitalId()));
 						if (patientCollection != null) {
@@ -940,7 +940,7 @@ public class ReportsServiceImpl implements ReportsService {
 	@Transactional
 	public OPDReports getOPDReportByVisitId(String visitId) {
 		OPDReports response = null;
-		OPDReportsCollection opdReportsCollection = opdReportsRepository.getOPDReportByVisitId(new ObjectId(visitId));
+		OPDReportsCollection opdReportsCollection = opdReportsRepository.findByVisitId(new ObjectId(visitId));
 		if (opdReportsCollection != null) {
 			response = new OPDReports();
 			BeanUtil.map(opdReportsCollection, response);
@@ -1432,7 +1432,7 @@ public class ReportsServiceImpl implements ReportsService {
 		String nameAndCost = "";
 
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 				new ObjectId(otReportsLookupResponse.getDoctorId()),
 				new ObjectId(otReportsLookupResponse.getLocationId()),
 				new ObjectId(otReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType());
@@ -1827,7 +1827,7 @@ public class ReportsServiceImpl implements ReportsService {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 				new ObjectId(deliveryReportsLookupResponse.getDoctorId()),
 				new ObjectId(deliveryReportsLookupResponse.getLocationId()),
 				new ObjectId(deliveryReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType());

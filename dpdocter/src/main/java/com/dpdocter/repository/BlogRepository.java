@@ -16,14 +16,11 @@ import com.dpdocter.collections.BlogCollection;
 public interface BlogRepository
 		extends MongoRepository<BlogCollection, ObjectId>, PagingAndSortingRepository<BlogCollection, ObjectId> {
 
-	@Query("{'category': ?0,'discarded': false}")
-	List<BlogCollection> findByCatogery(String category, Sort sort);
+	List<BlogCollection> findByCategoryAndDiscardedIsFalse(String category, Sort sort);
 
-	@Query("{'slugURL': ?0}")
 	BlogCollection findBySlugURL(String slugURL);
 
-	@Query("{'discarded': false,'category':?0}")
-	List<BlogCollection> findAll(Pageable pageable, String category);
+	List<BlogCollection> findByDiscardedIsFalseAndCategory(Pageable pageable, String category);
 
 	@Query(value = "{'category':?0}", count = true)
 	Integer getCount(String category);

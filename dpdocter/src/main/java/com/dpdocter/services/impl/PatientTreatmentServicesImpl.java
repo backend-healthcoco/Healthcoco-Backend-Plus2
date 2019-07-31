@@ -346,7 +346,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				}
 				patientTreatmentCollection.setCreatedBy(createdBy);
 			} else {
-				PatientTreatmentCollection oldPatientTreatmentCollection = patientTreamentRepository.findById(
+				PatientTreatmentCollection oldPatientTreatmentCollection = patientTreamentRepository.findByIdAndDoctorIdAndLocationIdAndHospitalId(
 						new ObjectId(request.getId()), new ObjectId(request.getDoctorId()),
 						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 
@@ -426,7 +426,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			String hospitalId, Treatment treatment) {
 		PatientTreatmentResponse response = null;
 		try {
-			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findById(
+			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findByIdAndDoctorIdAndLocationIdAndHospitalId(
 					new ObjectId(treatmentId), new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId));
 			if (patientTreatmentCollection == null) {
@@ -478,7 +478,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			String hospitalId, Boolean discarded) {
 		PatientTreatmentResponse response = null;
 		try {
-			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findById(
+			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findByIdAndDoctorIdAndLocationIdAndHospitalId(
 					new ObjectId(treatmentId), new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId));
 
@@ -1311,13 +1311,13 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					.findById(new ObjectId(treatmentId)).orElse(null);
 
 			if (patientTreatmentCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getLocationId(),
 						patientTreatmentCollection.getHospitalId());
 				UserCollection user = userRepository.findById(patientTreatmentCollection.getPatientId()).orElse(null);
 
 				if (showPH || showPLH || showFH || showDA) {
-					historyCollection = historyRepository.findHistory(patientTreatmentCollection.getLocationId(),
+					historyCollection = historyRepository.findByLocationIdAndHospitalIdAndPatientId(patientTreatmentCollection.getLocationId(),
 							patientTreatmentCollection.getHospitalId(), patientTreatmentCollection.getPatientId());
 				}
 				JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user,
@@ -1357,7 +1357,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							&& patientTreatmentCollection.getLocationId().toString().equals(locationId)) {
 
 						user = userRepository.findById(patientTreatmentCollection.getPatientId()).orElse(null);
-						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getLocationId(),
 								patientTreatmentCollection.getHospitalId());
 						user.setFirstName(patient.getLocalPatientName());
@@ -1538,7 +1538,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						+ sdf.format(patientTreatmentCollection.getFromDate());
 				parameters.put("followUpAppointment", "Next Review on " + dateTime);
 			}
-			PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+			PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 					patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
 					patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType());
 
@@ -1684,7 +1684,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					logger.error("Invalid treatmentService Id");
 					throw new BusinessException(ServiceError.Unknown, "Invalid treatmentService Id");
 				}
-				treatmentServicesCollection = treatmentServicesRepository.findbyTreatmentCodeAndDoctorId(
+				treatmentServicesCollection = treatmentServicesRepository.findByTreatmentCodeAndDoctorId(
 						originalTreatmentServicesCollection.getTreatmentCode(),
 						originalTreatmentServicesCollection.getDoctorId());
 				if (treatmentServicesCollection == null) {
@@ -1739,7 +1739,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				throw new BusinessException(ServiceError.Unknown, "Invalid Service Id");
 			}
 			TreatmentServicesCollection servicesCollection = treatmentServicesRepository
-					.findbyTreatmentCodeAndDoctorId(originalService.getTreatmentCode(), doctorObjectId);
+					.findByTreatmentCodeAndDoctorId(originalService.getTreatmentCode(), doctorObjectId);
 			if (servicesCollection == null) {
 				servicesCollection = originalService;
 
@@ -1794,7 +1794,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			if (patientTreatmentCollection != null) {
 
 				user = userRepository.findById(patientTreatmentCollection.getPatientId()).orElse(null);
-				patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+				patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getLocationId(),
 						patientTreatmentCollection.getHospitalId());
 				user.setFirstName(patient.getLocalPatientName());

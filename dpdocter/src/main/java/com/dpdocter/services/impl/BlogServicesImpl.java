@@ -112,9 +112,9 @@ public class BlogServicesImpl implements BlogService {
 				if (!DPDoctorUtils.anyStringEmpty(userId)) {
 
 					BlogLikesCollection blogLikesCollection = blogLikesRepository
-							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+							.findByBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
 					FavouriteBlogsCollection favouriteBlogsCollection = fevouriteBlogsRepository
-							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+							.findByBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
 					if (favouriteBlogsCollection != null) {
 						blog.setIsFavourite(!favouriteBlogsCollection.getDiscarded());
 					}
@@ -188,12 +188,12 @@ public class BlogServicesImpl implements BlogService {
 					blog.setTitleImage(imagePath + blog.getTitleImage());
 				if (!DPDoctorUtils.anyStringEmpty(userId)) {
 					FavouriteBlogsCollection favouriteBlogsCollection = fevouriteBlogsRepository
-							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+							.findByBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
 					if (favouriteBlogsCollection != null) {
 						blog.setIsFavourite(!favouriteBlogsCollection.getDiscarded());
 					}
 					BlogLikesCollection blogLikesCollection = blogLikesRepository
-							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+							.findByBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
 
 					if (blogLikesCollection != null)
 						blog.setIsliked(!blogLikesCollection.getDiscarded());
@@ -240,12 +240,12 @@ public class BlogServicesImpl implements BlogService {
 				response.setArticle(this.getBlogArticle(response.getArticleId()));
 				if (!DPDoctorUtils.anyStringEmpty(userId)) {
 					FavouriteBlogsCollection favouriteBlogsCollection = fevouriteBlogsRepository
-							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+							.findByBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
 					if (favouriteBlogsCollection != null) {
 						response.setIsFavourite(!favouriteBlogsCollection.getDiscarded());
 					}
 					BlogLikesCollection blogLikesCollection = blogLikesRepository
-							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+							.findByBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
 
 					if (blogLikesCollection != null) {
 						response.setIsliked(!blogLikesCollection.getDiscarded());
@@ -275,7 +275,7 @@ public class BlogServicesImpl implements BlogService {
 
 			BlogCollection blogCollection = blogRepository.findById(new ObjectId(blogId)).orElse(null);
 			if (userCollection != null && blogCollection != null) {
-				blogLikesCollection = blogLikesRepository.findbyBlogIdAndUserId(new ObjectId(blogId),
+				blogLikesCollection = blogLikesRepository.findByBlogIdAndUserId(new ObjectId(blogId),
 						new ObjectId(userId));
 				if (blogLikesCollection != null) {
 					if (!blogLikesCollection.getDiscarded()) {
@@ -301,7 +301,7 @@ public class BlogServicesImpl implements BlogService {
 
 				response = new Blog();
 				FavouriteBlogsCollection favouriteBlogsCollection = fevouriteBlogsRepository
-						.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+						.findByBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
 				if (favouriteBlogsCollection != null) {
 					response.setIsFavourite(!favouriteBlogsCollection.getDiscarded());
 				}
@@ -331,7 +331,7 @@ public class BlogServicesImpl implements BlogService {
 			UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
 			BlogCollection blogCollection = blogRepository.findById(new ObjectId(blogId)).orElse(null);
 			if (userCollection != null && blogCollection != null) {
-				favouriteBlogsCollection = fevouriteBlogsRepository.findbyBlogIdAndUserId(new ObjectId(blogId),
+				favouriteBlogsCollection = fevouriteBlogsRepository.findByBlogIdAndUserId(new ObjectId(blogId),
 						new ObjectId(userId));
 				if (favouriteBlogsCollection != null) {
 					if (!favouriteBlogsCollection.getDiscarded()) {
@@ -406,7 +406,7 @@ public class BlogServicesImpl implements BlogService {
 					blog.setTitleImage(imagePath + blog.getTitleImage());
 				if (!DPDoctorUtils.anyStringEmpty(userId)) {
 					BlogLikesCollection blogLikesCollection = blogLikesRepository
-							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+							.findByBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
 					if (blogLikesCollection != null)
 						blog.setIsliked(!blogLikesCollection.getDiscarded());
 				}
@@ -511,12 +511,12 @@ public class BlogServicesImpl implements BlogService {
 							/*if (!DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
 								blog.setTitleImage(imagePath + blog.getTitleImage());*/
 							if (!DPDoctorUtils.anyStringEmpty(request.getUserId())) {
-								BlogLikesCollection blogLikesCollection = blogLikesRepository.findbyBlogIdAndUserId(new ObjectId(blog.getId()), new ObjectId(request.getUserId()));
+								BlogLikesCollection blogLikesCollection = blogLikesRepository.findByBlogIdAndUserId(new ObjectId(blog.getId()), new ObjectId(request.getUserId()));
 								if (blogLikesCollection != null) {
 									blog.setIsliked(!blogLikesCollection.getDiscarded());
 								}
 								
-								FavouriteBlogsCollection favouriteBlogsCollection = fevouriteBlogsRepository.findbyBlogIdAndUserId(new ObjectId(blog.getId()), new ObjectId(request.getUserId()));
+								FavouriteBlogsCollection favouriteBlogsCollection = fevouriteBlogsRepository.findByBlogIdAndUserId(new ObjectId(blog.getId()), new ObjectId(request.getUserId()));
 								if (favouriteBlogsCollection != null) {
 									blog.setIsFavourite(!favouriteBlogsCollection.getDiscarded());
 								}	

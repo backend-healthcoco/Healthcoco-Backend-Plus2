@@ -906,7 +906,7 @@ public class AdminServicesImpl implements AdminServices {
 			while ((line = br.readLine()) != null) {
 				String[] obj = line.split(cvsSplitBy);
 				
-				CityCollection cityCollection = cityRepository.findByName(obj[3]);
+				CityCollection cityCollection = cityRepository.findByCity(obj[3]);
 				
 				if(cityCollection != null) {
 					LandmarkLocalityCollection landmarkLocalityCollection = new LandmarkLocalityCollection();
@@ -1039,7 +1039,7 @@ public class AdminServicesImpl implements AdminServices {
 			List<DoctorCollection> doctorCollections = doctorRepository.findAll();
 			for(DoctorCollection doctorCollection : doctorCollections) {
 				if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-					List<ServicesCollection> servicesCollections = servicesRepository.findbySpeciality(doctorCollection.getSpecialities());
+					List<ServicesCollection> servicesCollections = servicesRepository.findBySpecialityIdsIn(doctorCollection.getSpecialities());
 					List<ObjectId> services = (List<ObjectId>) CollectionUtils.collect(servicesCollections, new BeanToPropertyValueTransformer("id"));
 					
 					Set<ObjectId> servicesIds = new HashSet<>(services);

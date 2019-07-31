@@ -135,7 +135,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 				response.setDoctorName(userCollection.getTitle() + " " + userCollection.getFirstName());
 
 				nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository
-						.getByPatientDoctorLocationHospitalandStatus(nutritionReferenceCollection.getPatientId(),
+						.findByPatientIdAndDoctorIdAndLocationIdAndHospitalIdAndGoalStatus(nutritionReferenceCollection.getPatientId(),
 								nutritionReferenceCollection.getDoctorId(),
 								nutritionReferenceCollection.getLocationId(),
 								nutritionReferenceCollection.getHospitalId(),
@@ -166,7 +166,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 					response.setLocationName(locationCollection.getLocationName());
 				}
 
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						new ObjectId(response.getPatientId()), new ObjectId(response.getLocationId()),
 						new ObjectId(response.getHospitalId()));
 				if (patientCollection != null) {
@@ -395,7 +395,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 					if (!DPDoctorUtils.anyStringEmpty(goalStatus)) {
 						nutritionReferenceCollection.setGoalStatus(GoalStatus.valueOf(goalStatus));
 						NutritionGoalStatusStampingCollection nutritionGoalStatusStampingCollection = nutritionGoalStatusStampingRepository
-								.getByPatientDoctorLocationHospitalandStatus(
+								.findByPatientIdAndDoctorIdAndLocationIdAndHospitalIdAndGoalStatus(
 										nutritionReferenceCollection.getPatientId(),
 										nutritionReferenceCollection.getDoctorId(),
 										nutritionReferenceCollection.getLocationId(),
@@ -465,7 +465,7 @@ public class NutritionReferenceServiceImpl implements NutritionReferenceService 
 					if (userCollection != null) {
 						response.setDoctorName(userCollection.getTitle() + " " + userCollection.getFirstName());
 					}
-					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+					PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 							new ObjectId(response.getPatientId()), new ObjectId(response.getLocationId()),
 							new ObjectId(response.getHospitalId()));
 					if (patientCollection != null) {

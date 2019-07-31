@@ -4,17 +4,16 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.dpdocter.collections.ServicesCollection;
 
+@Repository
 public interface ServicesRepository extends MongoRepository<ServicesCollection, ObjectId> {
 
-	@Query("{'service' : {$in : ?0}}")
-	List<ServicesCollection> findbyService(List<String> services);
+	List<ServicesCollection> findByServiceIn(List<String> services);
 
-	@Query("{'specialityIds' : {$in : ?0}}")
-	List<ServicesCollection> findbySpeciality(List<ObjectId> oldSpecialities);
+	List<ServicesCollection> findBySpecialityIdsIn(List<ObjectId> specialityIds);
 
   
 }

@@ -430,7 +430,7 @@ public class CertificateServicesImpl implements CertificatesServices {
 				PatientCollection patient = consentFormCollection.getPatientCollection();
 //				UserCollection user = consentFormCollection.getPatientUser();
 
-				PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 						new ObjectId(consentFormCollection.getDoctorId()), new ObjectId(consentFormCollection.getLocationId()),
 								new ObjectId(consentFormCollection.getHospitalId()), ComponentType.ALL.getType());
 

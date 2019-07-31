@@ -9,10 +9,10 @@ import com.dpdocter.collections.OPDReportsCollection;
 public interface OPDReportsRepository extends MongoRepository<OPDReportsCollection, ObjectId> {
 
 	@Query("{'prescriptionId': ?0}")
-	public OPDReportsCollection getOPDReportByPrescriptionId(ObjectId prescriptionId);
+	public OPDReportsCollection findByPrescriptionId(ObjectId prescriptionId);
 	
 	@Query("{'visitId': ?0}")
-	public OPDReportsCollection getOPDReportByVisitId(ObjectId visitId);
+	public OPDReportsCollection findByVisitId(ObjectId visitId);
 
 	@Query(value = "{ 'locationId': ?0, 'doctorId': ?1}", count = true)
 	Integer getReportsCount(ObjectId locationId, ObjectId doctorId);

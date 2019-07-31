@@ -9,8 +9,7 @@ import com.dpdocter.collections.UserResourceFavouriteCollection;
 
 public interface UserResourceFavouriteRepository extends MongoRepository<UserResourceFavouriteCollection, ObjectId>, PagingAndSortingRepository<UserResourceFavouriteCollection, ObjectId> {
 
-	 @Query("{'userId': ?0, 'resourceId': ?1, 'resourceType': ?2, 'locationId': ?3}")
-	UserResourceFavouriteCollection find(ObjectId userId, ObjectId resourceId, String resourceType, ObjectId locationId);
+	UserResourceFavouriteCollection findByUserIdAndResourceIdAndResourceTypeAndLocationId(ObjectId userId, ObjectId resourceId, String resourceType, ObjectId locationId);
 
 	 @Query(value = "{'resourceId' : ?0, 'resourceType': ?1, 'locationId': ?2, 'userId' : ?3, 'discarded' : ?4}", count = true)
 	Integer findCount(ObjectId resourceId, String resourceType, ObjectId locationId, ObjectId userId, boolean discarded);

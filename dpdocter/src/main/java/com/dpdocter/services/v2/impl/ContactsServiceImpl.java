@@ -341,7 +341,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Transactional
 	public void blockPatient(String patientId, String docterId) {
 		try {
-			PatientCollection patientCollection = patientRepository.findByUserIdDoctorId(new ObjectId(patientId),
+			PatientCollection patientCollection = patientRepository.findByUserIdAndDoctorId(new ObjectId(patientId),
 					new ObjectId(docterId));
 			if (patientCollection != null) {
 				patientCollection.setDiscarded(true);
@@ -436,7 +436,7 @@ public class ContactsServiceImpl implements ContactsService {
 				if (patientGroupCollection != null) {
 					for (PatientGroupCollection patientGroup : patientGroupCollection) {
 						PatientCollection patientCollection = patientRepository
-								.findByUserIdDoctorIdLocationIdAndHospitalId(patientGroup.getPatientId(),
+								.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(patientGroup.getPatientId(),
 										groupCollection.getDoctorId(), groupCollection.getLocationId(),
 										groupCollection.getHospitalId());
 						if (patientCollection != null) {
@@ -666,12 +666,12 @@ public class ContactsServiceImpl implements ContactsService {
 				locationObjectId = new ObjectId(request.getLocationId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
-			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(patientObjecId,
+			PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(patientObjecId,
 					locationObjectId, hospitalObjectId);
 			;
 			List<String> groupIds = new ArrayList<String>();
 			List<PatientGroupCollection> patientGroupCollections = patientGroupRepository
-					.findByPatientId(patientObjecId);
+					.findByPatientIdAndDiscardedIsFalse(patientObjecId);
 			if (patientGroupCollections != null && !patientGroupCollections.isEmpty()) {
 				for (PatientGroupCollection patientGroupCollection : patientGroupCollections) {
 					if (request.getGroupIds() != null && !request.getGroupIds().isEmpty()) {

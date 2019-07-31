@@ -81,7 +81,7 @@ public class CounterServiceImpl implements CounterService {
 
 			fromTime = DPDoctorUtils.getStartTime(request.getDate());
 			toTime = DPDoctorUtils.getEndTime(request.getDate());
-			counterCollection = waterCounterRepository.findByuserId(new ObjectId(request.getUserId()), fromTime,
+			counterCollection = waterCounterRepository.findByUserIdAndDateGreaterThanAndDiscardedIsFalse(new ObjectId(request.getUserId()), fromTime,
 					toTime);
 			if (counterCollection != null) {
 				request.setId(counterCollection.getId().toString());
@@ -208,7 +208,7 @@ public class CounterServiceImpl implements CounterService {
 		try {
 			WaterCounterSettingCollection counterSettingCollection = null;
 
-			counterSettingCollection = waterCounterSettingRepository.findByuserId(new ObjectId(request.getUserId()));
+			counterSettingCollection = waterCounterSettingRepository.findByUserId(new ObjectId(request.getUserId()));
 			if (counterSettingCollection != null) {
 				request.setId(counterSettingCollection.getId().toString());
 				request.setCreatedTime(counterSettingCollection.getCreatedTime());
@@ -239,7 +239,7 @@ public class CounterServiceImpl implements CounterService {
 		WaterCounterSetting response = null;
 		try {
 			WaterCounterSettingCollection counterSettingCollection = waterCounterSettingRepository
-					.findByuserId(new ObjectId(userId));
+					.findByUserId(new ObjectId(userId));
 			if (counterSettingCollection != null) {
 				response = new WaterCounterSetting();
 				BeanUtil.map(counterSettingCollection, response);
@@ -260,7 +260,7 @@ public class CounterServiceImpl implements CounterService {
 		try {
 			WeightCounterSettingCollection counterSettingCollection = null;
 
-			counterSettingCollection = weightCounterSettingRepository.findByuserId(new ObjectId(request.getUserId()));
+			counterSettingCollection = weightCounterSettingRepository.findByUserId(new ObjectId(request.getUserId()));
 			if (counterSettingCollection != null) {
 				request.setCreatedTime(counterSettingCollection.getCreatedTime());
 
@@ -293,7 +293,7 @@ public class CounterServiceImpl implements CounterService {
 		WeightCounterSetting response = null;
 		try {
 			WeightCounterSettingCollection trackerSettingCollection = weightCounterSettingRepository
-					.findByuserId(new ObjectId(userId));
+					.findByUserId(new ObjectId(userId));
 
 			if (trackerSettingCollection != null) {
 				response = new WeightCounterSetting();
@@ -318,7 +318,7 @@ public class CounterServiceImpl implements CounterService {
 
 			fromTime = DPDoctorUtils.getStartTime(request.getDate());
 			toTime = DPDoctorUtils.getEndTime(request.getDate());
-			counterCollection = weightCounterRepository.findByuserId(new ObjectId(request.getUserId()), fromTime,
+			counterCollection = weightCounterRepository.findByUserIdAndDateGreaterThanAndDiscardedIsFalse(new ObjectId(request.getUserId()), fromTime,
 					toTime);
 			if (counterCollection != null) {
 				request.setId(counterCollection.getId().toString());
@@ -444,7 +444,7 @@ public class CounterServiceImpl implements CounterService {
 
 			fromTime = DPDoctorUtils.getStartTime(request.getDate());
 			toTime = DPDoctorUtils.getEndTime(request.getDate());
-			counterCollection = mealCounterRepository.findByuserId(new ObjectId(request.getUserId()), fromTime, toTime,
+			counterCollection = mealCounterRepository.findByUserIdDateBetweenAndMealTimeAndDiscardedIsFalse(new ObjectId(request.getUserId()), fromTime, toTime,
 					request.getMealTime().toString());
 			if (counterCollection != null) {
 				request.setId(counterCollection.getId().toString());
@@ -576,7 +576,7 @@ public class CounterServiceImpl implements CounterService {
 
 			fromTime = DPDoctorUtils.getStartTime(request.getDate());
 			toTime = DPDoctorUtils.getEndTime(request.getDate());
-			counterCollection = exerciseCounterRepository.findByuserId(new ObjectId(request.getUserId()), fromTime,
+			counterCollection = exerciseCounterRepository.findByUserIdAndDateBetweenAndDiscardedIsFalse(new ObjectId(request.getUserId()), fromTime,
 					toTime);
 			if (counterCollection != null) {
 				request.setId(counterCollection.getId().toString());
@@ -705,7 +705,7 @@ public class CounterServiceImpl implements CounterService {
 
 			fromTime = DPDoctorUtils.getStartTime(request.getDate());
 			toTime = DPDoctorUtils.getEndTime(request.getDate());
-			counterCollection = caloriesCounterRepository.findByuserId(new ObjectId(request.getUserId()), fromTime,
+			counterCollection = caloriesCounterRepository.findByUserIdAndDateBetweenAndDiscardedIsFalse(new ObjectId(request.getUserId()), fromTime,
 					toTime);
 			if (counterCollection != null) {
 				request.setId(counterCollection.getId().toString());

@@ -250,7 +250,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 		try {
 			SearchRequestToPharmacyCollection requestToPharmacyCollection = searchRequestToPharmacyRepository
-					.findByRequestIdandPharmacyId(request.getUniqueRequestId(), new ObjectId(request.getLocaleId()),
+					.findByUniqueRequestIdAndLocaleIdAndUserId(request.getUniqueRequestId(), new ObjectId(request.getLocaleId()),
 							new ObjectId(request.getUserId()));
 			if (!requestToPharmacyCollection.getIsAlreadyRequested()) {
 				requestToPharmacyCollection.setIsAlreadyRequested(true);

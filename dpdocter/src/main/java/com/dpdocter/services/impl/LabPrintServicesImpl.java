@@ -75,7 +75,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 				labPrintSettingCollection = labPrintSettingRepository.findById(new ObjectId(request.getId())).orElse(null);
 			}
 			if (labPrintSettingCollection == null) {
-				labPrintSettingCollection = labPrintSettingRepository.findBylocationIdAndhospitalId(locationObjectId,
+				labPrintSettingCollection = labPrintSettingRepository.findByLocationIdAndHospitalId(locationObjectId,
 						hospitalObjectId);
 			}
 
@@ -141,7 +141,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 		LabPrintSetting response = null;
 		try {
 			LabPrintSettingCollection labPrintSettingCollection = labPrintSettingRepository
-					.findBylocationIdAndhospitalId(new ObjectId(locationId), new ObjectId(hospitalId));
+					.findByLocationIdAndHospitalId(new ObjectId(locationId), new ObjectId(hospitalId));
 			if (labPrintSettingCollection != null) {
 				response = new LabPrintSetting();
 				BeanUtil.map(labPrintSettingCollection, response);
@@ -191,7 +191,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 				hospitalObjectId = new ObjectId(request.getHospitalId());
 			}
 
-			labPrintSettingCollection = labPrintSettingRepository.findBylocationIdAndhospitalId(locationObjectId,
+			labPrintSettingCollection = labPrintSettingRepository.findByLocationIdAndHospitalId(locationObjectId,
 					hospitalObjectId);
 			if (labPrintSettingCollection == null) {
 				labPrintSettingCollection = new LabPrintSettingCollection();

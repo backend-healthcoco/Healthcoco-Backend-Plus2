@@ -147,7 +147,7 @@ public class WebAppointmentServiceImpl implements WebAppointmentService {
 
 			Date dateObj = new Date(Long.parseLong(date));
 
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(doctorObjectId,
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(doctorObjectId,
 					locationObjectId);
 			if (doctorClinicProfileCollection != null) {
 

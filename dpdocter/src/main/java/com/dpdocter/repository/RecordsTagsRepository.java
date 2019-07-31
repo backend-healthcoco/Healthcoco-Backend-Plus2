@@ -13,13 +13,9 @@ import com.dpdocter.collections.RecordsTagsCollection;
 
 @Repository
 public interface RecordsTagsRepository extends MongoRepository<RecordsTagsCollection, ObjectId> {
-    @Query("{'tagsId': ?0}")
-    List<RecordsTagsCollection> findByTagsId(ObjectId tagsId, Pageable pageRequest);
+    
+	List<RecordsTagsCollection> findByTagsId(ObjectId tagsId, Pageable pageRequest);
 
-    @Query("{'doctorId': ?0}")
-    List<RecordsTagsCollection> findAll(ObjectId doctorId, Sort sort);
-
-    @Query("{'tagsId': ?0}")
     List<RecordsTagsCollection> findByTagsId(ObjectId tagId, Sort sort);
 
 }

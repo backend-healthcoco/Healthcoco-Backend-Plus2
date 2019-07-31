@@ -146,7 +146,7 @@ public class LocaleServiceImpl implements LocaleService {
 		if (localeCollection != null && !DPDoctorUtils.anyStringEmpty(userId)) {
 			ObjectId patientId = new ObjectId(userId);
 			RecommendationsCollection recommendationsCollection = recommendationsRepository
-					.findByDoctorIdLocationIdAndPatientId(null, localeCollection.getId(), patientId);
+					.findByDoctorIdAndLocationIdAndPatientId(null, localeCollection.getId(), patientId);
 			if (recommendationsCollection != null) {
 				response.setIsLocaleRecommended(!recommendationsCollection.getDiscarded());
 			}
@@ -163,7 +163,7 @@ public class LocaleServiceImpl implements LocaleService {
 	@Transactional
 	public Locale getLocaleDetailsByContactDetails(String contactNumber, String userId) {
 		Locale response = null;
-		LocaleCollection localeCollection = localeRepository.findByMobileNumber(contactNumber);
+		LocaleCollection localeCollection = localeRepository.findByContactNumber(contactNumber);
 		if (localeCollection == null) {
 			throw new BusinessException(ServiceError.NoRecord, "Record for id not found");
 		}
@@ -198,7 +198,7 @@ public class LocaleServiceImpl implements LocaleService {
 		BeanUtil.map(localeCollection, response);
 		if (localeCollection != null && !DPDoctorUtils.anyStringEmpty(userId)) {
 			RecommendationsCollection recommendationsCollection = recommendationsRepository
-					.findByDoctorIdLocationIdAndPatientId(null, localeCollection.getId(), new ObjectId(userId));
+					.findByDoctorIdAndLocationIdAndPatientId(null, localeCollection.getId(), new ObjectId(userId));
 			if (recommendationsCollection != null) {
 				response.setIsLocaleRecommended(!recommendationsCollection.getDiscarded());
 			}
@@ -221,7 +221,7 @@ public class LocaleServiceImpl implements LocaleService {
 			UserCollection userCollection = userRepository.findById(patientObjectId).orElse(null);
 
 			if (userCollection != null && localeCollection != null) {
-				recommendationsCollection = recommendationsRepository.findByDoctorIdLocationIdAndPatientId(null,
+				recommendationsCollection = recommendationsRepository.findByDoctorIdAndLocationIdAndPatientId(null,
 						localeObjectId, patientObjectId);
 
 				if (recommendationsCollection == null) {

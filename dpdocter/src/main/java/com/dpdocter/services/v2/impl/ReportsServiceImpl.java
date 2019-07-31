@@ -189,7 +189,7 @@ public class ReportsServiceImpl implements ReportsService {
 						}
 					}
 					if (collection.getPatientId() != null) {
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
 								new ObjectId(collection.getHospitalId()));
 						if (patientCollection != null) {
@@ -303,7 +303,7 @@ public class ReportsServiceImpl implements ReportsService {
 						otReports.setHospitalName(hospitalCollection.getHospitalName());
 					}
 					if (collection.getPatientId() != null) {
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
 								new ObjectId(collection.getHospitalId()));
 						if (patientCollection != null) {
@@ -442,7 +442,7 @@ public class ReportsServiceImpl implements ReportsService {
 						deliveryReports.setHospitalName(hospitalCollection.getHospitalName());
 					}
 					if (collection.getPatientId() != null) {
-						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
 								new ObjectId(collection.getHospitalId()));
 						if (patientCollection != null) {

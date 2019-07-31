@@ -99,7 +99,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				 * ObjectId(admitCardResponse.getHospitalId()));
 				 */
 
-				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+				patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						new ObjectId(admitCardResponse.getPatientId()), new ObjectId(admitCardResponse.getLocationId()),
 						new ObjectId(admitCardResponse.getHospitalId()));
 				patient = new PatientCard();

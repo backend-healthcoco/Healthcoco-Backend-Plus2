@@ -123,7 +123,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			 * ObjectId(request.getHospitalId()));
 			 */
 
-			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+			PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 					new ObjectId(request.getPatientId()), new ObjectId(request.getLocationId()),
 					new ObjectId(request.getHospitalId()));
 
@@ -180,7 +180,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			if (admitCardCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid Id");
 			}
-			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+			PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 					admitCardCollection.getPatientId(), 
 					admitCardCollection.getLocationId(), admitCardCollection.getHospitalId());
 			
@@ -251,7 +251,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				 * ObjectId(admitCardResponse.getHospitalId()));
 				 */
 
-				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+				patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						new ObjectId(admitCardResponse.getPatientId()), new ObjectId(admitCardResponse.getLocationId()),
 						new ObjectId(admitCardResponse.getHospitalId()));
 				patient = new Patient();
@@ -288,7 +288,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 						response = new AdmitCardResponse();
 						BeanUtil.map(admitCardCollection, response);
 						PatientCollection patientCollection = patientRepository
-								.findByUserIdDoctorIdLocationIdAndHospitalId(admitCardCollection.getPatientId(),
+								.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(admitCardCollection.getPatientId(),
 										admitCardCollection.getDoctorId(), admitCardCollection.getLocationId(),
 										admitCardCollection.getHospitalId());
 						Patient patient = new Patient();
@@ -342,7 +342,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		try {
 			AdmitCardCollection admitCardCollection = admitCardRepository.findById(new ObjectId(admitCardId)).orElse(null);
 			if (admitCardCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						admitCardCollection.getPatientId(), admitCardCollection.getLocationId(),
 						admitCardCollection.getHospitalId());
 
@@ -373,7 +373,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		Boolean show = false;
 
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(admitCardCollection.getDoctorId(),
+		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(admitCardCollection.getDoctorId(),
 				admitCardCollection.getLocationId(), admitCardCollection.getHospitalId(), ComponentType.ALL.getType());
 
 		if (printSettings == null) {
@@ -540,7 +540,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 							&& admitCardCollection.getLocationId().equals(locationId)) {
 
 						user = userRepository.findById(admitCardCollection.getPatientId()).orElse(null);
-						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								admitCardCollection.getPatientId(), admitCardCollection.getLocationId(),
 								admitCardCollection.getHospitalId());
 						user.setFirstName(patient.getLocalPatientName());
@@ -633,7 +633,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			admitCardCollection = admitCardRepository.findById(new ObjectId(admitcardId)).orElse(null);
 			if (admitCardCollection != null) {
 				user = userRepository.findById(admitCardCollection.getPatientId()).orElse(null);
-				patient = patientRepository.findByUserIdLocationIdAndHospitalId(admitCardCollection.getPatientId(),
+				patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(admitCardCollection.getPatientId(),
 						admitCardCollection.getLocationId(), admitCardCollection.getHospitalId());
 				user.setFirstName(patient.getLocalPatientName());
 				emailTrackCollection.setDoctorId(admitCardCollection.getDoctorId());

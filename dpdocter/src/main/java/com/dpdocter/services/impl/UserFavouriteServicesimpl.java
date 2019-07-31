@@ -59,7 +59,7 @@ public class UserFavouriteServicesimpl implements UserFavouriteService {
 			ObjectId userObjectId = new ObjectId(userId), 
 					 resourceObjectId = new ObjectId(resourceId),
 					 locationObjectId = !DPDoctorUtils.anyStringEmpty(locationId) ? new ObjectId(locationId) : null;
-			UserResourceFavouriteCollection resourceFavouriteCollection = userResourceFavouriteRepository.find(userObjectId, resourceObjectId, resourceType.toUpperCase(), locationObjectId);
+			UserResourceFavouriteCollection resourceFavouriteCollection = userResourceFavouriteRepository.findByUserIdAndResourceIdAndResourceTypeAndLocationId(userObjectId, resourceObjectId, resourceType.toUpperCase(), locationObjectId);
 			if(discarded) {
 				if(resourceFavouriteCollection == null)throw new BusinessException(ServiceError.Unknown,resourceType+" does not exist in your favourites list.");
 				else {

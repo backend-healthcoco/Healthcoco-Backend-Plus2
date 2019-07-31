@@ -38,7 +38,7 @@ public class VersionControlServiceImpl implements VersionControlService{
 	public Integer checkVersion(VersionControl versionControl)
 	{
 		Integer versionControlCode = 0; // default value for success - no change
-		VersionControlCollection versionControlCollection = versionControlRepository.findByApplicationType(versionControl.getAppType().toString() , versionControl.getDeviceType().toString());
+		VersionControlCollection versionControlCollection = versionControlRepository.findByAppTypeAndDeviceType(versionControl.getAppType().toString() , versionControl.getDeviceType().toString());
 		if(versionControl != null || versionControlCollection != null)
 		{
 			if(versionControlCollection.getMajorVersion() > versionControl.getMajorVersion())
@@ -93,7 +93,7 @@ public class VersionControlServiceImpl implements VersionControlService{
 	public VersionControl changeVersion(VersionControl versionControl)
 	{
 		VersionControl response = null;
-		VersionControlCollection versionControlCollection = versionControlRepository.findByApplicationType(versionControl.getAppType().toString() , versionControl.getDeviceType().toString());
+		VersionControlCollection versionControlCollection = versionControlRepository.findByAppTypeAndDeviceType(versionControl.getAppType().toString() , versionControl.getDeviceType().toString());
 		if(versionControl != null )
 		{
 			if(versionControlCollection == null)

@@ -266,7 +266,7 @@ public class SignUpServiceImpl implements SignUpService {
 
 				UserCollection userCollection = userRepository.findById(tokenCollection.getResourceId()).orElse(null);
 				LocaleCollection localeCollection = localeRepository
-						.findByMobileNumber(userCollection.getMobileNumber());
+						.findByContactNumber(userCollection.getMobileNumber());
 				userCollection.setIsVerified(true);
 				userRepository.save(userCollection);
 				localeCollection.setIsVerified(true);
@@ -377,7 +377,7 @@ public class SignUpServiceImpl implements SignUpService {
 	@Transactional
 	public Boolean checkMobileNumExist(String mobileNum) {
 		try {
-			List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNum);
+			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(mobileNum, UserState.USERSTATECOMPLETE.getState());
 			if (userCollections != null) {
 				if (!userCollections.isEmpty()) {
 					return true;
@@ -430,7 +430,7 @@ public class SignUpServiceImpl implements SignUpService {
 				if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 					hospitalObjectId = new ObjectId(request.getHospitalId());
 
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						userCollection.getId(), locationObjectId, hospitalObjectId);
 				if (patientCollection != null) {
 					if (request.getImage() != null) {
@@ -467,7 +467,7 @@ public class SignUpServiceImpl implements SignUpService {
 	public PateientSignUpCheckResponse checkMobileNumberSignedUp(String mobileNumber) {
 		PateientSignUpCheckResponse response = new PateientSignUpCheckResponse();
 		try {
-			List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(mobileNumber, UserState.USERSTATECOMPLETE.getState());
 			if (userCollections != null && !userCollections.isEmpty()) {
 				for (UserCollection userCollection : userCollections) {
 					if (!userCollection.getUserName().equals(userCollection.getEmailAddress())) {
@@ -494,7 +494,7 @@ public class SignUpServiceImpl implements SignUpService {
 	public boolean checkMobileNumberExistForPatient(String mobileNumber) {
 		boolean response = false;
 		try {
-			List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(mobileNumber, UserState.USERSTATECOMPLETE.getState());
 			if (userCollections != null && !userCollections.isEmpty()) {
 				for (UserCollection userCollection : userCollections) {
 					if (!userCollection.getUserName().equals(userCollection.getEmailAddress())) {
@@ -528,7 +528,7 @@ public class SignUpServiceImpl implements SignUpService {
 			throw new BusinessException(ServiceError.NoRecord,
 					verifyPatientBasedOn80PercentMatchOfName + " " + mobileNumber);
 		} else {
-			List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(mobileNumber, UserState.USERSTATECOMPLETE.getState());
 			if (userCollections != null && !userCollections.isEmpty()) {
 				for (UserCollection userCollection : userCollections) {
 					if (!userCollection.getUserName().equals(userCollection.getEmailAddress()))
@@ -556,7 +556,7 @@ public class SignUpServiceImpl implements SignUpService {
 			logger.error(unlockPatientBasedOn80PercentMatch + " " + mobileNumber);
 			throw new BusinessException(ServiceError.NoRecord, unlockPatientBasedOn80PercentMatch + " " + mobileNumber);
 		} else {
-			List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(mobileNumber, UserState.USERSTATECOMPLETE.getState());
 			if (userCollections != null && !userCollections.isEmpty()) {
 				for (UserCollection userCollection : userCollections) {
 					if (!userCollection.isSignedUp() && matchName(userCollection.getFirstName(), name)) {
@@ -678,7 +678,7 @@ public class SignUpServiceImpl implements SignUpService {
 
 		List<RegisteredPatientDetails> users = new ArrayList<RegisteredPatientDetails>();
 		try {
-			List<UserCollection> userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
+			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(), UserState.USERSTATECOMPLETE.getState());
 			char[] salt = DPDoctorUtils.generateSalt();
 
 			char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
@@ -699,7 +699,7 @@ public class SignUpServiceImpl implements SignUpService {
 						userRepository.save(userCollection);
 
 						PatientCollection patientCollection = patientRepository
-								.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
+								.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(userCollection.getId(), null, null, null);
 						if (patientCollection == null) {
 							patientCollection = new PatientCollection();
 							BeanUtil.map(userCollection, patientCollection);
@@ -856,7 +856,7 @@ public class SignUpServiceImpl implements SignUpService {
 			}
 
 			List<RoleCollection> roleCollections = roleRepository
-					.findByRoles(Arrays.asList(RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
+					.findByRoleInAndLocationIdAndHospitalId(Arrays.asList(RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
 							RoleEnum.DOCTOR.getRole(), RoleEnum.SUPER_ADMIN.getRole()), null, null);
 			if (roleCollections == null || roleCollections.isEmpty() || roleCollections.size() < 4) {
 				logger.warn("Role Collection in database is either empty or not defind properly");
@@ -899,7 +899,7 @@ public class SignUpServiceImpl implements SignUpService {
 			BeanUtil.map(request, doctorCollection);
 			if (specialities != null && !specialities.isEmpty()) {
 				List<SpecialityCollection> specialityCollections = specialityRepository
-						.findBySuperSpeciality(specialities);
+						.findBySuperSpecialityIn(specialities);
 				Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections,
 						new BeanToPropertyValueTransformer("id"));
 				if (specialityIds != null && !specialityIds.isEmpty())
@@ -913,7 +913,7 @@ public class SignUpServiceImpl implements SignUpService {
 			doctorCollection.setUserId(userCollection.getId());
 			doctorCollection.setCreatedTime(new Date());
 			if (request.getMrCode() != null) {
-				pcUserCollection = pcUserRepository.findByMRCode(request.getMrCode());
+				pcUserCollection = pcUserRepository.findByMrCode(request.getMrCode());
 				if (pcUserCollection != null) {
 					doctorCollection.setDivisionIds(pcUserCollection.getDivisionId());
 				}
@@ -972,7 +972,7 @@ public class SignUpServiceImpl implements SignUpService {
 			doctorClinicProfileCollection.setMrCode(request.getMrCode());
 			doctorClinicProfileCollection.setCreatedTime(new Date());
 			if(request.getMrCode() != null){
-				pcUserCollection = pcUserRepository.findByMRCode(request.getMrCode());
+				pcUserCollection = pcUserRepository.findByMrCode(request.getMrCode());
 				if(pcUserCollection != null){
 					doctorClinicProfileCollection.setDivisionIds(pcUserCollection.getDivisionId());
 					doctorClinicProfileCollection.setMrCode(pcUserCollection.getMrCode());

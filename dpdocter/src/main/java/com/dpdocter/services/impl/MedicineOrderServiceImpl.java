@@ -695,7 +695,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 
 		try {
 
-			userCartCollection = userCartRepository.getByUserId(new ObjectId(id));
+			userCartCollection = userCartRepository.findByUserId(new ObjectId(id));
 
 			if (userCartCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");

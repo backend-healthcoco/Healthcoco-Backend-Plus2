@@ -137,7 +137,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 				imageURLResponse = fileManager.saveImage(file, recordPath, true);
 			}
 			labReportsCollection = labReportsRepository
-					.getByRequestIdandSAmpleId(new ObjectId(request.getLabTestSampleId()));
+					.findByLabTestSampleId(new ObjectId(request.getLabTestSampleId()));
 			if (labReportsCollection == null) {
 				labReportsCollection = new LabReportsCollection();
 			}
@@ -182,7 +182,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 				}
 			}
 			labReportsCollection = labReportsRepository
-					.getByRequestIdandSAmpleId(new ObjectId(request.getLabTestSampleId()));
+					.findByLabTestSampleId(new ObjectId(request.getLabTestSampleId()));
 			if (labReportsCollection == null) {
 				labReportsCollection = new LabReportsCollection();
 			}
@@ -197,7 +197,7 @@ public class LabReportsServiceImpl implements LabReportsService {
 			BeanUtil.map(labReportsCollection, response);
 
 			LabTestPickupCollection labTestPickupCollection = labTestPickupRepository
-					.getByLabTestSampleId(new ObjectId(request.getLabTestSampleId()));
+					.findByLabTestSampleIds(new ObjectId(request.getLabTestSampleId()));
 			if (labTestPickupCollection != null) {
 				labTestPickupCollection.setStatus("REPORTS UPLOADED");
 				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
@@ -473,13 +473,13 @@ public class LabReportsServiceImpl implements LabReportsService {
 		LabReports labReports = null;
 		try {
 			LabReportsCollection labReportsCollection = labReportsRepository
-					.getByRequestIdandSAmpleId(new ObjectId(request.getId()));
+					.findByLabTestSampleId(new ObjectId(request.getId()));
 			if (labReportsCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
 			if (request.getLabReports() != null && request.getLabReports().isEmpty()) {
 				LabTestPickupCollection labTestPickupCollection = labTestPickupRepository
-						.getByLabTestSampleId(labReportsCollection.getLabTestSampleId());
+						.findByLabTestSampleIds(labReportsCollection.getLabTestSampleId());
 				if (labTestPickupCollection != null) {
 					labTestPickupCollection.setStatus("REPORTS PENDING");
 					labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);

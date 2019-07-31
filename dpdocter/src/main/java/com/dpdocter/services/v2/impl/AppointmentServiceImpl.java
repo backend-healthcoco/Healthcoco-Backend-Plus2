@@ -355,7 +355,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 
 					DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
-							.findByDoctorIdLocationId(appointmentCollection.getDoctorId(),
+							.findByDoctorIdAndLocationId(appointmentCollection.getDoctorId(),
 									appointmentCollection.getLocationId());
 
 					appointmentCollection.setCategory(request.getCategory());
@@ -600,7 +600,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			if (userCollection != null && locationCollection != null) {
 
-				clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(doctorId, locationId);
+				clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(doctorId, locationId);
 
 				appointmentCollection = new AppointmentCollection();
 				BeanUtil.map(request, appointmentCollection);
@@ -795,7 +795,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		} else if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
 
 			patientId = new ObjectId(request.getPatientId());
-			PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(patientId, locationId,
+			PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(patientId, locationId,
 					hospitalId);
 			if (patient == null) {
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
@@ -1228,7 +1228,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			String doctorName, String clinicName, String clinicContactNum, String branch) {
 		SMSFormatCollection smsFormatCollection = null;
 		if (formatType != null) {
-			smsFormatCollection = sMSFormatRepository.find(new ObjectId(doctorId), new ObjectId(locationId),
+			smsFormatCollection = sMSFormatRepository.findByDoctorIdAndLocationIdAndHospitalIdAndType(new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId), formatType);
 		}
 
@@ -1893,12 +1893,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				locationObjectId = new ObjectId(locationId);
 
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(doctorObjectId,
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(doctorObjectId,
 					locationObjectId);
 			if (doctorClinicProfileCollection != null) {
 
 				if (!isPatient) {
-					UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdLocationId(doctorObjectId,
+					UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdAndLocationId(doctorObjectId,
 							locationObjectId);
 					if (userRoleCollection != null) {
 						RoleCollection roleCollection = roleRepository.findById(userRoleCollection.getId()).orElse(null);
@@ -2456,7 +2456,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		if (appointmentLookupResponse != null) {
 			appointment = new Appointment();
 			BeanUtil.map(appointmentLookupResponse, appointment);
-			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+			PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 					new ObjectId(appointmentLookupResponse.getPatientId()),
 					new ObjectId(appointmentLookupResponse.getLocationId()),
 					new ObjectId(appointmentLookupResponse.getHospitalId()));

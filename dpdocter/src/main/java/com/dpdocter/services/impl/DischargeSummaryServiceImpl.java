@@ -554,7 +554,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			DischargeSummaryCollection dischargeSummaryCollection = dischargeSummaryRepository
 					.findById(new ObjectId(dischargeSummeryId)).orElse(null);
 			if (dischargeSummaryCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getLocationId(),
 						dischargeSummaryCollection.getHospitalId());
 
@@ -601,7 +601,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			}
 
 			if (flowsheetCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						flowsheetCollection.getPatientId(), flowsheetCollection.getLocationId(),
 						flowsheetCollection.getHospitalId());
 
@@ -638,7 +638,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 		SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 		String _24HourTime = "";
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
 				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
 		String dateTime = "";
@@ -1194,7 +1194,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 							&& dischargeSummaryCollection.getLocationId().toString().equals(locationId)) {
 
 						user = userRepository.findById(dischargeSummaryCollection.getPatientId()).orElse(null);
-						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 								dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getLocationId(),
 								dischargeSummaryCollection.getHospitalId());
 						user.setFirstName(patient.getLocalPatientName());
@@ -2489,7 +2489,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (dischargeSummaryCollection != null) {
 
 				user = userRepository.findById(dischargeSummaryCollection.getPatientId()).orElse(null);
-				patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+				patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getLocationId(),
 						dischargeSummaryCollection.getHospitalId());
 				user.setFirstName(patient.getLocalPatientName());
@@ -2813,7 +2813,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		List<FlowSheetJasperBean> jasperBeans = null;
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(flowsheetCollection.getDoctorId(),
+		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(flowsheetCollection.getDoctorId(),
 				flowsheetCollection.getLocationId(), flowsheetCollection.getHospitalId(), ComponentType.ALL.getType());
 
 		if (printSettings == null) {

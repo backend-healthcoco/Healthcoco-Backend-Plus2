@@ -156,7 +156,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				response.setProcedureConsentForm(procedureConsentForm);
 				response.setDiagrams(procedureSheetCollection.getDiagrams());
 
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(procedureSheetCollection.getPatientId(),
+				PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(procedureSheetCollection.getPatientId(),
 						procedureSheetCollection.getLocationId(), procedureSheetCollection.getHospitalId());
 				if (patientCollection != null) {
 					PatientShortCard patientShortCard = new PatientShortCard();
@@ -205,7 +205,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				response.setProcedureSheetFields(procedureSheetFields);
 				response.setDiagrams(procedureSheetCollection.getDiagrams());
 
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(procedureSheetCollection.getPatientId(),
+				PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(procedureSheetCollection.getPatientId(),
 						procedureSheetCollection.getLocationId(), procedureSheetCollection.getHospitalId());
 				if (patientCollection != null) {
 					PatientShortCard patientShortCard = new PatientShortCard();
@@ -346,7 +346,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 			if (procedureSheetCollection != null) {
 				response = new ProcedureSheetResponse();
 				BeanUtil.map(procedureSheetCollection, response);
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(procedureSheetCollection.getPatientId(),
+				PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(procedureSheetCollection.getPatientId(),
 						procedureSheetCollection.getLocationId(), procedureSheetCollection.getHospitalId());
 				if (patientCollection != null) {
 					PatientShortCard patientShortCard = new PatientShortCard();
@@ -793,7 +793,7 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 		String pdfName = "PROCEDURE-SHEET-" + procedureSheetCollection.getId().toString() + new Date().getTime();
 
-		printSettings = printSettingsRepository.getSettings(procedureSheetCollection.getDoctorId(),
+		printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalId(procedureSheetCollection.getDoctorId(),
 				(!DPDoctorUtils.anyStringEmpty(procedureSheetCollection.getLocationId())
 						? procedureSheetCollection.getLocationId()
 						: null),

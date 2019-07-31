@@ -156,7 +156,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			response = new AssessmentPersonalDetail();
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						new ObjectId(request.getPatientId()), new ObjectId(request.getLocationId()),
 						new ObjectId(request.getHospitalId()));
 				BeanUtil.map(patientCollection, response);
@@ -313,7 +313,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 			if (historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty()) {
 				diseaseListResponses = new ArrayList<DiseaseListResponse>();
-				diseasesCollections = diseasesRepository.findAll(historyCollection.getFamilyhistory());
+				diseasesCollections = diseasesRepository.findAllById(historyCollection.getFamilyhistory());
 				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 					for (DiseasesCollection diseasesCollection : diseasesCollections) {
 						diseaseListResponse = new DiseaseListResponse();
@@ -326,7 +326,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			response.setFamilyhistory(diseaseListResponses);
 			if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
 				diseaseListResponses = new ArrayList<DiseaseListResponse>();
-				diseasesCollections = diseasesRepository.findAll(historyCollection.getMedicalhistory());
+				diseasesCollections = diseasesRepository.findAllById(historyCollection.getMedicalhistory());
 				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 					for (DiseasesCollection diseasesCollection : diseasesCollections) {
 						diseaseListResponse = new DiseaseListResponse();
@@ -340,7 +340,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 			if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
 				diseaseListResponses = new ArrayList<DiseaseListResponse>();
-				diseasesCollections = diseasesRepository.findAll(historyCollection.getMedicalhistory());
+				diseasesCollections = diseasesRepository.findAllById(historyCollection.getMedicalhistory());
 				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 					for (DiseasesCollection diseasesCollection : diseasesCollections) {
 						diseaseListResponse = new DiseaseListResponse();
@@ -528,7 +528,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 		PatientLifeStyle response = null;
 		try {
 			PatientLifeStyleCollection lifeStyleCollection = patientLifeStyleRepository
-					.findByassessmentId(new ObjectId(assessmentId));
+					.findByAssessmentId(new ObjectId(assessmentId));
 			if (lifeStyleCollection != null) {
 				response = new PatientLifeStyle();
 				BeanUtil.map(lifeStyleCollection, response);
@@ -556,7 +556,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 				if (historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty()) {
 					diseaseListResponses = new ArrayList<DiseaseListResponse>();
-					diseasesCollections = diseasesRepository.findAll(historyCollection.getFamilyhistory());
+					diseasesCollections = diseasesRepository.findAllById(historyCollection.getFamilyhistory());
 					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 						for (DiseasesCollection diseasesCollection : diseasesCollections) {
 							diseaseListResponse = new DiseaseListResponse();
@@ -569,7 +569,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				response.setFamilyhistory(diseaseListResponses);
 				if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
 					diseaseListResponses = new ArrayList<DiseaseListResponse>();
-					diseasesCollections = diseasesRepository.findAll(historyCollection.getMedicalhistory());
+					diseasesCollections = diseasesRepository.findAllById(historyCollection.getMedicalhistory());
 					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 						for (DiseasesCollection diseasesCollection : diseasesCollections) {
 							diseaseListResponse = new DiseaseListResponse();
@@ -583,7 +583,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 				if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
 					diseaseListResponses = new ArrayList<DiseaseListResponse>();
-					diseasesCollections = diseasesRepository.findAll(historyCollection.getMedicalhistory());
+					diseasesCollections = diseasesRepository.findAllById(historyCollection.getMedicalhistory());
 					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 						for (DiseasesCollection diseasesCollection : diseasesCollections) {
 							diseaseListResponse = new DiseaseListResponse();
@@ -606,7 +606,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 		PatientMeasurementInfo response = null;
 		try {
 			PatientMeasurementCollection measurementCollection = patientMeasurementRepository
-					.findByassessmentId(new ObjectId(assessmentId));
+					.findByAssessmentId(new ObjectId(assessmentId));
 			if (measurementCollection != null) {
 				response = new PatientMeasurementInfo();
 				BeanUtil.map(measurementCollection, response);
@@ -624,7 +624,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 		PatientFoodAndExcercise response = null;
 		try {
 			PatientFoodAndExcerciseCollection foodAndExcerciseCollection = patientFoodAndExerciseRepository
-					.findByassessmentId(new ObjectId(assessmentId));
+					.findByAssessmentId(new ObjectId(assessmentId));
 			if (foodAndExcerciseCollection != null) {
 				response = new PatientFoodAndExcercise();
 				BeanUtil.map(foodAndExcerciseCollection, response);

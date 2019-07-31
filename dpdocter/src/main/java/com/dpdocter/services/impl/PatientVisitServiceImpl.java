@@ -1908,7 +1908,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				+ (patientVisitLookupResponse.getUniqueEmrId() != null ? patientVisitLookupResponse.getUniqueEmrId()
 						: "--");
 
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 				patientVisitLookupResponse.getDoctorId(), patientVisitLookupResponse.getLocationId(),
 				patientVisitLookupResponse.getHospitalId(), ComponentType.ALL.getType());
 
@@ -3467,13 +3467,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					PatientVisitCollection.class, PatientVisitLookupResponse.class).getUniqueMappedResult();
 
 			if (patientVisitLookupResponse != null) {
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						patientVisitLookupResponse.getPatientId(), patientVisitLookupResponse.getLocationId(),
 						patientVisitLookupResponse.getHospitalId());
 				UserCollection user = patientVisitLookupResponse.getPatientUser();
 
 				if (showPH || showPLH || showFH || showDA) {
-					historyCollection = historyRepository.findHistory(patientVisitLookupResponse.getLocationId(),
+					historyCollection = historyRepository.findByLocationIdAndHospitalIdAndPatientId(patientVisitLookupResponse.getLocationId(),
 							patientVisitLookupResponse.getHospitalId(), patientVisitLookupResponse.getPatientId());
 				}
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,

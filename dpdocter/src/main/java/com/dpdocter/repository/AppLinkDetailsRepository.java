@@ -9,6 +9,6 @@ import com.dpdocter.collections.AppLinkDetailsCollection;
 
 @Repository
 public interface AppLinkDetailsRepository extends MongoRepository<AppLinkDetailsCollection, ObjectId> {
-	@Query("{'mobileNumber': ?0}")
+
 	AppLinkDetailsCollection findByMobileNumber(String mobileNumber);
 }

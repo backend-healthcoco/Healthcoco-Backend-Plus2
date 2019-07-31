@@ -4,16 +4,15 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.dpdocter.collections.SMSFormatCollection;
 
+@Repository
 public interface SMSFormatRepository extends MongoRepository<SMSFormatCollection, ObjectId> {
+	
+	    SMSFormatCollection findByDoctorIdAndLocationIdAndHospitalIdAndType(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String type);
 
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'type':?3}")
-    SMSFormatCollection find(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String type);
-
-    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
-    List<SMSFormatCollection> find(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
+	    List<SMSFormatCollection> findByDoctorIdAndLocationIdAndHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
 
 }

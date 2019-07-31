@@ -744,7 +744,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 			BeanUtil.map(questionCollection, response);
 			QuestionLikeCollection likeCollection = null;
 			if (!DPDoctorUtils.anyStringEmpty(response.getQuestionerId())) {
-				likeCollection = questionLikeRepository.findbyQuestionAndUserId(new ObjectId(response.getId()),
+				likeCollection = questionLikeRepository.findByQuestionIdAndUserId(new ObjectId(response.getId()),
 						new ObjectId(response.getQuestionerId()));
 				if (likeCollection != null) {
 					response.setIsLiked(!likeCollection.getDiscarded());
@@ -790,7 +790,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 			BeanUtil.map(questionCollection, response);
 			QuestionLikeCollection likeCollection = null;
 			if (!DPDoctorUtils.anyStringEmpty(userId)) {
-				likeCollection = questionLikeRepository.findbyQuestionAndUserId(questionCollection.getId(),
+				likeCollection = questionLikeRepository.findByQuestionIdAndUserId(questionCollection.getId(),
 						new ObjectId(userId));
 				if (likeCollection != null) {
 					response.setIsLiked(!likeCollection.getDiscarded());
@@ -840,7 +840,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 				if (!DPDoctorUtils.anyStringEmpty(userId)) {
 					for (SessionQuestion sessionQuestion : response) {
 						likeCollection = questionLikeRepository
-								.findbyQuestionAndUserId(new ObjectId(sessionQuestion.getId()), new ObjectId(userId));
+								.findByQuestionIdAndUserId(new ObjectId(sessionQuestion.getId()), new ObjectId(userId));
 						if (likeCollection != null) {
 							sessionQuestion.setIsLiked(!likeCollection.getDiscarded());
 						}
@@ -865,7 +865,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 			QuestionLikeCollection likeCollection = null;
 			QuestionCollection questionCollection = questionRepository.findById(new ObjectId(id)).orElse(null);
 			if (!DPDoctorUtils.anyStringEmpty(userId)) {
-				likeCollection = questionLikeRepository.findbyQuestionAndUserId(new ObjectId(id), new ObjectId(userId));
+				likeCollection = questionLikeRepository.findByQuestionIdAndUserId(new ObjectId(id), new ObjectId(userId));
 			}
 			response = new SessionQuestion();
 			if (questionCollection != null) {
@@ -899,7 +899,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 			if (questionCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Session Question not found");
 			}
-			likeCollection = questionLikeRepository.findbyQuestionAndUserId(new ObjectId(questionId),
+			likeCollection = questionLikeRepository.findByQuestionIdAndUserId(new ObjectId(questionId),
 					new ObjectId(userId));
 			if (likeCollection == null) {
 				likeCollection = new QuestionLikeCollection();

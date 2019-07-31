@@ -13,9 +13,8 @@ import com.dpdocter.collections.DoctorPatientReceiptCollection;
 public interface DoctorPatientReceiptRepository extends MongoRepository<DoctorPatientReceiptCollection, ObjectId>,
 		PagingAndSortingRepository<DoctorPatientReceiptCollection, ObjectId> {
 
-	@Query("{'receiptType': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'patientId': ?4, 'remainingAdvanceAmount': {'$gt': 0.0}, 'discarded': false}")
-	List<DoctorPatientReceiptCollection> findAvailableAdvanceReceipts(String name, ObjectId doctorId,
-			ObjectId locationId, ObjectId hospitalId, ObjectId patientId, Sort sort);
+	List<DoctorPatientReceiptCollection> findByReceiptTypeAndDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndRemainingAdvanceAmountAndDiscarded(String name, ObjectId doctorId,
+			ObjectId locationId, ObjectId hospitalId, ObjectId patientId, Double remainingAdvanceAmount, Boolean discarded, Sort sort);
 
 	@Query(value = "{'patientId' : ?0, 'doctorId' : ?1, 'locationId' : ?2, 'hospitalId' : ?3,'discarded' : false, 'isPatientDiscarded':{'$ne' : true}}", count = true)
 	Integer countByPatientIdDoctorLocationHospital(ObjectId patientId, ObjectId doctorId, ObjectId locationId,
@@ -24,18 +23,13 @@ public interface DoctorPatientReceiptRepository extends MongoRepository<DoctorPa
 	@Query(value = "{'patientId' : ?0,'discarded' : false, 'isPatientDiscarded':{'$ne' : true}}", count = true)
 	Integer countByPatientId(ObjectId patientId);
 
-	@Query("{'advanceReceiptIdWithAmounts.receiptId': ?0}")
-	List<DoctorPatientReceiptCollection> findAllByAdvanceId(ObjectId advanceReceiptId);
+	List<DoctorPatientReceiptCollection> findByAdvanceReceiptIdWithAmountsReceiptId(ObjectId advanceReceiptId);
 
-	@Query("{'invoiceId': ?0, 'discarded' : ?1}")
-	List<DoctorPatientReceiptCollection> findByInvoiceId(ObjectId invoiceId, boolean discarded);
+	List<DoctorPatientReceiptCollection> findByInvoiceIdAndDiscarded(ObjectId invoiceId, boolean discarded);
 
-	@Query("{'uniqueReceiptId' : ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3}")
 	DoctorPatientReceiptCollection find(String uniqueReceiptId, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId);
 	
-	@Query("{'uniqueReceiptId' : ?0, 'locationId': ?1, 'hospitalId': ?2}")
-	DoctorPatientReceiptCollection find(String uniqueReceiptId, ObjectId locationObjectId, ObjectId hospitalObjectId);
+	DoctorPatientReceiptCollection findByUniqueReceiptIdAndLocationIdAndHospitalId(String uniqueReceiptId, ObjectId locationObjectId, ObjectId hospitalObjectId);
 	
-	@Query("{'uniqueInvoiceId' : ?0, 'locationId': ?1, 'hospitalId': ?2}")
-	DoctorPatientReceiptCollection findByUniqueInvoiceId(String uniqueInvoiceId, ObjectId locationObjectId, ObjectId hospitalObjectId);
+	DoctorPatientReceiptCollection findByUniqueInvoiceIdAndLocationIdAndHospitalId(String uniqueInvoiceId, ObjectId locationObjectId, ObjectId hospitalObjectId);
 }
