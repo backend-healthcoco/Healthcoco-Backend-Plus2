@@ -1,15 +1,12 @@
 package com.dpdocter.services.impl;
 
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +34,8 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Value(value = "${web.link}")
 	private String RESET_PASSWORD_WEB_LINK;
 
-	@Autowired
-	private VelocityEngine velocityEngine;
+//	@Autowired
+//	private VelocityEngine velocityEngine;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -78,9 +75,8 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
 		context.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
-		StringWriter stringWriter = new StringWriter();
-		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+		
+		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
 
@@ -103,10 +99,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("googlePlusLink", googlePlusLink);
 		context.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
 
-		StringWriter stringWriter = new StringWriter();
-
-		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
 
@@ -128,9 +121,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
 		
-		StringWriter stringWriter = new StringWriter();
-		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
 
@@ -147,9 +138,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
 	  
-		StringWriter stringWriter = new StringWriter();
-		velocityEngine.mergeTemplate("forgotPasswordTemplate.vm", "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+		String text = mergeTemplate(context, "forgotPasswordTemplate.vm");
 		return text;
 	}
 
@@ -163,12 +152,9 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("type", type);
 		context.put("mobileNumber", mobileNumber);
 		context.put("emailAddress", emailAddress);
-	    StringWriter stringWriter = new StringWriter();
-
-		velocityEngine.mergeTemplate("contactmail.vm", "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
-		return text;
-	}
+	    
+		String text = mergeTemplate(context, "contactmail.vm");
+		return text;	}
 
 	@Override
 	@Transactional
@@ -181,10 +167,8 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("emailAddress", contactUs.getEmailAddress());
 		context.put("deviceType", contactUs.getDeviceType());
 		context.put("specialities", contactUs.getSpecialities());
-	    StringWriter stringWriter = new StringWriter();
-
-		velocityEngine.mergeTemplate("contactmail.vm", "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+	    
+		String text = mergeTemplate(context, "contactmail.vm");
 		return text;
 	}
 
@@ -196,27 +180,20 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("locationName", locationName);
 		context.put("mobileNumber", mobileNumber);
 		context.put("labName", labName);
-	    StringWriter stringWriter = new StringWriter();
 
-		velocityEngine.mergeTemplate("doctorReferenceMail.vm", "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+		String text = mergeTemplate(context, "doctorReferenceMail.vm");
 		return text;
 	}
 
 	@Override
 	@Transactional
 	public String generatePrescriptionListMail(String collectionBody, String requestBody) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("collectionBody", collectionBody);
-		model.put("requestBody", requestBody);
 		
 		VelocityContext context = new VelocityContext();
 		context.put("collectionBody", collectionBody);
 		context.put("requestBody", requestBody);
 		
-	    StringWriter stringWriter = new StringWriter();
-	    velocityEngine.mergeTemplate("prescriptionListMail.vm", "UTF-8", context, stringWriter);
-	    String text = stringWriter.toString();
+	    String text = mergeTemplate(context, "prescriptionListMail.vm");
 		return text;
 	}
 
@@ -234,15 +211,6 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Override
 	@Transactional
 	public String generateIssueTrackEmailBody(String userName, String firstName, String middleName, String lastName) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("fName", firstName);
-		model.put("link", RESET_PASSWORD_WEB_LINK);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
 		
 		VelocityContext context = new VelocityContext();
 		context.put("fName", firstName);
@@ -254,25 +222,13 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
 		
-	    StringWriter stringWriter = new StringWriter();
-
-		velocityEngine.mergeTemplate("addIssueTemplate.vm", "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+		String text = mergeTemplate(context, "addIssueTemplate.vm");
 		return text;
 	}
 
 	@Override
 	@Transactional
 	public String generateResetPasswordSuccessEmailBody(String firstName) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("fName", firstName);
-		model.put("link", RESET_PASSWORD_WEB_LINK);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
 		
 		VelocityContext context = new VelocityContext();
 		context.put("fName", firstName);
@@ -284,10 +240,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
 		
-	    StringWriter stringWriter = new StringWriter();
-
-		velocityEngine.mergeTemplate("resetPasswordSuccess.vm", "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+	    String text = mergeTemplate(context, "resetPasswordSuccess.vm");
 		return text;
 	}
 
@@ -295,15 +248,6 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Transactional
 	public String generateRecordsShareOtpBeforeVerificationEmailBody(String emailAddress, String firstName,
 			String doctorName) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("fName", firstName);
-		model.put("doctorName", doctorName);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
 		
 		VelocityContext context = new VelocityContext();
 		context.put("fName", firstName);
@@ -315,10 +259,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
 		
-	    StringWriter stringWriter = new StringWriter();
-
-		velocityEngine.mergeTemplate("recordShareOtpBeforeVerificationTemplate.vm", "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+		String text = mergeTemplate(context, "recordShareOtpBeforeVerificationTemplate.vm");
 		return text;
 	}
 
@@ -326,16 +267,6 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Transactional
 	public String generateRecordsShareOtpAfterVerificationEmailBody(String emailAddress, String firstName,
 			String doctorName) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("fName", firstName);
-		model.put("doctorName", doctorName);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
-		
 		VelocityContext context = new VelocityContext();
 		context.put("fName", firstName);
 		context.put("doctorName", doctorName);
@@ -346,10 +277,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
 		
-	    StringWriter stringWriter = new StringWriter();
-
-		velocityEngine.mergeTemplate("recordShareOtpAfterVerificationTemplate.vm", "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+		String text = mergeTemplate(context, "recordShareOtpAfterVerificationTemplate.vm");
 		return text;
 	}
 
@@ -357,19 +285,6 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Transactional
 	public String generateAppointmentEmailBody(String doctorName, String patientName, String dateTime,
 			String clinicName, String templatePath, String branch) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("doctorName", doctorName);
-		model.put("patientName", patientName);
-		model.put("dateTime", dateTime);
-		model.put("clinicName", clinicName);
-		model.put("branch", branch);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
-		
 		VelocityContext context = new VelocityContext();
 		context.put("doctorName", doctorName);
 		context.put("patientName", patientName);
@@ -382,10 +297,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
 		
-	    StringWriter stringWriter = new StringWriter();
-
-		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
 
@@ -393,16 +305,6 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Transactional
 	public String generateEmailBody(String userName, String resumeType, String templatePath) throws Exception {
 
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("fName", userName);
-		model.put("resumeType", resumeType);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
-		
 		VelocityContext context = new VelocityContext();
 		context.put("fName", userName);
 		context.put("resumeType", resumeType);
@@ -413,29 +315,13 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
 		
-	    StringWriter stringWriter = new StringWriter();
-
-		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
 
 	@Override
 	public String generateEMREmailBody(String patientName, String doctorName, String clinicName, String clinicAddress,
 			String mailRecordCreatedDate, String medicalRecordType, String templatePath) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("fName", patientName);
-		model.put("doctorName", doctorName);
-		model.put("clinicName", clinicName);
-		model.put("clinicAddress", clinicAddress);
-		model.put("mailRecordCreatedDate", mailRecordCreatedDate);
-		model.put("medicalRecordType", medicalRecordType);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
 		
 		VelocityContext context = new VelocityContext();
 		context.put("fName", patientName);
@@ -451,10 +337,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
 		
-	    StringWriter stringWriter = new StringWriter();
-
-		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
 
@@ -471,11 +354,8 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("twitterLink", twitterLink);
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
-		StringWriter stringWriter = new StringWriter();
 
-		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
-		
+		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
 
@@ -495,26 +375,12 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
 		
-	    StringWriter stringWriter = new StringWriter();
-
-		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+		String text = mergeTemplate(context, templatePath);
 		return text;
-
 	}
 
 	@Override
 	public String generateAppLinkEmailBody(String appType, String bitLink, String appDeviceType, String templatePath) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("appDeviceType", appDeviceType);
-		model.put("appType", appType);
-		model.put("bitLink", bitLink);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
 		
 		VelocityContext context = new VelocityContext();
 		context.put("appDeviceType", appDeviceType);
@@ -527,29 +393,13 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
 		
-	    StringWriter stringWriter = new StringWriter();
-
-		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+		String text = mergeTemplate(context, templatePath);
 		return text;
-
 	}
 
 	@Override
 	public String generateRecordEmailBody(String doctorName, String clinicName, String patientName, String recordName,
 			String uniqueRecordId, String templatePath) {
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("doctorName", doctorName);
-		model.put("clinicName", clinicName);
-		model.put("patientName", patientName);
-		model.put("recordName", recordName);
-		model.put("uniqueRecordId", uniqueRecordId);
-		model.put("imageURL", imagePath + "templatesImage");
-		model.put("contactUsEmail", contactUsEmail);
-		model.put("fbLink", fbLink);
-		model.put("twitterLink", twitterLink);
-		model.put("linkedInLink", linkedInLink);
-		model.put("googlePlusLink", googlePlusLink);
 		
 		VelocityContext context = new VelocityContext();
 		context.put("doctorName", doctorName);
@@ -564,64 +414,59 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
 		
-	    StringWriter stringWriter = new StringWriter();
-
-	    velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
+		String text = mergeTemplate(context, templatePath);
 		return text;
-
 	}
 
 	@Override
 	@Transactional
 	public String generateExceptionEmailBody(String exception) {
-		 VelocityEngine ve = new VelocityEngine();
-		 ve.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,"org.apache.velocity.runtime.log.Log4JLogChute" );
-		 ve.setProperty("runtime.log", "/var/log/dpdocter/velocity.log");
-	     ve.init();
-	     
-	     
-	    Template t = ve.getTemplate( "exceptionMail.vm" );
+
 		VelocityContext context = new VelocityContext();
 		context.put("exceptionMsg", exception);
 
+		String text = mergeTemplate(context, "exceptionMail.vm");
+		return text;
+	}
+
+	private String mergeTemplate(VelocityContext context, String templatePath) {
+		VelocityEngine velocityEngine = new VelocityEngine();
+	    velocityEngine.setProperty("input.encoding", "UTF-8");
+	    velocityEngine.setProperty("output.encoding", "UTF-8");
+	    velocityEngine.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,"org.apache.velocity.runtime.log.Log4JLogChute" );
+	    velocityEngine.setProperty("runtime.log", "/var/log/dpdocter/velocity.log");
+	    velocityEngine.setProperty("resource.loader", "class, file");
+	    velocityEngine.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+	    velocityEngine.setProperty("file.resource.loader.class","org.apache.velocity.runtime.resource.loader.FileResourceLoader");
+	    velocityEngine.setProperty("file.resource.loader.path","/opt/tomcat/latest/webapps/dpdocter/WEB-INF/classes");
+	    velocityEngine.setProperty("class.resource.loader.cache", "false");
+	    velocityEngine.setProperty("file.resource.loader.cache", "true");
+	    velocityEngine.init();
+	    
+	    
+	    Template template = velocityEngine.getTemplate(templatePath);
+
 	    StringWriter stringWriter = new StringWriter();
 	
-		t.setEncoding("UTF-8");
-	    t.merge(context, stringWriter);
+	    template.setEncoding("UTF-8");
+	    template.merge(context, stringWriter);
 		String text = stringWriter.toString();
+	    
 		return text;
 	}
 
 	@Override
 	public String generateDentalImagingInvoiceEmailBody(String doctorName, String dentalImagingLab, String patientName,
 			List<MailAttachment> reports, String templatePath) {
-		String text = "";
-		try {
-			
-			Map<String, Object> model = new HashMap<String, Object>();
-			model.put("doctorName", doctorName);
-			model.put("dentalImagingLab", dentalImagingLab);
-			model.put("patientName", patientName);
-			model.put("reports", reports);
-			
+		
 			VelocityContext context = new VelocityContext();
 			context.put("doctorName", doctorName);
 			context.put("dentalImagingLab", dentalImagingLab);
 			context.put("patientName", patientName);
 			context.put("reports", reports);
 			
-		    StringWriter stringWriter = new StringWriter();
-
-			velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
-		    text = stringWriter.toString();
-
+			String text = mergeTemplate(context, templatePath);
 			return text;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return text;
-
 	}
 
 	@Override
@@ -641,11 +486,9 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("pinCode", pinCode);
 		context.put("planName", planName);
 		context.put("subplan", subplan);
-		StringWriter stringWriter = new StringWriter();
-
-		velocityEngine.mergeTemplate(templatePath, "UTF-8", context, stringWriter);
-		String text = stringWriter.toString();
-	    return text;
+		
+		String text = mergeTemplate(context, templatePath);
+		return text;
 	}
 
 }

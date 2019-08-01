@@ -1491,7 +1491,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				if (DPDoctorUtils.anyStringEmpty(visitId)) {
 					PatientVisitCollection patientVisitCollection = patientVisitRepository
-							.findByClinialNotesId(clinicalNotesCollection.getId());
+							.findByClinicalNotesId(clinicalNotesCollection.getId());
 					if (patientVisitCollection != null)
 						clinicalNote.setVisitId(patientVisitCollection.getId().toString());
 				} else {
@@ -1753,7 +1753,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 									clinicalNotesCollection.getDiagrams()));
 
 		PatientVisitCollection patientVisitCollection = patientVisitRepository
-				.findByClinialNotesId(clinicalNotesCollection.getId());
+				.findByClinicalNotesId(clinicalNotesCollection.getId());
 		if (patientVisitCollection != null)
 			clinicalNote.setVisitId(patientVisitCollection.getId().toString());
 
@@ -8382,7 +8382,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository
-					.findAllByIds(objectIds);
+					.findAllById(objectIds);
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				PatientCollection patient = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
 						clinicalNotesCollections.get(0).getPatientId(), clinicalNotesCollections.get(0).getDoctorId(),
@@ -8503,7 +8503,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository
-					.findAllByIds(objectIds);
+					.findAllById(objectIds);
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				PatientCollection patient = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
 						clinicalNotesCollections.get(0).getPatientId(), clinicalNotesCollections.get(0).getDoctorId(),

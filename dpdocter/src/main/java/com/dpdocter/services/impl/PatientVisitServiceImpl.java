@@ -20,6 +20,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -140,7 +141,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class PatientVisitServiceImpl implements PatientVisitService {
 
-	private static Logger logger = Logger.getLogger(PatientVisitServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(PatientVisitServiceImpl.class.getName());
 
 	@Value(value = "${pdf.footer.text}")
 	private String footerText;
@@ -372,7 +373,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			PatientVisitCollection patientTrackCollection = patientVisitRepository.find(doctorObjectId,
+			PatientVisitCollection patientTrackCollection = patientVisitRepository.findByDoctorIdAndLocationIdAndHospitalIdAndPatientId(doctorObjectId,
 					locationObjectId, hospitalObjectId, patientObjectId);
 			UserCollection userCollection = userRepository.findById(doctorObjectId).orElse(null);
 
@@ -3386,7 +3387,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientTrackCollection = patientVisitRepository.findByPrescriptionId(new ObjectId(id));
 				break;
 			case CLINICAL_NOTES:
-				patientTrackCollection = patientVisitRepository.findByClinialNotesId(new ObjectId(id));
+				patientTrackCollection = patientVisitRepository.findByClinicalNotesId(new ObjectId(id));
 				break;
 			case REPORTS:
 				patientTrackCollection = patientVisitRepository.findByRecordId(new ObjectId(id));

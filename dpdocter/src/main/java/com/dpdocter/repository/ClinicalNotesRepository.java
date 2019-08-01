@@ -27,7 +27,7 @@ public interface ClinicalNotesRepository extends MongoRepository<ClinicalNotesCo
 	Integer getClinicalNotesCount(ObjectId doctorId, ObjectId patientId, ObjectId hospitalId, ObjectId locationId,
 			boolean discarded);
 
-	List<ClinicalNotesCollection> findAllByIds(List<ObjectId> ids);
+	List<ClinicalNotesCollection> findAllById(List<ObjectId> ids);
 
 	ClinicalNotesCollection findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndCreatedTime(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId,
 			ObjectId userId, Date createdTime);

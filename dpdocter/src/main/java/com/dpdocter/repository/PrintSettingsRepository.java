@@ -14,17 +14,17 @@ import com.dpdocter.collections.PrintSettingsCollection;
 public interface PrintSettingsRepository extends MongoRepository<PrintSettingsCollection, ObjectId>,
 		PagingAndSortingRepository<PrintSettingsCollection, ObjectId> {
 
-	List<PrintSettingsCollection> findByDoctorIdAndUpdatedTimegreaterThanAndDiscardedIn(ObjectId doctorId, Date date, boolean[] discards, Pageable pageable);
+	List<PrintSettingsCollection> findByDoctorIdAndUpdatedTimeGreaterThanAndDiscardedIn(ObjectId doctorId, Date date, boolean[] discards, Pageable pageable);
 
-	List<PrintSettingsCollection> findByDoctorIdAndUpdatedTimegreaterThanAndDiscardedIn(ObjectId doctorId, Date date, boolean[] discards, Sort sort);
+	List<PrintSettingsCollection> findByDoctorIdAndUpdatedTimeGreaterThanAndDiscardedIn(ObjectId doctorId, Date date, boolean[] discards, Sort sort);
 
-	List<PrintSettingsCollection> findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimegreaterThanAndDiscardedIn(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date,
+	List<PrintSettingsCollection> findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date,
 			boolean[] discards, Sort sort);
 
-	List<PrintSettingsCollection> findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimegreaterThanAndDiscardedIn(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date,
+	List<PrintSettingsCollection> findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date,
 			boolean[] discards, Pageable pageable);
 
-	List<PrintSettingsCollection> findByLocationIdAndHospitalIdAndUpdatedTimegreaterThanAndDiscardedIn(ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards,
+	List<PrintSettingsCollection> findByLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards,
 			Sort sort);
 
 	PrintSettingsCollection findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String type);

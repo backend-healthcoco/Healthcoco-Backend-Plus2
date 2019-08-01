@@ -24,8 +24,8 @@
 		vUrl = new URL("https://secure.ccavenue.com/transaction/getRSAKey");
 		if(vUrl.openConnection() instanceof HttpsURLConnection){
 			vHttpUrlConnection = (HttpsURLConnection)vUrl.openConnection();
-		}else if(vUrl.openConnection() instanceof com.sun.net.ssl.HttpsURLConnection){
-			vHttpUrlConnection = (com.sun.net.ssl.HttpsURLConnection)vUrl.openConnection();
+		}else if(vUrl.openConnection() instanceof HttpsURLConnection){
+			vHttpUrlConnection = (HttpsURLConnection)vUrl.openConnection();
 		}else{
 			vHttpUrlConnection = (URLConnection)vUrl.openConnection();
 		}

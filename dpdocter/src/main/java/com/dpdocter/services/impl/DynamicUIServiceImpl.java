@@ -643,7 +643,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 	public DentalLabDynamicUi postDentalLabPermissions(DentalLabDynamicUi request) {
 		DentalLabDynamicUi dentalLabDynamicUI = null;
 		DentalLabDynamicUICollection dentalLabDynamicUICollection = dentalLabDynamicUIRepository
-				.findByDoctorId(new ObjectId(request.getDentalLabId()));
+				.findByDentalLabId(new ObjectId(request.getDentalLabId()));
 		if (dentalLabDynamicUICollection != null) {
 			dentalLabDynamicUICollection.setDentalLabDynamicField(request.getDentalLabDynamicField());
 			dentalLabDynamicUICollection = dentalLabDynamicUIRepository.save(dentalLabDynamicUICollection);
@@ -687,7 +687,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 				throw new BusinessException(ServiceError.NoRecord , "Lab not found");
 			}
 			DentalLabDynamicUICollection dentalLabDynamicUICollection = dentalLabDynamicUIRepository
-					.findByDoctorId(new ObjectId(dentalLabId));
+					.findByDentalLabId(new ObjectId(dentalLabId));
 			if (dentalLabDynamicUICollection != null) {
 				dentalLabDynamicUi = new DentalLabDynamicUi();
 				BeanUtil.map(dentalLabDynamicUICollection, dentalLabDynamicUi);

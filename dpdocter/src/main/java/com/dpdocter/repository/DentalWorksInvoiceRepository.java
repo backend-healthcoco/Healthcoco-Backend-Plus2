@@ -9,6 +9,6 @@ import com.dpdocter.collections.DentalWorksInvoiceCollection;
 
 public interface DentalWorksInvoiceRepository extends MongoRepository<DentalWorksInvoiceCollection, ObjectId> {
 
-	List<DentalWorksInvoiceCollection> findAllByIds(List<ObjectId> invoiceId);
+	List<DentalWorksInvoiceCollection> findAllById(List<ObjectId> invoiceId);
 
 }

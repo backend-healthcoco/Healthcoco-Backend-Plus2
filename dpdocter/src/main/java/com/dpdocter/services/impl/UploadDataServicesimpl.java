@@ -2394,7 +2394,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								double totalCost = 0.0;
 								double grandTotal = 0.0;
 								
-								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.find(line.get(4).replace("'", ""), userCollection.getId(), locationObjectId, hospitalObjectId);
+								doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findByUniqueInvoiceIdAndDoctorIdAndLocationIdAndHospitalId(line.get(4).replace("'", ""), userCollection.getId(), locationObjectId, hospitalObjectId);
 								if (doctorPatientInvoiceCollection == null) {
 									doctorPatientInvoiceCollection = new DoctorPatientInvoiceCollection();
 

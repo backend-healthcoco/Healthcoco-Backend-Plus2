@@ -10,7 +10,7 @@ import com.dpdocter.collections.PatientVisitCollection;
 @Repository
 public interface PatientVisitRepository extends MongoRepository<PatientVisitCollection, ObjectId>, PagingAndSortingRepository<PatientVisitCollection, ObjectId> {
 
-	PatientVisitCollection find(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId);
+	PatientVisitCollection findByDoctorIdAndLocationIdAndHospitalIdAndPatientId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId);
 
 	PatientVisitCollection findByRecordId(ObjectId recordId);
     
@@ -18,6 +18,6 @@ public interface PatientVisitRepository extends MongoRepository<PatientVisitColl
 
     PatientVisitCollection findByPrescriptionId(ObjectId prescriptionId);
 
-    PatientVisitCollection findByClinialNotesId(ObjectId clinicalNotesId);    
+    PatientVisitCollection findByClinicalNotesId(ObjectId clinicalNotesId);    
 
 }

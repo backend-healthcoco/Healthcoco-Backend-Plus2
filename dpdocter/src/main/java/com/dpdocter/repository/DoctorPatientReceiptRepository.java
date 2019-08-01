@@ -27,7 +27,7 @@ public interface DoctorPatientReceiptRepository extends MongoRepository<DoctorPa
 
 	List<DoctorPatientReceiptCollection> findByInvoiceIdAndDiscarded(ObjectId invoiceId, boolean discarded);
 
-	DoctorPatientReceiptCollection find(String uniqueReceiptId, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId);
+	DoctorPatientReceiptCollection findByUniqueReceiptIdAndDoctorIdAndLocationIdAndHospitalId(String uniqueReceiptId, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId);
 	
 	DoctorPatientReceiptCollection findByUniqueReceiptIdAndLocationIdAndHospitalId(String uniqueReceiptId, ObjectId locationObjectId, ObjectId hospitalObjectId);
 	

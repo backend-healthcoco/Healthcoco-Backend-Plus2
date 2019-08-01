@@ -181,25 +181,25 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			if (doctorObjectId == null) {
 
-				printSettingsCollections = printSettingsRepository.findByLocationIdAndHospitalIdAndUpdatedTimegreaterThanAndDiscardedIn(locationObjectId, hospitalObjectId,
+				printSettingsCollections = printSettingsRepository.findByLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(locationObjectId, hospitalObjectId,
 						new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 
 			} else {
 				if (locationObjectId == null && hospitalObjectId == null) {
 					if (size > 0)
-						printSettingsCollections = printSettingsRepository.findByDoctorIdAndUpdatedTimegreaterThanAndDiscardedIn(doctorObjectId,
+						printSettingsCollections = printSettingsRepository.findByDoctorIdAndUpdatedTimeGreaterThanAndDiscardedIn(doctorObjectId,
 								new Date(createdTimeStamp), discards,
 								PageRequest.of(page, size, Direction.DESC, "createdTime"));
 					else
-						printSettingsCollections = printSettingsRepository.findByDoctorIdAndUpdatedTimegreaterThanAndDiscardedIn(doctorObjectId,
+						printSettingsCollections = printSettingsRepository.findByDoctorIdAndUpdatedTimeGreaterThanAndDiscardedIn(doctorObjectId,
 								new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 				} else {
 					if (size > 0)
-						printSettingsCollections = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimegreaterThanAndDiscardedIn(doctorObjectId, locationObjectId,
+						printSettingsCollections = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(doctorObjectId, locationObjectId,
 								hospitalObjectId, new Date(createdTimeStamp), discards,
 								PageRequest.of(page, size, Direction.DESC, "createdTime"));
 					else
-						printSettingsCollections = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimegreaterThanAndDiscardedIn(doctorObjectId, locationObjectId,
+						printSettingsCollections = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(doctorObjectId, locationObjectId,
 								hospitalObjectId, new Date(createdTimeStamp), discards,
 								new Sort(Sort.Direction.DESC, "createdTime"));
 				}

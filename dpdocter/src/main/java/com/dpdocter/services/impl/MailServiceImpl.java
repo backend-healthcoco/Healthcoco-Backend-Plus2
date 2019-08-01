@@ -126,6 +126,7 @@ public class MailServiceImpl implements MailService {
 			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 			AmazonSimpleEmailServiceClient amazonSimpleEmailServiceClient = new AmazonSimpleEmailServiceClient(
 					credentials);
+			System.out.println("AWS_REGION"+AWS_REGION);
 			amazonSimpleEmailServiceClient.setRegion(Region.getRegion(Regions.fromName(AWS_REGION)));
 			amazonSimpleEmailServiceClient.sendRawEmail(rawEmailRequest);
 			outputStream.close();
@@ -188,6 +189,8 @@ public class MailServiceImpl implements MailService {
 	    rawEmailRequest.setSource(FROM);
 	    BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 	    AmazonSimpleEmailServiceClient amazonSimpleEmailServiceClient = new AmazonSimpleEmailServiceClient(credentials);
+		System.out.println("AWS_REGION"+AWS_REGION);
+
 	    amazonSimpleEmailServiceClient.setRegion(Region.getRegion(Regions.fromName(AWS_REGION)));
 	    amazonSimpleEmailServiceClient.sendRawEmail(rawEmailRequest);
 	    outputStream.close();
@@ -220,6 +223,8 @@ public class MailServiceImpl implements MailService {
 		}
 		else if (QA_ENV.equalsIgnoreCase("true")) {
 			status = sendEmail(TO,"QA - " + subject, body, null);
+		}else {
+			status = sendEmail(TO,"DEV - " + subject, body, null);
 		}
 		return status;
 	}

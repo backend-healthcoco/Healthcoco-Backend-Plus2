@@ -7,6 +7,6 @@ import com.dpdocter.collections.DentalLabDynamicUICollection;
 
 public interface DentalLabDynamicUIRepository extends MongoRepository<DentalLabDynamicUICollection, ObjectId> {
 
-	DentalLabDynamicUICollection findByDoctorId(ObjectId dentalLabId);
+	DentalLabDynamicUICollection findByDentalLabId(ObjectId dentalLabId);
 
 }
