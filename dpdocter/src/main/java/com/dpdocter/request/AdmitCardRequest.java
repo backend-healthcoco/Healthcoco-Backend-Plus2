@@ -25,7 +25,10 @@ public class AdmitCardRequest {
 	private String diagnosis;
 	private Boolean discarded = false;
 	private Date createdTime;
-
+	private String timeOfAdmission;
+	private String timeOfDischarge;
+	private String timeOfOperation;
+	
 	public Date getCreatedTime() {
 		return createdTime;
 	}
@@ -192,6 +195,43 @@ public class AdmitCardRequest {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getTimeOfAdmission() {
+		return timeOfAdmission;
+	}
+
+	public void setTimeOfAdmission(String timeOfAdmission) {
+		this.timeOfAdmission = timeOfAdmission;
+	}
+
+	public String getTimeOfDischarge() {
+		return timeOfDischarge;
+	}
+
+	public void setTimeOfDischarge(String timeOfDischarge) {
+		this.timeOfDischarge = timeOfDischarge;
+	}
+
+	public String getTimeOfOperation() {
+		return timeOfOperation;
+	}
+
+	public void setTimeOfOperation(String timeOfOperation) {
+		this.timeOfOperation = timeOfOperation;
+	}
+
+	@Override
+	public String toString() {
+		return "AdmitCardRequest [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", uniqueEmrId=" + uniqueEmrId + ", admissionDate="
+				+ admissionDate + ", dischargeDate=" + dischargeDate + ", operationDate=" + operationDate
+				+ ", natureOfOperation=" + natureOfOperation + ", pastHistory=" + pastHistory + ", familyHistory="
+				+ familyHistory + ", personalHistory=" + personalHistory + ", complaint=" + complaint + ", xRayDetails="
+				+ xRayDetails + ", jointInvolvement=" + jointInvolvement + ", treatmentsPlan=" + treatmentsPlan
+				+ ", examination=" + examination + ", diagnosis=" + diagnosis + ", discarded=" + discarded
+				+ ", createdTime=" + createdTime + ", timeOfAdmission=" + timeOfAdmission + ", timeOfDischarge="
+				+ timeOfDischarge + ", timeOfOperation=" + timeOfOperation + "]";
 	}
 
 }

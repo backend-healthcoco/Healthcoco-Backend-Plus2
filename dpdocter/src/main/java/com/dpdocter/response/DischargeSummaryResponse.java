@@ -80,7 +80,19 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String timeOfEntryInOt;
 	private String timeOfExitFromOt;
 	private String bloodLoss;
-
+	private String ageOnAdmission;
+	private String ageOnDischarge;
+	private String weightOnAdmission;
+	private String weightOnDischarge;
+	private String timeOfAdmission;
+	private String timeOfDischarge;
+	private String timeOfOperation;
+	private String referenceName;
+	private String dischargeStatus;
+	private String dischargeOutcome;
+	private String bedLog;
+	private String hospitalCourse;
+	
 	public String getOperationName() {
 		return operationName;
 	}
@@ -441,24 +453,6 @@ public class DischargeSummaryResponse extends GenericCollection {
 		this.uniqueEmrId = uniqueEmrId;
 	}
 
-	@Override
-	public String toString() {
-		return "DischargeSummaryResponse [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", prescriptions=" + prescriptions
-				+ ", diagnosis=" + diagnosis + ", pastHistory=" + pastHistory + ", familyHistory=" + familyHistory
-				+ ", personalHistory=" + personalHistory + ", complaint=" + complaint + ", presentComplaint="
-				+ presentComplaint + ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory="
-				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", generalExam=" + generalExam
-				+ ", systemExam=" + systemExam + ", observation=" + observation + ", investigation=" + investigation
-				+ ", pa=" + pa + ", ps=" + ps + ", pv=" + pv + ", echo=" + echo + ", xRayDetails=" + xRayDetails
-				+ ", operationNotes=" + operationNotes + ", treatmentsGiven=" + treatmentsGiven + ", nextReview="
-				+ ", uniqueEmrId=" + uniqueEmrId + ", admissionDate=" + admissionDate + ", dischargeDate="
-				+ dischargeDate + ", labourNotes=" + labourNotes + ", babyWeight=" + babyWeight + ", babyNotes="
-				+ babyNotes + ", conditionsAtDischarge=" + conditionsAtDischarge + ", summary=" + summary
-				+ ", discarded=" + discarded + ", indicationOfUSG=" + indicationOfUSG + ", ecgDetails=" + ecgDetails
-				+ ", holter=" + holter + "]";
-	}
-
 	public String getAppointmentId() {
 		return appointmentId;
 	}
@@ -625,6 +619,135 @@ public class DischargeSummaryResponse extends GenericCollection {
 
 	public void setBloodLoss(String bloodLoss) {
 		this.bloodLoss = bloodLoss;
+	}
+
+	public String getAgeOnAdmission() {
+		return ageOnAdmission;
+	}
+
+	public void setAgeOnAdmission(String ageOnAdmission) {
+		this.ageOnAdmission = ageOnAdmission;
+	}
+
+	public String getAgeOnDischarge() {
+		return ageOnDischarge;
+	}
+
+	public void setAgeOnDischarge(String ageOnDischarge) {
+		this.ageOnDischarge = ageOnDischarge;
+	}
+
+	public String getWeightOnAdmission() {
+		return weightOnAdmission;
+	}
+
+	public void setWeightOnAdmission(String weightOnAdmission) {
+		this.weightOnAdmission = weightOnAdmission;
+	}
+
+	public String getWeightOnDischarge() {
+		return weightOnDischarge;
+	}
+
+	public void setWeightOnDischarge(String weightOnDischarge) {
+		this.weightOnDischarge = weightOnDischarge;
+	}
+
+	public String getTimeOfAdmission() {
+		return timeOfAdmission;
+	}
+
+	public void setTimeOfAdmission(String timeOfAdmission) {
+		this.timeOfAdmission = timeOfAdmission;
+	}
+
+	public String getTimeOfDischarge() {
+		return timeOfDischarge;
+	}
+
+	public void setTimeOfDischarge(String timeOfDischarge) {
+		this.timeOfDischarge = timeOfDischarge;
+	}
+
+	public String getTimeOfOperation() {
+		return timeOfOperation;
+	}
+
+	public void setTimeOfOperation(String timeOfOperation) {
+		this.timeOfOperation = timeOfOperation;
+	}
+
+	public String getReferenceName() {
+		return referenceName;
+	}
+
+	public void setReferenceName(String referenceName) {
+		this.referenceName = referenceName;
+	}
+
+	public String getDischargeStatus() {
+		return dischargeStatus;
+	}
+
+	public void setDischargeStatus(String dischargeStatus) {
+		this.dischargeStatus = dischargeStatus;
+	}
+
+	public String getDischargeOutcome() {
+		return dischargeOutcome;
+	}
+
+	public void setDischargeOutcome(String dischargeOutcome) {
+		this.dischargeOutcome = dischargeOutcome;
+	}
+
+	public String getBedLog() {
+		return bedLog;
+	}
+
+	public void setBedLog(String bedLog) {
+		this.bedLog = bedLog;
+	}
+
+	public String getHospitalCourse() {
+		return hospitalCourse;
+	}
+
+	public void setHospitalCourse(String hospitalCourse) {
+		this.hospitalCourse = hospitalCourse;
+	}
+
+	@Override
+	public String toString() {
+		return "DischargeSummaryResponse [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", prescriptions=" + prescriptions
+				+ ", appointmentId=" + appointmentId + ", diagnosis=" + diagnosis + ", pastHistory=" + pastHistory
+				+ ", familyHistory=" + familyHistory + ", personalHistory=" + personalHistory + ", complaint="
+				+ complaint + ", presentComplaint=" + presentComplaint + ", presentComplaintHistory="
+				+ presentComplaintHistory + ", menstrualHistory=" + menstrualHistory + ", obstetricHistory="
+				+ obstetricHistory + ", generalExam=" + generalExam + ", systemExam=" + systemExam + ", observation="
+				+ observation + ", investigation=" + investigation + ", pa=" + pa + ", ps=" + ps + ", pv=" + pv
+				+ ", echo=" + echo + ", xRayDetails=" + xRayDetails + ", operationNotes=" + operationNotes
+				+ ", treatmentsGiven=" + treatmentsGiven + ", time=" + time + ", fromDate=" + fromDate
+				+ ", uniqueEmrId=" + uniqueEmrId + ", admissionDate=" + admissionDate + ", dischargeDate="
+				+ dischargeDate + ", labourNotes=" + labourNotes + ", babyWeight=" + babyWeight + ", babyNotes="
+				+ babyNotes + ", conditionsAtDischarge=" + conditionsAtDischarge + ", summary=" + summary
+				+ ", discarded=" + discarded + ", indicationOfUSG=" + indicationOfUSG + ", ecgDetails=" + ecgDetails
+				+ ", holter=" + holter + ", procedureNote=" + procedureNote + ", doctorIncharge=" + doctorIncharge
+				+ ", vitalSigns=" + vitalSigns + ", operationDate=" + operationDate + ", surgeon=" + surgeon
+				+ ", anesthetist=" + anesthetist + ", implant=" + implant + ", cement=" + cement + ", operationName="
+				+ operationName + ", lmp=" + lmp + ", edd=" + edd + ", surgeryDate=" + surgeryDate + ", surgeryNotes="
+				+ surgeryNotes + ", treatingConsultant=" + treatingConsultant + ", anesthesia=" + anesthesia
+				+ ", consultantDoctor=" + consultantDoctor + ", assistantDoctor=" + assistantDoctor
+				+ ", treatmentAdviceForMother=" + treatmentAdviceForMother + ", treatmentAdviceForBaby="
+				+ treatmentAdviceForBaby + ", pediatricianName=" + pediatricianName + ", flowSheets=" + flowSheets
+				+ ", diagrams=" + diagrams + ", timeOfEntryInOt=" + timeOfEntryInOt + ", timeOfExitFromOt="
+				+ timeOfExitFromOt + ", bloodLoss=" + bloodLoss + ", ageOnAdmission=" + ageOnAdmission
+				+ ", ageOnDischarge=" + ageOnDischarge + ", weightOnAdmission=" + weightOnAdmission
+				+ ", weightOnDischarge=" + weightOnDischarge + ", timeOfAdmission=" + timeOfAdmission
+				+ ", timeOfDischarge=" + timeOfDischarge + ", timeOfOperation=" + timeOfOperation + ", referenceName="
+				+ referenceName + ", dischargeStatus=" + dischargeStatus + ", dischargeOutcome=" + dischargeOutcome
+				+ ", bedLog=" + bedLog + ", hospitalCourse=" + hospitalCourse + "]";
 	}
 
 }

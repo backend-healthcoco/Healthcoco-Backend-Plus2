@@ -3045,7 +3045,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					esClinicalNotesService.addDiagnoses(esDiagnosesDocument);
 				}
 			}
-			System.out.println("added ");
+			System.out.println("added diagnosis");
 
 			List<NotesCollection> notesCollections = notesRepository.findAll();
 			if (notesCollections != null) {
@@ -3078,17 +3078,25 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			}
 			System.out.println("added nutrients");
 
-			List<DrugCollection> drugCollections = drugRepository.findAll();
-			if (drugCollections != null) {
-				for (DrugCollection drugCollection : drugCollections) {
-					ESDrugDocument esDrugDocument = new ESDrugDocument();
-					BeanUtil.map(drugCollection, esDrugDocument);
-					if (drugCollection.getDrugType() != null) {
-						esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-						esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+			long drugCount = drugRepository.count();
+			long remainingDrugCount = drugCount;
+			int page = 0;
+			while(remainingDrugCount>0) {
+				
+				List<DrugCollection> drugCollections = drugRepository.findAll(PageRequest.of(page, 20000)).getContent();
+				if (drugCollections != null) {
+					for (DrugCollection drugCollection : drugCollections) {
+						ESDrugDocument esDrugDocument = new ESDrugDocument();
+						BeanUtil.map(drugCollection, esDrugDocument);
+						if (drugCollection.getDrugType() != null) {
+							esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+							esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+						}
+						esPrescriptionService.addDrug(esDrugDocument);
 					}
-					esPrescriptionService.addDrug(esDrugDocument);
 				}
+				page = page + 1;
+				remainingDrugCount=remainingDrugCount-drugCollections.size();
 			}
 			System.out.println("added drugs");
 

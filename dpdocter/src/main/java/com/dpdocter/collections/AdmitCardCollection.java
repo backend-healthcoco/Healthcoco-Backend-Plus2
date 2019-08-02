@@ -52,7 +52,15 @@ public class AdmitCardCollection extends GenericCollection {
 	@Field
 	private Boolean isPatientDiscarded = false;
 	
-
+	@Field
+	private String timeOfAdmission;
+	
+	@Field
+	private String timeOfDischarge;
+	
+	@Field
+	private String timeOfOperation;
+	
 	public String getExamination() {
 		return examination;
 	}
@@ -223,6 +231,30 @@ public class AdmitCardCollection extends GenericCollection {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
+	public String getTimeOfAdmission() {
+		return timeOfAdmission;
+	}
+
+	public void setTimeOfAdmission(String timeOfAdmission) {
+		this.timeOfAdmission = timeOfAdmission;
+	}
+
+	public String getTimeOfDischarge() {
+		return timeOfDischarge;
+	}
+
+	public void setTimeOfDischarge(String timeOfDischarge) {
+		this.timeOfDischarge = timeOfDischarge;
+	}
+
+	public String getTimeOfOperation() {
+		return timeOfOperation;
+	}
+
+	public void setTimeOfOperation(String timeOfOperation) {
+		this.timeOfOperation = timeOfOperation;
+	}
+
 	@Override
 	public String toString() {
 		return "AdmitCardCollection [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId="
@@ -232,6 +264,8 @@ public class AdmitCardCollection extends GenericCollection {
 				+ familyHistory + ", personalHistory=" + personalHistory + ", complaint=" + complaint + ", xRayDetails="
 				+ xRayDetails + ", jointInvolvement=" + jointInvolvement + ", treatmentsPlan=" + treatmentsPlan
 				+ ", diagnosis=" + diagnosis + ", discarded=" + discarded + ", examination=" + examination
-				+ ", isPatientDiscarded=" + isPatientDiscarded + "]";
-	}	
+				+ ", isPatientDiscarded=" + isPatientDiscarded + ", timeOfAdmission=" + timeOfAdmission
+				+ ", timeOfDischarge=" + timeOfDischarge + ", timeOfOperation=" + timeOfOperation + "]";
+	}
+
 }
