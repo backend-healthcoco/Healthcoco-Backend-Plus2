@@ -2,6 +2,8 @@ package com.dpdocter.response.v2;
 
 import java.util.Date;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.beans.v2.PatientCard;
 import com.dpdocter.collections.GenericCollection;
 
@@ -28,7 +30,10 @@ public class AdmitCardResponse extends GenericCollection {
 	private PatientCard patient;
 	private Boolean discarded = false;
 	private String examination;
-
+	private String timeOfAdmission;
+	private String timeOfDischarge;
+	private String timeOfOperation;
+	
 	public String getId() {
 		return id;
 	}
@@ -197,4 +202,40 @@ public class AdmitCardResponse extends GenericCollection {
 		this.examination = examination;
 	}
 
+	public String getTimeOfAdmission() {
+		return timeOfAdmission;
+	}
+
+	public void setTimeOfAdmission(String timeOfAdmission) {
+		this.timeOfAdmission = timeOfAdmission;
+	}
+
+	public String getTimeOfDischarge() {
+		return timeOfDischarge;
+	}
+
+	public void setTimeOfDischarge(String timeOfDischarge) {
+		this.timeOfDischarge = timeOfDischarge;
+	}
+
+	public String getTimeOfOperation() {
+		return timeOfOperation;
+	}
+
+	public void setTimeOfOperation(String timeOfOperation) {
+		this.timeOfOperation = timeOfOperation;
+	}
+
+	@Override
+	public String toString() {
+		return "AdmitCardResponse [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", uniqueEmrId=" + uniqueEmrId + ", admissionDate="
+				+ admissionDate + ", dischargeDate=" + dischargeDate + ", operationDate=" + operationDate
+				+ ", natureOfOperation=" + natureOfOperation + ", pastHistory=" + pastHistory + ", familyHistory="
+				+ familyHistory + ", personalHistory=" + personalHistory + ", complaint=" + complaint + ", xRayDetails="
+				+ xRayDetails + ", jointInvolvement=" + jointInvolvement + ", treatmentsPlan=" + treatmentsPlan
+				+ ", diagnosis=" + diagnosis + ", patient=" + patient + ", discarded=" + discarded + ", examination="
+				+ examination + ", timeOfAdmission=" + timeOfAdmission + ", timeOfDischarge=" + timeOfDischarge
+				+ ", timeOfOperation=" + timeOfOperation + "]";
+	}
 }

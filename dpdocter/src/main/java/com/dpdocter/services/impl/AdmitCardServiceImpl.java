@@ -396,6 +396,27 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		}
 		parameters.put("showDOD", show);
 		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getTimeOfAdmission())) {
+			show = true;
+			parameters.put("tOA",
+					"<b>Time of Admission:-</b>" + admitCardCollection.getTimeOfAdmission());
+		}
+		parameters.put("showTOA", show);
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getTimeOfDischarge())) {
+			show = true;
+			parameters.put("tOD",
+					"<b>Time of Discharge:-</b>" + admitCardCollection.getTimeOfDischarge());
+		}
+		parameters.put("showTOD", show);
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getTimeOfOperation())) {
+			show = true;
+			parameters.put("tOO",
+					"<b>Time of Operation:-</b>" + admitCardCollection.getTimeOfOperation());
+		}
+		parameters.put("showTOO", show);
+		show = false;
 		if (admitCardCollection.getOperationDate() != null) {
 			show = true;
 			parameters.put("operationdate", simpleDateFormat.format(admitCardCollection.getOperationDate()));

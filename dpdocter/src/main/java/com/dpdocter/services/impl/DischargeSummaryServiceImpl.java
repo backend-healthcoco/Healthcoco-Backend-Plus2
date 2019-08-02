@@ -900,6 +900,55 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					+ _12HourSDF.format(dischargeSummaryCollection.getSurgeryDate()));
 
 		}
+		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getAgeOnAdmission())) {
+			parameters.put("ageOnAdmission", "<b>Age On Admission:-</b>"
+					+ dischargeSummaryCollection.getAgeOnAdmission());
+		}
+		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getAgeOnDischarge())) {
+			parameters.put("ageOnDischarge", "<b>Age On Discharge:-</b>"
+					+ dischargeSummaryCollection.getAgeOnDischarge());
+		}
+		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getWeightOnAdmission())) {
+			parameters.put("weightOnAdmission", "<b>Weight On Admission:-</b>"
+					+ dischargeSummaryCollection.getWeightOnAdmission());
+		}
+		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getWeightOnDischarge())) {
+			parameters.put("weightOnDischarge", "<b>Weight On Discharge:-</b>"
+					+ dischargeSummaryCollection.getWeightOnDischarge());
+		}
+		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getTimeOfAdmission())) {
+			parameters.put("timeOfAdmission", "<b>Time Of Admission:-</b>"
+					+ dischargeSummaryCollection.getTimeOfAdmission());
+		}
+		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getTimeOfDischarge())) {
+			parameters.put("timeOfDischarge", "<b>Time Of Discharge:-</b>"
+					+ dischargeSummaryCollection.getTimeOfDischarge());
+		}
+		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getTimeOfOperation())) {
+			parameters.put("timeOfOperation", "<b>Time Of Operation:-</b>"
+					+ dischargeSummaryCollection.getTimeOfOperation());
+		}
+		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getReferenceName())) {
+			parameters.put("referenceName", "<b>Reference Name:-</b>"
+					+ dischargeSummaryCollection.getReferenceName());
+		}
+		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getDischargeStatus())) {
+			parameters.put("dischargeStatus", "<b>Discharge Status:-</b>"
+					+ dischargeSummaryCollection.getDischargeStatus());
+		}
+		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getDischargeOutcome())) {
+			parameters.put("dischargeOutcome", "<b>Discharge Outcome:-</b>"
+					+ dischargeSummaryCollection.getDischargeOutcome());
+		}
+		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getBedLog())) {
+			parameters.put("bedLog", "<b>Bed Log:-</b>"
+					+ dischargeSummaryCollection.getBedLog());
+		}
+		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getHospitalCourse())) {
+			parameters.put("hospitalCourse", "<b>Hospital Course:-</b>"
+					+ dischargeSummaryCollection.getHospitalCourse());
+		}
+		
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getBabyNotes())) {
 			parameters.put("babyNotes", dischargeSummaryCollection.getBabyNotes());
 		}
