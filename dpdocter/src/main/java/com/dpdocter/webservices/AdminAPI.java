@@ -25,6 +25,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.AdminServices;
 import com.dpdocter.services.BirthdaySMSServices;
 import com.dpdocter.services.SubscriptionService;
+import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -49,6 +50,9 @@ public class AdminAPI {
 	@Autowired
 	private AdminServices adminServices;
 
+	@Autowired
+	private TransactionalManagementService transactionalManagementService;
+	
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -165,8 +169,7 @@ public class AdminAPI {
 	public Response<Boolean> addServices() {
 		
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(true);
-//		response.setData(adminServices.addServices());
+		response.setData(adminServices.addServices());
 		return response;
 	}
 	
@@ -207,6 +210,16 @@ public class AdminAPI {
 		
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(adminServices.addSymptomsDiseasesCondition());
+		return response;
+	}
+	
+	@Path(value = PathProxy.AdminUrls.ADD_ALL_TO_ELASTICSEARCH)
+	@GET
+	@ApiOperation(value = PathProxy.AdminUrls.ADD_ALL_TO_ELASTICSEARCH, notes = PathProxy.AdminUrls.ADD_ALL_TO_ELASTICSEARCH)
+	public Response<Boolean> addDataFromMongoToElasticSearch() {
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(transactionalManagementService.addDataFromMongoToElasticSearch());
 		return response;
 	}
 }

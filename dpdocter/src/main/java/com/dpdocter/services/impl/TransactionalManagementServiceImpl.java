@@ -49,6 +49,7 @@ import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.BabyNoteCollection;
 import com.dpdocter.collections.CementCollection;
 import com.dpdocter.collections.CityCollection;
+import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.DiagnosisCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
@@ -61,6 +62,8 @@ import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.ECGDetailsCollection;
 import com.dpdocter.collections.EarsExaminationCollection;
 import com.dpdocter.collections.EchoCollection;
+import com.dpdocter.collections.EducationInstituteCollection;
+import com.dpdocter.collections.EducationQualificationCollection;
 import com.dpdocter.collections.ExpenseTypeCollection;
 import com.dpdocter.collections.GeneralExamCollection;
 import com.dpdocter.collections.HolterCollection;
@@ -74,6 +77,7 @@ import com.dpdocter.collections.LabourNoteCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.MedicalCouncilCollection;
 import com.dpdocter.collections.MenstrualHistoryCollection;
 import com.dpdocter.collections.NeckExaminationCollection;
 import com.dpdocter.collections.NoseExaminationCollection;
@@ -96,6 +100,7 @@ import com.dpdocter.collections.PresentingComplaintNoseCollection;
 import com.dpdocter.collections.PresentingComplaintOralCavityCollection;
 import com.dpdocter.collections.PresentingComplaintThroatCollection;
 import com.dpdocter.collections.ProcedureNoteCollection;
+import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.ProvisionalDiagnosisCollection;
 import com.dpdocter.collections.RecipeCollection;
 import com.dpdocter.collections.ReferencesCollection;
@@ -116,6 +121,7 @@ import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
 import com.dpdocter.elasticsearch.document.ESBabyNoteDocument;
 import com.dpdocter.elasticsearch.document.ESCementDocument;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
+import com.dpdocter.elasticsearch.document.ESCollectionBoyDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
@@ -127,6 +133,8 @@ import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESECGDetailsDocument;
 import com.dpdocter.elasticsearch.document.ESEarsExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESEchoDocument;
+import com.dpdocter.elasticsearch.document.ESEducationInstituteDocument;
+import com.dpdocter.elasticsearch.document.ESEducationQualificationDocument;
 import com.dpdocter.elasticsearch.document.ESExpenseTypeDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
 import com.dpdocter.elasticsearch.document.ESHolterDocument;
@@ -138,6 +146,7 @@ import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESLabTestDocument;
 import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.document.ESLocationDocument;
+import com.dpdocter.elasticsearch.document.ESMedicalCouncilDocument;
 import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNeckExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNoseExaminationDocument;
@@ -158,6 +167,8 @@ import com.dpdocter.elasticsearch.document.ESPresentingComplaintNoseDocument;
 import com.dpdocter.elasticsearch.document.ESPresentingComplaintOralCavityDocument;
 import com.dpdocter.elasticsearch.document.ESPresentingComplaintThroatDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
+import com.dpdocter.elasticsearch.document.ESProfessionalMembershipDocument;
+import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESRecipeDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.document.ESServicesDocument;
@@ -169,7 +180,11 @@ import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
 import com.dpdocter.elasticsearch.document.EsLabourNoteDocument;
+import com.dpdocter.elasticsearch.repository.ESEducationInstituteRepository;
+import com.dpdocter.elasticsearch.repository.ESEducationQualificationRepository;
 import com.dpdocter.elasticsearch.repository.ESLocationRepository;
+import com.dpdocter.elasticsearch.repository.ESMedicalCouncilRepository;
+import com.dpdocter.elasticsearch.repository.ESProfessionalMembershipRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.elasticsearch.services.ESDischargeSummaryService;
@@ -195,6 +210,7 @@ import com.dpdocter.repository.AppLinkDetailsRepository;
 import com.dpdocter.repository.BabyNoteRepository;
 import com.dpdocter.repository.CementRepository;
 import com.dpdocter.repository.CityRepository;
+import com.dpdocter.repository.CollectionBoyRepository;
 import com.dpdocter.repository.ComplaintRepository;
 import com.dpdocter.repository.DiagnosisRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
@@ -207,6 +223,8 @@ import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.ECGDetailsRepository;
 import com.dpdocter.repository.EarsExaminationRepository;
 import com.dpdocter.repository.EchoRepository;
+import com.dpdocter.repository.EducationInstituteRepository;
+import com.dpdocter.repository.EducationQualificationRepository;
 import com.dpdocter.repository.ExpenseTypeRepository;
 import com.dpdocter.repository.GeneralExamRepository;
 import com.dpdocter.repository.HolterRepository;
@@ -220,6 +238,7 @@ import com.dpdocter.repository.LabourNoteRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocaleRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.MedicalCouncilRepository;
 import com.dpdocter.repository.MenstrualHistoryRepository;
 import com.dpdocter.repository.NeckExaminationRepository;
 import com.dpdocter.repository.NoseExaminationRepository;
@@ -512,6 +531,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Autowired
 	private ServicesRepository servicesRepository;
 	
+	@Autowired
+	private CollectionBoyRepository collectionBoyRepository;
+	
 	@Value(value = "${mail.appointment.details.subject}")
 	private String appointmentDetailsSub;
 
@@ -533,15 +555,38 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Autowired
 	SymptomDiseaseConditionRepository symptomDiseaseConditionRepository;
 	
-	@Scheduled(cron = "00 30 10 * * *", zone = "IST")
-//	@Scheduled(fixedDelay = 180000)
+	@Autowired
+	private ESProfessionalMembershipRepository esProfessionalMembershipRepository;
+	
+	@Autowired
+	private MedicalCouncilRepository medicalCouncilRepository;
+	
+	@Autowired
+	private ESMedicalCouncilRepository esMedicalCouncilRepository;
+	
+	@Autowired
+	private EducationInstituteRepository educationInstituteRepository;
+	
+	@Autowired
+	private ESEducationInstituteRepository esEducationInstituteRepository;
+	
+	@Autowired
+	private EducationQualificationRepository educationQualificationRepository;
+	
+	@Autowired
+	private ESEducationQualificationRepository esEducationQualificationRepository;
+	
+	@Scheduled(cron = "00 30 4 * * *", zone = "IST")
+//	@Scheduled(fixedDelay = 18000000)
 	@Override
 	@Transactional
 	public void checkResources() {
 		System.out.println(">>> Scheduled test service <<<");
 		List<TransactionalCollection> transactionalCollections = null;
 		try {
-			transactionalCollections = transnationalRepositiory.findByIsCached(false);
+			transactionalCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("isCached").is(false))).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), TransactionalCollection.class, TransactionalCollection.class).getMappedResults();
+
+//			transactionalCollections = transnationalRepositiory.findByIsCached(false);
 			if (transactionalCollections != null) {
 				for (TransactionalCollection transactionalCollection : transactionalCollections) {
 					if (transactionalCollection.getResourceId() != null)
@@ -2156,9 +2201,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			ProvisionalDiagnosisCollection provitionalDiagnosisCollection = provisionalDiagnosisRepository
 					.findById(resourceId).orElse(null);
 			if (provitionalDiagnosisCollection != null) {
-				ESPresentComplaintHistoryDocument esPresentComplaintHistoryDocument = new ESPresentComplaintHistoryDocument();
-				BeanUtil.map(provitionalDiagnosisCollection, esPresentComplaintHistoryDocument);
-				esClinicalNotesService.addPresentComplaintHistory(esPresentComplaintHistoryDocument);
+				ESProvisionalDiagnosisDocument esProvisionalDiagnosisDocument = new ESProvisionalDiagnosisDocument();
+				BeanUtil.map(provitionalDiagnosisCollection, esProvisionalDiagnosisDocument);
+				esClinicalNotesService.addProvisionalDiagnosis(esProvisionalDiagnosisDocument);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2573,6 +2618,581 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}catch (Exception e) {
 				e.printStackTrace();
 				logger.error(e);
+		}
+	}
+	
+	public Boolean addDataFromMongoToElasticSearch() {
+		try {
+			System.out.println("addDataFromMongoToElasticSearch");
+			List<CityCollection> cityCollections = cityRepository.findAll();
+			if (cityCollections != null && !cityCollections.isEmpty()) {
+				for (CityCollection cityCollection : cityCollections) {
+					ESCityDocument esCityDocument = new ESCityDocument();
+					BeanUtil.map(cityCollection, esCityDocument);
+
+					esCityService.addCities(esCityDocument);
+				}
 			}
+			System.out.println("added cities");
+			
+			List<AdviceCollection> adviceCollections = adviceRepository.findAll();
+			if (adviceCollections != null && !adviceCollections.isEmpty()) {
+				for (AdviceCollection adviceCollection : adviceCollections) {
+					ESAdvicesDocument esAdvicesDocument = new ESAdvicesDocument();
+					BeanUtil.map(adviceCollection, esAdvicesDocument);
+					esPrescriptionService.addAdvices(esAdvicesDocument);
+				}
+			}
+			System.out.println("added advice");
+
+			List<CollectionBoyCollection> collectionBoyCollections = collectionBoyRepository.findAll();
+			if (collectionBoyCollections != null && !collectionBoyCollections.isEmpty()) {
+				for (CollectionBoyCollection collectionBoyCollection : collectionBoyCollections) {
+					ESCollectionBoyDocument esCollectionBoyDocument = new ESCollectionBoyDocument();
+					BeanUtil.map(collectionBoyCollection, esCollectionBoyDocument);
+					esRegistrationService.addCollectionBoy(esCollectionBoyDocument);
+				}
+			}
+			System.out.println("added collection boy");
+
+			List<XRayDetailsCollection> xRayDetailsCollections = xRayDetailsRepository.findAll();
+			if (xRayDetailsCollections != null && !xRayDetailsCollections.isEmpty()) {
+				for (XRayDetailsCollection xRayDetailsCollection : xRayDetailsCollections) {
+					ESXRayDetailsDocument esxRayDetailsDocument = new ESXRayDetailsDocument();
+					BeanUtil.map(xRayDetailsCollection, esxRayDetailsDocument);
+					esClinicalNotesService.addXRayDetails(esxRayDetailsDocument);
+				}
+			}
+			System.out.println("added xray details");
+
+			List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository.findAll();
+			if (treatmentServicesCollections != null) {
+				for (TreatmentServicesCollection treatmentServicesCollection : treatmentServicesCollections) {
+					ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
+					BeanUtil.map(treatmentServicesCollection, esTreatmentServiceDocument);
+					esTreatmentService.addEditService(esTreatmentServiceDocument);
+				}
+			}
+			System.out.println("added treatment service");
+
+			List<SystemExamCollection> systemExamCollections = systemExamRepository.findAll();
+			if (systemExamCollections != null) {
+				for (SystemExamCollection systemExamCollection : systemExamCollections) {
+					ESSystemExamDocument esSystemExamDocument = new ESSystemExamDocument();
+					BeanUtil.map(systemExamCollection, esSystemExamDocument);
+					esClinicalNotesService.addSystemExam(esSystemExamDocument);
+				}
+
+			}
+			System.out.println("added system examination");
+
+			List<ReferencesCollection> referenceCollections = referenceRepository.findAll();
+			if (referenceCollections != null) {
+				for (ReferencesCollection referenceCollection : referenceCollections) {
+					ESReferenceDocument esReferenceDocument = new ESReferenceDocument();
+					BeanUtil.map(referenceCollection, esReferenceDocument);
+					esRegistrationService.addEditReference(esReferenceDocument);
+				}
+			}
+			System.out.println("added references");
+
+			List<RecipeCollection> recipeCollections = recipeRepository.findAll();
+			if (recipeCollections != null) {
+				for (RecipeCollection recipeCollection : recipeCollections) {
+					ESRecipeDocument esRecipeDocument = new ESRecipeDocument();
+					BeanUtil.map(recipeCollection, esRecipeDocument);
+					ESRecipeService.addRecipe(esRecipeDocument);
+				}
+			}
+			System.out.println("added recipes");
+
+			List<PSCollection> psCollections = psRepository.findAll();
+			if (psCollections != null) {
+				for (PSCollection psCollection : psCollections) {
+					ESPSDocument espsDocument = new ESPSDocument();
+					BeanUtil.map(psCollection, espsDocument);
+					esClinicalNotesService.addPS(espsDocument);
+				}
+			}
+			System.out.println("added ps");
+
+			List<PACollection> paCollections = paRepository.findAll();
+			if (paCollections != null) {
+				for (PACollection paCollection : paCollections) {
+					ESPADocument espaDocument = new ESPADocument();
+					BeanUtil.map(paCollection, espaDocument);
+					esClinicalNotesService.addPA(espaDocument);
+				}
+			}
+			System.out.println("added pa");
+
+			List<PVCollection> pvCollections = pvRepository.findAll();
+			if (pvCollections != null) {
+				for (PVCollection pvCollection : pvCollections) {
+					ESPVDocument espvDocument = new ESPVDocument();
+					BeanUtil.map(pvCollection, espvDocument);
+					esClinicalNotesService.addPV(espvDocument);
+				}
+			}
+			System.out.println("added pv");
+
+			List<ProvisionalDiagnosisCollection> provisionalDiagnosisCollections = provisionalDiagnosisRepository
+					.findAll();
+			if (provisionalDiagnosisCollections != null) {
+				for (ProvisionalDiagnosisCollection provisionalDiagnosisCollection : provisionalDiagnosisCollections) {
+					ESProvisionalDiagnosisDocument esProvisionalDiagnosisDocument = new ESProvisionalDiagnosisDocument();
+					BeanUtil.map(provisionalDiagnosisCollection, esProvisionalDiagnosisDocument);
+					esClinicalNotesService.addProvisionalDiagnosis(esProvisionalDiagnosisDocument);
+				}
+			}
+			System.out.println("added provsional diagnosis");
+
+			List<ProfessionalMembershipCollection> professionalMembershipCollections = professionalMembershipRepository
+					.findAll();
+			if (professionalMembershipCollections != null) {
+				for (ProfessionalMembershipCollection professionalMembershipCollection : professionalMembershipCollections) {
+					ESProfessionalMembershipDocument esProfessionalMembershipDocument = new ESProfessionalMembershipDocument();
+					BeanUtil.map(professionalMembershipCollection, esProfessionalMembershipDocument);
+					esProfessionalMembershipRepository.save(esProfessionalMembershipDocument);
+				}
+			}
+			System.out.println("added professional membership");
+
+			List<MedicalCouncilCollection> medicalCouncilCollections = medicalCouncilRepository.findAll();
+			if (medicalCouncilCollections != null) {
+				for (MedicalCouncilCollection medicalCouncilCollection : medicalCouncilCollections) {
+					ESMedicalCouncilDocument esMedicalCouncilDocument = new ESMedicalCouncilDocument();
+					BeanUtil.map(medicalCouncilCollection, esMedicalCouncilDocument);
+					esMedicalCouncilRepository.save(esMedicalCouncilDocument);
+				}
+			}
+			System.out.println("added medical council");
+
+			List<EducationInstituteCollection> educationInstituteCollections = educationInstituteRepository.findAll();
+			if (educationInstituteCollections != null) {
+				for (EducationInstituteCollection educationInstituteCollection : educationInstituteCollections) {
+					ESEducationInstituteDocument esEducationInstituteDocument = new ESEducationInstituteDocument();
+					BeanUtil.map(educationInstituteCollection, esEducationInstituteDocument);
+					esEducationInstituteRepository.save(esEducationInstituteDocument);
+				}
+			}
+			System.out.println("added education institutes");
+
+			List<EducationQualificationCollection> esEducationQualificationCollections = educationQualificationRepository
+					.findAll();
+			if (esEducationQualificationCollections != null) {
+				for (EducationQualificationCollection esEducationQualificationCollection : esEducationQualificationCollections) {
+					ESEducationQualificationDocument esQualificationDocument = new ESEducationQualificationDocument();
+					BeanUtil.map(esEducationQualificationCollection, esQualificationDocument);
+					esEducationQualificationRepository.save(esQualificationDocument);
+				}
+			}
+			System.out.println("added education qualifications");
+
+			List<ProcedureNoteCollection> procedureNoteCollections = procedureNoteRepository.findAll();
+			if (procedureNoteCollections != null) {
+				for (ProcedureNoteCollection procedureNoteCollection : procedureNoteCollections) {
+					ESProcedureNoteDocument esProcedureNoteDocument = new ESProcedureNoteDocument();
+					BeanUtil.map(procedureNoteCollection, esProcedureNoteDocument);
+					esClinicalNotesService.addProcedureNote(esProcedureNoteDocument);
+				}
+			}
+			System.out.println("added procedure notes");
+
+			List<PresentComplaintHistoryCollection> presentComplaintHistoryCollections = presentComplaintHistoryRepository
+					.findAll();
+			if (presentComplaintHistoryCollections != null) {
+				for (PresentComplaintHistoryCollection presentComplaintHistoryCollection : presentComplaintHistoryCollections) {
+					ESPresentComplaintHistoryDocument esPresentComplaintHistoryDocument = new ESPresentComplaintHistoryDocument();
+					BeanUtil.map(presentComplaintHistoryCollection, esPresentComplaintHistoryDocument);
+					esClinicalNotesService.addPresentComplaintHistory(esPresentComplaintHistoryDocument);
+				}
+			}
+			System.out.println("added present complaint history");
+
+			List<GeneralExamCollection> generalExamCollections = generalExamRepository.findAll();
+			if (generalExamCollections != null) {
+				for (GeneralExamCollection generalExamCollection : generalExamCollections) {
+					ESGeneralExamDocument esGeneralExamDocument = new ESGeneralExamDocument();
+					BeanUtil.map(generalExamCollection, esGeneralExamDocument);
+					esClinicalNotesService.addGeneralExam(esGeneralExamDocument);
+				}
+			}
+			System.out.println("added general examinations");
+
+			List<PresentComplaintCollection> presentComplaintCollections = presentComplaintRepository.findAll();
+			if (presentComplaintCollections != null) {
+				for (PresentComplaintCollection presentComplaintCollection : presentComplaintCollections) {
+					ESPresentComplaintDocument esPresentComplaintDocument = new ESPresentComplaintDocument();
+					BeanUtil.map(presentComplaintCollection, esPresentComplaintDocument);
+					esClinicalNotesService.addPresentComplaint(esPresentComplaintDocument);
+				}
+			}
+			System.out.println("added present complaint");
+
+			List<PresentingComplaintNoseCollection> presentingComplaintNoseCollections = presentingComplaintNosesRepository
+					.findAll();
+			if (presentingComplaintNoseCollections != null) {
+				for (PresentingComplaintNoseCollection presentingComplaintNoseCollection : presentingComplaintNoseCollections) {
+					ESPresentingComplaintNoseDocument esComplaintNoseDocument = new ESPresentingComplaintNoseDocument();
+					BeanUtil.map(presentingComplaintNoseCollection, esComplaintNoseDocument);
+					esClinicalNotesService.addPCNose(esComplaintNoseDocument);
+				}
+			}
+			System.out.println("added present complaint nose");
+
+			List<PresentingComplaintThroatCollection> presentingComplaintThroatCollections = presentingComplaintThroatRepository
+					.findAll();
+			if (presentingComplaintThroatCollections != null) {
+				for (PresentingComplaintThroatCollection presentingComplaintThroatCollection : presentingComplaintThroatCollections) {
+					ESPresentingComplaintThroatDocument esComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
+					BeanUtil.map(presentingComplaintThroatCollection, esComplaintThroatDocument);
+					esClinicalNotesService.addPCThroat(esComplaintThroatDocument);
+				}
+			}
+			System.out.println("added present complaint throat");
+
+			List<PresentingComplaintOralCavityCollection> presentingComplaintOralCavityCollections = presentingComplaintOralCavityRepository
+					.findAll();
+			if (presentingComplaintOralCavityCollections != null) {
+				for (PresentingComplaintOralCavityCollection presentingComplaintOralCavityCollection : presentingComplaintOralCavityCollections) {
+					ESPresentingComplaintOralCavityDocument esComplaintOralCavityDocument = new ESPresentingComplaintOralCavityDocument();
+					BeanUtil.map(presentingComplaintOralCavityCollection, esComplaintOralCavityDocument);
+					esClinicalNotesService.addPCOralCavity(esComplaintOralCavityDocument);
+				}
+			}
+			System.out.println("added present complaint oral cavity");
+
+			List<PresentingComplaintEarsCollection> earsCollections = presentingComplaintEarsRepository.findAll();
+			if (earsCollections != null) {
+				for (PresentingComplaintEarsCollection earsCollection : earsCollections) {
+					ESPresentingComplaintEarsDocument earsDocument = new ESPresentingComplaintEarsDocument();
+					BeanUtil.map(earsCollection, earsDocument);
+					esClinicalNotesService.addPCEars(earsDocument);
+				}
+			}
+			System.out.println("added present complaint nose");
+
+
+			List<NoseExaminationCollection> noseExaminationCollections = noseExaminationRepository.findAll();
+			if (noseExaminationCollections != null) {
+				for (NoseExaminationCollection noseExaminationCollection : noseExaminationCollections) {
+					ESNoseExaminationDocument noseExaminationDocument = new ESNoseExaminationDocument();
+					BeanUtil.map(noseExaminationCollection, noseExaminationDocument);
+					esClinicalNotesService.addNoseExam(noseExaminationDocument);
+				}
+			}
+			System.out.println("added nose examination");
+
+			List<OralCavityAndThroatExaminationCollection> cavityAndThroatExaminations = oralCavityThroatExaminationRepository
+					.findAll();
+			if (cavityAndThroatExaminations != null) {
+				for (OralCavityAndThroatExaminationCollection cavityAndThroatExamination : cavityAndThroatExaminations) {
+					ESOralCavityAndThroatExaminationDocument examinationDocument = new ESOralCavityAndThroatExaminationDocument();
+					BeanUtil.map(cavityAndThroatExamination, examinationDocument);
+					esClinicalNotesService.addOralCavityThroatExam(examinationDocument);
+				}
+			}
+			System.out.println("added oral cavitiy");
+
+			List<IndirectLarygoscopyExaminationCollection> indirectLarygoscopyExaminationCollections = indirectLarygoscopyExaminationRepository
+					.findAll();
+			if (indirectLarygoscopyExaminationCollections != null) {
+				for (IndirectLarygoscopyExaminationCollection indirectLarygoscopyExaminationCollection : indirectLarygoscopyExaminationCollections) {
+					ESIndirectLarygoscopyExaminationDocument examinationDocument = new ESIndirectLarygoscopyExaminationDocument();
+					BeanUtil.map(indirectLarygoscopyExaminationCollection, examinationDocument);
+					esClinicalNotesService.addIndirectLarygoscopyExam(examinationDocument);
+				}
+			}
+			System.out.println("added indirectLarygoscopyExamination");
+
+			List<NeckExaminationCollection> neckExaminationCollections = neckExaminationRepository.findAll();
+			if (neckExaminationCollections != null) {
+				for (NeckExaminationCollection neckExaminationCollection : neckExaminationCollections) {
+					ESNeckExaminationDocument examinationDocument = new ESNeckExaminationDocument();
+					BeanUtil.map(neckExaminationCollection, examinationDocument);
+					esClinicalNotesService.addNeckExam(examinationDocument);
+				}
+			}
+			System.out.println("added neck Examinations");
+
+			List<EarsExaminationCollection> earsExaminationCollections = earsExaminationRepository.findAll();
+			if (earsExaminationCollections != null) {
+				for (EarsExaminationCollection earsExaminationCollection : earsExaminationCollections) {
+					ESEarsExaminationDocument examinationDocument = new ESEarsExaminationDocument();
+					BeanUtil.map(earsExaminationCollection, examinationDocument);
+					esClinicalNotesService.addEarsExam(examinationDocument);
+				}
+			}
+			System.out.println("added ears Examinations");
+
+			List<MenstrualHistoryCollection> menstrualHistoryCollections = menstrualHistoryRepository.findAll();
+			if (medicalCouncilCollections != null) {
+				for (MenstrualHistoryCollection menstrualHistoryCollection : menstrualHistoryCollections) {
+					ESMenstrualHistoryDocument historyDocument = new ESMenstrualHistoryDocument();
+					BeanUtil.map(menstrualHistoryCollection, historyDocument);
+					esClinicalNotesService.addMenstrualHistory(historyDocument);
+				}
+			}
+			System.out.println("added menstrual Historys");
+
+			List<ObstetricHistoryCollection> obstetricHistoryCollections = obstetricHistoryRepository.findAll();
+			if (obstetricHistoryCollections != null) {
+				for (ObstetricHistoryCollection obstetricHistoryCollection : obstetricHistoryCollections) {
+					ESObstetricHistoryDocument historyDocument = new ESObstetricHistoryDocument();
+					BeanUtil.map(obstetricHistoryCollection, historyDocument);
+					esClinicalNotesService.addObstetricsHistory(historyDocument);
+				}
+			}
+			System.out.println("added obstetric Historys");
+
+			List<LabourNoteCollection> labourNoteCollections = labourNoteRepository.findAll();
+			if (labourNoteCollections != null) {
+				for (LabourNoteCollection noteCollection : labourNoteCollections) {
+					EsLabourNoteDocument noteDocument = new EsLabourNoteDocument();
+					BeanUtil.map(noteCollection, noteDocument);
+					esDischargeSummaryService.addLabourNotes(noteDocument);
+				}
+			}
+			System.out.println("added labour notes");
+
+			List<BabyNoteCollection> babyNoteCollections = babyNoteRepository.findAll();
+			if (babyNoteCollections != null) {
+				for (BabyNoteCollection babyNoteCollection : babyNoteCollections) {
+					ESBabyNoteDocument noteDocument = new ESBabyNoteDocument();
+					BeanUtil.map(babyNoteCollection, noteDocument);
+					esDischargeSummaryService.addBabyNote(noteDocument);
+				}
+			}
+			System.out.println("added baby notes");
+
+			List<OperationNoteCollection> operationNoteCollections = operationNoteRepository.findAll();
+			if (operationNoteCollections != null) {
+				for (OperationNoteCollection operationNoteCollection : operationNoteCollections) {
+					ESOperationNoteDocument noteDocument = new ESOperationNoteDocument();
+					BeanUtil.map(operationNoteCollection, noteDocument);
+					esDischargeSummaryService.addOperationNote(noteDocument);
+				}
+			}
+			System.out.println("added operation notes");
+
+			List<ImplantCollection> implantCollections = implantRepository.findAll();
+			if (implantCollections != null) {
+				for (ImplantCollection implantCollection : implantCollections) {
+					ESImplantDocument esImplantDocument = new ESImplantDocument();
+					BeanUtil.map(implantCollection, esImplantDocument);
+					esDischargeSummaryService.addImplant(esImplantDocument);
+				}
+			}
+			System.out.println("added impalnts");
+
+			List<CementCollection> cementCollections = cementRepository.findAll();
+			if (cementCollections != null) {
+				for (CementCollection cementCollection : cementCollections) {
+					ESCementDocument cementDocument = new ESCementDocument();
+					BeanUtil.map(cementCollection, cementDocument);
+					esDischargeSummaryService.addCement(cementDocument);
+				}
+			}
+			System.out.println("added cements");
+
+			List<ExpenseTypeCollection> typeCollections = expenseTypeRepository.findAll();
+			if (typeCollections != null) {
+				for (ExpenseTypeCollection typeCollection : typeCollections) {
+					ESExpenseTypeDocument expenseDocument = new ESExpenseTypeDocument();
+					BeanUtil.map(typeCollection, expenseDocument);
+					exExpenseTypeService.addEditExpenseType(expenseDocument);
+				}
+
+			}
+			System.out.println("added expense types");
+
+			List<ComplaintCollection> complaintCollections = complaintRepository.findAll();
+			if (complaintCollections != null) {
+				for (ComplaintCollection complaintCollection : complaintCollections) {
+					ESComplaintsDocument esComplaintsDocument = new ESComplaintsDocument();
+					BeanUtil.map(complaintCollection, esComplaintsDocument);
+					esClinicalNotesService.addComplaints(esComplaintsDocument);
+				}
+			}
+			System.out.println("added complaints");
+
+			List<ObservationCollection> observationCollections = observationRepository.findAll();
+			if (observationCollections != null) {
+				for (ObservationCollection observationCollection : observationCollections) {
+					ESObservationsDocument esObservationsDocument = new ESObservationsDocument();
+					BeanUtil.map(observationCollection, esObservationsDocument);
+					esClinicalNotesService.addObservations(esObservationsDocument);
+				}
+			}
+			System.out.println("added observations");
+
+			List<InvestigationCollection> investigationCollections = investigationRepository.findAll();
+			if (investigationCollections != null) {
+				for (InvestigationCollection investigationCollection : investigationCollections) {
+					ESInvestigationsDocument esInvestigationsDocument = new ESInvestigationsDocument();
+					BeanUtil.map(investigationCollection, esInvestigationsDocument);
+					esClinicalNotesService.addInvestigations(esInvestigationsDocument);
+				}
+			}
+			System.out.println("added investigations");
+
+			List<DiagnosisCollection> diagnosisCollections = diagnosisRepository.findAll();
+			if (diagnosisCollections != null) {
+				for (DiagnosisCollection diagnosisCollection : diagnosisCollections) {
+					ESDiagnosesDocument esDiagnosesDocument = new ESDiagnosesDocument();
+					BeanUtil.map(diagnosisCollection, esDiagnosesDocument);
+					esClinicalNotesService.addDiagnoses(esDiagnosesDocument);
+				}
+			}
+			System.out.println("added ");
+
+			List<NotesCollection> notesCollections = notesRepository.findAll();
+			if (notesCollections != null) {
+				for (NotesCollection notesCollection : notesCollections) {
+					ESNotesDocument esNotesDocument = new ESNotesDocument();
+					BeanUtil.map(notesCollection, esNotesDocument);
+					esClinicalNotesService.addNotes(esNotesDocument);
+				}
+			}
+			System.out.println("added notes");
+
+			List<DiagramsCollection> diagramsCollections = diagramsRepository.findAll();
+			if (diagramsCollections != null) {
+				for (DiagramsCollection diagramsCollection : diagramsCollections) {
+					ESDiagramsDocument esDiagramsDocument = new ESDiagramsDocument();
+					BeanUtil.map(diagramsCollection, esDiagramsDocument);
+					esClinicalNotesService.addDiagrams(esDiagramsDocument);
+				}
+			}
+			System.out.println("added diagrams");
+
+			List<NutrientCollection> nutrientCollections = nutrientRepository.findAll();
+			if (nutrientCollections != null) {
+				for (NutrientCollection nutrientCollection : nutrientCollections) {
+					ESNutrientDocument esNutrientDocument = new ESNutrientDocument();
+					BeanUtil.map(nutrientCollection, esNutrientDocument);
+					ESRecipeService.addNutrient(esNutrientDocument);
+				}
+
+			}
+			System.out.println("added nutrients");
+
+			List<DrugCollection> drugCollections = drugRepository.findAll();
+			if (drugCollections != null) {
+				for (DrugCollection drugCollection : drugCollections) {
+					ESDrugDocument esDrugDocument = new ESDrugDocument();
+					BeanUtil.map(drugCollection, esDrugDocument);
+					if (drugCollection.getDrugType() != null) {
+						esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+						esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+					}
+					esPrescriptionService.addDrug(esDrugDocument);
+				}
+			}
+			System.out.println("added drugs");
+
+			List<DoctorDrugCollection> doctorDrugCollections = doctorDrugRepository.findAll();
+			if (doctorDrugCollections != null) {
+				for (DoctorDrugCollection doctorDrugCollection : doctorDrugCollections) {
+					DrugCollection drugCollection = drugRepository.findById(doctorDrugCollection.getDrugId())
+							.orElse(null);
+					if (drugCollection != null) {
+						ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+						BeanUtil.map(drugCollection, esDoctorDrugDocument);
+						BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+						esDoctorDrugDocument.setId(drugCollection.getId().toString());
+						esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
+					}
+				}
+			}
+			System.out.println("added doctorDrugs");
+
+			List<LabTestCollection> labTestCollections = labTestRepository.findAll();
+			if (labTestCollections != null) {
+				for (LabTestCollection labTestCollection : labTestCollections) {
+					ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
+					BeanUtil.map(labTestCollection, esLabTestDocument);
+					esPrescriptionService.addLabTest(esLabTestDocument);
+				}
+			}
+			System.out.println("added labTests");
+
+			List<IngredientCollection> ingredientCollections = ingredientRepository.findAll();
+			if (ingredientCollections != null) {
+				for (IngredientCollection ingredientCollection : ingredientCollections) {
+					ESIngredientDocument esIngredientDocument = new ESIngredientDocument();
+					BeanUtil.map(ingredientCollection, esIngredientDocument);
+					ESRecipeService.addIngredient(esIngredientDocument);
+				}
+
+			}
+			System.out.println("added ingredients");
+
+			List<IndicationOfUSGCollection> indicationOfUCGCollections = indicationOfUSGRepository.findAll();
+			if (indicationOfUCGCollections != null) {
+				for (IndicationOfUSGCollection indicationOfUCGCollection : indicationOfUCGCollections) {
+					ESIndicationOfUSGDocument esIndicationOfUSGDocument = new ESIndicationOfUSGDocument();
+					BeanUtil.map(indicationOfUCGCollection, esIndicationOfUSGDocument);
+					esClinicalNotesService.addIndicationOfUSG(esIndicationOfUSGDocument);
+				}
+			}
+			System.out.println("added indicationOfUCGs");
+
+			List<HolterCollection> holterCollections = holterRepository.findAll();
+			if (holterCollections != null) {
+				for (HolterCollection holterCollection : holterCollections) {
+					ESHolterDocument esHolterDocument = new ESHolterDocument();
+					BeanUtil.map(holterCollection, esHolterDocument);
+					esClinicalNotesService.addHolter(esHolterDocument);
+				}
+			}
+			System.out.println("added holters");
+
+			List<EchoCollection> echoCollections = echoRepository.findAll();
+			if (echoCollections != null) {
+				for (EchoCollection echoCollection : echoCollections) {
+					ESEchoDocument esEchoDocument = new ESEchoDocument();
+					BeanUtil.map(echoCollection, esEchoDocument);
+					esClinicalNotesService.addEcho(esEchoDocument);
+				}
+			}
+			System.out.println("added echos");
+
+			List<ECGDetailsCollection> ecgDetailsCollections = ecgDetailsRepository.findAll();
+			if (ecgDetailsCollections != null) {
+				for (ECGDetailsCollection ecgDetailsCollection : ecgDetailsCollections) {
+					ESECGDetailsDocument esECGDetailsDocument = new ESECGDetailsDocument();
+					BeanUtil.map(ecgDetailsCollection, esECGDetailsDocument);
+					esClinicalNotesService.addECGDetails(esECGDetailsDocument);
+				}
+			}
+			System.out.println("added ecgDetails");
+
+			List<DiseasesCollection> diseasesCollections = diseasesRepository.findAll();
+			if (diseasesCollections != null) {
+				for (DiseasesCollection diseasesCollection : diseasesCollections) {
+					ESDiseasesDocument esDiseasesDocument = new ESDiseasesDocument();
+					BeanUtil.map(diseasesCollection, esDiseasesDocument);
+					esMasterService.addEditDisease(esDiseasesDocument);
+				}
+			}
+			System.out.println("added diseases");
+
+			List<DiagnosticTestCollection> diagnosticTestCollections = diagnosticTestRepository.findAll();
+			if (diagnosticTestCollections != null) {
+				for (DiagnosticTestCollection diagnosticTestCollection : diagnosticTestCollections) {
+					ESDiagnosticTestDocument esDiagnosticTestDocument = new ESDiagnosticTestDocument();
+					BeanUtil.map(diagnosticTestCollection, esDiagnosticTestDocument);
+					esPrescriptionService.addEditDiagnosticTest(esDiagnosticTestDocument);
+				}
+			}
+			System.out.println("added diagnosticTest");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+		return true;
 	}
 }

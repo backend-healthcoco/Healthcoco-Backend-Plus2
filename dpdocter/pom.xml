@@ -441,11 +441,16 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>com.jaspersoft</groupId>
-			<artifactId>com.jaspersoft.studio.data.mongodb</artifactId>
-			<version>2.0.1</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.jaspersoft</groupId> -->
+<!-- 			<artifactId>com.jaspersoft.studio.data.mongodb</artifactId> -->
+<!-- 			<version>5.1.0</version> -->
+<!-- 		</dependency> -->
+<dependency>
+            <groupId>com.jaspersoft.connectors.mongodb</groupId>
+            <artifactId>js-mongodb-datasource</artifactId>
+            <version>0.9.3</version>
+        </dependency>
 		<dependency>
 
 			<groupId>org.hibernate</groupId>
@@ -1087,10 +1092,10 @@
 			<name>Spring Milestone Maven Repository</name>
 			<url>http://repo.springsource.org/libs-milestone</url>
 		</repository>
-		<repository>
-			<id>bippo-nexus-public</id>
-			<url>http://nexus.bippo.co.id/nexus/content/groups/public/</url>
-		</repository>
+<!-- 		<repository> -->
+<!-- 			<id>bippo-nexus-public</id> -->
+<!-- 			<url>http://nexus.bippo.co.id/nexus/content/groups/public/</url> -->
+<!-- 		</repository> -->
 		<repository>
 			<id>jasperreports</id>
 			<url>http://jasperreports.sourceforge.net/maven2</url>
@@ -1099,5 +1104,12 @@
 			<id>jaspersoft-third-party</id>
 			<url>http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/</url>
 		</repository>
+		<repository>
+            <id>MongoJasperRepo</id>
+            <url>http://jaspersoft.artifactoryonline.com/jaspersoft/jaspersoft-repo</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
 	</repositories>
 </project>

@@ -50,4 +50,6 @@ public interface TransactionalManagementService {
 
 	void sendEventReminderToDoctor();
 
+	Boolean addDataFromMongoToElasticSearch();
+
 }
