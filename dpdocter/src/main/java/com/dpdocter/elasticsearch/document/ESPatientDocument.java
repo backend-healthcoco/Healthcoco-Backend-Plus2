@@ -31,7 +31,7 @@ public class ESPatientDocument {
 	@Field(type = FieldType.Text)
 	private String firstName;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Text, fielddata = true)
 	private String localPatientName;
 
 	@Field(type = FieldType.Text)

@@ -1425,8 +1425,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			String locationId, String patientId, String updatedTime, boolean isOTPVerified, boolean discarded,
 			boolean inHistory) {
 		List<Prescription> prescriptions = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
@@ -2488,11 +2488,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			boolean discarded) {
 		List<Object> response = null;
 		List<LabTestCollection> labTestCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 		try {
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 			long createdTimeStamp = Long.parseLong(updatedTime);
 
 			if (locationId == null && hospitalId == null) {
@@ -3398,12 +3398,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			Boolean discarded) {
 		Response<Object> response = new Response<Object>();
 		List<Prescription> prescriptions = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 		try {
 
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 			Criteria criteria = new Criteria()

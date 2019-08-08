@@ -3417,8 +3417,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	private List<Investigation> getCustomInvestigations(long page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<Investigation> response = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 		try {
 			AggregationResults<Investigation> results = mongoTemplate
 					.aggregate(
@@ -3923,8 +3923,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean discarded) {
 		List<ClinicalNotes> clinicalNotes = null;
 		List<ClinicalnoteLookupBean> clinicalnoteLookupBeans = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 
 		boolean[] inHistorys = new boolean[2];
 		inHistorys[0] = true;
@@ -3933,7 +3933,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 		try {
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 			Criteria criteria = new Criteria("discarded").in(discards).and("updatedTime").gt(createdTimestamp)

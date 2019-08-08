@@ -7,6 +7,7 @@ import com.dpdocter.beans.DoctorAndCost;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.Surgery;
 import com.dpdocter.beans.TimeDuration;
+import com.dpdocter.beans.v2.PrescriptionItemDetail;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -46,6 +47,7 @@ public class OTReportsLookupResponse extends GenericCollection {
 	private DoctorAndCost anaesthetistAndCost;
 	private List<DoctorAndCost> assitingDoctorsAndCost;
 	private List<DoctorAndCost> assitingNursesAndCost;
+	private List<PrescriptionItemDetail> postOperativeOrder;
 
 	public Boolean getDiscarded() {
 		return discarded;
@@ -287,6 +289,14 @@ public class OTReportsLookupResponse extends GenericCollection {
 		this.assitingNursesAndCost = assitingNursesAndCost;
 	}
 
+	public List<PrescriptionItemDetail> getPostOperativeOrder() {
+		return postOperativeOrder;
+	}
+
+	public void setPostOperativeOrder(List<PrescriptionItemDetail> postOperativeOrder) {
+		this.postOperativeOrder = postOperativeOrder;
+	}
+
 	@Override
 	public String toString() {
 		return "OTReportsLookupResponse [id=" + id + ", patientId=" + patientId + ", patient=" + patient
@@ -298,7 +308,10 @@ public class OTReportsLookupResponse extends GenericCollection {
 				+ ", locationId=" + locationId + ", location=" + location + ", hospitalId=" + hospitalId + ", hospital="
 				+ hospital + ", timeDuration=" + timeDuration + ", operationalNotes=" + operationalNotes
 				+ ", patientCollection=" + patientCollection + ", patientUser=" + patientUser + ", uniqueOTId="
-				+ uniqueOTId + ", discarded=" + discarded + "]";
+				+ uniqueOTId + ", discarded=" + discarded + ", operatingSurgeonAndCost=" + operatingSurgeonAndCost
+				+ ", anaesthetistAndCost=" + anaesthetistAndCost + ", assitingDoctorsAndCost=" + assitingDoctorsAndCost
+				+ ", assitingNursesAndCost=" + assitingNursesAndCost + ", postOperativeOrder=" + postOperativeOrder
+				+ "]";
 	}
 
 }

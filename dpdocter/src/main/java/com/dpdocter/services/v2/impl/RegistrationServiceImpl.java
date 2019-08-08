@@ -261,7 +261,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 								roles.add(roleObj);
 							}
 							if (!DPDoctorUtils.anyStringEmpty(defaultDoctorId)) {
-								if (doctorClinicProfileLookupResponse.getDoctorId().equals(defaultDoctorId))
+								if (doctorClinicProfileLookupResponse.getDoctorId().toString().equals(defaultDoctorId))
 									clinicDoctorResponse.setIsDefault(true);
 
 							}

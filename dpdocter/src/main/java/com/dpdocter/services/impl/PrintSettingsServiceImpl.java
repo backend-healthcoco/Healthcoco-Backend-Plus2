@@ -164,11 +164,11 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			int page, int size, String updatedTime, Boolean discarded) {
 		List<PrintSettings> response = null;
 		List<PrintSettingsCollection> printSettingsCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 		try {
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))

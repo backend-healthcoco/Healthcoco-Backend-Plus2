@@ -1120,15 +1120,15 @@ public class RecordsServiceImpl implements RecordsService {
 			String patientId, String updatedTime, boolean isOTPVerified, boolean discarded, boolean inHistory) {
 		List<Records> records = null;
 		List<RecordsLookupResponse> recordsLookupResponses = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 
 		boolean[] inHistorys = new boolean[2];
 		inHistorys[0] = true;
 		inHistorys[1] = true;
 		try {
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 			if (!inHistory)
 				inHistorys[1] = false;
 			long createdTimeStamp = Long.parseLong(updatedTime);
@@ -1213,12 +1213,12 @@ public class RecordsServiceImpl implements RecordsService {
 		Response<Object> response = new Response<Object>();
 		List<Records> records = null;
 		List<RecordsLookupResponse> recordsLookupResponses = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 		try {
 			long updatedTimeLong = Long.parseLong(updatedTime);
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 
 			ObjectId patientObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
@@ -1322,12 +1322,12 @@ public class RecordsServiceImpl implements RecordsService {
 		List<Records> records = null;
 		// List<RecordsCollection> recordsCollections = null;
 		List<RecordsLookupResponse> recordsLookupResponses = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 		try {
 			long updatedTimeLong = Long.parseLong(updatedTime);
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 
 			ObjectId doctorObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))

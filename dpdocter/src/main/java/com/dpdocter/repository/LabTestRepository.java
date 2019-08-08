@@ -13,9 +13,9 @@ import com.dpdocter.collections.LabTestCollection;
 
 public interface LabTestRepository extends MongoRepository<LabTestCollection, ObjectId>, PagingAndSortingRepository<LabTestCollection, ObjectId> {
 
-	List<LabTestCollection> findByHospitalIdAndLocationIdAndUpdatedTimeGreaterThanAndDiscardedIn(ObjectId hospitalId, ObjectId locationId, Date date, boolean[] discards, Pageable pageable);
+	List<LabTestCollection> findByHospitalIdAndLocationIdAndUpdatedTimeGreaterThanAndDiscardedIn(ObjectId hospitalId, ObjectId locationId, Date date, List<Boolean> discards, Pageable pageable);
 
-    List<LabTestCollection> findByHospitalIdAndLocationIdAndUpdatedTimeGreaterThanAndDiscardedIn(ObjectId hospitalId, ObjectId locationId, Date date, boolean[] discards, Sort sort);
+    List<LabTestCollection> findByHospitalIdAndLocationIdAndUpdatedTimeGreaterThanAndDiscardedIn(ObjectId hospitalId, ObjectId locationId, Date date, List<Boolean> discards, Sort sort);
 
     List<LabTestCollection> findByUpdatedTimeGreaterThanAndDiscardedIn(Date date, boolean[] discards, Pageable pageable);
 

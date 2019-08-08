@@ -1199,11 +1199,11 @@ public class HistoryServicesImpl implements HistoryServices {
 			String hospitalId, String updatedTime, Boolean discarded) {
 		Response<DiseaseListResponse> diseaseListResponses = new Response<DiseaseListResponse>();
 		List<DiseasesCollection> diseasesCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 		try {
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 			long createdTimeStamp = Long.parseLong(updatedTime);
 
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
@@ -1271,11 +1271,13 @@ public class HistoryServicesImpl implements HistoryServices {
 	private Response<DiseaseListResponse> getGlobalDiseases(int page, int size, String updatedTime, Boolean discarded) {
 		Response<DiseaseListResponse> diseaseListResponses = new Response<DiseaseListResponse>();
 		List<DiseasesCollection> diseasesCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+//		boolean[] discards = new boolean[2];
+//		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 		try {
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 			long createdTimeStamp = Long.parseLong(updatedTime);
 
 			Integer count = diseasesRepository.findGlobalDiseasesCount(new Date(createdTimeStamp), discards);
@@ -1320,11 +1322,11 @@ public class HistoryServicesImpl implements HistoryServices {
 			String hospitalId, String updatedTime, Boolean discarded) {
 		Response<DiseaseListResponse> diseaseListResponses = new Response<DiseaseListResponse>();
 		List<DiseasesCollection> diseasesCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 		try {
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 			long createdTimeStamp = Long.parseLong(updatedTime);
 
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
@@ -1393,11 +1395,11 @@ public class HistoryServicesImpl implements HistoryServices {
 			Boolean discarded, String searchTerm) {
 		Response<DiseaseListResponse> diseaseListResponses = new Response<DiseaseListResponse>();
 		List<DiseasesCollection> diseasesCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 		try {
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			Integer count = 0;
@@ -1456,11 +1458,11 @@ public class HistoryServicesImpl implements HistoryServices {
 			Boolean discarded, String searchTerm) {
 		Response<DiseaseListResponse> diseaseListResponses = new Response<DiseaseListResponse>();
 		List<DiseasesCollection> diseasesCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 		try {
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 			long createdTimeStamp = Long.parseLong(updatedTime);
 
 			Integer count = 0;
@@ -1473,12 +1475,12 @@ public class HistoryServicesImpl implements HistoryServices {
 			
 			if(count > 0) {
 				if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-					if (size > 0)
-						diseasesCollections = diseasesRepository.findByDoctorIdNullAndUpdatedTimeGreaterThanAndDiscardedIn(new Date(createdTimeStamp),
-								discards, PageRequest.of(page, size, Direction.DESC, "updatedTime"));
-					else
-						diseasesCollections = diseasesRepository.findByDoctorIdNullAndUpdatedTimeGreaterThanAndDiscardedIn(new Date(createdTimeStamp),
-								discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+//					if (size > 0)
+//						diseasesCollections = diseasesRepository.findByDoctorIdNullAndUpdatedTimeGreaterThanAndDiscardedIn(new Date(createdTimeStamp),
+//								discards, PageRequest.of(page, size, Direction.DESC, "updatedTime"));
+//					else
+//						diseasesCollections = diseasesRepository.findByDoctorIdNullAndUpdatedTimeGreaterThanAndDiscardedIn(new Date(createdTimeStamp),
+//								discards, new Sort(Sort.Direction.DESC, "updatedTime"));
 				} else {
 					if (size > 0)
 						diseasesCollections = diseasesRepository.findGlobalDiseasesForAdmin(new Date(createdTimeStamp),
@@ -1521,11 +1523,11 @@ public class HistoryServicesImpl implements HistoryServices {
 			Boolean discarded, String searchTerm) {
 		Response<DiseaseListResponse> diseaseListResponses = new Response<DiseaseListResponse>();
 		List<DiseasesCollection> diseasesCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<Boolean> discards = new ArrayList<Boolean>();
+		discards.add(false);
 		try {
 			if (discarded)
-				discards[1] = true;
+				discards.add(true);
 
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			Integer count = 0;

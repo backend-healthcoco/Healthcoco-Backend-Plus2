@@ -441,24 +441,17 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.jaspersoft</groupId> -->
-<!-- 			<artifactId>com.jaspersoft.studio.data.mongodb</artifactId> -->
-<!-- 			<version>5.1.0</version> -->
-<!-- 		</dependency> -->
-<dependency>
+		<dependency>
             <groupId>com.jaspersoft.connectors.mongodb</groupId>
             <artifactId>js-mongodb-datasource</artifactId>
             <version>0.9.3</version>
         </dependency>
 		<dependency>
-
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>5.2.4.Final</version>
 		</dependency>
 		<dependency>
-
 			<groupId>xml-apis</groupId>
 			<artifactId>xml-apis</artifactId>
 			<version>1.4.01</version>
@@ -726,17 +719,17 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.7.0</version>
+			<version>2.9.8</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>2.7.0</version>
+			<version>2.9.8</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.7.0</version>
+			<version>2.9.8</version>
 		</dependency>
 		<!-- Spring security Dependencies -->
 		<dependency>
@@ -1092,10 +1085,10 @@
 			<name>Spring Milestone Maven Repository</name>
 			<url>http://repo.springsource.org/libs-milestone</url>
 		</repository>
-<!-- 		<repository> -->
-<!-- 			<id>bippo-nexus-public</id> -->
-<!-- 			<url>http://nexus.bippo.co.id/nexus/content/groups/public/</url> -->
-<!-- 		</repository> -->
+		<repository>
+			<id>bippo-nexus-public</id>
+			<url>http://nexus.bippo.co.id/nexus/content/groups/public/</url>
+		</repository>
 		<repository>
 			<id>jasperreports</id>
 			<url>http://jasperreports.sourceforge.net/maven2</url>

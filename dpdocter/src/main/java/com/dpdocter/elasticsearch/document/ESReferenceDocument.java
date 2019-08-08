@@ -16,7 +16,7 @@ public class ESReferenceDocument {
 	@Field(type = FieldType.Text)
 	private String mobileNumber;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Text, fielddata = true)
     private String reference;
 
     @Field(type = FieldType.Text)
