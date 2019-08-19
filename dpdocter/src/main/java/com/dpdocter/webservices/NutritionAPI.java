@@ -20,6 +20,8 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.AssessmentPersonalDetail;
 import com.dpdocter.beans.BloodGlucose;
+import com.dpdocter.beans.ConsultationCall;
+import com.dpdocter.beans.GoalSetting;
 import com.dpdocter.beans.NutritionGoalAnalytics;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.NutritionRecord;
@@ -47,6 +49,7 @@ import com.dpdocter.response.NutritionPlanWithCategoryResponse;
 import com.dpdocter.response.NutritionReferenceResponse;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.services.AssessmentFormService;
+import com.dpdocter.services.GoalSettingService;
 import com.dpdocter.services.NutritionRecordService;
 import com.dpdocter.services.NutritionReferenceService;
 import com.dpdocter.services.NutritionService;
@@ -78,6 +81,9 @@ public class NutritionAPI {
 
 	@Autowired
 	private NutritionReferenceService nutritionReferenceService;
+	
+	@Autowired
+	private GoalSettingService goalSettingService;
 
 	@POST
 	@Path(PathProxy.NutritionUrl.ADD_EDIT_NUTRITION_REFERENCE)
@@ -735,6 +741,51 @@ public class NutritionAPI {
 		return response;
 	}
 	
+	@Path(value = PathProxy.NutritionUrl.ADD_EDIT_GOAL_SETTING)
+	@POST
+	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_GOAL_SETTING, notes = PathProxy.NutritionUrl.ADD_EDIT_GOAL_SETTING)
+	public Response<GoalSetting> addEditGoalSetting(GoalSetting request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<GoalSetting> response = new Response<GoalSetting>();
+
+		response.setData(goalSettingService.addEditGoalSetting(request));
+
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NutritionUrl.GET_GOAL_SETTING)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_SUGAR_SETTINGS_BY_ID, notes = PathProxy.NutritionUrl.GET_SUGAR_SETTINGS_BY_ID)
+	public Response<GoalSetting> getGoalSettingByPatientId(@PathParam("patientId") String patientId) {
+		if (patientId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<GoalSetting> response = new Response<GoalSetting>();
+
+		response.setData(goalSettingService.getGoalSetting(patientId));
+
+		return response;
+	}
+	
+	@Path(value = PathProxy.NutritionUrl.ADD_EDIT_CALL_CONSULTATION)
+	@POST
+	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_CALL_CONSULTATION, notes = PathProxy.NutritionUrl.ADD_EDIT_CALL_CONSULTATION)
+	public Response<ConsultationCall> addEditConsultationCall(ConsultationCall request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<ConsultationCall> response = new Response<ConsultationCall>();
+
+		response.setData(goalSettingService.addEditConsultationCall(request));
+
+		return response;
+	}
 	
 	
 }

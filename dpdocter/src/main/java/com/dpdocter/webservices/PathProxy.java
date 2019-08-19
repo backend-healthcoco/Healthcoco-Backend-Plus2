@@ -1920,6 +1920,12 @@ public interface PathProxy {
 		public static final String ADD_EDIT_SUGAR_MEDICINE_REMINDER = "/sugarMedicineReminder/addEdit";
 		public static final String GET_SUGAR_MEDICINE_REMINDER_LIST_BY_PATIENT_ID = "/sugarMedicineReminder/getList";
 		public static final String GET_SUGAR_MEDICINE_REMINDER_BY_ID = "/sugarMedicineReminder/get/{id}";
+		public static final String ADD_EDIT_GOAL_SETTING = "/addEditGoalSetting";
+		public static final String GET_GOAL_SETTING = "/getGoalSettingForPatient/{patientId}";
+		public static final String ADD_EDIT_CALL_CONSULTATION = "/addEditCallConsultation";
+		public static final String GET_CALL_CONSULTATION = "/getCallConsultation/{id}";
+		public static final String GET_CALL_CONSULTATION_LIST = "/getCallConsultationList";
+		
 	}
 
 	public static final String DENTAL_IMAGING_URL = BASE_URL + "/dentalImaging";
