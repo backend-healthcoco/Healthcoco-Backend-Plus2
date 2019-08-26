@@ -79,6 +79,9 @@
 		</profile>
 		<profile>
 			<id>production</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
