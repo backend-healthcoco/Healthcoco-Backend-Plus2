@@ -884,16 +884,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 
 		if (dischargeSummaryCollection.getAdmissionDate() != null) {
-			parameters.put("dOA", "<b>Date of Admission:-</b>"
-					+ simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()));
+			parameters.put("dOA", simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()));
 		}
 		if (dischargeSummaryCollection.getDischargeDate() != null) {
-			parameters.put("dOD", "<b>Date of Discharge:-</b>"
-					+ simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()));
+			parameters.put("dOD", simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()));
 		}
 		if (dischargeSummaryCollection.getOperationDate() != null) {
-			parameters.put("operationDate", "<b>Date of Operation:-</b>"
-					+ simpleDateFormat.format(dischargeSummaryCollection.getOperationDate()));
+			parameters.put("operationDate", simpleDateFormat.format(dischargeSummaryCollection.getOperationDate()));
 		}
 		if (dischargeSummaryCollection.getSurgeryDate() != null) {
 			parameters.put("surgeryDate", simpleDateFormat.format(dischargeSummaryCollection.getSurgeryDate()) + " "
@@ -901,33 +898,40 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 		}
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getAgeOnAdmission())) {
-			parameters.put("ageOnAdmission", "<b>Age On Admission:-</b>"
-					+ dischargeSummaryCollection.getAgeOnAdmission());
+			parameters.put("ageOnAdmission", dischargeSummaryCollection.getAgeOnAdmission());
 		}
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getAgeOnDischarge())) {
-			parameters.put("ageOnDischarge", "<b>Age On Discharge:-</b>"
-					+ dischargeSummaryCollection.getAgeOnDischarge());
+			parameters.put("ageOnDischarge", dischargeSummaryCollection.getAgeOnDischarge());
 		}
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getWeightOnAdmission())) {
-			parameters.put("weightOnAdmission", "<b>Weight On Admission:-</b>"
-					+ dischargeSummaryCollection.getWeightOnAdmission());
+			parameters.put("weightOnAdmission", dischargeSummaryCollection.getWeightOnAdmission());
 		}
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getWeightOnDischarge())) {
-			parameters.put("weightOnDischarge", "<b>Weight On Discharge:-</b>"
-					+ dischargeSummaryCollection.getWeightOnDischarge());
+			parameters.put("weightOnDischarge", dischargeSummaryCollection.getWeightOnDischarge());
 		}
+	    
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getTimeOfAdmission())) {
-			parameters.put("timeOfAdmission", "<b>Time Of Admission:-</b>"
-					+ dischargeSummaryCollection.getTimeOfAdmission());
+			SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
+			Date dt = sdfForMins.parse(dischargeSummaryCollection.getTimeOfAdmission());
+			sdfForMins = new SimpleDateFormat("hh:mm a");
+		    
+			parameters.put("timeOfAdmission", sdfForMins.format(dt));
 		}
+		
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getTimeOfDischarge())) {
-			parameters.put("timeOfDischarge", "<b>Time Of Discharge:-</b>"
-					+ dischargeSummaryCollection.getTimeOfDischarge());
+			SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
+			Date dt = sdfForMins.parse(dischargeSummaryCollection.getTimeOfDischarge());
+			sdfForMins = new SimpleDateFormat("hh:mm a");
+			parameters.put("timeOfDischarge", sdfForMins.format(dt));
 		}
+		
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getTimeOfOperation())) {
-			parameters.put("timeOfOperation", "<b>Time Of Operation:-</b>"
-					+ dischargeSummaryCollection.getTimeOfOperation());
+			SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
+			Date dt = sdfForMins.parse(dischargeSummaryCollection.getTimeOfOperation());
+			sdfForMins = new SimpleDateFormat("hh:mm a");
+			parameters.put("timeOfOperation", sdfForMins.format(dt));
 		}
+		
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getReferenceName())) {
 			parameters.put("referenceName", "<b>Reference Name:-</b>"
 					+ dischargeSummaryCollection.getReferenceName());

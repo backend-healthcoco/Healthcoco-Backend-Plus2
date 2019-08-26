@@ -384,37 +384,43 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 
 		if (admitCardCollection.getAdmissionDate() != null) {
 			show = true;
-			parameters.put("dOA",
-					"<b>Date of Admission:-</b>" + simpleDateFormat.format(admitCardCollection.getAdmissionDate()));
+			parameters.put("dOA", simpleDateFormat.format(admitCardCollection.getAdmissionDate()));
 		}
 		parameters.put("showDOA", show);
 		show = false;
 		if (admitCardCollection.getDischargeDate() != null) {
 			show = true;
-			parameters.put("dOD",
-					"<b>Date of Discharge:-</b>" + simpleDateFormat.format(admitCardCollection.getDischargeDate()));
+			parameters.put("dOD", simpleDateFormat.format(admitCardCollection.getDischargeDate()));
 		}
 		parameters.put("showDOD", show);
 		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getTimeOfAdmission())) {
 			show = true;
-			parameters.put("tOA",
-					"<b>Time of Admission:-</b>" + admitCardCollection.getTimeOfAdmission());
+			SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
+			Date dt = sdfForMins.parse(admitCardCollection.getTimeOfAdmission());
+			sdfForMins = new SimpleDateFormat("hh:mm a");
+			parameters.put("tOA", sdfForMins.format(dt));
 		}
 		parameters.put("showTOA", show);
 		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getTimeOfDischarge())) {
 			show = true;
-			parameters.put("tOD",
-					"<b>Time of Discharge:-</b>" + admitCardCollection.getTimeOfDischarge());
+			SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
+			Date dt = sdfForMins.parse(admitCardCollection.getTimeOfDischarge());
+			sdfForMins = new SimpleDateFormat("hh:mm a");
+			parameters.put("tOD", sdfForMins.format(dt));
 		}
 		parameters.put("showTOD", show);
 		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getTimeOfOperation())) {
 			show = true;
-			parameters.put("tOO",
-					"<b>Time of Operation:-</b>" + admitCardCollection.getTimeOfOperation());
+			SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
+			Date dt = sdfForMins.parse(admitCardCollection.getTimeOfOperation());
+			sdfForMins = new SimpleDateFormat("hh:mm a");
+			
+			parameters.put("tOO", sdfForMins.format(dt));
 		}
+		
 		parameters.put("showTOO", show);
 		show = false;
 		if (admitCardCollection.getOperationDate() != null) {

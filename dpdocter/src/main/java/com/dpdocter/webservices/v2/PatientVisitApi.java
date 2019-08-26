@@ -88,7 +88,7 @@ public class PatientVisitApi {
 		}
 		List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId,
 				patientId, page, size, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId),
-				updatedTime, visitFor);
+				updatedTime, visitFor, true);
 
 		Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
 		response.setDataList(patienVisitResponse);

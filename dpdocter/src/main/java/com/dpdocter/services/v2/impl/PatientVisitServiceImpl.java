@@ -458,7 +458,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	@Transactional
 	public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor) {
+			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor, Boolean discarded) {
 		List<PatientVisitResponse> response = null;
 		List<PatientVisitLookupBean> patientVisitlookupbeans = null;
 		try {

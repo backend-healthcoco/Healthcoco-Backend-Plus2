@@ -23,7 +23,7 @@ public interface PatientVisitService {
 	PatientVisitResponse getVisit(String visitId);
 */
 	List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor);
+			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor, Boolean discarded);
 
 	/*Boolean email(String visitId, String emailAddress);
 

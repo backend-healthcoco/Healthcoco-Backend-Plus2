@@ -743,6 +743,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 							fieldsCollections.add(fieldsCollection);
 						}
 						appointmentCollection.setTreatmentFields(fieldsCollections);
+					}else {
+						appointmentCollection.setTreatmentFields(null);
 					}
 					appointmentCollection = appointmentRepository.save(appointmentCollection);
 
