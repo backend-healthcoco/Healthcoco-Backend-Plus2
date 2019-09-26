@@ -1,4 +1,4 @@
-<%@ page language="java" pageEncoding="UTF-8"%>
+<%-- <%@ page language="java" pageEncoding="UTF-8"%>
 <%@page import="java.io.InputStreamReader"%>
 <%@page import="java.io.BufferedReader"%>
 <%@page import="javax.net.ssl.HttpsURLConnection"%>
@@ -56,3 +56,4 @@
 	response.setContentType("text/html");
 	out.print(vStringBuffer.substring(0,vStringBuffer.length()-1));
 %>
+ --%>

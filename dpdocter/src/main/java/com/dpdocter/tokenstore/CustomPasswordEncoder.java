@@ -1,44 +1,21 @@
 package com.dpdocter.tokenstore;
 
-import java.io.UnsupportedEncodingException;
-
-import org.springframework.security.authentication.encoding.BaseDigestPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import common.util.web.DPDoctorUtils;
 @Component
-public class CustomPasswordEncoder extends BaseDigestPasswordEncoder {
+public class CustomPasswordEncoder implements PasswordEncoder {
 
-	@Override
-	public String encodePassword(String rawPass, Object salt) {
-		String saltedPass = mergePasswordAndSalt(rawPass, salt, false);
-		char[] pass = saltedPass.toCharArray();
-		try {
-			pass = DPDoctorUtils.getSHA3SecurePassword(pass);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return String.valueOf(pass);
-	}
+	String salt = "$2a$12$HHBRV5pOMt9wQ9Ve.2mnhu";
 	
 	@Override
-	public boolean isPasswordValid(String encPass, String rawPass, Object salt) {
-		// TODO Auto-generated method stub
-		String pass1 = "" + encPass;
-		
-		String pass2 = encodePassword(rawPass, salt);
-		return match( pass1, pass2);
-	}
-
-	boolean match(String pass1, String pass2)
-
-	{
-		if (pass1.equals(pass2)) {
-			return true;
-		}
-		return false;
-
-	}
-
+    public String encode(CharSequence rawPassword) {
+        String hashed = BCrypt.hashpw(rawPassword.toString(), salt);
+        return hashed;
+    }
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        return BCrypt.checkpw(rawPassword.toString(), encodedPassword);
+    }
 }

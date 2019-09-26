@@ -306,15 +306,17 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 						&& !(userCollection.getUserState() == UserState.NOTACTIVATED)) {
 					return "User is not verified";
 				}
-				char[] salt = DPDoctorUtils.generateSalt();
-				userCollection.setSalt(salt);
-				char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
-				for (int i = 0; i < request.getPassword().length; i++)
-					passwordWithSalt[i] = request.getPassword()[i];
-				for (int i = 0; i < salt.length; i++)
-					passwordWithSalt[i + request.getPassword().length] = salt[i];
-				userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
+//				char[] salt = DPDoctorUtils.generateSalt();
+//				userCollection.setSalt(salt);
+//				char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
+//				for (int i = 0; i < request.getPassword().length; i++)
+//					passwordWithSalt[i] = request.getPassword()[i];
+//				for (int i = 0; i < salt.length; i++)
+//					passwordWithSalt[i + request.getPassword().length] = salt[i];
+//				userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
 				// userCollection.setIsTempPassword(false);
+				
+				userCollection.setPassword(request.getPassword());
 				userRepository.save(userCollection);
 
 				tokenCollection.setIsUsed(true);

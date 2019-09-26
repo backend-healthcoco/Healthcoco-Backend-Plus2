@@ -64,6 +64,7 @@ import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
 import com.dpdocter.services.OTPService;
+import com.dpdocter.tokenstore.CustomPasswordEncoder;
 
 import common.util.web.DPDoctorUtils;
 
@@ -130,23 +131,28 @@ public class LoginServiceImpl implements LoginService {
 				throw new BusinessException(ServiceError.InvalidInput, login);
 			} else {
 				System.out.println("user found");
-
-				char[] salt = userCollection.getSalt();
-				if (salt != null && salt.length > 0) {
-					char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
-					for (int i = 0; i < request.getPassword().length; i++)
-						passwordWithSalt[i] = request.getPassword()[i];
-					for (int i = 0; i < salt.length; i++)
-						passwordWithSalt[i + request.getPassword().length] = salt[i];
-					if (!Arrays.equals(userCollection.getPassword(),
-							DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))) {
-						logger.warn(login);
-						throw new BusinessException(ServiceError.InvalidInput, login);
-					}
-				} else {
+				boolean isPasswordCorrect = Arrays.equals(userCollection.getPassword(),request.getPassword());
+				
+				if(!isPasswordCorrect) {
 					logger.warn(login);
 					throw new BusinessException(ServiceError.InvalidInput, login);
 				}
+//				char[] salt = userCollection.getSalt();
+//				if (salt != null && salt.length > 0) {
+//					char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
+//					for (int i = 0; i < request.getPassword().length; i++)
+//						passwordWithSalt[i] = request.getPassword()[i];
+//					for (int i = 0; i < salt.length; i++)
+//						passwordWithSalt[i + request.getPassword().length] = salt[i];
+//					if (!Arrays.equals(userCollection.getPassword(),
+//							DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))) {
+//						logger.warn(login);
+//						throw new BusinessException(ServiceError.InvalidInput, login);
+//					}
+//				} else {
+//					logger.warn(login);
+//					throw new BusinessException(ServiceError.InvalidInput, login);
+//				}
 			}
 			User user = new User();
 			BeanUtil.map(userCollection, user);
