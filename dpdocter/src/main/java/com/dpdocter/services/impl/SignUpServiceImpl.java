@@ -763,12 +763,12 @@ public class SignUpServiceImpl implements SignUpService {
 			userCollection.setCreatedTime(new Date());
 			userCollection.setMobileNumber(collectionBoy.getMobileNumber());
 			userCollection.setUserState(UserState.COLLECTION_BOY);
-			userCollection.setSalt(DPDoctorUtils.generateSalt());
-			String salt = new String(userCollection.getSalt());
-			char[] sha3Password = DPDoctorUtils.getSHA3SecurePassword(collectionBoy.getPassword().toCharArray());
-			String password = new String(sha3Password);
-			password = passwordEncoder.encodePassword(password, salt);
-			userCollection.setPassword(password.toCharArray());
+//			userCollection.setSalt(DPDoctorUtils.generateSalt());
+//			String salt = new String(userCollection.getSalt());
+//			char[] sha3Password = DPDoctorUtils.getSHA3SecurePassword(collectionBoy.getPassword().toCharArray());
+//			String password = new String(sha3Password);
+//			password = passwordEncoder.encodePassword(password, salt);
+			userCollection.setPassword(collectionBoy.getPassword());
 			userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 			userCollection = userRepository.save(userCollection);
 

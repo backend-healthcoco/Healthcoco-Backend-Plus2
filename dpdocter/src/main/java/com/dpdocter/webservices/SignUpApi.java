@@ -330,7 +330,7 @@ public class SignUpApi {
 	public Response<CollectionBoyResponse> collectionBoySignup(CollectionBoy request) {
 		Response<CollectionBoyResponse> response = null;
 
-		if (request == null || request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+		if (request == null || request.getPassword() == null || request.getPassword().length == 0) {
 			logger.warn("Request send  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Request");
 		}

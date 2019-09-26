@@ -14,7 +14,7 @@ public class CollectionBoy extends GenericCollection {
 	private String gender;
 	private Address address;
 	private String mobileNumber;
-	private String password;
+	private char[] password;
 	private String profileImageURL;
 	private Boolean discarded = false;
 	private Boolean isAvailable = false;
@@ -84,11 +84,11 @@ public class CollectionBoy extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getPassword() {
+	public char[] getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(char[] password) {
 		this.password = password;
 	}
 

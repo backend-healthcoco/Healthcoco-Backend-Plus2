@@ -2,14 +2,15 @@ package com.dpdocter.elasticsearch.document;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.MultiField;
 
 import com.dpdocter.beans.EquivalentQuantities;
-import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeAddItem;
 import com.dpdocter.enums.LevelType;
@@ -19,11 +20,8 @@ public class ESRecipeDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Keyword)
 	private String name;
-
-	@Field(type = FieldType.Text)
-	private String recipeDescription;
 
 	@Field(type = FieldType.Nested)
 	private MealQuantity quantity;
@@ -119,31 +117,31 @@ public class ESRecipeDocument {
 	private MealQuantity protein;
 
 	@Field(type = FieldType.Nested)
-	private MealQuantity carbohydreate;
-
+	private MealQuantity carbohydrate;
+	
 	@Field(type = FieldType.Nested)
 	private MealQuantity fiber;
 
-	@Field(type = FieldType.Nested)
-	private List<IngredientAddItem> generalNutrients;
+	@MultiField(mainField = @Field(type = FieldType.Keyword))
+	private Map<String, String> generalNutrients;
 
-	@Field(type = FieldType.Nested)
-	private List<IngredientAddItem> carbNutrients;
+	@MultiField(mainField = @Field(type = FieldType.Keyword))
+	private Map<String, String> carbNutrients;
 
-	@Field(type = FieldType.Nested)
-	private List<IngredientAddItem> lipidNutrients;
+	@MultiField(mainField = @Field(type = FieldType.Keyword))
+	private Map<String, String> lipidNutrients;
 
-	@Field(type = FieldType.Nested)
-	private List<IngredientAddItem> proteinAminoAcidNutrients;
+	@MultiField(mainField = @Field(type = FieldType.Keyword))
+	private Map<String, String> proteinAminoAcidNutrients;
 
-	@Field(type = FieldType.Nested)
-	private List<IngredientAddItem> vitaminNutrients;
+	@MultiField(mainField = @Field(type = FieldType.Keyword))
+	private Map<String, String> vitaminNutrients;
 
-	@Field(type = FieldType.Nested)
-	private List<IngredientAddItem> mineralNutrients;
+	@MultiField(mainField = @Field(type = FieldType.Keyword))
+	private Map<String, String> mineralNutrients;
 
-	@Field(type = FieldType.Nested)
-	private List<IngredientAddItem> otherNutrients;
+	@MultiField(mainField = @Field(type = FieldType.Keyword))
+	private Map<String, String> otherNutrients;
 
 	@Field(type = FieldType.Boolean)
 	private boolean nutrientValueAtRecipeLevel = false;
@@ -228,28 +226,12 @@ public class ESRecipeDocument {
 		this.protein = protein;
 	}
 
-	public MealQuantity getCarbohydreate() {
-		return carbohydreate;
+	public MealQuantity getCarbohydrate() {
+		return carbohydrate;
 	}
 
-	public void setCarbohydreate(MealQuantity carbohydreate) {
-		this.carbohydreate = carbohydreate;
-	}
-
-	public List<IngredientAddItem> getCarbNutrients() {
-		return carbNutrients;
-	}
-
-	public void setCarbNutrients(List<IngredientAddItem> carbNutrients) {
-		this.carbNutrients = carbNutrients;
-	}
-
-	public List<IngredientAddItem> getLipidNutrients() {
-		return lipidNutrients;
-	}
-
-	public void setLipidNutrients(List<IngredientAddItem> lipidNutrients) {
-		this.lipidNutrients = lipidNutrients;
+	public void setCarbohydrate(MealQuantity carbohydrate) {
+		this.carbohydrate = carbohydrate;
 	}
 
 	public String getDishType() {
@@ -380,7 +362,7 @@ public class ESRecipeDocument {
 		this.equivalentMeasurements = equivalentMeasurements;
 	}
 
-	public boolean isVerified() {
+	public boolean getVerified() {
 		return verified;
 	}
 
@@ -428,44 +410,60 @@ public class ESRecipeDocument {
 		this.hospitalId = hospitalId;
 	}
 
-	public void setMineralNutrients(List<IngredientAddItem> mineralNutrients) {
-		this.mineralNutrients = mineralNutrients;
-	}
-
-	public void setOtherNutrients(List<IngredientAddItem> otherNutrients) {
-		this.otherNutrients = otherNutrients;
-	}
-
-	public List<IngredientAddItem> getGeneralNutrients() {
+	public Map<String, String> getGeneralNutrients() {
 		return generalNutrients;
 	}
 
-	public void setGeneralNutrients(List<IngredientAddItem> generalNutrients) {
+	public void setGeneralNutrients(Map<String, String> generalNutrients) {
 		this.generalNutrients = generalNutrients;
 	}
 
-	public List<IngredientAddItem> getProteinAminoAcidNutrients() {
+	public Map<String, String> getCarbNutrients() {
+		return carbNutrients;
+	}
+
+	public void setCarbNutrients(Map<String, String> carbNutrients) {
+		this.carbNutrients = carbNutrients;
+	}
+
+	public Map<String, String> getLipidNutrients() {
+		return lipidNutrients;
+	}
+
+	public void setLipidNutrients(Map<String, String> lipidNutrients) {
+		this.lipidNutrients = lipidNutrients;
+	}
+
+	public Map<String, String> getProteinAminoAcidNutrients() {
 		return proteinAminoAcidNutrients;
 	}
 
-	public void setProteinAminoAcidNutrients(List<IngredientAddItem> proteinAminoAcidNutrients) {
+	public void setProteinAminoAcidNutrients(Map<String, String> proteinAminoAcidNutrients) {
 		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
 	}
 
-	public List<IngredientAddItem> getMineralNutrients() {
-		return mineralNutrients;
-	}
-
-	public List<IngredientAddItem> getOtherNutrients() {
-		return otherNutrients;
-	}
-
-	public List<IngredientAddItem> getVitaminNutrients() {
+	public Map<String, String> getVitaminNutrients() {
 		return vitaminNutrients;
 	}
 
-	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
+	public void setVitaminNutrients(Map<String, String> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
+	}
+
+	public Map<String, String> getMineralNutrients() {
+		return mineralNutrients;
+	}
+
+	public void setMineralNutrients(Map<String, String> mineralNutrients) {
+		this.mineralNutrients = mineralNutrients;
+	}
+
+	public Map<String, String> getOtherNutrients() {
+		return otherNutrients;
+	}
+
+	public void setOtherNutrients(Map<String, String> otherNutrients) {
+		this.otherNutrients = otherNutrients;
 	}
 
 	public List<String> getCuisine() {
@@ -490,32 +488,6 @@ public class ESRecipeDocument {
 
 	public void setFiber(MealQuantity fiber) {
 		this.fiber = fiber;
-	}
-
-	@Override
-	public String toString() {
-		return "ESRecipeDocument [id=" + id + ", name=" + name + ", quantity=" + quantity + ", equivalentMeasurements="
-				+ equivalentMeasurements + ", videoUrl=" + videoUrl + ", recipeImages=" + recipeImages
-				+ ", includeIngredients=" + includeIngredients + ", excludeIngredients=" + excludeIngredients
-				+ ", locationId=" + locationId + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId
-				+ ", ingredients=" + ingredients + ", dishType=" + dishType + ", technique=" + technique
-				+ ", isPopular=" + isPopular + ", isHoliday=" + isHoliday + ", discarded=" + discarded + ", direction="
-				+ direction + ", dietaryConcerns=" + dietaryConcerns + ", forMember=" + forMember + ", cost=" + cost
-				+ ", costType=" + costType + ", meal=" + meal + ", cuisine=" + cuisine + ", course=" + course
-				+ ", preparationTime=" + preparationTime + ", verified=" + verified + ", updatedTime=" + updatedTime
-				+ ", createdBy=" + createdBy + ", mealTiming=" + mealTiming + ", calories=" + calories + ", fat=" + fat
-				+ ", protein=" + protein + ", carbohydreate=" + carbohydreate + ", fiber=" + fiber
-				+ ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients + ", lipidNutrients="
-				+ lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", vitaminNutrients="
-				+ vitaminNutrients + ", mineralNutrients=" + mineralNutrients + ", otherNutrients=" + otherNutrients
-				+ ", nutrientValueAtRecipeLevel=" + nutrientValueAtRecipeLevel + "]";
-	}
-		public String getRecipeDescription() {
-		return recipeDescription;
-	}
-
-	public void setRecipeDescription(String recipeDescription) {
-		this.recipeDescription = recipeDescription;
 	}
 
 }

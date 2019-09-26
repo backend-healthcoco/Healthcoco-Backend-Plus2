@@ -431,12 +431,13 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				if (!accessTokenCollections.isEmpty() && accessTokenCollections != null) {
 					oAuth2AccessTokenRepository.deleteAll(accessTokenCollections);
 				}
-				userCollection.setSalt(DPDoctorUtils.generateSalt());
-				String salt = new String(userCollection.getSalt());
-				char[] sha3Password = request.getPassword();
-				String password = new String(sha3Password);
-				password = passwordEncoder.encodePassword(password, salt);
-				userCollection.setPassword(password.toCharArray());
+//				userCollection.setSalt(DPDoctorUtils.generateSalt());
+//				String salt = new String(userCollection.getSalt());
+//				char[] sha3Password = request.getPassword();
+//				String password = new String(sha3Password);
+//				password = passwordEncoder.encodePassword(password, salt);
+				
+				userCollection.setPassword(request.getPassword());
 				// userCollection.setIsTempPassword(false);
 				userRepository.save(userCollection);
 				tokenCollection.setIsUsed(true);
@@ -463,11 +464,12 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			}
 			userCollection = userCollections.get(0);
 			userCollection.setSalt(DPDoctorUtils.generateSalt());
-			String salt = new String(userCollection.getSalt());
-			char[] sha3Password = request.getPassword();
-			String password = new String(sha3Password);
-			password = passwordEncoder.encodePassword(password, salt);
-			userCollection.setPassword(password.toCharArray());
+//			String salt = new String(userCollection.getSalt());
+//			char[] sha3Password = request.getPassword();
+//			String password = new String(sha3Password);
+//			password = passwordEncoder.encodePassword(password, salt);
+			
+			userCollection.setPassword(request.getPassword());
 			userRepository.save(userCollection);
 			return "You have successfully changed your password.";
 		} catch (IllegalArgumentException argumentException) {

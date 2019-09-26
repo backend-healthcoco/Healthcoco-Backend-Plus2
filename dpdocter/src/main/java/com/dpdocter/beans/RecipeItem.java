@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 
@@ -25,87 +26,24 @@ public class RecipeItem {
 
 	private MealQuantity protein;
 
-	private MealQuantity carbohydreate;
+	private MealQuantity carbohydrate;
 
 	private MealQuantity fiber;
 
-	private List<IngredientItem> generalNutrients;
+	private Map<String, String> generalNutrients;
 
-	private List<IngredientItem> carbNutrients;
+	private Map<String, String> carbNutrients;
 
-	private List<IngredientItem> lipidNutrients;
+	private Map<String, String> lipidNutrients;
 
-	private List<IngredientItem> vitaminNutrients;
+	private Map<String, String> proteinAminoAcidNutrients;
 
-	private List<IngredientItem> proteinAminoAcidNutrients;
+	private Map<String, String> vitaminNutrients;
 
-	private List<IngredientItem> mineralNutrients;
+	private Map<String, String> mineralNutrients;
 
-	private List<IngredientItem> otherNutrients;
+	private Map<String, String> otherNutrients;
 
-	public MealQuantity getCalories() {
-		return calories;
-	}
-
-	public void setCalories(MealQuantity calories) {
-		this.calories = calories;
-	}
-
-	public MealQuantity getFat() {
-		return fat;
-	}
-
-	public void setFat(MealQuantity fat) {
-		this.fat = fat;
-	}
-
-	public MealQuantity getProtein() {
-		return protein;
-	}
-
-	public void setProtein(MealQuantity protein) {
-		this.protein = protein;
-	}
-
-	public MealQuantity getCarbohydreate() {
-		return carbohydreate;
-	}
-
-	public void setCarbohydreate(MealQuantity carbohydreate) {
-		this.carbohydreate = carbohydreate;
-	}
-
-	public List<IngredientItem> getCarbNutrients() {
-		return carbNutrients;
-	}
-
-	public void setCarbNutrients(List<IngredientItem> carbNutrients) {
-		this.carbNutrients = carbNutrients;
-	}
-
-	public List<IngredientItem> getLipidNutrients() {
-		return lipidNutrients;
-	}
-
-	public void setLipidNutrients(List<IngredientItem> lipidNutrients) {
-		this.lipidNutrients = lipidNutrients;
-	}
-
-	public List<IngredientItem> getMineralNutrients() {
-		return mineralNutrients;
-	}
-
-	public void setMineralNutrients(List<IngredientItem> mineralNutrients) {
-		this.mineralNutrients = mineralNutrients;
-	}
-
-	public List<IngredientItem> getOtherNutrients() {
-		return otherNutrients;
-	}
-
-	public void setOtherNutrients(List<IngredientItem> otherNutrients) {
-		this.otherNutrients = otherNutrients;
-	}
 
 	public ObjectId getId() {
 		return id;
@@ -139,6 +77,38 @@ public class RecipeItem {
 		this.equivalentMeasurements = equivalentMeasurements;
 	}
 
+	public MealQuantity getCalories() {
+		return calories;
+	}
+
+	public void setCalories(MealQuantity calories) {
+		this.calories = calories;
+	}
+
+	public MealQuantity getFat() {
+		return fat;
+	}
+
+	public void setFat(MealQuantity fat) {
+		this.fat = fat;
+	}
+
+	public MealQuantity getProtein() {
+		return protein;
+	}
+
+	public void setProtein(MealQuantity protein) {
+		this.protein = protein;
+	}
+
+	public MealQuantity getCarbohydrate() {
+		return carbohydrate;
+	}
+
+	public void setCarbohydrate(MealQuantity carbohydrate) {
+		this.carbohydrate = carbohydrate;
+	}
+
 	public MealQuantity getFiber() {
 		return fiber;
 	}
@@ -147,28 +117,60 @@ public class RecipeItem {
 		this.fiber = fiber;
 	}
 
-	public List<IngredientItem> getGeneralNutrients() {
+	public Map<String, String> getGeneralNutrients() {
 		return generalNutrients;
 	}
 
-	public void setGeneralNutrients(List<IngredientItem> generalNutrients) {
+	public void setGeneralNutrients(Map<String, String> generalNutrients) {
 		this.generalNutrients = generalNutrients;
 	}
 
-	public List<IngredientItem> getProteinAminoAcidNutrients() {
+	public Map<String, String> getCarbNutrients() {
+		return carbNutrients;
+	}
+
+	public void setCarbNutrients(Map<String, String> carbNutrients) {
+		this.carbNutrients = carbNutrients;
+	}
+
+	public Map<String, String> getLipidNutrients() {
+		return lipidNutrients;
+	}
+
+	public void setLipidNutrients(Map<String, String> lipidNutrients) {
+		this.lipidNutrients = lipidNutrients;
+	}
+
+	public Map<String, String> getProteinAminoAcidNutrients() {
 		return proteinAminoAcidNutrients;
 	}
 
-	public void setProteinAminoAcidNutrients(List<IngredientItem> proteinAminoAcidNutrients) {
+	public void setProteinAminoAcidNutrients(Map<String, String> proteinAminoAcidNutrients) {
 		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
 	}
 
-	public List<IngredientItem> getVitaminNutrients() {
+	public Map<String, String> getVitaminNutrients() {
 		return vitaminNutrients;
 	}
 
-	public void setVitaminNutrients(List<IngredientItem> vitaminNutrients) {
+	public void setVitaminNutrients(Map<String, String> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
+	}
+
+	public Map<String, String> getMineralNutrients() {
+		return mineralNutrients;
+	}
+
+	public void setMineralNutrients(Map<String, String> mineralNutrients) {
+		this.mineralNutrients = mineralNutrients;
+	}
+
+	public Map<String, String> getOtherNutrients() {
+		return otherNutrients;
+	}
+
+	public void setOtherNutrients(Map<String, String> otherNutrients) {
+		this.otherNutrients = otherNutrients;
 	}
 
 	public Double getCost() {
@@ -185,6 +187,17 @@ public class RecipeItem {
 
 	public void setCostType(LevelType costType) {
 		this.costType = costType;
+	}
+
+	@Override
+	public String toString() {
+		return "RecipeItem [id=" + id + ", name=" + name + ", quantity=" + quantity + ", cost=" + cost + ", costType="
+				+ costType + ", equivalentMeasurements=" + equivalentMeasurements + ", calories=" + calories + ", fat="
+				+ fat + ", protein=" + protein + ", carbohydrate=" + carbohydrate + ", fiber=" + fiber
+				+ ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients + ", lipidNutrients="
+				+ lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", vitaminNutrients="
+				+ vitaminNutrients + ", mineralNutrients=" + mineralNutrients + ", otherNutrients=" + otherNutrients
+				+ "]";
 	}
 
 }
