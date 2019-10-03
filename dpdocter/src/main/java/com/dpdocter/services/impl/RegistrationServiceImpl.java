@@ -487,7 +487,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		List<Group> groups = null;
 		try {
 			// get role of specified type
-			RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
+			RoleCollection roleCollection = roleRepository.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.PATIENT.getRole());
 			if (roleCollection == null) {
 				logger.warn(role);
 				throw new BusinessException(ServiceError.NoRecord, role);
@@ -2254,7 +2254,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			tokenCollection = tokenRepository.save(tokenCollection);
 
 			LocationCollection locationCollection = locationRepository.findById(new ObjectId(request.getLocationId())).orElse(null);
-			RoleCollection adminRoleCollection = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole());
+			RoleCollection adminRoleCollection = roleRepository.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.LOCATION_ADMIN.getRole());
 			String admindoctorName = "";
 			if (adminRoleCollection != null) {
 				List<UserRoleCollection> roleCollections = userRoleRepository.findByRoleIdAndLocationIdAndHospitalId(
@@ -2414,7 +2414,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				LocationCollection locationCollection = locationRepository
 						.findById(new ObjectId(request.getLocationId())).orElse(null);
-				RoleCollection adminRoleCollection = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole());
+				RoleCollection adminRoleCollection = roleRepository.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.LOCATION_ADMIN.getRole());
 				String admindoctorName = "";
 				if (adminRoleCollection != null) {
 					List<UserRoleCollection> userRoleCollections = userRoleRepository.findByRoleIdAndLocationIdAndHospitalId(
@@ -3447,11 +3447,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 	public Boolean updateRoleCollectionData() {
 		Boolean response = false;
 		try {
-			RoleCollection doctorGlobalRoleCollection = roleRepository.findByRole(RoleEnum.DOCTOR.getRole());
+			RoleCollection doctorGlobalRoleCollection = roleRepository.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.DOCTOR.getRole());
 			RoleCollection locationAdminGlobalRoleCollection = roleRepository
-					.findByRole(RoleEnum.LOCATION_ADMIN.getRole());
+					.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.LOCATION_ADMIN.getRole());
 			RoleCollection hospitalAdminGlobalRoleCollection = roleRepository
-					.findByRole(RoleEnum.HOSPITAL_ADMIN.getRole());
+					.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.HOSPITAL_ADMIN.getRole());
 
 			List<RoleCollection> roleCollections = roleRepository.findByLocationIdNotNullAndHospitalIdNotNull();
 			for (RoleCollection roleCollection : roleCollections) {

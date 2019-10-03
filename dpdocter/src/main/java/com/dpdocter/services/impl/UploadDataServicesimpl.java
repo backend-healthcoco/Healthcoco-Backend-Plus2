@@ -1689,7 +1689,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 							Date fromDate = dateFormat.parse(dateSTri);
 
-							String drName = line.get(9).replace("'", "").replace("Dr. ", "").replace("Dr ", "");
+							String drName = line.get(11).replace("'", "").replace("Dr. ", "").replace("Dr ", "");
 							UserCollection userCollection = doctors.get(drName.toLowerCase());
 							if (userCollection == null) {
 								List<UserCollection> collections = mongoTemplate.aggregate(
@@ -1759,8 +1759,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 										treatmentService.setName(treatmentName);
 									}
 
-							if (checkIfNotNullOrNone(line.get(6)))
-										treatmentService.setCost(Double.parseDouble(line.get(6).replace("'", "")));
+							if (checkIfNotNullOrNone(line.get(7)))
+										treatmentService.setCost(Double.parseDouble(line.get(7).replace("'", "")));
 
 									treatmentService.setDoctorId(patientTreatmentCollection.getDoctorId().toString());
 									treatmentService.setLocationId(patientTreatmentCollection.getLocationId().toString());
@@ -1782,38 +1782,61 @@ public class UploadDataServicesimpl implements UploadDateService {
 									if (checkIfNotNullOrNone(line.get(5)))
 										treatment.setNote(line.get(5).replace("'", ""));
 
-									treatment.setFinalCost(treatment.getCost() * treatment.getQuantity().getValue());
-
-									if (checkIfNotNullOrNone(line.get(7))) {
-										
-										double cost =  treatment.getCost() * treatment.getQuantity().getValue();
-										
-										Discount discount = new Discount();
-										if (!checkIfNotNullOrNone(line.get(8))) {
-											discount.setUnit(UnitType.INR);
-										} else if ((line.get(8).replace("'", "")).equalsIgnoreCase("NUMBER")) {
-											discount.setUnit(UnitType.INR);
-										} else {
-											discount.setUnit(UnitType.valueOf(line.get(8).replace("'", "")));
-										}
-										discount.setValue(Double.parseDouble(line.get(7).replace("'", "")));
-										treatment.setDiscount(discount);
-
-										if (discount.getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
-											treatment.setFinalCost(cost
-													- (cost * (discount.getValue() / 100)));
-										} else {
-											treatment.setFinalCost(cost - discount.getValue());
-										}
-
-										if (totalDiscount == null) {
-											totalDiscount = new Discount();
-											totalDiscount.setUnit(UnitType.INR);
-											totalDiscount.setValue(treatment.getFinalCost() - treatment.getCost());
-										} else {
-											totalDiscount.setValue(totalDiscount.getValue() + (treatment.getFinalCost() - treatment.getCost()));
-										}
+									double cost = treatment.getCost();
+									if (checkIfNotNullOrNone(line.get(6))) {
+										Quantity quantity = new Quantity();
+										quantity.setType(QuantityEnum.QTY);
+										quantity.setValue(Integer.parseInt(line.get(6).replace("'", "")));
+										treatment.setQuantity(quantity);
+									}else {
+										Quantity quantity = new Quantity();
+										quantity.setType(QuantityEnum.QTY);
+										quantity.setValue(1);
+										treatment.setQuantity(quantity);
 									}
+
+
+									if (checkIfNotNullOrNone(line.get(9))) {
+																			
+										Discount discount = new Discount();
+										if (!checkIfNotNullOrNone(line.get(10))) {
+											discount.setUnit(UnitType.INR);
+										} else if ((line.get(10).replace("'", "")).equalsIgnoreCase("NUMBER")) {
+											discount.setUnit(UnitType.INR);
+										} else {
+											discount.setUnit(UnitType.valueOf(line.get(10).replace("'", "")));
+										}
+										discount.setValue(Double.parseDouble(line.get(9).replace("'", "")));
+										treatment.setDiscount(discount);
+									
+									}
+
+
+									if(treatment.getQuantity().getValue() > 0) {
+										
+										cost =  cost * treatment.getQuantity().getValue();
+										
+										if(treatment.getDiscount() != null) {
+											if (treatment.getDiscount().getUnit().name().equalsIgnoreCase(UnitType.PERCENT.name())) {
+												treatment.setFinalCost(cost - (cost * (treatment.getDiscount().getValue() / 100)));
+											} else {
+												treatment.setFinalCost(cost - treatment.getDiscount().getValue());
+											}
+											if(totalDiscount == null){
+												totalDiscount = new Discount();
+												totalDiscount.setUnit(UnitType.INR);
+												totalDiscount.setValue(0.0);
+											}
+											Double totaldiscountValue = totalDiscount.getValue() + (cost - treatment.getFinalCost());
+											totalDiscount.setValue(totaldiscountValue);
+										}else {
+											treatment.setFinalCost(cost);
+										}										
+									}else {
+										treatment.setFinalCost(0.0);
+									}
+
+									
 
 									if (treatments == null)
 										treatments = new ArrayList<Treatment>();

@@ -91,7 +91,6 @@ import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.SignUpService;
-import com.dpdocter.services.SubscriptionService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.tokenstore.CustomPasswordEncoder;
 import com.mongodb.DuplicateKeyException;
@@ -296,7 +295,7 @@ public class SignUpServiceImpl implements SignUpService {
 		User user = null;
 		try {
 			// get role of specified type
-			RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
+			RoleCollection roleCollection = roleRepository.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.PATIENT.getRole());
 			if (roleCollection == null) {
 				logger.warn(role);
 				throw new BusinessException(ServiceError.NoRecord, role);
@@ -596,7 +595,7 @@ public class SignUpServiceImpl implements SignUpService {
 	public RegisteredPatientDetails signupNewPatient(PatientSignupRequestMobile request) {
 		RegisteredPatientDetails user = null;
 		try {
-			RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
+			RoleCollection roleCollection = roleRepository.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.PATIENT.getRole());
 			if (roleCollection == null) {
 				logger.warn(role);
 				throw new BusinessException(ServiceError.NoRecord, role);
@@ -881,16 +880,8 @@ public class SignUpServiceImpl implements SignUpService {
 
 			userCollection.setUserState(UserState.NOTACTIVATED);
 			userCollection.setIsVerified(true);
-			if (request.getPassword() != null) {
-				char[] salt = DPDoctorUtils.generateSalt();
-				userCollection.setSalt(salt);
-				char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
-				for (int i = 0; i < request.getPassword().length; i++)
-					passwordWithSalt[i] = request.getPassword()[i];
-				for (int i = 0; i < salt.length; i++)
-					passwordWithSalt[i + request.getPassword().length] = salt[i];
-				userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
-			}
+			userCollection.setPassword(request.getPassword());
+			
 			userCollection = userRepository.save(userCollection);
 			// save doctor specific details
 			DoctorCollection doctorCollection = new DoctorCollection();

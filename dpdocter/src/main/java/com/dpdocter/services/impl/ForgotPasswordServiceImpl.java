@@ -10,16 +10,13 @@ import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.collections.ConfexUserCollection;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.collections.ConfexUserCollection;
 import com.dpdocter.collections.OAuth2AuthenticationAccessTokenCollection;
 import com.dpdocter.collections.OAuth2AuthenticationRefreshTokenCollection;
 import com.dpdocter.collections.OTPCollection;
@@ -96,9 +93,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	@Autowired
 	private OTPRepository otpRepository;
 
-	@Autowired
-	private MongoTemplate mongoTemplate;
-
 	@Value(value = "${forgot.password.link}")
 	private String forgotPasswordLink;
 	
@@ -115,10 +109,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			if (request.getUsername() == null)
 				request.setUsername(request.getEmailAddress());
 
-			Criteria criteria = new Criteria("userName").is(request.getUsername());
-			Query query = new Query();
-			query.addCriteria(criteria);
-			userCollection = mongoTemplate.findById(query, UserCollection.class);
+			userCollection = userRepository.findByUserNameAndEmailAddress(request.getUsername(), request.getUsername());
 
 			if (userCollection != null) {
 				if (userCollection.getUserState() == UserState.USERSTATECOMPLETE) {
@@ -515,20 +506,21 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 					oAuth2AccessTokenRepository.deleteAll(accessTokenCollections);
 				}
 				if (userCollection != null) {
-					char[] salt = DPDoctorUtils.generateSalt();
-
-					if (salt != null && salt.length > 0) {
-						char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
-						for (int i = 0; i < request.getPassword().length; i++) {
-							passwordWithSalt[i] = request.getPassword()[i];
-						}
-						for (int i = 0; i < salt.length; i++) {
-							passwordWithSalt[i + request.getPassword().length] = salt[i];
-						}
-						passwordWithSalt = DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt);
-						userCollection.setPassword(passwordWithSalt);
-						userCollection.setSalt(salt);
-					}
+//					char[] salt = DPDoctorUtils.generateSalt();
+//
+//					if (salt != null && salt.length > 0) {
+//						char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
+//						for (int i = 0; i < request.getPassword().length; i++) {
+//							passwordWithSalt[i] = request.getPassword()[i];
+//						}
+//						for (int i = 0; i < salt.length; i++) {
+//							passwordWithSalt[i + request.getPassword().length] = salt[i];
+//						}
+//						passwordWithSalt = DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt);
+//						userCollection.setPassword(passwordWithSalt);
+//						userCollection.setSalt(salt);
+//					}
+					userCollection.setPassword(request.getPassword());
 					confexUserRepository.save(userCollection);
 				}
 				tokenCollection.setIsUsed(true);

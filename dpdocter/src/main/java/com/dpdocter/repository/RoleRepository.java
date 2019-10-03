@@ -18,7 +18,7 @@ import com.dpdocter.collections.RoleCollection;
 @Repository
 public interface RoleRepository extends MongoRepository<RoleCollection, ObjectId> {
 
-    public RoleCollection findByRole(String role);
+    public RoleCollection findByRoleAndLocationIdIsNullAndHospitalIdIsNull(String role);
 
     public List<RoleCollection> findByLocationIdAndHospitalIdAndUpdatedTimeGreaterThan(ObjectId locationId, ObjectId hospitalId, Date date, Pageable pageRequest);
 

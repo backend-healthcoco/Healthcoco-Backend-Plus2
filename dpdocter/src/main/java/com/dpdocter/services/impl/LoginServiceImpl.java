@@ -132,7 +132,8 @@ public class LoginServiceImpl implements LoginService {
 			} else {
 				System.out.println("user found");
 				boolean isPasswordCorrect = Arrays.equals(userCollection.getPassword(),request.getPassword());
-				
+				System.out.println(userCollection.getPassword());
+				System.out.println(request.getPassword());
 				if(!isPasswordCorrect) {
 					logger.warn(login);
 					throw new BusinessException(ServiceError.InvalidInput, login);

@@ -913,7 +913,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-				RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole());
+				RoleCollection roleCollection = roleRepository.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.LOCATION_ADMIN.getRole());
 				if (roleCollection != null) {
 					Aggregation aggregation = Aggregation.newAggregation(
 							Aggregation.match(new Criteria("roleId").is(roleCollection.getId())),
@@ -1182,7 +1182,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-			RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.RECEPTIONIST_NURSE.getRole());
+			RoleCollection roleCollection = roleRepository.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.RECEPTIONIST_NURSE.getRole());
 			if (roleCollection != null) {
 				Aggregation aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("roleId").is(roleCollection.getId())),

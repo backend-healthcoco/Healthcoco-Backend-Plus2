@@ -66,7 +66,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					UserRoleCollection.class, UserRoleCollection.class);
 			List<UserRoleCollection> userRoleList = groupResults.getMappedResults();
 			response = new ArrayList<SubscriptionDetail>();
-			superAdminRole = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.toString());
+			superAdminRole = roleRepository.findByRoleAndLocationIdIsNullAndHospitalIdIsNull(RoleEnum.SUPER_ADMIN.toString());
 			if (superAdminRole == null) {
 				superAdminRole = new RoleCollection();
 				superAdminRole.setCreatedTime(new Date());
