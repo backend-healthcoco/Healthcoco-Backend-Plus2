@@ -298,7 +298,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 					return "User is not verified";
 				}
 				//userCollection.setPassword(request.getPassword());
-				userCollection.setPassword(passwordEncoder.encode(request.getPassword().toString()).toCharArray());
+				userCollection.setPassword(passwordEncoder.encode(String.valueOf(request.getPassword())).toCharArray());
 				userRepository.save(userCollection);
 
 				tokenCollection.setIsUsed(true);
