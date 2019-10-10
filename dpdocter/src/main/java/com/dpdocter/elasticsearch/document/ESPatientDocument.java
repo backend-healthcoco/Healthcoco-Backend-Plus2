@@ -19,10 +19,10 @@ public class ESPatientDocument {
 	@Field(type = FieldType.Text)
 	private String userId;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Text, fielddata = true)
 	private String PID;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Text, fielddata = true)
 	private String PNUM;
 	
 	@Field(type = FieldType.Text)
@@ -43,10 +43,10 @@ public class ESPatientDocument {
 	@Field(type = FieldType.Text)
 	private String bloodGroup;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Text, fielddata = true)
 	private String emailAddress;
 
-	@Field(type = FieldType.Nested)
+	@Field(type = FieldType.Nested, fielddata = true)
 	private DOB dob;
 
 	@Field(type = FieldType.Text)
@@ -58,7 +58,7 @@ public class ESPatientDocument {
 	@Field(type = FieldType.Text)
 	private String postalCode;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Text, fielddata = true)
 	private String mobileNumber;
 
     @Field(type = FieldType.Keyword)

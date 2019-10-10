@@ -31,7 +31,7 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@Field(type = FieldType.Text)
 	private String title;
 
-	@Field(type = FieldType.Text)
+	@Field(type = FieldType.Text, fielddata = true)
 	private String firstName;
 
 	@Field(type = FieldType.Text)

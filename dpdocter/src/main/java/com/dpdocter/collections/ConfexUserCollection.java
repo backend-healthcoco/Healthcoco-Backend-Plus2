@@ -20,7 +20,7 @@ public class ConfexUserCollection extends GenericCollection {
 	@Field
 	private String firstName;
 
-	@Indexed(unique = true)
+//	@Indexed(unique = true)
 	private String userName;
 
 	@Field

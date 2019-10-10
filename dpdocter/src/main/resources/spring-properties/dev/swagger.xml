@@ -8,15 +8,15 @@
 	http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
 <!-- Swaager configuration -->
-<!--  <bean id="apiListingResourceJSON" class="io.swagger.jaxrs.listing.ApiListingResource"/>  -->
-<!--  <bean id="apiDeclarationProvider" class="io.swagger.jaxrs.listing.SwaggerSerializers" scope="singleton"/>  -->
-<!--  <bean id="beanConfig" class="io.swagger.jaxrs.config.BeanConfig">  -->
-<!--          <property name="title" value="Swagger"/>  -->
-<!--          <property name="version" value="1.0.0" />  -->
-<!--          <property name="schemes" value="http" />  -->
-<!--          <property name="host" value="18.223.94.159" />  -->
-<!--          <property name="basePath" value="/dpdocter/api"/>  -->
-<!--          <property name="resourcePackage" value="com.dpdocter.webservices"/>  -->
-<!--          <property name="scan" value="true"/>  -->
-<!--  </bean>  -->
+ <bean id="apiListingResourceJSON" class="io.swagger.jaxrs.listing.ApiListingResource"/> 
+ <bean id="apiDeclarationProvider" class="io.swagger.jaxrs.listing.SwaggerSerializers" scope="singleton"/> 
+ <bean id="beanConfig" class="io.swagger.jaxrs.config.BeanConfig"> 
+         <property name="title" value="Swagger"/> 
+         <property name="version" value="1.0.0" /> 
+         <property name="schemes" value="http" /> 
+         <property name="host" value="18.223.94.159" /> 
+         <property name="basePath" value="/dpdocter/api"/> 
+         <property name="resourcePackage" value="com.dpdocter.webservices"/> 
+         <property name="scan" value="true"/> 
+ </bean> 
 </beans>

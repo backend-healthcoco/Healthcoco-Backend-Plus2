@@ -33,8 +33,12 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 
 	List<PatientCollection> findByLocationIdAndHospitalIdAndRegistrationDateBetween(ObjectId locationId, ObjectId hospitalId, Long startTimeinMillis, Long endTimeinMillis, Pageable pageRequest);
 	
+	@Query("{'locationId': ?0, 'hospitalId': ?1, 'PNUM': {$ne: null}}")
 	PatientCollection findByLocationIdAndHospitalIdAndPNUMNotNull(ObjectId locationObjectId, ObjectId hospitalObjectId, Sort sort);
 
+	@Query("{'locationId': ?0, 'hospitalId': ?1, 'PNUM': {$ne: null}}")
+	List<PatientCollection> findByLocationIdAndHospitalIdAndPNUMNotNull(ObjectId locationObjectId, ObjectId hospitalObjectId, Pageable pageRequest);
+	
 	@Query(value = "{'userId': ?0, 'locationId': ?1, 'hospitalId': ?2}", count = true)
 	Integer findCount(ObjectId userId, ObjectId locationId, ObjectId hospitalId);
 

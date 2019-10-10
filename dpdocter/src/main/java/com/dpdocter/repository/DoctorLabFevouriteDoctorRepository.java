@@ -10,4 +10,8 @@ import com.dpdocter.collections.DoctorLabFavouriteDoctorCollection;
 public interface DoctorLabFevouriteDoctorRepository
 		extends MongoRepository<DoctorLabFavouriteDoctorCollection, ObjectId> {
 
+	DoctorLabFavouriteDoctorCollection findByDoctorIdAndLocationIdAndHospitalIdAndFavouriteDoctorIdAndFavouriteLocationIdAndFavouriteHospitalIdAndDiscarded(
+			ObjectId objectId, ObjectId objectId2, ObjectId objectId3, ObjectId objectId4, ObjectId objectId5,
+			ObjectId objectId6, boolean b);
+
 }

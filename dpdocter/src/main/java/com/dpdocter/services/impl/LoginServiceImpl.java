@@ -118,42 +118,21 @@ public class LoginServiceImpl implements LoginService {
 	public LoginResponse login(LoginRequest request, Boolean isMobileApp, Boolean isNutritionist) {
 		LoginResponse response = null;
 		try {
-			System.out.println("in login");
 			Criteria criteria = new Criteria("userName").is(request.getUsername());
 			Query query = new Query();
 			query.addCriteria(criteria);
 			UserCollection userCollection = userRepository.findByUserName(request.getUsername());
-					//mongoTemplate.find(query, UserCollection.class);
-			System.out.println("in findById");
-
+		
 			if (userCollection == null) {
 				logger.warn(login);
 				throw new BusinessException(ServiceError.InvalidInput, login);
 			} else {
-				System.out.println("user found");
-				boolean isPasswordCorrect = Arrays.equals(userCollection.getPassword(),request.getPassword());
-				System.out.println(userCollection.getPassword());
-				System.out.println(request.getPassword());
+				boolean isPasswordCorrect = new CustomPasswordEncoder().matches(request.getPassword().toString(), userCollection.getPassword().toString());
+				
 				if(!isPasswordCorrect) {
 					logger.warn(login);
 					throw new BusinessException(ServiceError.InvalidInput, login);
 				}
-//				char[] salt = userCollection.getSalt();
-//				if (salt != null && salt.length > 0) {
-//					char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
-//					for (int i = 0; i < request.getPassword().length; i++)
-//						passwordWithSalt[i] = request.getPassword()[i];
-//					for (int i = 0; i < salt.length; i++)
-//						passwordWithSalt[i + request.getPassword().length] = salt[i];
-//					if (!Arrays.equals(userCollection.getPassword(),
-//							DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))) {
-//						logger.warn(login);
-//						throw new BusinessException(ServiceError.InvalidInput, login);
-//					}
-//				} else {
-//					logger.warn(login);
-//					throw new BusinessException(ServiceError.InvalidInput, login);
-//				}
 			}
 			User user = new User();
 			BeanUtil.map(userCollection, user);

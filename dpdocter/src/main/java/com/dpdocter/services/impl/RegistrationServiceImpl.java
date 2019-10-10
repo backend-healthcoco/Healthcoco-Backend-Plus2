@@ -1667,9 +1667,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				if(DPDoctorUtils.anyStringEmpty(PNUM)) {
 					int patientCounter = location.getPatientCounter();
-					PatientCollection patientCollection = patientRepository.findByLocationIdAndHospitalIdAndPNUMNotNull(locationObjectId,
-							hospitalObjectId, new Sort(Direction.DESC, "createdTime"));
-					if (patientCollection != null) {
+					List<PatientCollection> patientCollections = patientRepository.findByLocationIdAndHospitalIdAndPNUMNotNull(locationObjectId,
+							hospitalObjectId, PageRequest.of(0, 1, Direction.DESC, "createdTime"));
+					if (patientCollections != null && !patientCollections.isEmpty()) {
+						PatientCollection patientCollection = patientCollections.get(0);
 						String lastRegisterdPatientPNUM = patientCollection.getPNUM().replaceAll("[a-zA-Z\\s\\W_]", "");
 						Integer lastRegisterdPatientPNUMCount = 0;
 						if (!DPDoctorUtils.anyStringEmpty(lastRegisterdPatientPNUM))

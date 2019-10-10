@@ -223,9 +223,10 @@ public class MailServiceImpl implements MailService {
 		}
 		else if (QA_ENV.equalsIgnoreCase("true")) {
 			status = sendEmail(TO,"QA - " + subject, body, null);
-		}else {
-			status = sendEmail(TO,"DEV - " + subject, body, null);
 		}
+//		else {
+//			status = sendEmail(TO,"DEV - " + subject, body, null);
+//		}
 		return status;
 	}
 

@@ -4383,6 +4383,7 @@ try {
 				parameters.put("requestId", "<b>Appointment Id :- </b>  --");
 			}
 			if (request.getFromDate() != null) {
+				simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 				parameters.put("fromDate",
 						"<b>Appointment Date :- </b>" + simpleDateFormat.format(request.getFromDate()));
 			}

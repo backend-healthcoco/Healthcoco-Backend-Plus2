@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomPasswordEncoder implements PasswordEncoder {
 
-	String salt = "$2a$12$HHBRV5pOMt9wQ9Ve.2mnhu";
+	//String salt = "$2a$12$HHBRV5pOMt9wQ9Ve.2mnhu";
 	
 	@Override
     public String encode(CharSequence rawPassword) {
-        String hashed = BCrypt.hashpw(rawPassword.toString(), salt);
+        String hashed = BCrypt.hashpw(rawPassword.toString(), BCrypt.gensalt(12));
         return hashed;
     }
     @Override

@@ -762,12 +762,9 @@ public class SignUpServiceImpl implements SignUpService {
 			userCollection.setCreatedTime(new Date());
 			userCollection.setMobileNumber(collectionBoy.getMobileNumber());
 			userCollection.setUserState(UserState.COLLECTION_BOY);
-//			userCollection.setSalt(DPDoctorUtils.generateSalt());
-//			String salt = new String(userCollection.getSalt());
-//			char[] sha3Password = DPDoctorUtils.getSHA3SecurePassword(collectionBoy.getPassword().toCharArray());
-//			String password = new String(sha3Password);
-//			password = passwordEncoder.encodePassword(password, salt);
-			userCollection.setPassword(collectionBoy.getPassword());
+
+//			userCollection.setPassword(collectionBoy.getPassword());
+			userCollection.setPassword(passwordEncoder.encode(collectionBoy.getPassword().toString()).toCharArray());
 			userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 			userCollection = userRepository.save(userCollection);
 
@@ -807,7 +804,7 @@ public class SignUpServiceImpl implements SignUpService {
 				SMS sms = new SMS();
 				sms.setSmsText("Hi ," + collectionBoyCollection.getName()
 						+ " your registration with Healthcoco is completed. Please use provided contact number for login. Your password is "
-						+ collectionBoy.getPassword());
+						+ collectionBoy.getPassword().toString());
 
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(collectionBoyCollection.getMobileNumber());
@@ -880,8 +877,8 @@ public class SignUpServiceImpl implements SignUpService {
 
 			userCollection.setUserState(UserState.NOTACTIVATED);
 			userCollection.setIsVerified(true);
-			userCollection.setPassword(request.getPassword());
-			
+			userCollection.setPassword(passwordEncoder.encode(request.getPassword().toString()).toCharArray());
+//			userCollection.setPassword(request.getPassword());
 			userCollection = userRepository.save(userCollection);
 			// save doctor specific details
 			DoctorCollection doctorCollection = new DoctorCollection();

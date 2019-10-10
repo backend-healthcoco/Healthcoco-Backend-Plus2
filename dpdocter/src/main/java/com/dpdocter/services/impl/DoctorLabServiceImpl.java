@@ -763,6 +763,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					}
 				}
 			}
+
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("firstName", searchTerm));
 			}
@@ -804,14 +805,14 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 							&& !DPDoctorUtils.anyStringEmpty(doctorSearchResponse.getDoctorId())
 							&& !DPDoctorUtils.anyStringEmpty(doctorSearchResponse.getLocationId())
 							&& !DPDoctorUtils.anyStringEmpty(doctorSearchResponse.getHospitalId())) {
-						criteria = new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
-								.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId))
-								.and("favouriteDoctorId").is(new ObjectId(doctorSearchResponse.getDoctorId()))
-								.and("favouriteLocationId").is(new ObjectId(doctorSearchResponse.getLocationId()))
-								.and("favouriteHospitalId").is(new ObjectId(doctorSearchResponse.getHospitalId()))
-								.and("discarded").is(false);
-						fevDoctorCollection = mongoTemplate.findById(new Query(criteria),
-								DoctorLabFavouriteDoctorCollection.class);
+						
+						fevDoctorCollection = doctorLabFevouriteDoctorRepository.
+								findByDoctorIdAndLocationIdAndHospitalIdAndFavouriteDoctorIdAndFavouriteLocationIdAndFavouriteHospitalIdAndDiscarded
+								(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId),
+										new ObjectId(doctorSearchResponse.getDoctorId()),
+										new ObjectId(doctorSearchResponse.getLocationId()),
+										new ObjectId(doctorSearchResponse.getHospitalId()),false);
+								
 						if (fevDoctorCollection != null) {
 							doctorSearchResponse.setIsFavourite(true);
 						}
