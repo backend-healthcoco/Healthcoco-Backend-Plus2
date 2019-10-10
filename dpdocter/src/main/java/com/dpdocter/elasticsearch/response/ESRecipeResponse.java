@@ -1,9 +1,9 @@
 package com.dpdocter.elasticsearch.response;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dpdocter.beans.EquivalentQuantities;
-import com.dpdocter.beans.IngredientAddItem;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.enums.LevelType;
 import com.dpdocter.response.RecipeItemResponse;
@@ -42,19 +42,19 @@ public class ESRecipeResponse {
 
 	private MealQuantity carbohydreate;
 
-	private List<IngredientAddItem> generalNutrients;
+	private Map<String, String> generalNutrients;
 
-	private List<IngredientAddItem> carbNutrients;
+	private Map<String, String> carbNutrients;
 
-	private List<IngredientAddItem> lipidNutrients;
+	private Map<String, String> lipidNutrients;
 
-	private List<IngredientAddItem> proteinAminoAcidNutrients;
+	private Map<String, String> proteinAminoAcidNutrients;
 
-	private List<IngredientAddItem> vitaminNutrients;
+	private Map<String, String> vitaminNutrients;
 
-	private List<IngredientAddItem> mineralNutrients;
+	private Map<String, String> mineralNutrients;
 
-	private List<IngredientAddItem> otherNutrients;
+	private Map<String, String> otherNutrients;
 
 	public List<EquivalentQuantities> getEquivalentMeasurements() {
 		return equivalentMeasurements;
@@ -160,59 +160,59 @@ public class ESRecipeResponse {
 		this.ingredients = ingredients;
 	}
 
-	public List<IngredientAddItem> getGeneralNutrients() {
+	public Map<String, String> getGeneralNutrients() {
 		return generalNutrients;
 	}
 
-	public void setGeneralNutrients(List<IngredientAddItem> generalNutrients) {
+	public void setGeneralNutrients(Map<String, String> generalNutrients) {
 		this.generalNutrients = generalNutrients;
 	}
 
-	public List<IngredientAddItem> getCarbNutrients() {
+	public Map<String, String> getCarbNutrients() {
 		return carbNutrients;
 	}
 
-	public void setCarbNutrients(List<IngredientAddItem> carbNutrients) {
+	public void setCarbNutrients(Map<String, String> carbNutrients) {
 		this.carbNutrients = carbNutrients;
 	}
 
-	public List<IngredientAddItem> getLipidNutrients() {
+	public Map<String, String> getLipidNutrients() {
 		return lipidNutrients;
 	}
 
-	public void setLipidNutrients(List<IngredientAddItem> lipidNutrients) {
+	public void setLipidNutrients(Map<String, String> lipidNutrients) {
 		this.lipidNutrients = lipidNutrients;
 	}
 
-	public List<IngredientAddItem> getProteinAminoAcidNutrients() {
+	public Map<String, String> getProteinAminoAcidNutrients() {
 		return proteinAminoAcidNutrients;
 	}
 
-	public void setProteinAminoAcidNutrients(List<IngredientAddItem> proteinAminoAcidNutrients) {
+	public void setProteinAminoAcidNutrients(Map<String, String> proteinAminoAcidNutrients) {
 		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
 	}
 
-	public List<IngredientAddItem> getVitaminNutrients() {
+	public Map<String, String> getVitaminNutrients() {
 		return vitaminNutrients;
 	}
 
-	public void setVitaminNutrients(List<IngredientAddItem> vitaminNutrients) {
+	public void setVitaminNutrients(Map<String, String> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
 	}
 
-	public List<IngredientAddItem> getMineralNutrients() {
+	public Map<String, String> getMineralNutrients() {
 		return mineralNutrients;
 	}
 
-	public void setMineralNutrients(List<IngredientAddItem> mineralNutrients) {
+	public void setMineralNutrients(Map<String, String> mineralNutrients) {
 		this.mineralNutrients = mineralNutrients;
 	}
 
-	public List<IngredientAddItem> getOtherNutrients() {
+	public Map<String, String> getOtherNutrients() {
 		return otherNutrients;
 	}
 
-	public void setOtherNutrients(List<IngredientAddItem> otherNutrients) {
+	public void setOtherNutrients(Map<String, String> otherNutrients) {
 		this.otherNutrients = otherNutrients;
 	}
 

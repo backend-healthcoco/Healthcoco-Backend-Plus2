@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -8,7 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.EquivalentQuantities;
-import com.dpdocter.beans.IngredientItem;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.enums.LevelType;
 
@@ -27,7 +27,7 @@ public class IngredientCollection extends GenericCollection {
 	private List<EquivalentQuantities> equivalentMeasurements;
 
 	@Field
-	private List<IngredientItem> nutrients;
+	private Map<String, String> nutrients;
 
 	@Field
 	private ObjectId locationId;
@@ -66,25 +66,25 @@ public class IngredientCollection extends GenericCollection {
 	private MealQuantity fiber;
 
 	@Field
-	private List<IngredientItem> generalNutrients;
+	private Map<String, String> generalNutrients;
 
 	@Field
-	private List<IngredientItem> carbNutrients;
+	private Map<String, String> carbNutrients;
 
 	@Field
-	private List<IngredientItem> lipidNutrients;
+	private Map<String, String> lipidNutrients;
 
 	@Field
-	private List<IngredientItem> proteinAminoAcidNutrients;
+	private Map<String, String> proteinAminoAcidNutrients;
 
 	@Field
-	private List<IngredientItem> vitaminNutrients;
+	private Map<String, String> vitaminNutrients;
 
 	@Field
-	private List<IngredientItem> mineralNutrients;
+	private Map<String, String> mineralNutrients;
 
 	@Field
-	private List<IngredientItem> otherNutrients;
+	private Map<String, String> otherNutrients;
 
 	public MealQuantity getCalories() {
 		return calories;
@@ -110,11 +110,11 @@ public class IngredientCollection extends GenericCollection {
 		this.name = name;
 	}
 
-	public List<IngredientItem> getNutrients() {
+	public Map<String, String> getNutrients() {
 		return nutrients;
 	}
 
-	public void setNutrients(List<IngredientItem> nutrients) {
+	public void setNutrients(Map<String, String> nutrients) {
 		this.nutrients = nutrients;
 	}
 
@@ -206,59 +206,59 @@ public class IngredientCollection extends GenericCollection {
 		this.fiber = fiber;
 	}
 
-	public List<IngredientItem> getGeneralNutrients() {
+	public Map<String, String> getGeneralNutrients() {
 		return generalNutrients;
 	}
 
-	public void setGeneralNutrients(List<IngredientItem> generalNutrients) {
+	public void setGeneralNutrients(Map<String, String> generalNutrients) {
 		this.generalNutrients = generalNutrients;
 	}
 
-	public List<IngredientItem> getCarbNutrients() {
+	public Map<String, String> getCarbNutrients() {
 		return carbNutrients;
 	}
 
-	public void setCarbNutrients(List<IngredientItem> carbNutrients) {
+	public void setCarbNutrients(Map<String, String> carbNutrients) {
 		this.carbNutrients = carbNutrients;
 	}
 
-	public List<IngredientItem> getLipidNutrients() {
+	public Map<String, String> getLipidNutrients() {
 		return lipidNutrients;
 	}
 
-	public void setLipidNutrients(List<IngredientItem> lipidNutrients) {
+	public void setLipidNutrients(Map<String, String> lipidNutrients) {
 		this.lipidNutrients = lipidNutrients;
 	}
 
-	public List<IngredientItem> getProteinAminoAcidNutrients() {
+	public Map<String, String> getProteinAminoAcidNutrients() {
 		return proteinAminoAcidNutrients;
 	}
 
-	public void setProteinAminoAcidNutrients(List<IngredientItem> proteinAminoAcidNutrients) {
+	public void setProteinAminoAcidNutrients(Map<String, String> proteinAminoAcidNutrients) {
 		this.proteinAminoAcidNutrients = proteinAminoAcidNutrients;
 	}
 
-	public List<IngredientItem> getVitaminNutrients() {
+	public Map<String, String> getVitaminNutrients() {
 		return vitaminNutrients;
 	}
 
-	public void setVitaminNutrients(List<IngredientItem> vitaminNutrients) {
+	public void setVitaminNutrients(Map<String, String> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
 	}
 
-	public List<IngredientItem> getMineralNutrients() {
+	public Map<String, String> getMineralNutrients() {
 		return mineralNutrients;
 	}
 
-	public void setMineralNutrients(List<IngredientItem> mineralNutrients) {
+	public void setMineralNutrients(Map<String, String> mineralNutrients) {
 		this.mineralNutrients = mineralNutrients;
 	}
 
-	public List<IngredientItem> getOtherNutrients() {
+	public Map<String, String> getOtherNutrients() {
 		return otherNutrients;
 	}
 
-	public void setOtherNutrients(List<IngredientItem> otherNutrients) {
+	public void setOtherNutrients(Map<String, String> otherNutrients) {
 		this.otherNutrients = otherNutrients;
 	}
 
