@@ -7,15 +7,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomPasswordEncoder implements PasswordEncoder {
 
-	//String salt = "$2a$12$HHBRV5pOMt9wQ9Ve.2mnhu";
-	
 	@Override
-    public String encode(CharSequence rawPassword) {
-        String hashed = BCrypt.hashpw(String.valueOf(rawPassword), BCrypt.gensalt(12));
-        return hashed;
-    }
-    @Override
-    public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return BCrypt.checkpw(String.valueOf(rawPassword), encodedPassword);
-    }
+	public String encode(CharSequence rawPassword) {
+		System.out.println((String)rawPassword);
+		String hashed = BCrypt.hashpw((String) rawPassword, BCrypt.gensalt(12));
+		return hashed;
+	}
+
+	@Override
+	public boolean matches(CharSequence rawPassword, String encodedPassword) {
+		System.out.println((String) rawPassword);
+		System.out.println(encodedPassword);
+		return BCrypt.checkpw((String) rawPassword, encodedPassword);
+	}
 }

@@ -127,7 +127,7 @@ public class LoginServiceImpl implements LoginService {
 				logger.warn(login);
 				throw new BusinessException(ServiceError.InvalidInput, login);
 			} else {
-				boolean isPasswordCorrect = new CustomPasswordEncoder().matches(String.valueOf(request.getPassword()), userCollection.getPassword().toString());
+				boolean isPasswordCorrect = new CustomPasswordEncoder().matches(String.valueOf(request.getPassword()), String.valueOf(userCollection.getPassword()));
 				
 				if(!isPasswordCorrect) {
 					logger.warn(login);
