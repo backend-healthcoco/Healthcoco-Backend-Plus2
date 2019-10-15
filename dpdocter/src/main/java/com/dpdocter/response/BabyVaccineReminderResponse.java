@@ -12,7 +12,7 @@ public class BabyVaccineReminderResponse {
 	private List<Vaccine> vaccines;
 	private String mobileNumber;
 	private String clinicNumber;
-
+	private String googleMapShortUrl;
 	public String getPatientName() {
 		return patientName;
 	}
@@ -61,11 +61,18 @@ public class BabyVaccineReminderResponse {
 		this.clinicNumber = clinicNumber;
 	}
 
+	public String getGoogleMapShortUrl() {
+		return googleMapShortUrl;
+	}
+
+	public void setGoogleMapShortUrl(String googleMapShortUrl) {
+		this.googleMapShortUrl = googleMapShortUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "BabyVaccineReminderResponse [patientName=" + patientName + ", doctorName=" + doctorName
 				+ ", locationName=" + locationName + ", vaccines=" + vaccines + ", mobileNumber=" + mobileNumber
-				+ ", clinicNumber=" + clinicNumber + "]";
+				+ ", clinicNumber=" + clinicNumber + ", googleMapShortUrl=" + googleMapShortUrl + "]";
 	}
-
 }

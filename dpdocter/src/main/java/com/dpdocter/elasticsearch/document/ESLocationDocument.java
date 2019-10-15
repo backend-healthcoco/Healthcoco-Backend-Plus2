@@ -131,6 +131,9 @@ public class ESLocationDocument {
 	// private String receiptInitial = "RC";
 
 	@Field(type = FieldType.Text)
+    private String googleMapShortUrl;
+	
+	@Field(type = FieldType.Text)
 	private String locationSlugUrl;
 
 	public String getLocationSlugUrl() {
@@ -429,6 +432,14 @@ public class ESLocationDocument {
 		this.noOfClinicRecommendations = noOfClinicRecommendations;
 	}
 
+	public String getGoogleMapShortUrl() {
+		return googleMapShortUrl;
+	}
+
+	public void setGoogleMapShortUrl(String googleMapShortUrl) {
+		this.googleMapShortUrl = googleMapShortUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "ESLocationDocument [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId
@@ -443,6 +454,9 @@ public class ESLocationDocument {
 				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locationUId="
 				+ locationUId + ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isLocationListed="
 				+ isLocationListed + ", clinicAddress=" + clinicAddress + ", clinicRankingCount=" + clinicRankingCount
-				+ ", noOfClinicRecommendations=" + noOfClinicRecommendations + "]";
+				+ ", noOfClinicRecommendations=" + noOfClinicRecommendations + ", isActivate=" + isActivate
+				+ ", noOfClinicReview=" + noOfClinicReview + ", googleMapShortUrl=" + googleMapShortUrl
+				+ ", locationSlugUrl=" + locationSlugUrl + "]";
 	}
+
 }

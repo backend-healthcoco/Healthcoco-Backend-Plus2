@@ -108,7 +108,7 @@ public interface AppointmentService {
 
 	public String downloadCalender(List<String> doctorIds, String locationId, String hospitalId, String from, String to,
 			Boolean isGroupByDoctor, Boolean showMobileNo, Boolean showAppointmentStatus, Boolean showNotes,
-			Boolean showPatientGroups);
+			Boolean showPatientGroups, Boolean showCategory);
 
 	Response<Event> getEvents(String locationId, List<String> doctorId, String from, String to, int page, int size,
 			String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked, String state);

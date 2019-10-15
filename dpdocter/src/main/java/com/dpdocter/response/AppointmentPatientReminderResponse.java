@@ -22,6 +22,8 @@ public class AppointmentPatientReminderResponse {
 
     private Date fromDate;
 
+    private String googleMapShortUrl;
+    
 	public String getDoctorTitle() {
 		return doctorTitle;
 	}
@@ -86,10 +88,20 @@ public class AppointmentPatientReminderResponse {
 		this.fromDate = fromDate;
 	}
 
+	public String getGoogleMapShortUrl() {
+		return googleMapShortUrl;
+	}
+
+	public void setGoogleMapShortUrl(String googleMapShortUrl) {
+		this.googleMapShortUrl = googleMapShortUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentPatientReminderResponse [doctorTitle=" + doctorTitle + ", doctorName=" + doctorName
 				+ ", patientMobileNumber=" + patientMobileNumber + ", locationName=" + locationName + ", clinicNumber="
-				+ clinicNumber + ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
+				+ clinicNumber + ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate
+				+ ", googleMapShortUrl=" + googleMapShortUrl + "]";
 	}
+
 }

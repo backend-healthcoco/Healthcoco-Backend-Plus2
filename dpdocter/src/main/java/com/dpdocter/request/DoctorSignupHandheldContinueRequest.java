@@ -43,7 +43,7 @@ public class DoctorSignupHandheldContinueRequest {
     private String streetAddress;
 
     private String registerNumber;
-
+    private String googleMapShortUrl;
     public String getUserId() {
 	return userId;
     }
@@ -196,6 +196,14 @@ public class DoctorSignupHandheldContinueRequest {
 	this.registerNumber = registerNumber;
     }
 
+    public String getGoogleMapShortUrl() {
+		return googleMapShortUrl;
+	}
+
+	public void setGoogleMapShortUrl(String googleMapShortUrl) {
+		this.googleMapShortUrl = googleMapShortUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorSignupHandheldContinueRequest [userId=" + userId + ", specialization=" + specialization
@@ -205,7 +213,8 @@ public class DoctorSignupHandheldContinueRequest {
 				+ ", clinicNumber=" + clinicNumber + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl
 				+ ", locationImageUrl=" + locationImageUrl + ", hospitalId=" + hospitalId + ", latitude=" + latitude
 				+ ", longitude=" + longitude + ", streetAddress=" + streetAddress + ", registerNumber=" + registerNumber
-				+ "]";
+				+ ", googleMapShortUrl=" + googleMapShortUrl + "]";
 	}
+
 
 }

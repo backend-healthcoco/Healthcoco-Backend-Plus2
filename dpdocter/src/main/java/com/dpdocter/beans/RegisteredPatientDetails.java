@@ -72,6 +72,8 @@ public class RegisteredPatientDetails extends GenericCollection {
 
 	private String motherName;
 
+	private String landlineNumber;
+	
 	public List<UserNutritionSubscriptionResponse> getUserNutritionSubscriptions() {
 		return userNutritionSubscriptions;
 	}
@@ -322,6 +324,14 @@ public class RegisteredPatientDetails extends GenericCollection {
 		this.motherName = motherName;
 	}
 
+	public String getLandlineNumber() {
+		return landlineNumber;
+	}
+
+	public void setLandlineNumber(String landlineNumber) {
+		this.landlineNumber = landlineNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "RegisteredPatientDetails [firstName=" + firstName + ", localPatientName=" + localPatientName
@@ -334,7 +344,8 @@ public class RegisteredPatientDetails extends GenericCollection {
 				+ isPartOfConsultantDoctor + ", backendPatientId=" + backendPatientId + ", consultantDoctorIds="
 				+ consultantDoctorIds + ", isPatientDiscarded=" + isPatientDiscarded + ", PNUM=" + PNUM
 				+ ", userNutritionSubscriptions=" + userNutritionSubscriptions + ", isChild=" + isChild
-				+ ", fatherName=" + fatherName + ", motherName=" + motherName + "]";
+				+ ", fatherName=" + fatherName + ", motherName=" + motherName + ", landlineNumber=" + landlineNumber
+				+ "]";
 	}
 
 }

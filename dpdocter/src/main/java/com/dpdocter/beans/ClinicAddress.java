@@ -24,6 +24,8 @@ public class ClinicAddress {
 
     private String clinicNumber;
 
+    private String googleMapShortUrl;
+    
     private List<String> alternateClinicNumbers;
 
     private String landmarkDetails;
@@ -137,13 +139,20 @@ public class ClinicAddress {
 	this.longitude = longitude;
     }
 
+    public String getGoogleMapShortUrl() {
+		return googleMapShortUrl;
+	}
+
+	public void setGoogleMapShortUrl(String googleMapShortUrl) {
+		this.googleMapShortUrl = googleMapShortUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicAddress [id=" + id + ", locationName=" + locationName + ", streetAddress=" + streetAddress
 				+ ", locality=" + locality + ", city=" + city + ", state=" + state + ", country=" + country
-				+ ", postalCode=" + postalCode + ", clinicNumber=" + clinicNumber + ", alternateClinicNumbers="
-				+ alternateClinicNumbers + ", landmarkDetails=" + landmarkDetails + ", latitude=" + latitude
-				+ ", longitude=" + longitude + "]";
+				+ ", postalCode=" + postalCode + ", clinicNumber=" + clinicNumber + ", googleMapShortUrl="
+				+ googleMapShortUrl + ", alternateClinicNumbers=" + alternateClinicNumbers + ", landmarkDetails="
+				+ landmarkDetails + ", latitude=" + latitude + ", longitude=" + longitude + "]";
 	}
-
 }

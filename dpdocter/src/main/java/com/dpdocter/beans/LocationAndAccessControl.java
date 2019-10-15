@@ -88,6 +88,8 @@ public class LocationAndAccessControl {
 
 	private Boolean isAdminNutritionist = false;
 
+    private String googleMapShortUrl;
+
 	public String getId() {
 		return id;
 	}
@@ -415,6 +417,13 @@ public class LocationAndAccessControl {
 	public void setIsAdminNutritionist(Boolean isAdminNutritionist) {
 		this.isAdminNutritionist = isAdminNutritionist;
 	}
+	public String getGoogleMapShortUrl() {
+		return googleMapShortUrl;
+	}
+
+	public void setGoogleMapShortUrl(String googleMapShortUrl) {
+		this.googleMapShortUrl = googleMapShortUrl;
+	}
 
 	@Override
 	public String toString() {
@@ -431,7 +440,8 @@ public class LocationAndAccessControl {
 				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", isDentalWorksLab=" + isDentalWorksLab
 				+ ", isDentalImagingLab=" + isDentalImagingLab + ", isMobileNumberOptional=" + isMobileNumberOptional
 				+ ", roles=" + roles + ", isActivate=" + isActivate + ", isVerified=" + isVerified + ", patientInitial="
-				+ patientInitial + ", patientCounter=" + patientCounter + ", isPidHasDate=" + isPidHasDate + "]";
+				+ patientInitial + ", patientCounter=" + patientCounter + ", isPidHasDate=" + isPidHasDate
+				+ ", isVaccinationModuleOn=" + isVaccinationModuleOn + ", googleMapShortUrl=" + googleMapShortUrl + "]";
 	}
 
 }

@@ -41,6 +41,8 @@ public class PatientRegistrationRequest {
 
 	private String secMobile;
 
+	private String landlineNumber;
+	
 	private String adhaarId;
 
 	private String panCardNumber;
@@ -463,21 +465,31 @@ public class PatientRegistrationRequest {
 		this.motherName = motherName;
 	}
 
+	public String getLandlineNumber() {
+		return landlineNumber;
+	}
+
+	public void setLandlineNumber(String landlineNumber) {
+		this.landlineNumber = landlineNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", localPatientName="
 				+ localPatientName + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", age="
 				+ age + ", image=" + image + ", emailAddress=" + emailAddress + ", groups=" + groups + ", bloodGroup="
 				+ bloodGroup + ", profession=" + profession + ", relations=" + relations + ", secMobile=" + secMobile
-				+ ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId="
-				+ drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes="
-				+ notes + ", address=" + address + ", dateOfVisit=" + dateOfVisit + ", pastHistoryId=" + pastHistoryId
-				+ ", medicalHistoryId=" + medicalHistoryId + ", patientNumber=" + patientNumber + ", referredBy="
-				+ referredBy + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
-				+ ", regularCheckUpMonths=" + regularCheckUpMonths + ", role=" + role + ", registrationDate="
-				+ registrationDate + ", medicalQuestionAnswers=" + medicalQuestionAnswers
+				+ ", landlineNumber=" + landlineNumber + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
+				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName="
+				+ insuranceName + ", notes=" + notes + ", address=" + address + ", dateOfVisit=" + dateOfVisit
+				+ ", pastHistoryId=" + pastHistoryId + ", medicalHistoryId=" + medicalHistoryId + ", patientNumber="
+				+ patientNumber + ", referredBy=" + referredBy + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", doctorId=" + doctorId + ", regularCheckUpMonths=" + regularCheckUpMonths + ", role="
+				+ role + ", registrationDate=" + registrationDate + ", medicalQuestionAnswers=" + medicalQuestionAnswers
 				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", personalInformation="
 				+ personalInformation + ", PNUM=" + PNUM + ", PID=" + PID + ", recordType=" + recordType + ", recordId="
-				+ recordId + "]";
+				+ recordId + ", personalHistoryAddRequest=" + personalHistoryAddRequest + ", pastMedicalHistoryHandler="
+				+ pastMedicalHistoryHandler + ", familyMedicalHistoryHandler=" + familyMedicalHistoryHandler
+				+ ", isChild=" + isChild + ", fatherName=" + fatherName + ", motherName=" + motherName + "]";
 	}
 }

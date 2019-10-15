@@ -24,6 +24,8 @@ public class ClinicProfile {
 
     private List<String> alternateClinicNumbers;
 
+    private String googleMapShortUrl;
+
     public String getId() {
 	return id;
     }
@@ -96,11 +98,21 @@ public class ClinicProfile {
 		this.alternateClinicNumbers = alternateClinicNumbers;
 	}
 
+	public String getGoogleMapShortUrl() {
+		return googleMapShortUrl;
+	}
+
+	public void setGoogleMapShortUrl(String googleMapShortUrl) {
+		this.googleMapShortUrl = googleMapShortUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicProfile [id=" + id + ", locationName=" + locationName + ", tagLine=" + tagLine
 				+ ", specialization=" + specialization + ", locationEmailAddress=" + locationEmailAddress
 				+ ", websiteUrl=" + websiteUrl + ", landmarkDetails=" + landmarkDetails + ", clinicNumber="
-				+ clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers + "]";
+				+ clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers + ", googleMapShortUrl="
+				+ googleMapShortUrl + "]";
 	}
+
 }

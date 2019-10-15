@@ -61,6 +61,9 @@ public class PatientCollection extends GenericCollection {
 	private String secMobile;
 
 	@Field
+	private String landlineNumber;
+	
+	@Field
 	private String adhaarId;
 
 	@Field
@@ -444,21 +447,29 @@ public class PatientCollection extends GenericCollection {
 		this.isChild = isChild;
 	}
 
+	public String getLandlineNumber() {
+		return landlineNumber;
+	}
+
+	public void setLandlineNumber(String landlineNumber) {
+		this.landlineNumber = landlineNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCollection [id=" + id + ", firstName=" + firstName + ", localPatientName=" + localPatientName
 				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup=" + bloodGroup
 				+ ", profession=" + profession + ", relations=" + relations + ", emailAddress=" + emailAddress
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", secMobile=" + secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
-				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName="
-				+ insuranceName + ", userId=" + userId + ", notes=" + notes + ", PID=" + PID + ", registrationDate="
-				+ registrationDate + ", gender=" + gender + ", dob=" + dob + ", discarded=" + discarded
-				+ ", isPatientDiscarded=" + isPatientDiscarded + ", dateOfVisit=" + dateOfVisit + ", referredBy="
-				+ referredBy + ", address=" + address + ", consultantDoctorIds=" + consultantDoctorIds
-				+ ", personalInformation=" + personalInformation + ", medicalQuestionAnswers=" + medicalQuestionAnswers
-				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", PNUM=" + PNUM + ", isNutritionActive="
-				+ isNutritionActive + "]";
+				+ ", secMobile=" + secMobile + ", landlineNumber=" + landlineNumber + ", adhaarId=" + adhaarId
+				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
+				+ insuranceId + ", insuranceName=" + insuranceName + ", userId=" + userId + ", notes=" + notes
+				+ ", PID=" + PID + ", registrationDate=" + registrationDate + ", gender=" + gender + ", dob=" + dob
+				+ ", discarded=" + discarded + ", isPatientDiscarded=" + isPatientDiscarded + ", dateOfVisit="
+				+ dateOfVisit + ", referredBy=" + referredBy + ", address=" + address + ", consultantDoctorIds="
+				+ consultantDoctorIds + ", personalInformation=" + personalInformation + ", medicalQuestionAnswers="
+				+ medicalQuestionAnswers + ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", PNUM=" + PNUM
+				+ ", isNutritionActive=" + isNutritionActive + ", fatherName=" + fatherName + ", motherName="
+				+ motherName + ", isChild=" + isChild + "]";
 	}
-
 }

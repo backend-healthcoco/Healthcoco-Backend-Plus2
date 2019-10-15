@@ -1,5 +1,7 @@
 package com.dpdocter.request;
 
+import java.util.List;
+
 public class BulkSMSRequest {
 
 	private String locationId;
@@ -14,6 +16,8 @@ public class BulkSMSRequest {
 
 	private String message;
 
+	private List<String> patientIds;
+	
 	public String getLocationId() {
 		return locationId;
 	}
@@ -62,10 +66,18 @@ public class BulkSMSRequest {
 		this.patientId = patientId;
 	}
 
+	public List<String> getPatientIds() {
+		return patientIds;
+	}
+
+	public void setPatientIds(List<String> patientIds) {
+		this.patientIds = patientIds;
+	}
+
 	@Override
 	public String toString() {
 		return "BulkSMSRequest [locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
-				+ ", groupId=" + groupId + ", message=" + message + "]";
+				+ ", groupId=" + groupId + ", patientId=" + patientId + ", message=" + message + ", patientIds="
+				+ patientIds + "]";
 	}
-
 }
