@@ -1,7 +1,9 @@
 package com.dpdocter.response;
 
 import java.util.Date;
+import java.util.List;
 
+import com.dpdocter.beans.FieldsCollection;
 import com.dpdocter.beans.WorkingHours;
 
 public class CalenderResponse {
@@ -27,6 +29,12 @@ public class CalenderResponse {
 	private String state = "NEW";
 
 	private String doctorId;
+	
+	private String category;
+
+	private String branch;
+
+	private List<FieldsCollection> treatmentFields;
 
 	public String getDoctorId() {
 		return doctorId;
@@ -116,4 +124,35 @@ public class CalenderResponse {
 		this.state = state;
 	}
 
+	public List<FieldsCollection> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<FieldsCollection> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public String getBranch() {
+		return branch;
+	}
+
+	public void setBranch(String branch) {
+		this.branch = branch;
+	}
+
+	@Override
+	public String toString() {
+		return "CalenderResponse [id=" + id + ", time=" + time + ", fromDate=" + fromDate + ", patientName="
+				+ patientName + ", PID=" + PID + ", mobileNumber=" + mobileNumber + ", notes=" + notes + ", patientId="
+				+ patientId + ", status=" + status + ", state=" + state + ", doctorId=" + doctorId + ", category="
+				+ category + ", branch=" + branch + ", treatmentFields=" + treatmentFields + "]";
+	}
 }

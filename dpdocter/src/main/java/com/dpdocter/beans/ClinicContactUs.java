@@ -37,6 +37,8 @@ public class ClinicContactUs extends GenericCollection {
 
 	private Date contactLaterOnDate;
 
+    private String googleMapShortUrl;
+
 	public String getEmailAddress() {
 		return emailAddress;
 	}
@@ -139,6 +141,23 @@ public class ClinicContactUs extends GenericCollection {
 
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
+	}
+
+	public String getGoogleMapShortUrl() {
+		return googleMapShortUrl;
+	}
+
+	public void setGoogleMapShortUrl(String googleMapShortUrl) {
+		this.googleMapShortUrl = googleMapShortUrl;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicContactUs [id=" + id + ", locationName=" + locationName + ", emailAddress=" + emailAddress
+				+ ", type=" + type + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", country=" + country
+				+ ", state=" + state + ", city=" + city + ", clinicNumber=" + clinicNumber + ", streetAddress="
+				+ streetAddress + ", contactState=" + contactState + ", contactLaterOnDate=" + contactLaterOnDate
+				+ ", googleMapShortUrl=" + googleMapShortUrl + "]";
 	}
 
 }

@@ -732,7 +732,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					appointmentCollection.setNotifyDoctorByEmail(request.getNotifyDoctorByEmail());
 					appointmentCollection.setNotifyDoctorBySms(request.getNotifyDoctorBySms());
 					appointmentCollection.setNotifyPatientByEmail(request.getNotifyPatientByEmail());
-					appointmentCollection.setNotifyPatientBySms(request.getNotifyPatientByEmail());
+					appointmentCollection.setNotifyPatientBySms(request.getNotifyPatientBySms());
 					appointmentCollection.setUpdatedTime(new Date());
 					
 					if(request.getTreatmentFields() != null && !request.getTreatmentFields().isEmpty()) {
@@ -786,6 +786,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 					final String clinicContactNum = appointmentLookupResponse.getLocation().getClinicNumber() != null
 							? appointmentLookupResponse.getLocation().getClinicNumber()
 							: "";
+					final String clinicGoogleMapShortUrl = appointmentLookupResponse.getLocation().getGoogleMapShortUrl() != null
+									? appointmentLookupResponse.getLocation().getGoogleMapShortUrl()
+									: "";		
 
 					// sendSMS after appointment is saved
 					final String id = appointmentCollection.getId().toString(),
@@ -803,7 +806,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							try {
 								sendAppointmentEmailSmsNotification(false, request, id, appointmentId, doctorName,
 										patientName, dateTime, clinicName, clinicContactNum, patientEmailAddress,
-										patientMobileNumber, doctorEmailAddress, doctorMobileNumber, facility, branch);
+										patientMobileNumber, doctorEmailAddress, doctorMobileNumber, facility, branch, clinicGoogleMapShortUrl);
 							} catch (MessagingException e) {
 								e.printStackTrace();
 							}
@@ -1016,6 +1019,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 						clinicContactNum = locationCollection.getClinicNumber() != null
 								? locationCollection.getClinicNumber()
 								: "";
+				final String clinicGoogleMapShortUrl = locationCollection.getGoogleMapShortUrl() != null
+										? locationCollection.getGoogleMapShortUrl()
+										: "";		
 				final String branch = (!DPDoctorUtils.anyStringEmpty(request.getBranch())) ? request.getBranch() : "";
 
 				if (request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)) {
@@ -1067,7 +1073,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						try {
 							sendAppointmentEmailSmsNotification(true, request, id, appointmentId, doctorName,
 									patientName, dateTime, clinicName, clinicContactNum, patientEmailAddress,
-									patientMobileNumber, doctorEmailAddress, doctorMobileNumber, facility, branch);
+									patientMobileNumber, doctorEmailAddress, doctorMobileNumber, facility, branch, clinicGoogleMapShortUrl);
 						} catch (MessagingException e) {
 							e.printStackTrace();
 						}
@@ -1215,7 +1221,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			String appointmentCollectionId, String appointmentId, String doctorName, String patientName,
 			String dateTime, String clinicName, String clinicContactNum, String patientEmailAddress,
 			String patientMobileNumber, String doctorEmailAddress, String doctorMobileNumber,
-			DoctorFacility doctorFacility, String branch) throws MessagingException {
+			DoctorFacility doctorFacility, String branch, String googleMapShortUrl) throws MessagingException {
 
 		/*
 		 * sendAppointmentEmailSmsNotification(true, request,
@@ -1235,7 +1241,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()) {
 					sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
 							request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
-							appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch);
+							appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
 				}
 				sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
 						patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
@@ -1250,7 +1256,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 							request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 							request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch);
+							doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
 				}
 				if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 					sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
@@ -1263,12 +1269,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 							"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch);
 					sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
 							request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
-							appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch);
+							appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
 					sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
 							patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
 							clinicContactNum, branch);
@@ -1281,12 +1287,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 							doctorEmailAddress, branch);
 					sendMsg(null, "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR", request.getDoctorId(),
 							request.getLocationId(), request.getHospitalId(), request.getDoctorId(), doctorMobileNumber,
-							patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch);
+							patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(), "TENTATIVE_APPOINTMENT_TO_PATIENT",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
 					sendPushNotification("CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR", request.getDoctorId(),
 							doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
 							doctorName, clinicName, clinicContactNum, branch);
@@ -1307,7 +1313,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						sendMsg(null, "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", request.getDoctorId(),
 								request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-								clinicContactNum, branch);
+								clinicContactNum, branch, googleMapShortUrl);
 					}
 
 					sendPushNotification("CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", request.getDoctorId(),
@@ -1324,7 +1330,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(), "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
 					}
 
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
@@ -1336,13 +1342,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 						sendMsg(null, "CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT", request.getDoctorId(),
 								request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-								clinicContactNum, branch);
+								clinicContactNum, branch, googleMapShortUrl);
 						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(),
 									"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getPatientId(),
 									patientMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-									clinicContactNum, branch);
+									clinicContactNum, branch, googleMapShortUrl);
 
 						sendPushNotification("CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT", request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
@@ -1369,12 +1375,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 							sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
 									doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-									clinicContactNum, branch);
+									clinicContactNum, branch, googleMapShortUrl);
 						else
 							sendMsg(null, "RESCHEDULE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
 									doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-									clinicContactNum, branch);
+									clinicContactNum, branch, googleMapShortUrl);
 					}
 
 					if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
@@ -1392,18 +1398,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 					sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_TO_PATIENT",
 							patientEmailAddress, branch);
 				}
+				System.out.println("getNotifyPatientBySms" + request.getNotifyPatientBySms());
+				System.out.println(patientMobileNumber);
 				if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()) {
-					if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
+					if (request.getState().getState().equals(AppointmentState.CONFIRM.getState())) {
 						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-									doctorName, clinicName, clinicContactNum, branch);
-						else if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
+									doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
+					}else if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(), "RESCHEDULE_APPOINTMENT_TO_PATIENT",
 									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-									doctorName, clinicName, clinicContactNum, branch);
+									doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
 				}
 
 				if (request.getState().getState().equals(AppointmentState.CONFIRM.getState())
@@ -1612,13 +1620,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	private void sendMsg(String formatType, String type, String doctorId, String locationId, String hospitalId,
 			String userId, String mobileNumber, String patientName, String appointmentId, String dateTime,
-			String doctorName, String clinicName, String clinicContactNum, String branch) {
+			String doctorName, String clinicName, String clinicContactNum, String branch, String googleMapShortUrl) {
 		SMSFormatCollection smsFormatCollection = null;
 		if (formatType != null) {
 			smsFormatCollection = sMSFormatRepository.find(new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId), formatType);
 		}
-
 		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 		smsTrackDetail.setDoctorId(new ObjectId(doctorId));
 		smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
@@ -1655,6 +1662,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (!smsFormatCollection.getContent().contains(SMSContent.BRANCH.getContent())
 						|| branch == null)
 					branch = "";
+				if (!smsFormatCollection.getContent().contains(SMSContent.GOOGLE_MAP_URL.getContent())
+						|| googleMapShortUrl == null)
+					googleMapShortUrl = "";
 			}
 		}
 		String text = "";
@@ -1662,7 +1672,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
 			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "") + (branch != "" ? ", " + branch : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ " + dateTime
-					+ ". Download Healthcoco App- " + patientAppBitLink;
+					+ (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")+". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
 		}
 			break;
@@ -1722,15 +1732,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 		case "APPOINTMENT_REMINDER_TO_PATIENT": {
 			text = "You have an appointment @ " + dateTime + " with " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")+ (branch != "" ? ", " + branch : "")
-					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ". Download Healthcoco App- "
+					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")+". Download Healthcoco App- "
 					+ patientAppBitLink;
 			smsDetail.setUserName(patientName);
 		}
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT": {
+			System.out.println("RESCHEDULE_APPOINTMENT_TO_PATIENT sms");
 			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")+ (branch != "" ? ", " + branch : "")
-					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been rescheduled @ " + dateTime
+					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been rescheduled @ " + dateTime+(googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
 		}
@@ -3024,14 +3035,16 @@ System.out.println(appointmentCollections);
 								clinicName = locationCollection.getLocationName(),
 								clinicContactNum = locationCollection.getClinicNumber() != null
 										? locationCollection.getClinicNumber()
-										: "";
-										
+										: "",
+								clinicGoogleMapShortUrl	= locationCollection.getGoogleMapShortUrl() != null
+										? locationCollection.getGoogleMapShortUrl()
+										: "";	
 						sendMsg(SMSFormatType.APPOINTMENT_REMINDER.getType(), "APPOINTMENT_REMINDER_TO_PATIENT",
 								appointmentLookupResponse.getDoctorId().toString(),
 								appointmentLookupResponse.getLocationId().toString(),
 								appointmentLookupResponse.getHospitalId().toString(),
 								appointmentLookupResponse.getPatientId().toString(), patient.getMobileNumber(),
-								patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum, appointmentLookupResponse.getBranch());
+								patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum, appointmentLookupResponse.getBranch(), clinicGoogleMapShortUrl);
 						response = true;
 					}
 				}
@@ -4442,7 +4455,7 @@ System.out.println(appointmentCollections);
 	@Override
 	public String downloadCalender(List<String> doctorIds, String locationId, String hospitalId, String fromTime,
 			String toTime, Boolean isGroupByDoctor, Boolean showMobileNo, Boolean showAppointmentStatus,
-			Boolean showNotes, Boolean showPatientGroups) {
+			Boolean showNotes, Boolean showPatientGroups, Boolean showCategory) {
 		String response = null;
 		JasperReportResponse jasperReportResponse = null;
 		Date fromDate = null;
@@ -4499,7 +4512,7 @@ System.out.println(appointmentCollections);
 
 			jasperReportResponse = createCalenderJasper(calenderResponseForJaspers, doctorIds, locationId, hospitalId,
 					isGroupByDoctor, showMobileNo, showAppointmentStatus, showNotes, showPatientGroups, fromDate,
-					toDate);
+					toDate, showCategory);
 
 			if (jasperReportResponse != null)
 				response = getFinalImageURL(jasperReportResponse.getPath());
@@ -4574,7 +4587,9 @@ System.out.println(appointmentCollections);
 					Fields.field("fromDate", "$fromDate"), Fields.field("patientName", "$patientCard.localPatientName"),
 					Fields.field("patientId", "$patientId"), Fields.field("mobileNumber", "$user.mobileNumber"),
 					Fields.field("status", "$status"), Fields.field("notes", "$explanation"),
-					Fields.field("state", "$state"), Fields.field("doctorId", "$doctorId")));
+					Fields.field("state", "$state"), Fields.field("doctorId", "$doctorId"), 
+					Fields.field("treatmentFields", "$treatmentFields"),
+					Fields.field("category", "$category"), Fields.field("branch", "$branch")));
 
 			CustomAggregationOperation firstGroupOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", "$_id").append("time", new BasicDBObject("$first", "$time"))
@@ -4586,7 +4601,10 @@ System.out.println(appointmentCollections);
 							.append("notes", new BasicDBObject("$first", "$notes"))
 							.append("state", new BasicDBObject("$first", "$state"))
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
-							.append("doctorId", new BasicDBObject("$first", "$doctorId"))));
+							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+							.append("treatmentFields", new BasicDBObject("$first", "$treatmentFields"))
+							.append("category", new BasicDBObject("$first", "$category"))
+							.append("branch", new BasicDBObject("$first", "$branch"))));
 
 			ProjectionOperation projectListsecond = new ProjectionOperation(Fields.from(
 					Fields.field("calenderResponse.patientName", "$patientName"),
@@ -4597,7 +4615,10 @@ System.out.println(appointmentCollections);
 					Fields.field("calenderResponse.notes", "$notes"),
 					Fields.field("calenderResponse.patientId", "$patientId"),
 					Fields.field("calenderResponse.state", "$state"),
-					Fields.field("calenderResponse.doctorId", "$doctorId"), Fields.field("doctorId", "$doctorId")));
+					Fields.field("calenderResponse.doctorId", "$doctorId"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("calenderResponse.treatmentFields", "$treatmentFields"),
+					Fields.field("calenderResponse.category", "$category"),
+					Fields.field("calenderResponse.branch", "$branch")));
 
 			CustomAggregationOperation secondGroupOperation = null;
 			Aggregation aggregation = null;
@@ -4662,13 +4683,13 @@ System.out.println(appointmentCollections);
 	private JasperReportResponse createCalenderJasper(List<CalenderResponseForJasper> calenderResponseForJaspers,
 			List<String> doctorList, String locationId, String hospitalId, Boolean isGroupByDoctor,
 			Boolean showMobileNo, Boolean showAppointmentStatus, Boolean showNotes, Boolean showPatientGroups,
-			Date fromDate, Date toDate) throws IOException, ParseException {
+			Date fromDate, Date toDate, Boolean showCategory) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		UserCollection userCollection = null;
 		String pattern = "dd/MM/yyyy";
 		String doctors = "";
-		Boolean mbnoAvailable = false, noteAvailable = false, statusAvailable = false, groupAvailble = false;
+		Boolean mbnoAvailable = false, noteAvailable = false, statusAvailable = false, groupAvailble = false, categoryAvailable = false, branchAvailable = false;
 		List<CalenderJasperBean> calenderJasperBeans = null;
 		CalenderJasperBean calenderJasperBean = null;
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -4719,28 +4740,51 @@ System.out.println(appointmentCollections);
 					}
 
 				}
-				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPatientId()) && showPatientGroups) {
-					List<GroupCollection> groupCollections = getPatientGroup(locationId, calenderResponse.getDoctorId(),
-							calenderResponse.getPatientId());
-					calenderJasperBean.setGroupName("");
-					if (groupCollections != null && !groupCollections.isEmpty()) {
-
-						for (GroupCollection groupCollection : groupCollections) {
-							calenderJasperBean.setGroupName(calenderJasperBean.getGroupName()
-									+ (!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName()) ? "," : "")
-									+ groupCollection.getName());
-
-						}
-						if (!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName())) {
-							groupAvailble = true;
-
-						}
-					}
-				}
-
-				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getNotes()) && showNotes) {
+//				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPatientId()) && showPatientGroups) {
+//					List<GroupCollection> groupCollections = getPatientGroup(locationId, calenderResponse.getDoctorId(),
+//							calenderResponse.getPatientId());
+//					calenderJasperBean.setGroupName("");
+//					if (groupCollections != null && !groupCollections.isEmpty()) {
+//
+//						for (GroupCollection groupCollection : groupCollections) {
+//							calenderJasperBean.setGroupName(calenderJasperBean.getGroupName()
+//									+ (!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName()) ? "," : "")
+//									+ groupCollection.getName());
+//
+//						}
+//						if (!DPDoctorUtils.anyStringEmpty(calenderJasperBean.getGroupName())) {
+//							groupAvailble = true;
+//
+//						}
+//					}
+//				}
+				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getCategory()) && showNotes) {
 					calenderJasperBean.setNotes("<b>Note :- </b>" + calenderResponse.getNotes());
 					noteAvailable = true;
+				}
+				
+				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getCategory()) && showPatientGroups) {
+					calenderJasperBean.setCategory(calenderResponse.getCategory());
+					categoryAvailable = true;
+				}
+				
+				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getBranch()) && showCategory) {
+					calenderJasperBean.setBranch(calenderResponse.getBranch());
+					branchAvailable = true;
+				}
+				
+				if (calenderResponse.getTreatmentFields() != null && !calenderResponse.getTreatmentFields().isEmpty()) {
+					String treatments = "<b>Treatments:- </b>";
+					for(FieldsCollection fieldsCollection : calenderResponse.getTreatmentFields()) {
+						if(fieldsCollection.getKey() != null && fieldsCollection.getKey().equalsIgnoreCase("toothNumber")) {
+							treatments = treatments + fieldsCollection.getName() + "[" +fieldsCollection.getValue()+"]"+ " ";
+						}else {
+							treatments = treatments + fieldsCollection.getName()+" ";
+						}
+						
+					}
+					calenderJasperBean.setTreatments(treatments);
+					System.out.println(calenderResponse.getPatientName() + treatments);
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPatientName())) {
@@ -4820,7 +4864,9 @@ System.out.println(appointmentCollections);
 		parameters.put("showMobileNo", showMobileNo && mbnoAvailable);
 		parameters.put("showStatus", showAppointmentStatus && statusAvailable);
 		parameters.put("showNotes", showNotes && noteAvailable);
-		parameters.put("showGroups", showPatientGroups && groupAvailble);
+		//parameters.put("showGroups", showPatientGroups && groupAvailble);
+		parameters.put("showCategory", showPatientGroups && categoryAvailable);
+		parameters.put("showBranch", showCategory && branchAvailable);
 		parameters.put("isGroup", isGroupByDoctor);
 
 		parameters.put("footerSignature", "");

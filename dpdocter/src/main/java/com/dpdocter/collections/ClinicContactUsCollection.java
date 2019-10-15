@@ -39,6 +39,8 @@ public class ClinicContactUsCollection extends GenericCollection {
 	private String streetAddress;
 	@Field
 	private DoctorContactStateType contactState;
+	@Field
+    private String googleMapShortUrl;
 
 	public ObjectId getId() {
 		return id;
@@ -144,12 +146,21 @@ public class ClinicContactUsCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
+	public String getGoogleMapShortUrl() {
+		return googleMapShortUrl;
+	}
+
+	public void setGoogleMapShortUrl(String googleMapShortUrl) {
+		this.googleMapShortUrl = googleMapShortUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicContactUsCollection [id=" + id + ", locationName=" + locationName + ", emailAddress="
-				+ emailAddress + ", type=" + type + ", doctorId=" + doctorId + ", country=" + country + ", state="
-				+ state + ", city=" + city + ", contactLaterOnDate=" + contactLaterOnDate + ", clinicNumber="
-				+ clinicNumber + ", streetAddress=" + streetAddress + ", contactState=" + contactState + "]";
+				+ emailAddress + ", type=" + type + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId
+				+ ", country=" + country + ", state=" + state + ", city=" + city + ", contactLaterOnDate="
+				+ contactLaterOnDate + ", clinicNumber=" + clinicNumber + ", streetAddress=" + streetAddress
+				+ ", contactState=" + contactState + ", googleMapShortUrl=" + googleMapShortUrl + "]";
 	}
 
 }

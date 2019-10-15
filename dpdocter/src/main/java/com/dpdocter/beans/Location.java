@@ -116,6 +116,8 @@ public class Location {
 
 	private String smsCode;
 
+    private String googleMapShortUrl;
+
 	public Boolean getIsMobileNumberOptional() {
 		return isMobileNumberOptional;
 	}
@@ -532,6 +534,14 @@ public class Location {
 		this.smsCode = smsCode;
 	}
 
+	public String getGoogleMapShortUrl() {
+		return googleMapShortUrl;
+	}
+
+	public void setGoogleMapShortUrl(String googleMapShortUrl) {
+		this.googleMapShortUrl = googleMapShortUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
@@ -553,7 +563,7 @@ public class Location {
 				+ receiptInitial + ", noOfClinicReview=" + noOfClinicReview + ", isParent=" + isParent
 				+ ", associatedLabs=" + associatedLabs + ", locationSlugUrl=" + locationSlugUrl + ", isDentalWorksLab="
 				+ isDentalWorksLab + ", isDentalImagingLab=" + isDentalImagingLab + ", isMobileNumberOptional="
-				+ isMobileNumberOptional + "]";
+				+ isMobileNumberOptional + ", isPatientWelcomeMessageOn=" + isPatientWelcomeMessageOn + ", smsCode="
+				+ smsCode + ", googleMapShortUrl=" + googleMapShortUrl + "]";
 	}
-
 }

@@ -938,7 +938,23 @@ public class ContactsServiceImpl implements ContactsService {
 
 				}
 
-			} else if (request.getPatientId() != null) {
+			} else if(request.getPatientIds()!=null && !request.getPatientIds().isEmpty()){
+				List<ObjectId> patientIds = new ArrayList<ObjectId>();
+				for(String id : request.getPatientIds())patientIds.add(new ObjectId(id));
+				
+				Criteria criteria = new Criteria().and("id").in(patientIds);
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				AggregationResults<User> aggregationResults = mongoTemplate.aggregate(aggregation, UserCollection.class,
+						User.class);
+				user = aggregationResults.getUniqueMappedResult();
+				if (user != null) {
+					if(mobileNumbers == null)mobileNumbers = new ArrayList<>();
+
+					mobileNumbers.add(user.getMobileNumber());
+
+				}
+			}else if (request.getPatientId() != null) {
 				Criteria criteria = new Criteria().and("id").is(new ObjectId(request.getPatientId()));
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));

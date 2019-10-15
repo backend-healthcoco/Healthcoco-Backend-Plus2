@@ -6449,6 +6449,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jasperDesign.addStyle(normalStyle);
 
+		int tableWidth = columnWidth;
 		Boolean showMobileNo = (Boolean) parameters.get("showMobileNo") != null
 				? (Boolean) parameters.get("showMobileNo")
 				: false;
@@ -6456,54 +6457,204 @@ public class JasperReportServiceImpl implements JasperReportService {
 				: false;
 		Boolean showNotes = (Boolean) parameters.get("showNotes") != null ? (Boolean) parameters.get("showNotes")
 				: false;
-		Boolean showGroups = (Boolean) parameters.get("showGroups") != null ? (Boolean) parameters.get("showGroups")
+//		Boolean showGroups = (Boolean) parameters.get("showGroups") != null ? (Boolean) parameters.get("showGroups")
+//				: false;
+		Boolean showCategory = (Boolean) parameters.get("showCategory") != null ? (Boolean) parameters.get("showCategory")
 				: false;
+		Boolean showBranch = (Boolean) parameters.get("showBranch") != null ? (Boolean) parameters.get("showBranch")
+				: false;
+		
+		int timeWidth = 100, nameWidth = 0, mNoWidth = 0, statusWidth = 0, branchWidth = 0, categoryWidth = 0;
 
-		int timeWidth = 0, nameWidth = 0, mNoWidth = 0, statusWidth = 0, groupWidth = 0;
-
-		if (showMobileNo && showStatus && showGroups) {
-			timeWidth = 120;
-			nameWidth = 130;
-			mNoWidth = 90;
-			statusWidth = 80;
-			groupWidth = 80;
-		} else if (showMobileNo && showStatus) {
-			timeWidth = 130;
-			nameWidth = 170;
-			mNoWidth = 100;
-			statusWidth = 120;
-		} else if (showMobileNo && showGroups) {
-			timeWidth = 120;
-			nameWidth = 130;
-			mNoWidth = 100;
-			groupWidth = 180;
-		} else if (showStatus && showGroups) {
-			timeWidth = 120;
-			nameWidth = 130;
-			statusWidth = 120;
-			groupWidth = 160;
-		} else if (showGroups) {
-			timeWidth = 140;
-			nameWidth = 160;
-			groupWidth = 230;
-		} else if (showStatus) {
-			timeWidth = 140;
-			nameWidth = 150;
-			statusWidth = 120;
-		} else if (showMobileNo) {
-			timeWidth = 140;
-			nameWidth = 160;
-			mNoWidth = 100;
-		} else {
-			timeWidth = 230;
-			nameWidth = 230;
-
+		if(showMobileNo) {
+			mNoWidth = 70;
+			tableWidth = tableWidth - 70;
 		}
+		if(showCategory) {
+			categoryWidth = 70;
+			tableWidth = tableWidth - 70;
+		}
+		if(showStatus) {
+			statusWidth = 70;
+			tableWidth = tableWidth - 70;
+		}
+		if(showBranch) {
+			branchWidth = 70;
+			tableWidth = tableWidth - 70;
+		}
+		nameWidth = tableWidth - 100;
+//		if (showMobileNo && showStatus && showGroups && showCategory) {
+//			timeWidth = 110;
+//			nameWidth = 130;
+//			mNoWidth = 70;
+//			statusWidth = 60;
+//			groupWidth = 70;
+//			categoryWidth = 60;
+//		} else if (showMobileNo && showStatus && showGroups) {
+//			timeWidth = 120;
+//			nameWidth = 130;
+//			mNoWidth = 90;
+//			statusWidth = 80;
+//			groupWidth = 80;
+//		} else if (showMobileNo && showStatus && showCategory) {
+//			timeWidth = 130;
+//			nameWidth = 170;
+//			mNoWidth = 80;
+//			statusWidth = 80;
+//			categoryWidth = 80;
+//		}else if (showMobileNo && showStatus) {
+//			timeWidth = 130;
+//			nameWidth = 170;
+//			mNoWidth = 100;
+//			statusWidth = 120;
+//		} else if (showMobileNo && showGroups) {
+//			timeWidth = 120;
+//			nameWidth = 130;
+//			mNoWidth = 100;
+//			groupWidth = 180;
+//		} else if (showStatus && showGroups) {
+//			timeWidth = 120;
+//			nameWidth = 130;
+//			statusWidth = 120;
+//			groupWidth = 160;
+//		} else if (showGroups) {
+//			timeWidth = 140;
+//			nameWidth = 160;
+//			groupWidth = 230;
+//		} else if (showStatus) {
+//			timeWidth = 140;
+//			nameWidth = 150;
+//			statusWidth = 120;
+//		} else if (showMobileNo) {
+//			timeWidth = 140;
+//			nameWidth = 160;
+//			mNoWidth = 100;
+//		} else if (showCategory) {
+//			timeWidth = 140;
+//			nameWidth = 160;
+//			categoryWidth = 100;
+//		} else {
+//			timeWidth = 230;
+//			nameWidth = 230;
+//
+//		}
 
 		Integer titleFontSize = contentFontSize;
 		if (contentFontSize > 13)
 			titleFontSize = 13;
+		band = new JRDesignBand();
+		band.setSplitType(SplitTypeEnum.STRETCH);
+		band.setHeight(23);
 
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{Timing}"));
+		jrDesignTextField.setX(5);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setWidth(timeWidth);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+		band.addElement(jrDesignTextField);
+		timeWidth = timeWidth + 5;
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{PatientName}"));
+		jrDesignTextField.setX(timeWidth + 2);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setWidth(nameWidth);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+		band.addElement(jrDesignTextField);
+		timeWidth = timeWidth + nameWidth + 2;
+
+		if (showMobileNo) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{MbNo}"));
+			jrDesignTextField.setX(2 + timeWidth);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(mNoWidth);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+			band.addElement(jrDesignTextField);
+			timeWidth = timeWidth + mNoWidth + 2;
+		}
+
+//		if (showGroups) {
+//			jrDesignTextField = new JRDesignTextField();
+//			jrDesignTextField.setExpression(new JRDesignExpression("$P{GroupName}"));
+//			jrDesignTextField.setX(timeWidth);
+//			jrDesignTextField.setY(0);
+//			jrDesignTextField.setHeight(18);
+//			jrDesignTextField.setWidth(groupWidth);
+//			jrDesignTextField.setStretchWithOverflow(true);
+//			jrDesignTextField.setMarkup("html");
+//			jrDesignTextField.setBold(true);
+//			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+//			band.addElement(jrDesignTextField);
+//			timeWidth = timeWidth + groupWidth;
+//		}
+		
+		if (showCategory) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{GroupName}"));
+			jrDesignTextField.setX(timeWidth);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(categoryWidth);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+			band.addElement(jrDesignTextField);
+			timeWidth = timeWidth + categoryWidth;
+		}
+		if (showBranch) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{Category}"));
+			jrDesignTextField.setX(timeWidth);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(branchWidth);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+			band.addElement(jrDesignTextField);
+			timeWidth = timeWidth + branchWidth;
+		}
+		if (showStatus) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{Status}"));
+			jrDesignTextField.setX(timeWidth);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(statusWidth);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+			band.addElement(jrDesignTextField);
+
+		}
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(0);
+		jrDesignLine.setY(22);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth);
+		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+		band.addElement(jrDesignLine);
+		jasperDesign.setColumnHeader(band);
+		
+		
+		timeWidth = 100;
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);
 		band.setHeight(23);
@@ -6530,6 +6681,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(nameWidth);
+		jrDesignTextField.setBold(true);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
@@ -6552,20 +6704,51 @@ public class JasperReportServiceImpl implements JasperReportService {
 			timeWidth = timeWidth + mNoWidth + 2;
 		}
 
-		if (showGroups) {
+//		if (showGroups) {
+//			jrDesignTextField = new JRDesignTextField();
+//			jrDesignTextField.setExpression(new JRDesignExpression("$F{groupName}"));
+//			jrDesignTextField.setPrintWhenExpression(
+//					new JRDesignExpression("!$F{groupName}.equals(null) && !$F{groupName}.isEmpty() "));
+//			jrDesignTextField.setX(timeWidth);
+//			jrDesignTextField.setY(0);
+//			jrDesignTextField.setHeight(18);
+//			jrDesignTextField.setWidth(groupWidth);
+//			jrDesignTextField.setStretchWithOverflow(true);
+//			jrDesignTextField.setMarkup("html");
+//			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+//			band.addElement(jrDesignTextField);
+//			timeWidth = timeWidth + groupWidth;
+//		}
+		
+		if (showCategory) {
 			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$F{groupName}"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{category}"));
 			jrDesignTextField.setPrintWhenExpression(
-					new JRDesignExpression("!$F{groupName}.equals(null) && !$F{groupName}.isEmpty() "));
+					new JRDesignExpression("!$F{category}.equals(null) && !$F{category}.isEmpty() "));
 			jrDesignTextField.setX(timeWidth);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(groupWidth);
+			jrDesignTextField.setWidth(categoryWidth);
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setMarkup("html");
 			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
 			band.addElement(jrDesignTextField);
-			timeWidth = timeWidth + groupWidth;
+			timeWidth = timeWidth + categoryWidth;
+		}
+		if (showBranch) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{branch}"));
+			jrDesignTextField.setPrintWhenExpression(
+					new JRDesignExpression("!$F{branch}.equals(null) && !$F{branch}.isEmpty() "));
+			jrDesignTextField.setX(timeWidth);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(branchWidth);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+			band.addElement(jrDesignTextField);
+			timeWidth = timeWidth + branchWidth;
 		}
 		if (showStatus) {
 			jrDesignTextField = new JRDesignTextField();
@@ -6583,7 +6766,24 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		}
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
+		
+		band = new JRDesignBand();
+		band.setHeight(20);
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{treatments}"));
+		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$F{treatments}.equals(null) && !$F{treatments}.isEmpty() "));
+		jrDesignTextField.setX(5);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setWidth(columnWidth - 20);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+		band.addElement(jrDesignTextField);
+		
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
+		
 		if (showNotes) {
 			band = new JRDesignBand();
 			band.setHeight(20);
@@ -6603,7 +6803,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		}
-
+		band = new JRDesignBand();
+		band.setHeight(1);
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(0);
+		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth);
+		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+		band.addElement(jrDesignLine);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
 		JasperCompileManager.compileReportToFile(jasperDesign,
 				JASPER_TEMPLATES_RESOURCE + "new/mongo-appointment-items.jasper");
 		JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign);

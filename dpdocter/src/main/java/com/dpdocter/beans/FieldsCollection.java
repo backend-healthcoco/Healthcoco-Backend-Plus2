@@ -4,7 +4,7 @@ import org.bson.types.ObjectId;
 
 public class FieldsCollection {
 
-private String key;
+	private String key;
 	
 	private String value;
 

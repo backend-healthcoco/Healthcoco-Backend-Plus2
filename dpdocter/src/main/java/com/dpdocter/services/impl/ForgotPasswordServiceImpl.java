@@ -9,9 +9,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,9 +83,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	@Autowired
 	private OTPRepository otpRepository;
 
-	@Autowired
-	private MongoTemplate mongoTemplate;
-
 	@Value(value = "${forgot.password.link}")
 	private String forgotPasswordLink;
 
@@ -102,10 +96,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			if (request.getUsername() == null)
 				request.setUsername(request.getEmailAddress());
 
-			Criteria criteria = new Criteria("userName").is(request.getUsername());
-			Query query = new Query();
-			query.addCriteria(criteria);
-			userCollection = mongoTemplate.findOne(query, UserCollection.class);
+			userCollection = userRepository.findByUserNameAndEmailAddress(request.getUsername(), request.getUsername());
 
 			if (userCollection != null) {
 				if (userCollection.getUserState() == UserState.USERSTATECOMPLETE) {

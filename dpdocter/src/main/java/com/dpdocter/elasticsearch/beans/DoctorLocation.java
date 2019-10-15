@@ -121,6 +121,9 @@ public class DoctorLocation {
 	// @Field(type = FieldType.String)
 	// private String receiptInitial = "RC";
 
+	@Field(type = FieldType.String)
+    private String googleMapShortUrl;
+
 	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;
 	}
@@ -401,6 +404,14 @@ public class DoctorLocation {
 		this.noOfClinicRecommendations = noOfClinicRecommendations;
 	}
 
+	public String getGoogleMapShortUrl() {
+		return googleMapShortUrl;
+	}
+
+	public void setGoogleMapShortUrl(String googleMapShortUrl) {
+		this.googleMapShortUrl = googleMapShortUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
@@ -415,7 +426,7 @@ public class DoctorLocation {
 				+ ", noOfReviews=" + noOfReviews + ", locationUId=" + locationUId + ", clinicWorkingSchedules="
 				+ clinicWorkingSchedules + ", isLocationListed=" + isLocationListed + ", clinicAddress=" + clinicAddress
 				+ ", clinicRankingCount=" + clinicRankingCount + ", noOfClinicRecommendations="
-				+ noOfClinicRecommendations + "]";
+				+ noOfClinicRecommendations + ", isActivate=" + isActivate + ", noOfClinicReview=" + noOfClinicReview
+				+ ", googleMapShortUrl=" + googleMapShortUrl + "]";
 	}
-
 }

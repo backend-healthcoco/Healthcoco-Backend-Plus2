@@ -66,6 +66,8 @@ public class LabResponse {
 	
 	private Integer noOfClinicReview = 0;
 
+    private String googleMapShortUrl;
+	
     public Integer getNoOfClinicReview() {
 		return noOfClinicReview;
 	}
@@ -306,6 +308,14 @@ public class LabResponse {
 		this.noOfClinicRecommendations = noOfClinicRecommendations;
 	}
 
+	public String getGoogleMapShortUrl() {
+		return googleMapShortUrl;
+	}
+
+	public void setGoogleMapShortUrl(String googleMapShortUrl) {
+		this.googleMapShortUrl = googleMapShortUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "LabResponse [locationId=" + locationId + ", locationName=" + locationName + ", country=" + country
@@ -318,7 +328,8 @@ public class LabResponse {
 				+ isHomeServiceAvailable + ", labTest=" + labTest + ", images=" + images + ", logoUrl=" + logoUrl
 				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", distance="
 				+ distance + ", clinicNumber=" + clinicNumber + ", clinicAddress=" + clinicAddress
-				+ ", noOfClinicRecommendations=" + noOfClinicRecommendations + "]";
+				+ ", noOfClinicRecommendations=" + noOfClinicRecommendations + ", noOfClinicReview=" + noOfClinicReview
+				+ ", googleMapShortUrl=" + googleMapShortUrl + "]";
 	}
 
 }

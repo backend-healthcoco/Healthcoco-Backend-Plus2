@@ -15,6 +15,12 @@ public class CalenderJasperBean {
 	private String groupName = "";
 
 	private String status = "";
+	
+	private String treatments = "";
+	
+	private String category = "";
+
+	private String branch = "";
 
 	public String getTiming() {
 		return timing;
@@ -72,4 +78,34 @@ public class CalenderJasperBean {
 		this.status = status;
 	}
 
+	public String getTreatments() {
+		return treatments;
+	}
+
+	public void setTreatments(String treatments) {
+		this.treatments = treatments;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public String getBranch() {
+		return branch;
+	}
+
+	public void setBranch(String branch) {
+		this.branch = branch;
+	}
+
+	@Override
+	public String toString() {
+		return "CalenderJasperBean [timing=" + timing + ", fromDate=" + fromDate + ", patientName=" + patientName
+				+ ", mobileNumber=" + mobileNumber + ", notes=" + notes + ", groupName=" + groupName + ", status="
+				+ status + ", treatments=" + treatments + ", category=" + category + ", branch=" + branch + "]";
+	}
 }

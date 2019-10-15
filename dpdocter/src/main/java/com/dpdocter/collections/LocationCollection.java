@@ -573,6 +573,7 @@ public class LocationCollection extends GenericCollection {
 				+ noOfClinicReview + ", isParent=" + isParent + ", associatedLabs=" + associatedLabs
 				+ ", locationSlugUrl=" + locationSlugUrl + ", isDentalWorksLab=" + isDentalWorksLab
 				+ ", isDentalImagingLab=" + isDentalImagingLab + ", isMobileNumberOptional=" + isMobileNumberOptional
-				+ "]";
+				+ ", googleMapShortUrl=" + googleMapShortUrl + ", isPatientWelcomeMessageOn="
+				+ isPatientWelcomeMessageOn + ", smsCode=" + smsCode + "]";
 	}
 }

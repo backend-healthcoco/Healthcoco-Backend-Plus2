@@ -85,6 +85,8 @@ public class LocationAndAccessControl {
 
 	private Boolean isVaccinationModuleOn = false;
 
+    private String googleMapShortUrl;
+
 	public String getId() {
 		return id;
 	}
@@ -397,6 +399,14 @@ public class LocationAndAccessControl {
 		this.isVaccinationModuleOn = isVaccinationModuleOn;
 	}
 
+	public String getGoogleMapShortUrl() {
+		return googleMapShortUrl;
+	}
+
+	public void setGoogleMapShortUrl(String googleMapShortUrl) {
+		this.googleMapShortUrl = googleMapShortUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "LocationAndAccessControl [id=" + id + ", locationName=" + locationName + ", country=" + country
@@ -412,7 +422,8 @@ public class LocationAndAccessControl {
 				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", isDentalWorksLab=" + isDentalWorksLab
 				+ ", isDentalImagingLab=" + isDentalImagingLab + ", isMobileNumberOptional=" + isMobileNumberOptional
 				+ ", roles=" + roles + ", isActivate=" + isActivate + ", isVerified=" + isVerified + ", patientInitial="
-				+ patientInitial + ", patientCounter=" + patientCounter + ", isPidHasDate=" + isPidHasDate + "]";
+				+ patientInitial + ", patientCounter=" + patientCounter + ", isPidHasDate=" + isPidHasDate
+				+ ", isVaccinationModuleOn=" + isVaccinationModuleOn + ", googleMapShortUrl=" + googleMapShortUrl + "]";
 	}
 
 }

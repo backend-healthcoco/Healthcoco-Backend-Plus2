@@ -363,7 +363,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					appointmentCollection.setNotifyDoctorByEmail(request.getNotifyDoctorByEmail());
 					appointmentCollection.setNotifyDoctorBySms(request.getNotifyDoctorBySms());
 					appointmentCollection.setNotifyPatientByEmail(request.getNotifyPatientByEmail());
-					appointmentCollection.setNotifyPatientBySms(request.getNotifyPatientByEmail());
+					appointmentCollection.setNotifyPatientBySms(request.getNotifyPatientBySms());
 					appointmentCollection.setUpdatedTime(new Date());
 					appointmentCollection = appointmentRepository.save(appointmentCollection);
 
@@ -1005,13 +1005,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 							patientEmailAddress, branch);
 				}
 				if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()) {
-					if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
+					if (request.getState().getState().equals(AppointmentState.CONFIRM.getState())) {
 						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
 									doctorName, clinicName, clinicContactNum, branch);
-						else if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
+					}else if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(), "RESCHEDULE_APPOINTMENT_TO_PATIENT",
 									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
