@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -891,6 +892,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 													Arrays.asList("$patient.locationId", "$locationId")))
 															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
+							new CustomAggregationOperation(new BasicDBObject("$sort",
+									new BasicDBObject("locationAppointments.time.fromTime", 1))),
 							new CustomAggregationOperation(new BasicDBObject("$project",
 									new BasicDBObject("locationId", "$locationId").append("userId", "$userId")
 											.append("locationAdminName", "$locationAdmin.firstName")
@@ -918,10 +921,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 													new BasicDBObject("$first", "$locationAdminEmailAddress"))
 											.append("userDevices", new BasicDBObject("$first", "$userDevices"))
 											.append("drAppointments",
-													new BasicDBObject("$addToSet", "$drAppointments")))),
-
-							new CustomAggregationOperation(new BasicDBObject("$sort",
-									new BasicDBObject("locationAppointments.time.fromTime", 1))));
+													new BasicDBObject("$addToSet", "$drAppointments")))));
 
 					List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate
 							.aggregate(aggregation, UserRoleCollection.class,
@@ -934,7 +934,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
 
 						for (LocationAdminAppointmentLookupResponse lookupResponse : aggregationResults) {
-							Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
+							Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new LinkedHashMap<String, DoctorAppointmentSMSResponse>();
 							int count = 0;
 							if (lookupResponse.getDrAppointments() != null
 									&& !lookupResponse.getDrAppointments().isEmpty())
@@ -951,7 +951,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 											.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
 										DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
 												.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-										response.setMessage(response.getMessage() + ", "
+										response.setMessage(response.getMessage() + "\n"
 												+ appointmentDoctorReminderResponse.getLocalPatientName() + "("
 												+ _12HourSDF.format(_24HourDt) + ")");
 										count = count + 1;
@@ -960,7 +960,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 									} else {
 										DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
 										response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
-										response.setMessage(appointmentDoctorReminderResponse.getDoctorName() + ":"
+										response.setMessage(appointmentDoctorReminderResponse.getDoctorName() + ": "
 												+ appointmentDoctorReminderResponse.getLocalPatientName() + "("
 												+ _12HourSDF.format(_24HourDt) + ")");
 										count = count + 1;
@@ -986,8 +986,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							LocationAdminAppointmentLookupResponse response = entry.getValue();
 							String message = "Healthcoco! Your clinic " + response.getLocationName() + " have "
 									+ response.getTotalAppointments() + " appointments scheduled today.\n"
-									+ response.getMessage() + ".\nHave a Healthy and Happy day!!";
+									+ response.getMessage() + ".\nStay Happy!";
 
+							System.out.println(message);
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 							smsTrackDetail.setDoctorId(response.getUserId());
 							smsTrackDetail.setType("APPOINTMENT");

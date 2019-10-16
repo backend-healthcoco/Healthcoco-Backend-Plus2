@@ -4784,7 +4784,6 @@ System.out.println(appointmentCollections);
 						
 					}
 					calenderJasperBean.setTreatments(treatments);
-					System.out.println(calenderResponse.getPatientName() + treatments);
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getPatientName())) {
