@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -933,40 +934,47 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 									new BasicDBObject("path", "$doctor")
 											.append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_cl", "locationAppointments.patientId", "userId", "patient"),
+
 							new CustomAggregationOperation(new Document("$unwind",
-									new BasicDBObject("path", "$patient")
-											.append("preserveNullAndEmptyArrays", true))),
-							new CustomAggregationOperation(new Document("$redact",new BasicDBObject("$cond",
-									new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
-									.append("then", "$$KEEP").append("else", "$$PRUNE")))),
-							
-							new CustomAggregationOperation(new Document("$project", new BasicDBObject("locationId", "$locationId")
-									.append("userId", "$userId")
-									.append("locationAdminName", "$locationAdmin.firstName")
-									.append("locationAdminMobileNumber", "$locationAdmin.mobileNumber")
-									.append("locationAdminEmailAddress", "$locationAdmin.emailAddress")
-									.append("locationName", "$location.locationName")
-									.append("userDevices", "$userDevices")
-									.append("drAppointments.time", "$locationAppointments.time")
-									.append("drAppointments.localPatientName", "$patient.localPatientName")
-									.append("drAppointments.doctorName", new BasicDBObject("$concat",Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
-									.append("drAppointments.doctorId", "$locationAppointments.doctorId")
-									)),
-							
-							new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$locationId")
-									.append("locationId", new BasicDBObject("$first","$locationId"))
-									.append("userId", new BasicDBObject("$first","$userId"))
-									.append("locationAdminName", new BasicDBObject("$first","$locationAdminName"))
-									.append("locationAdminMobileNumber", new BasicDBObject("$first","$locationAdminMobileNumber"))
-									.append("locationName", new BasicDBObject("$first","$locationName"))
-									.append("locationAdminEmailAddress", new BasicDBObject("$first","$locationAdminEmailAddress"))
-									.append("userDevices", new BasicDBObject("$first","$userDevices"))
-									.append("drAppointments", new BasicDBObject("$addToSet","$drAppointments"))
-									)),
-							
-							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("locationAppointments.time.fromTime", 1)))
-							);
-					
+									new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
+							new CustomAggregationOperation(new Document("$redact", new BasicDBObject("$cond",
+									new BasicDBObject("if",
+											new BasicDBObject("$eq",
+													Arrays.asList("$patient.locationId", "$locationId")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+
+							new CustomAggregationOperation(new Document("$sort",
+									new BasicDBObject("locationAppointments.time.fromTime", 1))),
+							new CustomAggregationOperation(new Document("$project",
+									new BasicDBObject("locationId", "$locationId").append("userId", "$userId")
+											.append("locationAdminName", "$locationAdmin.firstName")
+											.append("locationAdminMobileNumber", "$locationAdmin.mobileNumber")
+											.append("locationAdminEmailAddress", "$locationAdmin.emailAddress")
+											.append("locationName", "$location.locationName")
+											.append("userDevices", "$userDevices")
+											.append("drAppointments.time", "$locationAppointments.time")
+											.append("drAppointments.localPatientName", "$patient.localPatientName")
+											.append("drAppointments.doctorName",
+													new BasicDBObject("$concat",
+															Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
+											.append("drAppointments.doctorId", "$locationAppointments.doctorId"))),
+
+							new CustomAggregationOperation(new Document("$group",
+									new BasicDBObject("id", "$locationId")
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("userId", new BasicDBObject("$first", "$userId"))
+											.append("locationAdminName",
+													new BasicDBObject("$first", "$locationAdminName"))
+											.append("locationAdminMobileNumber",
+													new BasicDBObject("$first", "$locationAdminMobileNumber"))
+											.append("locationName", new BasicDBObject("$first", "$locationName"))
+											.append("locationAdminEmailAddress",
+													new BasicDBObject("$first", "$locationAdminEmailAddress"))
+											.append("userDevices", new BasicDBObject("$first", "$userDevices"))
+											.append("drAppointments",
+													new BasicDBObject("$addToSet", "$drAppointments")))));
+
+
 					List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate
 							.aggregate(aggregation, UserRoleCollection.class,
 									LocationAdminAppointmentLookupResponse.class)
@@ -978,7 +986,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
 
 						for (LocationAdminAppointmentLookupResponse lookupResponse : aggregationResults) {
-							Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
+							Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new LinkedHashMap<String, DoctorAppointmentSMSResponse>();
 							int count = 0;
 							if (lookupResponse.getDrAppointments() != null
 									&& !lookupResponse.getDrAppointments().isEmpty())
@@ -995,7 +1003,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 											.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
 										DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
 												.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-										response.setMessage(response.getMessage() + ", "
+										response.setMessage(response.getMessage() + "\n"
 												+ appointmentDoctorReminderResponse.getLocalPatientName() + "("
 												+ _12HourSDF.format(_24HourDt) + ")");
 										count = count + 1;
@@ -1004,7 +1012,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 									} else {
 										DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
 										response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
-										response.setMessage(appointmentDoctorReminderResponse.getDoctorName() + ":"
+										response.setMessage(appointmentDoctorReminderResponse.getDoctorName() + ": "
 												+ appointmentDoctorReminderResponse.getLocalPatientName() + "("
 												+ _12HourSDF.format(_24HourDt) + ")");
 										count = count + 1;
@@ -1030,8 +1038,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							LocationAdminAppointmentLookupResponse response = entry.getValue();
 							String message = "Healthcoco! Your clinic " + response.getLocationName() + " have "
 									+ response.getTotalAppointments() + " appointments scheduled today.\n"
-									+ response.getMessage() + ".\nHave a Healthy and Happy day!!";
+									+ response.getMessage() + ".\nStay Happy!";
 
+							System.out.println(message);
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 							smsTrackDetail.setDoctorId(response.getUserId());
 							smsTrackDetail.setType("APPOINTMENT");

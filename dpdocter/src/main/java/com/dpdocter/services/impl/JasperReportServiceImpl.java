@@ -6667,7 +6667,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		timeWidth = 100;
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);
-		band.setHeight(23);
+		band.setHeight(20);
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{timing}"));
@@ -6778,10 +6778,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		
 		band = new JRDesignBand();
-		band.setHeight(20);
+		band.setHeight(18);
+		band.setPrintWhenExpression(new JRDesignExpression("!$F{treatments}.equals(null) && !$F{treatments}.isEmpty() "));
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{treatments}"));
-		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$F{treatments}.equals(null) && !$F{treatments}.isEmpty() "));
 		jrDesignTextField.setX(5);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
@@ -6796,11 +6796,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		
 		if (showNotes) {
 			band = new JRDesignBand();
-			band.setHeight(20);
+			band.setHeight(18);
+			band.setPrintWhenExpression(new JRDesignExpression("!$F{notes}.equals(null) && !$F{notes}.isEmpty() "));
 			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$F{notes}"));
-			jrDesignTextField
-					.setPrintWhenExpression(new JRDesignExpression("!$F{notes}.equals(null) && !$F{notes}.isEmpty() "));
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{notes}"));					
 			jrDesignTextField.setX(timeWidth);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
