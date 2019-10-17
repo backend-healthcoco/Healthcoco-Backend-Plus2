@@ -83,6 +83,8 @@ public class PatientCollectionResponse {
 
 	private String PNUM;
 	
+	private String landlineNumber;
+	
 	public String getId() {
 		return id;
 	}
@@ -363,6 +365,14 @@ public class PatientCollectionResponse {
 		PNUM = pNUM;
 	}
 
+	public String getLandlineNumber() {
+		return landlineNumber;
+	}
+
+	public void setLandlineNumber(String landlineNumber) {
+		this.landlineNumber = landlineNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCollectionResponse [id=" + id + ", firstName=" + firstName + ", localPatientName="
@@ -376,7 +386,8 @@ public class PatientCollectionResponse {
 				+ ", dateOfVisit=" + dateOfVisit + ", referredBy=" + referredBy + ", address=" + address + ", user="
 				+ user + ", reference=" + reference + ", patientGroupCollections=" + patientGroupCollections
 				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
-				+ lifestyleQuestionAnswers + ", personalInformation=" + personalInformation + ", PNUM=" + PNUM + "]";
+				+ lifestyleQuestionAnswers + ", personalInformation=" + personalInformation + ", PNUM=" + PNUM
+				+ ", landlineNumber=" + landlineNumber + "]";
 	}
 
 }

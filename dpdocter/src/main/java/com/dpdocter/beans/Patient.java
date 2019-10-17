@@ -77,6 +77,8 @@ public class Patient {
 
 	private String backendPatientId;
 
+	private String landlineNumber;
+	
 	public String getLocalPatientName() {
 		return localPatientName;
 	}
@@ -357,6 +359,14 @@ public class Patient {
 		this.backendPatientId = backendPatientId;
 	}
 
+	public String getLandlineNumber() {
+		return landlineNumber;
+	}
+
+	public void setLandlineNumber(String landlineNumber) {
+		this.landlineNumber = landlineNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "Patient [firstName=" + firstName + ", localPatientName=" + localPatientName + ", patientId=" + patientId
@@ -371,6 +381,7 @@ public class Patient {
 				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", personalInformation="
 				+ personalInformation + ", registrationDate=" + registrationDate + ", isPatientDiscarded="
 				+ isPatientDiscarded + ", PNUM=" + PNUM + ", isChild=" + isChild + ", fatherName=" + fatherName
-				+ ", motherName=" + motherName + ", backendPatientId=" + backendPatientId + "]";
+				+ ", motherName=" + motherName + ", backendPatientId=" + backendPatientId + ", landlineNumber="
+				+ landlineNumber + "]";
 	}
 }
