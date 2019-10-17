@@ -127,7 +127,8 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
 					.mustNot(QueryBuilders.termQuery("isPatientDiscarded", true))
 
-					.should(QueryBuilders.queryStringQuery("localPatientNameFormatted:" + patientName + "*").boost(4))
+					//.should(QueryBuilders.queryStringQuery("localPatientNameFormatted:" + patientName + "*").boost(4))
+					.should(QueryBuilders.matchPhrasePrefixQuery("localPatientName", patientName).boost(4))
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.EMAIL_ADDRESS.getSearchType(), searchTerm)
 							.boost(1.3f))
@@ -299,7 +300,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 						builder = QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchValue);
 					 }else if (searchType.equalsIgnoreCase(AdvancedSearchType.PNUM.getSearchType())){
 							builder = QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PNUM.getSearchType(), searchValue);
-				     }else {
+				     }else { 
 						builder = QueryBuilders.matchPhrasePrefixQuery(searchType, searchValue);
 					}
 					boolQueryBuilder.must(builder);
