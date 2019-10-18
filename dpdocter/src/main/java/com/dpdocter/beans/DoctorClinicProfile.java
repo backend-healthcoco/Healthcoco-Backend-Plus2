@@ -129,6 +129,8 @@ public class DoctorClinicProfile {
 
 	private Boolean isNutritionist = false;
 
+	private Boolean isAdminNutritionist = false;
+
 	private Boolean isSuperAdmin = false;
 
 	private String mrCode;
@@ -644,7 +646,7 @@ public class DoctorClinicProfile {
 	public void setFeedbackURL(String feedbackURL) {
 		this.feedbackURL = feedbackURL;
 	}
-	
+
 	public Boolean getHasLoginAccess() {
 		return hasLoginAccess;
 	}
@@ -659,6 +661,14 @@ public class DoctorClinicProfile {
 
 	public void setHasBillingAccess(Boolean hasBillingAccess) {
 		this.hasBillingAccess = hasBillingAccess;
+	}
+
+	public Boolean getIsAdminNutritionist() {
+		return isAdminNutritionist;
+	}
+
+	public void setIsAdminNutritionist(Boolean isAdminNutritionist) {
+		this.isAdminNutritionist = isAdminNutritionist;
 	}
 
 	@Override

@@ -119,6 +119,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private Boolean isSuperAdmin = false;
+	
+	@Field
+	private Boolean isAdminNutritionist = false;
 
 	@Field
 	private String mrCode;

@@ -19,7 +19,7 @@ public class Recipe extends GenericCollection {
 	private String videoUrl;
 
 	private List<String> recipeImages;
-	
+
 	private String thumbnailImages;
 
 	private String thumbnailImage;
@@ -55,7 +55,7 @@ public class Recipe extends GenericCollection {
 	private List<String> course;
 
 	private String userId;
-	
+
 	private String locationId;
 
 	private String doctorId;
@@ -95,6 +95,18 @@ public class Recipe extends GenericCollection {
 	private Map<String, String> otherNutrients;
 
 	private boolean nutrientValueAtRecipeLevel = false;
+
+	private String dietoryEvaluation;
+	private String phLevel;
+	private String giLevel;
+	private List<String> communities;
+	private List<String> foodCultures;
+	private List<String> diseaseFriendly;
+	private Boolean isPrebiotic = false;
+	private Boolean isProBiotic = false;
+	private String cookingMethod;
+	private String medicineDosage;
+	private String foodPreparationTemperature;
 
 	public boolean getNutrientValueAtRecipeLevel() {
 		return nutrientValueAtRecipeLevel;
@@ -446,6 +458,94 @@ public class Recipe extends GenericCollection {
 
 	public void setOtherNutrients(Map<String, String> otherNutrients) {
 		this.otherNutrients = otherNutrients;
+	}
+
+	public String getDietoryEvaluation() {
+		return dietoryEvaluation;
+	}
+
+	public void setDietoryEvaluation(String dietoryEvaluation) {
+		this.dietoryEvaluation = dietoryEvaluation;
+	}
+
+	public String getPhLevel() {
+		return phLevel;
+	}
+
+	public void setPhLevel(String phLevel) {
+		this.phLevel = phLevel;
+	}
+
+	public String getGiLevel() {
+		return giLevel;
+	}
+
+	public void setGiLevel(String giLevel) {
+		this.giLevel = giLevel;
+	}
+
+	public List<String> getCommunities() {
+		return communities;
+	}
+
+	public void setCommunities(List<String> communities) {
+		this.communities = communities;
+	}
+
+	public List<String> getFoodCultures() {
+		return foodCultures;
+	}
+
+	public void setFoodCultures(List<String> foodCultures) {
+		this.foodCultures = foodCultures;
+	}
+
+	public List<String> getDiseaseFriendly() {
+		return diseaseFriendly;
+	}
+
+	public void setDiseaseFriendly(List<String> diseaseFriendly) {
+		this.diseaseFriendly = diseaseFriendly;
+	}
+
+	public Boolean getIsPrebiotic() {
+		return isPrebiotic;
+	}
+
+	public void setIsPrebiotic(Boolean isPrebiotic) {
+		this.isPrebiotic = isPrebiotic;
+	}
+
+	public Boolean getIsProBiotic() {
+		return isProBiotic;
+	}
+
+	public void setIsProBiotic(Boolean isProBiotic) {
+		this.isProBiotic = isProBiotic;
+	}
+
+	public String getCookingMethod() {
+		return cookingMethod;
+	}
+
+	public void setCookingMethod(String cookingMethod) {
+		this.cookingMethod = cookingMethod;
+	}
+
+	public String getMedicineDosage() {
+		return medicineDosage;
+	}
+
+	public void setMedicineDosage(String medicineDosage) {
+		this.medicineDosage = medicineDosage;
+	}
+
+	public String getFoodPreparationTemperature() {
+		return foodPreparationTemperature;
+	}
+
+	public void setFoodPreparationTemperature(String foodPreparationTemperature) {
+		this.foodPreparationTemperature = foodPreparationTemperature;
 	}
 
 }

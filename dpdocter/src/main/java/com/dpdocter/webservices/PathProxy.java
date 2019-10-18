@@ -2204,4 +2204,27 @@ public interface PathProxy {
 		public static final String GRT_NUTRITION_REFERNCE = "/{id}/get";
 		public static final String CHANGE_REFERENCE_STATUS = "/change/{id}/status";
 	}
+	
+	public static final String CAMP_VISIT_BASE_URL =  BASE_URL + "/campVisit";
+
+	public interface CampVisitUrls {
+
+		public static final String GET_GROWTH_ASSESSMENT_AND_GENERAL_BIO_METRICS_BY_ID = "/getGrowthAssessmentAndBioMetrics/{id}";
+		public static final String GET_GROWTH_ASSESSMENT_AND_GENERAL_BIO_METRICS_LIST = "/getGrowthAssessmentAndBioMetricsList";
+		public static final String GET_PHYSICAL_ASSESSMENT_BY_ID = "/getPhysicalAssessment/{id}";
+		public static final String GET_PHYSICAL_ASSESSMENT_LIST = "/getPhysicalAssessmentList";
+		public static final String GET_ENT_ASSESSMENT_BY_ID = "/getENTAssessment/{id}";
+		public static final String GET_ENT_ASSESSMENT_LIST = "/getENTAssessmentList";
+		public static final String GET_DENTAL_ASSESSMENT_BY_ID = "/getDentalAssessment/{id}";
+		public static final String GET_DENTAL_ASSESSMENT_LIST = "/getDentalAssessmentList";
+		public static final String GET_EYE_ASSESSMENT_BY_ID = "/getEyeAssessment/{id}";
+		public static final String GET_EYE_ASSESSMENT_LIST = "/getEyeAssessmentList";
+		public static final String GET_NUTRITION_ASSESSMENT_BY_ID = "/getNutritionAssessment/{id}";
+		public static final String GET_NUTRITION_ASSESSMENT_LIST = "/getNutritionAssessmentList";
+		public static final String GET_DRUG_INFO_LIST = "/getDrugInfoList";
+		public static final String GET_ACADAMIC_PROFILE = "academicProfile/{profileType}/{branchId}/{schoolId}/get";
+		public static final String GET_ACADAMIC_PROFILE_BY_ID = "academicProfile/{id}/get";
+		public static final String GET_ASSOCIATIONS_FOR_DOCTOR = "getAssociations/{doctorId}/get";
+
+	}
 }

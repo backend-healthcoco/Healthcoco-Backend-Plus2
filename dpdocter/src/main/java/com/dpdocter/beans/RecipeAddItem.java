@@ -44,6 +44,8 @@ public class RecipeAddItem {
 
 	private Map<String, String> otherNutrients;
 
+	private String colour;
+
 	public MealQuantity getFiber() {
 		return fiber;
 	}
@@ -186,6 +188,14 @@ public class RecipeAddItem {
 
 	public void setCostType(LevelType costType) {
 		this.costType = costType;
+	}
+
+	public String getColour() {
+		return colour;
+	}
+
+	public void setColour(String colour) {
+		this.colour = colour;
 	}
 
 }
