@@ -20,7 +20,7 @@ public class ESRecipeDocument {
 	@Id
 	private String id;
 
-	@Field(type = FieldType.Keyword)
+	@Field(type = FieldType.Text, fielddata = true)
 	private String name;
 
 	@Field(type = FieldType.Nested)

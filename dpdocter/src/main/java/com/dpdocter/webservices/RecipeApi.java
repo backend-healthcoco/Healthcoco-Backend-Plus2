@@ -12,6 +12,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,12 +24,14 @@ import com.dpdocter.elasticsearch.document.ESIngredientDocument;
 import com.dpdocter.elasticsearch.document.ESNutrientDocument;
 import com.dpdocter.elasticsearch.document.ESRecipeDocument;
 import com.dpdocter.elasticsearch.services.ESRecipeService;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.response.RecentRecipeResponse;
 import com.dpdocter.response.RecipeCardResponse;
 import com.dpdocter.services.RecipeService;
+import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -51,6 +54,9 @@ public class RecipeApi {
 
 	@Value(value = "${image.path}")
 	private String imagePath;
+
+	@Autowired
+	private TransactionalManagementService transnationalService;
 
 	@Path(value = PathProxy.RecipeUrls.ADD_EDIT_NUTRIENT)
 	@POST
@@ -270,6 +276,8 @@ public class RecipeApi {
 		Response<Recipe> response = new Response<Recipe>();
 
 		if (recipe != null) {
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.RECIPE, true);
+
 			ESRecipeDocument document = new ESRecipeDocument();
 			BeanUtil.map(recipe, document);
 			esRecipeService.addRecipe(document);
