@@ -4331,8 +4331,9 @@ System.out.println(appointmentCollections);
 		String response = null;
 		JasperReportResponse jasperReportResponse = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
-		String pattern = "EEE, d MMM yyyy hh:mm aaa";
+		String pattern = "EEE, d MMM yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		String age = null;
 
 		try {
@@ -4345,7 +4346,8 @@ System.out.println(appointmentCollections);
 				DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 				BeanUtil.map(defaultPrintSettings, printSettings);
 			}
-
+			
+			AppointmentCollection appointmentCollection = appointmentRepository.findByAppointmentId(request.getAppointmentId());
 			if (request.getPatientName() != null) {
 				parameters.put("patientName", "<b>Patient Name :- </b> " + request.getPatientName());
 			} else {
@@ -4397,9 +4399,29 @@ System.out.println(appointmentCollections);
 			} else {
 				parameters.put("requestId", "<b>Appointment Id :- </b>  --");
 			}
-			if (request.getFromDate() != null) {
+			if (appointmentCollection.getFromDate() != null) {
+				String time = "";
+				if (appointmentCollection.getTime() != null) {
+					int hour, min;
+					
+					hour = (appointmentCollection.getTime().getFromTime() != null ? appointmentCollection.getTime().getFromTime()
+							: 0) / 60;
+					min = (appointmentCollection.getTime().getFromTime() != null ? appointmentCollection.getTime().getFromTime()
+							: 0) % 60;
+					if (hour > 12) {
+						hour = (hour % 12);
+						time = hour + ":" + (min == 0 ? "00" : min) + " PM";
+
+					} else {
+						if (hour == 0) {
+							hour = 12;
+						}
+						time = hour + ":" + (min == 0 ? "00" : min) + " AM";
+					}
+				}
+				
 				parameters.put("fromDate",
-						"<b>Appointment Date :- </b>" + simpleDateFormat.format(request.getFromDate()));
+						"<b>Appointment Date :- </b>" + simpleDateFormat.format(request.getFromDate()) +" "+time);
 			}
 			if (request.getGeneralNotes() != null) {
 				parameters.put("generalNotes", request.getGeneralNotes());
