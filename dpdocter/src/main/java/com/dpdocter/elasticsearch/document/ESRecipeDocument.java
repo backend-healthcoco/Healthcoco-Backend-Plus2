@@ -122,25 +122,25 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Nested)
 	private MealQuantity fiber;
 
-	@MultiField(mainField = @Field(type = FieldType.Keyword))
+	@Field(type = FieldType.Nested)
 	private Map<String, String> generalNutrients;
 
-	@MultiField(mainField = @Field(type = FieldType.Keyword))
+	@Field(type = FieldType.Nested)
 	private Map<String, String> carbNutrients;
 
-	@MultiField(mainField = @Field(type = FieldType.Keyword))
+	@Field(type = FieldType.Nested)
 	private Map<String, String> lipidNutrients;
 
-	@MultiField(mainField = @Field(type = FieldType.Keyword))
+	@Field(type = FieldType.Nested)
 	private Map<String, String> proteinAminoAcidNutrients;
 
-	@MultiField(mainField = @Field(type = FieldType.Keyword))
+	@Field(type = FieldType.Nested)
 	private Map<String, String> vitaminNutrients;
 
-	@MultiField(mainField = @Field(type = FieldType.Keyword))
+	@Field(type = FieldType.Nested)
 	private Map<String, String> mineralNutrients;
 
-	@MultiField(mainField = @Field(type = FieldType.Keyword))
+	@Field(type = FieldType.Nested)
 	private Map<String, String> otherNutrients;
 
 	@Field(type = FieldType.Boolean)
