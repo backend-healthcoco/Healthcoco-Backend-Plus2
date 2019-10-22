@@ -2168,14 +2168,14 @@ public interface PathProxy {
 		public static final String ADD_EDIT_USER_CART = "/addEditUserCart";
 		public static final String GET_CART_BY_ID = "/getCart/{id}";
 		public static final String GET_CART_BY_USER_ID = "/getCartByUser/{id}";
-		public static final String ADD_EDIT_TRACKING_DETAILS= "/addEditTrackingDetails";
-		public static final String GET_TRACKING_DETAILS= "/getTrackingDetails/{orderId}";
-		public static final String GET_DRUG_INFO_LIST= "/getDrugInfoList";
+		public static final String ADD_EDIT_TRACKING_DETAILS = "/addEditTrackingDetails";
+		public static final String GET_TRACKING_DETAILS = "/getTrackingDetails/{orderId}";
+		public static final String GET_DRUG_INFO_LIST = "/getDrugInfoList";
 		public static final String CLEAR_CART = "/clearCart/{id}";
 		public static final String MEDICINE_ORDER_ADD_EDIT_RX_IMAGE = "/addEditRxImage";
 		public static final String GET_DRUGS_BY_CODE = "/getByDrugCode/{drugCode}";
 		public static final String GET_DRUGS_BY_CODES = "/getByDrugCodes";
-		
+
 	}
 
 	public static final String TRENDING_URL = BASE_URL + "/Trending";
@@ -2204,8 +2204,8 @@ public interface PathProxy {
 		public static final String GRT_NUTRITION_REFERNCE = "/{id}/get";
 		public static final String CHANGE_REFERENCE_STATUS = "/change/{id}/status";
 	}
-	
-	public static final String CAMP_VISIT_BASE_URL =  BASE_URL + "/campVisit";
+
+	public static final String CAMP_VISIT_BASE_URL = BASE_URL + "/campVisit";
 
 	public interface CampVisitUrls {
 
@@ -2224,7 +2224,8 @@ public interface PathProxy {
 		public static final String GET_DRUG_INFO_LIST = "/getDrugInfoList";
 		public static final String GET_ACADAMIC_PROFILE = "academicProfile/{profileType}/{branchId}/{schoolId}/get";
 		public static final String GET_ACADAMIC_PROFILE_BY_ID = "academicProfile/{id}/get";
-		public static final String GET_ASSOCIATIONS_FOR_DOCTOR = "getAssociations/{doctorId}/get";
+		public static final String GET_ASSOCIATIONS_FOR_DOCTOR = "getAssociations/";
+		public static final String GET_ACADAMIC_CLASSES = "acadamic/class/{branchId}/{schoolId}/get";
 
 	}
 }

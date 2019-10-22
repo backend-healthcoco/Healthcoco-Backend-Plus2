@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.ImageURLResponse;
-
+import com.dpdocter.response.Drug;
 public class NutritionAssessment extends GenericCollection {
 
 	private String id;

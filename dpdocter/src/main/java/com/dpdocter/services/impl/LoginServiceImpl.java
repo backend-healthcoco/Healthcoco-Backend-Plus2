@@ -179,7 +179,7 @@ public class LoginServiceImpl implements LoginService {
 					criteria = new Criteria("doctorId").is(userCollection.getId()).and("isActivate").is(true)
 							.and("hasLoginAccess").ne(false);
 
-					criteria.and("isNutritionist").is(isNutritionist);
+					//criteria.and("isNutritionist").is(isNutritionist);
 					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate
 							.aggregate(
 									Aggregation.newAggregation(Aggregation.match(criteria),
@@ -213,6 +213,8 @@ public class LoginServiceImpl implements LoginService {
 									.setImages(getFinalClinicImages(locationAndAccessControl.getImages()));
 							locationAndAccessControl.setIsVaccinationModuleOn(
 									doctorClinicProfileLookupResponse.getIsVaccinationModuleOn());
+							locationAndAccessControl.setIsNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
+							locationAndAccessControl.setIsAdminNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
 							List<Role> roles = null;
 
 							Boolean isStaff = false;

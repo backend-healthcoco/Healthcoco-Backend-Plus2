@@ -26,4 +26,6 @@ public interface LoginService {
 
 	public List<RegisteredPatientDetails> loginPatientByOtp(LoginPatientRequest request);
 
+	//LoginResponse login(LoginRequest request, Boolean isMobileApp, Boolean isNutritionist, Boolean isAdminNutritionist);
+
 }

@@ -81,6 +81,8 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	private Boolean isVaccinationModuleOn = false;
 
 	private String feedbackURL;
+	
+	private Boolean isAdminNutritionist = false;
 
 	public ObjectId getId() {
 		return id;
@@ -345,6 +347,14 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	public void setIsSuperAdmin(Boolean isSuperAdmin) {
 		this.isSuperAdmin = isSuperAdmin;
+	}
+
+	public Boolean getIsAdminNutritionist() {
+		return isAdminNutritionist;
+	}
+
+	public void setIsAdminNutritionist(Boolean isAdminNutritionist) {
+		this.isAdminNutritionist = isAdminNutritionist;
 	}
 
 	@Override

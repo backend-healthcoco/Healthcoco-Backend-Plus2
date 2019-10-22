@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -53,6 +54,7 @@ import com.dpdocter.repository.EyeAssessmentRepository;
 import com.dpdocter.repository.GrowthAssessmentAndGeneralBioMetricsRepository;
 import com.dpdocter.repository.NutritionAssessmentRepository;
 import com.dpdocter.repository.PhysicalAssessmentRepository;
+import com.dpdocter.response.AcadamicClassResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.NutritionSchoolAssociationResponse;
 import com.dpdocter.services.CampVisitService;
@@ -1609,7 +1611,10 @@ public class CampVisitServiceImpl implements CampVisitService {
 			String searchTerm, String updatedTime) {
 		List<NutritionSchoolAssociationResponse> response = null;
 		try {
-			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId));
+			
+			ArrayList<ObjectId> objectIds = new ArrayList<>();
+			objectIds.add(new ObjectId(doctorId));
+			Criteria criteria = new Criteria("doctorId").in(objectIds);
 			
 			if (!DPDoctorUtils.anyStringEmpty(updatedTime)) {
 				criteria.and("createdTime").gte(new Date(Long.parseLong(updatedTime)));
@@ -1644,6 +1649,109 @@ public class CampVisitServiceImpl implements CampVisitService {
 		}
 		return response;
 	}
+	
+	@Override
+	public List<AcadamicClassResponse> getAcadamicClass(int page, int size, String branchId, String schoolId,
+			String searchTerm, Boolean discarded) {
+		List<AcadamicClassResponse> response = null;
+		try {
+			Criteria criteria = new Criteria();
+			if (discarded != null)
+				criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("name").regex("^" + searchTerm),
+						new Criteria("name").regex("^" + searchTerm, "i"));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(branchId)) {
+				criteria.and("branchId").is(new ObjectId(branchId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(schoolId)) {
+				criteria.and("schoolId").is(new ObjectId(schoolId));
+			}
+			Aggregation aggregation = null;
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+					Fields.field("section", "$section.section"), Fields.field("teacher", "$teacher.firstName"),
+					Fields.field("branchId", "$branchId"), Fields.field("schoolId", "$schoolId"),
+					Fields.field("sectionId", "$sectionId"), Fields.field("name", "$name"),
+					Fields.field("teacherId", "$teacherId"), Fields.field("discarded", "$discarded"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime")));
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+
+
+						Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "section"),
+						Aggregation.unwind("section"),
+						Aggregation.lookup("acadamic_profile_cl", "teacherId", "_id", "teacher"),
+						Aggregation.unwind("teacher"), projectList,
+
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+
+						Aggregation.limit(size));
+			} else {
+
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+
+						Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "section"),
+						Aggregation.unwind("section"),
+						Aggregation.lookup("acadamic_profile_cl", "teacherId", "_id", "teacher"),
+						Aggregation.unwind("teacher"), projectList,
+
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, AcadamicClassCollection.class, AcadamicClassResponse.class)
+					.getMappedResults();
+
+
+		} catch (BusinessException e) {
+			logger.error("Error while get Acadamic class" + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while get Acadamic class" + e.getMessage());
+
+		}
+
+		return response;
+	}
+	
+	@Override
+	public Integer countAcadamicClass(String branchId, String schoolId, String searchTerm, Boolean discarded) {
+		Integer response = 0;
+		try {
+			Criteria criteria = new Criteria();
+			if (discarded != null)
+				criteria.and("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("name").regex("^" + searchTerm),
+						new Criteria("name").regex("^" + searchTerm, "i"));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(branchId)) {
+				criteria.and("branchId").is(new ObjectId(branchId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(schoolId)) {
+				criteria.and("schoolId").is(new ObjectId(schoolId));
+			}
+			Aggregation aggregation = null;
+
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id")));
+
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "section"),
+					Aggregation.unwind("section"),
+					Aggregation.lookup("acadamic_profile_cl", "teacherId", "_id", "teacher"),
+					Aggregation.unwind("teacher"), projectList);
+			response = mongoTemplate.aggregate(aggregation, AcadamicClassCollection.class, AcadamicClassResponse.class)
+					.getMappedResults().size();
+
+
+		} catch (BusinessException e) {
+			logger.error("Error while counting Acadamic class" + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while counting Acadamic class" + e.getMessage());
+
+		}
+
+		return response;
+	}
+
 	
 	
 }

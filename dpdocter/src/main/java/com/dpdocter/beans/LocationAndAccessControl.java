@@ -84,6 +84,9 @@ public class LocationAndAccessControl {
 	private Boolean isPidHasDate = true;
 
 	private Boolean isVaccinationModuleOn = false;
+	private Boolean isNutritionist = false;
+
+	private Boolean isAdminNutritionist = false;
 
 	public String getId() {
 		return id;
@@ -395,6 +398,22 @@ public class LocationAndAccessControl {
 
 	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
 		this.isVaccinationModuleOn = isVaccinationModuleOn;
+	}
+
+	public Boolean getIsNutritionist() {
+		return isNutritionist;
+	}
+
+	public void setIsNutritionist(Boolean isNutritionist) {
+		this.isNutritionist = isNutritionist;
+	}
+
+	public Boolean getIsAdminNutritionist() {
+		return isAdminNutritionist;
+	}
+
+	public void setIsAdminNutritionist(Boolean isAdminNutritionist) {
+		this.isAdminNutritionist = isAdminNutritionist;
 	}
 
 	@Override

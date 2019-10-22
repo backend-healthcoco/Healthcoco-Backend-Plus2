@@ -6,11 +6,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.ws.rs.HEAD;
-
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,10 +63,6 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.v2.ContactsService;
 import com.mongodb.BasicDBObject;
-
-import org.bson.Document;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperationContext;
 
 import common.util.web.DPDoctorUtils;
 

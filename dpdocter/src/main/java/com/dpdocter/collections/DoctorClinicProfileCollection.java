@@ -119,7 +119,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private Boolean isSuperAdmin = false;
-	
+
 	@Field
 	private Boolean isAdminNutritionist = false;
 
@@ -464,13 +464,21 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setFeedbackURL(String feedbackURL) {
 		this.feedbackURL = feedbackURL;
 	}
-	
+
 	public Boolean getIsVaccinationModuleOn() {
 		return isVaccinationModuleOn;
 	}
 
 	public void setIsVaccinationModuleOn(Boolean isVaccinationModuleOn) {
 		this.isVaccinationModuleOn = isVaccinationModuleOn;
+	}
+
+	public Boolean getIsAdminNutritionist() {
+		return isAdminNutritionist;
+	}
+
+	public void setIsAdminNutritionist(Boolean isAdminNutritionist) {
+		this.isAdminNutritionist = isAdminNutritionist;
 	}
 
 	@Override

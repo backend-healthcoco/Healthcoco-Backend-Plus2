@@ -13,10 +13,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dpdocter.beans.AcadamicProfile;
 import com.dpdocter.beans.DentalAssessment;
@@ -28,6 +26,8 @@ import com.dpdocter.beans.PhysicalAssessment;
 import com.dpdocter.beans.RegistrationDetails;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.AcadamicClassResponse;
+import com.dpdocter.response.NutritionSchoolAssociationResponse;
 import com.dpdocter.services.CampVisitService;
 
 import common.util.web.DPDoctorUtils;
@@ -257,7 +257,7 @@ public class CampVisitAPI {
 		}
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.CampVisitUrls.GET_ACADAMIC_PROFILE_BY_ID)
 	@ApiOperation(value = PathProxy.CampVisitUrls.GET_ACADAMIC_PROFILE_BY_ID, notes = PathProxy.CampVisitUrls.GET_ACADAMIC_PROFILE_BY_ID)
 	@GET
@@ -274,14 +274,28 @@ public class CampVisitAPI {
 	@Path(value = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_DOCTOR)
 	@ApiOperation(value = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_DOCTOR, notes = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_DOCTOR)
 	@GET
-	public Response<RegistrationDetails> getAssociations(@PathParam("doctorId") String id) {
+	public Response<NutritionSchoolAssociationResponse> getAssociations(@QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("classId") String classId,
+			@QueryParam("doctorId") String doctorId, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("updatedTime") String updatedTime) {
 
-		if (DPDoctorUtils.anyStringEmpty(id)) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "id should not null or Empty");
 		}
-		Response<RegistrationDetails> response = new Response<RegistrationDetails>();
-		response.setData(campVisitService.getAcadamicProfile(id));
+		Response<NutritionSchoolAssociationResponse> response = new Response<NutritionSchoolAssociationResponse>();
+		response.setDataList(campVisitService.getAssociations(page, size, doctorId, searchTerm, updatedTime));
 		return response;
 	}
 
+	@Path(value = PathProxy.CampVisitUrls.GET_ACADAMIC_CLASSES)
+	@ApiOperation(value = PathProxy.CampVisitUrls.GET_ACADAMIC_CLASSES, notes = PathProxy.CampVisitUrls.GET_ACADAMIC_CLASSES)
+	@GET
+	public Response<AcadamicClassResponse> getAcadamicClass(@PathParam("branchId") String branchId,
+			@PathParam("schoolId") String schoolId, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("discarded") Boolean discarded) {
+		Response<AcadamicClassResponse> response = new Response<AcadamicClassResponse>();
+		response.setDataList(campVisitService.getAcadamicClass(page, size, branchId, schoolId, searchTerm, discarded));
+		response.setCount(campVisitService.countAcadamicClass(branchId, schoolId, searchTerm, discarded));
+		return response;
+	}
 }

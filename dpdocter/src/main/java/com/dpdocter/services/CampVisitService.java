@@ -13,6 +13,7 @@ import com.dpdocter.beans.GrowthAssessmentAndGeneralBioMetrics;
 import com.dpdocter.beans.NutritionAssessment;
 import com.dpdocter.beans.PhysicalAssessment;
 import com.dpdocter.beans.RegistrationDetails;
+import com.dpdocter.response.AcadamicClassResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.NutritionSchoolAssociationResponse;
 
@@ -115,5 +116,10 @@ public interface CampVisitService {
 
 	List<NutritionSchoolAssociationResponse> getAssociations(int page, int size, String doctorId, String searchTerm,
 			String updatedTime);
+
+	List<AcadamicClassResponse> getAcadamicClass(int page, int size, String branchId, String schoolId,
+			String searchTerm, Boolean discarded);
+
+	Integer countAcadamicClass(String branchId, String schoolId, String searchTerm, Boolean discarded);
 
 }

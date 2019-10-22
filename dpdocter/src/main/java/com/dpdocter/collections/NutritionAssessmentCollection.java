@@ -7,11 +7,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.FoodPattern;
 import com.dpdocter.beans.MealTiming;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.Drug;
 
 @Document(collection = "nutrition_assessment_cl")
 public class NutritionAssessmentCollection extends GenericCollection {
