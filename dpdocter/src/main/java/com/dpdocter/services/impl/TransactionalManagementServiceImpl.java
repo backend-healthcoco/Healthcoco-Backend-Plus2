@@ -792,7 +792,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 								.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
 							DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
 									.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-							response.setMessage(response.getMessage() + ", " + patientCollection.getLocalPatientName()
+							response.setMessage(response.getMessage() + "%0a" + patientCollection.getLocalPatientName()
 									+ "(" + _12HourSDF.format(_24HourDt) + ")");
 							response.setNoOfAppointments(response.getNoOfAppointments() + 1);
 							doctorAppointmentSMSResponseMap
@@ -808,13 +808,12 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 									.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
 						}
 					}
-
 				for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
 					DoctorAppointmentSMSResponse response = entry.getValue();
 					UserCollection userCollection = response.getDoctor();
 					String message = "Healthcoco! You have " + response.getNoOfAppointments()
-							+ " appointments scheduled today.\n" + response.getMessage()
-							+ ".\nHave a Healthy and Happy day!!";
+							+ " appointments scheduled today.%0a" + response.getMessage()
+							+ ".%0aStay Happy!!";
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 					smsTrackDetail.setDoctorId(userCollection.getId());
 					smsTrackDetail.setType("APPOINTMENT");
@@ -892,8 +891,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 													Arrays.asList("$patient.locationId", "$locationId")))
 															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 
-							new CustomAggregationOperation(new BasicDBObject("$sort",
-									new BasicDBObject("locationAppointments.time.fromTime", 1))),
+							
+							
 							new CustomAggregationOperation(new BasicDBObject("$project",
 									new BasicDBObject("locationId", "$locationId").append("userId", "$userId")
 											.append("locationAdminName", "$locationAdmin.firstName")
@@ -908,6 +907,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 															Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
 											.append("drAppointments.doctorId", "$locationAppointments.doctorId"))),
 
+							new CustomAggregationOperation(new BasicDBObject("$sort",
+									new BasicDBObject("drAppointments.time.fromTime", 1))),
+							
 							new CustomAggregationOperation(new BasicDBObject("$group",
 									new BasicDBObject("id", "$locationId")
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -921,7 +923,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 													new BasicDBObject("$first", "$locationAdminEmailAddress"))
 											.append("userDevices", new BasicDBObject("$first", "$userDevices"))
 											.append("drAppointments",
-													new BasicDBObject("$addToSet", "$drAppointments")))));
+													new BasicDBObject("$push", "$drAppointments")))));
 
 					List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate
 							.aggregate(aggregation, UserRoleCollection.class,
@@ -951,7 +953,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 											.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
 										DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
 												.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-										response.setMessage(response.getMessage() + "\n"
+										response.setMessage(response.getMessage() + "%0a"
 												+ appointmentDoctorReminderResponse.getLocalPatientName() + "("
 												+ _12HourSDF.format(_24HourDt) + ")");
 										count = count + 1;
@@ -973,10 +975,11 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							String message = "";
 							for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap
 									.entrySet()) {
+								
 								if (DPDoctorUtils.anyStringEmpty(message))
 									message = entry.getValue().getMessage();
 								else
-									message = message + " " + entry.getValue().getMessage();
+									message = message + "%0a" + entry.getValue().getMessage();
 							}
 							lookupResponse.setMessage(message);
 							locationDetailsMap.put(lookupResponse.getLocationId(), lookupResponse);
@@ -985,10 +988,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 								.entrySet()) {
 							LocationAdminAppointmentLookupResponse response = entry.getValue();
 							String message = "Healthcoco! Your clinic " + response.getLocationName() + " have "
-									+ response.getTotalAppointments() + " appointments scheduled today.\n"
-									+ response.getMessage() + ".\nStay Happy!";
+									+ response.getTotalAppointments() + " appointments scheduled today.%0a"
+									+ response.getMessage() + ".%0aStay Happy!";
 
-							System.out.println(message);
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 							smsTrackDetail.setDoctorId(response.getUserId());
 							smsTrackDetail.setType("APPOINTMENT");
@@ -1048,7 +1050,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						Aggregation.unwind("doctorIds"), Aggregation.lookup("user_cl", "doctorIds", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("user_device_cl", "doctorIds", "userIds", "userDevices"),
-						Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
+						Aggregation.sort(new Sort(Direction.ASC,"time.fromTime")));
 				AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate
 						.aggregate(aggregation, AppointmentCollection.class, AppointmentDoctorReminderResponse.class);
 
@@ -1178,7 +1180,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 												new BasicDBObject("$concat",
 														Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
 										.append("drAppointments.doctorId", "$locationAppointments.doctorId"))),
-
+						new CustomAggregationOperation(new BasicDBObject("$sort",
+								new BasicDBObject("drAppointments.time.fromTime", 1))),
 						new CustomAggregationOperation(new BasicDBObject("$group",
 								new BasicDBObject("id", "$locationId")
 										.append("locationId", new BasicDBObject("$first", "$locationId"))
@@ -1190,10 +1193,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 										.append("locationAdminEmailAddress",
 												new BasicDBObject("$first", "$locationAdminEmailAddress"))
 										.append("userDevices", new BasicDBObject("$first", "$userDevices"))
-										.append("drAppointments", new BasicDBObject("$addToSet", "$drAppointments")))),
-
-						new CustomAggregationOperation(new BasicDBObject("$sort",
-								new BasicDBObject("locationAppointments.time.fromTime", 1))));
+										.append("drAppointments", new BasicDBObject("$push", "$drAppointments")))));
 
 				List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate
 						.aggregate(aggregation, UserRoleCollection.class, LocationAdminAppointmentLookupResponse.class)
@@ -1221,7 +1221,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 										.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
 									DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
 											.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-									response.setMessage(response.getMessage() + ", "
+									response.setMessage(response.getMessage() + "\n"
 											+ appointmentDoctorReminderResponse.getLocalPatientName() + "("
 											+ _12HourSDF.format(_24HourDt) + ")");
 									count = count + 1;
@@ -1255,7 +1255,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						LocationAdminAppointmentLookupResponse response = entry.getValue();
 						String message = "Healthcoco! Your clinic " + response.getLocationName() + " have "
 								+ response.getTotalAppointments() + " appointments scheduled today.\n"
-								+ response.getMessage() + ".\nHave a Healthy and Happy day!!";
+								+ response.getMessage() + ".\nStay Happy!!";
 
 //							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 //							smsTrackDetail.setDoctorId(response.getUserId());
