@@ -27,26 +27,17 @@
 						<filtering>true</filtering>
 					</resource>
 				</resources>
-<!-- 				<plugins> -->
-<!-- 					<plugin> -->
-<!--     <groupId>org.apache.tomcat.maven</groupId> -->
-<!--     <artifactId>tomcat8-maven-plugin</artifactId> -->
-<!--     <version>2.2</version> -->
-					
-<!-- 						https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
-<!-- 						<dependency> -->
-<!-- 						<groupId>org.apache.tomcat.embed</groupId> -->
-<!-- 						<artifactId>tomcat-embed-core</artifactId> -->
-<!-- 						<version>9.0.16</version> -->
-<!-- 						</dependency> -->
-
-<!-- 					</plugin> -->
-<!-- 				</plugins> -->
+				<plugins>
+					<plugin>
+						<groupId>org.apache.tomcat.embed</groupId>
+						<artifactId>tomcat-embed-core</artifactId>
+						<version>9.0.16</version>
+					</plugin>
+				</plugins>
 			</build>
 		</profile>
 		<profile>
-			<id>dev</id>
-			<activation> <activeByDefault>true</activeByDefault></activation>
+			<id>dev</id>	
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -67,6 +58,7 @@
 		</profile>
 		<profile>
 			<id>qa</id>
+			<activation> <activeByDefault>true</activeByDefault></activation>					
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -438,6 +430,10 @@
 				<exclusion>
 					<artifactId>lucene-sandbox</artifactId>
 					<groupId>org.apache.lucene</groupId>
+				</exclusion>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bcprov-jdk14</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -992,6 +988,12 @@
 			<groupId>org.xhtmlrenderer</groupId>
 			<artifactId>flying-saucer-pdf</artifactId>
 			<version>9.1.12</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk14</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
 		<dependency>

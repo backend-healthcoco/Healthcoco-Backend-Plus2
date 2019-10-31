@@ -85,6 +85,9 @@ public class UserCollection extends GenericCollection {
 	@Field
 	private Integer regularCheckUpMonths;
 
+	@Field
+	private Boolean isPasswordSet = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -345,4 +348,13 @@ public class UserCollection extends GenericCollection {
 				+ userState + ", lastSession=" + lastSession + ", signedUp=" + signedUp + ", userUId=" + userUId
 				+ ", regularCheckUpMonths=" + regularCheckUpMonths + "]";
 	}
+
+	public Boolean getIsPasswordSet() {
+		return isPasswordSet;
+	}
+
+	public void setIsPasswordSet(Boolean isPasswordSet) {
+		this.isPasswordSet = isPasswordSet;
+	}
+
 }

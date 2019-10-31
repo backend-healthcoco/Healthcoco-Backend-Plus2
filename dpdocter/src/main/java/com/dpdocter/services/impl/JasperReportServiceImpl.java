@@ -1,6 +1,7 @@
 
 package com.dpdocter.services.impl;
 
+import java.awt.Color;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -55,6 +56,7 @@ import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
 import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
+import net.sf.jasperreports.engine.type.ModeEnum;
 import net.sf.jasperreports.engine.type.PositionTypeEnum;
 import net.sf.jasperreports.engine.type.PrintOrderEnum;
 import net.sf.jasperreports.engine.type.ScaleImageEnum;
@@ -550,6 +552,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaints}", "$P{presentComplaint}", fieldWidth, false, 0,
 				false);
 
+		addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{PH}", fieldWidth, false, 0, false);
+
+		addItems(jasperDesign, columnWidth, "$P{PriorConsultations}", "$P{priorConsultations}", fieldWidth, false, 0,
+				false);
+
 		if (showTitle) {
 			band = new JRDesignBand();
 			band.setHeight(20);
@@ -561,7 +568,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setWidth(columnWidth);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 			jrDesignTextField.setBold(true);
-			jrDesignTextField.setUnderline(true);
+			//jrDesignTextField.setUnderline(true);
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
 			band.addElement(jrDesignTextField);
@@ -584,6 +591,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
 		jrDesignLine.setHeight(1);
+		jrDesignLine.setMode(ModeEnum.OPAQUE);
 		jrDesignLine.setWidth(columnWidth);
 		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
@@ -604,7 +612,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setWidth(columnWidth);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setBold(true);
-		jrDesignTextField.setUnderline(true);
+	//	jrDesignTextField.setUnderline(true);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
 		band.addElement(jrDesignTextField);
@@ -648,7 +656,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setWidth(columnWidth);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setBold(true);
-		jrDesignTextField.setUnderline(true);
+	//	jrDesignTextField.setUnderline(true);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
 		band.addElement(jrDesignTextField);
@@ -672,14 +680,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
 		jrDesignLine.setHeight(1);
+		jrDesignLine.setMode(ModeEnum.OPAQUE);
 		jrDesignLine.setWidth(columnWidth);
 		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{PH}", fieldWidth, false, 0, false);
-
-		addItems(jasperDesign, columnWidth, "$P{PriorConsultations}", "$P{priorConsultations}", fieldWidth, false, 0,
-				false);
-
+		
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$P{complaints}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaintHistory}", "$P{presentComplaintHistory}", fieldWidth,
@@ -704,7 +709,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setWidth(columnWidth);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 			jrDesignTextField.setBold(true);
-			jrDesignTextField.setUnderline(true);
+		//	jrDesignTextField.setUnderline(true);
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
 			band.addElement(jrDesignTextField);
@@ -731,6 +736,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
 		jrDesignLine.setHeight(1);
+		jrDesignLine.setMode(ModeEnum.OPAQUE);
 		jrDesignLine.setWidth(columnWidth);
 		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
@@ -1211,7 +1217,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$F{vitalSigns}", fieldWidth, false, 0, false);
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaints}", "$F{presentComplaint}", fieldWidth, false, 0,
 				false);
+		addItems(jasperDesign, columnWidth, "$P{PastHistory}", "$F{pastHistory}", fieldWidth, false, 0, false);
 
+		addItems(jasperDesign, columnWidth, "$P{PriorConsultations}", "$F{priorConsultations}", fieldWidth, false, 0,
+				false);
 		if (showTitle) {
 
 			band = new JRDesignBand();
@@ -1224,7 +1233,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setWidth(columnWidth);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 			jrDesignTextField.setBold(true);
-			jrDesignTextField.setUnderline(true);
+//			jrDesignTextField.setUnderline(true);
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
 			band.addElement(jrDesignTextField);
@@ -1249,6 +1258,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
 		jrDesignLine.setHeight(1);
+		jrDesignLine.setMode(ModeEnum.OPAQUE);
 		jrDesignLine.setWidth(columnWidth);
 		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
@@ -1267,7 +1277,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setWidth(columnWidth);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setBold(true);
-		jrDesignTextField.setUnderline(true);
+		//jrDesignTextField.setUnderline(true);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
 		band.addElement(jrDesignTextField);
@@ -1294,6 +1304,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
 		jrDesignLine.setHeight(1);
+		jrDesignLine.setMode(ModeEnum.OPAQUE);
 		jrDesignLine.setWidth(columnWidth);
 		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
@@ -1313,7 +1324,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setWidth(columnWidth);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setBold(true);
-		jrDesignTextField.setUnderline(true);
+		//jrDesignTextField.setUnderline(true);
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
 		band.addElement(jrDesignTextField);
@@ -1340,14 +1351,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
 		jrDesignLine.setHeight(1);
+		jrDesignLine.setMode(ModeEnum.OPAQUE);
 		jrDesignLine.setWidth(columnWidth);
 		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-		addItems(jasperDesign, columnWidth, "$P{PastHistory}", "$F{pastHistory}", fieldWidth, false, 0, false);
-
-		addItems(jasperDesign, columnWidth, "$P{PriorConsultations}", "$F{priorConsultations}", fieldWidth, false, 0,
-				false);
+		
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$F{complaints}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaintHistory}", "$F{presentComplaintHistory}", fieldWidth,
@@ -1371,7 +1380,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setWidth(columnWidth);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 			jrDesignTextField.setBold(true);
-			jrDesignTextField.setUnderline(true);
+		//	jrDesignTextField.setUnderline(true);
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
 			band.addElement(jrDesignTextField);
@@ -1399,6 +1408,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
 		jrDesignLine.setHeight(1);
+		jrDesignLine.setMode(ModeEnum.OPAQUE);
 		jrDesignLine.setWidth(columnWidth);
 		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);

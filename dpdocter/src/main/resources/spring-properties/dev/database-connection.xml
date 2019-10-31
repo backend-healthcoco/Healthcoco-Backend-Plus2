@@ -19,16 +19,6 @@
 		<constructor-arg name="mongoConverter" ref="mappingConverter" />
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
 	</bean>
-<!-- 	<mongo:mapping-converter id="mappingConverter" /> -->
-	
-<!-- <bean id="readConverter"
-		class="com.dpdocter.tokenstore.OAuth2AuthenticationReadConverter" />
-
-	<mongo:mapping-converter id="mappingConverter">
-		<mongo:custom-converters>
-			<mongo:converter ref="readConverter" />
-		</mongo:custom-converters>
-	</mongo:mapping-converter> -->
 	
 	<bean id="mongoTypeMapper" class="org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper">
 		<constructor-arg name="typeKey"><null/></constructor-arg>

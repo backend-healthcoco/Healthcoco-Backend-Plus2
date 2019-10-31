@@ -14,9 +14,9 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
-	<listener>
-		<listener-class>se.jiderhamn.classloader.leak.prevention.ClassLoaderLeakPreventor</listener-class>
-	</listener>
+<!-- 	<listener> -->
+<!-- 		<listener-class>se.jiderhamn.classloader.leak.prevention.ClassLoaderLeakPreventor</listener-class> -->
+<!-- 	</listener> -->
 
 	<servlet>
 		<servlet-name>jersey-serlvet</servlet-name>

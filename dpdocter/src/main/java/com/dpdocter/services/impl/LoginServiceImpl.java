@@ -55,13 +55,16 @@ import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.DoctorLoginPinRequest;
+import com.dpdocter.response.ForgotPasswordResponse;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
+import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.LoginService;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.tokenstore.CustomPasswordEncoder;
@@ -109,6 +112,8 @@ public class LoginServiceImpl implements LoginService {
 	@Value(value = "${Signup.role}")
 	private String role;
 
+	@Autowired
+	private ForgotPasswordService forgotPasswordService;
 	/**
 	 * This method is used for login purpose.
 	 */
@@ -127,6 +132,16 @@ public class LoginServiceImpl implements LoginService {
 				logger.warn(login);
 				throw new BusinessException(ServiceError.InvalidInput, login);
 			} else {
+				if(userCollection.getIsPasswordSet() == null || !userCollection.getIsPasswordSet()) {
+					ForgotUsernamePasswordRequest forgotUsernamePasswordRequest = new ForgotUsernamePasswordRequest();
+					forgotUsernamePasswordRequest.setEmailAddress(request.getUsername());
+					forgotUsernamePasswordRequest.setUsername(request.getUsername());
+					ForgotPasswordResponse forgotPasswordResponse = forgotPasswordService.forgotPasswordForDoctor(forgotUsernamePasswordRequest);
+					if(forgotPasswordResponse!=null) {
+						logger.warn("Please reset your password and check your email to update your password");
+						throw new BusinessException(ServiceError.InvalidInput, "Please reset your password and check your email to update your password");
+					}
+				}
 				boolean isPasswordCorrect = new CustomPasswordEncoder().matches(String.valueOf(request.getPassword()), String.valueOf(userCollection.getPassword()));
 				
 				if(!isPasswordCorrect) {

@@ -12,25 +12,29 @@
 			threads-allowed-to-block-for-connection-multiplier="${db.threadsAllowedTblockForConnectionMultiplier}"
 			ssl="true" />
 	</mongo:mongo>
-	<mongo:db-factory dbname="${db.name}" host="${db.host}"
-		mongo-ref="mongo" port="${db.port}" />
+	<mongo:db-factory dbname="${db.name}" host="${db.host}" mongo-ref="mongo" port="${db.port}" />
+	
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongoConverter" ref="mappingConverter" />
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
-
+	</bean>
+	
+	<bean id="mongoTypeMapper" class="org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper">
+		<constructor-arg name="typeKey"><null/></constructor-arg>
 	</bean>
 
-	<bean id="readConverter"
-		class="com.dpdocter.tokenstore.OAuth2AuthenticationReadConverter" />
+	<bean id="mongoMappingContext" class="org.springframework.data.mongodb.core.mapping.MongoMappingContext" />
 
-	<mongo:mapping-converter id="mappingConverter">
-		<mongo:custom-converters>
-			<mongo:converter ref="readConverter" />
-		</mongo:custom-converters>
-	</mongo:mapping-converter>
+	<bean id="mappingConverter"     class="org.springframework.data.mongodb.core.convert.MappingMongoConverter">
+		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
+		<constructor-arg name="mappingContext" ref="mongoMappingContext" />
+		<property name="typeMapper" ref="mongoTypeMapper"></property>
+	</bean>
+ 
+ 	
 	<bean id="gridFsTemplate" class="org.springframework.data.mongodb.gridfs.GridFsTemplate">
-    <constructor-arg ref="mongoDbFactory" />
-    <constructor-arg ref="mappingConverter" />
-</bean>
+		<constructor-arg ref="mongoDbFactory" />
+		<constructor-arg ref="mappingConverter" />
+	</bean>
 
 </beans>
