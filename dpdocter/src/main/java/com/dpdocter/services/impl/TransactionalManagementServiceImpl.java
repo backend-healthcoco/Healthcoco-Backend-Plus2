@@ -1230,14 +1230,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 												new BasicDBObject("$concat",
 														Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
 										.append("drAppointments.doctorId", "$locationAppointments.doctorId"))),
-<<<<<<< HEAD
-
-						new CustomAggregationOperation(new Document("$group",
-=======
-						new CustomAggregationOperation(new BasicDBObject("$sort",
+			new CustomAggregationOperation(new Document("$sort",
 								new BasicDBObject("drAppointments.time.fromTime", 1))),
-						new CustomAggregationOperation(new BasicDBObject("$group",
->>>>>>> 51e475e3c... HAPPY-4950 Neha : BACKEND : Doctor App : Daily Appointment Sms new line
+						new CustomAggregationOperation(new Document("$group",
 								new BasicDBObject("id", "$locationId")
 										.append("locationId", new BasicDBObject("$first", "$locationId"))
 										.append("userId", new BasicDBObject("$first", "$userId"))
@@ -1248,14 +1243,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 										.append("locationAdminEmailAddress",
 												new BasicDBObject("$first", "$locationAdminEmailAddress"))
 										.append("userDevices", new BasicDBObject("$first", "$userDevices"))
-<<<<<<< HEAD
-										.append("drAppointments", new BasicDBObject("$addToSet", "$drAppointments")))),
 
-						new CustomAggregationOperation(new Document("$sort",
-								new BasicDBObject("locationAppointments.time.fromTime", 1))));
-=======
 										.append("drAppointments", new BasicDBObject("$push", "$drAppointments")))));
->>>>>>> 51e475e3c... HAPPY-4950 Neha : BACKEND : Doctor App : Daily Appointment Sms new line
 
 				List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate
 						.aggregate(aggregation, UserRoleCollection.class, LocationAdminAppointmentLookupResponse.class)

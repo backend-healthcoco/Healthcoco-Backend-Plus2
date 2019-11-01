@@ -121,7 +121,7 @@ public class DoctorLocation {
 	// @Field(type = FieldType.Text)
 	// private String receiptInitial = "RC";
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Text)
     private String googleMapShortUrl;
 
 	public Integer getNoOfClinicReview() {
