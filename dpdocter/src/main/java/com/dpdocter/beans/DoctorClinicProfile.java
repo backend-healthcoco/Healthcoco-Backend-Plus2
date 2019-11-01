@@ -639,14 +639,6 @@ public class DoctorClinicProfile {
 		this.isVaccinationModuleOn = isVaccinationModuleOn;
 	}
 
-	public String getFeedbackURL() {
-		return feedbackURL;
-	}
-
-	public void setFeedbackURL(String feedbackURL) {
-		this.feedbackURL = feedbackURL;
-	}
-
 	public Boolean getHasLoginAccess() {
 		return hasLoginAccess;
 	}

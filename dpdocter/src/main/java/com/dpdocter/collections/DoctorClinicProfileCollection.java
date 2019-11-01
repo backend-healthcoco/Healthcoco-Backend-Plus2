@@ -473,6 +473,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.isVaccinationModuleOn = isVaccinationModuleOn;
 	}
 
+	public Boolean getIsAdminNutritionist() {
+		return isAdminNutritionist;
+	}
+
+	public void setIsAdminNutritionist(Boolean isAdminNutritionist) {
+		this.isAdminNutritionist = isAdminNutritionist;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", doctorId="
