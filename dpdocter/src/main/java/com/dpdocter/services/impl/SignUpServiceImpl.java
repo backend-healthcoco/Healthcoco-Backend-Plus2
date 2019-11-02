@@ -879,6 +879,7 @@ public class SignUpServiceImpl implements SignUpService {
 			userCollection.setIsVerified(true);
 			userCollection.setPassword(passwordEncoder.encode(request.getPassword().toString()).toCharArray());
 //			userCollection.setPassword(request.getPassword());
+			userCollection.setIsPasswordSet(true);
 			userCollection = userRepository.save(userCollection);
 			// save doctor specific details
 			DoctorCollection doctorCollection = new DoctorCollection();
