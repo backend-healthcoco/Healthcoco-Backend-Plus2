@@ -134,6 +134,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 import common.util.web.DPDoctorUtils;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
 
 @Service
 public class PatientVisitServiceImpl implements PatientVisitService {
@@ -2821,6 +2822,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						clinicalNotesJasperDetails.setPainScale(clinicalNotesCollection.getPainScale());
 						clinicalNotesJasperDetails
 								.setPriorConsultations(clinicalNotesCollection.getPriorConsultations());
+						
+						if (clinicalNotesCollection.getVitalSigns()!=null || !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPresentComplaint(), 
+								clinicalNotesCollection.getPastHistory(), clinicalNotesCollection.getPriorConsultations())) {
+							showTitle = true;
+						}
+						parameters.put("showPresentComplaintLine", showTitle);
+						showTitle = false;
+						
 						if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcNose())
 								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcEars())
 								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcOralCavity())
@@ -2830,6 +2839,21 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						}
 						parameters.put("showPCTitle", showTitle);
 						showTitle = false;
+						if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPersonalHistoryAlcohol(), clinicalNotesCollection.getPersonalHistoryDiet(),
+								clinicalNotesCollection.getPersonalHistoryOccupation(), clinicalNotesCollection.getPersonalHistorySmoking(), 
+								clinicalNotesCollection.getPersonalHistoryTobacco())){
+							showTitle = true;
+						}			
+						parameters.put("showPersonalHistoryTitle", showTitle);
+						showTitle = false;
+						
+						if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getGeneralHistoryDrugs(), clinicalNotesCollection.getGeneralHistoryMedicine(),
+								clinicalNotesCollection.getGeneralHistoryAllergies(), clinicalNotesCollection.getGeneralHistorySurgical())){
+							showTitle = true;
+						}			
+						parameters.put("showGeneralHistoryTitle", showTitle);
+						showTitle = false;
+						
 						if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getEarsExam())
 								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNeckExam())
 								|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getIndirectLarygoscopyExam())
