@@ -34,6 +34,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -577,7 +578,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Autowired
 	private ESEducationQualificationRepository esEducationQualificationRepository;
 	
-	@Scheduled(cron = "00 30 4 * * *", zone = "IST")
+	@Scheduled(cron = "${mongo.to.elastic.scheduler.cron.time}", zone = "IST")
 //	@Scheduled(fixedDelay = 18000000)
 	@Override
 	@Transactional
@@ -585,201 +586,213 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		System.out.println(">>> Scheduled test service <<<");
 		List<TransactionalCollection> transactionalCollections = null;
 		try {
-			transactionalCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("isCached").is(false))).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), TransactionalCollection.class, TransactionalCollection.class).getMappedResults();
+			long count = mongoTemplate.count(new Query(new Criteria("isCached").is(false)), TransactionalCollection.class);
+			long remainingCount = count;
+			int page = 0;
+			int size = 20000;
+			while(remainingCount>0) {
+				
+				transactionalCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("isCached").is(false)), 
+						Aggregation.skip(page * size), Aggregation.limit(size)).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), TransactionalCollection.class, TransactionalCollection.class).getMappedResults();
 
-//			transactionalCollections = transnationalRepositiory.findByIsCached(false);
-			if (transactionalCollections != null) {
-				for (TransactionalCollection transactionalCollection : transactionalCollections) {
-					if (transactionalCollection.getResourceId() != null)
-						switch (transactionalCollection.getResource()) {
+//				transactionalCollections = transnationalRepositiory.findByIsCached(false);
+				if (transactionalCollections != null) {
+					for (TransactionalCollection transactionalCollection : transactionalCollections) {
+						if (transactionalCollection.getResourceId() != null)
+							switch (transactionalCollection.getResource()) {
 
-						case PATIENT:
-							checkPatient(transactionalCollection.getResourceId());
-							break;
-						case DRUG:
-							checkDrug(transactionalCollection.getResourceId());
-							break;
-						case DOCTORDRUG:
-							checkDoctorDrug(transactionalCollection.getResourceId());
-							break;
-						case LABTEST:
-							checkLabTest(transactionalCollection.getResourceId());
-							break;
-						case COMPLAINT:
-							checkComplaint(transactionalCollection.getResourceId());
-							break;
-						case DIAGNOSIS:
-							checkDiagnosis(transactionalCollection.getResourceId());
-							break;
-						case DIAGRAM:
-							checkDiagrams(transactionalCollection.getResourceId());
-							break;
-						case INVESTIGATION:
-							checkInvestigation(transactionalCollection.getResourceId());
-							break;
-						case NOTES:
-							checkNotes(transactionalCollection.getResourceId());
-							break;
-						case OBSERVATION:
-							checkObservation(transactionalCollection.getResourceId());
-							break;
-						case CITY:
-							checkCity(transactionalCollection.getResourceId());
-							break;
-						case LANDMARKLOCALITY:
-							checkLandmarkLocality(transactionalCollection.getResourceId());
-							break;
-						case DOCTOR:
-							checkDoctor(transactionalCollection.getResourceId(), null);
-							break;
-						case LOCATION:
-							checkLocation(transactionalCollection.getResourceId());
-							break;
-						case REFERENCE:
-							checkReference(transactionalCollection.getResourceId());
-							break;
-						case DISEASE:
-							checkDisease(transactionalCollection.getResourceId());
-							break;
-						case DIAGNOSTICTEST:
-							checkDiagnosticTest(transactionalCollection.getResourceId());
-							break;
-						case TREATMENTSERVICE:
-							checkTreatmentService(transactionalCollection.getResourceId());
-							break;
-						case TREATMENTSERVICECOST:
-							checkTreatmentServiceCost(transactionalCollection.getResourceId());
-							break;
-						case XRAY:
-							checkXray(transactionalCollection.getResourceId());
-							break;
-						case ADVICE:
-							checkAdvice(transactionalCollection.getResourceId());
-							break;
-						case PRESENT_COMPLAINT:
-							checkPresentComplaint(transactionalCollection.getResourceId());
-							break;
-						case GENERAL_EXAMINATION:
-							checkGeneralExam(transactionalCollection.getResourceId());
-							break;
-						case PROVISIONAL_DIAGNOSIS:
-							checkProvisionalDignosis(transactionalCollection.getResourceId());
-							break;
-						case SYSTEMIC_EXAMINATION:
-							checkSystemExam(transactionalCollection.getResourceId());
-							break;
-						case HISTORY_OF_PRESENT_COMPLAINT:
-							checkPresentComplaintHistory(transactionalCollection.getResourceId());
-							break;
-						case PS:
-							checkPS(transactionalCollection.getResourceId());
-							break;
-						case PA:
-							checkPA(transactionalCollection.getResourceId());
-							break;
-						case PV:
-							checkPV(transactionalCollection.getResourceId());
-							break;
-						case ECHO:
-							checkEcho(transactionalCollection.getResourceId());
-							break;
-						case INDICATION_OF_USG:
-							checkIndicationOfUCG(transactionalCollection.getResourceId());
-							break;
+							case PATIENT:
+								checkPatient(transactionalCollection.getResourceId());
+								break;
+							case DRUG:
+								checkDrug(transactionalCollection.getResourceId());
+								break;
+							case DOCTORDRUG:
+								checkDoctorDrug(transactionalCollection.getResourceId());
+								break;
+							case LABTEST:
+								checkLabTest(transactionalCollection.getResourceId());
+								break;
+							case COMPLAINT:
+								checkComplaint(transactionalCollection.getResourceId());
+								break;
+							case DIAGNOSIS:
+								checkDiagnosis(transactionalCollection.getResourceId());
+								break;
+							case DIAGRAM:
+								checkDiagrams(transactionalCollection.getResourceId());
+								break;
+							case INVESTIGATION:
+								checkInvestigation(transactionalCollection.getResourceId());
+								break;
+							case NOTES:
+								checkNotes(transactionalCollection.getResourceId());
+								break;
+							case OBSERVATION:
+								checkObservation(transactionalCollection.getResourceId());
+								break;
+							case CITY:
+								checkCity(transactionalCollection.getResourceId());
+								break;
+							case LANDMARKLOCALITY:
+								checkLandmarkLocality(transactionalCollection.getResourceId());
+								break;
+							case DOCTOR:
+								checkDoctor(transactionalCollection.getResourceId(), null);
+								break;
+							case LOCATION:
+								checkLocation(transactionalCollection.getResourceId());
+								break;
+							case REFERENCE:
+								checkReference(transactionalCollection.getResourceId());
+								break;
+							case DISEASE:
+								checkDisease(transactionalCollection.getResourceId());
+								break;
+							case DIAGNOSTICTEST:
+								checkDiagnosticTest(transactionalCollection.getResourceId());
+								break;
+							case TREATMENTSERVICE:
+								checkTreatmentService(transactionalCollection.getResourceId());
+								break;
+							case TREATMENTSERVICECOST:
+								checkTreatmentServiceCost(transactionalCollection.getResourceId());
+								break;
+							case XRAY:
+								checkXray(transactionalCollection.getResourceId());
+								break;
+							case ADVICE:
+								checkAdvice(transactionalCollection.getResourceId());
+								break;
+							case PRESENT_COMPLAINT:
+								checkPresentComplaint(transactionalCollection.getResourceId());
+								break;
+							case GENERAL_EXAMINATION:
+								checkGeneralExam(transactionalCollection.getResourceId());
+								break;
+							case PROVISIONAL_DIAGNOSIS:
+								checkProvisionalDignosis(transactionalCollection.getResourceId());
+								break;
+							case SYSTEMIC_EXAMINATION:
+								checkSystemExam(transactionalCollection.getResourceId());
+								break;
+							case HISTORY_OF_PRESENT_COMPLAINT:
+								checkPresentComplaintHistory(transactionalCollection.getResourceId());
+								break;
+							case PS:
+								checkPS(transactionalCollection.getResourceId());
+								break;
+							case PA:
+								checkPA(transactionalCollection.getResourceId());
+								break;
+							case PV:
+								checkPV(transactionalCollection.getResourceId());
+								break;
+							case ECHO:
+								checkEcho(transactionalCollection.getResourceId());
+								break;
+							case INDICATION_OF_USG:
+								checkIndicationOfUCG(transactionalCollection.getResourceId());
+								break;
 
-						case ECG:
-							checkECG(transactionalCollection.getResourceId());
-							break;
+							case ECG:
+								checkECG(transactionalCollection.getResourceId());
+								break;
 
-						case HOLTER:
-							checkHolter(transactionalCollection.getResourceId());
-							break;
+							case HOLTER:
+								checkHolter(transactionalCollection.getResourceId());
+								break;
 
-						case PHARMACY:
-							checkPharmacy(transactionalCollection.getResourceId());
-							break;
+							case PHARMACY:
+								checkPharmacy(transactionalCollection.getResourceId());
+								break;
 
-						case PROCEDURE_NOTE:
-							checkProcedureNote(transactionalCollection.getResourceId());
-							break;
-						case PC_NOSE:
-							checkPCNoses(transactionalCollection.getResourceId());
-							break;
-						case PC_EARS:
-							checkPCEars(transactionalCollection.getResourceId());
-							break;
-						case PC_THROAT:
-							checkPCThroat(transactionalCollection.getResourceId());
-							break;
-						case PC_ORAL_CAVITY:
-							checkPCOralCavity(transactionalCollection.getResourceId());
-							break;
-						case EARS_EXAM:
-							checkEarsExam(transactionalCollection.getResourceId());
-							break;
-						case INDIRECT_LARYGOSCOPY_EXAM:
-							checkINdirectExam(transactionalCollection.getResourceId());
-							break;
-						case ORAL_CAVITY_THROAT_EXAM:
-							checkOralCavityAndThroatExam(transactionalCollection.getResourceId());
-							break;
-						case NOSE_EXAM:
-							checkNoseExam(transactionalCollection.getResourceId());
-							break;
-						case NECK_EXAM:
-							checkNeckExam(transactionalCollection.getResourceId());
-							break;
-						case LABOUR_NOTES:
-							checkLabourNotes(transactionalCollection.getResourceId());
-							break;
+							case PROCEDURE_NOTE:
+								checkProcedureNote(transactionalCollection.getResourceId());
+								break;
+							case PC_NOSE:
+								checkPCNoses(transactionalCollection.getResourceId());
+								break;
+							case PC_EARS:
+								checkPCEars(transactionalCollection.getResourceId());
+								break;
+							case PC_THROAT:
+								checkPCThroat(transactionalCollection.getResourceId());
+								break;
+							case PC_ORAL_CAVITY:
+								checkPCOralCavity(transactionalCollection.getResourceId());
+								break;
+							case EARS_EXAM:
+								checkEarsExam(transactionalCollection.getResourceId());
+								break;
+							case INDIRECT_LARYGOSCOPY_EXAM:
+								checkINdirectExam(transactionalCollection.getResourceId());
+								break;
+							case ORAL_CAVITY_THROAT_EXAM:
+								checkOralCavityAndThroatExam(transactionalCollection.getResourceId());
+								break;
+							case NOSE_EXAM:
+								checkNoseExam(transactionalCollection.getResourceId());
+								break;
+							case NECK_EXAM:
+								checkNeckExam(transactionalCollection.getResourceId());
+								break;
+							case LABOUR_NOTES:
+								checkLabourNotes(transactionalCollection.getResourceId());
+								break;
 
-						case BABY_NOTES:
-							checkBabyNote(transactionalCollection.getResourceId());
-							break;
+							case BABY_NOTES:
+								checkBabyNote(transactionalCollection.getResourceId());
+								break;
 
-						case MENSTRUAL_HISTORY:
-							checkmenstrualHistory(transactionalCollection.getResourceId());
-							break;
-						case OBSTETRIC_HISTORY:
-							checkObstresrticHistory(transactionalCollection.getResourceId());
-							break;
+							case MENSTRUAL_HISTORY:
+								checkmenstrualHistory(transactionalCollection.getResourceId());
+								break;
+							case OBSTETRIC_HISTORY:
+								checkObstresrticHistory(transactionalCollection.getResourceId());
+								break;
 
-						case OPERATION_NOTES:
-							checkOperationNote(transactionalCollection.getResourceId());
+							case OPERATION_NOTES:
+								checkOperationNote(transactionalCollection.getResourceId());
+								break;
+							case CEMENT:
+								checkCement(transactionalCollection.getResourceId());
+								break;
+							case IMPLANT:
+								checkImplant(transactionalCollection.getResourceId());
+								break;
+							case EXPENSE_TYPE:
+								checkExpenseType(transactionalCollection.getResourceId());
+								break;
+							case RECIPE:
+								checkRecipe(transactionalCollection.getResourceId());
+								break;
+							case INGREDIENT:
+								checkIngredient(transactionalCollection.getResourceId());
+								break;
+							case NUTRIENT:
+								checkNutrient(transactionalCollection.getResourceId());
+								break;
+							case STATE:
+								break;
+							case SERVICE:checkService(transactionalCollection.getResourceId());
+								break;
+							case SPECIALITY:checkSpeciality(transactionalCollection.getResourceId());
 							break;
-						case CEMENT:
-							checkCement(transactionalCollection.getResourceId());
+							case SYMPTOM_DISEASE_CONDITION:checkSymptomsDiseasesCondition(transactionalCollection.getResourceId());
 							break;
-						case IMPLANT:
-							checkImplant(transactionalCollection.getResourceId());
-							break;
-						case EXPENSE_TYPE:
-							checkExpenseType(transactionalCollection.getResourceId());
-							break;
-						case RECIPE:
-							checkRecipe(transactionalCollection.getResourceId());
-							break;
-						case INGREDIENT:
-							checkIngredient(transactionalCollection.getResourceId());
-							break;
-						case NUTRIENT:
-							checkNutrient(transactionalCollection.getResourceId());
-							break;
-						case STATE:
-							break;
-						case SERVICE:checkService(transactionalCollection.getResourceId());
-							break;
-						case SPECIALITY:checkSpeciality(transactionalCollection.getResourceId());
-						break;
-						case SYMPTOM_DISEASE_CONDITION:checkSymptomsDiseasesCondition(transactionalCollection.getResourceId());
-						break;
-						default:
-							break;
-						}
+							default:
+								break;
+							}
+					}
 				}
+				page = page + 1;
+				remainingCount=remainingCount-transactionalCollections.size();
 			}
+			
 			// Expire invalid otp
 			checkOTP();
+			addDataFromMongoToElasticSearch();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -2632,56 +2645,94 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public Boolean addDataFromMongoToElasticSearch() {
 		try {
 			System.out.println("addDataFromMongoToElasticSearch");
-			List<CityCollection> cityCollections = cityRepository.findAll();
-			if (cityCollections != null && !cityCollections.isEmpty()) {
-				for (CityCollection cityCollection : cityCollections) {
-					ESCityDocument esCityDocument = new ESCityDocument();
-					BeanUtil.map(cityCollection, esCityDocument);
+//			List<CityCollection> cityCollections = cityRepository.findAll();
+//			if (cityCollections != null && !cityCollections.isEmpty()) {
+//				for (CityCollection cityCollection : cityCollections) {
+//					ESCityDocument esCityDocument = new ESCityDocument();
+//					BeanUtil.map(cityCollection, esCityDocument);
+//
+//					esCityService.addCities(esCityDocument);
+//				}
+//			}
+//			System.out.println("added cities");
+//			
+//			List<AdviceCollection> adviceCollections = adviceRepository.findAll();
+//			if (adviceCollections != null && !adviceCollections.isEmpty()) {
+//				for (AdviceCollection adviceCollection : adviceCollections) {
+//					ESAdvicesDocument esAdvicesDocument = new ESAdvicesDocument();
+//					BeanUtil.map(adviceCollection, esAdvicesDocument);
+//					esPrescriptionService.addAdvices(esAdvicesDocument);
+//				}
+//			}
+//			System.out.println("added advice");
+//
+//			List<CollectionBoyCollection> collectionBoyCollections = collectionBoyRepository.findAll();
+//			if (collectionBoyCollections != null && !collectionBoyCollections.isEmpty()) {
+//				for (CollectionBoyCollection collectionBoyCollection : collectionBoyCollections) {
+//					ESCollectionBoyDocument esCollectionBoyDocument = new ESCollectionBoyDocument();
+//					BeanUtil.map(collectionBoyCollection, esCollectionBoyDocument);
+//					esRegistrationService.addCollectionBoy(esCollectionBoyDocument);
+//				}
+//			}
+//			System.out.println("added collection boy");
+//
+//			List<XRayDetailsCollection> xRayDetailsCollections = xRayDetailsRepository.findAll();
+//			if (xRayDetailsCollections != null && !xRayDetailsCollections.isEmpty()) {
+//				for (XRayDetailsCollection xRayDetailsCollection : xRayDetailsCollections) {
+//					ESXRayDetailsDocument esxRayDetailsDocument = new ESXRayDetailsDocument();
+//					BeanUtil.map(xRayDetailsCollection, esxRayDetailsDocument);
+//					esClinicalNotesService.addXRayDetails(esxRayDetailsDocument);
+//				}
+//			}
+//			System.out.println("added xray details");
+//
+//			List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository.findAll();
+//			if (treatmentServicesCollections != null) {
+//				for (TreatmentServicesCollection treatmentServicesCollection : treatmentServicesCollections) {
+//					ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
+//					BeanUtil.map(treatmentServicesCollection, esTreatmentServiceDocument);
+//					esTreatmentService.addEditService(esTreatmentServiceDocument);
+//				}
+//			}
+//			System.out.println("added treatment service");
 
-					esCityService.addCities(esCityDocument);
+			long drugCount = drugRepository.count();
+			long remainingDrugCount = drugCount;
+			int page = 0;
+			while(remainingDrugCount>0) {
+				
+				List<DrugCollection> drugCollections = drugRepository.findAll(PageRequest.of(page, 10000)).getContent();
+				if (drugCollections != null) {
+					for (DrugCollection drugCollection : drugCollections) {
+						ESDrugDocument esDrugDocument = new ESDrugDocument();
+						BeanUtil.map(drugCollection, esDrugDocument);
+						if (drugCollection.getDrugType() != null) {
+							esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+							esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+						}
+						esPrescriptionService.addDrug(esDrugDocument);
+					}
 				}
+				page = page + 1;
+				remainingDrugCount=remainingDrugCount-drugCollections.size();
 			}
-			System.out.println("added cities");
-			
-			List<AdviceCollection> adviceCollections = adviceRepository.findAll();
-			if (adviceCollections != null && !adviceCollections.isEmpty()) {
-				for (AdviceCollection adviceCollection : adviceCollections) {
-					ESAdvicesDocument esAdvicesDocument = new ESAdvicesDocument();
-					BeanUtil.map(adviceCollection, esAdvicesDocument);
-					esPrescriptionService.addAdvices(esAdvicesDocument);
-				}
-			}
-			System.out.println("added advice");
+			System.out.println("added drugs");
 
-			List<CollectionBoyCollection> collectionBoyCollections = collectionBoyRepository.findAll();
-			if (collectionBoyCollections != null && !collectionBoyCollections.isEmpty()) {
-				for (CollectionBoyCollection collectionBoyCollection : collectionBoyCollections) {
-					ESCollectionBoyDocument esCollectionBoyDocument = new ESCollectionBoyDocument();
-					BeanUtil.map(collectionBoyCollection, esCollectionBoyDocument);
-					esRegistrationService.addCollectionBoy(esCollectionBoyDocument);
+			List<DoctorDrugCollection> doctorDrugCollections = doctorDrugRepository.findAll();
+			if (doctorDrugCollections != null) {
+				for (DoctorDrugCollection doctorDrugCollection : doctorDrugCollections) {
+					DrugCollection drugCollection = drugRepository.findById(doctorDrugCollection.getDrugId())
+							.orElse(null);
+					if (drugCollection != null) {
+						ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+						BeanUtil.map(drugCollection, esDoctorDrugDocument);
+						BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+						esDoctorDrugDocument.setId(drugCollection.getId().toString());
+						esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
+					}
 				}
 			}
-			System.out.println("added collection boy");
-
-			List<XRayDetailsCollection> xRayDetailsCollections = xRayDetailsRepository.findAll();
-			if (xRayDetailsCollections != null && !xRayDetailsCollections.isEmpty()) {
-				for (XRayDetailsCollection xRayDetailsCollection : xRayDetailsCollections) {
-					ESXRayDetailsDocument esxRayDetailsDocument = new ESXRayDetailsDocument();
-					BeanUtil.map(xRayDetailsCollection, esxRayDetailsDocument);
-					esClinicalNotesService.addXRayDetails(esxRayDetailsDocument);
-				}
-			}
-			System.out.println("added xray details");
-
-			List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository.findAll();
-			if (treatmentServicesCollections != null) {
-				for (TreatmentServicesCollection treatmentServicesCollection : treatmentServicesCollections) {
-					ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
-					BeanUtil.map(treatmentServicesCollection, esTreatmentServiceDocument);
-					esTreatmentService.addEditService(esTreatmentServiceDocument);
-				}
-			}
-			System.out.println("added treatment service");
+			System.out.println("added doctorDrugs");
 
 			List<SystemExamCollection> systemExamCollections = systemExamRepository.findAll();
 			if (systemExamCollections != null) {
@@ -3086,44 +3137,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			}
 			System.out.println("added nutrients");
 
-			long drugCount = drugRepository.count();
-			long remainingDrugCount = drugCount;
-			int page = 0;
-			while(remainingDrugCount>0) {
-				
-				List<DrugCollection> drugCollections = drugRepository.findAll(PageRequest.of(page, 20000)).getContent();
-				if (drugCollections != null) {
-					for (DrugCollection drugCollection : drugCollections) {
-						ESDrugDocument esDrugDocument = new ESDrugDocument();
-						BeanUtil.map(drugCollection, esDrugDocument);
-						if (drugCollection.getDrugType() != null) {
-							esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-							esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
-						}
-						esPrescriptionService.addDrug(esDrugDocument);
-					}
-				}
-				page = page + 1;
-				remainingDrugCount=remainingDrugCount-drugCollections.size();
-			}
-			System.out.println("added drugs");
-
-			List<DoctorDrugCollection> doctorDrugCollections = doctorDrugRepository.findAll();
-			if (doctorDrugCollections != null) {
-				for (DoctorDrugCollection doctorDrugCollection : doctorDrugCollections) {
-					DrugCollection drugCollection = drugRepository.findById(doctorDrugCollection.getDrugId())
-							.orElse(null);
-					if (drugCollection != null) {
-						ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-						BeanUtil.map(drugCollection, esDoctorDrugDocument);
-						BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-						esDoctorDrugDocument.setId(drugCollection.getId().toString());
-						esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
-					}
-				}
-			}
-			System.out.println("added doctorDrugs");
-
+			
 			List<LabTestCollection> labTestCollections = labTestRepository.findAll();
 			if (labTestCollections != null) {
 				for (LabTestCollection labTestCollection : labTestCollections) {

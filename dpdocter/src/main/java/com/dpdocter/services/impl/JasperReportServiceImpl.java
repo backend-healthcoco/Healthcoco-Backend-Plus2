@@ -1265,9 +1265,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(20);
 		band.setPrintWhenExpression(new JRDesignExpression(
-				"!$F{personalHistoryAlcohol}.equals( null ) && ! $F{personalHistoryAlcohol} .isEmpty() || !$F{personalHistoryTobacco}.equals( null ) && ! $F{personalHistoryTobacco} .isEmpty()"
-						+ "|| !$F{personalHistorySmoking}.equals( null ) && ! $F{personalHistorySmoking} .isEmpty() || !$F{personalHistoryDiet}.equals( null ) && ! $F{personalHistoryDiet} .isEmpty()"
-						+ "|| !$F{personalHistoryOccupation}.equals( null ) && ! $F{personalHistoryOccupation} .isEmpty()"));
+				"(!$F{personalHistoryAlcohol}.equals( null ) && ! $F{personalHistoryAlcohol} .isEmpty()) || "
+				+ "(!$F{personalHistoryTobacco}.equals( null ) && ! $F{personalHistoryTobacco} .isEmpty())"
+						+ "|| (!$F{personalHistorySmoking}.equals( null ) && ! $F{personalHistorySmoking} .isEmpty())"
+						+ "|| (!$F{personalHistoryDiet}.equals( null ) && ! $F{personalHistoryDiet} .isEmpty())"
+						+ "|| (!$F{personalHistoryOccupation}.equals( null ) && ! $F{personalHistoryOccupation} .isEmpty())"));
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{PersonalHistoryTitle}"));
 		jrDesignTextField.setX(1);
@@ -1296,9 +1298,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(2);
 		band.setPrintWhenExpression(new JRDesignExpression(
-				"!$F{personalHistoryAlcohol}.equals( null ) && ! $F{personalHistoryAlcohol} .isEmpty() || !$F{personalHistoryTobacco}.equals( null ) && ! $F{personalHistoryTobacco} .isEmpty()"
-						+ "|| !$F{personalHistorySmoking}.equals( null ) && ! $F{personalHistorySmoking} .isEmpty() || !$F{personalHistoryDiet}.equals( null ) && ! $F{personalHistoryDiet} .isEmpty()"
-						+ "|| !$F{personalHistoryOccupation}.equals( null ) && ! $F{personalHistoryOccupation} .isEmpty()"));
+				"(!$F{personalHistoryAlcohol}.equals( null ) && ! $F{personalHistoryAlcohol} .isEmpty()) || "
+				+ "(!$F{personalHistoryTobacco}.equals( null ) && ! $F{personalHistoryTobacco} .isEmpty())"
+						+ "|| (!$F{personalHistorySmoking}.equals( null ) && ! $F{personalHistorySmoking} .isEmpty())"
+						+ "|| (!$F{personalHistoryDiet}.equals( null ) && ! $F{personalHistoryDiet} .isEmpty())"
+						+ "|| (!$F{personalHistoryOccupation}.equals( null ) && ! $F{personalHistoryOccupation} .isEmpty())"));
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
@@ -1313,8 +1317,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(20);
 		band.setPrintWhenExpression(new JRDesignExpression(
-				"!$F{generalHistoryDrugs}.equals( null ) && ! $F{generalHistoryDrugs} .isEmpty() || !$F{generalHistoryMedicine}.equals( null ) && ! $F{generalHistoryMedicine} .isEmpty()"
-						+ "|| !$F{generalHistoryAllergies}.equals( null ) && ! $F{generalHistoryAllergies} .isEmpty() || !$F{generalHistorySurgical}.equals( null ) && ! $F{generalHistorySurgical} .isEmpty()"));
+				"(!$F{generalHistoryDrugs}.equals( null ) && ! $F{generalHistoryDrugs} .isEmpty())"
+				+ "|| (!$F{generalHistoryMedicine}.equals( null ) && ! $F{generalHistoryMedicine} .isEmpty())"
+						+ "|| (!$F{generalHistoryAllergies}.equals( null ) && ! $F{generalHistoryAllergies} .isEmpty())"
+						+ "|| (!$F{generalHistorySurgical}.equals( null ) && ! $F{generalHistorySurgical} .isEmpty())"));
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{GeneralHistoryTitle}"));
 		jrDesignTextField.setX(1);
@@ -1344,8 +1350,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(2);
 		band.setPrintWhenExpression(new JRDesignExpression(
-				"!$F{generalHistoryDrugs}.equals( null ) && ! $F{generalHistoryDrugs} .isEmpty() || !$F{generalHistoryMedicine}.equals( null ) && ! $F{generalHistoryMedicine} .isEmpty()"
-						+ "|| !$F{generalHistoryAllergies}.equals( null ) && ! $F{generalHistoryAllergies} .isEmpty() || !$F{generalHistorySurgical}.equals( null ) && ! $F{generalHistorySurgical} .isEmpty()"));
+				"(!$F{generalHistoryDrugs}.equals( null ) && ! $F{generalHistoryDrugs} .isEmpty())"
+				+ "|| (!$F{generalHistoryMedicine}.equals( null ) && ! $F{generalHistoryMedicine} .isEmpty())"
+						+ "|| (!$F{generalHistoryAllergies}.equals( null ) && ! $F{generalHistoryAllergies} .isEmpty())"
+						+ "|| (!$F{generalHistorySurgical}.equals( null ) && ! $F{generalHistorySurgical} .isEmpty())"));
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
@@ -1446,15 +1454,15 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$F{notes}", fieldWidth, false, 0, false);
 
-		band = new JRDesignBand();
-		band.setHeight(2);
-		jrDesignLine = new JRDesignLine();
-		jrDesignLine.setX(0);
-		jrDesignLine.setY(0);
-		jrDesignLine.setHeight(1);
-		jrDesignLine.setWidth(columnWidth);
-		band.addElement(jrDesignLine);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+//		band = new JRDesignBand();
+//		band.setHeight(2);
+//		jrDesignLine = new JRDesignLine();
+//		jrDesignLine.setX(0);
+//		jrDesignLine.setY(0);
+//		jrDesignLine.setHeight(1);
+//		jrDesignLine.setWidth(columnWidth);
+//		band.addElement(jrDesignLine);
+//		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		JasperCompileManager.compileReportToFile(jasperDesign,
 				JASPER_TEMPLATES_RESOURCE + "new/mongo-clinical-notes_subreport-A4.jasper");
