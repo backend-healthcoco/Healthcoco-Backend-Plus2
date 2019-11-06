@@ -8382,7 +8382,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository
-					.findAllById(objectIds);
+					.findByIdIn(objectIds);
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				PatientCollection patient = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
 						clinicalNotesCollections.get(0).getPatientId(), clinicalNotesCollections.get(0).getDoctorId(),
@@ -8503,7 +8503,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository
-					.findAllById(objectIds);
+					.findByIdIn(objectIds);
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				PatientCollection patient = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
 						clinicalNotesCollections.get(0).getPatientId(), clinicalNotesCollections.get(0).getDoctorId(),
