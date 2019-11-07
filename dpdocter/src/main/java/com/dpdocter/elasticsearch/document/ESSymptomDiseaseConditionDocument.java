@@ -24,10 +24,10 @@ public class ESSymptomDiseaseConditionDocument {
     @Field(type = FieldType.Date)
     private Date updatedTime = new Date();
 
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	@MultiField(mainField = @Field(type = FieldType.String))
     private List<String> specialities;
     
-	@MultiField(mainField = @Field(type = FieldType.String, index = FieldIndex.not_analyzed))
+	@MultiField(mainField = @Field(type = FieldType.String))
     private List<String> formattedSpecialities;
     
 	@MultiField(mainField = @Field(type = FieldType.String))

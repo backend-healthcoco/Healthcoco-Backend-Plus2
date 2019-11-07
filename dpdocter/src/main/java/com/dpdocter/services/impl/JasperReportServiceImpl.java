@@ -735,7 +735,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignLine.setX(0);
 		jrDesignLine.setY(0);
 		jrDesignLine.setHeight(1);
-		jrDesignLine.setForecolor(Color.GRAY);
+		jrDesignLine.setForecolor(Color.LIGHT_GRAY);
 		jrDesignLine.setWidth(columnWidth);
 		band.addElement(jrDesignLine);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
@@ -1286,6 +1286,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
+
 			addItems(jasperDesign, columnWidth, "$P{PersonalHistoryTobacco}", "$F{personalHistoryTobacco}", fieldWidth,
 					false, 0, false);
 			addItems(jasperDesign, columnWidth, "$P{PersonalHistoryAlcohol}", "$F{personalHistoryAlcohol}", fieldWidth,
@@ -1356,7 +1357,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
 		
-
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$F{complaints}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaintHistory}", "$F{presentComplaintHistory}", fieldWidth,
@@ -1380,7 +1380,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setWidth(columnWidth);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 			jrDesignTextField.setBold(true);
-//			jrDesignTextField.setUnderline(true);
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
 			band.addElement(jrDesignTextField);
@@ -1406,8 +1405,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignLine);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
-
-		
 
 		addItems(jasperDesign, columnWidth, "$P{SystemExam}", "$F{systemExam}", fieldWidth, false, 0, false);
 
