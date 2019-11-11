@@ -20,10 +20,10 @@ public class ESPatientDocument {
 	private String userId;
 
 	@Field(type = FieldType.Text, fielddata = true)
-	private String PID;
+	private String pid;
 
 	@Field(type = FieldType.Text, fielddata = true)
-	private String PNUM;
+	private String pnum;
 	
 	@Field(type = FieldType.Text)
 	private String userName;
@@ -136,12 +136,20 @@ public class ESPatientDocument {
 		this.userId = userId;
 	}
 
-	public String getPID() {
-		return PID;
+	public String getPid() {
+		return pid;
 	}
 
-	public void setPID(String pID) {
-		PID = pID;
+	public void setPid(String pid) {
+		this.pid = pid;
+	}
+
+	public String getPnum() {
+		return pnum;
+	}
+
+	public void setPnum(String pnum) {
+		this.pnum = pnum;
 	}
 
 	public String getUserName() {
@@ -346,14 +354,6 @@ public class ESPatientDocument {
 		this.discarded = discarded;
 	}
 
-	public String getPNUM() {
-		return PNUM;
-	}
-
-	public void setPNUM(String pNUM) {
-		PNUM = pNUM;
-	}
-
 	public Boolean getIsChild() {
 		return isChild;
 	}
@@ -380,7 +380,7 @@ public class ESPatientDocument {
 
 	@Override
 	public String toString() {
-		return "ESPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", PNUM=" + PNUM + ", userName="
+		return "ESPatientDocument [id=" + id + ", userId=" + userId + ", pid=" + pid + ", pnum=" + pnum + ", userName="
 				+ userName + ", firstName=" + firstName + ", localPatientName=" + localPatientName
 				+ ", localPatientNameFormatted=" + localPatientNameFormatted + ", gender=" + gender + ", bloodGroup="
 				+ bloodGroup + ", emailAddress=" + emailAddress + ", dob=" + dob + ", city=" + city + ", locality="
@@ -389,7 +389,7 @@ public class ESPatientDocument {
 				+ ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
 				+ ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", registrationDate="
 				+ registrationDate + ", userUId=" + userUId + ", consultantDoctorIds=" + consultantDoctorIds
-				+ ", isPatientDiscarded=" + isPatientDiscarded + ", discarded=" + discarded + "]";
+				+ ", isPatientDiscarded=" + isPatientDiscarded + ", discarded=" + discarded + ", isChild=" + isChild
+				+ ", fatherName=" + fatherName + ", motherName=" + motherName + "]";
 	}
-
 }

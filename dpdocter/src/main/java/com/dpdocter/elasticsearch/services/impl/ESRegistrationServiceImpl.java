@@ -109,7 +109,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 				String localPatientNameFormatted = request.getLocalPatientName().replaceAll("[^a-zA-Z0-9]", "");
 				request.setLocalPatientNameFormatted(localPatientNameFormatted.toLowerCase());
 			}
-
+			
 			esPatientRepository.save(request);
 			response = true;
 			transnationalService.addResource(new ObjectId(request.getUserId()), Resource.PATIENT, true);
@@ -143,8 +143,6 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 							.matchPhrasePrefixQuery(AdvancedSearchType.MOBILE_NUMBER.getSearchType(), searchTerm)
 							.boost(1.2f))
 					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchTerm)
-							.boost(1.0f))
-					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PNUM.getSearchType(), searchTerm)
 							.boost(1.0f))
 					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PNUM.getSearchType(), searchTerm)
 							.boost(1.0f))

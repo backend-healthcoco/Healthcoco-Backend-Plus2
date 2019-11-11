@@ -1,5 +1,7 @@
 package com.dpdocter.repository;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -13,6 +15,6 @@ public interface SubscriptionDetailRepository extends MongoRepository<Subscripti
 	public SubscriptionDetailCollection findByDoctorId(ObjectId doctorId);
 
 	@Query("{'locationIds': ?0}")
-	public SubscriptionDetailCollection findSuscriptionDetailBylocationId(ObjectId locationId);
+	public List<SubscriptionDetailCollection> findSuscriptionDetailBylocationId(ObjectId locationId);
 
 }

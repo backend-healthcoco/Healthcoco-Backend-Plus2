@@ -1317,8 +1317,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				UserCollection user = userRepository.findById(patientTreatmentCollection.getPatientId()).orElse(null);
 
 				if (showPH || showPLH || showFH || showDA) {
-					historyCollection = historyRepository.findByLocationIdAndHospitalIdAndPatientId(patientTreatmentCollection.getLocationId(),
+					List<HistoryCollection> historyCollections = historyRepository.findByLocationIdAndHospitalIdAndPatientId(patientTreatmentCollection.getLocationId(),
 							patientTreatmentCollection.getHospitalId(), patientTreatmentCollection.getPatientId());
+					if(historyCollections!=null)historyCollection=historyCollections.get(0);
 				}
 				JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user,
 						historyCollection, showPH, showPLH, showFH, showDA);

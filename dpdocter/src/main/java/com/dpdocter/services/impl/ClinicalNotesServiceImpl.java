@@ -3997,8 +3997,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						clinicalNotesCollection.getHospitalId());
 				UserCollection user = userRepository.findById(clinicalNotesCollection.getPatientId()).orElse(null);
 				if (showPH || showPLH || showFH || showDA) {
-					historyCollection = historyRepository.findByLocationIdAndHospitalIdAndPatientId(clinicalNotesCollection.getLocationId(),
+					List<HistoryCollection> historyCollections = historyRepository.findByLocationIdAndHospitalIdAndPatientId(clinicalNotesCollection.getLocationId(),
 							clinicalNotesCollection.getHospitalId(), clinicalNotesCollection.getPatientId());
+					if(historyCollections!=null)historyCollection=historyCollections.get(0);
 				}
 				JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
 						historyCollection, showPH, showPLH, showFH, showDA, showUSG, isCustomPDF, showLMP, showEDD,

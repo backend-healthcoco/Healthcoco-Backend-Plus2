@@ -181,9 +181,10 @@ public class SMSServicesImpl implements SMSServices {
 				fileIn.close();
 			}
 			if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId())) {
-
-				subscriptionDetailCollection = subscriptionDetailRepository
+				
+				List<SubscriptionDetailCollection> subscriptionDetailCollections = subscriptionDetailRepository
 						.findSuscriptionDetailBylocationId(smsTrackDetail.getLocationId());
+				if(subscriptionDetailCollections !=null)subscriptionDetailCollection = subscriptionDetailCollections.get(0);
 			}
 
 			for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {

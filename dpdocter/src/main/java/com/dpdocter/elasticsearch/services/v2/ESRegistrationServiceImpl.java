@@ -122,17 +122,17 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
 					.mustNot(QueryBuilders.termQuery("isPatientDiscarded", true))
-
-					//.should(QueryBuilders.queryStringQuery("localPatientNameFormatted:" + patientName + "*").boost(4))
+					
 					.should(QueryBuilders.matchPhrasePrefixQuery("localPatientName", patientName).boost(4.0f))
+					.should(QueryBuilders.queryStringQuery("localPatientNameFormatted:" + patientName.replaceAll(" ", "") + "*").boost(3.8f))
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.EMAIL_ADDRESS.getSearchType(), searchTerm)
-							.boost(1.3f))
+							.boost(2.0f))
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.MOBILE_NUMBER.getSearchType(), searchTerm)
-							.boost(1.2f))
+							.boost(1.5f))
 					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchTerm)
-							.boost(1.0f))
+							.boost(1.3f))
 					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PNUM.getSearchType(), searchTerm)
 							.boost(1.0f))
 					.minimumShouldMatch(1);

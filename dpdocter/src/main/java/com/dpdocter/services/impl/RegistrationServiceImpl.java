@@ -2478,6 +2478,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 							new ObjectId(request.getHospitalId()));
 					userRoleCollection.setCreatedTime(new Date());
 					userRoleCollection = userRoleRepository.save(userRoleCollection);
+				}else {
+					userRoleCollection.setUpdatedTime(new Date());
+					userRoleCollection.setRoleId(doctorRole.getId());
+					userRoleCollection = userRoleRepository.save(userRoleCollection);
 				}
 			}
 			response = new RegisterDoctorResponse();
@@ -3984,7 +3988,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 							ESPatientDocument esPatientDocument = esPatientRepository
 									.findById(patient.getId().toString()).orElse(null);
 							if (esPatientDocument != null) {
-								esPatientDocument.setPID(patient.getPID());
+								esPatientDocument.setPid(patient.getPID());
 								esPatientDocument.setRegistrationDate(patient.getRegistrationDate());
 								esPatientDocument = esPatientRepository.save(esPatientDocument);
 							}

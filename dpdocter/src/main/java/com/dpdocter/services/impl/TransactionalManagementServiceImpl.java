@@ -34,7 +34,6 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +50,6 @@ import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.BabyNoteCollection;
 import com.dpdocter.collections.CementCollection;
 import com.dpdocter.collections.CityCollection;
-import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.DiagnosisCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
@@ -123,7 +121,6 @@ import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
 import com.dpdocter.elasticsearch.document.ESBabyNoteDocument;
 import com.dpdocter.elasticsearch.document.ESCementDocument;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
-import com.dpdocter.elasticsearch.document.ESCollectionBoyDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
@@ -199,7 +196,6 @@ import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
-import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.OTPState;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
@@ -586,14 +582,17 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		System.out.println(">>> Scheduled test service <<<");
 		List<TransactionalCollection> transactionalCollections = null;
 		try {
-			long count = mongoTemplate.count(new Query(new Criteria("isCached").is(false)), TransactionalCollection.class);
-			long remainingCount = count;
-			int page = 0;
-			int size = 20000;
-			while(remainingCount>0) {
-				
-				transactionalCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("isCached").is(false)), 
-						Aggregation.skip(page * size), Aggregation.limit(size)).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), TransactionalCollection.class, TransactionalCollection.class).getMappedResults();
+			
+			transactionalCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("isCached").is(false))).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), TransactionalCollection.class, TransactionalCollection.class).getMappedResults();
+			
+//			long count = mongoTemplate.count(new Query(new Criteria("isCached").is(false)), TransactionalCollection.class);
+//			long remainingCount = count;
+//			int page = 0;
+//			int size = 20000;
+//			while(remainingCount>0) {
+//				
+//				transactionalCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("isCached").is(false)), 
+//						Aggregation.skip(page * size), Aggregation.limit(size)).withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()), TransactionalCollection.class, TransactionalCollection.class).getMappedResults();
 
 //				transactionalCollections = transnationalRepositiory.findByIsCached(false);
 				if (transactionalCollections != null) {
@@ -786,13 +785,13 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							}
 					}
 				}
-				page = page + 1;
-				remainingCount=remainingCount-transactionalCollections.size();
-			}
+//				page = page + 1;
+//				remainingCount=remainingCount-transactionalCollections.size();
+//			}
 			
 			// Expire invalid otp
 			checkOTP();
-			addDataFromMongoToElasticSearch();
+//			addDataFromMongoToElasticSearch();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -897,8 +896,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					smsTrackDetail.setSmsDetails(smsDetails);
 					sMSServices.sendSMS(smsTrackDetail, true);
 					if (response.getUserDevices() != null && !response.getUserDevices().isEmpty()) {
-						pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
-								null, response.getUserDevices());
+//						pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
+//								null, response.getUserDevices());
 					}
 				}
 			}
@@ -1074,8 +1073,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							smsTrackDetail.setSmsDetails(smsDetails);
 							sMSServices.sendSMS(smsTrackDetail, true);
 							if (response.getUserDevices() != null && !response.getUserDevices().isEmpty()) {
-								pushNotificationServices.notifyUser(null, message,
-										ComponentType.CALENDAR_REMINDER.getType(), null, response.getUserDevices());
+//								pushNotificationServices.notifyUser(null, message,
+//										ComponentType.CALENDAR_REMINDER.getType(), null, response.getUserDevices());
 							}
 						}
 					}
@@ -1177,8 +1176,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					smsTrackDetail.setSmsDetails(smsDetails);
 					sMSServices.sendSMS(smsTrackDetail, true);
 					if (response.getUserDevices() != null && !response.getUserDevices().isEmpty()) {
-						pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
-								null, response.getUserDevices());
+//						pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(),
+//								null, response.getUserDevices());
 					}
 				}
 			}
@@ -1625,8 +1624,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				transactionalCollection.setResourceId(resourceId);
 				transactionalCollection.setResource(resource);
 				transactionalCollection.setIsCached(isCached);
+				transactionalCollection.setCreatedTime(new Date());
 				transnationalRepositiory.save(transactionalCollection);
 			} else {
+				transactionalCollection.setUpdatedTime(new Date());
 				transactionalCollection.setIsCached(isCached);
 				transnationalRepositiory.save(transactionalCollection);
 			}
@@ -1646,7 +1647,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			if (userCollection != null && patientCollections != null) {
 				for (PatientCollection patientCollection : patientCollections) {
 					ESPatientDocument patientDocument = new ESPatientDocument();
-
 					BeanUtil.map(userCollection, patientDocument);
 					if (patientCollection != null)
 						BeanUtil.map(patientCollection, patientDocument);
@@ -1656,6 +1656,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 					if (patientCollection != null)
 						esRegistrationService.addPatient(patientDocument);
+					patientDocument.setPid(patientCollection.getPID());
 				}
 			}
 		} catch (Exception e) {
@@ -2696,44 +2697,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 //			}
 //			System.out.println("added treatment service");
 
-			long drugCount = drugRepository.count();
-			long remainingDrugCount = drugCount;
-			int page = 0;
-			while(remainingDrugCount>0) {
-				
-				List<DrugCollection> drugCollections = drugRepository.findAll(PageRequest.of(page, 10000)).getContent();
-				if (drugCollections != null) {
-					for (DrugCollection drugCollection : drugCollections) {
-						ESDrugDocument esDrugDocument = new ESDrugDocument();
-						BeanUtil.map(drugCollection, esDrugDocument);
-						if (drugCollection.getDrugType() != null) {
-							esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-							esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
-						}
-						esPrescriptionService.addDrug(esDrugDocument);
-					}
-				}
-				page = page + 1;
-				remainingDrugCount=remainingDrugCount-drugCollections.size();
-			}
-			System.out.println("added drugs");
-
-			List<DoctorDrugCollection> doctorDrugCollections = doctorDrugRepository.findAll();
-			if (doctorDrugCollections != null) {
-				for (DoctorDrugCollection doctorDrugCollection : doctorDrugCollections) {
-					DrugCollection drugCollection = drugRepository.findById(doctorDrugCollection.getDrugId())
-							.orElse(null);
-					if (drugCollection != null) {
-						ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-						BeanUtil.map(drugCollection, esDoctorDrugDocument);
-						BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-						esDoctorDrugDocument.setId(drugCollection.getId().toString());
-						esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
-					}
-				}
-			}
-			System.out.println("added doctorDrugs");
-
 			List<SystemExamCollection> systemExamCollections = systemExamRepository.findAll();
 			if (systemExamCollections != null) {
 				for (SystemExamCollection systemExamCollection : systemExamCollections) {
@@ -3218,7 +3181,44 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				}
 			}
 			System.out.println("added diagnosticTest");
+			
+			long drugCount = drugRepository.count();
+			long remainingDrugCount = drugCount;
+			int page = 0;
+			while(remainingDrugCount>0) {
+				
+				List<DrugCollection> drugCollections = drugRepository.findAll(PageRequest.of(page, 10000)).getContent();
+				if (drugCollections != null) {
+					for (DrugCollection drugCollection : drugCollections) {
+						ESDrugDocument esDrugDocument = new ESDrugDocument();
+						BeanUtil.map(drugCollection, esDrugDocument);
+						if (drugCollection.getDrugType() != null) {
+							esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+							esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+						}
+						esPrescriptionService.addDrug(esDrugDocument);
+					}
+				}
+				page = page + 1;
+				remainingDrugCount=remainingDrugCount-drugCollections.size();
+			}
+			System.out.println("added drugs");
 
+			List<DoctorDrugCollection> doctorDrugCollections = doctorDrugRepository.findAll();
+			if (doctorDrugCollections != null) {
+				for (DoctorDrugCollection doctorDrugCollection : doctorDrugCollections) {
+					DrugCollection drugCollection = drugRepository.findById(doctorDrugCollection.getDrugId())
+							.orElse(null);
+					if (drugCollection != null) {
+						ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+						BeanUtil.map(drugCollection, esDoctorDrugDocument);
+						BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+						esDoctorDrugDocument.setId(drugCollection.getId().toString());
+						esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
+					}
+				}
+			}
+			System.out.println("added doctorDrugs");
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

@@ -3876,8 +3876,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				UserCollection user = userRepository.findById(prescriptionCollection.getPatientId()).orElse(null);
 
 				if (showPH || showPLH || showFH || showDA) {
-					historyCollection = historyRepository.findByLocationIdAndHospitalIdAndPatientId(prescriptionCollection.getLocationId(),
+					List<HistoryCollection> historyCollections = historyRepository.findByLocationIdAndHospitalIdAndPatientId(prescriptionCollection.getLocationId(),
 							prescriptionCollection.getHospitalId(), prescriptionCollection.getPatientId());
+					if(historyCollections!=null)historyCollection=historyCollections.get(0);
 				}
 				JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user,
 						historyCollection, showPH, showPLH, showFH, showDA, isLabPrint);

@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.enums.Resource;
 
 @Document(collection = "transnational_cl")
-public class TransactionalCollection {
+public class TransactionalCollection extends GenericCollection{
 
     @Id
     private ObjectId id;
