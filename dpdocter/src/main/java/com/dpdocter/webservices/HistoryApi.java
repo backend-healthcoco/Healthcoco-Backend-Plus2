@@ -462,10 +462,11 @@ public class HistoryApi {
 	    logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	HistoryDetailsResponse history = historyServices.getMedicalAndFamilyHistory(patientId, doctorId, hospitalId, locationId);
+	List<HistoryDetailsResponse> history = historyServices.getMedicalAndFamilyHistory(patientId, doctorId, hospitalId, locationId);
 
 	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
-	response.setData(history);
+	if(history!=null)response.setData(history.get(0));
+	response.setDataList(history);
 	return response;
     }
 

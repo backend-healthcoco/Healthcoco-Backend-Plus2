@@ -2196,33 +2196,37 @@ public class HistoryServicesImpl implements HistoryServices {
 
 	@Override
 	@Transactional
-	public HistoryDetailsResponse getMedicalAndFamilyHistory(String patientId, String doctorId, String hospitalId,
+	public List<HistoryDetailsResponse> getMedicalAndFamilyHistory(String patientId, String doctorId, String hospitalId,
 			String locationId) {
-		HistoryDetailsResponse response = null;
-		HistoryCollection historyCollection = null;
-
+		List<HistoryDetailsResponse> response = null;
 		try {
 			List<HistoryCollection> historyCollections = historyRepository.findByLocationIdAndHospitalIdAndPatientId(new ObjectId(locationId), new ObjectId(hospitalId),
 					new ObjectId(patientId));
 			
 			if (historyCollections != null) {
-				historyCollection = historyCollections.get(0);
-				response = new HistoryDetailsResponse();
-				BeanUtil.map(historyCollection, response);
-				List<ObjectId> medicalHistoryIds = historyCollection.getMedicalhistory();
-				if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
-					List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
-					response.setMedicalhistory(medicalHistory);
-				}
+				for(HistoryCollection historyCollection : historyCollections) {
+					HistoryDetailsResponse historyDetailsResponse = new HistoryDetailsResponse();
+					BeanUtil.map(historyCollection, historyDetailsResponse);
+					List<ObjectId> medicalHistoryIds = historyCollection.getMedicalhistory();
+					if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
+						List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
+						historyDetailsResponse.setMedicalhistory(medicalHistory);
+					}
 
-				List<ObjectId> familyHistoryIds = historyCollection.getFamilyhistory();
-				if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
-					List<DiseaseListResponse> familyHistory = getDiseasesByIds(familyHistoryIds);
-					response.setFamilyhistory(familyHistory);
+					List<ObjectId> familyHistoryIds = historyCollection.getFamilyhistory();
+					if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
+						List<DiseaseListResponse> familyHistory = getDiseasesByIds(familyHistoryIds);
+						historyDetailsResponse.setFamilyhistory(familyHistory);
+					}
+					if ((medicalHistoryIds == null || medicalHistoryIds.isEmpty())
+							&& (familyHistoryIds == null || familyHistoryIds.isEmpty()))
+						historyDetailsResponse = null;
+					
+					if(historyDetailsResponse!=null) {
+						if(response == null)response = new ArrayList<>();
+						response.add(historyDetailsResponse);
+					}
 				}
-				if ((medicalHistoryIds == null || medicalHistoryIds.isEmpty())
-						&& (familyHistoryIds == null || familyHistoryIds.isEmpty()))
-					response = null;
 			}
 
 		} catch (Exception e) {

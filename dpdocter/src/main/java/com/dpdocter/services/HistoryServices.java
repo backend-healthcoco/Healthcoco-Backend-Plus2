@@ -71,7 +71,7 @@ public interface HistoryServices {
 
     boolean handleFamilyHistory(MedicalHistoryHandler request);
 
-    HistoryDetailsResponse getMedicalAndFamilyHistory(String patientId, String doctorId, String hospitalId, String locationId);
+    List<HistoryDetailsResponse> getMedicalAndFamilyHistory(String patientId, String doctorId, String hospitalId, String locationId);
 
     boolean mailMedicalData(MedicalData medicalData);
 
