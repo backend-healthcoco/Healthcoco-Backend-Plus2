@@ -2483,11 +2483,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 					userRoleCollection.setRoleId(doctorRole.getId());
 					userRoleCollection = userRoleRepository.save(userRoleCollection);
 				}
-				else {
+				/*else {
 					userRoleCollection.setUpdatedTime(new Date());
 					userRoleCollection.setRoleId(doctorRole.getId());
 					userRoleCollection = userRoleRepository.save(userRoleCollection);
-				}
+				}*/
 				
 			}
 			response = new RegisterDoctorResponse();

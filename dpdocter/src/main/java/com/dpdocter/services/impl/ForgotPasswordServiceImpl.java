@@ -283,18 +283,22 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		try {
 			TokenCollection tokenCollection = tokenRepository.findById(new ObjectId(request.getUserId())).orElse(null);
 			if (tokenCollection == null)
+			{
+				System.out.println("token not null :: " + tokenCollection);
 				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
-			else if (tokenCollection.getIsUsed())
+			
+			}else if (tokenCollection.getIsUsed())
 				return "Your password has already been reset.";
 			else {
 				if (!isLinkValid(tokenCollection.getCreatedTime()))
 					return "Your reset password link has expired.";
 				UserCollection userCollection = userRepository.findById(tokenCollection.getResourceId()).orElse(null);
 				if (userCollection == null) {
+					System.out.println("user not null :: " + userCollection);
 					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
 				}
 				if (!(userCollection.getUserState() == UserState.USERSTATECOMPLETE)
-						&& !(userCollection.getUserState() == UserState.NOTACTIVATED)) {
+						&& !(userCollection.getUserState() == UserState.NOTACTIVATED) && !(userCollection.getUserState() == UserState.DELIVERY_BOY && !(userCollection.getUserState() == UserState.VENDOR))) {
 					return "User is not verified";
 				}
 				//userCollection.setPassword(request.getPassword());
@@ -312,6 +316,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				return "You have successfully changed your password.";
 			}
 		} catch (IllegalArgumentException argumentException) {
+			argumentException.printStackTrace();
 			return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
 		} catch (Exception e) {
 			e.printStackTrace();
