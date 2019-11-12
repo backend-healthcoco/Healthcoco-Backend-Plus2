@@ -167,6 +167,8 @@ public interface PathProxy {
 		public static final String GET_USERS = "/users/{locationId}/{hospitalId}";
 
 		public static final String ACTIVATE_DEACTIVATE_USER = "/user/{userId}/{locationId}/activate";
+		
+		public static final String  ACCESS_USER =	"/user/{userId}/{locationId}/loginAccess";
 
 		public static final String ADD_FEEDBACK = "/feedback/add";
 

@@ -2483,6 +2483,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 					userRoleCollection.setRoleId(doctorRole.getId());
 					userRoleCollection = userRoleRepository.save(userRoleCollection);
 				}
+				else {
+					userRoleCollection.setUpdatedTime(new Date());
+					userRoleCollection.setRoleId(doctorRole.getId());
+					userRoleCollection = userRoleRepository.save(userRoleCollection);
+				}
+				
 			}
 			response = new RegisterDoctorResponse();
 			BeanUtil.map(userCollection, response);
@@ -2982,6 +2988,23 @@ public class RegistrationServiceImpl implements RegistrationService {
 					.findByDoctorIdAndLocationId(new ObjectId(userId), new ObjectId(locationId));
 			if (doctorClinicProfileCollection != null) {
 				doctorClinicProfileCollection.setIsActivate(isActivate);
+				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
+	
+	@Override
+	@Transactional
+	public void loginAccessUser(String userId, String locationId, Boolean hasLoginAccess) {
+		try {
+			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+					.findByDoctorIdAndLocationId(new ObjectId(userId), new ObjectId(locationId));
+			if (doctorClinicProfileCollection != null) {
+				doctorClinicProfileCollection.setHasLoginAccess(hasLoginAccess);
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 			}
 		} catch (Exception e) {

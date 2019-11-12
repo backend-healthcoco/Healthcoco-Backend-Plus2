@@ -177,4 +177,6 @@ public interface RegistrationService {
 	Boolean update();
 
 	Boolean checkIfPNUMExist(String locationId, String hospitalId, String pNUM);
+
+	void loginAccessUser(String userId, String locationId, Boolean hasLoginAccess);
 }

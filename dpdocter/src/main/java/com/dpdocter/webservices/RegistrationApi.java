@@ -777,6 +777,23 @@ public class RegistrationApi {
 		response.setData(true);
 		return response;
 	}
+	
+	@Path(value = PathProxy.RegistrationUrls.ACCESS_USER)
+	@DELETE
+	
+	public Response<Boolean> LoginAccessUser(@PathParam(value = "userId") String userId,
+			@PathParam(value = "locationId") String locationId,
+			@DefaultValue("false") @QueryParam("hasLoginAccess") Boolean hasLoginAccess) {
+		if (DPDoctorUtils.anyStringEmpty(userId, locationId)) {
+			logger.warn(invalidInput);
+			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+		}
+		registrationService.loginAccessUser(userId, locationId, hasLoginAccess);
+		transnationalService.checkDoctor(new ObjectId(userId), null);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
 
 	@Path(value = PathProxy.RegistrationUrls.ADD_FEEDBACK)
 	@POST
