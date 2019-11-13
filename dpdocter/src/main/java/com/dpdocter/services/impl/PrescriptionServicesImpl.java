@@ -6491,7 +6491,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		try {
 			prescriptionCollection = prescriptionRepository.findById(new ObjectId(prescriptionId)).orElse(null);
 			if (prescriptionCollection != null) {
-				UserCollection userCollection = userRepository.findById(prescriptionCollection.getPatientId()).orElse(null);
 				PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						prescriptionCollection.getPatientId(), prescriptionCollection.getLocationId(),
 						prescriptionCollection.getHospitalId());

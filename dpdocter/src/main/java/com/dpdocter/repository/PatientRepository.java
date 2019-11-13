@@ -29,6 +29,7 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 	
 	List<PatientCollection> findByLocationIdAndHospitalIdAndPNUMNull(ObjectId locationId, ObjectId hospitalId);
 	
+	@Query("{'locationId': ?0, 'hospitalId': ?1, 'PNUM': ?2}")
 	PatientCollection findByLocationIdAndHospitalIdAndPNUM(ObjectId locationId, ObjectId hospitalId, String pnum);
 
 	List<PatientCollection> findByLocationIdAndHospitalIdAndRegistrationDateBetween(ObjectId locationId, ObjectId hospitalId, Long startTimeinMillis, Long endTimeinMillis, Pageable pageRequest);

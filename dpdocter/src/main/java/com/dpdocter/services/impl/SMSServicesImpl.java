@@ -171,7 +171,7 @@ public class SMSServicesImpl implements SMSServices {
 			message.setUnicode(UNICODE);
 			Boolean isSMSInAccount = true;
 			UserMobileNumbers userNumber = null;
-			SubscriptionDetailCollection subscriptionDetailCollection = null;
+//			SubscriptionDetailCollection subscriptionDetailCollection = null;
 
 			if (!isEnvProduction) {
 				FileInputStream fileIn = new FileInputStream(MOBILE_NUMBERS_RESOURCE);
@@ -180,12 +180,12 @@ public class SMSServicesImpl implements SMSServices {
 				in.close();
 				fileIn.close();
 			}
-			if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId())) {
-				
-				List<SubscriptionDetailCollection> subscriptionDetailCollections = subscriptionDetailRepository
-						.findSuscriptionDetailBylocationId(smsTrackDetail.getLocationId());
-				if(subscriptionDetailCollections !=null)subscriptionDetailCollection = subscriptionDetailCollections.get(0);
-			}
+//			if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId())) {
+//				
+//				List<SubscriptionDetailCollection> subscriptionDetailCollections = subscriptionDetailRepository
+//						.findSuscriptionDetailBylocationId(smsTrackDetail.getLocationId());
+//				if(subscriptionDetailCollections !=null)subscriptionDetailCollection = subscriptionDetailCollections.get(0);
+//			}
 
 			for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
 				/*if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))

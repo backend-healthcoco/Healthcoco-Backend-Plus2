@@ -131,9 +131,9 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.should(QueryBuilders
 							.matchPhrasePrefixQuery(AdvancedSearchType.MOBILE_NUMBER.getSearchType(), searchTerm)
 							.boost(1.5f))
-					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchTerm)
+					.should(QueryBuilders.matchPhrasePrefixQuery("pid", searchTerm)
 							.boost(1.3f))
-					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PNUM.getSearchType(), searchTerm)
+					.should(QueryBuilders.matchPhrasePrefixQuery("pnum", searchTerm)
 							.boost(1.0f))
 					.minimumShouldMatch(1);
 			if (RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)) {
@@ -281,9 +281,9 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 							builder = QueryBuilders.termsQuery(searchType, referenceIds);
 						}
 					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.PID.getSearchType())){
-						builder = QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchValue);
+						builder = QueryBuilders.matchPhrasePrefixQuery("pid", searchValue);
 					 }else if (searchType.equalsIgnoreCase(AdvancedSearchType.PNUM.getSearchType())){
-							builder = QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PNUM.getSearchType(), searchValue);
+							builder = QueryBuilders.matchPhrasePrefixQuery("pnum", searchValue);
 				     }else { 
 						builder = QueryBuilders.matchPhrasePrefixQuery(searchType, searchValue);
 					}

@@ -158,8 +158,6 @@ public class LoginServiceImpl implements LoginService {
 				response.setUser(user);
 				return response;
 			}
-			System.out.println("user lookup");
-
 			List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(
 							Aggregation.match(new Criteria("userId").is(userCollection.getId()).and("locationId")
@@ -369,11 +367,7 @@ public class LoginServiceImpl implements LoginService {
 	public List<RegisteredPatientDetails> loginPatient(LoginPatientRequest request) {
 		List<RegisteredPatientDetails> response = null;
 		try {
-			Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber()).and("userState")
-					.is("USERSTATECOMPLETE");
-			Query query = new Query();
-			query.addCriteria(criteria);
-			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
+			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(), "USERSTATECOMPLETE");
 
 			for (UserCollection userCollection : userCollections) {
 				if (userCollection.getEmailAddress() != null) {
@@ -465,10 +459,7 @@ public class LoginServiceImpl implements LoginService {
 	public List<RegisteredPatientDetails> loginPatientByOtp(LoginPatientRequest request) {
 		List<RegisteredPatientDetails> response = null;
 		try {
-			Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber()).and("userState").is("USERSTATECOMPLETE");
-			Query query = new Query();
-			query.addCriteria(criteria);
-			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
+			List<UserCollection> userCollections = userRepository.findByMobileNumberAndUserState(request.getMobileNumber(), "USERSTATECOMPLETE");
 			if (userCollections != null && !userCollections.isEmpty()) {
 				for (UserCollection userCollection : userCollections) {
 					if (userCollection.getEmailAddress() != null) {

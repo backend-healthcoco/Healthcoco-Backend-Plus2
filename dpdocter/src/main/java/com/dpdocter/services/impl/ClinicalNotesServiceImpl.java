@@ -8379,14 +8379,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			for (String id : ids) {
 				if (!DPDoctorUtils.anyStringEmpty(id)) {
 					objectIds.add(new ObjectId(id));
-					System.out.println(id);
 				}
 			}
 
 			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository
 					.findByIdIn(objectIds);
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
-				System.out.println(clinicalNotesCollections.size());
 				PatientCollection patient = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
 						clinicalNotesCollections.get(0).getPatientId(), clinicalNotesCollections.get(0).getDoctorId(),
 						clinicalNotesCollections.get(0).getLocationId(),
@@ -8439,7 +8437,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						: LineStyle.INLINE.name();
 
 		for (ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
-System.out.println(clinicalNotesCollection.getId());
 			ClinicalNotesJasperDetails clinicalJasperDetails = patientVisitService.getClinicalNotesJasperDetails(
 					clinicalNotesCollection.getId().toString(), contentLineStyle, parameters, false, false, false,
 					false, false, clinicalNotesCollection, false);

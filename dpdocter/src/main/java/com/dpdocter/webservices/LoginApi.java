@@ -66,7 +66,6 @@ public class LoginApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		LoginResponse loginResponse = loginService.login(request, isMobileApp, isNutritionist);
-		System.out.println("login done");
 		if (loginResponse != null) {
 			if (!DPDoctorUtils.anyStringEmpty(loginResponse.getUser().getImageUrl())) {
 				loginResponse.getUser().setImageUrl(getFinalImageURL(loginResponse.getUser().getImageUrl()));

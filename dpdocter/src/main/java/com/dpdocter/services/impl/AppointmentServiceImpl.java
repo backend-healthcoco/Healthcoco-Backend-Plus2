@@ -1393,8 +1393,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_TO_PATIENT",
 							patientEmailAddress, branch);
 				}
-				System.out.println("getNotifyPatientBySms" + request.getNotifyPatientBySms());
-				System.out.println(patientMobileNumber);
 				if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()) {
 					if (request.getState().getState().equals(AppointmentState.CONFIRM.getState())) {
 						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
@@ -1734,7 +1732,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT": {
-			System.out.println("RESCHEDULE_APPOINTMENT_TO_PATIENT sms");
 			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")+ (branch != "" ? ", " + branch : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been rescheduled @ " + dateTime+(googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
 					+ ". Download Healthcoco App- " + patientAppBitLink;

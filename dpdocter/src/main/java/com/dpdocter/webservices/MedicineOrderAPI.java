@@ -209,10 +209,7 @@ public class MedicineOrderAPI {
 		{
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid input. Id cannot be null");
 		}
-		
-		
-		System.out.println(status);
-		
+
 		List<MedicineOrder> medicineOrders = medicineOrderService.getOrderList(patientId, updatedTime, searchTerm, page, size, status);
 		Response<MedicineOrder> response = new Response<MedicineOrder>();
 		response.setDataList(medicineOrders);

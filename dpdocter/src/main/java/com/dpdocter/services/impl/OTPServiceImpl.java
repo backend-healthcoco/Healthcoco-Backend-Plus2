@@ -296,9 +296,6 @@ public class OTPServiceImpl implements OTPService {
 			otpCollection.setMobileNumber(mobileNumber);
 			otpCollection.setCreatedBy(mobileNumber);
 			otpCollection = otpRepository.save(otpCollection);
-			
-			System.out.println(otpCollection);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error While Generating OTP");

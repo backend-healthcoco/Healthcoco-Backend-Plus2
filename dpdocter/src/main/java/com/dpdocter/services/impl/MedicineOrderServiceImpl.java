@@ -366,7 +366,6 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 			medicineOrderCollection.setOrderStatus(status);
 			switch (status) {
 			case PLACED:
-				System.out.println("Inside Placed");
 				message = ORDER_PLACED_MESSAGE;
 				pushNotificationServices.notifyUser(String.valueOf(medicineOrderCollection.getPatientId()), message,
 						ComponentType.ORDER_PLACED.getType(), id, null);
@@ -859,9 +858,6 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				aggregation = Aggregation.newAggregation(
 				Aggregation.match(criteria),Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
-			
-			//System.out.println(aggregation);
-			
 			response = mongoTemplate.aggregate(
 					aggregation,
 					DrugInfoCollection.class, DrugInfo.class).getMappedResults();
