@@ -15,7 +15,7 @@ public class DietplanAddItem {
 	private MealQuantity calories;
 
 	private Integer toTime = 0;
-
+	
 	public Integer getToTime() {
 		return toTime;
 	}

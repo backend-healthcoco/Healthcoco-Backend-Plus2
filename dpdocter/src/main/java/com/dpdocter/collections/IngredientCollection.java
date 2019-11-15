@@ -60,7 +60,7 @@ public class IngredientCollection extends GenericCollection {
 	private MealQuantity protein;
 
 	@Field
-	private MealQuantity carbohydreate;
+	private MealQuantity carbohydrate;
 
 	@Field
 	private MealQuantity fiber;
@@ -190,12 +190,12 @@ public class IngredientCollection extends GenericCollection {
 		this.protein = protein;
 	}
 
-	public MealQuantity getCarbohydreate() {
-		return carbohydreate;
+	public MealQuantity getCarbohydrate() {
+		return carbohydrate;
 	}
 
-	public void setCarbohydreate(MealQuantity carbohydreate) {
-		this.carbohydreate = carbohydreate;
+	public void setCarbohydrate(MealQuantity carbohydrate) {
+		this.carbohydrate = carbohydrate;
 	}
 
 	public MealQuantity getFiber() {

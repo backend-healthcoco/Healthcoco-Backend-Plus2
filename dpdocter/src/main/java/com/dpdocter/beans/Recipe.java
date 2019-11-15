@@ -95,7 +95,7 @@ public class Recipe extends GenericCollection {
 	private Map<String, String> otherNutrients;
 
 	private boolean nutrientValueAtRecipeLevel = false;
-
+	
 	private String dietoryEvaluation;
 	private String phLevel;
 	private String giLevel;

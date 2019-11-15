@@ -26,7 +26,7 @@ public class ESRecipeUserAppResponse {
 
 	private MealQuantity protein;
 
-	private MealQuantity carbohydreate;
+	private MealQuantity carbohydrate;
 
 	public String getId() {
 		return id;
@@ -100,12 +100,12 @@ public class ESRecipeUserAppResponse {
 		this.protein = protein;
 	}
 
-	public MealQuantity getCarbohydreate() {
-		return carbohydreate;
+	public MealQuantity getCarbohydrate() {
+		return carbohydrate;
 	}
 
-	public void setCarbohydreate(MealQuantity carbohydreate) {
-		this.carbohydreate = carbohydreate;
+	public void setCarbohydrate(MealQuantity carbohydrate) {
+		this.carbohydrate = carbohydrate;
 	}
 
 	public String getRecipeDescription() {

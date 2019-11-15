@@ -579,7 +579,7 @@ public class RecipeServiceImpl implements RecipeService {
 		try {
 			Criteria criteria = new Criteria("favRecipe.discarded").is(discarded);
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-				criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
+				criteria = criteria.orOperator(new Criteria("name").regex("/^" + searchTerm+"/", "i"),
 						new Criteria("name").regex("^" + searchTerm));
 			if (!DPDoctorUtils.allStringsEmpty(userId))
 				criteria.and("favRecipe.userId").is(new ObjectId(userId));
@@ -625,7 +625,7 @@ public class RecipeServiceImpl implements RecipeService {
 							.append("fat", new BasicDBObject("$first", "$racipe.fat"))
 							.append("protein", new BasicDBObject("$first", "$racipe.protein"))
 							.append("fiber", new BasicDBObject("$first", "$racipe.fiber"))
-							.append("carbohydreate", new BasicDBObject("$first", "$racipe.carbohydreate"))));
+							.append("carbohydrate", new BasicDBObject("$first", "$racipe.carbohydrate"))));
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("recipes"),

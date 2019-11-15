@@ -26,7 +26,7 @@ public class RecipeItemResponse {
 
 	private MealQuantity protein;
 
-	private MealQuantity carbohydreate;
+	private MealQuantity carbohydrate;
 
 	private MealQuantity fiber;
 
@@ -86,12 +86,12 @@ public class RecipeItemResponse {
 		this.protein = protein;
 	}
 
-	public MealQuantity getCarbohydreate() {
-		return carbohydreate;
+	public MealQuantity getCarbohydrate() {
+		return carbohydrate;
 	}
 
-	public void setCarbohydreate(MealQuantity carbohydreate) {
-		this.carbohydreate = carbohydreate;
+	public void setCarbohydrate(MealQuantity carbohydrate) {
+		this.carbohydrate = carbohydrate;
 	}
 
 	public MealQuantity getFiber() {

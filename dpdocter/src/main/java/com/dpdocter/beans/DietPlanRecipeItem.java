@@ -25,7 +25,7 @@ public class DietPlanRecipeItem {
 
 	private MealQuantity protein;
 
-	private MealQuantity carbohydreate;
+	private MealQuantity carbohydrate;
 
 	private MealQuantity fiber;
 
@@ -43,6 +43,8 @@ public class DietPlanRecipeItem {
 	
 	private Map<String, String> vitaminNutrients;
 
+	private List<EquivalentQuantities> equivalentMeasurements;
+	
 	public MealQuantity getFat() {
 		return fat;
 	}
@@ -59,12 +61,12 @@ public class DietPlanRecipeItem {
 		this.protein = protein;
 	}
 
-	public MealQuantity getCarbohydreate() {
-		return carbohydreate;
+	public MealQuantity getCarbohydrate() {
+		return carbohydrate;
 	}
 
-	public void setCarbohydreate(MealQuantity carbohydreate) {
-		this.carbohydreate = carbohydreate;
+	public void setCarbohydrate(MealQuantity carbohydrate) {
+		this.carbohydrate = carbohydrate;
 	}
 
 	public MealQuantity getFiber() {
@@ -185,6 +187,25 @@ public class DietPlanRecipeItem {
 
 	public void setVitaminNutrients(Map<String, String> vitaminNutrients) {
 		this.vitaminNutrients = vitaminNutrients;
+	}
+
+	public List<EquivalentQuantities> getEquivalentMeasurements() {
+		return equivalentMeasurements;
+	}
+
+	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
+		this.equivalentMeasurements = equivalentMeasurements;
+	}
+
+	@Override
+	public String toString() {
+		return "DietPlanRecipeItem [id=" + id + ", quantity=" + quantity + ", name=" + name + ", ingredients="
+				+ ingredients + ", direction=" + direction + ", note=" + note + ", calories=" + calories + ", fat="
+				+ fat + ", protein=" + protein + ", carbohydrate=" + carbohydrate + ", fiber=" + fiber
+				+ ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients + ", lipidNutrients="
+				+ lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", mineralNutrients="
+				+ mineralNutrients + ", otherNutrients=" + otherNutrients + ", vitaminNutrients=" + vitaminNutrients
+				+ ", equivalentMeasurements=" + equivalentMeasurements + "]";
 	}
 
 }

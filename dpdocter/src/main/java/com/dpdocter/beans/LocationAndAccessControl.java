@@ -84,6 +84,7 @@ public class LocationAndAccessControl {
 	private Boolean isPidHasDate = true;
 
 	private Boolean isVaccinationModuleOn = false;
+	
 	private Boolean isNutritionist = false;
 
 	private Boolean isAdminNutritionist = false;

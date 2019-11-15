@@ -24,7 +24,7 @@ public class CaloriesCounterCollection extends GenericCollection {
 	@Field
 	private MealQuantity protein;
 	@Field
-	private MealQuantity carbohydreate;
+	private MealQuantity carbohydrate;
 	@Field
 	private MealQuantity fiber;
 	@Field
@@ -34,7 +34,7 @@ public class CaloriesCounterCollection extends GenericCollection {
 	@Field
 	private MealQuantity GoalIntakeProtein;
 	@Field
-	private MealQuantity GoalIntakeCarbohydreate;
+	private MealQuantity GoalIntakecarbohydrate;
 	@Field
 	private MealQuantity GoalIntakeFiber;
 	@Field
@@ -96,12 +96,12 @@ public class CaloriesCounterCollection extends GenericCollection {
 		this.protein = protein;
 	}
 
-	public MealQuantity getCarbohydreate() {
-		return carbohydreate;
+	public MealQuantity getCarbohydrate() {
+		return carbohydrate;
 	}
 
-	public void setCarbohydreate(MealQuantity carbohydreate) {
-		this.carbohydreate = carbohydreate;
+	public void setCarbohydrate(MealQuantity carbohydrate) {
+		this.carbohydrate = carbohydrate;
 	}
 
 	public MealQuantity getFiber() {
@@ -136,12 +136,12 @@ public class CaloriesCounterCollection extends GenericCollection {
 		GoalIntakeProtein = goalIntakeProtein;
 	}
 
-	public MealQuantity getGoalIntakeCarbohydreate() {
-		return GoalIntakeCarbohydreate;
+	public MealQuantity getGoalIntakecarbohydrate() {
+		return GoalIntakecarbohydrate;
 	}
 
-	public void setGoalIntakeCarbohydreate(MealQuantity goalIntakeCarbohydreate) {
-		GoalIntakeCarbohydreate = goalIntakeCarbohydreate;
+	public void setGoalIntakecarbohydrate(MealQuantity goalIntakecarbohydrate) {
+		GoalIntakecarbohydrate = goalIntakecarbohydrate;
 	}
 
 	public MealQuantity getGoalIntakeFiber() {
