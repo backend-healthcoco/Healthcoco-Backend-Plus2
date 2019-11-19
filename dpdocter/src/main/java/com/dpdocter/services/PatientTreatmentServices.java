@@ -9,6 +9,7 @@ import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
+import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.response.PatientTreatmentResponse;
 
@@ -68,4 +69,9 @@ public interface PatientTreatmentServices {
 	PatientTreatmentResponse deletePatientTreatmentForWeb(String treatmentId, Boolean discarded);
 
 	public List<TreatmentService> getTreatmentServices(List<ObjectId> idList);
+
+//	PatientTreatmentResponse addEditPatientTreatment(AppointmentRequest request, boolean isAppointmentAdd,
+//			Object createdBy, Object appointment);
+//	 PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request, boolean isAppointmentAdd,
+//			Object createdBy, Object appointment);
 }

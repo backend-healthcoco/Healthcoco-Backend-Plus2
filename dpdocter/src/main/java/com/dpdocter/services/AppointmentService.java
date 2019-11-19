@@ -17,6 +17,7 @@ import com.dpdocter.beans.PatientQueue;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
+import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.request.PrintPatientCardRequest;
 import com.dpdocter.response.AVGTimeDetail;
 import com.dpdocter.response.LocationWithAppointmentCount;
@@ -132,4 +133,8 @@ public interface AppointmentService {
 	Boolean addEditNutritionAppointment(NutritionAppointment request);
 
 	Boolean update();
+
+	//new
+//	Appointment addAppointment(AppointmentRequest request,
+	//		Boolean isFormattedResponseRequired);
 }

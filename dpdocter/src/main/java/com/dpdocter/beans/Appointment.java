@@ -9,6 +9,7 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.QueueStatus;
+import com.dpdocter.response.PatientTreatmentResponse;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Appointment extends GenericCollection {
@@ -100,6 +101,16 @@ public class Appointment extends GenericCollection {
 	private List<Fields> treatmentFields;
 
 	private Boolean isCreatedByPatient = false;
+	
+	private PatientTreatmentResponse patientTreatmentResponse;
+
+	public PatientTreatmentResponse getPatientTreatmentResponse() {
+		return patientTreatmentResponse;
+	}
+
+	public void setPatientTreatmentResponse(PatientTreatmentResponse patientTreatmentResponse) {
+		this.patientTreatmentResponse = patientTreatmentResponse;
+	}
 
 	public String getId() {
 		return id;
