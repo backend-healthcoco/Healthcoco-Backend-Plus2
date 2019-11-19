@@ -779,8 +779,8 @@ public class RegistrationApi {
 	}
 	
 	@Path(value = PathProxy.RegistrationUrls.ACCESS_USER)
-	@DELETE
-	
+	@PUT
+	@ApiOperation(value = PathProxy.RegistrationUrls.ACCESS_USER, notes = PathProxy.RegistrationUrls.ACCESS_USER)
 	public Response<Boolean> LoginAccessUser(@PathParam(value = "userId") String userId,
 			@PathParam(value = "locationId") String locationId,
 			@DefaultValue("false") @QueryParam("hasLoginAccess") Boolean hasLoginAccess) {

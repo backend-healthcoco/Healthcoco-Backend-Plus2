@@ -6,6 +6,7 @@ import java.util.List;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.beans.v2.PatientTreatment;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.QueueStatus;
@@ -78,9 +79,21 @@ public class AppointmentRequest {
 
 	private List<Fields> treatmentFields;
 
+	private PatientTreatmentAddEditRequest patientTreatments;
+
 	private String PNUM;
 
 	private Boolean isCreatedByPatient = false;
+
+	private Boolean isTreatmentEdited = false;
+
+	public Boolean getIsTreatmentEdited() {
+		return isTreatmentEdited;
+	}
+
+	public void setIsTreatmentEdited(Boolean isTreatmentEdited) {
+		this.isTreatmentEdited = isTreatmentEdited;
+	}
 
 	public String getAppointmentId() {
 		return appointmentId;
@@ -360,6 +373,14 @@ public class AppointmentRequest {
 
 	public void setBranch(String branch) {
 		this.branch = branch;
+	}
+
+	public PatientTreatmentAddEditRequest getPatientTreatments() {
+		return patientTreatments;
+	}
+
+	public void setPatientTreatments(PatientTreatmentAddEditRequest patientTreatments) {
+		this.patientTreatments = patientTreatments;
 	}
 
 	@Override
