@@ -124,7 +124,6 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 
 		List<ESRecipeDocument> recipes = elasticsearchTemplate.queryForList(searchQuery, ESRecipeDocument.class);
 		if (recipes != null && !recipes.isEmpty()) {
-			System.out.println(recipes.size());
 			response = new ArrayList<ESRecipeResponse>();
 			for (ESRecipeDocument recipe : recipes) {
 				esRecipeResponse = new ESRecipeResponse();

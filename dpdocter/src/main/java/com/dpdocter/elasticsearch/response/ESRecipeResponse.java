@@ -56,6 +56,8 @@ public class ESRecipeResponse {
 
 	private Map<String, String> otherNutrients;
 
+	private boolean verified = false;
+	
 	public List<EquivalentQuantities> getEquivalentMeasurements() {
 		return equivalentMeasurements;
 	}
@@ -238,6 +240,27 @@ public class ESRecipeResponse {
 
 	public void setRecipeDescription(String recipeDescription) {
 		this.recipeDescription = recipeDescription;
+	}
+
+	public boolean isVerified() {
+		return verified;
+	}
+
+	public void setVerified(boolean verified) {
+		this.verified = verified;
+	}
+
+	@Override
+	public String toString() {
+		return "ESRecipeResponse [id=" + id + ", name=" + name + ", quantity=" + quantity + ", recipeDescription="
+				+ recipeDescription + ", equivalentMeasurements=" + equivalentMeasurements + ", ingredients="
+				+ ingredients + ", nutrientValueAtRecipeLevel=" + nutrientValueAtRecipeLevel + ", calories=" + calories
+				+ ", mealTiming=" + mealTiming + ", direction=" + direction + ", cost=" + cost + ", costType="
+				+ costType + ", fiber=" + fiber + ", fat=" + fat + ", protein=" + protein + ", carbohydrate="
+				+ carbohydrate + ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients
+				+ ", lipidNutrients=" + lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients
+				+ ", vitaminNutrients=" + vitaminNutrients + ", mineralNutrients=" + mineralNutrients
+				+ ", otherNutrients=" + otherNutrients + ", verified=" + verified + "]";
 	}
 
 }
