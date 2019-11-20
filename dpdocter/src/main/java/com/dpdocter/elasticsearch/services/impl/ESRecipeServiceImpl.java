@@ -101,26 +101,30 @@ public class ESRecipeServiceImpl implements ESRecipeService {
 	}
 
 	@Override
-	public List<ESRecipeResponse> searchRecipe(int page, int size, Boolean discarded, String searchTerm) {
+	public List<ESRecipeResponse> searchRecipe(int page, int size, Boolean discarded, String searchTerm, Boolean verified) {
 		List<ESRecipeResponse> response = null;
 		ESRecipeResponse esRecipeResponse = null;
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-				.must(QueryBuilders.matchPhrasePrefixQuery("discarded", discarded));
+				.must(QueryBuilders.matchQuery("discarded", discarded));
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			boolQueryBuilder
 					.must(QueryBuilders.matchPhrasePrefixQuery("name", searchTerm.replaceAll("[^a-zA-Z0-9]", " ")));
 		}
-		List<ESRecipeDocument> recipes = null;
+		if(verified!=null) {
+			boolQueryBuilder.must(QueryBuilders.matchQuery("verified", verified));
+		}
 		SearchQuery searchQuery = null;
 		if (size > 0)
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(page, size, Direction.ASC, "name")).build();
+					.withPageable(PageRequest.of(page, size, Direction.ASC, "name")).build();
 		else
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(new PageRequest(0, 15, Direction.ASC, "name")).build();
-		recipes = elasticsearchTemplate.queryForList(searchQuery, ESRecipeDocument.class);
+					.withPageable(PageRequest.of(0, 15, Direction.ASC, "name")).build();
+
+		List<ESRecipeDocument> recipes = elasticsearchTemplate.queryForList(searchQuery, ESRecipeDocument.class);
 		if (recipes != null && !recipes.isEmpty()) {
+			System.out.println(recipes.size());
 			response = new ArrayList<ESRecipeResponse>();
 			for (ESRecipeDocument recipe : recipes) {
 				esRecipeResponse = new ESRecipeResponse();

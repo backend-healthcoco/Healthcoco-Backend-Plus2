@@ -42,9 +42,9 @@ public class ESRecipeAPI {
 	@ApiOperation(value = PathProxy.SolrRecipeUrls.SEARCH_RECIPES, notes = PathProxy.SolrRecipeUrls.SEARCH_RECIPES)
 	public Response<ESRecipeResponse> searchRecipe(@QueryParam("page") int page, @QueryParam("size") int size,
 			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded,
-			@QueryParam(value = "searchTerm") String searchTerm) {
+			@QueryParam(value = "searchTerm") String searchTerm, @QueryParam(value = "verified") Boolean verified) {
 
-		List<ESRecipeResponse> recipeDocuments = esRecipeService.searchRecipe(page, size, discarded, searchTerm);
+		List<ESRecipeResponse> recipeDocuments = esRecipeService.searchRecipe(page, size, discarded, searchTerm, verified);
 		Response<ESRecipeResponse> response = new Response<ESRecipeResponse>();
 		response.setDataList(recipeDocuments);
 		return response;
