@@ -877,6 +877,7 @@ public class SignUpServiceImpl implements SignUpService {
 
 			userCollection.setUserState(UserState.NOTACTIVATED);
 			userCollection.setIsVerified(true);
+			if(request.getPassword()!=null&&request.getPassword().length>0)
 			userCollection.setPassword(passwordEncoder.encode(String.valueOf(request.getPassword())).toCharArray());
 //			userCollection.setPassword(request.getPassword());
 			userCollection.setIsPasswordSet(true);
