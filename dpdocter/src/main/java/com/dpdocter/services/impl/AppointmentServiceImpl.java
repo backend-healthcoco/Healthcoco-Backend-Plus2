@@ -141,7 +141,6 @@ import com.dpdocter.request.PatientQueueAddEditRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.request.PrintPatientCardRequest;
-import com.dpdocter.request.TreatmentRequest;
 import com.dpdocter.response.AVGTimeDetail;
 import com.dpdocter.response.AppointmentLookupResponse;
 import com.dpdocter.response.CalenderJasperBeanList;

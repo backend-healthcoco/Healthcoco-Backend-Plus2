@@ -249,8 +249,10 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 				localeCollection = localeRepository.save(localeCollection);
 				
 				ESUserLocaleDocument esUserLocaleDocument = esUserLocaleRepository.findById(detailResponse.getLocaleId()).orElse(null);
-				esUserLocaleDocument.setLocaleRankingCount(localeCollection.getLocaleRankingCount());
-				esUserLocaleRepository.save(esUserLocaleDocument);
+				if(esUserLocaleDocument!= null) {
+					esUserLocaleDocument.setLocaleRankingCount(localeCollection.getLocaleRankingCount());
+					esUserLocaleRepository.save(esUserLocaleDocument);
+				}
 			}		
 		
 		} catch (Exception e) {
