@@ -205,9 +205,9 @@ public class LoginServiceImpl implements LoginService {
 							.getMappedResults();
 					if (doctorClinicProfileLookupResponses == null || doctorClinicProfileLookupResponses.isEmpty()) {
 
-						logger.warn("None of your clinic is active");
+						logger.warn("None of your clinic is active or or you dont have login access,please contact your admin.");
 						// user.setUserState(UserState.NOTACTIVATED);
-						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active");
+						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active or you dont have login access,please contact your admin.");
 
 					}
 					if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {

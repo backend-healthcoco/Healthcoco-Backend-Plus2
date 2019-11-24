@@ -16,6 +16,7 @@ import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.QueueStatus;
+import com.dpdocter.response.PatientTreatmentResponse;
 
 @Document(collection = "appointment_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
@@ -132,6 +133,17 @@ public class AppointmentCollection extends GenericCollection {
 
 	@Field
 	private Boolean isCreatedByPatient = false;
+	
+//	@Field
+//	private PatientTreatmentResponse patientTreatmentResponse;
+//
+//	public PatientTreatmentResponse getPatientTreatmentResponse() {
+//		return patientTreatmentResponse;
+//	}
+////
+//	public void setPatientTreatmentResponse(PatientTreatmentResponse patientTreatmentResponse) {
+//		this.patientTreatmentResponse = patientTreatmentResponse;
+//	}
 
 	public String getCancelledByProfile() {
 		return cancelledByProfile;

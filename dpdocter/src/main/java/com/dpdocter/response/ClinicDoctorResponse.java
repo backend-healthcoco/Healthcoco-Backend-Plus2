@@ -35,6 +35,16 @@ public class ClinicDoctorResponse {
 	private String webRole;
 	
 	private Boolean isSuperAdmin = false;
+	
+	private Boolean hasLoginAccess;
+
+	public Boolean getHasLoginAccess() {
+		return hasLoginAccess;
+	}
+
+	public void setHasLoginAccess(Boolean hasLoginAccess) {
+		this.hasLoginAccess = hasLoginAccess;
+	}
 
 	public String getUserId() {
 		return userId;

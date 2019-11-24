@@ -758,9 +758,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 				
 					if(request.getIsTreatmentEdited()==true)
-					{
-						 patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
-					}
+						patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
+					    
+					
 					appointmentCollection = appointmentRepository.save(appointmentCollection);
 
 					if (updateVisit && !DPDoctorUtils.anyStringEmpty(appointmentCollection.getVisitId())) {
@@ -1065,9 +1065,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 				
 				appointmentCollection = appointmentRepository.save(appointmentCollection);
 				
-				PatientTreatmentResponse  patientTreatmentResponse= addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
-				//treatment add through appointment        
-				
+			PatientTreatmentResponse  patientTreatmentResponse= addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
+		    
+
+					//treatment add through appointment		
 			
 				
 				
@@ -1179,6 +1180,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	public PatientTreatmentResponse addPatientTreatmentsThroughAppointments(AppointmentCollection request,PatientTreatmentAddEditRequest patientAddEditRequest)
+	
+
 	{
 		PatientTreatmentResponse addEditPatientTreatmentResponse=null;
 		if(patientAddEditRequest!=null) {
@@ -1192,8 +1195,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			patientAddEditRequest.setTime(request.getTime());
 			patientAddEditRequest.setFromDate(request.getFromDate());
 			 addEditPatientTreatmentResponse = patientTreatmentServices
-					.addEditPatientTreatment(  patientAddEditRequest, false, null, null);
-			
+	//				.addEditPatientTreatment(  patientAddEditRequest, false, null, null);
+					 .addEditPatientTreatment(  patientAddEditRequest, false, null,null);
+			 
 			if (addEditPatientTreatmentResponse != null) {
 				String visitId = patientTrackService.addRecord(addEditPatientTreatmentResponse, VisitedFor.TREATMENT,
 						null);
