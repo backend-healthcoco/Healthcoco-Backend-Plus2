@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -48,6 +49,7 @@ import com.dpdocter.collections.CustomAppointmentCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -94,6 +96,7 @@ import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.response.v2.AppointmentLookupResponse;
 import com.dpdocter.services.JasperReportService;
@@ -1382,6 +1385,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb, Boolean discarded) {
 		Response<Appointment> response = new Response<Appointment>();
 		List<Appointment> appointments = null;
+		
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 
@@ -1521,12 +1525,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 										.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
 								AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
 					}
+					
+	
 
 					if (appointmentLookupResponses != null && !appointmentLookupResponses.isEmpty()) {
 						appointments = new ArrayList<Appointment>();
 
 					for (AppointmentLookupResponse collection : appointmentLookupResponses) {
 						Appointment appointment = new Appointment();
+	//new					
+						ObjectId appointmentId = new ObjectId(collection.getAppointmentId());
+												
 						PatientCard patientCard = null;
 						if (collection.getType().getType().equals(AppointmentType.APPOINTMENT.getType())) {
 							patientCard = collection.getPatientCard();
@@ -1543,6 +1552,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 							}
 						}
 						BeanUtil.map(collection, appointment);
+												
+						PatientTreatmentResponse  patientTreatmentResponse = getPatientTreatmentAppointmentById(appointmentId);
+
+						
 						appointment.setPatient(patientCard);
 						appointment.setLocalPatientName(patientCard.getLocalPatientName());
 						if (collection.getDoctor() != null) {
@@ -1578,15 +1591,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 								if (address.charAt(address.length() - 2) == ',') {
 									address = address.substring(0, address.length() - 2);
 								}
-
+								
 								appointment.setClinicAddress(address);
 								appointment.setLatitude(collection.getLocation().getLatitude());
 								appointment.setLongitude(collection.getLocation().getLongitude());
 							}
+							appointment.setPatientTreatmentResponse(patientTreatmentResponse);
+							response.setData(appointment);
 							appointments.add(appointment);
-						}
+							
+					    }
 					}
 				}
+			
 				response.setDataList(appointments);
 			}				
 		} catch (Exception e) {
@@ -1595,6 +1612,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 		return response;
 	}
+	
+	
+
 
 	private List<Appointment> getAppointmentsForWeb(Criteria criteria, SortOperation sortOperation, int page, int size,
 			List<Appointment> response, List<AppointmentLookupResponse> appointmentLookupResponses) {
@@ -1620,6 +1640,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.append("count", "$count").append("category", "$category")
 						.append("branch", "$branch")
 						.append("treatmentFields", "$treatmentFields")
+						.append("patientTreatmentResponse","$patientTreatmentResponse")
 						.append("cancelledByProfile", "$cancelledByProfile")
 						.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
 						.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
@@ -1679,6 +1700,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.append("category", new BasicDBObject("$first", "$category"))
 						.append("branch", new BasicDBObject("$first", "$branch"))
 						.append("treatmentFields", new BasicDBObject("$first", "$treatmentFields"))
+						.append("patientTreatmentResponse", new BasicDBObject("$first","$patientTreatmentResponse"))
 						.append("cancelledByProfile", new BasicDBObject("$first", "$cancelledByProfile"))
 						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
@@ -2445,6 +2467,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Appointment getAppointmentById(ObjectId appointmentId) {
 		Appointment appointment = null;
+		PatientTreatmentResponse  patientTreatmentResponse=null;
 		AppointmentLookupResponse appointmentLookupResponse = mongoTemplate
 				.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(appointmentId)),
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
@@ -2452,10 +2475,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 						Aggregation.unwind("location"), Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
 						Aggregation.unwind("patient")), AppointmentCollection.class, AppointmentLookupResponse.class)
 				.getUniqueMappedResult();
-
+		
+		 patientTreatmentResponse = getPatientTreatmentAppointmentById(appointmentId);
+		
 		if (appointmentLookupResponse != null) {
 			appointment = new Appointment();
 			BeanUtil.map(appointmentLookupResponse, appointment);
+			//PatientTreatmentResponse  patientTreatmentResponse= getPatientTreatmentAppointmentById(appointmentId);
+			
+			appointment.setPatientTreatmentResponse(patientTreatmentResponse);
+			
 			PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 					new ObjectId(appointmentLookupResponse.getPatientId()),
 					new ObjectId(appointmentLookupResponse.getLocationId()),
@@ -2504,7 +2533,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (address.charAt(address.length() - 2) == ',') {
 					address = address.substring(0, address.length() - 2);
 				}
-
+				
+				appointment.setPatientTreatmentResponse(patientTreatmentResponse);
+				
 				appointment.setClinicAddress(address);
 				appointment.setLatitude(appointmentLookupResponse.getLocation().getLatitude());
 				appointment.setLongitude(appointmentLookupResponse.getLocation().getLongitude());
@@ -2512,6 +2543,92 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 		return appointment;
 	}
+	
+	public PatientTreatmentResponse getPatientTreatmentAppointmentById(ObjectId appointmentId) {
+		PatientTreatmentResponse response=null;
+		try {
+			CustomAggregationOperation projectList = new CustomAggregationOperation(new Document("$project",
+					new BasicDBObject("patientId", "$patientId").append("locationId", "$locationId")
+							.append("hospitalId", "$hospitalId").append("doctorId", "$doctorId")
+							.append("visitId", "$patientVisit._id").append("uniqueEmrId", "$uniqueEmrId")
+							.append("totalCost", "$totalCost").append("totalDiscount", "$totalDiscount")
+							.append("grandTotal", "$grandTotal").append("discarded", "$discarded")
+							.append("inHistory", "$inHistory").append("appointmentId", "$appointmentId")
+							.append("time", "$time").append("fromDate", "$fromDate")
+							.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")
+							.append("createdBy", "$createdBy")
+							.append("treatments.treatmentService", "$treatmentService")
+							.append("treatments.treatmentServiceId", "$treatments.treatmentServiceId")
+							.append("treatments.doctorId", "$treatments.doctorId")
+							.append("treatments.doctorName",
+									new BasicDBObject("$concat",
+											Arrays.asList("$treatmentDoctor.title", " ", "$treatmentDoctor.firstName")))
+							.append("treatments.status", "$treatments.status")
+							.append("treatments.cost", "$treatments.cost").append("treatments.note", "$treatments.note")
+							.append("treatments.discount", "$treatments.discount")
+							.append("treatments.finalCost", "$treatments.finalCost")
+							.append("treatments.quantity", "$treatments.quantity")
+							.append("treatments.treatmentFields", "$treatments.treatmentFields")
+							.append("appointmentRequest", "$appointmentRequest")));
+			Aggregation aggregation = Aggregation
+					.newAggregation(
+							new CustomAggregationOperation(new Document("$unwind",
+									new BasicDBObject("path", "$treatments").append("includeArrayIndex",
+											"arrayIndex"))),
+							Aggregation.match(new Criteria("appointmentId").is(appointmentId)
+									.and("isPatientDiscarded").ne(true)),
+							Aggregation.lookup(
+									"treatment_services_cl", "treatments.treatmentServiceId", "_id",
+									"treatmentService"),
+							Aggregation
+									.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+							Aggregation.unwind("treatmentService"),
+							new CustomAggregationOperation(new Document("$unwind",
+									new BasicDBObject("path", "$appointmentRequest")
+											.append("preserveNullAndEmptyArrays", true))),
+							Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
+							Aggregation.unwind("patientVisit"),
+
+							Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
+							new CustomAggregationOperation(new Document("$unwind",
+									new BasicDBObject("path", "$treatmentDoctor").append("preserveNullAndEmptyArrays",
+											true))),
+							projectList,
+
+							new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$_id")
+									.append("patientId", new BasicDBObject("$first", "$patientId"))
+									.append("locationId", new BasicDBObject("$first", "$locationId"))
+									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
+									.append("visitId", new BasicDBObject("$first", "$visitId"))
+									.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+									.append("totalCost", new BasicDBObject("$first", "$totalCost"))
+									.append("totalDiscount", new BasicDBObject("$first", "$totalDiscount"))
+									.append("grandTotal", new BasicDBObject("$first", "$grandTotal"))
+									.append("discarded", new BasicDBObject("$first", "$discarded"))
+									.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+									.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+									.append("time", new BasicDBObject("$first", "$time"))
+									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+									.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+									.append("treatments", new BasicDBObject("$push", "$treatments")))));
+
+			AggregationResults<PatientTreatmentResponse> groupResults = mongoTemplate.aggregate(aggregation,
+					PatientTreatmentCollection.class, PatientTreatmentResponse.class);
+			List<PatientTreatmentResponse> patientDetailsresponse = groupResults.getMappedResults();
+			response = patientDetailsresponse.get(0);
+
+		} catch (Exception e) {
+			logger.error("Error while getting patient treatments", e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting patient treatments" + e);
+		}
+		return response;
+	}
+
 
 	// @Scheduled(cron = "0 13 12 * * ?", zone = "IST")
 	// @Transactional

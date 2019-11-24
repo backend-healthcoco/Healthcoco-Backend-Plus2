@@ -67,6 +67,7 @@ import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.Patient;
@@ -245,6 +246,7 @@ import com.dpdocter.services.FileManager;
 import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LocationServices;
+import com.dpdocter.services.LoginService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.OTPService;
@@ -459,6 +461,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private GroupRepository groupRepository;
+	
+	@Autowired
+	private LoginService loginService;
 
 	@Override
 	@Transactional
@@ -2766,7 +2771,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	@Transactional
 	public List<ClinicDoctorResponse> getUsers(long page, int size, String locationId, String hospitalId,
-			String updatedTime, String role, Boolean active, String userState) {
+			String updatedTime, String role, Boolean active,Boolean access, String userState) {
 		List<ClinicDoctorResponse> response = null;
 		try {
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = null;
@@ -2777,6 +2782,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (active) {
 				criteria.and("isActivate").is(active);
 			}
+			if (access) {
+				criteria.and("hasLoginAccess").is(access);
+			}
+			
 			if (!DPDoctorUtils.anyStringEmpty(userState)) {
 				if (userState.equalsIgnoreCase("COMPLETED")) {
 					criteria.and("user.userState").is("USERSTATECOMPLETE");
@@ -2789,6 +2798,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
 							.append("locationId", new BasicDBObject("$first", "$locationId"))
 							.append("isActivate", new BasicDBObject("$first", "$isActivate"))
+							.append("hasLoginAccess", new BasicDBObject("$first", "$hasLoginAccess"))
 							.append("isVerified", new BasicDBObject("$first", "$isVerified"))
 							.append("discarded", new BasicDBObject("$first", "$discarded"))
 							.append("patientInitial", new BasicDBObject("$first", "$patientInitial"))
@@ -2851,6 +2861,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 						clinicDoctorResponse.setUserId(doctorClinicProfileLookupResponse.getUser().getId().toString());
 						clinicDoctorResponse.setIsActivate(doctorClinicProfileLookupResponse.getIsActivate());
+						clinicDoctorResponse.setHasLoginAccess(doctorClinicProfileLookupResponse.getHasLoginAccess());
 						clinicDoctorResponse.setDiscarded(doctorClinicProfileLookupResponse.getDiscarded());
 
 						if (doctorClinicProfileLookupResponse.getDoctor() != null)
@@ -3003,11 +3014,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 		try {
 			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
 					.findByDoctorIdAndLocationId(new ObjectId(userId), new ObjectId(locationId));
+			
 			if (doctorClinicProfileCollection != null) {
+				
 				doctorClinicProfileCollection.setHasLoginAccess(hasLoginAccess);
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+				}
 			}
-		} catch (Exception e) {
+		 catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());

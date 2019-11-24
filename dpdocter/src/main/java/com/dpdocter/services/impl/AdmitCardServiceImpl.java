@@ -500,6 +500,20 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		}
 		parameters.put("showEx", show);
 		show = false;
+		
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getIp())) {
+			show = true;
+			parameters.put("ip", admitCardCollection.getIp());
+		}
+		parameters.put("showIp", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getAddress())) {
+			show = true;
+			parameters.put("address", admitCardCollection.getAddress());
+		}
+		parameters.put("showAddress", show);
+		show = false;
 
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))

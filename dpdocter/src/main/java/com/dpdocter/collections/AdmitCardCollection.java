@@ -61,6 +61,29 @@ public class AdmitCardCollection extends GenericCollection {
 	@Field
 	private String timeOfOperation;
 	
+	@Field
+	private String ip;
+	
+	@Field
+	private String address;
+	
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	
 	public String getExamination() {
 		return examination;
 	}

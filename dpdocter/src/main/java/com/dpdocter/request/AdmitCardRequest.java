@@ -28,6 +28,24 @@ public class AdmitCardRequest {
 	private String timeOfAdmission;
 	private String timeOfDischarge;
 	private String timeOfOperation;
+	private String ip;
+	private String address;
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
 	
 	public Date getCreatedTime() {
 		return createdTime;

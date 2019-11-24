@@ -22,6 +22,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
@@ -733,14 +734,14 @@ public class RegistrationApi {
 			@QueryParam(value = "size") int size,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "role") String role,
-			@DefaultValue("false") @QueryParam(value = "active") Boolean active,
+			@DefaultValue("false") @QueryParam(value = "active") Boolean active,@DefaultValue("false") @QueryParam(value = "access") Boolean access,
 			@QueryParam(value = "userState") String userState) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
 		List<ClinicDoctorResponse> professionResponse = registrationService.getUsers(page, size, locationId, hospitalId,
-				updatedTime, role, active, userState);
+				updatedTime, role, active,access, userState);
 		Response<ClinicDoctorResponse> response = new Response<ClinicDoctorResponse>();
 		response.setDataList(professionResponse);
 		return response;
@@ -779,11 +780,11 @@ public class RegistrationApi {
 	}
 	
 	@Path(value = PathProxy.RegistrationUrls.ACCESS_USER)
-	@PUT
+	@DELETE
 	@ApiOperation(value = PathProxy.RegistrationUrls.ACCESS_USER, notes = PathProxy.RegistrationUrls.ACCESS_USER)
 	public Response<Boolean> LoginAccessUser(@PathParam(value = "userId") String userId,
 			@PathParam(value = "locationId") String locationId,
-			@DefaultValue("false") @QueryParam("hasLoginAccess") Boolean hasLoginAccess) {
+			@DefaultValue("true") @QueryParam("hasLoginAccess") Boolean hasLoginAccess) {
 		if (DPDoctorUtils.anyStringEmpty(userId, locationId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
