@@ -12,6 +12,7 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.QueueStatus;
+import com.dpdocter.response.PatientTreatmentResponse;
 
 public class AppointmentLookupResponse extends GenericCollection {
 
@@ -94,6 +95,17 @@ public class AppointmentLookupResponse extends GenericCollection {
 	private Boolean isCreatedByPatient = false;
 
 	private List<Fields> treatmentFields;
+	
+	private PatientTreatmentResponse patientTreatmentResponse;
+
+	public PatientTreatmentResponse getPatientTreatmentResponse() {
+		return patientTreatmentResponse;
+	}
+
+	public void setPatientTreatmentResponse(PatientTreatmentResponse patientTreatmentResponse) {
+		this.patientTreatmentResponse = patientTreatmentResponse;
+	}
+
 
 	public String getId() {
 		return id;
