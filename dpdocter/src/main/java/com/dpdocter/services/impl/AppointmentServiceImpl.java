@@ -730,10 +730,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								bookedSlotCollection.setUpdatedTime(new Date());
 								appointmentBookedSlotRepository.save(bookedSlotCollection);
 							}
-							if(request.getIsTreatmentEdited()==true)
-							{
-								patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
-							} 
+							patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments()); 
 						}
 						
 						  
@@ -1083,7 +1080,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				
 				appointmentCollection = appointmentRepository.save(appointmentCollection);
 				
-			PatientTreatmentResponse  patientTreatmentResponse= addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
+				PatientTreatmentResponse  patientTreatmentResponse= addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
 		    
 
 					//treatment add through appointment		

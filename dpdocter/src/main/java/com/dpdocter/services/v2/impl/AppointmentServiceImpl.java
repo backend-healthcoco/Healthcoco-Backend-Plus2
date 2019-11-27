@@ -1661,8 +1661,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.append("count", "$count").append("category", "$category")
 						.append("branch", "$branch")
 						.append("treatmentFields", "$treatmentFields")
-						.append("patientTreatmentResponse","$patientTreatmentResponse")
-						
+//						.append("patientTreatmentResponse","$patientTreatmentResponse")
 						.append("cancelledByProfile", "$cancelledByProfile")
 						.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
 						.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
@@ -1722,9 +1721,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.append("category", new BasicDBObject("$first", "$category"))
 						.append("branch", new BasicDBObject("$first", "$branch"))
 						.append("treatmentFields", new BasicDBObject("$first", "$treatmentFields"))
-						.append("patientTreatmentResponse", new BasicDBObject("$first","$patientTreatmentResponse"))
-			//new			
-						
+//						.append("patientTreatmentResponse", new BasicDBObject("$first","$patientTreatmentResponse"))
 						.append("cancelledByProfile", new BasicDBObject("$first", "$cancelledByProfile"))
 						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
@@ -1742,12 +1739,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 											Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 											Aggregation.unwind("doctor"),
 											
-											Aggregation.lookup("patient_treatment_cl", "appointmentId","appointmentId", "patientTreatmentResponse"),
-											Aggregation.unwind("patientTreatmentResponse",true),
-					//new											
-											Aggregation.lookup("patient_treatment_cl", "doctorId","_id", "treatments"),
-											Aggregation.unwind("treatments",true),
-											
+//											Aggregation.lookup("patient_treatment_cl", "appointmentId","appointmentId", "patientTreatmentResponse"),
+//											Aggregation.unwind("patientTreatmentResponse",true),
+//					//new											
+//											Aggregation.lookup("patient_treatment_cl", "doctorId","_id", "treatments"),
+//											Aggregation.unwind("treatments",true),
+//											
 											Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
 											new CustomAggregationOperation(new Document(
 													"$unwind",
@@ -1778,13 +1775,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 											Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 											Aggregation.unwind("doctor"),
 											
-											Aggregation.lookup("patient_treatment_cl", "appointmentId","appointmentId", "patientTreatmentResponse"),
-											Aggregation.unwind("patientTreatmentResponse",true),
-					//new						
-											Aggregation.lookup("patient_treatment_cl", "doctorId","doctorId", "treatments"),
-											Aggregation.unwind("treatments",true),
-					//new					
-											
+//											Aggregation.lookup("patient_treatment_cl", "appointmentId","appointmentId", "patientTreatmentResponse"),
+//											Aggregation.unwind("patientTreatmentResponse",true),
+//					//new						
+//											Aggregation.lookup("patient_treatment_cl", "doctorId","doctorId", "treatments"),
+//											Aggregation.unwind("treatments",true),
+//					//new					
+//											
 											Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
 											new CustomAggregationOperation(new Document(
 													"$unwind",
@@ -1808,6 +1805,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 							AppointmentCollection.class, Appointment.class)
 					.getMappedResults();
 		}
+		for (Appointment appointment : response) {
+			appointment.setPatientTreatmentResponse(getPatientTreatmentAppointmentById(appointment.getAppointmentId()));
+		}
+		
 		return response;
 	}
 
@@ -2626,7 +2627,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$treatments").append("includeArrayIndex",
 											"arrayIndex"))),
-							Aggregation.match(new Criteria("appointmentId").is(new ObjectId(appointmentId))
+							Aggregation.match(new Criteria("appointmentId").is(appointmentId)
 									.and("isPatientDiscarded").ne(true)),
 							
 							Aggregation.lookup(
@@ -2672,7 +2673,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			AggregationResults<PatientTreatmentResponse> groupResults = mongoTemplate.aggregate(aggregation,
 					PatientTreatmentCollection.class, PatientTreatmentResponse.class);
 			List<PatientTreatmentResponse> patientDetailsresponse = groupResults.getMappedResults();
-			response = patientDetailsresponse.get(0);
+			response = (patientDetailsresponse!=null && !patientDetailsresponse.isEmpty()) ? patientDetailsresponse.get(0) : null;
 
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);
