@@ -651,10 +651,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Appointment updateAppointment(final AppointmentRequest request, Boolean updateVisit,
 			Boolean isStatusChange) {
 		Appointment response = null;
-		PatientTreatmentResponse patientTreatmentResponse=null;
+		PatientTreatmentResponse patientTreatmentResponse=new PatientTreatmentResponse();
 		try {
 			AppointmentLookupResponse appointmentLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
 					Aggregation.match(new Criteria("appointmentId").is(request.getAppointmentId())),
+//					Aggregation.lookup("patient_treatment_cl", "appointmentId","appointmentId", "patientTreatmentResponse"),
+//					Aggregation.unwind("patientTreatmentResponse",true),
 					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location")),
 					AppointmentCollection.class, AppointmentLookupResponse.class).getUniqueMappedResult();
@@ -687,7 +689,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					appointmentWorkFlowRepository.save(appointmentWorkFlowCollection);
 
 					appointmentCollection.setState(request.getState());
-
+					
 					if (request.getState().getState().equals(AppointmentState.CANCEL.getState())) {
 						if (request.getCancelledBy() != null) {
 							if (request.getCancelledBy().equalsIgnoreCase(AppointmentCreatedBy.DOCTOR.getType())) {
@@ -710,6 +712,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 							appointmentCollection.setTime(request.getTime());
 							appointmentCollection.setIsRescheduled(true);
 							appointmentCollection.setState(AppointmentState.CONFIRM);
+							
+							patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
+							
+							if(request.getIsTreatmentEdited()==true)
+							{
+								patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
+							}   
+							
 							AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
 									.findByAppointmentId(request.getAppointmentId());
 							if (bookedSlotCollection != null) {
@@ -720,7 +730,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 								bookedSlotCollection.setUpdatedTime(new Date());
 								appointmentBookedSlotRepository.save(bookedSlotCollection);
 							}
+							if(request.getIsTreatmentEdited()==true)
+							{
+								patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
+							} 
 						}
+						
+						  
 
 						if (!request.getDoctorId().equalsIgnoreCase(appointmentLookupResponse.getDoctorId())) {
 							appointmentCollection.setDoctorId(new ObjectId(request.getDoctorId()));
@@ -731,6 +747,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							appointmentLookupResponse.setDoctor(drCollection);
 						}
 					}
+					
 
 					DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
 							.findByDoctorIdAndLocationId(appointmentCollection.getDoctorId(),
@@ -757,9 +774,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 						appointmentCollection.setTreatmentFields(null);
 					}
 				
-					if(request.getIsTreatmentEdited()==true)
-						patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
-					    
+//					if(request.getIsTreatmentEdited()==true)
+//					{
+//						patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
+//					}   
 					
 					appointmentCollection = appointmentRepository.save(appointmentCollection);
 
@@ -828,7 +846,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						}
 					});
 				} else if (request.getStatus() != null) {
-
+				
 					appointmentCollection.setCheckedInAt(request.getCheckedInAt());
 					appointmentCollection.setEngagedAt(request.getEngagedAt());
 					appointmentCollection.setCheckedOutAt(request.getCheckedOutAt());
@@ -1109,7 +1127,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (appointmentCollection != null) {
 					response = new Appointment();
 					BeanUtil.map(appointmentCollection, response);
+					
 					response.setPatientTreatmentResponse(patientTreatmentResponse);
+					
 					if (isFormattedResponseRequired) {
 						if (patientCard != null) {
 							patientCard.getUser().setLocalPatientName(patientCard.getLocalPatientName());
@@ -1184,7 +1204,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	{
 		PatientTreatmentResponse addEditPatientTreatmentResponse=null;
-		if(patientAddEditRequest!=null) {
+		if(patientAddEditRequest.getTreatments()!=null) {
 		//	PatientTreatmentAddEditRequest patientAddEditRequest =new PatientTreatmentAddEditRequest();
 			patientAddEditRequest.setPatientId(request.getPatientId().toString());
 			patientAddEditRequest.setLocationId(request.getLocationId().toString());
@@ -1198,7 +1218,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	//				.addEditPatientTreatment(  patientAddEditRequest, false, null, null);
 					 .addEditPatientTreatment(  patientAddEditRequest, false, null,null);
 			 
-			if (addEditPatientTreatmentResponse != null) {
+			if (addEditPatientTreatmentResponse.getTreatmentServicesCollections() != null) {
 				String visitId = patientTrackService.addRecord(addEditPatientTreatmentResponse, VisitedFor.TREATMENT,
 						null);
 				request.setVisitId(new ObjectId(visitId));
