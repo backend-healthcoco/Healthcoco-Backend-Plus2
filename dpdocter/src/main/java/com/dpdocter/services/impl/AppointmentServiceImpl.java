@@ -1214,7 +1214,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	//				.addEditPatientTreatment(  patientAddEditRequest, false, null, null);
 					 .addEditPatientTreatment(  patientAddEditRequest, false, null,null);
 			 
-			if (addEditPatientTreatmentResponse.getTreatmentServicesCollections() != null) {
+			if (addEditPatientTreatmentResponse != null) {
 				String visitId = patientTrackService.addRecord(addEditPatientTreatmentResponse, VisitedFor.TREATMENT,
 						null);
 				request.setVisitId(new ObjectId(visitId));
