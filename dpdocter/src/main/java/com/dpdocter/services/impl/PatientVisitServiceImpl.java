@@ -862,9 +862,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error while adding patient Visit : " + e.getCause().getMessage());
+			logger.error(e + " Error while adding patient Visit : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown,
-					"Error while adding patient Visit : " + e.getCause().getMessage());
+					"Error while adding patient Visit : " + e.getMessage());
 		}
 		return response;
 	}
