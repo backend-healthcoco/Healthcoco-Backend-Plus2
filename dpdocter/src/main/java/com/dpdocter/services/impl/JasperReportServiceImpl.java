@@ -4830,6 +4830,16 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (show) {
 			addItems(jasperDesign, columnWidth, "$P{TreatmentPlan}", "$P{treatmentPlan}", fieldWidth, false, 0, false);
 		}
+		
+		show = (Boolean) parameters.get("showIp");
+		if (show) {
+			addItems(jasperDesign, columnWidth, "$P{Ip}", "$P{ip}", fieldWidth, false, 0, false);
+		}
+		
+		show = (Boolean) parameters.get("showAddress");
+		if (show) {
+			addItems(jasperDesign, columnWidth, "$P{Address}", "$P{address}", fieldWidth, false, 0, false);
+		}
 
 	}
 

@@ -60,7 +60,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 	@Value(value = "${sms.birthday.wish.to.patient}")
 	private String birthdayWishSMStoPatient;
 
-	//@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
+	@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
 	@Override
 	public void sendBirthdaySMSToPatients() {
 		try {
@@ -157,7 +157,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 			Criteria criteria = new Criteria("userLocation.discarded").is(false).andOperator(
 					(new Criteria("docter.dob.days").is(day)), new Criteria("docter.dob.months").is(month));
 			Aggregation aggregation = Aggregation.newAggregation(
-					Aggregation.lookup("user_location_cl", "_id", "userId", "userLocation"),
+					Aggregation.lookup("doctor_clinic_profile_cl", "_id", "doctorId", "userLocation"),
 					Aggregation.lookup("docter_cl", "_id", "userId", "docter"), Aggregation.match(criteria),
 					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 			AggregationResults<UserCollection> results = mongoTemplate.aggregate(aggregation, UserCollection.class,
