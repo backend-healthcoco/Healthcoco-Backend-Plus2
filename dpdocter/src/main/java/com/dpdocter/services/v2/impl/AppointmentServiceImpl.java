@@ -1382,9 +1382,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Response<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
-			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb, Boolean discarded) {
+			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb, Boolean discarded,String branch) {
 		Response<Appointment> response = new Response<Appointment>();
 		List<Appointment> appointments = null;
+	//	PatientTreatmentResponse  patientTreatmentResponse=null;
 		
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -1394,6 +1395,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
+			 if (!DPDoctorUtils.anyStringEmpty(branch))
+					criteria.and("branch").is(branch);
 			if (doctorId != null && !doctorId.isEmpty()) {
 				List<ObjectId> doctorObjectIds = new ArrayList<ObjectId>();
 				for (String id : doctorId)
@@ -1548,7 +1551,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					for (AppointmentLookupResponse collection : appointmentLookupResponses) {
 						Appointment appointment = new Appointment();
 	//new					
-						ObjectId appointmentId = new ObjectId(collection.getAppointmentId());
+				//		ObjectId appointmentId = new ObjectId(collection.getAppointmentId());
 												
 						PatientCard patientCard = null;
 						if (collection.getType().getType().equals(AppointmentType.APPOINTMENT.getType())) {
@@ -1567,7 +1570,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						}
 						BeanUtil.map(collection, appointment);
 												
-						PatientTreatmentResponse  patientTreatmentResponse = getPatientTreatmentAppointmentById(appointmentId.toString());
+			//			  patientTreatmentResponse = getPatientTreatmentAppointmentById(appointmentId.toString());
 
 						
 						appointment.setPatient(patientCard);
@@ -1577,10 +1580,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 									collection.getDoctor().getTitle() + " " + collection.getDoctor().getFirstName());
 						}
 				//new		
-						if(collection.getPatientTreatmentResponse()!=null) {
-							appointment.setPatientTreatmentResponse(patientTreatmentResponse);
-						}
-						
+//						if(collection.getPatientTreatmentResponse()!=null) {
+//							
+//						}
+	//					appointment.setPatientTreatmentResponse(patientTreatmentResponse);
 						
 						
 							if (collection.getLocation() != null) {
@@ -1618,7 +1621,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								appointment.setLongitude(collection.getLocation().getLongitude());
 							}
 							
-							response.setData(appointment);
+							//response.setData(appointment);
 							appointments.add(appointment);
 							
 					    }
@@ -1805,6 +1808,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							AppointmentCollection.class, Appointment.class)
 					.getMappedResults();
 		}
+		
 		for (Appointment appointment : response) {
 			appointment.setPatientTreatmentResponse(getPatientTreatmentAppointmentById(appointment.getAppointmentId()));
 		}
@@ -2512,16 +2516,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 		PatientTreatmentResponse  patientTreatmentResponse=null;
 		AppointmentLookupResponse appointmentLookupResponse = mongoTemplate
 				.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(appointmentId)),
-						Aggregation.lookup("patient_treatment_cl", "appointmentId","appointmentId", "patientTreatmentResponse"),
-						Aggregation.unwind("patientTreatmentResponse",true),
-						Aggregation.lookup(
-								"treatment_services_cl","_id" ,"treatments.treatmentServiceId",
-								"treatmentService"),
-		//new				
-						Aggregation.lookup(
-								"patient_treatment_cl","doctorId" ,"doctorId",
-								"treatmentService"),Aggregation.unwind("treatmentService",true),
-						
+//						Aggregation.lookup("patient_treatment_cl", "appointmentId","appointmentId", "patientTreatmentResponse"),
+//						Aggregation.unwind("patientTreatmentResponse",true),
+//						Aggregation.lookup(
+//								"treatment_services_cl","_id" ,"treatments.treatmentServiceId",
+//								"treatmentService"),
+//		//new				
+//						Aggregation.lookup(
+//								"patient_treatment_cl","doctorId" ,"doctorId",
+//								"treatmentService"),Aggregation.unwind("treatmentService",true),
+//						
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"), Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
@@ -2586,7 +2590,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					address = address.substring(0, address.length() - 2);
 				}
 				
-				appointment.setPatientTreatmentResponse(patientTreatmentResponse);
+			//	appointment.setPatientTreatmentResponse(patientTreatmentResponse);
 				
 				appointment.setClinicAddress(address);
 				appointment.setLatitude(appointmentLookupResponse.getLocation().getLatitude());
@@ -2597,7 +2601,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 	
 	public PatientTreatmentResponse getPatientTreatmentAppointmentById(String appointmentId) {
-		PatientTreatmentResponse response;
+		PatientTreatmentResponse response=null;
 		try {
 			CustomAggregationOperation projectList = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("patientId", "$patientId").append("locationId", "$locationId")
@@ -2624,9 +2628,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.append("appointmentRequest", "$appointmentRequest")));
 			Aggregation aggregation = Aggregation
 					.newAggregation(
-							new CustomAggregationOperation(new Document("$unwind",
-									new BasicDBObject("path", "$treatments").append("includeArrayIndex",
-											"arrayIndex"))),
+							Aggregation.unwind("treatments","arrayIndex" ),
 							Aggregation.match(new Criteria("appointmentId").is(appointmentId)
 									.and("isPatientDiscarded").ne(true)),
 							
@@ -2636,7 +2638,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							Aggregation.unwind("treatmentService"),
 							Aggregation
 									.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-							Aggregation.unwind("treatmentService"),
+						//	Aggregation.unwind("treatmentService",true),
 							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$appointmentRequest")
 											.append("preserveNullAndEmptyArrays", true))),
@@ -2649,7 +2651,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 											true))),
 							projectList,
 
-							new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$_id")
+							new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id")
 									.append("patientId", new BasicDBObject("$first", "$patientId"))
 									.append("locationId", new BasicDBObject("$first", "$locationId"))
 									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -2674,6 +2676,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					PatientTreatmentCollection.class, PatientTreatmentResponse.class);
 			List<PatientTreatmentResponse> patientDetailsresponse = groupResults.getMappedResults();
 			response = (patientDetailsresponse!=null && !patientDetailsresponse.isEmpty()) ? patientDetailsresponse.get(0) : null;
+
 
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);
