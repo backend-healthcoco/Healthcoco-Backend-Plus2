@@ -1211,13 +1211,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 			
 			patientAddEditRequest.setTime(request.getTime());
 			patientAddEditRequest.setFromDate(request.getFromDate());
+			patientAddEditRequest.setVisitId(request.getVisitId()!=null ? request.getVisitId().toString() : null);
 			 addEditPatientTreatmentResponse = patientTreatmentServices
-	//				.addEditPatientTreatment(  patientAddEditRequest, false, null, null);
 					 .addEditPatientTreatment(  patientAddEditRequest, false, null,null);
 			 
 			if (addEditPatientTreatmentResponse != null) {
 				String visitId = patientTrackService.addRecord(addEditPatientTreatmentResponse, VisitedFor.TREATMENT,
-						null);
+						addEditPatientTreatmentResponse.getVisitId());
 				request.setVisitId(new ObjectId(visitId));
 				request = appointmentRepository.save(request);
 				
