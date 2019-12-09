@@ -2626,22 +2626,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.append("treatments.quantity", "$treatments.quantity")
 							.append("treatments.treatmentFields", "$treatments.treatmentFields")
 							.append("appointmentRequest", "$appointmentRequest")));
+			
 			Aggregation aggregation = Aggregation
 					.newAggregation(
-							Aggregation.unwind("treatments","arrayIndex" ),
 							Aggregation.match(new Criteria("appointmentId").is(appointmentId)
 									.and("isPatientDiscarded").ne(true)),
+							Aggregation.unwind("treatments","arrayIndex" ),
 							
 							Aggregation.lookup(
 									"treatment_services_cl", "treatments.treatmentServiceId", "_id",
 									"treatmentService"),
 							Aggregation.unwind("treatmentService"),
-							Aggregation
-									.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-						//	Aggregation.unwind("treatmentService",true),
-							new CustomAggregationOperation(new Document("$unwind",
-									new BasicDBObject("path", "$appointmentRequest")
-											.append("preserveNullAndEmptyArrays", true))),
 							Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
 							Aggregation.unwind("patientVisit"),
 
@@ -2656,7 +2651,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 									.append("locationId", new BasicDBObject("$first", "$locationId"))
 									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 									.append("visitId", new BasicDBObject("$first", "$visitId"))
 									.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 									.append("totalCost", new BasicDBObject("$first", "$totalCost"))
@@ -2676,7 +2670,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					PatientTreatmentCollection.class, PatientTreatmentResponse.class);
 			List<PatientTreatmentResponse> patientDetailsresponse = groupResults.getMappedResults();
 			response = (patientDetailsresponse!=null && !patientDetailsresponse.isEmpty()) ? patientDetailsresponse.get(0) : null;
-
+			System.out.println(response != null ? response.getTreatments().size() :"");
 
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);

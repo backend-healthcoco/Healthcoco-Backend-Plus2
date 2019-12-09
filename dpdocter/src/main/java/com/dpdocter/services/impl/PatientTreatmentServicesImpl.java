@@ -570,11 +570,11 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							.append("appointmentRequest", "$appointmentRequest")));
 			Aggregation aggregation = Aggregation
 					.newAggregation(
+							Aggregation.match(new Criteria("_id").is(new ObjectId(treatmentId))
+									.and("isPatientDiscarded").ne(true)),
 							new CustomAggregationOperation(new Document("$unwind",
 									new BasicDBObject("path", "$treatments").append("includeArrayIndex",
 											"arrayIndex"))),
-							Aggregation.match(new Criteria("_id").is(new ObjectId(treatmentId))
-									.and("isPatientDiscarded").ne(true)),
 							Aggregation.lookup(
 									"treatment_services_cl", "treatments.treatmentServiceId", "_id",
 									"treatmentService"),
