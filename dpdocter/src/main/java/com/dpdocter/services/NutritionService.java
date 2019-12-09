@@ -6,6 +6,7 @@ import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.BloodGlucose;
 import com.dpdocter.beans.NutritionPlan;
+import com.dpdocter.beans.NutritionRDA;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.SugarMedicineReminder;
 import com.dpdocter.beans.SugarSetting;
@@ -69,5 +70,7 @@ public interface NutritionService {
 	BloodGlucose addEditBloodGlucose(BloodGlucose request);
 
 	SugarSetting addEditSugarSetting(SugarSetting request);
+
+	public NutritionRDA getRDAForPatient(String patientId, String country, String countryId);
 
 }

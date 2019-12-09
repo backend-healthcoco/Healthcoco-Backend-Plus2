@@ -10,4 +10,6 @@ import com.dpdocter.collections.PatientLifeStyleCollection;
 public interface PatientLifeStyleRepository extends MongoRepository<PatientLifeStyleCollection, ObjectId> {
 	
 	PatientLifeStyleCollection findByAssessmentId(ObjectId assessmentId);
+
+	PatientLifeStyleCollection findByPatientId(ObjectId patientid);
 }

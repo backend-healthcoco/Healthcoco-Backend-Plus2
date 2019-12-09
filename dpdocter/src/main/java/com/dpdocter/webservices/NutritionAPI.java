@@ -22,6 +22,7 @@ import com.dpdocter.beans.AssessmentPersonalDetail;
 import com.dpdocter.beans.BloodGlucose;
 import com.dpdocter.beans.NutritionGoalAnalytics;
 import com.dpdocter.beans.NutritionPlan;
+import com.dpdocter.beans.NutritionRDA;
 import com.dpdocter.beans.NutritionRecord;
 import com.dpdocter.beans.PatientAssesentmentHistoryRequest;
 import com.dpdocter.beans.PatientFoodAndExcercise;
@@ -733,6 +734,18 @@ public class NutritionAPI {
 		return response;
 	}
 	
-	
+	@Path(value = PathProxy.NutritionUrl.GET_RDA_FOR_PATIENT)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_RDA_FOR_PATIENT, notes = PathProxy.NutritionUrl.GET_RDA_FOR_PATIENT)
+	public Response<NutritionRDA> getRDAForPatient(@PathParam("patientId") String patientId, 
+			@QueryParam("country") String country, @QueryParam("countryId") String countryId) {
+		if (patientId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<NutritionRDA> response = new Response<NutritionRDA>();
+		response.setData(nutritionService.getRDAForPatient(patientId, country, countryId));
+		return response;
+	}
 	
 }

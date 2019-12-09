@@ -831,7 +831,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 								patientInitial = request.getPNUM().replaceAll("[0-9]", "");
 								
-								Scanner scannerForApp = new Scanner(new File(UPLOAD_APPOINTMENTS_DATA_FILE));
+								Scanner scannerForApp = new Scanner(new File(UPLOAD_TREATMENTS_PLAN_DATA_FILE));
 						        while (scannerForApp.hasNext()) {
 						        		List<String> appLine = CSVUtils.parseLine(scannerForApp.nextLine());
 						        		if (appLine.get(1).equalsIgnoreCase(line.get(pNUMIndex))) {
@@ -1437,7 +1437,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 						if (patientCollection != null) {
 
 							SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
-							String dateSTri = line.get(0).replace("'", "") + " 13:00:00";
+							String dateSTri = line.get(0).replace("'", "");
 							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 							Date fromDate = dateFormat.parse(dateSTri);
 
