@@ -141,7 +141,6 @@ import com.dpdocter.request.PatientQueueAddEditRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.request.PrintPatientCardRequest;
-import com.dpdocter.request.TreatmentRequest;
 import com.dpdocter.response.AVGTimeDetail;
 import com.dpdocter.response.AppointmentLookupResponse;
 import com.dpdocter.response.CalenderJasperBeanList;
@@ -154,6 +153,7 @@ import com.dpdocter.response.LocationWithAppointmentCount;
 import com.dpdocter.response.LocationWithPatientQueueDetails;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.SlotDataResponse;
+import com.dpdocter.response.TreatmentResponse;
 import com.dpdocter.response.UserLocationWithDoctorClinicProfile;
 import com.dpdocter.response.UserRoleResponse;
 import com.dpdocter.services.AppointmentService;
@@ -651,12 +651,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Appointment updateAppointment(final AppointmentRequest request, Boolean updateVisit,
 			Boolean isStatusChange) {
 		Appointment response = null;
-		PatientTreatmentResponse patientTreatmentResponse=new PatientTreatmentResponse();
+		PatientTreatmentResponse patientTreatmentResponse=null;
 		try {
 			AppointmentLookupResponse appointmentLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
 					Aggregation.match(new Criteria("appointmentId").is(request.getAppointmentId())),
-//					Aggregation.lookup("patient_treatment_cl", "appointmentId","appointmentId", "patientTreatmentResponse"),
-//					Aggregation.unwind("patientTreatmentResponse",true),
 					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location")),
 					AppointmentCollection.class, AppointmentLookupResponse.class).getUniqueMappedResult();
@@ -713,13 +711,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 							appointmentCollection.setIsRescheduled(true);
 							appointmentCollection.setState(AppointmentState.CONFIRM);
 							
-							patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
-							
-							if(request.getIsTreatmentEdited()==true)
-							{
-								patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
-							}   
-							
 							AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
 									.findByAppointmentId(request.getAppointmentId());
 							if (bookedSlotCollection != null) {
@@ -758,23 +749,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					appointmentCollection.setNotifyPatientByEmail(request.getNotifyPatientByEmail());
 					appointmentCollection.setNotifyPatientBySms(request.getNotifyPatientBySms());
 					appointmentCollection.setUpdatedTime(new Date());
-					
-					if(request.getTreatmentFields() != null && !request.getTreatmentFields().isEmpty()) {
-						List<FieldsCollection> fieldsCollections = new ArrayList<FieldsCollection>();
-						for(com.dpdocter.beans.Fields fields : request.getTreatmentFields()) {
-							FieldsCollection fieldsCollection = new FieldsCollection();
-							BeanUtil.map(fields, fieldsCollection);
-							fieldsCollections.add(fieldsCollection);
-						}
-						appointmentCollection.setTreatmentFields(fieldsCollections);
-					}else {
-						appointmentCollection.setTreatmentFields(null);
-					}
-				
-//					if(request.getIsTreatmentEdited()==true)
-//					{
-//						patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
-//					}   
 					
 					appointmentCollection = appointmentRepository.save(appointmentCollection);
 
@@ -1080,13 +1054,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 				
 				appointmentCollection = appointmentRepository.save(appointmentCollection);
 				
-				PatientTreatmentResponse  patientTreatmentResponse= addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
-		    
-
-					//treatment add through appointment		
-			
-				
-				
+				PatientTreatmentResponse  patientTreatmentResponse = addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
+		
 				AppointmentBookedSlotCollection bookedSlotCollection = new AppointmentBookedSlotCollection();
 				BeanUtil.map(appointmentCollection, bookedSlotCollection);
 				
@@ -1197,12 +1166,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	public PatientTreatmentResponse addPatientTreatmentsThroughAppointments(AppointmentCollection request,PatientTreatmentAddEditRequest patientAddEditRequest)
-	
-
 	{
 		PatientTreatmentResponse addEditPatientTreatmentResponse=null;
-		if(patientAddEditRequest.getTreatments()!=null) {
-		//	PatientTreatmentAddEditRequest patientAddEditRequest =new PatientTreatmentAddEditRequest();
+		if(patientAddEditRequest != null && patientAddEditRequest.getTreatments()!=null) {
 			patientAddEditRequest.setPatientId(request.getPatientId().toString());
 			patientAddEditRequest.setLocationId(request.getLocationId().toString());
 			patientAddEditRequest.setHospitalId(request.getHospitalId().toString());
@@ -1219,12 +1185,22 @@ public class AppointmentServiceImpl implements AppointmentService {
 				String visitId = patientTrackService.addRecord(addEditPatientTreatmentResponse, VisitedFor.TREATMENT,
 						addEditPatientTreatmentResponse.getVisitId());
 				request.setVisitId(new ObjectId(visitId));
+				
+				List<FieldsCollection> treatmentFields = new ArrayList<FieldsCollection>();
+				for(TreatmentResponse treatmentResponse : addEditPatientTreatmentResponse.getTreatments()) {
+					for(com.dpdocter.beans.Fields fields : treatmentResponse.getTreatmentFields()) {
+						fields.setName(treatmentResponse.getTreatmentService().getName());
+						FieldsCollection fieldsCollection = new FieldsCollection();
+						BeanUtil.map(fields, fieldsCollection);
+						treatmentFields.add(fieldsCollection);
+					}
+				}
+				request.setTreatmentFields(null);
+				request.setTreatmentFields(treatmentFields);
 				request = appointmentRepository.save(request);
-				
-				
-			   }
-			
 			}
+			
+		}
 		return addEditPatientTreatmentResponse;
 	}
 	
@@ -4853,6 +4829,7 @@ try {
 
 				List<CalenderResponse> calenderResponses = mongoTemplate
 						.aggregate(aggregation, AppointmentCollection.class, CalenderResponse.class).getMappedResults();
+
 				if (calenderResponses != null && !calenderResponses.isEmpty()) {
 					response = new ArrayList<CalenderResponseForJasper>();
 					CalenderResponseForJasper calenderResponseForJasper = new CalenderResponseForJasper();
