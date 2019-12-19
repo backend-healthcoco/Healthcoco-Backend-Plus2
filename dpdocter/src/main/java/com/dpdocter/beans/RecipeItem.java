@@ -6,6 +6,7 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 
 import com.dpdocter.enums.LevelType;
+import com.dpdocter.enums.MealTimeEnum;
 
 public class RecipeItem {
 	private ObjectId id;
@@ -14,6 +15,8 @@ public class RecipeItem {
 
 	private MealQuantity quantity;
 
+	private MealTimeEnum mealTime;
+	
 	private Double cost = 0.0;
 
 	private LevelType costType;
@@ -189,15 +192,22 @@ public class RecipeItem {
 		this.costType = costType;
 	}
 
-	@Override
-	public String toString() {
-		return "RecipeItem [id=" + id + ", name=" + name + ", quantity=" + quantity + ", cost=" + cost + ", costType="
-				+ costType + ", equivalentMeasurements=" + equivalentMeasurements + ", calories=" + calories + ", fat="
-				+ fat + ", protein=" + protein + ", carbohydrate=" + carbohydrate + ", fiber=" + fiber
-				+ ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients + ", lipidNutrients="
-				+ lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", vitaminNutrients="
-				+ vitaminNutrients + ", mineralNutrients=" + mineralNutrients + ", otherNutrients=" + otherNutrients
-				+ "]";
+	public MealTimeEnum getMealTime() {
+		return mealTime;
 	}
 
+	public void setMealTime(MealTimeEnum mealTime) {
+		this.mealTime = mealTime;
+	}
+
+	@Override
+	public String toString() {
+		return "RecipeItem [id=" + id + ", name=" + name + ", quantity=" + quantity + ", mealTime=" + mealTime
+				+ ", cost=" + cost + ", costType=" + costType + ", equivalentMeasurements=" + equivalentMeasurements
+				+ ", calories=" + calories + ", fat=" + fat + ", protein=" + protein + ", carbohydrate=" + carbohydrate
+				+ ", fiber=" + fiber + ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients
+				+ ", lipidNutrients=" + lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients
+				+ ", vitaminNutrients=" + vitaminNutrients + ", mineralNutrients=" + mineralNutrients
+				+ ", otherNutrients=" + otherNutrients + "]";
+	}
 }

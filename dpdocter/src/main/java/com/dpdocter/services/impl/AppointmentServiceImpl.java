@@ -3606,7 +3606,7 @@ try {
 			AggregationResults<PatientTreatmentResponse> groupResults = mongoTemplate.aggregate(aggregation,
 					PatientTreatmentCollection.class, PatientTreatmentResponse.class);
 			List<PatientTreatmentResponse> patientDetailsresponse = groupResults.getMappedResults();
-			response = patientDetailsresponse.get(0);
+			response = (patientDetailsresponse != null && !patientDetailsresponse.isEmpty()) ? patientDetailsresponse.get(0) : null;
 
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);

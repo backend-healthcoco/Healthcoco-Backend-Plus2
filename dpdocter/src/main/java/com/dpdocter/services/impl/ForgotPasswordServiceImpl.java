@@ -284,7 +284,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			TokenCollection tokenCollection = tokenRepository.findById(new ObjectId(request.getUserId())).orElse(null);
 			if (tokenCollection == null)
 			{
-				System.out.println("token not null :: " + tokenCollection);
 				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
 			
 			}else if (tokenCollection.getIsUsed())
@@ -294,7 +293,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 					return "Your reset password link has expired.";
 				UserCollection userCollection = userRepository.findById(tokenCollection.getResourceId()).orElse(null);
 				if (userCollection == null) {
-					System.out.println("user not null :: " + userCollection);
 					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
 				}
 				if (!(userCollection.getUserState() == UserState.USERSTATECOMPLETE)

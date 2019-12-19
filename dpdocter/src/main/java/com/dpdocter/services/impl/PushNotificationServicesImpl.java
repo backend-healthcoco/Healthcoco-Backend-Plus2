@@ -356,7 +356,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					notification.setNotificationType(componentType);
 				}
 			}
-			System.out.println(notification);
 			String jsonOutput = mapper.writeValueAsString(notification);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
 
@@ -367,7 +366,6 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					message, DeviceType.ANDROID, null, PushNotificationType.INDIVIDUAL);
 			pushNotificationRepository.save(pushNotificationCollection);
 			logger.info("Message Result: " + result.toString());
-			System.out.println("Message Result: " + result.toString());
 		} catch (JsonProcessingException jpe) {
 			jpe.printStackTrace();
 		} catch (IOException e) {

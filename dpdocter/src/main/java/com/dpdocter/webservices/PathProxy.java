@@ -2231,4 +2231,10 @@ public interface PathProxy {
 		public static final String GET_ACADAMIC_CLASSES = "acadamic/class/{branchId}/{schoolId}/get";
 
 	}
+	
+	public static final String NUTRITION_ENGINE_BASE_URL = BASE_URL + "/nutritionEngine";
+
+	public interface NutritionEngineUrl {
+		public static final String GET_RECIPES = "/recipes/{userId}";
+	}
 }

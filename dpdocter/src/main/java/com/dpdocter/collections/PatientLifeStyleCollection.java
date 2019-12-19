@@ -50,6 +50,10 @@ public class PatientLifeStyleCollection extends GenericCollection {
 	private Integer laptopInBedRoomForMinute = 0;
 	@Field
 	private LifeStyleType type = LifeStyleType.MODERATE;
+	
+	@Field
+	private List<String> pregnancyCategory;
+	
 	@Field
 	private SleepPattern mobileUsage;
 
@@ -216,6 +220,14 @@ public class PatientLifeStyleCollection extends GenericCollection {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
+	public List<String> getPregnancyCategory() {
+		return pregnancyCategory;
+	}
+
+	public void setPregnancyCategory(List<String> pregnancyCategory) {
+		this.pregnancyCategory = pregnancyCategory;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientLifeStyleCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -224,8 +236,8 @@ public class PatientLifeStyleCollection extends GenericCollection {
 				+ ", trivalingPeriod=" + trivalingPeriod + ", socialMediaTime=" + socialMediaTime + ", tvViewTime="
 				+ tvViewTime + ", loptopUseTime=" + loptopUseTime + ", tvInBedRoom=" + tvInBedRoom
 				+ ", laptopInBedRoom=" + laptopInBedRoom + ", tvInBedRoomForMinute=" + tvInBedRoomForMinute
-				+ ", laptopInBedRoomForMinute=" + laptopInBedRoomForMinute + ", type=" + type + ", mobileUsage="
-				+ mobileUsage + ", isPatientDiscarded=" + isPatientDiscarded + "]";
+				+ ", laptopInBedRoomForMinute=" + laptopInBedRoomForMinute + ", type=" + type + ", pregnancyCategory="
+				+ pregnancyCategory + ", mobileUsage=" + mobileUsage + ", isPatientDiscarded=" + isPatientDiscarded
+				+ "]";
 	}
-
 }

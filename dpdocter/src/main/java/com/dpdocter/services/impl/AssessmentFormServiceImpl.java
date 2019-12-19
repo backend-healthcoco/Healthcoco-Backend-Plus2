@@ -564,9 +564,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 							diseaseListResponses.add(diseaseListResponse);
 						}
 					}
-
-				}
-				response.setFamilyhistory(diseaseListResponses);
+					response.setFamilyhistory(diseaseListResponses);	
+				}else response.setFamilyhistory(null);
+				
 				if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
 					diseaseListResponses = new ArrayList<DiseaseListResponse>();
 					diseasesCollections = diseasesRepository.findAllById(historyCollection.getMedicalhistory());
@@ -577,9 +577,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 							diseaseListResponses.add(diseaseListResponse);
 						}
 					}
-
-				}
-				response.setMedicalhistory(diseaseListResponses);
+					response.setMedicalhistory(diseaseListResponses);
+				}else response.setMedicalhistory(null);
+				
 
 				if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
 					diseaseListResponses = new ArrayList<DiseaseListResponse>();
@@ -591,7 +591,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 							diseaseListResponses.add(diseaseListResponse);
 						}
 					}
-
+					response.setDiesease(diseaseListResponses);
 				}
 			}
 		} catch (Exception e) {

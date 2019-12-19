@@ -1,10 +1,10 @@
 package com.dpdocter.beans;
 
+import java.util.List;
 import java.util.Map;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.RDACategory;
-import com.dpdocter.enums.RDAGroup;
+import com.dpdocter.enums.LifeStyleType;
 
 public class NutritionRDA extends GenericCollection{
 
@@ -14,9 +14,11 @@ public class NutritionRDA extends GenericCollection{
 	
 	private String country;
 	
-	private RDAGroup group;
+    private String gender;
 	
-	private RDACategory category;
+	private LifeStyleType type;
+	
+	private List<String> pregnancyCategory;
 	
 	private Map<String, String> generalNutrients;
 
@@ -54,22 +56,6 @@ public class NutritionRDA extends GenericCollection{
 
 	public void setCountry(String country) {
 		this.country = country;
-	}
-
-	public RDAGroup getGroup() {
-		return group;
-	}
-
-	public void setGroup(RDAGroup group) {
-		this.group = group;
-	}
-
-	public RDACategory getCategory() {
-		return category;
-	}
-
-	public void setCategory(RDACategory category) {
-		this.category = category;
 	}
 
 	public Map<String, String> getGeneralNutrients() {
@@ -128,65 +114,37 @@ public class NutritionRDA extends GenericCollection{
 		this.otherNutrients = otherNutrients;
 	}
 
-	@Override
-	public String toString() {
-		return "NutritionRDA [id=" + id + ", countryId=" + countryId + ", country=" + country + ", group=" + group
-				+ ", category=" + category + ", generalNutrients=" + generalNutrients + ", carbNutrients="
-				+ carbNutrients + ", lipidNutrients=" + lipidNutrients + ", proteinAminoAcidNutrients="
-				+ proteinAminoAcidNutrients + ", vitaminNutrients=" + vitaminNutrients + ", mineralNutrients="
-				+ mineralNutrients + ", otherNutrients=" + otherNutrients + "]";
+	public String getGender() {
+		return gender;
 	}
 
-	
-	
-//	private Integer bodyWeight; //in kg
-//	
-//	@Field
-//	private Integer energy; //Kcal/day
-//	
-//	@Field
-//	private Integer proteins; //g/day
-//	
-//	@Field
-//	private Integer visibleFat; // (g/day) 
-//		
-//	@Field
-//	private Integer calcium; // (mgl/Day) 
-//	
-//	@Field
-//	private Integer iron; // (mg/day)
-//	
-//	@Field
-//	private Integer retinol; // (μg/day) 
-//	
-//	@Field
-//	private Integer bCarotene; // (μg/day) 
-//	
-//	@Field
-//	private Integer thiamin; // (mg/day);
-//	
-//	@Field
-//	private Integer riboflavin; // (mg/day) 
-//	
-//	@Field
-//	private Integer niacinEq; // (mg/day) 
-//	
-//	@Field
-//	private Integer vitaminB6; // (mg/day)
-//	
-//	@Field
-//	private Integer vitaminC; // (mg/day) 
-//	
-//	@Field
-//	private Integer dietaryFolate; // (μg/day) 
-//	
-//	@Field
-//	private Integer vitaminB12; // (μg/Day)
-//	
-//	@Field
-//	private Integer zinc; // (mg/Day) 
-//	
-//	@Field
-//	private Integer magnesium; // (mg/Day)
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public LifeStyleType getType() {
+		return type;
+	}
+
+	public void setType(LifeStyleType type) {
+		this.type = type;
+	}
+
+	public List<String> getPregnancyCategory() {
+		return pregnancyCategory;
+	}
+
+	public void setPregnancyCategory(List<String> pregnancyCategory) {
+		this.pregnancyCategory = pregnancyCategory;
+	}
+
+	@Override
+	public String toString() {
+		return "NutritionRDA [id=" + id + ", countryId=" + countryId + ", country=" + country + ", gender=" + gender
+				+ ", type=" + type + ", pregnancyCategory=" + pregnancyCategory + ", generalNutrients="
+				+ generalNutrients + ", carbNutrients=" + carbNutrients + ", lipidNutrients=" + lipidNutrients
+				+ ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", vitaminNutrients=" + vitaminNutrients
+				+ ", mineralNutrients=" + mineralNutrients + ", otherNutrients=" + otherNutrients + "]";
+	}
 
 }

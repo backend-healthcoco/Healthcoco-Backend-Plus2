@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
@@ -8,9 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Age;
-import com.dpdocter.enums.RDACategory;
-import com.dpdocter.enums.RDAGroup;
-import com.dpdocter.enums.RDAPregnancyCategory;
+import com.dpdocter.enums.LifeStyleType;
 
 @Document(collection = "nutriention_rda_cl")
 public class NutritionRDACollection extends GenericCollection{
@@ -31,13 +30,13 @@ public class NutritionRDACollection extends GenericCollection{
 	private Age toAge;
 	
 	@Field
-	private RDAGroup group;
+	private String gender;
+		
+	@Field
+	private LifeStyleType type;
 	
 	@Field
-	private RDACategory category;
-	
-	@Field
-	private RDAPregnancyCategory pregnancyCategory;
+	private List<String> pregnancyCategory;
 	
 	@Field
 	private Map<String, String> generalNutrients;
@@ -83,23 +82,7 @@ public class NutritionRDACollection extends GenericCollection{
 	public void setCountry(String country) {
 		this.country = country;
 	}
-
-	public RDAGroup getGroup() {
-		return group;
-	}
-
-	public void setGroup(RDAGroup group) {
-		this.group = group;
-	}
-
-	public RDACategory getCategory() {
-		return category;
-	}
-
-	public void setCategory(RDACategory category) {
-		this.category = category;
-	}
-
+	
 	public Map<String, String> getGeneralNutrients() {
 		return generalNutrients;
 	}
@@ -172,71 +155,38 @@ public class NutritionRDACollection extends GenericCollection{
 		this.toAge = toAge;
 	}
 
-	public RDAPregnancyCategory getPregnancyCategory() {
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public LifeStyleType getType() {
+		return type;
+	}
+
+	public void setType(LifeStyleType type) {
+		this.type = type;
+	}
+
+	public List<String> getPregnancyCategory() {
 		return pregnancyCategory;
 	}
 
-	public void setPregnancyCategory(RDAPregnancyCategory pregnancyCategory) {
+	public void setPregnancyCategory(List<String> pregnancyCategory) {
 		this.pregnancyCategory = pregnancyCategory;
 	}
 
 	@Override
 	public String toString() {
 		return "NutritionRDACollection [id=" + id + ", countryId=" + countryId + ", country=" + country + ", fromAge="
-				+ fromAge + ", toAge=" + toAge + ", group=" + group + ", category=" + category + ", generalNutrients="
-				+ generalNutrients + ", carbNutrients=" + carbNutrients + ", lipidNutrients=" + lipidNutrients
-				+ ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", vitaminNutrients=" + vitaminNutrients
-				+ ", mineralNutrients=" + mineralNutrients + ", otherNutrients=" + otherNutrients + "]";
+				+ fromAge + ", toAge=" + toAge + ", gender=" + gender + ", type=" + type + ", pregnancyCategory="
+				+ pregnancyCategory + ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients
+				+ ", lipidNutrients=" + lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients
+				+ ", vitaminNutrients=" + vitaminNutrients + ", mineralNutrients=" + mineralNutrients
+				+ ", otherNutrients=" + otherNutrients + "]";
 	}
-	
-//	private Integer bodyWeight; //in kg
-//	
-//	@Field
-//	private Integer energy; //Kcal/day
-//	
-//	@Field
-//	private Integer proteins; //g/day
-//	
-//	@Field
-//	private Integer visibleFat; // (g/day) 
-//		
-//	@Field
-//	private Integer calcium; // (mgl/Day) 
-//	
-//	@Field
-//	private Integer iron; // (mg/day)
-//	
-//	@Field
-//	private Integer retinol; // (μg/day) 
-//	
-//	@Field
-//	private Integer bCarotene; // (μg/day) 
-//	
-//	@Field
-//	private Integer thiamin; // (mg/day);
-//	
-//	@Field
-//	private Integer riboflavin; // (mg/day) 
-//	
-//	@Field
-//	private Integer niacinEq; // (mg/day) 
-//	
-//	@Field
-//	private Integer vitaminB6; // (mg/day)
-//	
-//	@Field
-//	private Integer vitaminC; // (mg/day) 
-//	
-//	@Field
-//	private Integer dietaryFolate; // (μg/day) 
-//	
-//	@Field
-//	private Integer vitaminB12; // (μg/Day)
-//	
-//	@Field
-//	private Integer zinc; // (mg/Day) 
-//	
-//	@Field
-//	private Integer magnesium; // (mg/Day)
 
 }

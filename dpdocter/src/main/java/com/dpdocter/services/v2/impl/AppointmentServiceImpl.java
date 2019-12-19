@@ -2670,8 +2670,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					PatientTreatmentCollection.class, PatientTreatmentResponse.class);
 			List<PatientTreatmentResponse> patientDetailsresponse = groupResults.getMappedResults();
 			response = (patientDetailsresponse!=null && !patientDetailsresponse.isEmpty()) ? patientDetailsresponse.get(0) : null;
-			System.out.println(response != null ? response.getTreatments().size() :"");
-
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);
 			e.printStackTrace();

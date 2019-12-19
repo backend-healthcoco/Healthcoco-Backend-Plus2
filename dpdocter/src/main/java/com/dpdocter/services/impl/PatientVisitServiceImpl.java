@@ -373,8 +373,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			PatientVisitCollection patientTrackCollection = patientVisitRepository.findByDoctorIdAndLocationIdAndHospitalIdAndPatientId(doctorObjectId,
-					locationObjectId, hospitalObjectId, patientObjectId);
+			PatientVisitCollection patientTrackCollection = patientVisitRepository.findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndVisitedFor(doctorObjectId,
+					locationObjectId, hospitalObjectId, patientObjectId, visitedFor!=null ? visitedFor.getVisitedFor():null);
 			UserCollection userCollection = userRepository.findById(doctorObjectId).orElse(null);
 
 			if (patientTrackCollection == null) {

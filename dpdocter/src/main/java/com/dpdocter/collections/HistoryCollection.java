@@ -53,7 +53,7 @@ public class HistoryCollection extends GenericCollection {
 	private PersonalHistory personalHistory;
 
 	@Field
-	private List<ObjectId> specialNotes;
+	private List<String> specialNotes;
 
 	@Transient
 	private long count;
@@ -163,11 +163,11 @@ public class HistoryCollection extends GenericCollection {
 		this.medicalhistory = medicalhistory;
 	}
 
-	public List<ObjectId> getSpecialNotes() {
+	public List<String> getSpecialNotes() {
 		return specialNotes;
 	}
 
-	public void setSpecialNotes(List<ObjectId> specialNotes) {
+	public void setSpecialNotes(List<String> specialNotes) {
 		this.specialNotes = specialNotes;
 	}
 

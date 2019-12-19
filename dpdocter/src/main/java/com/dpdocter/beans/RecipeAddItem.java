@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dpdocter.enums.LevelType;
+import com.dpdocter.enums.MealTimeEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -18,6 +19,8 @@ public class RecipeAddItem {
 
 	private MealQuantity quantity;
 
+	private MealTimeEnum mealTime;
+	
 	private List<EquivalentQuantities> equivalentMeasurements;
 
 	private MealQuantity calories;
@@ -198,4 +201,23 @@ public class RecipeAddItem {
 		this.colour = colour;
 	}
 
+	public MealTimeEnum getMealTime() {
+		return mealTime;
+	}
+
+	public void setMealTime(MealTimeEnum mealTime) {
+		this.mealTime = mealTime;
+	}
+
+	@Override
+	public String toString() {
+		return "RecipeAddItem [id=" + id + ", name=" + name + ", cost=" + cost + ", costType=" + costType
+				+ ", quantity=" + quantity + ", mealTime=" + mealTime + ", equivalentMeasurements="
+				+ equivalentMeasurements + ", calories=" + calories + ", fat=" + fat + ", protein=" + protein
+				+ ", carbohydrate=" + carbohydrate + ", fiber=" + fiber + ", generalNutrients=" + generalNutrients
+				+ ", carbNutrients=" + carbNutrients + ", lipidNutrients=" + lipidNutrients
+				+ ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", vitaminNutrients=" + vitaminNutrients
+				+ ", mineralNutrients=" + mineralNutrients + ", otherNutrients=" + otherNutrients + ", colour=" + colour
+				+ "]";
+	}
 }

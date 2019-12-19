@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.LevelType;
+import com.dpdocter.enums.MealTimeEnum;
 
 public class Recipe extends GenericCollection {
 
@@ -12,6 +13,8 @@ public class Recipe extends GenericCollection {
 
 	private MealQuantity quantity;
 
+	private MealTimeEnum mealTime;
+	
 	private List<EquivalentQuantities> equivalentMeasurements;
 
 	private String name;
@@ -546,6 +549,38 @@ public class Recipe extends GenericCollection {
 
 	public void setFoodPreparationTemperature(String foodPreparationTemperature) {
 		this.foodPreparationTemperature = foodPreparationTemperature;
+	}
+
+	public MealTimeEnum getMealTime() {
+		return mealTime;
+	}
+
+	public void setMealTime(MealTimeEnum mealTime) {
+		this.mealTime = mealTime;
+	}
+
+	@Override
+	public String toString() {
+		return "Recipe [id=" + id + ", quantity=" + quantity + ", mealTime=" + mealTime + ", equivalentMeasurements="
+				+ equivalentMeasurements + ", name=" + name + ", videoUrl=" + videoUrl + ", recipeImages="
+				+ recipeImages + ", thumbnailImages=" + thumbnailImages + ", thumbnailImage=" + thumbnailImage
+				+ ", includeIngredients=" + includeIngredients + ", excludeIngredients=" + excludeIngredients
+				+ ", ingredients=" + ingredients + ", dishType=" + dishType + ", mealTiming=" + mealTiming
+				+ ", technique=" + technique + ", isPopular=" + isPopular + ", isHoliday=" + isHoliday + ", discarded="
+				+ discarded + ", direction=" + direction + ", dietaryConcerns=" + dietaryConcerns + ", forMember="
+				+ forMember + ", meal=" + meal + ", cuisine=" + cuisine + ", course=" + course + ", userId=" + userId
+				+ ", locationId=" + locationId + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", cost="
+				+ cost + ", costType=" + costType + ", preparationTime=" + preparationTime + ", verified=" + verified
+				+ ", calories=" + calories + ", fat=" + fat + ", protein=" + protein + ", carbohydrate=" + carbohydrate
+				+ ", fiber=" + fiber + ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients
+				+ ", lipidNutrients=" + lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients
+				+ ", vitaminNutrients=" + vitaminNutrients + ", mineralNutrients=" + mineralNutrients
+				+ ", otherNutrients=" + otherNutrients + ", nutrientValueAtRecipeLevel=" + nutrientValueAtRecipeLevel
+				+ ", dietoryEvaluation=" + dietoryEvaluation + ", phLevel=" + phLevel + ", giLevel=" + giLevel
+				+ ", communities=" + communities + ", foodCultures=" + foodCultures + ", diseaseFriendly="
+				+ diseaseFriendly + ", isPrebiotic=" + isPrebiotic + ", isProBiotic=" + isProBiotic + ", cookingMethod="
+				+ cookingMethod + ", medicineDosage=" + medicineDosage + ", foodPreparationTemperature="
+				+ foodPreparationTemperature + "]";
 	}
 
 }

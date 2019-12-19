@@ -24,8 +24,6 @@ public class DietplanAddItem {
 		this.toTime = toTime;
 	}
 
-	
-
 	public MealQuantity getCalories() {
 		return calories;
 	}

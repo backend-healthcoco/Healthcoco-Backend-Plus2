@@ -47,6 +47,8 @@ public class MealRequest {
 
 	private Map<String, String> otherNutrients;
 
+	private boolean verified = false;
+	
 	public MealQuantity getCalories() {
 		return calories;
 	}
@@ -209,4 +211,22 @@ public class MealRequest {
 		this.otherNutrients = otherNutrients;
 	}
 
+	public boolean isVerified() {
+		return verified;
+	}
+
+	public void setVerified(boolean verified) {
+		this.verified = verified;
+	}
+
+	@Override
+	public String toString() {
+		return "MealRequest [id=" + id + ", name=" + name + ", ingredients=" + ingredients + ", nutrients=" + nutrients
+				+ ", quantity=" + quantity + ", note=" + note + ", calories=" + calories + ", equivalentMeasurements="
+				+ equivalentMeasurements + ", fat=" + fat + ", protein=" + protein + ", carbohydrate=" + carbohydrate
+				+ ", fiber=" + fiber + ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients
+				+ ", lipidNutrients=" + lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients
+				+ ", vitaminNutrients=" + vitaminNutrients + ", mineralNutrients=" + mineralNutrients
+				+ ", otherNutrients=" + otherNutrients + ", verified=" + verified + ", type=" + type + "]";
+	}
 }

@@ -43,6 +43,8 @@ public class PatientLifeStyle {
 
 	private LifeStyleType type = LifeStyleType.MODERATE;
 
+	private List<String> pregnancyCategory;
+	
 	private SleepPattern mobileUsage;
 
 	public SleepPattern getMobileUsage() {
@@ -197,4 +199,23 @@ public class PatientLifeStyle {
 		this.patientId = patientId;
 	}
 
+	public List<String> getPregnancyCategory() {
+		return pregnancyCategory;
+	}
+
+	public void setPregnancyCategory(List<String> pregnancyCategory) {
+		this.pregnancyCategory = pregnancyCategory;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientLifeStyle [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", patientId=" + patientId + ", assessmentId=" + assessmentId + ", workingschedules="
+				+ workingschedules + ", sleepPatterns=" + sleepPatterns + ", offDays=" + offDays + ", trivalingPeriod="
+				+ trivalingPeriod + ", socialMediaTime=" + socialMediaTime + ", tvViewTime=" + tvViewTime
+				+ ", loptopUseTime=" + loptopUseTime + ", tvInBedRoom=" + tvInBedRoom + ", laptopInBedRoom="
+				+ laptopInBedRoom + ", tvInBedRoomForMinute=" + tvInBedRoomForMinute + ", laptopInBedRoomForMinute="
+				+ laptopInBedRoomForMinute + ", type=" + type + ", pregnancyCategory=" + pregnancyCategory
+				+ ", mobileUsage=" + mobileUsage + "]";
+	}
 }

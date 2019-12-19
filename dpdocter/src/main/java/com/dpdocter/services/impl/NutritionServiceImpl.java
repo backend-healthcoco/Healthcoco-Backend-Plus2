@@ -43,10 +43,7 @@ import com.dpdocter.collections.TestimonialCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserNutritionSubscriptionCollection;
 import com.dpdocter.elasticsearch.response.NutritionPlanWithCategoryShortResponse;
-import com.dpdocter.enums.GenderType;
 import com.dpdocter.enums.NutritionPlanType;
-import com.dpdocter.enums.RDACategory;
-import com.dpdocter.enums.RDAGroup;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -1112,58 +1109,17 @@ public class NutritionServiceImpl implements NutritionService {
 				throw new BusinessException(ServiceError.InvalidInput, "Patient date of birth is null or empty");
 			}
 			
-			Criteria criteria = new Criteria("country").is(country);
-			RDAGroup rdaGroup = null;
-			RDACategory rdaCategory = null;
-			Boolean isFemale = false;
-			if(patientCollection.getGender().equalsIgnoreCase(GenderType.FEMALE.getType())) {
-				isFemale = true;
+			PatientLifeStyleCollection patientLifeStyleCollection = patientLifeStyleRepository.findByPatientId(new ObjectId(patientId));
+			if(patientLifeStyleCollection == null) {
+				logger.warn("No assessment is set for this patient");
+				throw new BusinessException(ServiceError.InvalidInput, "No assessment is set for this patient");
 			}
 			
-			if(patientCollection.getDob().getAge().getYears() >= 18) {
-				if(isFemale)rdaGroup = RDAGroup.WOMAN;
-				else rdaGroup = RDAGroup.MAN;
-				
-				PatientLifeStyleCollection patientLifeStyleCollection = patientLifeStyleRepository.findByPatientId(new ObjectId(patientId));
-				if(patientLifeStyleCollection == null) {
-					logger.warn("No assessment is set for this patient");
-					throw new BusinessException(ServiceError.InvalidInput, "No assessment is set for this patient");
-				}
-				if(patientLifeStyleCollection.getType() == null) {
-					logger.warn("No life style is set for this patient");
-					throw new BusinessException(ServiceError.InvalidInput, "No life style is set for this patient");
-				}
-				rdaCategory = RDACategory.valueOf(patientLifeStyleCollection.getType().getType());
-			}else if(patientCollection.getDob().getAge().getYears() >= 16) {
-				if(isFemale)rdaGroup = RDAGroup.GIRLS;
-				else rdaGroup = RDAGroup.BOYS;
-				rdaCategory = RDACategory.SIXTEEN_TO_SEVENTEEN_YEARS;
-			}else if(patientCollection.getDob().getAge().getYears() >= 13) {
-				if(isFemale)rdaGroup = RDAGroup.GIRLS;
-				else rdaGroup = RDAGroup.BOYS;
-				rdaCategory = RDACategory.THIRTEEN_TO_FIFTEEN_YEARS;
-			}else if(patientCollection.getDob().getAge().getYears() >= 10) {
-				if(isFemale)rdaGroup = RDAGroup.GIRLS;
-				else rdaGroup = RDAGroup.BOYS;
-				rdaCategory = RDACategory.TEN_TO_TWELVE_YEARS;
-			}else if(patientCollection.getDob().getAge().getYears() >= 7) {
-				rdaGroup = RDAGroup.CHILDREN;
-				rdaCategory = RDACategory.SEVEN_TO_NINE_YEARS;
-			}else if(patientCollection.getDob().getAge().getYears() >= 4) {
-				rdaGroup = RDAGroup.CHILDREN;
-				rdaCategory = RDACategory.FOUR_TO_SIX_YEARS;
-			}else if(patientCollection.getDob().getAge().getYears() >= 1) {
-				rdaGroup = RDAGroup.CHILDREN;
-				rdaCategory = RDACategory.ONE_TO_THREE_YEARS;
-			}else if(patientCollection.getDob().getAge().getYears() == 0 && patientCollection.getDob().getAge().getMonths()>6) {
-				rdaGroup = RDAGroup.INFANTS;
-				rdaCategory = RDACategory.SIX_TO_TWELVE_MONTHS;
-			}else if(patientCollection.getDob().getAge().getYears() == 0 && patientCollection.getDob().getAge().getMonths()>0) {
-				rdaGroup = RDAGroup.INFANTS;
-				rdaCategory = RDACategory.ZERO_TO_SIX_MONTHS;
-			}
+			Criteria criteria = new Criteria("country").is(country)
+									.and("gender").is(patientCollection.getGender())
+									.and("type").is(patientLifeStyleCollection.getType())
+									.and("pregnancyCategory").is(patientLifeStyleCollection.getPregnancyCategory());
 			
-			criteria.and("group").is(rdaGroup).and("category").is(rdaCategory);
 			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), NutritionRDACollection.class ,NutritionRDA.class).getUniqueMappedResult(); 
 		}catch(BusinessException e) {
 			logger.error("Error while getting RDA for patient " + e.getMessage());

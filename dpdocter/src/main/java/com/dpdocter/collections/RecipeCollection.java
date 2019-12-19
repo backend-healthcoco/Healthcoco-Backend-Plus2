@@ -12,6 +12,7 @@ import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeItem;
 import com.dpdocter.enums.LevelType;
+import com.dpdocter.enums.MealTimeEnum;
 
 @Document(collection = "recipe_cl")
 public class RecipeCollection extends GenericCollection {
@@ -24,6 +25,9 @@ public class RecipeCollection extends GenericCollection {
 	@Field
 	private MealQuantity quantity;
 
+	@Field
+	private MealTimeEnum mealTime;
+	
 	@Field
 	private List<EquivalentQuantities> equivalentMeasurements;
 
@@ -485,5 +489,32 @@ public class RecipeCollection extends GenericCollection {
 
 	public void setUserId(ObjectId userId) {
 		this.userId = userId;
+	}
+
+	public MealTimeEnum getMealTime() {
+		return mealTime;
+	}
+
+	public void setMealTime(MealTimeEnum mealTime) {
+		this.mealTime = mealTime;
+	}
+
+	@Override
+	public String toString() {
+		return "RecipeCollection [id=" + id + ", name=" + name + ", quantity=" + quantity + ", mealTime=" + mealTime
+				+ ", equivalentMeasurements=" + equivalentMeasurements + ", videoUrl=" + videoUrl + ", recipeImages="
+				+ recipeImages + ", includeIngredients=" + includeIngredients + ", excludeIngredients="
+				+ excludeIngredients + ", ingredients=" + ingredients + ", userId=" + userId + ", locationId="
+				+ locationId + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", dishType=" + dishType
+				+ ", technique=" + technique + ", isPopular=" + isPopular + ", isHoliday=" + isHoliday + ", discarded="
+				+ discarded + ", direction=" + direction + ", dietaryConcerns=" + dietaryConcerns + ", forMember="
+				+ forMember + ", cost=" + cost + ", costType=" + costType + ", meal=" + meal + ", cuisine=" + cuisine
+				+ ", course=" + course + ", preparationTime=" + preparationTime + ", verified=" + verified
+				+ ", mealTiming=" + mealTiming + ", calories=" + calories + ", fat=" + fat + ", protein=" + protein
+				+ ", carbohydrate=" + carbohydrate + ", fiber=" + fiber + ", generalNutrients=" + generalNutrients
+				+ ", carbNutrients=" + carbNutrients + ", lipidNutrients=" + lipidNutrients
+				+ ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", vitaminNutrients=" + vitaminNutrients
+				+ ", mineralNutrients=" + mineralNutrients + ", otherNutrients=" + otherNutrients
+				+ ", nutrientValueAtRecipeLevel=" + nutrientValueAtRecipeLevel + ", planIds=" + planIds + "]";
 	}
 }
