@@ -738,13 +738,15 @@ public class NutritionAPI {
 	@GET
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_RDA_FOR_PATIENT, notes = PathProxy.NutritionUrl.GET_RDA_FOR_PATIENT)
 	public Response<NutritionRDA> getRDAForPatient(@PathParam("patientId") String patientId, 
-			@QueryParam("country") String country, @QueryParam("countryId") String countryId) {
+			@QueryParam("country") String country, @QueryParam("countryId") String countryId, 
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId) {
 		if (patientId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
 
 		Response<NutritionRDA> response = new Response<NutritionRDA>();
-		response.setData(nutritionService.getRDAForPatient(patientId, country, countryId));
+		response.setData(nutritionService.getRDAForPatient(patientId, country, countryId, doctorId, locationId, hospitalId));
 		return response;
 	}
 	

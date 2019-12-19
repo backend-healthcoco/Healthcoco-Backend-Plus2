@@ -7,8 +7,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.Age;
 import com.dpdocter.enums.RDACategory;
 import com.dpdocter.enums.RDAGroup;
+import com.dpdocter.enums.RDAPregnancyCategory;
 
 @Document(collection = "nutriention_rda_cl")
 public class NutritionRDACollection extends GenericCollection{
@@ -21,12 +23,21 @@ public class NutritionRDACollection extends GenericCollection{
 	
 	@Field
 	private String country;
+
+	@Field
+	private Age fromAge;
+	
+	@Field
+	private Age toAge;
 	
 	@Field
 	private RDAGroup group;
 	
 	@Field
 	private RDACategory category;
+	
+	@Field
+	private RDAPregnancyCategory pregnancyCategory;
 	
 	@Field
 	private Map<String, String> generalNutrients;
@@ -145,13 +156,37 @@ public class NutritionRDACollection extends GenericCollection{
 		this.otherNutrients = otherNutrients;
 	}
 
+	public Age getFromAge() {
+		return fromAge;
+	}
+
+	public void setFromAge(Age fromAge) {
+		this.fromAge = fromAge;
+	}
+
+	public Age getToAge() {
+		return toAge;
+	}
+
+	public void setToAge(Age toAge) {
+		this.toAge = toAge;
+	}
+
+	public RDAPregnancyCategory getPregnancyCategory() {
+		return pregnancyCategory;
+	}
+
+	public void setPregnancyCategory(RDAPregnancyCategory pregnancyCategory) {
+		this.pregnancyCategory = pregnancyCategory;
+	}
+
 	@Override
 	public String toString() {
-		return "NutritionRDACollection [id=" + id + ", countryId=" + countryId + ", country=" + country + ", group="
-				+ group + ", category=" + category + ", generalNutrients=" + generalNutrients + ", carbNutrients="
-				+ carbNutrients + ", lipidNutrients=" + lipidNutrients + ", proteinAminoAcidNutrients="
-				+ proteinAminoAcidNutrients + ", vitaminNutrients=" + vitaminNutrients + ", mineralNutrients="
-				+ mineralNutrients + ", otherNutrients=" + otherNutrients + "]";
+		return "NutritionRDACollection [id=" + id + ", countryId=" + countryId + ", country=" + country + ", fromAge="
+				+ fromAge + ", toAge=" + toAge + ", group=" + group + ", category=" + category + ", generalNutrients="
+				+ generalNutrients + ", carbNutrients=" + carbNutrients + ", lipidNutrients=" + lipidNutrients
+				+ ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", vitaminNutrients=" + vitaminNutrients
+				+ ", mineralNutrients=" + mineralNutrients + ", otherNutrients=" + otherNutrients + "]";
 	}
 	
 //	private Integer bodyWeight; //in kg

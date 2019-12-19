@@ -1084,7 +1084,7 @@ public class NutritionServiceImpl implements NutritionService {
 	}
 
 	@Override
-	public NutritionRDA getRDAForPatient(String patientId, String country, String countryId) {
+	public NutritionRDA getRDAForPatient(String patientId, String country, String countryId, String doctorId, String locationId, String hospitalId) {
 		NutritionRDA response = null;
 		try {
 			UserCollection userCollection = userRepository.findById(new ObjectId(patientId)).orElse(null);
@@ -1093,7 +1093,9 @@ public class NutritionServiceImpl implements NutritionService {
 				throw new BusinessException(ServiceError.InvalidInput, "No user found with this Id");
 			}
 			PatientCollection patientCollection = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
-					new ObjectId(patientId), null, null, null);
+					new ObjectId(patientId), !DPDoctorUtils.anyStringEmpty(doctorId) ? new ObjectId(doctorId) : null, 
+							!DPDoctorUtils.anyStringEmpty(locationId) ? new ObjectId(locationId) : null,
+							!DPDoctorUtils.anyStringEmpty(hospitalId) ? new ObjectId(hospitalId) : null);
 			
 			if(patientCollection == null){
 				logger.warn("No patient found with this Id");
