@@ -31,4 +31,7 @@ public interface AssessmentFormService {
 
 	public PatientFoodAndExcercise getPatientFoodAndExcercise(String assessmentId);
 
+	public Integer getAssessmentPatientDetailCount(int page, int size, boolean discarded, long updateTime,
+			String patientId, String doctorId, String locationId, String hospitalId);
+
 }

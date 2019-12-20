@@ -9,6 +9,5 @@ import com.dpdocter.collections.NutritionRDACollection;
 @Repository
 public interface NutritionRDARepository extends MongoRepository<NutritionRDACollection, ObjectId> {
 
-	NutritionRDACollection findByCountryIdAndGroupAndCategory(String countryId, String group, String category);
-
+	NutritionRDACollection findByCountryIdAndGenderAndType(String countryId, String group, String category);
 }

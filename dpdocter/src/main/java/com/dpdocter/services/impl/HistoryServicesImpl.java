@@ -770,28 +770,28 @@ public class HistoryServicesImpl implements HistoryServices {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			List<ObjectId> specialNotesObjectIds = null;
-			if (specialNotes != null) {
-				specialNotesObjectIds = new ArrayList<ObjectId>();
-				for (String specialNotesId : specialNotes)
-					specialNotesObjectIds.add(new ObjectId(specialNotesId));
-			}
+//			List<ObjectId> specialNotesObjectIds = null;
+//			if (specialNotes != null) {
+//				specialNotesObjectIds = new ArrayList<ObjectId>();
+//				for (String specialNotesId : specialNotes)
+//					specialNotesObjectIds.add(new ObjectId(specialNotesId));
+//			}
 			List<HistoryCollection> historyCollections = historyRepository.findByLocationIdAndHospitalIdAndPatientId(new ObjectId(locationId), new ObjectId(hospitalId),
 					new ObjectId(patientId));
 			
 			if (historyCollections != null && !historyCollections.isEmpty()) {
 				historyCollection = historyCollections.get(0);
-				List<ObjectId> specialNotesInHistory = historyCollection.getSpecialNotes();
-				if (specialNotesInHistory == null)
-					specialNotesInHistory = new ArrayList<ObjectId>();
-				if (specialNotesObjectIds != null)
-					specialNotesInHistory.addAll(specialNotesObjectIds);
-				historyCollection.setSpecialNotes(specialNotesInHistory);
+//				List<ObjectId> specialNotesInHistory = historyCollection.getSpecialNotes();
+//				if (specialNotesInHistory == null)
+//					specialNotesInHistory = new ArrayList<ObjectId>();
+//				if (specialNotesObjectIds != null)
+//					specialNotesInHistory.addAll(specialNotesObjectIds);
+				historyCollection.setSpecialNotes(specialNotes);
 			} else {// if history not added for this patient.Create new history.
 				historyCollection = new HistoryCollection(doctorObjectId, locationObjectId, hospitalObjectId,
 						patientObjectId);
 				historyCollection.setCreatedTime(new Date());
-				historyCollection.setSpecialNotes(specialNotesObjectIds);
+				historyCollection.setSpecialNotes(specialNotes);
 			}
 			historyRepository.save(historyCollection);
 

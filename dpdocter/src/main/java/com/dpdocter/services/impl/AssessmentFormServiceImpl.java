@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AssessmentPersonalDetail;
+import com.dpdocter.beans.Count;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
@@ -193,6 +194,12 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			} else {
 				patientFoodAndExcerciseCollection = patientFoodAndExerciseRepository
 						.findById(new ObjectId(request.getId())).orElse(null);
+				patientFoodAndExcerciseCollection.setMealTimeAndPattern(null);
+				patientFoodAndExcerciseCollection.setFoodCravings(null);
+				patientFoodAndExcerciseCollection.setExercise(null);
+				patientFoodAndExcerciseCollection.setFoodPrefer(null);
+				patientFoodAndExcerciseCollection.setDrugs(null);
+				
 				BeanUtil.map(request, patientFoodAndExcerciseCollection);
 				patientFoodAndExcerciseCollection.setUpdatedTime(new Date());
 			}
@@ -239,7 +246,17 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				request.setUpdatedTime(new Date());
 				request.setCreatedBy(historyCollection.getCreatedBy());
 				request.setCreatedTime(historyCollection.getCreatedTime());
-
+				
+				historyCollection.setAddiction(null);
+				historyCollection.setDiesease(null);
+				historyCollection.setExistingMedication(null);
+				historyCollection.setFamilyhistory(null);
+				historyCollection.setGeneralRecords(null);
+				historyCollection.setMedicalhistory(null);
+				historyCollection.setReasons(null);
+				historyCollection.setSpecialNotes(null);
+				historyCollection.setDrugsAndAllergies(null);
+				
 				BeanUtil.map(request, historyCollection);
 				historyCollection.setUpdatedTime(new Date());
 			}
@@ -321,9 +338,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 						diseaseListResponses.add(diseaseListResponse);
 					}
 				}
-
-			}
-			response.setFamilyhistory(diseaseListResponses);
+				response.setFamilyhistory(diseaseListResponses);
+			}else response.setFamilyhistory(null);
+			
 			if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
 				diseaseListResponses = new ArrayList<DiseaseListResponse>();
 				diseasesCollections = diseasesRepository.findAllById(historyCollection.getMedicalhistory());
@@ -334,13 +351,13 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 						diseaseListResponses.add(diseaseListResponse);
 					}
 				}
-
-			}
-			response.setMedicalhistory(diseaseListResponses);
+				response.setMedicalhistory(diseaseListResponses);
+			}else response.setMedicalhistory(null);
+			
 
 			if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
 				diseaseListResponses = new ArrayList<DiseaseListResponse>();
-				diseasesCollections = diseasesRepository.findAllById(historyCollection.getMedicalhistory());
+				diseasesCollections = diseasesRepository.findAllById(historyCollection.getDiesease());
 				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 					for (DiseasesCollection diseasesCollection : diseasesCollections) {
 						diseaseListResponse = new DiseaseListResponse();
@@ -348,9 +365,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 						diseaseListResponses.add(diseaseListResponse);
 					}
 				}
-
-			}
-			response.setDiesease(diseaseListResponses);
+				response.setDiesease(diseaseListResponses);
+			}else response.setDiesease(null);
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -380,6 +397,11 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 			} else {
 				patientLifeStyleCollection = patientLifeStyleRepository.findById(new ObjectId(request.getId())).orElse(null);
+				patientLifeStyleCollection.setOffDays(null);
+				patientLifeStyleCollection.setPregnancyCategory(null);
+				patientLifeStyleCollection.setSleepPatterns(null);
+				patientLifeStyleCollection.setTrivalingPeriod(null);
+				patientLifeStyleCollection.setWorkingschedules(null);
 				BeanUtil.map(request, patientLifeStyleCollection);
 				patientLifeStyleCollection.setUpdatedTime(new Date());
 			}
@@ -524,6 +546,52 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 	}
 
 	@Override
+	public Integer getAssessmentPatientDetailCount(int page, int size, boolean discarded, long updateTime,
+			String patientId, String doctorId, String locationId, String hospitalId) {
+		Integer count = 0;
+		try {
+			Criteria criteria = new Criteria();
+			Criteria secondCriteria = new Criteria();
+			
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria.and("patientId").is(new ObjectId(patientId));
+				secondCriteria.and("patient.userId").is(new ObjectId(patientId));
+
+			}
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+				secondCriteria.and("patient.doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+				secondCriteria.and("patient.locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+				secondCriteria.and("patient.hospitalId").is(new ObjectId(hospitalId));
+			}
+			if (updateTime > 0) {
+				criteria.and("createdTime").lte(new Date(updateTime));
+			}
+            if(!discarded) {
+            	criteria.and("discarded").is(discarded);
+            }
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+						Aggregation.unwind("patient"), Aggregation.match(secondCriteria), 
+						Aggregation.group("id").count().as("value"));
+
+			List<Count> results = mongoTemplate.aggregate(aggregation,
+					AssessmentPersonalDetailCollection.class, Count.class).getMappedResults();
+			count = (results!=null) ? results.size() : 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return count;
+	}
+	
+	@Override
 	public PatientLifeStyle getAssessmentLifeStyle(String assessmentId) {
 		PatientLifeStyle response = null;
 		try {
@@ -583,7 +651,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 				if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
 					diseaseListResponses = new ArrayList<DiseaseListResponse>();
-					diseasesCollections = diseasesRepository.findAllById(historyCollection.getMedicalhistory());
+					diseasesCollections = diseasesRepository.findAllById(historyCollection.getDiesease());
 					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 						for (DiseasesCollection diseasesCollection : diseasesCollections) {
 							diseaseListResponse = new DiseaseListResponse();

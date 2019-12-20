@@ -25,6 +25,6 @@ public interface NutritionEngineService {
 	
 //	public void recipeSelection();
 
-	public List<Recipe> getRecipes(String userId, String countryId, String country, List<MealTimeEnum> mealTime, String doctorId, String locationId, String hospitalId);
+	public List<Recipe> getRecipes(String userId, List<MealTimeEnum> mealTime, String doctorId, String locationId, String hospitalId);
 	
 }

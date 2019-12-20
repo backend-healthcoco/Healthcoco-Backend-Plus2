@@ -71,6 +71,6 @@ public interface NutritionService {
 
 	SugarSetting addEditSugarSetting(SugarSetting request);
 
-	public NutritionRDA getRDAForPatient(String patientId, String country, String countryId, String doctorId, String locationId, String hospitalId);
+	public NutritionRDA getRDAForPatient(String patientId, String doctorId, String locationId, String hospitalId);
 
 }

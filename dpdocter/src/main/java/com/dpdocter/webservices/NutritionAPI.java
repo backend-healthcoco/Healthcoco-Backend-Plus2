@@ -75,7 +75,7 @@ public class NutritionAPI {
 	private NutritionRecordService nutritionRecordService;
 
 	@Autowired
-	private AssessmentFormService AssessmentFormService;
+	private AssessmentFormService assessmentFormService;
 
 	@Autowired
 	private NutritionReferenceService nutritionReferenceService;
@@ -295,7 +295,7 @@ public class NutritionAPI {
 		}
 
 		Response<AssessmentPersonalDetail> response = new Response<AssessmentPersonalDetail>();
-		response.setData(AssessmentFormService.addEditAssessmentPersonalDetail(request));
+		response.setData(assessmentFormService.addEditAssessmentPersonalDetail(request));
 
 		return response;
 	}
@@ -312,7 +312,7 @@ public class NutritionAPI {
 					" doctorId , hospitalId ,locationId should not null");
 		}
 		Response<PatientLifeStyle> response = new Response<PatientLifeStyle>();
-		response.setData(AssessmentFormService.addEditAssessmentLifeStyle(request));
+		response.setData(assessmentFormService.addEditAssessmentLifeStyle(request));
 
 		return response;
 	}
@@ -329,7 +329,7 @@ public class NutritionAPI {
 					" doctorId , hospitalId ,locationId should not null");
 		}
 		Response<PatientFoodAndExcercise> response = new Response<PatientFoodAndExcercise>();
-		response.setData(AssessmentFormService.addEditFoodAndExcercise(request));
+		response.setData(assessmentFormService.addEditFoodAndExcercise(request));
 
 		return response;
 	}
@@ -347,7 +347,7 @@ public class NutritionAPI {
 					" doctorId , hospitalId ,locationId should not null");
 		}
 		Response<AssessmentFormHistoryResponse> response = new Response<AssessmentFormHistoryResponse>();
-		response.setData(AssessmentFormService.addEditAssessmentHistory(request));
+		response.setData(assessmentFormService.addEditAssessmentHistory(request));
 
 		return response;
 	}
@@ -364,7 +364,7 @@ public class NutritionAPI {
 					" doctorId , hospitalId ,locationId should not null");
 		}
 		Response<PatientMeasurementInfo> response = new Response<PatientMeasurementInfo>();
-		response.setData(AssessmentFormService.addEditPatientMeasurementInfo(request));
+		response.setData(assessmentFormService.addEditPatientMeasurementInfo(request));
 
 		return response;
 	}
@@ -382,8 +382,12 @@ public class NutritionAPI {
 			throw new BusinessException(ServiceError.InvalidInput, " hospitalId ,locationId should not null");
 		}
 		Response<AssessmentPersonalDetail> response = new Response<AssessmentPersonalDetail>();
-		response.setDataList(AssessmentFormService.getAssessmentPatientDetail(page, size, discarded, updateTime,
+		response.setCount(assessmentFormService.getAssessmentPatientDetailCount(page, size, discarded, updateTime,
 				patientId, doctorId, locationId, hospitalId));
+		if(response.getCount()>0) {
+			response.setDataList(assessmentFormService.getAssessmentPatientDetail(page, size, discarded, updateTime,
+					patientId, doctorId, locationId, hospitalId));	
+		}
 
 		return response;
 	}
@@ -397,7 +401,7 @@ public class NutritionAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "assessmentId should not be null");
 		}
 		Response<PatientLifeStyle> response = new Response<PatientLifeStyle>();
-		response.setData(AssessmentFormService.getAssessmentLifeStyle(assessmentId));
+		response.setData(assessmentFormService.getAssessmentLifeStyle(assessmentId));
 
 		return response;
 	}
@@ -412,7 +416,7 @@ public class NutritionAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "assessmentId should not be null");
 		}
 		Response<PatientFoodAndExcercise> response = new Response<PatientFoodAndExcercise>();
-		response.setData(AssessmentFormService.getPatientFoodAndExcercise(assessmentId));
+		response.setData(assessmentFormService.getPatientFoodAndExcercise(assessmentId));
 
 		return response;
 	}
@@ -427,7 +431,7 @@ public class NutritionAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "assessmentId should not be null");
 		}
 		Response<AssessmentFormHistoryResponse> response = new Response<AssessmentFormHistoryResponse>();
-		response.setData(AssessmentFormService.getAssessmentHistory(assessmentId));
+		response.setData(assessmentFormService.getAssessmentHistory(assessmentId));
 
 		return response;
 	}
@@ -442,7 +446,7 @@ public class NutritionAPI {
 		}
 		Response<PatientMeasurementInfo> response = new Response<PatientMeasurementInfo>();
 
-		response.setData(AssessmentFormService.getPatientMeasurementInfo(assessmentId));
+		response.setData(assessmentFormService.getPatientMeasurementInfo(assessmentId));
 		return response;
 	}
 
@@ -738,7 +742,6 @@ public class NutritionAPI {
 	@GET
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_RDA_FOR_PATIENT, notes = PathProxy.NutritionUrl.GET_RDA_FOR_PATIENT)
 	public Response<NutritionRDA> getRDAForPatient(@PathParam("patientId") String patientId, 
-			@QueryParam("country") String country, @QueryParam("countryId") String countryId, 
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId) {
 		if (patientId == null) {
@@ -746,7 +749,7 @@ public class NutritionAPI {
 		}
 
 		Response<NutritionRDA> response = new Response<NutritionRDA>();
-		response.setData(nutritionService.getRDAForPatient(patientId, country, countryId, doctorId, locationId, hospitalId));
+		response.setData(nutritionService.getRDAForPatient(patientId, doctorId, locationId, hospitalId));
 		return response;
 	}
 	

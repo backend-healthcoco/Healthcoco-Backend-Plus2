@@ -161,12 +161,12 @@ public class NutritionEngineServiceImpl implements NutritionEngineService {
 	 * Final recipe selection
 	 */
 //	@Override
-	public List<Recipe> recipeSelection(String userId, String countryId, String country, List<MealTimeEnum> mealTime, String doctorId, String locationId, String hospitalId) {
+	public List<Recipe> recipeSelection(String userId, List<MealTimeEnum> mealTime, String doctorId, String locationId, String hospitalId) {
 		// TODO Auto-generated method stub
 		List<Recipe> recipes = new ArrayList<>();
 		List<RecipeCollection> recipeCollections = recipeRepository.findAll();
 		
-		NutritionRDA nutritionRDA = nutritionService.getRDAForPatient(userId, country, countryId, doctorId, locationId, hospitalId);
+		NutritionRDA nutritionRDA = nutritionService.getRDAForPatient(userId, doctorId, locationId, hospitalId);
 		for(RecipeCollection recipeCollection: recipeCollections) {
 			if(bodyParametersNutrientsMatchesRecipeNutrients(nutritionRDA, recipeCollection)) {
 				Recipe recipe = new Recipe();
@@ -179,10 +179,10 @@ public class NutritionEngineServiceImpl implements NutritionEngineService {
 	}
 
 	@Override
-	public List<Recipe> getRecipes(String userId, String countryId, String country, List<MealTimeEnum> mealTime, 
+	public List<Recipe> getRecipes(String userId, List<MealTimeEnum> mealTime, 
 			String doctorId, String locationId, String hospitalId) {
 		try {
-			return recipeSelection(userId, countryId, country, mealTime, doctorId, locationId, hospitalId);
+			return recipeSelection(userId, mealTime, doctorId, locationId, hospitalId);
 		}catch(BusinessException e) {
 			logger.error("Error while getting Recipes for patient " + e.getMessage());
 			e.printStackTrace();

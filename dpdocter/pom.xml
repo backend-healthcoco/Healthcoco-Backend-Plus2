@@ -38,7 +38,7 @@
 		</profile>
 		<profile>
 			<id>dev</id>	
-			<activation><activeByDefault>true</activeByDefault></activation>					
+						<activation><activeByDefault>true</activeByDefault></activation>					
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>

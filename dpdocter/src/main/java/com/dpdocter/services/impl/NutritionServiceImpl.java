@@ -1081,7 +1081,7 @@ public class NutritionServiceImpl implements NutritionService {
 	}
 
 	@Override
-	public NutritionRDA getRDAForPatient(String patientId, String country, String countryId, String doctorId, String locationId, String hospitalId) {
+	public NutritionRDA getRDAForPatient(String patientId, String doctorId, String locationId, String hospitalId) {
 		NutritionRDA response = null;
 		try {
 			UserCollection userCollection = userRepository.findById(new ObjectId(patientId)).orElse(null);
@@ -1097,6 +1097,11 @@ public class NutritionServiceImpl implements NutritionService {
 			if(patientCollection == null){
 				logger.warn("No patient found with this Id");
 				throw new BusinessException(ServiceError.InvalidInput, "No patient found with this Id");
+			}
+			
+			if(patientCollection.getAddress() == null || DPDoctorUtils.allStringsEmpty(patientCollection.getAddress().getCountry())) {
+				logger.warn("Patient country is null or empty");
+				throw new BusinessException(ServiceError.InvalidInput, "Patient country is null or empty");
 			}
 			
 			if(DPDoctorUtils.allStringsEmpty(patientCollection.getGender())) {
@@ -1115,10 +1120,14 @@ public class NutritionServiceImpl implements NutritionService {
 				throw new BusinessException(ServiceError.InvalidInput, "No assessment is set for this patient");
 			}
 			
-			Criteria criteria = new Criteria("country").is(country)
+			Criteria criteria = new Criteria("country").is(patientCollection.getAddress().getCountry())
 									.and("gender").is(patientCollection.getGender())
-									.and("type").is(patientLifeStyleCollection.getType())
-									.and("pregnancyCategory").is(patientLifeStyleCollection.getPregnancyCategory());
+									.and("type").is(patientLifeStyleCollection.getType());
+			
+			if(patientLifeStyleCollection.getPregnancyCategory() == null || patientLifeStyleCollection.getPregnancyCategory().isEmpty()) {
+				criteria.and("pregnancyCategory").is(null);
+			}
+			else criteria.and("pregnancyCategory").is(patientLifeStyleCollection.getPregnancyCategory());
 			
 			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), NutritionRDACollection.class ,NutritionRDA.class).getUniqueMappedResult(); 
 		}catch(BusinessException e) {

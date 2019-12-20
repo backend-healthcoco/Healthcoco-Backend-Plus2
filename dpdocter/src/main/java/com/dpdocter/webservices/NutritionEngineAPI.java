@@ -40,8 +40,7 @@ public class NutritionEngineAPI {
 	@GET
 	@Path(PathProxy.NutritionEngineUrl.GET_RECIPES)
 	@ApiOperation(value = PathProxy.NutritionEngineUrl.GET_RECIPES)
-	public Response<Recipe> getRecipes(@PathParam("userId") String userId, @QueryParam("countryId") String countryId,
-			@QueryParam("country") String country,
+	public Response<Recipe> getRecipes(@PathParam("userId") String userId,
 			@MatrixParam(value = "mealTime") List<MealTimeEnum> mealTime,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId) {
@@ -51,7 +50,7 @@ public class NutritionEngineAPI {
 		}
 		
 		Response<Recipe> response = new Response<Recipe>();
-		response.setDataList(nutritionEngineService.getRecipes(userId, countryId, country, mealTime, doctorId, locationId, hospitalId));
+		response.setDataList(nutritionEngineService.getRecipes(userId, mealTime, doctorId, locationId, hospitalId));
 		return response;
 	}
 
