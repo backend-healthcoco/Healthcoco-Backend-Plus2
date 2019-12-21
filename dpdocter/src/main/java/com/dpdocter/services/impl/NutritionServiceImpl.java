@@ -1122,14 +1122,19 @@ public class NutritionServiceImpl implements NutritionService {
 			
 			Criteria criteria = new Criteria("country").is(patientCollection.getAddress().getCountry())
 									.and("gender").is(patientCollection.getGender())
-									.and("type").is(patientLifeStyleCollection.getType());
-			
+									.and("type").is(patientLifeStyleCollection.getType())
+									.and("fromAge.years").lte(patientCollection.getDob().getAge().getYears())
+					.and("fromAge.months").lte(patientCollection.getDob().getAge().getMonths())
+					.and("toAge.years").gte(patientCollection.getDob().getAge().getYears())
+					.and("toAge.months").gte(patientCollection.getDob().getAge().getMonths());
+									
 			if(patientLifeStyleCollection.getPregnancyCategory() == null || patientLifeStyleCollection.getPregnancyCategory().isEmpty()) {
 				criteria.and("pregnancyCategory").is(null);
 			}
 			else criteria.and("pregnancyCategory").is(patientLifeStyleCollection.getPregnancyCategory());
 			
 			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), NutritionRDACollection.class ,NutritionRDA.class).getUniqueMappedResult(); 
+			System.out.println(response == null);			
 		}catch(BusinessException e) {
 			logger.error("Error while getting RDA for patient " + e.getMessage());
 			e.printStackTrace();

@@ -3,6 +3,8 @@ package com.dpdocter.beans;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.LifeStyleType;
 
@@ -13,6 +15,10 @@ public class NutritionRDA extends GenericCollection{
 	private String countryId;
 	
 	private String country;
+	
+	private Age fromAge;
+	
+	private Age toAge;
 	
     private String gender;
 	
@@ -138,13 +144,30 @@ public class NutritionRDA extends GenericCollection{
 		this.pregnancyCategory = pregnancyCategory;
 	}
 
+	public Age getFromAge() {
+		return fromAge;
+	}
+
+	public void setFromAge(Age fromAge) {
+		this.fromAge = fromAge;
+	}
+
+	public Age getToAge() {
+		return toAge;
+	}
+
+	public void setToAge(Age toAge) {
+		this.toAge = toAge;
+	}
+
 	@Override
 	public String toString() {
-		return "NutritionRDA [id=" + id + ", countryId=" + countryId + ", country=" + country + ", gender=" + gender
-				+ ", type=" + type + ", pregnancyCategory=" + pregnancyCategory + ", generalNutrients="
-				+ generalNutrients + ", carbNutrients=" + carbNutrients + ", lipidNutrients=" + lipidNutrients
-				+ ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", vitaminNutrients=" + vitaminNutrients
-				+ ", mineralNutrients=" + mineralNutrients + ", otherNutrients=" + otherNutrients + "]";
+		return "NutritionRDA [id=" + id + ", countryId=" + countryId + ", country=" + country + ", fromAge=" + fromAge
+				+ ", toAge=" + toAge + ", gender=" + gender + ", type=" + type + ", pregnancyCategory="
+				+ pregnancyCategory + ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients
+				+ ", lipidNutrients=" + lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients
+				+ ", vitaminNutrients=" + vitaminNutrients + ", mineralNutrients=" + mineralNutrients
+				+ ", otherNutrients=" + otherNutrients + "]";
 	}
 
 }
