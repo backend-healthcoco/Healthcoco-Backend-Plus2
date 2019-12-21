@@ -5,9 +5,12 @@ import java.util.List;
 import com.dpdocter.beans.Ingredient;
 import com.dpdocter.beans.Nutrient;
 import com.dpdocter.beans.Recipe;
+import com.dpdocter.beans.RecipeTemplate;
 import com.dpdocter.request.RecipeCounterAddItem;
 import com.dpdocter.response.RecentRecipeResponse;
 import com.dpdocter.response.RecipeCardResponse;
+
+import common.util.web.Response;
 
 public interface RecipeService {
 	public Nutrient addEditNutrient(Nutrient request);
@@ -46,4 +49,13 @@ public interface RecipeService {
 			String locationId, String hospitalId, String planId);
 
 	List<RecipeCardResponse> getRecipeByPlanId(int size, int page, String planId);
+
+	public RecipeTemplate discardRecipeTemplate(String recipeId, Boolean discarded);
+
+	public Response<RecipeTemplate> getRecipeTemplates(int size, int page, boolean discarded, String searchTerm, String doctorId,
+			String locationId, String hospitalId);
+
+	public RecipeTemplate getRecipeTemplate(String recipeId);
+
+	public RecipeTemplate addEditRecipeTemplate(RecipeTemplate request);
 }

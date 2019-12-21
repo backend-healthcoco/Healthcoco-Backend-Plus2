@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dpdocter.beans.Ingredient;
 import com.dpdocter.beans.Nutrient;
 import com.dpdocter.beans.Recipe;
+import com.dpdocter.beans.RecipeTemplate;
 import com.dpdocter.elasticsearch.document.ESIngredientDocument;
 import com.dpdocter.elasticsearch.document.ESNutrientDocument;
 import com.dpdocter.elasticsearch.document.ESRecipeDocument;
@@ -378,6 +379,74 @@ public class RecipeApi {
 		}
 		Response<RecipeCardResponse> response = new Response<RecipeCardResponse>();
 		response.setDataList(recipeService.getRecipeByPlanId(size, page, planId));
+		return response;
+	}
+	
+	@Path(value = PathProxy.RecipeUrls.DELETE_RECIPE_TEMPLATE)
+	@DELETE
+	@ApiOperation(value = PathProxy.RecipeUrls.DELETE_RECIPE_TEMPLATE, notes = PathProxy.RecipeUrls.DELETE_RECIPE_TEMPLATE)
+	public Response<RecipeTemplate> deleteRecipeTemplate(@PathParam("recipeId") String recipeId, @PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+
+		if (DPDoctorUtils.anyStringEmpty(recipeId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Response<RecipeTemplate> response = new Response<RecipeTemplate>();
+		response.setData(recipeService.discardRecipeTemplate(recipeId, discarded));
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.GET_RECIPES_TEMPLATE)
+	@GET
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPES_TEMPLATE, notes = PathProxy.RecipeUrls.GET_RECIPES_TEMPLATE)
+	public Response<RecipeTemplate> getRecipeTemplates(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
+			@QueryParam("searchTerm") String searchTerm) {
+
+		Response<RecipeTemplate> response = recipeService.getRecipeTemplates(size, page, discarded, searchTerm, doctorId, locationId, hospitalId);
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.GET_RECIPE_TEMPLATE)
+	@GET
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPE_TEMPLATE, notes = PathProxy.RecipeUrls.GET_RECIPE_TEMPLATE)
+	public Response<RecipeTemplate> getRecipeTemplate(@PathParam("recipeId") String recipeId) {
+		if (DPDoctorUtils.anyStringEmpty(recipeId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Response<RecipeTemplate> response = new Response<RecipeTemplate>();
+		response.setData(recipeService.getRecipeTemplate(recipeId));
+		return response;
+	}
+
+	@Path(value = PathProxy.RecipeUrls.ADD_EDIT_RECIPE_TEMPLATE)
+	@POST
+	@ApiOperation(value = PathProxy.RecipeUrls.ADD_EDIT_RECIPE_TEMPLATE, notes = PathProxy.RecipeUrls.ADD_EDIT_RECIPE_TEMPLATE)
+	public Response<RecipeTemplate> addEditRecipeTemplate(RecipeTemplate request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+				request.getName())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"name,doctorId,locationId or hospitalId should not be null or empty");
+
+		}
+		RecipeTemplate recipe = recipeService.addEditRecipeTemplate(request);
+		Response<RecipeTemplate> response = new Response<RecipeTemplate>();
+
+		response.setData(recipe);
+
 		return response;
 	}
 }

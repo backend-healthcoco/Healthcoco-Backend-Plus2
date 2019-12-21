@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.CustomAggregationOperation;
@@ -21,11 +22,13 @@ import com.dpdocter.beans.Ingredient;
 import com.dpdocter.beans.Nutrient;
 import com.dpdocter.beans.Recipe;
 import com.dpdocter.beans.RecipeItem;
+import com.dpdocter.beans.RecipeTemplate;
 import com.dpdocter.collections.FavouriteRecipeCollection;
 import com.dpdocter.collections.IngredientCollection;
 import com.dpdocter.collections.MealCounterCollection;
 import com.dpdocter.collections.NutrientCollection;
 import com.dpdocter.collections.RecipeCollection;
+import com.dpdocter.collections.RecipeTemplateCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESIngredientDocument;
 import com.dpdocter.elasticsearch.document.ESNutrientDocument;
@@ -40,6 +43,7 @@ import com.dpdocter.repository.FavouriteRecipeRepository;
 import com.dpdocter.repository.IngredientRepository;
 import com.dpdocter.repository.NutrientRepository;
 import com.dpdocter.repository.RecipeRepository;
+import com.dpdocter.repository.RecipeTemplateRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.RecipeCounterAddItem;
 import com.dpdocter.response.RecentRecipeResponse;
@@ -48,6 +52,7 @@ import com.dpdocter.services.RecipeService;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
 
 @Service
 public class RecipeServiceImpl implements RecipeService {
@@ -65,6 +70,9 @@ public class RecipeServiceImpl implements RecipeService {
 	@Autowired
 	private RecipeRepository recipeRepository;
 
+	@Autowired
+	private RecipeTemplateRepository recipeTemplateRepository;
+	
 	@Autowired
 	private UserRepository userRepository;
 
@@ -706,6 +714,142 @@ public class RecipeServiceImpl implements RecipeService {
 			logger.error("Error while getting Recipe " + e.getMessage());
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting Recent Recipe " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public RecipeTemplate discardRecipeTemplate(String recipeId, Boolean discarded) {
+		RecipeTemplate response = null;
+		try {
+			RecipeTemplateCollection recipeTemplateCollection = recipeTemplateRepository.findById(new ObjectId(recipeId)).orElse(null);
+			if (recipeTemplateCollection == null) {
+				throw new BusinessException(ServiceError.NotFound, "recipe Not found with Id");
+			}
+
+			recipeTemplateCollection.setDiscarded(discarded);
+			recipeTemplateCollection.setUpdatedTime(new Date());
+			recipeTemplateCollection = recipeTemplateRepository.save(recipeTemplateCollection);
+			response = new RecipeTemplate();
+			BeanUtil.map(recipeTemplateCollection, response);
+
+		} catch (BusinessException e) {
+			logger.error("Error while delete Recipe Template " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while discard Recipe template" + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public Response<RecipeTemplate> getRecipeTemplates(int size, int page, boolean discarded, String searchTerm,
+			String doctorId, String locationId, String hospitalId) {
+		Response<RecipeTemplate> response = new Response<>();
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
+						new Criteria("name").regex(searchTerm));
+			}
+			if (!DPDoctorUtils.allStringsEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.allStringsEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+			if (!DPDoctorUtils.allStringsEmpty(hospitalId))
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			
+			int count = (int) mongoTemplate.count(new Query(criteria), RecipeTemplateCollection.class);
+			if(count > 0) {
+				Aggregation aggregation = null;
+				if (size > 0) {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+							Aggregation.limit(size));
+				} else {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+				}
+
+				response.setDataList(mongoTemplate.aggregate(aggregation, RecipeTemplateCollection.class, RecipeTemplate.class).getMappedResults());
+			}
+			
+			response.setCount(count);
+		} catch (BusinessException e) {
+			logger.error("Error while getting Recipe Templates " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Recipe Templates" + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public RecipeTemplate getRecipeTemplate(String id) {
+		RecipeTemplate response = null;
+		try {
+			RecipeTemplateCollection recipeTemplateCollection = recipeTemplateRepository.findById(new ObjectId(id)).orElse(null);
+			response = new RecipeTemplate();
+			BeanUtil.map(recipeTemplateCollection, response);
+		} catch (BusinessException e) {
+			logger.error("Error while getting recipe template" + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting recipe template" + e.getMessage());
+
+		}
+		return response;
+
+	}
+
+	@Override
+	public RecipeTemplate addEditRecipeTemplate(RecipeTemplate request) {
+		RecipeTemplate response = null;
+		try {
+			if (request != null) {
+				RecipeTemplateCollection recipeTemplateCollection = null;
+				UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+				if (doctor == null) {
+					throw new BusinessException(ServiceError.NotFound, "doctor Not found with Id");
+				}
+				if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+					recipeTemplateCollection = recipeTemplateRepository.findById(new ObjectId(request.getId())).orElse(null);
+					if (recipeTemplateCollection == null) {
+						throw new BusinessException(ServiceError.NotFound, "Recipe Not found with Id");
+					}
+
+					request.setUpdatedTime(new Date());
+					request.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
+							+ " " + doctor.getFirstName());
+					request.setCreatedTime(recipeTemplateCollection.getCreatedTime());
+					recipeTemplateCollection = new RecipeTemplateCollection();
+					BeanUtil.map(request, recipeTemplateCollection);
+
+				} else {
+					recipeTemplateCollection = recipeTemplateRepository.findByNameAndDoctorIdAndLocationIdAndHospitalId(request.getName(),
+							new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+					if(recipeTemplateCollection != null) {
+						logger.error("Recipe Template already exist with this name");
+						throw new BusinessException(ServiceError.Unknown, "Recipe Template already exist with this name");
+					}
+					recipeTemplateCollection = new RecipeTemplateCollection();
+					BeanUtil.map(request, recipeTemplateCollection);
+					recipeTemplateCollection
+							.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
+									+ " " + doctor.getFirstName());
+					recipeTemplateCollection.setUpdatedTime(new Date());
+					recipeTemplateCollection.setCreatedTime(new Date());
+
+				}
+				recipeTemplateCollection = recipeTemplateRepository.save(recipeTemplateCollection);
+				response = new RecipeTemplate();
+				BeanUtil.map(recipeTemplateCollection, response);
+
+			}
+		} catch (BusinessException e) {
+			logger.error("Error while addedit Recipe " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while addedit Recipe " + e.getMessage());
 
 		}
 		return response;
