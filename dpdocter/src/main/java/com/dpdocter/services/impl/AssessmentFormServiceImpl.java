@@ -256,7 +256,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				historyCollection.setReasons(null);
 				historyCollection.setSpecialNotes(null);
 				historyCollection.setDrugsAndAllergies(null);
-				
+				historyCollection.setFoodAndAllergies(null);
+				historyCollection.setPersonalHistory(null);
+
 				BeanUtil.map(request, historyCollection);
 				historyCollection.setUpdatedTime(new Date());
 			}
