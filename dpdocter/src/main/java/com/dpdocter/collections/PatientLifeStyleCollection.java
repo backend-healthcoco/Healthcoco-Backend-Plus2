@@ -49,7 +49,7 @@ public class PatientLifeStyleCollection extends GenericCollection {
 	@Field
 	private Integer laptopInBedRoomForMinute = 0;
 	@Field
-	private LifeStyleType type = LifeStyleType.MODERATE;
+	private LifeStyleType type;
 	
 	@Field
 	private List<String> pregnancyCategory;

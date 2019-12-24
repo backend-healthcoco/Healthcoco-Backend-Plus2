@@ -41,7 +41,7 @@ public class PatientLifeStyle {
 
 	private Integer laptopInBedRoomForMinute = 0;
 
-	private LifeStyleType type = LifeStyleType.MODERATE;
+	private LifeStyleType type;
 
 	private List<String> pregnancyCategory;
 	
