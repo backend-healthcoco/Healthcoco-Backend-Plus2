@@ -427,7 +427,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	private EchoRepository echoRepository;
 
 	@Autowired
-
 	private ProcedureNoteRepository procedureNoteRepository;
 
 	@Autowired
@@ -1055,6 +1054,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 							smsTrackDetail.setDoctorId(response.getUserId());
+							
+							if(!DPDoctorUtils.anyStringEmpty(response.getLocationId()))
+								smsTrackDetail.setLocationId(new ObjectId(response.getLocationId()));
+							
 							smsTrackDetail.setType("APPOINTMENT");
 							SMSDetail smsDetail = new SMSDetail();
 							smsDetail.setUserId(response.getUserId());
