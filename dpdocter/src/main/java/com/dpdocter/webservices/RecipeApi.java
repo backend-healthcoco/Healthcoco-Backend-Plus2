@@ -414,14 +414,14 @@ public class RecipeApi {
 	@Path(value = PathProxy.RecipeUrls.GET_RECIPE_TEMPLATE)
 	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPE_TEMPLATE, notes = PathProxy.RecipeUrls.GET_RECIPE_TEMPLATE)
-	public Response<RecipeTemplate> getRecipeTemplate(@PathParam("recipeId") String recipeId) {
-		if (DPDoctorUtils.anyStringEmpty(recipeId)) {
+	public Response<RecipeTemplate> getRecipeTemplate(@PathParam("recipeTemplateId") String recipeTemplateId) {
+		if (DPDoctorUtils.anyStringEmpty(recipeTemplateId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 
 		}
 		Response<RecipeTemplate> response = new Response<RecipeTemplate>();
-		response.setData(recipeService.getRecipeTemplate(recipeId));
+		response.setData(recipeService.getRecipeTemplate(recipeTemplateId));
 		return response;
 	}
 

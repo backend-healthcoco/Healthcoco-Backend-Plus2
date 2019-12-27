@@ -55,7 +55,7 @@ public interface RecipeService {
 	public Response<RecipeTemplate> getRecipeTemplates(int size, int page, boolean discarded, String searchTerm, String doctorId,
 			String locationId, String hospitalId);
 
-	public RecipeTemplate getRecipeTemplate(String recipeId);
+	public RecipeTemplate getRecipeTemplate(String recipeTemplateId);
 
 	public RecipeTemplate addEditRecipeTemplate(RecipeTemplate request);
 }

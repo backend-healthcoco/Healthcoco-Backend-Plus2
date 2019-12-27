@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.response.RecipeTemplateItemResponse;
 
 public class RecipeTemplate extends GenericCollection{
 
@@ -18,7 +19,7 @@ public class RecipeTemplate extends GenericCollection{
 
 	private Boolean discarded = false;
 
-	private List<RecipeTemplateItem> items;
+	private List<RecipeTemplateItemResponse> items;
 	
 	private List<String> recipeIds;
 
@@ -70,11 +71,11 @@ public class RecipeTemplate extends GenericCollection{
 		this.discarded = discarded;
 	}
 
-	public List<RecipeTemplateItem> getItems() {
+	public List<RecipeTemplateItemResponse> getItems() {
 		return items;
 	}
 
-	public void setItems(List<RecipeTemplateItem> items) {
+	public void setItems(List<RecipeTemplateItemResponse> items) {
 		this.items = items;
 	}
 
