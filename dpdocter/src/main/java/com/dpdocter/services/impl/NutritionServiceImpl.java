@@ -10,7 +10,9 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -1114,24 +1116,25 @@ public class NutritionServiceImpl implements NutritionService {
 				throw new BusinessException(ServiceError.InvalidInput, "Patient date of birth is null or empty");
 			}
 			
-			PatientLifeStyleCollection patientLifeStyleCollection = patientLifeStyleRepository.findByPatientId(new ObjectId(patientId));
-			if(patientLifeStyleCollection == null) {
+			List<PatientLifeStyleCollection> patientLifeStyleCollections = patientLifeStyleRepository.findByPatientId(new ObjectId(patientId), 
+					PageRequest.of(0, 1, new Sort(Direction.DESC, "createdTime")));
+			if(patientLifeStyleCollections == null || patientLifeStyleCollections.isEmpty()) {
 				logger.warn("No assessment is set for this patient");
 				throw new BusinessException(ServiceError.InvalidInput, "No assessment is set for this patient");
 			}
 			
 			Criteria criteria = new Criteria("country").is(patientCollection.getAddress().getCountry())
 									.and("gender").is(patientCollection.getGender())
-									.and("type").is(patientLifeStyleCollection.getType())
+									.and("type").is(patientLifeStyleCollections.get(0).getType())
 									.and("fromAge.years").lte(patientCollection.getDob().getAge().getYears())
 					.and("fromAge.months").lte(patientCollection.getDob().getAge().getMonths())
 					.and("toAge.years").gte(patientCollection.getDob().getAge().getYears())
 					.and("toAge.months").gte(patientCollection.getDob().getAge().getMonths());
 									
-			if(patientLifeStyleCollection.getPregnancyCategory() == null || patientLifeStyleCollection.getPregnancyCategory().isEmpty()) {
+			if(patientLifeStyleCollections.get(0).getPregnancyCategory() == null || patientLifeStyleCollections.get(0).getPregnancyCategory().isEmpty()) {
 				criteria.and("pregnancyCategory").is(null);
 			}
-			else criteria.and("pregnancyCategory").is(patientLifeStyleCollection.getPregnancyCategory());
+			else criteria.and("pregnancyCategory").is(patientLifeStyleCollections.get(0).getPregnancyCategory());
 			
 			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), NutritionRDACollection.class ,NutritionRDA.class).getUniqueMappedResult(); 
 			System.out.println(response == null);			

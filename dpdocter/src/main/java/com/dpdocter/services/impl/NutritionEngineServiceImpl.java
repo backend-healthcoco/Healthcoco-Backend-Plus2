@@ -37,37 +37,53 @@ public class NutritionEngineServiceImpl implements NutritionEngineService {
 	private RecipeRepository recipeRepository;
 	
 	
-	public boolean compareNutrients(Map<String, String> nutrient1, Map<String, String> nutrient2){
+	public boolean compareNutrients(Map<String, String> nutrient1, Map<String, String> nutrient2, MealTimeEnum mealTimeEnum){
 		boolean isMatched = false;
+		
 		
 		if(nutrient1 == null && nutrient2 == null) return true;
 		if(nutrient1 == null) return false;
 		if(nutrient2 == null) return false;
+		
+		nutrient2.forEach((key, value) -> System.out.println(key + ":" + value));
+
 		if(nutrient1.size() != nutrient2.size())return isMatched;
 		
 		isMatched = nutrient1.entrySet().stream()
-						.allMatch(x -> compareNutrientValues(x.getValue(), nutrient2.getOrDefault(x, null)));
+						.allMatch(x -> compareNutrientValues(x.getValue(), nutrient2.getOrDefault(x, null), mealTimeEnum));
 		return isMatched;
 		
 	}
 	
-	private boolean compareNutrientValues(String value1, String value2) {
+	private boolean compareNutrientValues(String value1, String value2, MealTimeEnum mealTimeEnum) {
 		// TODO Auto-generated method stub
-		if(DPDoctorUtils.anyStringEmpty(value1, value2))return false;
+		if(DPDoctorUtils.anyStringEmpty(value1, value2))return true;
 		
 		Double val1 = Double.parseDouble(value1);
+//		if(mealTimeEnum.getTime().equalsIgnoreCase(MealTimeEnum.BREAKFAST.getTime())) {
+//			val1 = (15 * val1)/100;
+//		}else if(mealTimeEnum.getTime().equalsIgnoreCase(MealTimeEnum.LUNCH.getTime())) {
+//			val1 = (35 * val1)/100;
+//		}else if(mealTimeEnum.getTime().equalsIgnoreCase(MealTimeEnum.EVENING_SNACK.getTime())) {
+//			val1 = (15 * val1)/100;
+//		}else if(mealTimeEnum.getTime().equalsIgnoreCase(MealTimeEnum.DINNER.getTime())) {
+//			val1 = (35 * val1)/100;
+//		}
 		Double val2 = Double.parseDouble(value2);
-		
-		if(val1 == val2)return true;
-		if(isInRange(val1, val2)) return true;
-		if(isInRange(val2, val1)) return true;
+		System.out.println("val1"+val1);
+		System.out.println("val2"+val2);
+		if(val1/4 == val2)return true;
+		if(isInRange(val1/4, val2)) return true;
+	//	if(isInRange(val2, val1)) return true;
 		
 		return false;
 	}
 	
 	private boolean isInRange(Double rangeValue, Double valueToBeCheck) {
-		Double fivePerValue = (5*rangeValue)/100;
-		
+		Double fivePerValue = (20*rangeValue)/100;
+		System.out.println("-fivePerValue" + (rangeValue-fivePerValue));
+		System.out.println("valueToBeCheck"+valueToBeCheck);
+		System.out.println("+fivePerValue" + (rangeValue+fivePerValue));
 		if((rangeValue-fivePerValue)<=valueToBeCheck  &&  valueToBeCheck <= (rangeValue+fivePerValue))return true;
 		return false;
 	}
@@ -77,18 +93,21 @@ public class NutritionEngineServiceImpl implements NutritionEngineService {
 	 * Compare this nutrient RDA
 	 * with the recipe nutrients
 	 */
-	@Override
-	public boolean bodyParametersNutrientsMatchesRecipeNutrients(NutritionRDA nutritionRDA, RecipeCollection recipeCollection) {
+	//@Override
+	public boolean bodyParametersNutrientsMatchesRecipeNutrients(NutritionRDA nutritionRDA, RecipeCollection recipeCollection, MealTimeEnum mealTimeEnum) {
 		// TODO Auto-generated method stub
 		//API - nutritionService.getRDAForPatient(patientId, country, countryId)
 		
-		if(!compareNutrients(nutritionRDA.getGeneralNutrients(), recipeCollection.getGeneralNutrients())) return false;		
-		if(!compareNutrients(nutritionRDA.getCarbNutrients(), recipeCollection.getCarbNutrients())) return false;
-		if(!compareNutrients(nutritionRDA.getLipidNutrients(), recipeCollection.getLipidNutrients())) return false;
-		if(!compareNutrients(nutritionRDA.getProteinAminoAcidNutrients(), recipeCollection.getProteinAminoAcidNutrients())) return false;
-		if(!compareNutrients(nutritionRDA.getVitaminNutrients(), recipeCollection.getVitaminNutrients())) return false;
-		if(!compareNutrients(nutritionRDA.getMineralNutrients(), recipeCollection.getMineralNutrients())) return false;
-		if(!compareNutrients(nutritionRDA.getOtherNutrients(), recipeCollection.getOtherNutrients())) return false;
+//		System.out.println(nutritionRDA.toString());
+//		
+		System.out.println(recipeCollection.getName()+"------");
+		if(!compareNutrients(nutritionRDA.getGeneralNutrients(), recipeCollection.getGeneralNutrients(), mealTimeEnum)) return false;		
+		if(!compareNutrients(nutritionRDA.getCarbNutrients(), recipeCollection.getCarbNutrients(), mealTimeEnum)) return false;
+		if(!compareNutrients(nutritionRDA.getLipidNutrients(), recipeCollection.getLipidNutrients(), mealTimeEnum)) return false;
+		if(!compareNutrients(nutritionRDA.getProteinAminoAcidNutrients(), recipeCollection.getProteinAminoAcidNutrients(), mealTimeEnum)) return false;
+		if(!compareNutrients(nutritionRDA.getVitaminNutrients(), recipeCollection.getVitaminNutrients(), mealTimeEnum)) return false;
+		if(!compareNutrients(nutritionRDA.getMineralNutrients(), recipeCollection.getMineralNutrients(), mealTimeEnum)) return false;
+		if(!compareNutrients(nutritionRDA.getOtherNutrients(), recipeCollection.getOtherNutrients(), mealTimeEnum)) return false;
 		
 		return true;
 	}
@@ -161,20 +180,45 @@ public class NutritionEngineServiceImpl implements NutritionEngineService {
 	 * Final recipe selection
 	 */
 //	@Override
-	public List<Recipe> recipeSelection(String userId, List<MealTimeEnum> mealTime, String doctorId, String locationId, String hospitalId) {
+	public List<Recipe> recipeSelection(String userId, List<MealTimeEnum> mealTimes, String doctorId, String locationId, String hospitalId) {
 		// TODO Auto-generated method stub
 		List<Recipe> recipes = new ArrayList<>();
-		List<RecipeCollection> recipeCollections = recipeRepository.findAll();
+		mealTimes = new ArrayList<MealTimeEnum>();
+		mealTimes.add(MealTimeEnum.BREAKFAST);
+		mealTimes.add(MealTimeEnum.LUNCH);
+		mealTimes.add(MealTimeEnum.EVENING_SNACK);
+		mealTimes.add(MealTimeEnum.DINNER);
+		
+		
 		
 		NutritionRDA nutritionRDA = nutritionService.getRDAForPatient(userId, doctorId, locationId, hospitalId);
-		for(RecipeCollection recipeCollection: recipeCollections) {
-			if(bodyParametersNutrientsMatchesRecipeNutrients(nutritionRDA, recipeCollection)) {
-				Recipe recipe = new Recipe();
-				BeanUtil.map(recipeCollection, recipe);
-				recipes.add(recipe);
-			}
-			if(recipes.size() == 4)break;
+		if(nutritionRDA == null) {
+			logger.warn("No RDA found");
+			throw new BusinessException(ServiceError.InvalidInput, "No RDA found");
 		}
+		
+		nutritionRDA.getGeneralNutrients().forEach((key, value) -> System.out.println(key + ":" + value));
+		nutritionRDA.getCarbNutrients().forEach((key, value) -> System.out.println(key + ":" + value));
+		nutritionRDA.getLipidNutrients().forEach((key, value) -> System.out.println(key + ":" + value));
+		nutritionRDA.getProteinAminoAcidNutrients().forEach((key, value) -> System.out.println(key + ":" + value));
+		nutritionRDA.getVitaminNutrients().forEach((key, value) -> System.out.println(key + ":" + value));
+		nutritionRDA.getMineralNutrients().forEach((key, value) -> System.out.println(key + ":" + value));
+		nutritionRDA.getOtherNutrients().forEach((key, value) -> System.out.println(key + ":" + value));
+		
+		for(MealTimeEnum mealTimeEnum : mealTimes) {
+			List<RecipeCollection> recipeCollections = recipeRepository.findByMealTiming(mealTimeEnum.getTime());
+			
+			for(RecipeCollection recipeCollection: recipeCollections) {
+				if(bodyParametersNutrientsMatchesRecipeNutrients(nutritionRDA, recipeCollection, mealTimeEnum)) {
+					Recipe recipe = new Recipe();
+					BeanUtil.map(recipeCollection, recipe);
+					recipes.add(recipe);
+					break;
+				}
+				//if(recipes.size() == 4)break;
+			}
+		}
+				
 		return recipes;
 	}
 

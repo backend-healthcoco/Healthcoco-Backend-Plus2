@@ -2,14 +2,12 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import com.dpdocter.beans.NutritionRDA;
 import com.dpdocter.beans.Recipe;
-import com.dpdocter.collections.RecipeCollection;
 import com.dpdocter.enums.MealTimeEnum;
 
 public interface NutritionEngineService {
 	
-	public boolean bodyParametersNutrientsMatchesRecipeNutrients(NutritionRDA nutritionRDA, RecipeCollection recipeCollection);
+	//public boolean bodyParametersNutrientsMatchesRecipeNutrients(NutritionRDA nutritionRDA, RecipeCollection recipeCollection);
 	
 	public void filterRecipesByIngredientsNutrients();
 	
