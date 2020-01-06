@@ -59,7 +59,7 @@ public class OTPApi {
 	    logger.warn("Invalid Input. Mobile Number Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty");
 	}
-	mobileNumber=countryCode+mobileNumber;
+	//mobileNumber=countryCode+mobileNumber;
 	Boolean OTP = otpService.otpGenerator(mobileNumber, isPatientOTP);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(OTP);

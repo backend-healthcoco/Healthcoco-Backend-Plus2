@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.Age;
 import com.dpdocter.enums.LifeStyleType;
 
-@Document(collection = "nutriention_rda_cl")
+@Document(collection = "nutrition_rda_cl")
 public class NutritionRDACollection extends GenericCollection{
 
 	@Id
