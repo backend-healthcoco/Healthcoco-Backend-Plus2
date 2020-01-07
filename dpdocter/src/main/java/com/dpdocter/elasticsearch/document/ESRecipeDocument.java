@@ -145,6 +145,39 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Boolean)
 	private boolean nutrientValueAtRecipeLevel = false;
 
+	@Field(type = FieldType.Text)
+	private String dietoryEvaluation;
+	
+	@Field(type = FieldType.Text)
+	private String phLevel;
+	
+	@Field(type = FieldType.Text)
+	private String giLevel;
+	
+	@Field(type = FieldType.Nested)
+	private List<String> communities;
+	
+	@Field(type = FieldType.Nested)
+	private List<String> foodCultures;
+	
+	@Field(type = FieldType.Nested)
+	private List<String> diseaseFriendly;
+	
+	@Field(type = FieldType.Boolean)
+	private Boolean isPrebiotic = false;
+	
+	@Field(type = FieldType.Boolean)
+	private Boolean isProBiotic = false;
+	
+	@Field(type = FieldType.Text)
+	private String cookingMethod;
+	
+	@Field(type = FieldType.Text)
+	private String medicineDosage;
+	
+	@Field(type = FieldType.Text)
+	private String foodPreparationTemperature;
+	
 	public MealQuantity getCalories() {
 		return calories;
 	}

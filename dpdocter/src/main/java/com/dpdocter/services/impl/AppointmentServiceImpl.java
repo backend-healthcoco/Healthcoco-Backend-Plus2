@@ -1200,7 +1200,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	{
 		PatientTreatmentResponse addEditPatientTreatmentResponse=null;
-		if(patientAddEditRequest.getTreatments()!=null) {
+		if(patientAddEditRequest!= null && patientAddEditRequest.getTreatments()!=null) {
 		//	PatientTreatmentAddEditRequest patientAddEditRequest =new PatientTreatmentAddEditRequest();
 			patientAddEditRequest.setPatientId(request.getPatientId().toString());
 			patientAddEditRequest.setLocationId(request.getLocationId().toString());
