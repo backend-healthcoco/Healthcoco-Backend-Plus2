@@ -332,7 +332,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 			if (historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty()) {
 				diseaseListResponses = new ArrayList<DiseaseListResponse>();
-				diseasesCollections = diseasesRepository.findAllById(historyCollection.getFamilyhistory());
+				diseasesCollections = (List<DiseasesCollection>) diseasesRepository.findAllById(historyCollection.getFamilyhistory());
 				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 					for (DiseasesCollection diseasesCollection : diseasesCollections) {
 						diseaseListResponse = new DiseaseListResponse();
@@ -345,7 +345,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			
 			if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
 				diseaseListResponses = new ArrayList<DiseaseListResponse>();
-				diseasesCollections = diseasesRepository.findAllById(historyCollection.getMedicalhistory());
+				diseasesCollections = (List<DiseasesCollection>)diseasesRepository.findAllById(historyCollection.getMedicalhistory());
 				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 					for (DiseasesCollection diseasesCollection : diseasesCollections) {
 						diseaseListResponse = new DiseaseListResponse();
@@ -359,7 +359,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 			if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
 				diseaseListResponses = new ArrayList<DiseaseListResponse>();
-				diseasesCollections = diseasesRepository.findAllById(historyCollection.getDiesease());
+				diseasesCollections = (List<DiseasesCollection>)diseasesRepository.findAllById(historyCollection.getDiesease());
 				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 					for (DiseasesCollection diseasesCollection : diseasesCollections) {
 						diseaseListResponse = new DiseaseListResponse();
@@ -626,7 +626,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 				if (historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty()) {
 					diseaseListResponses = new ArrayList<DiseaseListResponse>();
-					diseasesCollections = diseasesRepository.findAllById(historyCollection.getFamilyhistory());
+					diseasesCollections = (List<DiseasesCollection>)diseasesRepository.findAllById(historyCollection.getFamilyhistory());
 					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 						for (DiseasesCollection diseasesCollection : diseasesCollections) {
 							diseaseListResponse = new DiseaseListResponse();
@@ -639,7 +639,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				
 				if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
 					diseaseListResponses = new ArrayList<DiseaseListResponse>();
-					diseasesCollections = diseasesRepository.findAllById(historyCollection.getMedicalhistory());
+					diseasesCollections = (List<DiseasesCollection>)diseasesRepository.findAllById(historyCollection.getMedicalhistory());
 					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 						for (DiseasesCollection diseasesCollection : diseasesCollections) {
 							diseaseListResponse = new DiseaseListResponse();
@@ -653,7 +653,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 				if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
 					diseaseListResponses = new ArrayList<DiseaseListResponse>();
-					diseasesCollections = diseasesRepository.findAllById(historyCollection.getDiesease());
+					diseasesCollections = (List<DiseasesCollection>)diseasesRepository.findAllById(historyCollection.getDiesease());
 					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
 						for (DiseasesCollection diseasesCollection : diseasesCollections) {
 							diseaseListResponse = new DiseaseListResponse();

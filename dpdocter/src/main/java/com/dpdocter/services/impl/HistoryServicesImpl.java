@@ -1999,14 +1999,12 @@ public class HistoryServicesImpl implements HistoryServices {
 		return generalData;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	public List<DiseaseListResponse> getDiseasesByIds(List<ObjectId> medicalHistoryIds) {
 		List<DiseaseListResponse> diseaseListResponses = null;
 		try {
-			List<DiseasesCollection> diseasesCollections = IteratorUtils
-					.toList(diseasesRepository.findAllById(medicalHistoryIds).iterator());
+			List<DiseasesCollection> diseasesCollections = (List<DiseasesCollection>)diseasesRepository.findAllById(medicalHistoryIds);
 
 			if (diseasesCollections != null) {
 				diseaseListResponses = new ArrayList<DiseaseListResponse>();
@@ -2015,7 +2013,6 @@ public class HistoryServicesImpl implements HistoryServices {
 					BeanUtil.map(diseasesCollection, diseaseListResponse);
 					diseaseListResponses.add(diseaseListResponse);
 				}
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

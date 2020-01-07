@@ -78,8 +78,6 @@ public interface DiseasesRepository extends MongoRepository<DiseasesCollection, 
 	List<DiseasesCollection> findCustomGlobalDiseasesForAdmin(Date date, List<Boolean> discards, String searchTerm,
 			Sort sort);
 
-	List<DiseasesCollection> findAllById(List<ObjectId> diseasesIds);
-
 	@Query("{'$or': [{'disease' : {$regex : '^?0', $options : 'i'}, 'doctorId': ?1,  'locationId': ?2, 'hospitalId': ?3, 'discarded': ?4},{'disease' : {$regex : '^?0', $options : 'i'}, 'doctorId': null, 'locationId': null, 'hospitalId': null, 'discarded': ?4}]}")
 	DiseasesCollection find(String disease, ObjectId doctorObjectId, ObjectId locationObjectId,
 			ObjectId hospitalObjectId, Boolean discarded);
