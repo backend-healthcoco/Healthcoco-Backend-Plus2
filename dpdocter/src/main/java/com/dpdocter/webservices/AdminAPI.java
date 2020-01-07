@@ -222,4 +222,14 @@ public class AdminAPI {
 		response.setData(transactionalManagementService.addDataFromMongoToElasticSearch());
 		return response;
 	}
+	
+	@Path(value = PathProxy.AdminUrls.ADD_NUTRITION_DATA_TO_ES)
+	@GET
+	@ApiOperation(value = PathProxy.AdminUrls.ADD_NUTRITION_DATA_TO_ES, notes = PathProxy.AdminUrls.ADD_NUTRITION_DATA_TO_ES)
+	public Response<Boolean> addNutritionDataToElasticSearch() {
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(adminServices.addNutritionDataToElasticSearch());
+		return response;
+	}
 }

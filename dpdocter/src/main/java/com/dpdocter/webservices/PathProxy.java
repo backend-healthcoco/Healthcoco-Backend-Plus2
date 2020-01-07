@@ -1249,6 +1249,8 @@ public interface PathProxy {
 		public static final String ADD_SYMPTOMS_DISEASES_CONDITION = "/symptomsDiseasesCondition/add";
 
 		public static final String ADD_ALL_TO_ELASTICSEARCH = "/addAll";
+		
+		public static final String ADD_NUTRITION_DATA_TO_ES = "/addNutritionData";
 
 	}
 

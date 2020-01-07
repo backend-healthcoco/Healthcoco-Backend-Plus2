@@ -49,18 +49,23 @@ import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EducationInstituteCollection;
 import com.dpdocter.collections.EducationQualificationCollection;
+import com.dpdocter.collections.IngredientCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MedicalCouncilCollection;
+import com.dpdocter.collections.NutrientCollection;
+import com.dpdocter.collections.NutritionRDACollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.ProcedureNoteCollection;
 import com.dpdocter.collections.ProfessionalMembershipCollection;
+import com.dpdocter.collections.RecipeCollection;
 import com.dpdocter.collections.ResumeCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.ServicesCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.SymptomDiseaseConditionCollection;
+import com.dpdocter.collections.SystemExamCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
@@ -70,15 +75,19 @@ import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESEducationInstituteDocument;
 import com.dpdocter.elasticsearch.document.ESEducationQualificationDocument;
+import com.dpdocter.elasticsearch.document.ESIngredientDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.document.ESMedicalCouncilDocument;
+import com.dpdocter.elasticsearch.document.ESNutrientDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProfessionalMembershipDocument;
+import com.dpdocter.elasticsearch.document.ESRecipeDocument;
 import com.dpdocter.elasticsearch.document.ESServicesDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.document.ESSymptomDiseaseConditionDocument;
+import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.repository.ESComplaintsRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosesRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
@@ -97,6 +106,7 @@ import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.repository.ESSymptomDiseaseConditionRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESMasterService;
+import com.dpdocter.elasticsearch.services.ESRecipeService;
 import com.dpdocter.enums.AppType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
@@ -111,12 +121,15 @@ import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.EducationInstituteRepository;
 import com.dpdocter.repository.EducationQualificationRepository;
 import com.dpdocter.repository.HospitalRepository;
+import com.dpdocter.repository.IngredientRepository;
 import com.dpdocter.repository.InvestigationRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MedicalCouncilRepository;
+import com.dpdocter.repository.NutrientRepository;
 import com.dpdocter.repository.ProcedureNoteRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
+import com.dpdocter.repository.RecipeRepository;
 import com.dpdocter.repository.ResumeRepository;
 import com.dpdocter.repository.ServicesRepository;
 import com.dpdocter.repository.SpecialityRepository;
@@ -304,6 +317,18 @@ public class AdminServicesImpl implements AdminServices {
 	
 	@Autowired
 	SymptomDiseaseConditionRepository symptomDiseaseConditionRepository;
+	
+	@Autowired
+	private RecipeRepository recipeRepository;
+	
+	@Autowired
+	private NutrientRepository nutrientRepository;
+	
+	@Autowired
+	private IngredientRepository ingredientRepository;
+		
+	@Autowired
+	private ESRecipeService esRecipeService;
 	
 	@Autowired
 	ESSymptomDiseaseConditionRepository esSymptomDiseaseConditionRepository;
@@ -1150,5 +1175,50 @@ public class AdminServicesImpl implements AdminServices {
 			e.printStackTrace();
 		}
 		return response;
+	}
+
+	@Override
+	public Boolean addNutritionDataToElasticSearch() {
+		try {
+			List<RecipeCollection> recipeCollections = recipeRepository.findAll();
+			if (recipeCollections != null) {
+				for (RecipeCollection recipeCollection : recipeCollections) {
+					ESRecipeDocument esRecipeDocument = new ESRecipeDocument();
+					BeanUtil.map(recipeCollection, esRecipeDocument);
+					transnationalService.addResource(recipeCollection.getId(), Resource.RECIPE, false);
+					esRecipeService.addRecipe(esRecipeDocument);
+				}
+
+			}
+			System.out.println("added recipes");
+			
+			List<IngredientCollection> ingredientCollections = ingredientRepository.findAll();
+			if (ingredientCollections != null) {
+				for (IngredientCollection ingredientCollection : ingredientCollections) {
+					ESIngredientDocument esIngredientDocument = new ESIngredientDocument();
+					BeanUtil.map(ingredientCollection, esIngredientDocument);
+					transnationalService.addResource(ingredientCollection.getId(), Resource.INGREDIENT, false);
+					esRecipeService.addIngredient(esIngredientDocument);
+				}
+
+			}
+			System.out.println("added ingredient");
+			
+			List<NutrientCollection> nutrientCollections = nutrientRepository.findAll();
+			if (nutrientCollections != null) {
+				for (NutrientCollection nutrientCollection : nutrientCollections) {
+					ESNutrientDocument esNutrientDocument = new ESNutrientDocument();
+					BeanUtil.map(nutrientCollection, esNutrientDocument);
+					transnationalService.addResource(nutrientCollection.getId(), Resource.NUTRIENT, false);
+					esRecipeService.addNutrient(esNutrientDocument);
+				}
+
+			}
+			System.out.println("added nutrient");
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+		return true;
 	}
 }
