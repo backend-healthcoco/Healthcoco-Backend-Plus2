@@ -74,7 +74,9 @@ public class NutritionAssessmentCollection extends GenericCollection {
 	private Long familyIncomePerMonth;
 	@Field
 	private Boolean discarded = Boolean.FALSE;
-
+	@Field
+	private String otherTests;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -305,6 +307,14 @@ public class NutritionAssessmentCollection extends GenericCollection {
 
 	public void setOtherExerciseType(String otherExerciseType) {
 		this.otherExerciseType = otherExerciseType;
+	}
+
+	public String getOtherTests() {
+		return otherTests;
+	}
+
+	public void setOtherTests(String otherTests) {
+		this.otherTests = otherTests;
 	}
 
 }

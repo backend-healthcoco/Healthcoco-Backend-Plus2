@@ -40,7 +40,15 @@ public class ENTAssessmentCollection extends GenericCollection {
 	private List<ImageURLResponse> images;
 	@Field
 	private Boolean discarded = Boolean.FALSE;
-
+	@Field
+	private List<String> earTest;
+	
+	@Field
+	private List<String> noseTest;
+	
+	@Field
+	private List<String> throatTest;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -151,6 +159,30 @@ public class ENTAssessmentCollection extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public List<String> getEarTest() {
+		return earTest;
+	}
+
+	public void setEarTest(List<String> earTest) {
+		this.earTest = earTest;
+	}
+
+	public List<String> getNoseTest() {
+		return noseTest;
+	}
+
+	public void setNoseTest(List<String> noseTest) {
+		this.noseTest = noseTest;
+	}
+
+	public List<String> getThroatTest() {
+		return throatTest;
+	}
+
+	public void setThroatTest(List<String> throatTest) {
+		this.throatTest = throatTest;
 	}
 
 }

@@ -20,7 +20,12 @@ public class ENTAssessment extends GenericCollection {
 	private String otherTests;
 	private String remarks;
 	private List<ImageURLResponse> images;
+	private Boolean discarded = Boolean.FALSE;
 
+	private List<String> earTest;
+	private List<String> noseTest;
+	private List<String> throatTest;
+	
 	public String getId() {
 		return id;
 	}
@@ -125,13 +130,45 @@ public class ENTAssessment extends GenericCollection {
 		this.images = images;
 	}
 
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public List<String> getEarTest() {
+		return earTest;
+	}
+
+	public void setEarTest(List<String> earTest) {
+		this.earTest = earTest;
+	}
+
+	public List<String> getNoseTest() {
+		return noseTest;
+	}
+
+	public void setNoseTest(List<String> noseTest) {
+		this.noseTest = noseTest;
+	}
+
+	public List<String> getThroatTest() {
+		return throatTest;
+	}
+
+	public void setThroatTest(List<String> throatTest) {
+		this.throatTest = throatTest;
+	}
+
 	@Override
 	public String toString() {
 		return "ENTAssessment [id=" + id + ", academicProfileId=" + academicProfileId + ", branchId=" + branchId
 				+ ", schoolId=" + schoolId + ", doctorId=" + doctorId + ", rightEar=" + rightEar + ", leftEar="
 				+ leftEar + ", nose=" + nose + ", oralCavityAndThroat=" + oralCavityAndThroat + ", doctorConsultations="
 				+ doctorConsultations + ", otherTests=" + otherTests + ", remarks=" + remarks + ", images=" + images
-				+ "]";
+				+ ", discarded=" + discarded + ", earTest=" + earTest + ", noseTest=" + noseTest + ", throatTest="
+				+ throatTest + "]";
 	}
-
 }

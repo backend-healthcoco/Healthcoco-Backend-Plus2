@@ -76,7 +76,9 @@ public class PhysicalAssessmentCollection extends GenericCollection {
 	private String otherTests;
 	@Field
 	private String remarks;
-
+	@Field
+	private List<String> lungs;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -331,6 +333,14 @@ public class PhysicalAssessmentCollection extends GenericCollection {
 
 	public void setSuggestedImages(List<ImageURLResponse> suggestedImages) {
 		this.suggestedImages = suggestedImages;
+	}
+
+	public List<String> getLungs() {
+		return lungs;
+	}
+
+	public void setLungs(List<String> lungs) {
+		this.lungs = lungs;
 	}
 
 }

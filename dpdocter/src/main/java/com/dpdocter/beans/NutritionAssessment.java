@@ -3,8 +3,8 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.Drug;
+import com.dpdocter.response.ImageURLResponse;
 public class NutritionAssessment extends GenericCollection {
 
 	private String id;
@@ -36,7 +36,8 @@ public class NutritionAssessment extends GenericCollection {
 	private List<String> clinicalManifestation;
 	private Long familyIncomePerMonth;
 	private Boolean discarded = Boolean.FALSE;
-
+	private String otherTests;
+	
 	public String getId() {
 		return id;
 	}
@@ -267,6 +268,14 @@ public class NutritionAssessment extends GenericCollection {
 
 	public void setOtherExerciseType(String otherExerciseType) {
 		this.otherExerciseType = otherExerciseType;
+	}
+
+	public String getOtherTests() {
+		return otherTests;
+	}
+
+	public void setOtherTests(String otherTests) {
+		this.otherTests = otherTests;
 	}
 
 }
