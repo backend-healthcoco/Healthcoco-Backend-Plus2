@@ -39,7 +39,7 @@ public class PhysicalAssessment extends GenericCollection {
 	private List<String> urineTest;
 	private String otherTests;
 	private String remarks;
-
+	private List<String> lungs;
 	public String getId() {
 		return id;
 	}
@@ -296,4 +296,27 @@ public class PhysicalAssessment extends GenericCollection {
 		this.suggestedImages = suggestedImages;
 	}
 
+	public List<String> getLungs() {
+		return lungs;
+	}
+
+	public void setLungs(List<String> lungs) {
+		this.lungs = lungs;
+	}
+
+	@Override
+	public String toString() {
+		return "PhysicalAssessment [id=" + id + ", academicProfileId=" + academicProfileId + ", branchId=" + branchId
+				+ ", schoolId=" + schoolId + ", doctorId=" + doctorId + ", handAndNailHygiene=" + handAndNailHygiene
+				+ ", hairHygiene=" + hairHygiene + ", generalSigns=" + generalSigns + ", head=" + head + ", lymphatic="
+				+ lymphatic + ", skin=" + skin + ", cardiovascular=" + cardiovascular + ", respiratory=" + respiratory
+				+ ", abdomen=" + abdomen + ", nuerological=" + nuerological + ", orthopedics=" + orthopedics
+				+ ", deficienciesSuspected=" + deficienciesSuspected + ", nervousSystem=" + nervousSystem
+				+ ", otherConditions=" + otherConditions + ", images=" + images + ", suggestedImages=" + suggestedImages
+				+ ", discarded=" + discarded + ", doctorConsultation=" + doctorConsultation + ", fitnessProgram="
+				+ fitnessProgram + ", nutritionConsultation=" + nutritionConsultation + ", xRay=" + xRay
+				+ ", ctMRIScanRegion=" + ctMRIScanRegion + ", bloodTest=" + bloodTest + ", stoolTest=" + stoolTest
+				+ ", urineTest=" + urineTest + ", otherTests=" + otherTests + ", remarks=" + remarks + ", lungs="
+				+ lungs + "]";
+	}
 }

@@ -2088,15 +2088,17 @@ public class HistoryServicesImpl implements HistoryServices {
 					if (diseaseObjectIds != null)
 						medicalHistoryList.addAll(diseaseObjectIds);
 					medicalHistoryList = new ArrayList<ObjectId>(new LinkedHashSet<ObjectId>(medicalHistoryList));
-					if (request.getRemoveDiseases() != null)
-						medicalHistoryList.removeAll(request.getRemoveDiseases());
+					if (request.getRemoveDiseases() != null) {
+						for(String removeId : request.getRemoveDiseases())medicalHistoryList.remove(new ObjectId(removeId));
+					}
 					historyCollection.setMedicalhistory(medicalHistoryList);
 				} else {
 					medicalHistoryList = new ArrayList<ObjectId>();
 					if (diseaseObjectIds != null)
 						medicalHistoryList.addAll(diseaseObjectIds);
-					if (request.getRemoveDiseases() != null)
-						medicalHistoryList.removeAll(request.getRemoveDiseases());
+					if (request.getRemoveDiseases() != null) {
+						for(String removeId : request.getRemoveDiseases())medicalHistoryList.remove(new ObjectId(removeId));
+					}
 					historyCollection.setMedicalhistory(medicalHistoryList);
 				}
 			} else {
@@ -2107,8 +2109,9 @@ public class HistoryServicesImpl implements HistoryServices {
 				List<ObjectId> medicalHistoryList = new ArrayList<ObjectId>();
 				if (diseaseObjectIds != null)
 					medicalHistoryList.addAll(diseaseObjectIds);
-				if (request.getRemoveDiseases() != null)
-					medicalHistoryList.removeAll(request.getRemoveDiseases());
+				if (request.getRemoveDiseases() != null) {
+					for(String removeId : request.getRemoveDiseases())medicalHistoryList.remove(new ObjectId(removeId));
+				}
 				historyCollection.setMedicalhistory(medicalHistoryList);
 			}
 			if (checkIfHistoryRemovedCompletely(historyCollection)) {
@@ -2152,15 +2155,17 @@ public class HistoryServicesImpl implements HistoryServices {
 					if (diseasesObjectIdList != null)
 						familyHistoryList.addAll(diseasesObjectIdList);
 					familyHistoryList = new ArrayList<ObjectId>(new LinkedHashSet<ObjectId>(familyHistoryList));
-					if (request.getRemoveDiseases() != null)
-						familyHistoryList.removeAll(request.getRemoveDiseases());
+					if (request.getRemoveDiseases() != null) {
+						for(String removeId : request.getRemoveDiseases())familyHistoryList.remove(new ObjectId(removeId));
+					}
 					historyCollection.setFamilyhistory(familyHistoryList);
 				} else {
 					familyHistoryList = new ArrayList<ObjectId>();
 					if (diseasesObjectIdList != null)
 						familyHistoryList.addAll(diseasesObjectIdList);
-					if (request.getRemoveDiseases() != null)
-						familyHistoryList.removeAll(request.getRemoveDiseases());
+					if (request.getRemoveDiseases() != null) {
+						for(String removeId : request.getRemoveDiseases())familyHistoryList.remove(new ObjectId(removeId));
+					}
 					historyCollection.setFamilyhistory(familyHistoryList);
 				}
 			} else {
@@ -2171,8 +2176,9 @@ public class HistoryServicesImpl implements HistoryServices {
 				List<ObjectId> familyHistoryList = new ArrayList<ObjectId>();
 				if (diseasesObjectIdList != null)
 					familyHistoryList.addAll(diseasesObjectIdList);
-				if (request.getRemoveDiseases() != null)
-					familyHistoryList.removeAll(request.getRemoveDiseases());
+				if (request.getRemoveDiseases() != null) {
+					for(String removeId : request.getRemoveDiseases())familyHistoryList.remove(new ObjectId(removeId));
+				}
 				historyCollection.setFamilyhistory(familyHistoryList);
 			}
 			if (checkIfHistoryRemovedCompletely(historyCollection)) {

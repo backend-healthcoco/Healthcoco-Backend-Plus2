@@ -22,6 +22,9 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Text, fielddata = true)
 	private String name;
 
+	@Field(type = FieldType.Text)
+	private String recipeDescription;
+	
 	@Field(type = FieldType.Nested)
 	private MealQuantity quantity;
 
@@ -144,6 +147,48 @@ public class ESRecipeDocument {
 
 	@Field(type = FieldType.Boolean)
 	private boolean nutrientValueAtRecipeLevel = false;
+
+//<<<<<<< HEAD
+//=======
+	@Field(type = FieldType.Text)
+	private String dietoryEvaluation;
+	
+	@Field(type = FieldType.Text)
+	private String phLevel;
+	
+	@Field(type = FieldType.Text)
+	private String giLevel;
+	
+	@Field(type = FieldType.Nested)
+	private List<String> communities;
+	
+	@Field(type = FieldType.Nested)
+	private List<String> foodCultures;
+	
+	@Field(type = FieldType.Nested)
+	private List<String> diseaseFriendly;
+	
+	@Field(type = FieldType.Boolean)
+	private Boolean isPrebiotic = false;
+	
+	@Field(type = FieldType.Boolean)
+	private Boolean isProBiotic = false;
+	
+	@Field(type = FieldType.Text)
+	private String cookingMethod;
+	
+	@Field(type = FieldType.Text)
+	private String medicineDosage;
+	
+	@Field(type = FieldType.Text)
+	private String foodPreparationTemperature;
+	
+	@Field(type = FieldType.Nested)
+	private List<String> foodGroups;
+	
+	@Field(type = FieldType.Nested)
+	private List<String> nutrientTypes;
+	
 
 	public MealQuantity getCalories() {
 		return calories;
@@ -488,5 +533,142 @@ public class ESRecipeDocument {
 	public void setFiber(MealQuantity fiber) {
 		this.fiber = fiber;
 	}
+
+	public String getDietoryEvaluation() {
+		return dietoryEvaluation;
+	}
+
+	public void setDietoryEvaluation(String dietoryEvaluation) {
+		this.dietoryEvaluation = dietoryEvaluation;
+	}
+
+	public String getPhLevel() {
+		return phLevel;
+	}
+
+	public void setPhLevel(String phLevel) {
+		this.phLevel = phLevel;
+	}
+
+	public String getGiLevel() {
+		return giLevel;
+	}
+
+	public void setGiLevel(String giLevel) {
+		this.giLevel = giLevel;
+	}
+
+	public List<String> getCommunities() {
+		return communities;
+	}
+
+	public void setCommunities(List<String> communities) {
+		this.communities = communities;
+	}
+
+	public List<String> getFoodCultures() {
+		return foodCultures;
+	}
+
+	public void setFoodCultures(List<String> foodCultures) {
+		this.foodCultures = foodCultures;
+	}
+
+	public List<String> getDiseaseFriendly() {
+		return diseaseFriendly;
+	}
+
+	public void setDiseaseFriendly(List<String> diseaseFriendly) {
+		this.diseaseFriendly = diseaseFriendly;
+	}
+
+	public Boolean getIsPrebiotic() {
+		return isPrebiotic;
+	}
+
+	public void setIsPrebiotic(Boolean isPrebiotic) {
+		this.isPrebiotic = isPrebiotic;
+	}
+
+	public Boolean getIsProBiotic() {
+		return isProBiotic;
+	}
+
+	public void setIsProBiotic(Boolean isProBiotic) {
+		this.isProBiotic = isProBiotic;
+	}
+
+	public String getCookingMethod() {
+		return cookingMethod;
+	}
+
+	public void setCookingMethod(String cookingMethod) {
+		this.cookingMethod = cookingMethod;
+	}
+
+	public String getMedicineDosage() {
+		return medicineDosage;
+	}
+
+	public void setMedicineDosage(String medicineDosage) {
+		this.medicineDosage = medicineDosage;
+	}
+
+	public String getFoodPreparationTemperature() {
+		return foodPreparationTemperature;
+	}
+
+	public void setFoodPreparationTemperature(String foodPreparationTemperature) {
+		this.foodPreparationTemperature = foodPreparationTemperature;
+	}
+
+	public List<String> getFoodGroups() {
+		return foodGroups;
+	}
+
+	public void setFoodGroups(List<String> foodGroups) {
+		this.foodGroups = foodGroups;
+	}
+
+	public List<String> getNutrientTypes() {
+		return nutrientTypes;
+	}
+
+	public void setNutrientTypes(List<String> nutrientTypes) {
+		this.nutrientTypes = nutrientTypes;
+	}
+
+	public String getRecipeDescription() {
+		return recipeDescription;
+	}
+
+	public void setRecipeDescription(String recipeDescription) {
+		this.recipeDescription = recipeDescription;
+	}
+
+	@Override
+	public String toString() {
+		return "ESRecipeDocument [id=" + id + ", name=" + name + ", recipeDescription=" + recipeDescription
+				+ ", quantity=" + quantity + ", equivalentMeasurements=" + equivalentMeasurements + ", videoUrl="
+				+ videoUrl + ", recipeImages=" + recipeImages + ", includeIngredients=" + includeIngredients
+				+ ", excludeIngredients=" + excludeIngredients + ", locationId=" + locationId + ", doctorId=" + doctorId
+				+ ", hospitalId=" + hospitalId + ", ingredients=" + ingredients + ", dishType=" + dishType
+				+ ", technique=" + technique + ", isPopular=" + isPopular + ", isHoliday=" + isHoliday + ", discarded="
+				+ discarded + ", direction=" + direction + ", dietaryConcerns=" + dietaryConcerns + ", forMember="
+				+ forMember + ", cost=" + cost + ", costType=" + costType + ", meal=" + meal + ", cuisine=" + cuisine
+				+ ", course=" + course + ", preparationTime=" + preparationTime + ", verified=" + verified
+				+ ", updatedTime=" + updatedTime + ", createdBy=" + createdBy + ", mealTiming=" + mealTiming
+				+ ", calories=" + calories + ", fat=" + fat + ", protein=" + protein + ", carbohydrate=" + carbohydrate
+				+ ", fiber=" + fiber + ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients
+				+ ", lipidNutrients=" + lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients
+				+ ", vitaminNutrients=" + vitaminNutrients + ", mineralNutrients=" + mineralNutrients
+				+ ", otherNutrients=" + otherNutrients + ", nutrientValueAtRecipeLevel=" + nutrientValueAtRecipeLevel
+				+ ", dietoryEvaluation=" + dietoryEvaluation + ", phLevel=" + phLevel + ", giLevel=" + giLevel
+				+ ", communities=" + communities + ", foodCultures=" + foodCultures + ", diseaseFriendly="
+				+ diseaseFriendly + ", isPrebiotic=" + isPrebiotic + ", isProBiotic=" + isProBiotic + ", cookingMethod="
+				+ cookingMethod + ", medicineDosage=" + medicineDosage + ", foodPreparationTemperature="
+				+ foodPreparationTemperature + ", foodGroups=" + foodGroups + ", nutrientTypes=" + nutrientTypes + "]";
+	}
+
 
 }

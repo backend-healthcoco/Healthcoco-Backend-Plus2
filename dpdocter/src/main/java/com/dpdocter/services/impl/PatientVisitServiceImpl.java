@@ -3527,7 +3527,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		if (appointment.getAppointmentId() == null) {
 			response = appointmentService.addAppointment(appointment, false);
 		} else {
-			response=appointmentService.updateAppointment(appointment, true, false);
+			appointment.setIsTreatmentEdited(false);
+			response=appointmentService.updateAppointment(appointment, false, false);
 			//response = new Appointment();
 			//BeanUtil.map(appointment, response);
 		}
