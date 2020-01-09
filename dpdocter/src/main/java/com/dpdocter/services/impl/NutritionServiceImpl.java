@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -1124,15 +1125,17 @@ public class NutritionServiceImpl implements NutritionService {
 			}
 			
 			Criteria criteria = new Criteria("country").is(patientCollection.getAddress().getCountry())
-									.and("gender").is(patientCollection.getGender())
-									.and("type").is(patientLifeStyleCollections.get(0).getType())
-									.and("fromAge.years").lte(patientCollection.getDob().getAge().getYears())
-					.and("fromAge.months").lte(patientCollection.getDob().getAge().getMonths())
-					.and("toAge.years").gte(patientCollection.getDob().getAge().getYears())
-					.and("toAge.months").gte(patientCollection.getDob().getAge().getMonths());
-									
+					.and("gender").is(patientCollection.getGender())
+					.and("type").is(patientLifeStyleCollections.get(0).getType());
+			
+			double ageInYears = patientCollection.getDob().getAge().getYears() 
+					+ (double)patientCollection.getDob().getAge().getMonths()/12
+					+ (double)patientCollection.getDob().getAge().getDays()/365; 
+
+			criteria.and("fromAgeInYears").lte(ageInYears).and("toAgeInYears").gte(ageInYears);
+					
 			if(patientLifeStyleCollections.get(0).getPregnancyCategory() == null || patientLifeStyleCollections.get(0).getPregnancyCategory().isEmpty()) {
-				criteria.and("pregnancyCategory").is(null);
+				criteria.and("pregnancyCategory").in(null, new ArrayList<>());
 			}
 			else criteria.and("pregnancyCategory").is(patientLifeStyleCollections.get(0).getPregnancyCategory());
 			
