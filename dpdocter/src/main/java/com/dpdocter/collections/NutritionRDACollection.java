@@ -30,6 +30,12 @@ public class NutritionRDACollection extends GenericCollection{
 	private Age toAge;
 	
 	@Field
+	private double fromAgeInYears;
+	
+	@Field
+	private double toAgeInYears;
+	
+	@Field
 	private String gender;
 		
 	@Field
@@ -171,6 +177,22 @@ public class NutritionRDACollection extends GenericCollection{
 		this.type = type;
 	}
 
+	public double getFromAgeInYears() {
+		return fromAgeInYears;
+	}
+
+	public void setFromAgeInYears(double fromAgeInYears) {
+		this.fromAgeInYears = fromAgeInYears;
+	}
+
+	public double getToAgeInYears() {
+		return toAgeInYears;
+	}
+
+	public void setToAgeInYears(double toAgeInYears) {
+		this.toAgeInYears = toAgeInYears;
+	}
+
 	public List<String> getPregnancyCategory() {
 		return pregnancyCategory;
 	}
@@ -182,11 +204,11 @@ public class NutritionRDACollection extends GenericCollection{
 	@Override
 	public String toString() {
 		return "NutritionRDACollection [id=" + id + ", countryId=" + countryId + ", country=" + country + ", fromAge="
-				+ fromAge + ", toAge=" + toAge + ", gender=" + gender + ", type=" + type + ", pregnancyCategory="
-				+ pregnancyCategory + ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients
-				+ ", lipidNutrients=" + lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients
-				+ ", vitaminNutrients=" + vitaminNutrients + ", mineralNutrients=" + mineralNutrients
-				+ ", otherNutrients=" + otherNutrients + "]";
+				+ fromAge + ", toAge=" + toAge + ", fromAgeInYears=" + fromAgeInYears + ", toAgeInYears=" + toAgeInYears
+				+ ", gender=" + gender + ", type=" + type + ", pregnancyCategory=" + pregnancyCategory
+				+ ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients + ", lipidNutrients="
+				+ lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", vitaminNutrients="
+				+ vitaminNutrients + ", mineralNutrients=" + mineralNutrients + ", otherNutrients=" + otherNutrients
+				+ "]";
 	}
-
 }

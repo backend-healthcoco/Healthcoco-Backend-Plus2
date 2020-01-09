@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -1122,19 +1123,19 @@ public class NutritionServiceImpl implements NutritionService {
 				logger.warn("No assessment is set for this patient");
 				throw new BusinessException(ServiceError.InvalidInput, "No assessment is set for this patient");
 			}
-			
 			Criteria criteria = new Criteria("country").is(patientCollection.getAddress().getCountry())
-									.and("gender").is(patientCollection.getGender())
-									.and("type").is(patientLifeStyleCollections.get(0).getType())
-									.and("fromAge.years").lte(patientCollection.getDob().getAge().getYears())
-					.and("fromAge.months").lte(patientCollection.getDob().getAge().getMonths())
-					.and("toAge.years").gte(patientCollection.getDob().getAge().getYears())
-					.and("toAge.months").gte(patientCollection.getDob().getAge().getMonths());
-									
+					.and("gender").is(patientCollection.getGender())
+					.and("type").is(patientLifeStyleCollections.get(0).getType());
+			
+			double ageInYears = patientCollection.getDob().getAge().getYears() 
+					+ (double)patientCollection.getDob().getAge().getMonths()/12
+					+ (double)patientCollection.getDob().getAge().getDays()/365; 
+
+			criteria.and("fromAgeInYears").lte(ageInYears).and("toAgeInYears").gte(ageInYears);
+					
 			if(patientLifeStyleCollections.get(0).getPregnancyCategory() == null || patientLifeStyleCollections.get(0).getPregnancyCategory().isEmpty()) {
-				criteria.and("pregnancyCategory").is(null);
-			}
-			else criteria.and("pregnancyCategory").is(patientLifeStyleCollections.get(0).getPregnancyCategory());
+				criteria.and("pregnancyCategory").in(null, new ArrayList<>());
+			}else criteria.and("pregnancyCategory").is(patientLifeStyleCollections.get(0).getPregnancyCategory());
 			
 			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), NutritionRDACollection.class ,NutritionRDA.class).getUniqueMappedResult(); 
 			System.out.println(response == null);			

@@ -18,6 +18,8 @@ import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -55,6 +57,7 @@ import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 
+import com.dpdocter.beans.DOB;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -197,6 +200,14 @@ public class DPDoctorUtils {
 		return result;
 	}
 
+	public static long getAgeInDaysFromDOB(DOB dob) {
+		LocalDate now = LocalDate.now();
+		LocalDate birthDate = LocalDate.of(dob.getYears(), dob.getMonths(), dob.getDays());
+
+		long days = ChronoUnit.DAYS.between(birthDate, now);
+		return days;
+	}
+	
 	public static SearchQuery createGlobalQuery(Resource resource, long page, int size, String updatedTime,
 			Boolean discarded, String sortBy, String searchTerm, Collection<String> specialities, String category,
 			String disease, String... searchTermFieldName) {
