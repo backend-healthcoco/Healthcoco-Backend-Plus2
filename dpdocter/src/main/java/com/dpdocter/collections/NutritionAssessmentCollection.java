@@ -37,7 +37,7 @@ public class NutritionAssessmentCollection extends GenericCollection {
 	@Field
 	private Integer waterIntakePerDay;
 	@Field
-	private String drinkingWaterType;
+	private List<String> drinkingWaterType;
 	@Field
 	private WorkingHours schoolHours;
 	@Field
@@ -45,7 +45,7 @@ public class NutritionAssessmentCollection extends GenericCollection {
 	@Field
 	private String sleepingHours;
 	@Field
-	private String exerciseType;
+	private List<String> exerciseType;
 	@Field
 	private String otherExerciseType;
 	@Field
@@ -157,11 +157,11 @@ public class NutritionAssessmentCollection extends GenericCollection {
 		this.waterIntakePerDay = waterIntakePerDay;
 	}
 
-	public String getDrinkingWaterType() {
+	public List<String> getDrinkingWaterType() {
 		return drinkingWaterType;
 	}
 
-	public void setDrinkingWaterType(String drinkingWaterType) {
+	public void setDrinkingWaterType(List<String> drinkingWaterType) {
 		this.drinkingWaterType = drinkingWaterType;
 	}
 
@@ -189,11 +189,11 @@ public class NutritionAssessmentCollection extends GenericCollection {
 		this.sleepingHours = sleepingHours;
 	}
 
-	public String getExerciseType() {
+	public List<String> getExerciseType() {
 		return exerciseType;
 	}
 
-	public void setExerciseType(String exerciseType) {
+	public void setExerciseType(List<String> exerciseType) {
 		this.exerciseType = exerciseType;
 	}
 

@@ -1061,6 +1061,8 @@ public class CampVisitServiceImpl implements CampVisitService {
 			nutritionAssessmentCollection.setImages(request.getImages());
 			nutritionAssessmentCollection.setDrugs(request.getDrugs());
 			nutritionAssessmentCollection.setClinicalManifestation(request.getClinicalManifestation());
+			nutritionAssessmentCollection.setDrinkingWaterType(request.getDrinkingWaterType());
+			nutritionAssessmentCollection.setExerciseType(request.getExerciseType());
 			nutritionAssessmentCollection = nutritionAssessmentRepository.save(nutritionAssessmentCollection);
 			response = new NutritionAssessment();
 			BeanUtil.map(nutritionAssessmentCollection, response);

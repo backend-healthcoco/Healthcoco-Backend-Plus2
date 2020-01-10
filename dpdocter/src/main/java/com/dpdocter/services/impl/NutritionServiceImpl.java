@@ -1135,7 +1135,8 @@ public class NutritionServiceImpl implements NutritionService {
 			criteria.and("fromAgeInYears").lte(ageInYears).and("toAgeInYears").gte(ageInYears);
 					
 			if(patientLifeStyleCollections.get(0).getPregnancyCategory() == null || patientLifeStyleCollections.get(0).getPregnancyCategory().isEmpty()) {
-				criteria.and("pregnancyCategory").in(null, new ArrayList<>());
+				List<String> emptyArr = new ArrayList<String>();
+				criteria.orOperator(new Criteria("pregnancyCategory").is(null), new Criteria("pregnancyCategory").is(emptyArr));
 			}
 			else criteria.and("pregnancyCategory").is(patientLifeStyleCollections.get(0).getPregnancyCategory());
 			
