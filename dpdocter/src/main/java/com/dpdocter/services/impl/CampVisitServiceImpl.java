@@ -1061,6 +1061,8 @@ public class CampVisitServiceImpl implements CampVisitService {
 			nutritionAssessmentCollection.setImages(request.getImages());
 			nutritionAssessmentCollection.setDrugs(request.getDrugs());
 			nutritionAssessmentCollection.setClinicalManifestation(request.getClinicalManifestation());
+			nutritionAssessmentCollection.setDrinkingWaterType(request.getDrinkingWaterType());
+			nutritionAssessmentCollection.setExerciseType(request.getExerciseType());
 			nutritionAssessmentCollection = nutritionAssessmentRepository.save(nutritionAssessmentCollection);
 			response = new NutritionAssessment();
 			BeanUtil.map(nutritionAssessmentCollection, response);
@@ -1132,7 +1134,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 	@Override
 	@Transactional
 	public List<NutritionAssessment> getNutritionAssessmentList(String academicProfileId, String schoolId,
-			String branchId, String doctorId, String updatedTime, int page, int size, Boolean isDiscarded) {
+			String branchId, String doctorId, String updatedTime, int page, int size, Boolean isDiscarded, String recipe) {
 		List<NutritionAssessment> nutritionAssessments = null;
 		Aggregation aggregation = null;
 		try {
@@ -1161,7 +1163,10 @@ public class CampVisitServiceImpl implements CampVisitService {
 			if (isDiscarded != null) {
 				criteria.and("discarded").is(isDiscarded);
 			}
-
+			if(!DPDoctorUtils.anyStringEmpty(recipe)) {
+				criteria = criteria.orOperator(new Criteria("foodPatterns.recipeName").regex("^" + recipe, "i"),
+							new Criteria("foodPatterns.recipeName").regex(recipe));
+			}
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
@@ -1186,7 +1191,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 	@Override
 	@Transactional
 	public Integer getNutritionAssessmentListCount(String academicProfileId, String schoolId, String branchId,
-			String doctorId, String updatedTime, int page, int size, Boolean isDiscarded) {
+			String doctorId, String updatedTime, int page, int size, Boolean isDiscarded, String recipe) {
 		Integer count = 0;
 		try {
 			// Criteria criteria = new Criteria();
@@ -1214,7 +1219,10 @@ public class CampVisitServiceImpl implements CampVisitService {
 			if (isDiscarded != null) {
 				criteria.and("discarded").is(isDiscarded);
 			}
-
+			if(!DPDoctorUtils.anyStringEmpty(recipe)) {
+				criteria = criteria.orOperator(new Criteria("foodPatterns.recipeName").regex("^" + recipe, "i"),
+							new Criteria("foodPatterns.recipeName").regex(recipe));
+			}
 			count = (int) mongoTemplate.count(new Query(criteria), NutritionAssessmentCollection.class);
 
 		} catch (Exception e) {

@@ -17,11 +17,11 @@ public class NutritionAssessment extends GenericCollection {
 	private List<MealTiming> mealTimings;
 	private List<FoodPattern> foodPatterns;
 	private Integer waterIntakePerDay;
-	private String drinkingWaterType;
+	private List<String> drinkingWaterType;
 	private WorkingHours schoolHours;
 	private WorkingHours sleepTime;
 	private String sleepingHours;
-	private String exerciseType;
+	private List<String> exerciseType;
 	private String otherExerciseType;
 	private List<String> addictionOfParents;
 	private String foodDrugAllergy;
@@ -118,11 +118,11 @@ public class NutritionAssessment extends GenericCollection {
 		this.waterIntakePerDay = waterIntakePerDay;
 	}
 
-	public String getDrinkingWaterType() {
+	public List<String> getDrinkingWaterType() {
 		return drinkingWaterType;
 	}
 
-	public void setDrinkingWaterType(String drinkingWaterType) {
+	public void setDrinkingWaterType(List<String> drinkingWaterType) {
 		this.drinkingWaterType = drinkingWaterType;
 	}
 
@@ -150,11 +150,11 @@ public class NutritionAssessment extends GenericCollection {
 		this.sleepingHours = sleepingHours;
 	}
 
-	public String getExerciseType() {
+	public List<String> getExerciseType() {
 		return exerciseType;
 	}
 
-	public void setExerciseType(String exerciseType) {
+	public void setExerciseType(List<String> exerciseType) {
 		this.exerciseType = exerciseType;
 	}
 

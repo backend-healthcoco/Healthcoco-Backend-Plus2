@@ -219,12 +219,13 @@ public class CampVisitAPI {
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "page") int page,
 			@QueryParam(value = "size") int size,
 			@QueryParam(value = "updatedTime") @DefaultValue("0") String updatedTime,
-			@QueryParam(value = "discarded") Boolean discarded) {
+			@QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "recipe") String recipe) {
 		Response<NutritionAssessment> response = new Response<NutritionAssessment>();
 		response.setDataList(campVisitService.getNutritionAssessmentList(academicProfileId, schoolId, branchId,
-				doctorId, updatedTime, page, size, discarded));
+				doctorId, updatedTime, page, size, discarded, recipe));
 		response.setCount(campVisitService.getNutritionAssessmentListCount(academicProfileId, schoolId, branchId,
-				doctorId, updatedTime, page, size, discarded));
+				doctorId, updatedTime, page, size, discarded, recipe));
 		return response;
 	}
 

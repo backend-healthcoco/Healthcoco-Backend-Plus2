@@ -88,10 +88,10 @@ public interface CampVisitService {
 	NutritionAssessment discardNutritionAssessmentById(String id, Boolean discarded);
 
 	List<NutritionAssessment> getNutritionAssessmentList(String academicProfileId, String schoolId, String branchId,
-			String doctorId, String updatedTime, int page, int size, Boolean isDiscarded);
+			String doctorId, String updatedTime, int page, int size, Boolean isDiscarded, String recipe);
 
 	Integer getNutritionAssessmentListCount(String academicProfileId, String schoolId, String branchId, String doctorId,
-			String updatedTime, int page, int size, Boolean isDiscarded);
+			String updatedTime, int page, int size, Boolean isDiscarded, String recipe);
 
 	ImageURLResponse addCampVisitImage(MultipartFile file);
 
