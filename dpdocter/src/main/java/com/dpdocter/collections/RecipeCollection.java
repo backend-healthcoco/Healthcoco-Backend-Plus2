@@ -11,8 +11,12 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeItem;
+import com.dpdocter.enums.FoodCommunity;
+import com.dpdocter.enums.FoodGroup;
 import com.dpdocter.enums.LevelType;
 import com.dpdocter.enums.MealTimeEnum;
+import com.dpdocter.enums.NutrientGoal;
+import com.dpdocter.enums.RecipeNutrientType;
 
 @Document(collection = "recipe_cl")
 public class RecipeCollection extends GenericCollection {
@@ -28,9 +32,6 @@ public class RecipeCollection extends GenericCollection {
 	@Field
 	private MealQuantity quantity;
 
-	@Field
-	private MealTimeEnum mealTime;
-	
 	@Field
 	private List<EquivalentQuantities> equivalentMeasurements;
 
@@ -161,7 +162,7 @@ public class RecipeCollection extends GenericCollection {
 	private String giLevel;
 	
 	@Field
-	private List<String> communities;
+	private List<FoodCommunity> communities;
 	
 	@Field
 	private List<String> foodCultures;
@@ -185,10 +186,16 @@ public class RecipeCollection extends GenericCollection {
 	private String foodPreparationTemperature;
 	
 	@Field
-	private List<String> foodGroups;
+	private List<FoodGroup> foodGroups;
 	
 	@Field
-	private List<String> nutrientTypes;
+	private List<RecipeNutrientType> nutrientTypes;
+	
+	@Field
+	private List<NutrientGoal> nutrientGoals;
+	
+	@Field
+	private List<DiseasesCollection> diseases;
 	
 	public MealQuantity getFiber() {
 		return fiber;
@@ -533,14 +540,6 @@ public class RecipeCollection extends GenericCollection {
 		this.userId = userId;
 	}
 
-	public MealTimeEnum getMealTime() {
-		return mealTime;
-	}
-
-	public void setMealTime(MealTimeEnum mealTime) {
-		this.mealTime = mealTime;
-	}
-
 	public String getDietoryEvaluation() {
 		return dietoryEvaluation;
 	}
@@ -563,14 +562,6 @@ public class RecipeCollection extends GenericCollection {
 
 	public void setGiLevel(String giLevel) {
 		this.giLevel = giLevel;
-	}
-
-	public List<String> getCommunities() {
-		return communities;
-	}
-
-	public void setCommunities(List<String> communities) {
-		this.communities = communities;
 	}
 
 	public List<String> getFoodCultures() {
@@ -629,22 +620,6 @@ public class RecipeCollection extends GenericCollection {
 		this.foodPreparationTemperature = foodPreparationTemperature;
 	}
 
-	public List<String> getFoodGroups() {
-		return foodGroups;
-	}
-
-	public void setFoodGroups(List<String> foodGroups) {
-		this.foodGroups = foodGroups;
-	}
-
-	public List<String> getNutrientTypes() {
-		return nutrientTypes;
-	}
-
-	public void setNutrientTypes(List<String> nutrientTypes) {
-		this.nutrientTypes = nutrientTypes;
-	}
-
 	public String getRecipeDescription() {
 		return recipeDescription;
 	}
@@ -653,10 +628,50 @@ public class RecipeCollection extends GenericCollection {
 		this.recipeDescription = recipeDescription;
 	}
 
+	public List<FoodCommunity> getCommunities() {
+		return communities;
+	}
+
+	public void setCommunities(List<FoodCommunity> communities) {
+		this.communities = communities;
+	}
+
+	public List<FoodGroup> getFoodGroups() {
+		return foodGroups;
+	}
+
+	public void setFoodGroups(List<FoodGroup> foodGroups) {
+		this.foodGroups = foodGroups;
+	}
+
+	public List<RecipeNutrientType> getNutrientTypes() {
+		return nutrientTypes;
+	}
+
+	public void setNutrientTypes(List<RecipeNutrientType> nutrientTypes) {
+		this.nutrientTypes = nutrientTypes;
+	}
+
+	public List<NutrientGoal> getNutrientGoals() {
+		return nutrientGoals;
+	}
+
+	public void setNutrientGoals(List<NutrientGoal> nutrientGoals) {
+		this.nutrientGoals = nutrientGoals;
+	}
+
+	public List<DiseasesCollection> getDiseases() {
+		return diseases;
+	}
+
+	public void setDiseases(List<DiseasesCollection> diseases) {
+		this.diseases = diseases;
+	}
+
 	@Override
 	public String toString() {
 		return "RecipeCollection [id=" + id + ", name=" + name + ", recipeDescription=" + recipeDescription
-				+ ", quantity=" + quantity + ", mealTime=" + mealTime + ", equivalentMeasurements="
+				+ ", quantity=" + quantity + ", equivalentMeasurements="
 				+ equivalentMeasurements + ", videoUrl=" + videoUrl + ", recipeImages=" + recipeImages
 				+ ", includeIngredients=" + includeIngredients + ", excludeIngredients=" + excludeIngredients
 				+ ", ingredients=" + ingredients + ", userId=" + userId + ", locationId=" + locationId + ", doctorId="
@@ -675,6 +690,7 @@ public class RecipeCollection extends GenericCollection {
 				+ ", diseaseFriendly=" + diseaseFriendly + ", isPrebiotic=" + isPrebiotic + ", isProBiotic="
 				+ isProBiotic + ", cookingMethod=" + cookingMethod + ", medicineDosage=" + medicineDosage
 				+ ", foodPreparationTemperature=" + foodPreparationTemperature + ", foodGroups=" + foodGroups
-				+ ", nutrientTypes=" + nutrientTypes + "]";
+				+ ", nutrientTypes=" + nutrientTypes + ", nutrientGoals=" + nutrientGoals + ", diseases=" + diseases
+				+ "]";
 	}
 }
