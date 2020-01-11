@@ -9,10 +9,15 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import com.dpdocter.beans.Disease;
 import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.MealQuantity;
 import com.dpdocter.beans.RecipeAddItem;
+import com.dpdocter.enums.FoodCommunity;
+import com.dpdocter.enums.FoodGroup;
 import com.dpdocter.enums.LevelType;
+import com.dpdocter.enums.NutrientGoal;
+import com.dpdocter.enums.RecipeNutrientType;
 
 @Document(indexName = "recipes_in", type = "recipes")
 public class ESRecipeDocument {
@@ -160,7 +165,7 @@ public class ESRecipeDocument {
 	private String giLevel;
 	
 	@Field(type = FieldType.Nested)
-	private List<String> communities;
+	private List<FoodCommunity> communities;
 	
 	@Field(type = FieldType.Nested)
 	private List<String> foodCultures;
@@ -184,10 +189,16 @@ public class ESRecipeDocument {
 	private String foodPreparationTemperature;
 	
 	@Field(type = FieldType.Nested)
-	private List<String> foodGroups;
+	private List<FoodGroup> foodGroups;
 	
 	@Field(type = FieldType.Nested)
-	private List<String> nutrientTypes;
+	private List<RecipeNutrientType> nutrientTypes;
+	
+	@Field(type = FieldType.Nested)
+	private List<NutrientGoal> nutrientGoals;
+	
+	@Field(type = FieldType.Nested)
+	private List<Disease> diseases;
 	
 
 	public MealQuantity getCalories() {
@@ -558,11 +569,11 @@ public class ESRecipeDocument {
 		this.giLevel = giLevel;
 	}
 
-	public List<String> getCommunities() {
+	public List<FoodCommunity> getCommunities() {
 		return communities;
 	}
 
-	public void setCommunities(List<String> communities) {
+	public void setCommunities(List<FoodCommunity> communities) {
 		this.communities = communities;
 	}
 
@@ -622,28 +633,36 @@ public class ESRecipeDocument {
 		this.foodPreparationTemperature = foodPreparationTemperature;
 	}
 
-	public List<String> getFoodGroups() {
+	public List<FoodGroup> getFoodGroups() {
 		return foodGroups;
 	}
 
-	public void setFoodGroups(List<String> foodGroups) {
+	public void setFoodGroups(List<FoodGroup> foodGroups) {
 		this.foodGroups = foodGroups;
 	}
 
-	public List<String> getNutrientTypes() {
+	public List<RecipeNutrientType> getNutrientTypes() {
 		return nutrientTypes;
 	}
 
-	public void setNutrientTypes(List<String> nutrientTypes) {
+	public void setNutrientTypes(List<RecipeNutrientType> nutrientTypes) {
 		this.nutrientTypes = nutrientTypes;
 	}
 
-	public String getRecipeDescription() {
-		return recipeDescription;
+	public List<NutrientGoal> getNutrientGoals() {
+		return nutrientGoals;
 	}
 
-	public void setRecipeDescription(String recipeDescription) {
-		this.recipeDescription = recipeDescription;
+	public void setNutrientGoals(List<NutrientGoal> nutrientGoals) {
+		this.nutrientGoals = nutrientGoals;
+	}
+
+	public List<Disease> getDiseases() {
+		return diseases;
+	}
+
+	public void setDiseases(List<Disease> diseases) {
+		this.diseases = diseases;
 	}
 
 	@Override
@@ -667,8 +686,7 @@ public class ESRecipeDocument {
 				+ ", communities=" + communities + ", foodCultures=" + foodCultures + ", diseaseFriendly="
 				+ diseaseFriendly + ", isPrebiotic=" + isPrebiotic + ", isProBiotic=" + isProBiotic + ", cookingMethod="
 				+ cookingMethod + ", medicineDosage=" + medicineDosage + ", foodPreparationTemperature="
-				+ foodPreparationTemperature + ", foodGroups=" + foodGroups + ", nutrientTypes=" + nutrientTypes + "]";
+				+ foodPreparationTemperature + ", foodGroups=" + foodGroups + ", nutrientTypes=" + nutrientTypes
+				+ ", nutrientGoals=" + nutrientGoals + ", diseases=" + diseases + "]";
 	}
-
-
 }
