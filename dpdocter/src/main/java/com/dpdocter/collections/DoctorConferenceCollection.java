@@ -37,6 +37,17 @@ public class DoctorConferenceCollection extends GenericCollection {
 	private Boolean discarded = false;
 	@Field
 	private String status = "NONE";
+	@Field
+	private String smsHeader;
+	
+
+	public String getSmsHeader() {
+		return smsHeader;
+	}
+
+	public void setSmsHeader(String smsHeader) {
+		this.smsHeader = smsHeader;
+	}
 
 	public Boolean getDiscarded() {
 		return discarded;

@@ -121,5 +121,7 @@ public interface CampVisitService {
 			String searchTerm, Boolean discarded);
 
 	Integer countAcadamicClass(String branchId, String schoolId, String searchTerm, Boolean discarded);
-
+	
+	public List<AcadamicProfile> getProfile(int page, int size, String userId, Boolean discarded, String searchTerm);
+	public Integer countProfile(String userId, Boolean discarded, String searchTerm);
 }

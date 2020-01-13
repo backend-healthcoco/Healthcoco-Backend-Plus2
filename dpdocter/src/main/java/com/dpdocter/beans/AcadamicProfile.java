@@ -37,6 +37,26 @@ public class AcadamicProfile extends GenericCollection {
 	private String thumbnailUrl;
 
 	private Boolean isSuperStar = false;
+	
+	private SchoolBranch branch;
+
+	private School school;
+	
+	public SchoolBranch getBranch() {
+		return branch;
+	}
+
+	public void setBranch(SchoolBranch branch) {
+		this.branch = branch;
+	}
+
+	public School getSchool() {
+		return school;
+	}
+
+	public void setSchool(School school) {
+		this.school = school;
+	}
 
 	public String getImageUrl() {
 		return imageUrl;

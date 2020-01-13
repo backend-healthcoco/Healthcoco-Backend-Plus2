@@ -2233,8 +2233,12 @@ public interface PathProxy {
 		public static final String GET_ACADAMIC_PROFILE_BY_ID = "academicProfile/{id}/get";
 		public static final String GET_ASSOCIATIONS_FOR_DOCTOR = "getAssociations/";
 		public static final String GET_ACADAMIC_CLASSES = "acadamic/class/{branchId}/{schoolId}/get";
-
+		
+		public static final String GET_DOCTOR_ACADAMIC_PROFILE = "/profile/{userId}/get";
+		
 	}
+
+
 	
 	public static final String NUTRITION_ENGINE_BASE_URL = BASE_URL + "/nutritionEngine";
 
