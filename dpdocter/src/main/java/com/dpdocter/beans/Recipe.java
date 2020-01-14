@@ -4,12 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.FoodCommunity;
-import com.dpdocter.enums.FoodGroup;
 import com.dpdocter.enums.LevelType;
 import com.dpdocter.enums.MealTimeEnum;
-import com.dpdocter.enums.NutrientGoal;
-import com.dpdocter.enums.RecipeNutrientType;
 
 public class Recipe extends GenericCollection {
 

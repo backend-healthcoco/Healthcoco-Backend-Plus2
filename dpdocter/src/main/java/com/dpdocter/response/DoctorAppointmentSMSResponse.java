@@ -1,5 +1,6 @@
 package com.dpdocter.response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -19,6 +20,8 @@ public class DoctorAppointmentSMSResponse {
 
 	private ObjectId locationId;
 
+	private List<String> appointmentIds = new ArrayList<String>();
+	
 	public int getNoOfAppointments() {
 		return noOfAppointments;
 	}
@@ -63,6 +66,14 @@ public class DoctorAppointmentSMSResponse {
 	public String toString() {
 		return "DoctorAppointmentSMSResponse [noOfAppointments=" + noOfAppointments + ", doctor=" + doctor
 				+ ", message=" + message + ", userDevices=" + userDevices + "]";
+	}
+
+	public List<String> getAppointmentIds() {
+		return appointmentIds;
+	}
+
+	public void setAppointmentIds(List<String> appointmentIds) {
+		this.appointmentIds = appointmentIds;
 	}
 
 }

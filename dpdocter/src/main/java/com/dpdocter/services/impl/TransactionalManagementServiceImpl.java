@@ -959,6 +959,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 											.append("locationAdminEmailAddress", "$locationAdmin.emailAddress")
 											.append("locationName", "$location.locationName")
 											.append("userDevices", "$userDevices")
+											.append("drAppointments.id", "$locationAppointments.id")
 											.append("drAppointments.time", "$locationAppointments.time")
 											.append("drAppointments.localPatientName", "$patient.localPatientName")
 											.append("drAppointments.doctorName",
@@ -1014,18 +1015,23 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 											.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null) {
 										DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap
 												.get(appointmentDoctorReminderResponse.getDoctorId().toString());
-										response.setMessage(response.getMessage() + "%0a"
-												+ appointmentDoctorReminderResponse.getLocalPatientName() + "("
-												+ _12HourSDF.format(_24HourDt) + ")");
-										count = count + 1;
-										doctorAppointmentSMSResponseMap.put(
-												appointmentDoctorReminderResponse.getDoctorId().toString(), response);
+										
+										if(!response.getAppointmentIds().contains(new ObjectId(appointmentDoctorReminderResponse.getId()))) {
+											response.setMessage(response.getMessage() + "%0a"
+													+ appointmentDoctorReminderResponse.getLocalPatientName() + "("
+													+ _12HourSDF.format(_24HourDt) + ")");
+											response.getAppointmentIds().add(appointmentDoctorReminderResponse.getId());
+											count = count + 1;
+											doctorAppointmentSMSResponseMap.put(
+													appointmentDoctorReminderResponse.getDoctorId().toString(), response);	
+										}
 									} else {
 										DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
 										response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
 										response.setMessage(appointmentDoctorReminderResponse.getDoctorName() + ": "
 												+ appointmentDoctorReminderResponse.getLocalPatientName() + "("
 												+ _12HourSDF.format(_24HourDt) + ")");
+										response.getAppointmentIds().add(appointmentDoctorReminderResponse.getId());
 										count = count + 1;
 										response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
 										doctorAppointmentSMSResponseMap.put(
