@@ -1759,7 +1759,141 @@ public class CampVisitServiceImpl implements CampVisitService {
 
 		return response;
 	}
-
 	
+	
+	@Override
+	public List<AcadamicProfile> getProfile(int page, int size, String userId, Boolean discarded, String searchTerm) {
+		List<AcadamicProfile> response = null;
+		try {
+			Criteria criteria = new Criteria();
+
+			if (!DPDoctorUtils.anyStringEmpty(userId)) {
+				criteria.and("userId").is(new ObjectId(userId));
+			}
+
+			if (discarded != null) {
+				criteria.and("discarded").is(discarded);
+			}
+
+			criteria.and("isSuperStar").is(true);
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("firstName").regex("^" + searchTerm, "i"),
+						new Criteria("firstName").regex("^" + searchTerm),
+						new Criteria("rollNo").regex("^" + searchTerm),
+						new Criteria("uniqueId").regex("^" + searchTerm),
+						new Criteria("emailAddress").regex("^" + searchTerm, "i"),
+						new Criteria("mobileNumber").regex("^" + searchTerm, "i"));
+			}
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+					Fields.field("userId", "$userId"), Fields.field("firstName", "$firstName"),
+					Fields.field("localPatientName", "$localPatientName"),
+					Fields.field("mobileNumber", "$mobileNumber"), Fields.field("uniqueId", "$uniqueId"),
+					Fields.field("rollNo", "$rollNo"), Fields.field("acadamicClass", "$acadamicClass"),
+					Fields.field("emailAddress", "$emailAddress"), Fields.field("school", "$school"),
+					Fields.field("branch", "$branch"), Fields.field("acadamicSection", "$acadamicSection.section"),
+					Fields.field("admissionDate", "$admissionDate"), Fields.field("type", "$type"),
+					Fields.field("imageUrl", "$imageUrl"), Fields.field("thumbnailUrl", "$thumbnailUrl"),
+					Fields.field("isSuperStar", "$isSuperStar"), Fields.field("createdTime", "$createdTime")));
+
+			Aggregation aggregation = null;
+
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("acadamic_class_cl", "classId", "_id", "acadamicClass"),
+						Aggregation.unwind("acadamicClass", true),
+						Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "acadamicSection"),
+						Aggregation.unwind("acadamicSection", true),
+						Aggregation.lookup("school_branch_cl", "branchId", "_id", "branch"),
+						Aggregation.unwind("branch"), Aggregation.match(new Criteria("branch.isActivated").is(true)),
+						Aggregation.lookup("school_cl", "schoolId", "_id", "school"), Aggregation.unwind("school"),
+						Aggregation.match(new Criteria("school.isActivated").is(true)), projectList,
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "firstName")),
+
+						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
+			} else {
+
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("acadamic_class_cl", "classId", "_id", "acadamicClass"),
+						Aggregation.unwind("acadamicClass", true),
+						Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "acadamicSection"),
+						Aggregation.unwind("acadamicSection", true),
+						Aggregation.lookup("school_branch_cl", "branchId", "_id", "branch"),
+						Aggregation.unwind("branch"),Aggregation.match(new Criteria("branch.isActivated").is(true)),
+						Aggregation.lookup("school_cl", "schoolId", "_id", "school"), Aggregation.unwind("school"),
+						Aggregation.match(new Criteria("school.isActivated").is(true)), projectList,
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "firstName")));
+			}
+			response = mongoTemplate.aggregate(aggregation, AcadamicProfileCollection.class, AcadamicProfile.class)
+					.getMappedResults();
+//			for (AcadamicProfile acadamicProfile : response) {
+//				if (!DPDoctorUtils.anyStringEmpty(acadamicProfile.getImageUrl())) {
+//					acadamicProfile.setImageUrl(imagePath + acadamicProfile.getImageUrl());
+//				}
+//				if (!DPDoctorUtils.anyStringEmpty(acadamicProfile.getThumbnailUrl())) {
+//					acadamicProfile.setThumbnailUrl(imagePath + acadamicProfile.getThumbnailUrl());
+//				}
+//			}
+
+		} catch (BusinessException be) {
+			logger.warn(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while getting Student Profile List");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while getting Student Profile list");
+		}
+		return response;
+	}
+
+
+	@Override
+	public Integer countProfile(String userId, Boolean discarded, String searchTerm) {
+		Integer response = 0;
+		try {
+			Criteria criteria = new Criteria();
+
+			if (!DPDoctorUtils.anyStringEmpty(userId)) {
+				criteria.and("userId").is(new ObjectId(userId));
+			}
+
+			if (discarded != null) {
+				criteria.and("discarded").is(discarded);
+			}
+
+			criteria.and("isSuperStar").is(true);
+
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("firstName").regex("^" + searchTerm, "i"),
+						new Criteria("firstName").regex("^" + searchTerm),
+						new Criteria("rollNo").regex("^" + searchTerm),
+						new Criteria("uniqueId").regex("^" + searchTerm),
+						new Criteria("emailAddress").regex("^" + searchTerm, "i"),
+						new Criteria("mobileNumber").regex("^" + searchTerm, "i"));
+			}
+			
+			Aggregation aggregation = null;
+
+			
+
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),					
+						Aggregation.lookup("school_branch_cl", "branchId", "_id", "branch"),
+						Aggregation.unwind("branch"),Aggregation.match(new Criteria("branch.isActivated").is(true)),
+						Aggregation.lookup("school_cl", "schoolId", "_id", "school"), Aggregation.unwind("school"),
+						Aggregation.match(new Criteria("school.isActivated").is(true)));
+			
+			response = mongoTemplate.aggregate(aggregation, AcadamicProfileCollection.class, AcadamicProfile.class)
+					.getMappedResults().size();
+			
+		} catch (BusinessException be) {
+			logger.warn(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while count Student Profile List");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while count Student Profile list");
+		}
+		return response;
+	}
 	
 }

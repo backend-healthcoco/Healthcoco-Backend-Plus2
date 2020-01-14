@@ -13,8 +13,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.dpdocter.beans.AcadamicProfile;
 import com.dpdocter.beans.DentalAssessment;
@@ -299,4 +301,19 @@ public class CampVisitAPI {
 		response.setCount(campVisitService.countAcadamicClass(branchId, schoolId, searchTerm, discarded));
 		return response;
 	}
+	
+	@Path(value = PathProxy.CampVisitUrls.GET_DOCTOR_ACADAMIC_PROFILE)
+	@ApiOperation(value = PathProxy.CampVisitUrls.GET_DOCTOR_ACADAMIC_PROFILE, notes = PathProxy.CampVisitUrls.GET_DOCTOR_ACADAMIC_PROFILE)
+	@GET
+	
+	public Response<AcadamicProfile> getAcadamicProfile(
+			@PathParam("userId") String userId, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("discarded") Boolean discarded) {
+		Response<AcadamicProfile> response = new Response<AcadamicProfile>();
+		response.setDataList(campVisitService.getProfile(page, size, userId, discarded, searchTerm));
+		response.setCount(campVisitService.countProfile(userId, discarded, searchTerm));
+		return response;
+	}
+
+
 }
