@@ -5,14 +5,14 @@ import java.util.Map;
 
 import com.dpdocter.beans.Disease;
 import com.dpdocter.beans.EquivalentQuantities;
+import com.dpdocter.beans.FoodCommunity;
+import com.dpdocter.beans.FoodGroup;
 import com.dpdocter.beans.MealQuantity;
+import com.dpdocter.beans.NutrientGoal;
 import com.dpdocter.beans.RecipeAddItem;
-import com.dpdocter.enums.FoodCommunity;
-import com.dpdocter.enums.FoodGroup;
+import com.dpdocter.beans.RecipeNutrientType;
 import com.dpdocter.enums.LevelType;
 import com.dpdocter.enums.MealTimeEnum;
-import com.dpdocter.enums.NutrientGoal;
-import com.dpdocter.enums.RecipeNutrientType;
 
 public class RecipeTemplateItemResponse {
 	private String id;
