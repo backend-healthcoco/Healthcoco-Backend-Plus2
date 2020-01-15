@@ -3,8 +3,8 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.response.Drug;
 import com.dpdocter.response.ImageURLResponse;
+
 public class NutritionAssessment extends GenericCollection {
 
 	private String id;
@@ -12,6 +12,7 @@ public class NutritionAssessment extends GenericCollection {
 	private String branchId;
 	private String schoolId;
 	private String doctorId;
+	private String campId;
 	private String nutritionGoal;
 	private String foodPreference;
 	private List<MealTiming> mealTimings;
@@ -20,9 +21,10 @@ public class NutritionAssessment extends GenericCollection {
 	private List<String> drinkingWaterType;
 	private WorkingHours schoolHours;
 	private WorkingHours sleepTime;
-	private String sleepingHours;
+	private Double sleepingHours = Double.valueOf(0);
 	private List<String> exerciseType;
 	private String otherExerciseType;
+	private Integer exerciseTimeDuration;
 	private List<String> addictionOfParents;
 	private String foodDrugAllergy;
 	private Boolean everHospitalized = Boolean.FALSE;
@@ -142,11 +144,11 @@ public class NutritionAssessment extends GenericCollection {
 		this.sleepTime = sleepTime;
 	}
 
-	public String getSleepingHours() {
+	public Double getSleepingHours() {
 		return sleepingHours;
 	}
 
-	public void setSleepingHours(String sleepingHours) {
+	public void setSleepingHours(Double sleepingHours) {
 		this.sleepingHours = sleepingHours;
 	}
 
@@ -270,12 +272,45 @@ public class NutritionAssessment extends GenericCollection {
 		this.otherExerciseType = otherExerciseType;
 	}
 
+	public String getCampId() {
+		return campId;
+	}
+
+	public void setCampId(String campId) {
+		this.campId = campId;
+	}
+
 	public String getOtherTests() {
 		return otherTests;
 	}
 
 	public void setOtherTests(String otherTests) {
 		this.otherTests = otherTests;
+	}
+
+	public Integer getExerciseTimeDuration() {
+		return exerciseTimeDuration;
+	}
+
+	public void setExerciseTimeDuration(Integer exerciseTimeDuration) {
+		this.exerciseTimeDuration = exerciseTimeDuration;
+	}
+
+	@Override
+	public String toString() {
+		return "NutritionAssessment [id=" + id + ", academicProfileId=" + academicProfileId + ", branchId=" + branchId
+				+ ", schoolId=" + schoolId + ", doctorId=" + doctorId + ", campId=" + campId + ", nutritionGoal="
+				+ nutritionGoal + ", foodPreference=" + foodPreference + ", mealTimings=" + mealTimings
+				+ ", foodPatterns=" + foodPatterns + ", waterIntakePerDay=" + waterIntakePerDay + ", drinkingWaterType="
+				+ drinkingWaterType + ", schoolHours=" + schoolHours + ", sleepTime=" + sleepTime + ", sleepingHours="
+				+ sleepingHours + ", exerciseType=" + exerciseType + ", otherExerciseType=" + otherExerciseType
+				+ ", exerciseTimeDuration=" + exerciseTimeDuration + ", addictionOfParents=" + addictionOfParents
+				+ ", foodDrugAllergy=" + foodDrugAllergy + ", everHospitalized=" + everHospitalized + ", images="
+				+ images + ", drugs=" + drugs + ", noOfFamilyMembers=" + noOfFamilyMembers
+				+ ", oilConsumpationPerMonth=" + oilConsumpationPerMonth + ", foodSource=" + foodSource
+				+ ", cravingItems=" + cravingItems + ", idealTimeForFeedback=" + idealTimeForFeedback
+				+ ", clinicalManifestation=" + clinicalManifestation + ", familyIncomePerMonth=" + familyIncomePerMonth
+				+ ", discarded=" + discarded + ", otherTests=" + otherTests + "]";
 	}
 
 }
