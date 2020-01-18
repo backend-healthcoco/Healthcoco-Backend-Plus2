@@ -10,8 +10,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.FoodPattern;
 import com.dpdocter.beans.MealTiming;
 import com.dpdocter.beans.WorkingHours;
-import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.Drug;
+import com.dpdocter.response.ImageURLResponse;
 
 @Document(collection = "nutrition_assessment_cl")
 public class NutritionAssessmentCollection extends GenericCollection {
@@ -26,6 +26,8 @@ public class NutritionAssessmentCollection extends GenericCollection {
 	private ObjectId schoolId;
 	@Field
 	private ObjectId doctorId;
+	@Field
+	private ObjectId campId;
 	@Field
 	private String nutritionGoal;
 	@Field
@@ -43,11 +45,13 @@ public class NutritionAssessmentCollection extends GenericCollection {
 	@Field
 	private WorkingHours sleepTime;
 	@Field
-	private String sleepingHours;
+	private Double sleepingHours = Double.valueOf(0);
 	@Field
 	private List<String> exerciseType;
 	@Field
 	private String otherExerciseType;
+	@Field
+	private Integer exerciseTimeDuration;
 	@Field
 	private List<String> addictionOfParents;
 	@Field
@@ -74,6 +78,7 @@ public class NutritionAssessmentCollection extends GenericCollection {
 	private Long familyIncomePerMonth;
 	@Field
 	private Boolean discarded = Boolean.FALSE;
+
 	@Field
 	private String otherTests;
 	
@@ -181,11 +186,11 @@ public class NutritionAssessmentCollection extends GenericCollection {
 		this.sleepTime = sleepTime;
 	}
 
-	public String getSleepingHours() {
+	public Double getSleepingHours() {
 		return sleepingHours;
 	}
 
-	public void setSleepingHours(String sleepingHours) {
+	public void setSleepingHours(Double sleepingHours) {
 		this.sleepingHours = sleepingHours;
 	}
 
@@ -309,12 +314,45 @@ public class NutritionAssessmentCollection extends GenericCollection {
 		this.otherExerciseType = otherExerciseType;
 	}
 
+	public ObjectId getCampId() {
+		return campId;
+	}
+
+	public void setCampId(ObjectId campId) {
+		this.campId = campId;
+	}
+
 	public String getOtherTests() {
 		return otherTests;
 	}
 
 	public void setOtherTests(String otherTests) {
 		this.otherTests = otherTests;
+	}
+
+	public Integer getExerciseTimeDuration() {
+		return exerciseTimeDuration;
+	}
+
+	public void setExerciseTimeDuration(Integer exerciseTimeDuration) {
+		this.exerciseTimeDuration = exerciseTimeDuration;
+	}
+
+	@Override
+	public String toString() {
+		return "NutritionAssessmentCollection [id=" + id + ", academicProfileId=" + academicProfileId + ", branchId="
+				+ branchId + ", schoolId=" + schoolId + ", doctorId=" + doctorId + ", campId=" + campId
+				+ ", nutritionGoal=" + nutritionGoal + ", foodPreference=" + foodPreference + ", mealTimings="
+				+ mealTimings + ", foodPatterns=" + foodPatterns + ", waterIntakePerDay=" + waterIntakePerDay
+				+ ", drinkingWaterType=" + drinkingWaterType + ", schoolHours=" + schoolHours + ", sleepTime="
+				+ sleepTime + ", sleepingHours=" + sleepingHours + ", exerciseType=" + exerciseType
+				+ ", otherExerciseType=" + otherExerciseType + ", exerciseTimeDuration=" + exerciseTimeDuration
+				+ ", addictionOfParents=" + addictionOfParents + ", foodDrugAllergy=" + foodDrugAllergy
+				+ ", everHospitalized=" + everHospitalized + ", images=" + images + ", drugs=" + drugs
+				+ ", noOfFamilyMembers=" + noOfFamilyMembers + ", oilConsumpationPerMonth=" + oilConsumpationPerMonth
+				+ ", foodSource=" + foodSource + ", cravingItems=" + cravingItems + ", idealTimeForFeedback="
+				+ idealTimeForFeedback + ", clinicalManifestation=" + clinicalManifestation + ", familyIncomePerMonth="
+				+ familyIncomePerMonth + ", discarded=" + discarded + ", otherTests=" + otherTests + "]";
 	}
 
 }
