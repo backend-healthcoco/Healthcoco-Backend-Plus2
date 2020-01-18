@@ -29,7 +29,7 @@ public class NutritionAssessment extends GenericCollection {
 	private String foodDrugAllergy;
 	private Boolean everHospitalized = Boolean.FALSE;
 	private List<ImageURLResponse> images;
-	private List<Drug> drugs;
+	private List<com.dpdocter.response.Drug> drugs;
 	private Integer noOfFamilyMembers;
 	private Integer oilConsumpationPerMonth;
 	private String foodSource;
@@ -192,11 +192,11 @@ public class NutritionAssessment extends GenericCollection {
 		this.images = images;
 	}
 
-	public List<Drug> getDrugs() {
+	public List<com.dpdocter.response.Drug> getDrugs() {
 		return drugs;
 	}
 
-	public void setDrugs(List<Drug> drugs) {
+	public void setDrugs(List<com.dpdocter.response.Drug> drugs) {
 		this.drugs = drugs;
 	}
 
