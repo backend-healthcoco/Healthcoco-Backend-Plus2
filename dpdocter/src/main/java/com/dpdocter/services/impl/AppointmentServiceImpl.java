@@ -18,6 +18,8 @@ import java.util.TimeZone;
 import java.util.concurrent.Executors;
 
 import javax.mail.MessagingException;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.QueryParam;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -4643,7 +4645,7 @@ try {
 	@Override
 	public String downloadCalender(List<String> doctorIds, String locationId, String hospitalId, String fromTime,
 			String toTime, Boolean isGroupByDoctor, Boolean showMobileNo, Boolean showAppointmentStatus,
-			Boolean showNotes, Boolean showPatientGroups, Boolean showCategory) {
+			Boolean showNotes, Boolean showPatientGroups, Boolean showCategory,Boolean showTreatment) {
 		String response = null;
 		JasperReportResponse jasperReportResponse = null;
 		Date fromDate = null;
@@ -4700,7 +4702,7 @@ try {
 
 			jasperReportResponse = createCalenderJasper(calenderResponseForJaspers, doctorIds, locationId, hospitalId,
 					isGroupByDoctor, showMobileNo, showAppointmentStatus, showNotes, showPatientGroups, fromDate,
-					toDate, showCategory);
+					toDate, showCategory,showTreatment);
 
 			if (jasperReportResponse != null)
 				response = getFinalImageURL(jasperReportResponse.getPath());
@@ -4777,7 +4779,10 @@ try {
 					Fields.field("status", "$status"), Fields.field("notes", "$explanation"),
 					Fields.field("state", "$state"), Fields.field("doctorId", "$doctorId"), 
 					Fields.field("treatmentFields", "$treatmentFields"),
-					Fields.field("category", "$category"), Fields.field("branch", "$branch")));
+					Fields.field("category", "$category"), Fields.field("branch", "$branch"),
+					Fields.field("treatments", "$patientTreatment.treatments")
+					));
+					
 
 			CustomAggregationOperation firstGroupOperation = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id").append("time", new BasicDBObject("$first", "$time"))
@@ -4792,7 +4797,8 @@ try {
 							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 							.append("treatmentFields", new BasicDBObject("$first", "$treatmentFields"))
 							.append("category", new BasicDBObject("$first", "$category"))
-							.append("branch", new BasicDBObject("$first", "$branch"))));
+							.append("branch", new BasicDBObject("$first", "$branch"))
+							.append("treatments", new BasicDBObject("$first", "$treatments"))));
 
 			ProjectionOperation projectListsecond = new ProjectionOperation(Fields.from(
 					Fields.field("calenderResponse.patientName", "$patientName"),
@@ -4806,7 +4812,8 @@ try {
 					Fields.field("calenderResponse.doctorId", "$doctorId"), Fields.field("doctorId", "$doctorId"),
 					Fields.field("calenderResponse.treatmentFields", "$treatmentFields"),
 					Fields.field("calenderResponse.category", "$category"),
-					Fields.field("calenderResponse.branch", "$branch")));
+					Fields.field("calenderResponse.branch", "$branch"),
+					Fields.field("calenderResponse.treatments", "$treatment")));
 
 			CustomAggregationOperation secondGroupOperation = null;
 			Aggregation aggregation = null;
@@ -4819,16 +4826,21 @@ try {
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"),
+						
 						Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-						new CustomAggregationOperation(new Document("$unwind",
-								new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays", true))),
-						new CustomAggregationOperation(new Document("$redact",
-								new BasicDBObject("$cond",
-										new BasicDBObject("if",
-												new BasicDBObject("$eq",
-														Arrays.asList("$patientCard.locationId", "$locationId")))
-																.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+						Aggregation.unwind("patientTreatment",true),
+						Aggregation.lookup("patient_treatment_cl", "appointmentId", "patientId", "patientTreatment"),
+						Aggregation.unwind("patientTreatment"),
+//						new CustomAggregationOperation(new Document("$unwind",
+//								new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays", true))),
+//						new CustomAggregationOperation(new Document("$redact",
+//								new BasicDBObject("$cond",
+//										new BasicDBObject("if",
+//												new BasicDBObject("$eq",
+//														Arrays.asList("$patientCard.locationId", "$locationId")))
+//																.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 						Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
+						
 						projectListFirst, firstGroupOperation, sortOperation, projectListsecond, secondGroupOperation);
 				response = mongoTemplate
 						.aggregate(aggregation, AppointmentCollection.class, CalenderResponseForJasper.class)
@@ -4838,15 +4850,18 @@ try {
 						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 						Aggregation.unwind("location"),
+						Aggregation.lookup("patient_treatment_cl", "_id", "appointmentId", "patientTreatment"),
+						Aggregation.unwind("patientTreatment"),
 						Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
-						new CustomAggregationOperation(new Document("$unwind",
-								new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays", true))),
-						new CustomAggregationOperation(new Document("$redact",
-								new BasicDBObject("$cond",
-										new BasicDBObject("if",
-												new BasicDBObject("$eq",
-														Arrays.asList("$patientCard.locationId", "$locationId")))
-																.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+						Aggregation.unwind("patientTreatment",true),
+//						new CustomAggregationOperation(new Document("$unwind",
+//								new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays", true))),
+//						new CustomAggregationOperation(new Document("$redact",
+//								new BasicDBObject("$cond",
+//										new BasicDBObject("if",
+//												new BasicDBObject("$eq",
+//														Arrays.asList("$patientCard.locationId", "$locationId")))
+//																.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 						Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
 						projectListFirst, firstGroupOperation, sortOperation);
 
@@ -4871,13 +4886,13 @@ try {
 	private JasperReportResponse createCalenderJasper(List<CalenderResponseForJasper> calenderResponseForJaspers,
 			List<String> doctorList, String locationId, String hospitalId, Boolean isGroupByDoctor,
 			Boolean showMobileNo, Boolean showAppointmentStatus, Boolean showNotes, Boolean showPatientGroups,
-			Date fromDate, Date toDate, Boolean showCategory) throws IOException, ParseException {
+			Date fromDate, Date toDate, Boolean showCategory,Boolean showTreatment) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		UserCollection userCollection = null;
 		String pattern = "dd/MM/yyyy";
 		String doctors = "";
-		Boolean mbnoAvailable = false, noteAvailable = false, statusAvailable = false, groupAvailble = false, categoryAvailable = false, branchAvailable = false;
+		Boolean mbnoAvailable = false, noteAvailable = false, statusAvailable = false, groupAvailble = false, categoryAvailable = false, branchAvailable = false,treatmentAvailable=false;
 		List<CalenderJasperBean> calenderJasperBeans = null;
 		CalenderJasperBean calenderJasperBean = null;
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -4959,6 +4974,21 @@ try {
 				if (!DPDoctorUtils.anyStringEmpty(calenderResponse.getBranch()) && showCategory) {
 					calenderJasperBean.setBranch(calenderResponse.getBranch());
 					branchAvailable = true;
+				}
+				
+				if (calenderResponse.getPatientTreatments() != null && !calenderResponse.getPatientTreatments().isEmpty() && showTreatment) {
+					String treatments = "<b>Treatments:- </b>";
+					for(PatientTreatmentCollection treatmentCollection : calenderResponse.getPatientTreatments()) {
+						if(treatmentCollection.getTreatments() != null && !treatmentCollection.getTreatments().isEmpty()) {
+							treatments = treatments + treatmentCollection.getTreatments() + ",";
+							treatmentAvailable=true;
+						}else {
+							treatments = treatments + " ";
+						}
+						
+					}
+					calenderJasperBean.setTreatments(treatments);
+					
 				}
 				
 				if (calenderResponse.getTreatmentFields() != null && !calenderResponse.getTreatmentFields().isEmpty()) {
@@ -5051,7 +5081,7 @@ try {
 		parameters.put("showMobileNo", showMobileNo && mbnoAvailable);
 		parameters.put("showStatus", showAppointmentStatus && statusAvailable);
 		parameters.put("showNotes", showNotes && noteAvailable);
-		//parameters.put("showGroups", showPatientGroups && groupAvailble);
+		parameters.put("showTreatment", showTreatment && treatmentAvailable);
 		parameters.put("showCategory", showPatientGroups && categoryAvailable);
 		parameters.put("showBranch", showCategory && branchAvailable);
 		parameters.put("isGroup", isGroupByDoctor);
@@ -5074,7 +5104,10 @@ try {
 		return response;
 
 	}
-
+	
+	
+	
+	
 	private List<GroupCollection> getPatientGroup(String locationId, String doctorId, String patirntId) {
 
 		CustomAggregationOperation GroupOperation = new CustomAggregationOperation(new Document("$group",
@@ -5093,6 +5126,11 @@ try {
 		return groupCollections;
 	}
 
+	
+	
+	
+	
+	
 	@Override
 	public Response<Event> getEvents(String locationId, List<String> doctorId, String from, String to, int page, int size,
 			String updatedTime, String sortBy, String fromTime, String toTime, Boolean isCalenderBlocked, String state) {

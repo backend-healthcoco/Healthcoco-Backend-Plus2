@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class CalenderJasperBean {
 
 	private String timing = "";
@@ -21,6 +23,16 @@ public class CalenderJasperBean {
 	private String category = "";
 
 	private String branch = "";
+	
+	private String patientTreatment ="";
+
+	public String getPatientTreatment() {
+		return patientTreatment;
+	}
+
+	public void setPatientTreatment(String  patientTreatment) {
+		this.patientTreatment = patientTreatment;
+	}
 
 	public String getTiming() {
 		return timing;

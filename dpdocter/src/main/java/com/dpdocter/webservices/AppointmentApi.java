@@ -627,7 +627,8 @@ public class AppointmentApi {
 			@QueryParam("showAppointmentStatus") @DefaultValue("true") Boolean showAppointmentStatus,
 			@QueryParam("showNotes") @DefaultValue("true") Boolean showNotes,
 			@QueryParam("showPatientGroups") @DefaultValue("true") Boolean showPatientGroups,
-			@QueryParam("showCategory") @DefaultValue("true") Boolean showCategory) {
+			@QueryParam("showCategory") @DefaultValue("true") Boolean showCategory,
+			@QueryParam("showTreatment") @DefaultValue("true") Boolean showTreatment) {
 
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn("Invalid Input");
@@ -636,7 +637,7 @@ public class AppointmentApi {
 		}
 		Response<String> response = new Response<String>();
 		response.setData(appointmentService.downloadCalender(doctorIds, locationId, hospitalId, from, to,
-				isGroupByDoctor, showMobileNo, showAppointmentStatus, showNotes, showPatientGroups, showCategory));
+				isGroupByDoctor, showMobileNo, showAppointmentStatus, showNotes, showPatientGroups, showCategory,showTreatment));
 
 		return response;
 	}

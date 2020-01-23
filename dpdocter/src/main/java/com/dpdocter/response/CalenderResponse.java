@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.dpdocter.beans.FieldsCollection;
 import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.collections.PatientTreatmentCollection;
 
 public class CalenderResponse {
 
@@ -35,6 +36,17 @@ public class CalenderResponse {
 	private String branch;
 
 	private List<FieldsCollection> treatmentFields;
+	
+	private List<PatientTreatmentCollection> treatments;
+	
+
+	public List<PatientTreatmentCollection> getPatientTreatments() {
+		return treatments;
+	}
+
+	public void setPatientTreatments(List<PatientTreatmentCollection> treatments) {
+		this.treatments = treatments;
+	}
 
 	public String getDoctorId() {
 		return doctorId;
