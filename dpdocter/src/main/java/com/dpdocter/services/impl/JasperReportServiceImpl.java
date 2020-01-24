@@ -6635,7 +6635,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 		if (showBranch) {
 			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{Category}"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{Branch}"));
 			jrDesignTextField.setX(timeWidth);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
@@ -6784,6 +6784,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		
+		System.out.println("adding treatments in pdf");
 		band = new JRDesignBand();
 		band.setHeight(18);
 		band.setPrintWhenExpression(new JRDesignExpression("!$F{treatments}.equals(null) && !$F{treatments}.isEmpty() "));

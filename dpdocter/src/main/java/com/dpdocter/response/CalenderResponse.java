@@ -3,9 +3,8 @@ package com.dpdocter.response;
 import java.util.Date;
 import java.util.List;
 
-import com.dpdocter.beans.FieldsCollection;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.WorkingHours;
-import com.dpdocter.collections.PatientTreatmentCollection;
 
 public class CalenderResponse {
 
@@ -35,18 +34,7 @@ public class CalenderResponse {
 
 	private String branch;
 
-	private List<FieldsCollection> treatmentFields;
-	
-	private List<PatientTreatmentCollection> treatments;
-	
-
-	public List<PatientTreatmentCollection> getPatientTreatments() {
-		return treatments;
-	}
-
-	public void setPatientTreatments(List<PatientTreatmentCollection> treatments) {
-		this.treatments = treatments;
-	}
+	private List<Fields> treatmentFields;
 
 	public String getDoctorId() {
 		return doctorId;
@@ -136,11 +124,11 @@ public class CalenderResponse {
 		this.state = state;
 	}
 
-	public List<FieldsCollection> getTreatmentFields() {
+	public List<Fields> getTreatmentFields() {
 		return treatmentFields;
 	}
 
-	public void setTreatmentFields(List<FieldsCollection> treatmentFields) {
+	public void setTreatmentFields(List<Fields> treatmentFields) {
 		this.treatmentFields = treatmentFields;
 	}
 
