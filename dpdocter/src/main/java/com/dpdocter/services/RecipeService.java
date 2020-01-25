@@ -58,4 +58,24 @@ public interface RecipeService {
 	public RecipeTemplate getRecipeTemplate(String recipeTemplateId);
 
 	public RecipeTemplate addEditRecipeTemplate(RecipeTemplate request);
+
+	public Integer countFoodCommunities(Boolean discarded, String searchTerm);
+
+	public List<?> getFoodCommunities(int size, int page, Boolean discarded, String searchTerm);
+
+	public Integer countFoodGroups(Boolean discarded, String searchTerm);
+
+	public List<?> getFoodGroups(int size, int page, Boolean discarded, String searchTerm);
+
+	public Integer countNutrientGoals(Boolean discarded, String searchTerm);
+
+	public List<?> getNutrientGoals(int size, int page, Boolean discarded, String searchTerm);
+
+	public Integer countRecipeNutrientTypes(Boolean discarded, String searchTerm);
+
+	public List<?> getRecipeNutrientTypes(int size, int page, Boolean discarded, String searchTerm);
+
+	public Integer countDisease(Boolean discarded, String searchTerm);
+
+	public List<?> getDiseases(int size, int page, Boolean discarded, String searchTerm);
 }

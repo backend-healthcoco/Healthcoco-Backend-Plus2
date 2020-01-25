@@ -43,6 +43,10 @@ public class DietPlanRecipeAddItem {
 
 	private List<EquivalentQuantities> equivalentMeasurements;
 	
+	private String advice;
+	
+	private String option;
+	
 	public String getId() {
 		return id;
 	}
@@ -194,6 +198,21 @@ public class DietPlanRecipeAddItem {
 	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
 		this.equivalentMeasurements = equivalentMeasurements;
 	}
+	public String getAdvice() {
+		return advice;
+	}
+
+	public void setAdvice(String advice) {
+		this.advice = advice;
+	}
+
+	public String getOption() {
+		return option;
+	}
+
+	public void setOption(String option) {
+		this.option = option;
+	}
 
 	@Override
 	public String toString() {
@@ -203,7 +222,7 @@ public class DietPlanRecipeAddItem {
 				+ ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients + ", lipidNutrients="
 				+ lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", mineralNutrients="
 				+ mineralNutrients + ", otherNutrients=" + otherNutrients + ", vitaminNutrients=" + vitaminNutrients
-				+ ", equivalentMeasurements=" + equivalentMeasurements + "]";
+				+ ", equivalentMeasurements=" + equivalentMeasurements + ", advice=" + advice + ", option=" + option
+				+ "]";
 	}
-
 }

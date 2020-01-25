@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.FoodCommunity;
+import com.dpdocter.beans.NutrientGoal;
 import com.dpdocter.enums.DishType;
 
 @Document(collection = "assessment_personal_detail_cl")
@@ -26,10 +28,6 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 	@Field
 	private List<String> physicalStatusType;
 	@Field
-	private String goal;
-	@Field
-	private String community;
-	@Field
 	private Boolean discarded = false;
 	@Field
 	private Integer noOfAdultMember = 0;
@@ -43,6 +41,10 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 	private DishType dietType = DishType.VEG;
 	@Field
 	private Boolean isPatientDiscarded = false;
+	@Field
+	private List<FoodCommunity> communities;
+	@Field
+	private List<NutrientGoal> nutrientGoals;
 	
 	public DishType getDietType() {
 		return dietType;
@@ -140,22 +142,6 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 		this.physicalStatusType = physicalStatusType;
 	}
 
-	public String getGoal() {
-		return goal;
-	}
-
-	public void setGoal(String goal) {
-		this.goal = goal;
-	}
-
-	public String getCommunity() {
-		return community;
-	}
-
-	public void setCommunity(String community) {
-		this.community = community;
-	}
-
 	public String getMobileNumber() {
 		return mobileNumber;
 	}
@@ -172,13 +158,29 @@ public class AssessmentPersonalDetailCollection extends GenericCollection {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
+	public List<FoodCommunity> getCommunities() {
+		return communities;
+	}
+
+	public void setCommunities(List<FoodCommunity> communities) {
+		this.communities = communities;
+	}
+
+	public List<NutrientGoal> getNutrientGoals() {
+		return nutrientGoals;
+	}
+
+	public void setNutrientGoals(List<NutrientGoal> nutrientGoals) {
+		this.nutrientGoals = nutrientGoals;
+	}
+
 	@Override
 	public String toString() {
 		return "AssessmentPersonalDetailCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", assessmentUniqueId="
-				+ assessmentUniqueId + ", physicalStatusType=" + physicalStatusType + ", goal=" + goal + ", community="
-				+ community + ", discarded=" + discarded + ", noOfAdultMember=" + noOfAdultMember + ", noOfChildMember="
-				+ noOfChildMember + ", profession=" + profession + ", mobileNumber=" + mobileNumber + ", dietType="
-				+ dietType + ", isPatientDiscarded=" + isPatientDiscarded + "]";
+				+ assessmentUniqueId + ", physicalStatusType=" + physicalStatusType + ", discarded=" + discarded
+				+ ", noOfAdultMember=" + noOfAdultMember + ", noOfChildMember=" + noOfChildMember + ", profession="
+				+ profession + ", mobileNumber=" + mobileNumber + ", dietType=" + dietType + ", isPatientDiscarded="
+				+ isPatientDiscarded + ", communities=" + communities + ", nutrientGoals=" + nutrientGoals + "]";
 	}
 }

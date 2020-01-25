@@ -2056,6 +2056,12 @@ public interface PathProxy {
 		public static final String GET_RECIPES_TEMPLATE = "template/{doctorId}/{locationId}/{hospitalId}/get";
 		public static final String DELETE_RECIPE_TEMPLATE = "template/{recipeTemplateId}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String GET_RECIPE_TEMPLATE = "template/{recipeTemplateId}/get";
+		
+		public static final String GET_FOOD_COMMUNITIES = "/foodCommunity";
+		public static final String GET_FOOD_GROUPS = "/foodGroup";
+		public static final String GET_NUTRIENT_GOALS = "/nutrientGoal";
+		public static final String GET_RECIPE_NUTRIENT_TYPES = "/recipeNutrientType";
+		public static final String GET_NUTRITION_DISEASES = "/nutritionDisease/get";
 	}
 
 	public static final String DIET_PLAN_BASE_URL = BASE_URL + "/dietPlan";

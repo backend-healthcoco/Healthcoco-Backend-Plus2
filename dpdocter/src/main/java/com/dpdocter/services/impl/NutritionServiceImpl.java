@@ -1139,7 +1139,6 @@ public class NutritionServiceImpl implements NutritionService {
 			}else criteria.and("pregnancyCategory").is(patientLifeStyleCollections.get(0).getPregnancyCategory());
 			
 			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), NutritionRDACollection.class ,NutritionRDA.class).getUniqueMappedResult(); 
-			System.out.println(response == null);			
 		}catch(BusinessException e) {
 			logger.error("Error while getting RDA for patient " + e.getMessage());
 			e.printStackTrace();

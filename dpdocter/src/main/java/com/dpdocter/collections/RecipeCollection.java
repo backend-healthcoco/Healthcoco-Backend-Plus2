@@ -16,7 +16,6 @@ import com.dpdocter.beans.NutrientGoal;
 import com.dpdocter.beans.RecipeItem;
 import com.dpdocter.beans.RecipeNutrientType;
 import com.dpdocter.enums.LevelType;
-import com.dpdocter.enums.MealTimeEnum;
 
 @Document(collection = "recipe_cl")
 public class RecipeCollection extends GenericCollection {

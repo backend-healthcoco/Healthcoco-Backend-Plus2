@@ -18,16 +18,26 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.FoodCommunity;
+import com.dpdocter.beans.FoodGroup;
 import com.dpdocter.beans.Ingredient;
 import com.dpdocter.beans.Nutrient;
+import com.dpdocter.beans.NutrientGoal;
+import com.dpdocter.beans.NutritionDisease;
 import com.dpdocter.beans.Recipe;
 import com.dpdocter.beans.RecipeItem;
+import com.dpdocter.beans.RecipeNutrientType;
 import com.dpdocter.beans.RecipeTemplate;
 import com.dpdocter.collections.FavouriteRecipeCollection;
+import com.dpdocter.collections.FoodCommunityCollection;
+import com.dpdocter.collections.FoodGroupCollection;
 import com.dpdocter.collections.IngredientCollection;
 import com.dpdocter.collections.MealCounterCollection;
 import com.dpdocter.collections.NutrientCollection;
+import com.dpdocter.collections.NutrientGoalCollection;
+import com.dpdocter.collections.NutritionDiseaseCollection;
 import com.dpdocter.collections.RecipeCollection;
+import com.dpdocter.collections.RecipeNutrientTypeCollection;
 import com.dpdocter.collections.RecipeTemplateCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESIngredientDocument;
@@ -855,4 +865,243 @@ public class RecipeServiceImpl implements RecipeService {
 		return response;
 	}
 	
+	@Override
+	public Integer countFoodCommunities(Boolean discarded, String searchTerm) {
+		Integer response = 0;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("value").regex("^" + searchTerm, "i"),
+						new Criteria("value").regex("^" + searchTerm));
+			
+			response = (int) mongoTemplate.count(new Query(criteria), FoodCommunityCollection.class);
+		} catch (BusinessException e) {
+			logger.error("Error while counting food communities " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while counting food communities " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public List<FoodCommunity> getFoodCommunities(int size, int page, Boolean discarded, String searchTerm) {
+		List<FoodCommunity> response = null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("value").regex("^" + searchTerm, "i"),
+						new Criteria("value").regex("^" + searchTerm));
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, FoodCommunityCollection.class, FoodCommunity.class)
+					.getMappedResults();
+		} catch (BusinessException e) {
+			logger.error("Error while getting food communities " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting food communities " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public Integer countFoodGroups(Boolean discarded, String searchTerm) {
+		Integer response = 0;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("value").regex("^" + searchTerm, "i"),
+						new Criteria("value").regex("^" + searchTerm));
+			
+			response = (int) mongoTemplate.count(new Query(criteria), FoodGroupCollection.class);
+		} catch (BusinessException e) {
+			logger.error("Error while counting food groups " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while counting food groups " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public List<FoodGroup> getFoodGroups(int size, int page, Boolean discarded, String searchTerm) {
+		List<FoodGroup> response = null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("value").regex("^" + searchTerm, "i"),
+						new Criteria("value").regex("^" + searchTerm));
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, FoodGroupCollection.class, FoodGroup.class)
+					.getMappedResults();
+		} catch (BusinessException e) {
+			logger.error("Error while getting food groups " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting food groups " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public Integer countNutrientGoals(Boolean discarded, String searchTerm) {
+		Integer response = 0;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("value").regex("^" + searchTerm, "i"),
+						new Criteria("value").regex("^" + searchTerm));
+			
+			response = (int) mongoTemplate.count(new Query(criteria), NutrientGoalCollection.class);
+		} catch (BusinessException e) {
+			logger.error("Error while counting Nutrient Goals " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while counting Nutrient Goals " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public List<NutrientGoal> getNutrientGoals(int size, int page, Boolean discarded, String searchTerm) {
+		List<NutrientGoal> response = null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("value").regex("^" + searchTerm, "i"),
+						new Criteria("value").regex("^" + searchTerm));
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, NutrientGoalCollection.class, NutrientGoal.class)
+					.getMappedResults();
+		} catch (BusinessException e) {
+			logger.error("Error while getting Nutrient Goals " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Nutrient Goals " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public Integer countRecipeNutrientTypes(Boolean discarded, String searchTerm) {
+		Integer response = 0;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("value").regex("^" + searchTerm, "i"),
+						new Criteria("value").regex("^" + searchTerm));
+			
+			response = (int) mongoTemplate.count(new Query(criteria), RecipeNutrientTypeCollection.class);
+		} catch (BusinessException e) {
+			logger.error("Error while counting Recipe Nutrient Types " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while counting Recipe Nutrient Types " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public List<RecipeNutrientType> getRecipeNutrientTypes(int size, int page, Boolean discarded, String searchTerm) {
+		List<RecipeNutrientType> response = null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("value").regex("^" + searchTerm, "i"),
+						new Criteria("value").regex("^" + searchTerm));
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, RecipeNutrientTypeCollection.class, RecipeNutrientType.class)
+					.getMappedResults();
+		} catch (BusinessException e) {
+			logger.error("Error while getting Recipe Nutrient Types " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Recipe Nutrient Types " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public Integer countDisease(Boolean discarded, String searchTerm) {
+		Integer response=null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+		    criteria = criteria.orOperator(new Criteria("disease").regex("^" + searchTerm, "i"),
+				new Criteria("disease").regex("^" + searchTerm));
+	
+		    response = (int) mongoTemplate.count(new Query(criteria), NutritionDiseaseCollection.class);
+		} catch (BusinessException e) {
+			logger.error("Error while counting nutrition diseases " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while counting nutrition diseases " + e.getMessage());
+		
+		}
+		return response;
+	}
+	
+	@Override
+	public List<NutritionDisease> getDiseases(int size, int page, Boolean discarded,String searchTerm) {
+		List<NutritionDisease> response = null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("disease").regex("^" + searchTerm, "i"),
+						new Criteria("disease").regex("^" + searchTerm));
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, NutritionDiseaseCollection.class, NutritionDisease.class)
+					.getMappedResults();
+		} catch (BusinessException e) {
+			logger.error("Error while getting nutrition diseases " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting nutrition diseases " + e.getMessage());
+
+		}
+		return response;
+
+	}
 }

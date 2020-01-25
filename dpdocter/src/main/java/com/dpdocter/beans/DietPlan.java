@@ -26,6 +26,8 @@ public class DietPlan extends GenericCollection {
 	
 	private List<EquivalentQuantities> equivalentMeasurements;
 	
+	private String advice;
+	
 	public MealQuantity getCalories() {
 		return calories;
 	}
@@ -104,6 +106,14 @@ public class DietPlan extends GenericCollection {
 
 	public void setEquivalentMeasurements(List<EquivalentQuantities> equivalentMeasurements) {
 		this.equivalentMeasurements = equivalentMeasurements;
+	}
+
+	public String getAdvice() {
+		return advice;
+	}
+
+	public void setAdvice(String advice) {
+		this.advice = advice;
 	}
 
 }

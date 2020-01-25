@@ -15,11 +15,22 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dpdocter.beans.FoodCommunity;
+import com.dpdocter.beans.FoodGroup;
 import com.dpdocter.beans.Ingredient;
 import com.dpdocter.beans.Nutrient;
+import com.dpdocter.beans.NutrientGoal;
+import com.dpdocter.beans.NutritionDisease;
 import com.dpdocter.beans.Recipe;
+import com.dpdocter.beans.RecipeNutrientType;
 import com.dpdocter.beans.RecipeTemplate;
 import com.dpdocter.elasticsearch.document.ESIngredientDocument;
 import com.dpdocter.elasticsearch.document.ESNutrientDocument;
@@ -447,6 +458,76 @@ public class RecipeApi {
 
 		response.setData(recipe);
 
+		return response;
+	}
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_FOOD_COMMUNITIES)
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_FOOD_COMMUNITIES, notes = PathProxy.RecipeUrls.GET_FOOD_COMMUNITIES)
+	public Response<FoodCommunity> getFoodCommunities(@RequestParam(required = false, value ="size", defaultValue = "0") int size, 
+			@RequestParam(required = false, value ="page", defaultValue = "0") int page,
+			@RequestParam(required = false, value ="discarded") Boolean discarded, 
+			@RequestParam(required = false, value ="searchTerm") String searchTerm) {
+		Integer count = recipeService.countFoodCommunities(discarded, searchTerm);
+		Response<FoodCommunity> response = new Response<FoodCommunity>();
+		if (count > 0)
+			response.setDataList(recipeService.getFoodCommunities(size, page, discarded, searchTerm));
+		response.setCount(count);
+		return response;
+	}
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_FOOD_GROUPS)
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_FOOD_GROUPS, notes = PathProxy.RecipeUrls.GET_FOOD_GROUPS)
+	public Response<FoodGroup> getFoodGroups(@RequestParam(required = false, value ="size", defaultValue = "0") int size, 
+			@RequestParam(required = false, value ="page", defaultValue = "0") int page,
+			@RequestParam(required = false, value ="discarded") Boolean discarded, 
+			@RequestParam(required = false, value ="searchTerm") String searchTerm) {
+		Integer count = recipeService.countFoodGroups(discarded, searchTerm);
+		Response<FoodGroup> response = new Response<FoodGroup>();
+		if (count > 0)
+			response.setDataList(recipeService.getFoodGroups(size, page, discarded, searchTerm));
+		response.setCount(count);
+		return response;
+	}
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_NUTRIENT_GOALS)
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRIENT_GOALS, notes = PathProxy.RecipeUrls.GET_NUTRIENT_GOALS)
+	public Response<NutrientGoal> getNutrientGoals(@RequestParam(required = false, value ="size", defaultValue = "0") int size, 
+			@RequestParam(required = false, value ="page", defaultValue = "0") int page,
+			@RequestParam(required = false, value ="discarded") Boolean discarded, 
+			@RequestParam(required = false, value ="searchTerm") String searchTerm) {
+		Integer count = recipeService.countNutrientGoals(discarded, searchTerm);
+		Response<NutrientGoal> response = new Response<NutrientGoal>();
+		if (count > 0)
+			response.setDataList(recipeService.getNutrientGoals(size, page, discarded, searchTerm));
+		response.setCount(count);
+		return response;
+	}
+
+	@GetMapping(value = PathProxy.RecipeUrls.GET_RECIPE_NUTRIENT_TYPES)
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPE_NUTRIENT_TYPES, notes = PathProxy.RecipeUrls.GET_RECIPE_NUTRIENT_TYPES)
+	public Response<RecipeNutrientType> getRecipeNutrientTypes(@RequestParam(required = false, value ="size", defaultValue = "0") int size, 
+			@RequestParam(required = false, value ="page", defaultValue = "0") int page,
+			@RequestParam(required = false, value ="discarded") Boolean discarded, 
+			@RequestParam(required = false, value ="searchTerm") String searchTerm) {
+		Integer count = recipeService.countRecipeNutrientTypes(discarded, searchTerm);
+		Response<RecipeNutrientType> response = new Response<RecipeNutrientType>();
+		if (count > 0)
+			response.setDataList(recipeService.getRecipeNutrientTypes(size, page, discarded, searchTerm));
+		response.setCount(count);
+		return response;
+	}
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_NUTRITION_DISEASES)
+	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRITION_DISEASES, notes = PathProxy.RecipeUrls.GET_NUTRITION_DISEASES)
+	public Response<NutritionDisease> getNutritionDisease(@RequestParam(required = false, value ="size", defaultValue = "0") int size, 
+			@RequestParam(required = false, value ="page", defaultValue = "0") int page,
+			@RequestParam(required = false, value ="discarded") Boolean discarded, 
+			@RequestParam(required = false, value ="searchTerm") String searchTerm) {
+		Integer count = recipeService.countDisease(discarded, searchTerm);
+		Response<NutritionDisease> response = new Response<NutritionDisease>();
+		if (count > 0)
+			response.setDataList(recipeService.getDiseases(size, page, discarded, searchTerm));
+		response.setCount(count);
 		return response;
 	}
 }

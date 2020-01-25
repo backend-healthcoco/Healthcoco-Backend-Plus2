@@ -34,6 +34,8 @@ public class DietPlanCollection extends GenericCollection {
 	private MealQuantity calories;
 	@Field
 	private Boolean isPatientDiscarded = false;
+	@Field
+	private String advice;
 	
 	public ObjectId getId() {
 		return id;
@@ -115,6 +117,13 @@ public class DietPlanCollection extends GenericCollection {
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
+	public String getAdvice() {
+		return advice;
+	}
+
+	public void setAdvice(String advice) {
+		this.advice = advice;
+	}
 	@Override
 	public String toString() {
 		return "DietPlanCollection [id=" + id + ", uniquePlanId=" + uniquePlanId + ", doctorId=" + doctorId

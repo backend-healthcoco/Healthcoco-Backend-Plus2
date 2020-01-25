@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.DishType;
 
@@ -33,11 +35,11 @@ public class AssessmentPersonalDetail extends GenericCollection {
 
 	private List<String> physicalStatusType;
 
-	private String goal;
-
 	private Address address;
 
-	private String community;
+	private List<FoodCommunity> communities;
+	
+	private List<NutrientGoal> nutrientGoals;
 
 	private Boolean discarded = false;
 
@@ -137,14 +139,6 @@ public class AssessmentPersonalDetail extends GenericCollection {
 		this.physicalStatusType = physicalStatusType;
 	}
 
-	public String getGoal() {
-		return goal;
-	}
-
-	public void setGoal(String goal) {
-		this.goal = goal;
-	}
-
 	public Address getAddress() {
 		return address;
 	}
@@ -152,15 +146,7 @@ public class AssessmentPersonalDetail extends GenericCollection {
 	public void setAddress(Address address) {
 		this.address = address;
 	}
-
-	public String getCommunity() {
-		return community;
-	}
-
-	public void setCommunity(String community) {
-		this.community = community;
-	}
-
+	
 	public String getAssessmentUniqueId() {
 		return assessmentUniqueId;
 	}
@@ -215,6 +201,34 @@ public class AssessmentPersonalDetail extends GenericCollection {
 
 	public void setAge(Integer age) {
 		this.age = age;
+	}
+
+	public List<FoodCommunity> getCommunities() {
+		return communities;
+	}
+
+	public void setCommunities(List<FoodCommunity> communities) {
+		this.communities = communities;
+	}
+
+	public List<NutrientGoal> getNutrientGoals() {
+		return nutrientGoals;
+	}
+
+	public void setNutrientGoals(List<NutrientGoal> nutrientGoals) {
+		this.nutrientGoals = nutrientGoals;
+	}
+
+	@Override
+	public String toString() {
+		return "AssessmentPersonalDetail [id=" + id + ", firstName=" + firstName + ", mobileNumber=" + mobileNumber
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", patientId=" + patientId + ", bloodGroup=" + bloodGroup + ", gender=" + gender
+				+ ", assessmentUniqueId=" + assessmentUniqueId + ", dob=" + dob + ", age=" + age
+				+ ", physicalStatusType=" + physicalStatusType + ", address=" + address + ", communities=" + communities
+				+ ", nutrientGoals=" + nutrientGoals + ", discarded=" + discarded + ", noOfAdultMember="
+				+ noOfAdultMember + ", noOfChildMember=" + noOfChildMember + ", profession=" + profession
+				+ ", dietType=" + dietType + "]";
 	}
 
 }

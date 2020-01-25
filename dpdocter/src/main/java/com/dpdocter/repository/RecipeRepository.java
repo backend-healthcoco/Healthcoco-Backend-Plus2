@@ -11,4 +11,12 @@ public interface RecipeRepository extends MongoRepository<RecipeCollection, Obje
 
 	List<RecipeCollection> findByMealTiming(String time);
 
+	List<RecipeCollection> findByMealTimingAndFoodGroupsValueRegex(String time, String string);
+
+	List<RecipeCollection> findByMealTimingAndFoodGroupsValueIn(String time, List<String> asList);
+
+	List<RecipeCollection> findByFoodGroupsValueIn(List<String> asList);
+
+	RecipeCollection findByNameRegex(String string);
+
 }
