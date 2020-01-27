@@ -29,11 +29,13 @@ import com.dpdocter.beans.DietPlan;
 import com.dpdocter.beans.DietPlanJasperDetail;
 import com.dpdocter.beans.DietPlanRecipeAddItem;
 import com.dpdocter.beans.DietPlanRecipeItem;
+import com.dpdocter.beans.DietPlanTemplate;
 import com.dpdocter.beans.DietplanAddItem;
 import com.dpdocter.beans.DietplanItem;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.RecipeItem;
 import com.dpdocter.collections.DietPlanCollection;
+import com.dpdocter.collections.DietPlanTemplateCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
@@ -42,6 +44,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DietPlanRepository;
+import com.dpdocter.repository.DietPlanTemplateRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
@@ -79,6 +82,9 @@ public class DietPlansServiceImpl implements DietPlansService {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
+	@Autowired
+	private DietPlanTemplateRepository dietPlanTemplateRepository;
+	
 	@Override
 	public DietPlan addEditDietPlan(DietPlan request) {
 		DietPlan response = null;
@@ -431,6 +437,157 @@ public class DietPlansServiceImpl implements DietPlansService {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+	
+	@Override
+	public DietPlanTemplate addEditDietPlanTemplate(DietPlanTemplate request) {
+		DietPlanTemplate response = null;
+		try {
+			DietPlanTemplateCollection dietPlanTemplateCollection = null;
+			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				dietPlanTemplateCollection = dietPlanTemplateRepository.findById(new ObjectId(request.getId())).orElse(null);
+				if (dietPlanTemplateCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, " No Diet Plan Template found with Id ");
+				}
+				request.setCreatedBy(dietPlanTemplateCollection.getCreatedBy());
+				request.setCreatedTime(dietPlanTemplateCollection.getCreatedTime());
+				request.setUniquePlanId(dietPlanTemplateCollection.getUniquePlanId());
+				request.setUpdatedTime(new Date());
+				dietPlanTemplateCollection.setItems(new ArrayList<DietplanItem>());
+				BeanUtil.map(request, dietPlanTemplateCollection);
+
+			} else {
+				dietPlanTemplateCollection = new DietPlanTemplateCollection();
+				BeanUtil.map(request, dietPlanTemplateCollection);
+				dietPlanTemplateCollection
+						.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+								+ userCollection.getFirstName());
+				dietPlanTemplateCollection.setCreatedTime(new Date());
+				dietPlanTemplateCollection.setUniquePlanId(
+						UniqueIdInitial.DIET_PLAN.getInitial() + "-" + DPDoctorUtils.generateRandomId());
+				dietPlanTemplateCollection.setUpdatedTime(new Date());
+
+			}
+			dietPlanTemplateCollection = dietPlanTemplateRepository.save(dietPlanTemplateCollection);
+			response = new DietPlanTemplate();
+			BeanUtil.map(dietPlanTemplateCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while add edit Diet Plan Template : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					" Error while add edit Diet Plan Template: " + e.getCause().getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public List<DietPlanTemplate> getDietPlanTemplates(int page, int size, String doctorId, String hospitalId, String locationId,
+			long updatedTime, boolean discarded, String gender, String country, Double fromAge, Double toAge,
+			String community, String type, String pregnancyCategory) {
+		List<DietPlanTemplate> response = null;
+		try {
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTime));
+			
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+			
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			
+			if (!discarded) 
+				criteria.and("discarded").is(discarded);
+			
+			if (!DPDoctorUtils.anyStringEmpty(gender))
+				criteria.and("gender").is(gender);
+			
+			if (!DPDoctorUtils.anyStringEmpty(country))
+				criteria.and("country").is(country);
+			
+			if (fromAge!= null)
+				criteria.and("fromAgeInYears").gte(fromAge);
+			
+			if (toAge!= null)
+				criteria.and("toAgeInYears").lte(toAge);
+			
+			if (!DPDoctorUtils.anyStringEmpty(community))
+				criteria.and("communities.value").is(community);
+			
+			if (!DPDoctorUtils.anyStringEmpty(type))
+				criteria.and("type").is(type);
+			
+			if (!DPDoctorUtils.anyStringEmpty(pregnancyCategory))
+				criteria.and("pregnancyCategory").is(pregnancyCategory);
+			
+			Aggregation aggregation = null;
+
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			}
+			AggregationResults<DietPlanTemplate> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DietPlanTemplateCollection.class, DietPlanTemplate.class);
+			response = aggregationResults.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while getting Diet Plan Templates : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					" Error while getting Diet Plan Templates : " + e.getCause().getMessage());
+		}
+		return response;
+	}
+	
+	@Override
+	public DietPlanTemplate getDietPlanTemplateById(String planId) {
+		DietPlanTemplate response = null;
+		try {
+			DietPlanTemplateCollection dietPlanTemplateCollection = dietPlanTemplateRepository.findById(new ObjectId(planId)).orElse(null);
+			response = new DietPlanTemplate();
+			BeanUtil.map(dietPlanTemplateCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while getting Diet Plan Template: " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					" Error while getting Diet Plan Template: " + e.getCause().getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public DietPlanTemplate deleteDietPlanTemplate(String planId, Boolean discarded) {
+		DietPlanTemplate response = null;
+		try {
+			DietPlanTemplateCollection dietPlanTemplateCollection = dietPlanTemplateRepository.findById(new ObjectId(planId)).orElse(null);
+			if (dietPlanTemplateCollection == null) {
+				throw new BusinessException(ServiceError.NotFound, "Diet Plan Template not found with Id");
+			}
+			dietPlanTemplateCollection.setAdminCreatedTime(new Date());
+			dietPlanTemplateCollection.setDiscarded(discarded);
+			dietPlanTemplateCollection = dietPlanTemplateRepository.save(dietPlanTemplateCollection);
+			response = new DietPlanTemplate();
+			BeanUtil.map(dietPlanTemplateCollection, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while deleting Diet Plan Template: " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					" Error while deleting Diet Plan Template: " + e.getCause().getMessage());
+
 		}
 		return response;
 	}

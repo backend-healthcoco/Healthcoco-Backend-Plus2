@@ -1,5 +1,7 @@
 package com.dpdocter.webservices;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DietPlan;
+import com.dpdocter.beans.DietPlanTemplate;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.DietPlansService;
@@ -144,4 +147,72 @@ public class DietPlanAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.DietPlanUrls.ADD_EDIT_DIET_PLAN_TEMPLATE)
+	@POST
+	@ApiOperation(value = PathProxy.DietPlanUrls.ADD_EDIT_DIET_PLAN_TEMPLATE, notes = PathProxy.DietPlanUrls.ADD_EDIT_DIET_PLAN_TEMPLATE)
+	public Response<DietPlanTemplate> addEditDietPlanTemplate(DietPlanTemplate request) {
+
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			logger.warn("doctorId,locationId and hospitalId should not be null or empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"doctorId,locationId and hospitalId should not be null or empty");
+		}
+
+		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
+		response.setData(dietPlansService.addEditDietPlanTemplate(request));
+		return response;
+	}
+
+	@Path(value = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATES)
+	@GET
+	@ApiOperation(value = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATES, notes = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATES)
+	public Response<DietPlanTemplate> getDietPlanTemplates(@QueryParam("locationId") String locationId, @QueryParam("page") int page,
+			@QueryParam("size") int size, 
+			@QueryParam("doctorId") String doctorId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("updatedTime") long updatedTime, @QueryParam("discarded") boolean discarded,
+			@QueryParam("gender") String gender, @QueryParam("country") String country, @QueryParam("fromAge") Double fromAge,
+			@QueryParam("toAge") Double toAge, @QueryParam("community") String community,
+			@QueryParam("type") String type, @QueryParam("pregnancyCategory") String pregnancyCategory) {
+		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
+		response.setDataList(dietPlansService.getDietPlanTemplates(page, size, doctorId, hospitalId, locationId,
+				updatedTime, discarded, gender, country, fromAge, toAge, community, type, pregnancyCategory));
+		return response;
+	}
+
+	@Path(value = PathProxy.DietPlanUrls.DELETE_DIET_PLAN_TEMPLATE)
+	@DELETE
+	@ApiOperation(value = PathProxy.DietPlanUrls.DELETE_DIET_PLAN_TEMPLATE, notes = PathProxy.DietPlanUrls.DELETE_DIET_PLAN_TEMPLATE)
+	public Response<DietPlanTemplate> deleteDietPlanTemplate(@PathParam("planId") String planId,
+			@QueryParam("discarded") boolean discarded) {
+
+		if (planId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
+		response.setData(dietPlansService.deleteDietPlanTemplate(planId, discarded));
+		return response;
+	}
+
+	@Path(value = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATE)
+	@GET
+	@ApiOperation(value = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATE, notes = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATE)
+	public Response<DietPlanTemplate> getDietPlanTemplateById(@QueryParam("planId") String planId) {
+
+		if (planId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
+		response.setData(dietPlansService.getDietPlanTemplateById(planId));
+
+		return response;
+	}
 }

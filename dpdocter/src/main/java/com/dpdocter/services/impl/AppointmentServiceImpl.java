@@ -1080,12 +1080,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				appointmentCollection = appointmentRepository.save(appointmentCollection);
 				
 				PatientTreatmentResponse  patientTreatmentResponse= addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
-		    
-
-					//treatment add through appointment		
-			
-				
-				
+		    			
 				AppointmentBookedSlotCollection bookedSlotCollection = new AppointmentBookedSlotCollection();
 				BeanUtil.map(appointmentCollection, bookedSlotCollection);
 				
@@ -4793,7 +4788,7 @@ try {
 							.append("state", new BasicDBObject("$first", "$state"))
 							.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-							.append("treatments", new BasicDBObject("$push", "$treatments"))
+							.append("treatmentFields", new BasicDBObject("$push", "$treatments"))
 							.append("category", new BasicDBObject("$first", "$category"))
 							.append("branch", new BasicDBObject("$first", "$branch"))));
 
@@ -4807,7 +4802,7 @@ try {
 						.append("calenderResponse.patientId", "$patientId")
 						.append("calenderResponse.state", "$state")
 						.append("calenderResponse.doctorId", "$doctorId").append("doctorId", "$doctorId")
-						.append("calenderResponse.treatmentFields", "$treatments")
+						.append("calenderResponse.treatmentFields", "$treatmentFields")
 						.append("calenderResponse.category", "$category")
 						.append("calenderResponse.branch", "$branch")));
 
@@ -4833,7 +4828,7 @@ try {
 																.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 						Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
 						
-						Aggregation.lookup("patient_treatment_cl", "visitId", "visitId", "patientTreatment"),
+						Aggregation.lookup("patient_treatment_cl", "appointmentId", "appointmentId", "patientTreatment"),
 						Aggregation.unwind("patientTreatment", true),
 						
 						new CustomAggregationOperation(new Document("$unwind",

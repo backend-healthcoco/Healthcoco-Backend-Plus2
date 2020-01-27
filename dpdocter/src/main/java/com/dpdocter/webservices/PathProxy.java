@@ -2074,6 +2074,12 @@ public interface PathProxy {
 		public static final String DOWNLOAD_DIET_PLAN = "{planId}/download";
 		public static final String SEND_DIET_PLAN_EMAIL = "{planId}/sendEmail";
 		public static final String GET_DIET_PLANS_FOR_PATIENT = "/get/patient";
+		
+		public static final String ADD_EDIT_DIET_PLAN_TEMPLATE = "/template/addEdit";
+		public static final String GET_DIET_PLAN_TEMPLATES = "/template/";
+		public static final String DELETE_DIET_PLAN_TEMPLATE = "/template/{planId}/delete";
+		public static final String GET_DIET_PLAN_TEMPLATE = "/template/{planId}/get";
+		
 	}
 
 	public static final String COUNTER_BASE_URL = BASE_URL + "/counter";

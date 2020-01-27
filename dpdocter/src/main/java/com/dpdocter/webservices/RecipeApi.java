@@ -15,12 +15,6 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.FoodCommunity;
@@ -461,12 +455,13 @@ public class RecipeApi {
 		return response;
 	}
 	
-	@GetMapping(value = PathProxy.RecipeUrls.GET_FOOD_COMMUNITIES)
+	@Path(value = PathProxy.RecipeUrls.GET_FOOD_COMMUNITIES)
+	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_FOOD_COMMUNITIES, notes = PathProxy.RecipeUrls.GET_FOOD_COMMUNITIES)
-	public Response<FoodCommunity> getFoodCommunities(@RequestParam(required = false, value ="size", defaultValue = "0") int size, 
-			@RequestParam(required = false, value ="page", defaultValue = "0") int page,
-			@RequestParam(required = false, value ="discarded") Boolean discarded, 
-			@RequestParam(required = false, value ="searchTerm") String searchTerm) {
+	public Response<FoodCommunity> getFoodCommunities(@QueryParam(value ="size") int size, 
+			@QueryParam(value ="page") int page,
+			@QueryParam(value ="discarded") Boolean discarded, 
+			@QueryParam(value ="searchTerm") String searchTerm) {
 		Integer count = recipeService.countFoodCommunities(discarded, searchTerm);
 		Response<FoodCommunity> response = new Response<FoodCommunity>();
 		if (count > 0)
@@ -475,12 +470,13 @@ public class RecipeApi {
 		return response;
 	}
 	
-	@GetMapping(value = PathProxy.RecipeUrls.GET_FOOD_GROUPS)
+	@Path(value = PathProxy.RecipeUrls.GET_FOOD_GROUPS)
+	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_FOOD_GROUPS, notes = PathProxy.RecipeUrls.GET_FOOD_GROUPS)
-	public Response<FoodGroup> getFoodGroups(@RequestParam(required = false, value ="size", defaultValue = "0") int size, 
-			@RequestParam(required = false, value ="page", defaultValue = "0") int page,
-			@RequestParam(required = false, value ="discarded") Boolean discarded, 
-			@RequestParam(required = false, value ="searchTerm") String searchTerm) {
+	public Response<FoodGroup> getFoodGroups(@QueryParam(value ="size") int size, 
+			@QueryParam(value ="page") int page,
+			@QueryParam(value ="discarded") Boolean discarded, 
+			@QueryParam(value ="searchTerm") String searchTerm) {
 		Integer count = recipeService.countFoodGroups(discarded, searchTerm);
 		Response<FoodGroup> response = new Response<FoodGroup>();
 		if (count > 0)
@@ -489,12 +485,13 @@ public class RecipeApi {
 		return response;
 	}
 	
-	@GetMapping(value = PathProxy.RecipeUrls.GET_NUTRIENT_GOALS)
+	@Path(value = PathProxy.RecipeUrls.GET_NUTRIENT_GOALS)
+	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRIENT_GOALS, notes = PathProxy.RecipeUrls.GET_NUTRIENT_GOALS)
-	public Response<NutrientGoal> getNutrientGoals(@RequestParam(required = false, value ="size", defaultValue = "0") int size, 
-			@RequestParam(required = false, value ="page", defaultValue = "0") int page,
-			@RequestParam(required = false, value ="discarded") Boolean discarded, 
-			@RequestParam(required = false, value ="searchTerm") String searchTerm) {
+	public Response<NutrientGoal> getNutrientGoals(@QueryParam(value ="size") int size, 
+			@QueryParam(value ="page") int page,
+			@QueryParam(value ="discarded") Boolean discarded, 
+			@QueryParam(value ="searchTerm") String searchTerm) {
 		Integer count = recipeService.countNutrientGoals(discarded, searchTerm);
 		Response<NutrientGoal> response = new Response<NutrientGoal>();
 		if (count > 0)
@@ -503,12 +500,13 @@ public class RecipeApi {
 		return response;
 	}
 
-	@GetMapping(value = PathProxy.RecipeUrls.GET_RECIPE_NUTRIENT_TYPES)
+	@Path(value = PathProxy.RecipeUrls.GET_RECIPE_NUTRIENT_TYPES)
+	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPE_NUTRIENT_TYPES, notes = PathProxy.RecipeUrls.GET_RECIPE_NUTRIENT_TYPES)
-	public Response<RecipeNutrientType> getRecipeNutrientTypes(@RequestParam(required = false, value ="size", defaultValue = "0") int size, 
-			@RequestParam(required = false, value ="page", defaultValue = "0") int page,
-			@RequestParam(required = false, value ="discarded") Boolean discarded, 
-			@RequestParam(required = false, value ="searchTerm") String searchTerm) {
+	public Response<RecipeNutrientType> getRecipeNutrientTypes(@QueryParam(value ="size") int size, 
+			@QueryParam(value ="page") int page,
+			@QueryParam(value ="discarded") Boolean discarded, 
+			@QueryParam(value ="searchTerm") String searchTerm) {
 		Integer count = recipeService.countRecipeNutrientTypes(discarded, searchTerm);
 		Response<RecipeNutrientType> response = new Response<RecipeNutrientType>();
 		if (count > 0)
@@ -517,12 +515,13 @@ public class RecipeApi {
 		return response;
 	}
 	
-	@GetMapping(value = PathProxy.RecipeUrls.GET_NUTRITION_DISEASES)
+	@Path(value = PathProxy.RecipeUrls.GET_NUTRITION_DISEASES)
+	@GET
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRITION_DISEASES, notes = PathProxy.RecipeUrls.GET_NUTRITION_DISEASES)
-	public Response<NutritionDisease> getNutritionDisease(@RequestParam(required = false, value ="size", defaultValue = "0") int size, 
-			@RequestParam(required = false, value ="page", defaultValue = "0") int page,
-			@RequestParam(required = false, value ="discarded") Boolean discarded, 
-			@RequestParam(required = false, value ="searchTerm") String searchTerm) {
+	public Response<NutritionDisease> getNutritionDisease(@QueryParam(value ="size") int size, 
+			@QueryParam(value ="page") int page,
+			@QueryParam(value ="discarded") Boolean discarded, 
+			@QueryParam(value ="searchTerm") String searchTerm) {
 		Integer count = recipeService.countDisease(discarded, searchTerm);
 		Response<NutritionDisease> response = new Response<NutritionDisease>();
 		if (count > 0)
