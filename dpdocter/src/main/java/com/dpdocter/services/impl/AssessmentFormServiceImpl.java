@@ -227,6 +227,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 	@Override
 	public AssessmentFormHistoryResponse addEditAssessmentHistory(PatientAssesentmentHistoryRequest request) {
 		AssessmentFormHistoryResponse response = null;
+		
 		try {
 			PatientAssessmentHistoryCollection historyCollection = null;
 
@@ -243,6 +244,13 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				historyCollection = new PatientAssessmentHistoryCollection();
 
 				BeanUtil.map(request, historyCollection);
+//				if (request.getDiesease() != null) {
+//					diseaseObjectIds = new ArrayList<>();
+//					for (String diseaseId : request.getDiesease()) {
+//						diseaseObjectIds.add(new ObjectId(diseaseId));
+//					}
+//				}
+//				historyCollection.setDiesease(diseaseObjectIds);
 				historyCollection.setCreatedTime(new Date());
 				historyCollection.setUpdatedTime(new Date());
 				historyCollection
@@ -262,6 +270,13 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				historyCollection.setFoodAndAllergies(null);
 
 				BeanUtil.map(request, historyCollection);
+//				if (request.getDiesease() != null) {
+//					diseaseObjectIds = new ArrayList<>();
+//					for (String diseaseId : request.getDiesease()) {
+//						diseaseObjectIds.add(new ObjectId(diseaseId));
+//					}
+//				}
+//				historyCollection.setDiesease(diseaseObjectIds);
 				historyCollection.setUpdatedTime(new Date());
 			}
 			if (historyCollection.getExistingMedication() != null) {
@@ -467,10 +482,10 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					Fields.field("locationId", "$locationId"), Fields.field("hospitalId", "$hospitalId"),
 					Fields.field("bloodGroup", "$patient.bloodGroup"), Fields.field("gender", "$patient.gender"),
 					Fields.field("assessmentUniqueId", "$assessmentUniqueId"),
-					Fields.field("physicalStatusType", "$physicalStatusType"), Fields.field("goal", "$goal"),
+					Fields.field("physicalStatusType", "$physicalStatusType"), Fields.field("nutrientGoals", "$nutrientGoals"),
 					Fields.field("discarded", "$discarded"), Fields.field("dob", "$patient.dob"),
 					Fields.field("address", "$patient.address"), Fields.field("profession", "$patient.profession"),
-					Fields.field("community", "$community"), Fields.field("noOfAdultMember", "$noOfAdultMember"),
+					Fields.field("communities", "$communities"), Fields.field("noOfAdultMember", "$noOfAdultMember"),
 					Fields.field("noOfChildMember", "$noOfChildMember"), Fields.field("createdTime", "$createdTime"),
 					Fields.field("createdBy", "$createdBy"), Fields.field("dietType", "$dietType")));
 
