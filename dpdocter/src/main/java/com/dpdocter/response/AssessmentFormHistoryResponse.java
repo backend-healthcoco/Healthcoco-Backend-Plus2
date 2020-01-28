@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.Addiction;
 import com.dpdocter.beans.DrugsAndAllergies;
+import com.dpdocter.beans.NutritionDisease;
 import com.dpdocter.beans.PrescriptionAddItem;
 import com.dpdocter.request.FoodAndAllergiesRequest;
 
@@ -31,7 +32,7 @@ public class AssessmentFormHistoryResponse {
 
 	private List<Addiction> addiction;
 
-	private List<DiseaseListResponse> diesease;
+	private List<NutritionDisease> diesease;
 
 	private Boolean everHospitalize = false;
 
@@ -181,11 +182,11 @@ public class AssessmentFormHistoryResponse {
 		this.medicalhistory = medicalhistory;
 	}
 
-	public List<DiseaseListResponse> getDiesease() {
+	public List<NutritionDisease> getDiesease() {
 		return diesease;
 	}
 
-	public void setDiesease(List<DiseaseListResponse> diesease) {
+	public void setDiesease(List<NutritionDisease> diesease) {
 		this.diesease = diesease;
 	}
 	

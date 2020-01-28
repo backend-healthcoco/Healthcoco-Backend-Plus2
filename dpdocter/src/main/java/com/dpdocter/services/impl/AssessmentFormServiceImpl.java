@@ -24,6 +24,7 @@ import com.dpdocter.beans.Count;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
+import com.dpdocter.beans.NutritionDisease;
 import com.dpdocter.beans.PatientAssesentmentHistoryRequest;
 import com.dpdocter.beans.PatientFoodAndExcercise;
 import com.dpdocter.beans.PatientLifeStyle;
@@ -32,9 +33,10 @@ import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.collections.AssessmentPersonalDetailCollection;
-import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.HistoryCollection;
+import com.dpdocter.collections.NutritionDiseaseCollection;
+import com.dpdocter.collections.PatientAssessmentHistoryCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientFoodAndExcerciseCollection;
 import com.dpdocter.collections.PatientLifeStyleCollection;
@@ -46,9 +48,10 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AssessmentPersonalDetailRepository;
-import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.HistoryRepository;
+import com.dpdocter.repository.NutritionDiseaseRepository;
+import com.dpdocter.repository.PatientAssessmentHistoryRepository;
 import com.dpdocter.repository.PatientFoodAndExerciseRepository;
 import com.dpdocter.repository.PatientLifeStyleRepository;
 import com.dpdocter.repository.PatientMeasurementRepository;
@@ -57,7 +60,6 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.AssessmentFormHistoryResponse;
-import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.services.AssessmentFormService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RegistrationService;
@@ -102,7 +104,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 	private PatientRepository patientRepository;
 
 	@Autowired
-	private DiseasesRepository diseasesRepository;
+	private NutritionDiseaseRepository nutritionDiseaseRepository;
 
 	@Autowired
 	private DrugRepository drugRepository;
@@ -113,6 +115,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 	@Value(value = "${Signup.DOB}")
 	private String DOB;
 
+	@Autowired
+	private PatientAssessmentHistoryRepository patientAssessmentHistoryRepository;
+	
 	@Transactional
 	@Override
 	public AssessmentPersonalDetail addEditAssessmentPersonalDetail(AssessmentPersonalDetail request) {
@@ -149,6 +154,9 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			} else {
 				assessmentPersonalDetailCollection = assessmentPersonalDetailRepository
 						.findById(new ObjectId(request.getId())).orElse(null);
+				
+				assessmentPersonalDetailCollection.setCommunities(null);
+				assessmentPersonalDetailCollection.setNutrientGoals(null);
 				BeanUtil.map(request, assessmentPersonalDetailCollection);
 				assessmentPersonalDetailCollection.setUpdatedTime(new Date());
 			}
@@ -220,19 +228,19 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 	public AssessmentFormHistoryResponse addEditAssessmentHistory(PatientAssesentmentHistoryRequest request) {
 		AssessmentFormHistoryResponse response = null;
 		try {
-			HistoryCollection historyCollection = null;
+			PatientAssessmentHistoryCollection historyCollection = null;
 
-			List<DiseaseListResponse> diseaseListResponses = null;
+			List<NutritionDisease> diseaseListResponses = null;
 
-			List<DiseasesCollection> diseasesCollections = null;
-			DiseaseListResponse diseaseListResponse = null;
+			List<NutritionDiseaseCollection> diseasesCollections = null;
+			NutritionDisease diseaseListResponse = null;
 
 			if (DPDoctorUtils.allStringsEmpty(request.getId())) {
 				UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 				if (doctor == null) {
 					throw new BusinessException(ServiceError.NotFound, "No Nutritionist found with doctorId");
 				}
-				historyCollection = new HistoryCollection();
+				historyCollection = new PatientAssessmentHistoryCollection();
 
 				BeanUtil.map(request, historyCollection);
 				historyCollection.setCreatedTime(new Date());
@@ -242,7 +250,7 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 								+ " " + doctor.getFirstName());
 
 			} else {
-				historyCollection = historyRepository.findById(new ObjectId(request.getId())).orElse(null);
+				historyCollection = patientAssessmentHistoryRepository.findById(new ObjectId(request.getId())).orElse(null);
 				request.setUpdatedTime(new Date());
 				request.setCreatedBy(historyCollection.getCreatedBy());
 				request.setCreatedTime(historyCollection.getCreatedTime());
@@ -250,14 +258,8 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				historyCollection.setAddiction(null);
 				historyCollection.setDiesease(null);
 				historyCollection.setExistingMedication(null);
-				historyCollection.setFamilyhistory(null);
-				historyCollection.setGeneralRecords(null);
-				historyCollection.setMedicalhistory(null);
 				historyCollection.setReasons(null);
-				historyCollection.setSpecialNotes(null);
-				historyCollection.setDrugsAndAllergies(null);
 				historyCollection.setFoodAndAllergies(null);
-				historyCollection.setPersonalHistory(null);
 
 				BeanUtil.map(request, historyCollection);
 				historyCollection.setUpdatedTime(new Date());
@@ -326,43 +328,17 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 					historyCollection.setExistingMedication(items);
 				}
 			}
-			historyCollection = historyRepository.save(historyCollection);
+			historyCollection = patientAssessmentHistoryRepository.save(historyCollection);
 			response = new AssessmentFormHistoryResponse();
 			BeanUtil.map(historyCollection, response);
 
-			if (historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty()) {
-				diseaseListResponses = new ArrayList<DiseaseListResponse>();
-				diseasesCollections = (List<DiseasesCollection>) diseasesRepository.findAllById(historyCollection.getFamilyhistory());
-				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
-					for (DiseasesCollection diseasesCollection : diseasesCollections) {
-						diseaseListResponse = new DiseaseListResponse();
-						BeanUtil.map(diseasesCollection, diseaseListResponse);
-						diseaseListResponses.add(diseaseListResponse);
-					}
-				}
-				response.setFamilyhistory(diseaseListResponses);
-			}else response.setFamilyhistory(null);
-			
-			if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
-				diseaseListResponses = new ArrayList<DiseaseListResponse>();
-				diseasesCollections = (List<DiseasesCollection>)diseasesRepository.findAllById(historyCollection.getMedicalhistory());
-				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
-					for (DiseasesCollection diseasesCollection : diseasesCollections) {
-						diseaseListResponse = new DiseaseListResponse();
-						BeanUtil.map(diseasesCollection, diseaseListResponse);
-						diseaseListResponses.add(diseaseListResponse);
-					}
-				}
-				response.setMedicalhistory(diseaseListResponses);
-			}else response.setMedicalhistory(null);
-			
 
 			if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
-				diseaseListResponses = new ArrayList<DiseaseListResponse>();
-				diseasesCollections = (List<DiseasesCollection>)diseasesRepository.findAllById(historyCollection.getDiesease());
+				diseaseListResponses = new ArrayList<NutritionDisease>();
+				diseasesCollections = (List<NutritionDiseaseCollection>)nutritionDiseaseRepository.findAllById(historyCollection.getDiesease());
 				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
-					for (DiseasesCollection diseasesCollection : diseasesCollections) {
-						diseaseListResponse = new DiseaseListResponse();
+					for (NutritionDiseaseCollection diseasesCollection : diseasesCollections) {
+						diseaseListResponse = new NutritionDisease();
 						BeanUtil.map(diseasesCollection, diseaseListResponse);
 						diseaseListResponses.add(diseaseListResponse);
 					}
@@ -615,48 +591,21 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 	public AssessmentFormHistoryResponse getAssessmentHistory(String assessmentId) {
 		AssessmentFormHistoryResponse response = null;
 		try {
-			List<DiseaseListResponse> diseaseListResponses = null;
+			List<NutritionDisease> diseaseListResponses = null;
 
-			List<DiseasesCollection> diseasesCollections = null;
-			DiseaseListResponse diseaseListResponse = null;
+			List<NutritionDiseaseCollection> diseasesCollections = null;
+			NutritionDisease diseaseListResponse = null;
 			HistoryCollection historyCollection = historyRepository.findByAssessmentId(new ObjectId(assessmentId));
 			if (historyCollection != null) {
 				response = new AssessmentFormHistoryResponse();
 				BeanUtil.map(historyCollection, response);
 
-				if (historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty()) {
-					diseaseListResponses = new ArrayList<DiseaseListResponse>();
-					diseasesCollections = (List<DiseasesCollection>)diseasesRepository.findAllById(historyCollection.getFamilyhistory());
-					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
-						for (DiseasesCollection diseasesCollection : diseasesCollections) {
-							diseaseListResponse = new DiseaseListResponse();
-							BeanUtil.map(diseasesCollection, diseaseListResponse);
-							diseaseListResponses.add(diseaseListResponse);
-						}
-					}
-					response.setFamilyhistory(diseaseListResponses);	
-				}else response.setFamilyhistory(null);
-				
-				if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
-					diseaseListResponses = new ArrayList<DiseaseListResponse>();
-					diseasesCollections = (List<DiseasesCollection>)diseasesRepository.findAllById(historyCollection.getMedicalhistory());
-					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
-						for (DiseasesCollection diseasesCollection : diseasesCollections) {
-							diseaseListResponse = new DiseaseListResponse();
-							BeanUtil.map(diseasesCollection, diseaseListResponse);
-							diseaseListResponses.add(diseaseListResponse);
-						}
-					}
-					response.setMedicalhistory(diseaseListResponses);
-				}else response.setMedicalhistory(null);
-				
-
 				if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
-					diseaseListResponses = new ArrayList<DiseaseListResponse>();
-					diseasesCollections = (List<DiseasesCollection>)diseasesRepository.findAllById(historyCollection.getDiesease());
+					diseaseListResponses = new ArrayList<NutritionDisease>();
+					diseasesCollections = (List<NutritionDiseaseCollection>)nutritionDiseaseRepository.findAllById(historyCollection.getDiesease());
 					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
-						for (DiseasesCollection diseasesCollection : diseasesCollections) {
-							diseaseListResponse = new DiseaseListResponse();
+						for (NutritionDiseaseCollection diseasesCollection : diseasesCollections) {
+							diseaseListResponse = new NutritionDisease();
 							BeanUtil.map(diseasesCollection, diseaseListResponse);
 							diseaseListResponses.add(diseaseListResponse);
 						}
