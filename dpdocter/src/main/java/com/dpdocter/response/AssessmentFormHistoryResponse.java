@@ -3,7 +3,6 @@ package com.dpdocter.response;
 import java.util.List;
 
 import com.dpdocter.beans.Addiction;
-import com.dpdocter.beans.DrugsAndAllergies;
 import com.dpdocter.beans.NutritionDisease;
 import com.dpdocter.beans.PrescriptionAddItem;
 import com.dpdocter.request.FoodAndAllergiesRequest;
@@ -20,14 +19,6 @@ public class AssessmentFormHistoryResponse {
 
 	private String patientId;
 
-	private List<DiseaseListResponse> familyhistory;
-
-	private List<DiseaseListResponse> medicalhistory;
-
-	private DrugsAndAllergies drugsAndAllergies;
-
-	private List<String> specialNotes;
-
 	private Boolean isStress = false;
 
 	private List<Addiction> addiction;
@@ -36,8 +27,12 @@ public class AssessmentFormHistoryResponse {
 
 	private Boolean everHospitalize = false;
 
-	private List<String> reasons;
+	private String reason;
 
+	private String stressReason;
+	
+	private String specialNotes;
+	
 	private Integer noOfTime = 0;
 
 	private FoodAndAllergiesRequest foodAndAllergies;
@@ -86,22 +81,6 @@ public class AssessmentFormHistoryResponse {
 		this.patientId = patientId;
 	}
 
-	public DrugsAndAllergies getDrugsAndAllergies() {
-		return drugsAndAllergies;
-	}
-
-	public void setDrugsAndAllergies(DrugsAndAllergies drugsAndAllergies) {
-		this.drugsAndAllergies = drugsAndAllergies;
-	}
-
-	public List<String> getSpecialNotes() {
-		return specialNotes;
-	}
-
-	public void setSpecialNotes(List<String> specialNotes) {
-		this.specialNotes = specialNotes;
-	}
-
 	public Boolean getIsStress() {
 		return isStress;
 	}
@@ -126,12 +105,28 @@ public class AssessmentFormHistoryResponse {
 		this.everHospitalize = everHospitalize;
 	}
 
-	public List<String> getReasons() {
-		return reasons;
+	public String getReason() {
+		return reason;
 	}
 
-	public void setReasons(List<String> reasons) {
-		this.reasons = reasons;
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public String getStressReason() {
+		return stressReason;
+	}
+
+	public void setStressReason(String stressReason) {
+		this.stressReason = stressReason;
+	}
+
+	public String getSpecialNotes() {
+		return specialNotes;
+	}
+
+	public void setSpecialNotes(String specialNotes) {
+		this.specialNotes = specialNotes;
 	}
 
 	public Integer getNoOfTime() {
@@ -165,23 +160,7 @@ public class AssessmentFormHistoryResponse {
 	public void setAssessmentId(String assessmentId) {
 		this.assessmentId = assessmentId;
 	}
-
-	public List<DiseaseListResponse> getFamilyhistory() {
-		return familyhistory;
-	}
-
-	public void setFamilyhistory(List<DiseaseListResponse> familyhistory) {
-		this.familyhistory = familyhistory;
-	}
-
-	public List<DiseaseListResponse> getMedicalhistory() {
-		return medicalhistory;
-	}
-
-	public void setMedicalhistory(List<DiseaseListResponse> medicalhistory) {
-		this.medicalhistory = medicalhistory;
-	}
-
+	
 	public List<NutritionDisease> getDiesease() {
 		return diesease;
 	}

@@ -46,7 +46,13 @@ public class PatientAssessmentHistoryCollection extends GenericCollection {
 	private Boolean everHospitalize = false;
 
 	@Field
-	private List<String> reasons;
+	private String reason;
+
+	@Field
+	private String stressReason;
+	
+	@Field
+	private String specialNotes;
 
 	@Field
 	private Integer noOfTime = 0;
@@ -132,12 +138,28 @@ public class PatientAssessmentHistoryCollection extends GenericCollection {
 		this.everHospitalize = everHospitalize;
 	}
 
-	public List<String> getReasons() {
-		return reasons;
+	public String getReason() {
+		return reason;
 	}
 
-	public void setReasons(List<String> reasons) {
-		this.reasons = reasons;
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public String getStressReason() {
+		return stressReason;
+	}
+
+	public void setStressReason(String stressReason) {
+		this.stressReason = stressReason;
+	}
+
+	public String getSpecialNotes() {
+		return specialNotes;
+	}
+
+	public void setSpecialNotes(String specialNotes) {
+		this.specialNotes = specialNotes;
 	}
 
 	public Integer getNoOfTime() {
@@ -176,8 +198,9 @@ public class PatientAssessmentHistoryCollection extends GenericCollection {
 	public String toString() {
 		return "PatientAssessmentHistoryCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", isStress=" + isStress + ", addiction="
-				+ addiction + ", diesease=" + diesease + ", everHospitalize=" + everHospitalize + ", reasons=" + reasons
-				+ ", noOfTime=" + noOfTime + ", foodAndAllergies=" + foodAndAllergies + ", existingMedication="
-				+ existingMedication + ", assessmentId=" + assessmentId + "]";
+				+ addiction + ", diesease=" + diesease + ", everHospitalize=" + everHospitalize + ", reason=" + reason
+				+ ", stressReason=" + stressReason + ", specialNotes=" + specialNotes + ", noOfTime=" + noOfTime
+				+ ", foodAndAllergies=" + foodAndAllergies + ", existingMedication=" + existingMedication
+				+ ", assessmentId=" + assessmentId + "]";
 	}
 }

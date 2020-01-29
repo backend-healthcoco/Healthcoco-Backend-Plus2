@@ -17,14 +17,6 @@ public class PatientAssesentmentHistoryRequest extends GenericCollection {
 
 	private String patientId;
 
-	private List<String> familyhistory;
-
-	private List<String> medicalhistory;
-
-	private DrugsAndAllergies drugsAndAllergies;
-
-	private List<String> specialNotes;
-
 	private Boolean isStress = false;
 
 	private List<Addiction> addiction;
@@ -33,7 +25,11 @@ public class PatientAssesentmentHistoryRequest extends GenericCollection {
 
 	private Boolean everHospitalize = false;
 
-	private List<String> reasons;
+	private String reason;
+
+	private String stressReason;
+	
+	private String specialNotes;
 
 	private Integer noOfTime = 0;
 
@@ -91,38 +87,6 @@ public class PatientAssesentmentHistoryRequest extends GenericCollection {
 		this.patientId = patientId;
 	}
 
-	public List<String> getFamilyhistory() {
-		return familyhistory;
-	}
-
-	public void setFamilyhistory(List<String> familyhistory) {
-		this.familyhistory = familyhistory;
-	}
-
-	public List<String> getMedicalhistory() {
-		return medicalhistory;
-	}
-
-	public void setMedicalhistory(List<String> medicalhistory) {
-		this.medicalhistory = medicalhistory;
-	}
-
-	public DrugsAndAllergies getDrugsAndAllergies() {
-		return drugsAndAllergies;
-	}
-
-	public void setDrugsAndAllergies(DrugsAndAllergies drugsAndAllergies) {
-		this.drugsAndAllergies = drugsAndAllergies;
-	}
-
-	public List<String> getSpecialNotes() {
-		return specialNotes;
-	}
-
-	public void setSpecialNotes(List<String> specialNotes) {
-		this.specialNotes = specialNotes;
-	}
-
 	public Boolean getIsStress() {
 		return isStress;
 	}
@@ -155,12 +119,28 @@ public class PatientAssesentmentHistoryRequest extends GenericCollection {
 		this.everHospitalize = everHospitalize;
 	}
 
-	public List<String> getReasons() {
-		return reasons;
+	public String getReason() {
+		return reason;
 	}
 
-	public void setReasons(List<String> reasons) {
-		this.reasons = reasons;
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public String getStressReason() {
+		return stressReason;
+	}
+
+	public void setStressReason(String stressReason) {
+		this.stressReason = stressReason;
+	}
+
+	public String getSpecialNotes() {
+		return specialNotes;
+	}
+
+	public void setSpecialNotes(String specialNotes) {
+		this.specialNotes = specialNotes;
 	}
 
 	public Integer getNoOfTime() {
