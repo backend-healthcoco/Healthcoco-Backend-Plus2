@@ -713,12 +713,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 							appointmentCollection.setState(AppointmentState.CONFIRM);
 							
 							patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
-							
-							if(request.getIsTreatmentEdited()==true)
-							{
-								patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
-							}   
-							
 							AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
 									.findByAppointmentId(request.getAppointmentId());
 							if (bookedSlotCollection != null) {
@@ -729,11 +723,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								bookedSlotCollection.setUpdatedTime(new Date());
 								appointmentBookedSlotRepository.save(bookedSlotCollection);
 							}
-							patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments()); 
 						}
-						
-						  
-
 						if (!request.getDoctorId().equalsIgnoreCase(appointmentLookupResponse.getDoctorId())) {
 							appointmentCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 							User drCollection = mongoTemplate.aggregate(
@@ -770,11 +760,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						appointmentCollection.setTreatmentFields(null);
 					}
 				
-//					if(request.getIsTreatmentEdited()==true)
-//					{
-//						patientTreatmentResponse=addPatientTreatmentsThroughAppointments(appointmentCollection, request.getPatientTreatments());
-//					}   
-					
+
 					appointmentCollection = appointmentRepository.save(appointmentCollection);
 
 					if (updateVisit && !DPDoctorUtils.anyStringEmpty(appointmentCollection.getVisitId())) {

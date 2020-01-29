@@ -489,11 +489,16 @@ public class DietPlansServiceImpl implements DietPlansService {
 	@Override
 	public List<DietPlanTemplate> getDietPlanTemplates(int page, int size, String doctorId, String hospitalId, String locationId,
 			long updatedTime, boolean discarded, String gender, String country, Double fromAge, Double toAge,
-			String community, String type, String pregnancyCategory) {
+			String community, String type, String pregnancyCategory, String searchTerm) {
 		List<DietPlanTemplate> response = null;
 		try {
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTime));
+			
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
+						new Criteria("templateName").regex(searchTerm));
+			}
 			
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));

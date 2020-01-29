@@ -1,7 +1,5 @@
 package com.dpdocter.webservices;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -103,7 +101,7 @@ public class DietPlanAPI {
 	@Path(value = PathProxy.DietPlanUrls.GET_DIET_PLAN)
 	@GET
 	@ApiOperation(value = PathProxy.DietPlanUrls.GET_DIET_PLAN, notes = PathProxy.DietPlanUrls.GET_DIET_PLAN)
-	public Response<DietPlan> getDietPlan(@QueryParam("planId") String planId) {
+	public Response<DietPlan> getDietPlan(@PathParam("planId") String planId) {
 
 		if (planId == null) {
 			logger.warn("Invalid Input");
@@ -177,10 +175,11 @@ public class DietPlanAPI {
 			@QueryParam("updatedTime") long updatedTime, @QueryParam("discarded") boolean discarded,
 			@QueryParam("gender") String gender, @QueryParam("country") String country, @QueryParam("fromAge") Double fromAge,
 			@QueryParam("toAge") Double toAge, @QueryParam("community") String community,
-			@QueryParam("type") String type, @QueryParam("pregnancyCategory") String pregnancyCategory) {
+			@QueryParam("type") String type, @QueryParam("pregnancyCategory") String pregnancyCategory,
+			@QueryParam("searchTerm") String searchTerm) {
 		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
 		response.setDataList(dietPlansService.getDietPlanTemplates(page, size, doctorId, hospitalId, locationId,
-				updatedTime, discarded, gender, country, fromAge, toAge, community, type, pregnancyCategory));
+				updatedTime, discarded, gender, country, fromAge, toAge, community, type, pregnancyCategory, searchTerm));
 		return response;
 	}
 
@@ -203,7 +202,7 @@ public class DietPlanAPI {
 	@Path(value = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATE)
 	@GET
 	@ApiOperation(value = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATE, notes = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATE)
-	public Response<DietPlanTemplate> getDietPlanTemplateById(@QueryParam("planId") String planId) {
+	public Response<DietPlanTemplate> getDietPlanTemplateById(@PathParam("planId") String planId) {
 
 		if (planId == null) {
 			logger.warn("Invalid Input");

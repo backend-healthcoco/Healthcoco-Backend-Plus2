@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -11,7 +12,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Addiction;
+import com.dpdocter.beans.DrugsAndAllergies;
 import com.dpdocter.beans.FoodAndAllergies;
+import com.dpdocter.beans.GeneralData;
+import com.dpdocter.beans.PersonalHistory;
 import com.dpdocter.beans.PrescriptionItem;
 
 @Document(collection = "patient_assessment_history_cl")
@@ -33,6 +37,27 @@ public class PatientAssessmentHistoryCollection extends GenericCollection {
 	@Indexed
 	private ObjectId patientId;
 
+	@Field
+	private List<GeneralData> generalRecords;
+
+	@Field
+	private List<ObjectId> familyhistory;
+
+	@Field
+	private List<ObjectId> medicalhistory;
+
+	@Field
+	private DrugsAndAllergies drugsAndAllergies;
+
+	@Field
+	private PersonalHistory personalHistory;
+
+	@Transient
+	private long count;
+
+	@Field
+	private Boolean isPatientDiscarded = false;
+	
 	@Field
 	private Boolean isStress = false;
 
@@ -192,6 +217,62 @@ public class PatientAssessmentHistoryCollection extends GenericCollection {
 
 	public void setAssessmentId(ObjectId assessmentId) {
 		this.assessmentId = assessmentId;
+	}
+
+	public List<GeneralData> getGeneralRecords() {
+		return generalRecords;
+	}
+
+	public void setGeneralRecords(List<GeneralData> generalRecords) {
+		this.generalRecords = generalRecords;
+	}
+
+	public List<ObjectId> getFamilyhistory() {
+		return familyhistory;
+	}
+
+	public void setFamilyhistory(List<ObjectId> familyhistory) {
+		this.familyhistory = familyhistory;
+	}
+
+	public List<ObjectId> getMedicalhistory() {
+		return medicalhistory;
+	}
+
+	public void setMedicalhistory(List<ObjectId> medicalhistory) {
+		this.medicalhistory = medicalhistory;
+	}
+
+	public DrugsAndAllergies getDrugsAndAllergies() {
+		return drugsAndAllergies;
+	}
+
+	public void setDrugsAndAllergies(DrugsAndAllergies drugsAndAllergies) {
+		this.drugsAndAllergies = drugsAndAllergies;
+	}
+
+	public PersonalHistory getPersonalHistory() {
+		return personalHistory;
+	}
+
+	public void setPersonalHistory(PersonalHistory personalHistory) {
+		this.personalHistory = personalHistory;
+	}
+
+	public long getCount() {
+		return count;
+	}
+
+	public void setCount(long count) {
+		this.count = count;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
 	@Override

@@ -57,6 +57,8 @@ public class DietPlanTemplateCollection extends GenericCollection {
 	private List<String> pregnancyCategory;
 	@Field
 	private List<FoodCommunity> communities;
+	@Field
+	private String templateName;
 	
 	public ObjectId getId() {
 		return id;
@@ -218,6 +220,14 @@ public class DietPlanTemplateCollection extends GenericCollection {
 		this.communities = communities;
 	}
 
+	public String getTemplateName() {
+		return templateName;
+	}
+
+	public void setTemplateName(String templateName) {
+		this.templateName = templateName;
+	}
+
 	@Override
 	public String toString() {
 		return "DietPlanTemplateCollection [id=" + id + ", uniquePlanId=" + uniquePlanId + ", doctorId=" + doctorId
@@ -226,6 +236,7 @@ public class DietPlanTemplateCollection extends GenericCollection {
 				+ isPatientDiscarded + ", advice=" + advice + ", country=" + country + ", fromAge=" + fromAge
 				+ ", toAge=" + toAge + ", fromAgeInYears=" + fromAgeInYears + ", toAgeInYears=" + toAgeInYears
 				+ ", gender=" + gender + ", type=" + type + ", pregnancyCategory=" + pregnancyCategory
-				+ ", communities=" + communities + "]";
+				+ ", communities=" + communities + ", templateName=" + templateName + "]";
 	}
+
 }

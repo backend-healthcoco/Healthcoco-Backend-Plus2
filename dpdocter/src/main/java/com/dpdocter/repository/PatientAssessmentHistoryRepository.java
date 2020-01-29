@@ -8,4 +8,6 @@ import com.dpdocter.collections.PatientAssessmentHistoryCollection;
 
 public interface PatientAssessmentHistoryRepository extends MongoRepository<PatientAssessmentHistoryCollection, ObjectId>, PagingAndSortingRepository<PatientAssessmentHistoryCollection, ObjectId> {
 
+	PatientAssessmentHistoryCollection findByAssessmentId(ObjectId assessmentId);
+
 }

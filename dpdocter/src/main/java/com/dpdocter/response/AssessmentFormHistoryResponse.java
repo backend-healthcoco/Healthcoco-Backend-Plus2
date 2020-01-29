@@ -2,8 +2,13 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.beans.Addiction;
+import com.dpdocter.beans.DrugsAndAllergies;
+import com.dpdocter.beans.GeneralData;
 import com.dpdocter.beans.NutritionDisease;
+import com.dpdocter.beans.PersonalHistory;
 import com.dpdocter.beans.PrescriptionAddItem;
 import com.dpdocter.request.FoodAndAllergiesRequest;
 
@@ -19,6 +24,20 @@ public class AssessmentFormHistoryResponse {
 
 	private String patientId;
 
+	private List<GeneralData> generalRecords;
+
+	private List<NutritionDisease> familyhistory;
+
+	private List<NutritionDisease> medicalhistory;
+
+	private DrugsAndAllergies drugsAndAllergies;
+
+	private PersonalHistory personalHistory;
+
+	private long count;
+
+	private Boolean isPatientDiscarded = false;
+	
 	private Boolean isStress = false;
 
 	private List<Addiction> addiction;
@@ -168,7 +187,73 @@ public class AssessmentFormHistoryResponse {
 	public void setDiesease(List<NutritionDisease> diesease) {
 		this.diesease = diesease;
 	}
-	
-	
 
+	public List<GeneralData> getGeneralRecords() {
+		return generalRecords;
+	}
+
+	public void setGeneralRecords(List<GeneralData> generalRecords) {
+		this.generalRecords = generalRecords;
+	}
+
+	public List<NutritionDisease> getFamilyhistory() {
+		return familyhistory;
+	}
+
+	public void setFamilyhistory(List<NutritionDisease> familyhistory) {
+		this.familyhistory = familyhistory;
+	}
+
+	public List<NutritionDisease> getMedicalhistory() {
+		return medicalhistory;
+	}
+
+	public void setMedicalhistory(List<NutritionDisease> medicalhistory) {
+		this.medicalhistory = medicalhistory;
+	}
+
+	public DrugsAndAllergies getDrugsAndAllergies() {
+		return drugsAndAllergies;
+	}
+
+	public void setDrugsAndAllergies(DrugsAndAllergies drugsAndAllergies) {
+		this.drugsAndAllergies = drugsAndAllergies;
+	}
+
+	public PersonalHistory getPersonalHistory() {
+		return personalHistory;
+	}
+
+	public void setPersonalHistory(PersonalHistory personalHistory) {
+		this.personalHistory = personalHistory;
+	}
+
+	public long getCount() {
+		return count;
+	}
+
+	public void setCount(long count) {
+		this.count = count;
+	}
+
+	public Boolean getIsPatientDiscarded() {
+		return isPatientDiscarded;
+	}
+
+	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
+		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	@Override
+	public String toString() {
+		return "AssessmentFormHistoryResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", generalRecords=" + generalRecords
+				+ ", familyhistory=" + familyhistory + ", medicalhistory=" + medicalhistory + ", drugsAndAllergies="
+				+ drugsAndAllergies + ", personalHistory=" + personalHistory + ", count=" + count
+				+ ", isPatientDiscarded=" + isPatientDiscarded + ", isStress=" + isStress + ", addiction=" + addiction
+				+ ", diesease=" + diesease + ", everHospitalize=" + everHospitalize + ", reason=" + reason
+				+ ", stressReason=" + stressReason + ", specialNotes=" + specialNotes + ", noOfTime=" + noOfTime
+				+ ", foodAndAllergies=" + foodAndAllergies + ", existingMedication=" + existingMedication
+				+ ", assessmentId=" + assessmentId + "]";
+	}
 }

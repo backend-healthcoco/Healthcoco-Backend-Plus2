@@ -45,6 +45,8 @@ public class DietPlanTemplate extends GenericCollection {
 
 	private List<FoodCommunity> communities;
 	
+	private String templateName;
+	
 	public String getId() {
 		return id;
 	}
@@ -197,6 +199,14 @@ public class DietPlanTemplate extends GenericCollection {
 		this.communities = communities;
 	}
 
+	public String getTemplateName() {
+		return templateName;
+	}
+
+	public void setTemplateName(String templateName) {
+		this.templateName = templateName;
+	}
+
 	@Override
 	public String toString() {
 		return "DietPlanTemplate [id=" + id + ", uniquePlanId=" + uniquePlanId + ", doctorId=" + doctorId
@@ -204,6 +214,8 @@ public class DietPlanTemplate extends GenericCollection {
 				+ items + ", calories=" + calories + ", equivalentMeasurements=" + equivalentMeasurements + ", advice="
 				+ advice + ", country=" + country + ", fromAge=" + fromAge + ", toAge=" + toAge + ", fromAgeInYears="
 				+ fromAgeInYears + ", toAgeInYears=" + toAgeInYears + ", gender=" + gender + ", type=" + type
-				+ ", pregnancyCategory=" + pregnancyCategory + ", communities=" + communities + "]";
+				+ ", pregnancyCategory=" + pregnancyCategory + ", communities=" + communities + ", templateName="
+				+ templateName + "]";
 	}
+
 }

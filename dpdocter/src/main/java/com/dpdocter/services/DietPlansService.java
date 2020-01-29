@@ -26,7 +26,7 @@ public interface DietPlansService {
 
 	public List<DietPlanTemplate> getDietPlanTemplates(int page, int size, String doctorId, String hospitalId, String locationId,
 			long updatedTime, boolean discarded, String gender, String country, Double fromAge, Double toAge,
-			String community, String type, String pregnancyCategory);
+			String community, String type, String pregnancyCategory, String searchTerm);
 
 	public DietPlanTemplate deleteDietPlanTemplate(String planId, Boolean discarded);
 

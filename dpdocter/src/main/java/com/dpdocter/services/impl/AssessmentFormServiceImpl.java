@@ -34,7 +34,6 @@ import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.collections.AssessmentPersonalDetailCollection;
 import com.dpdocter.collections.DrugCollection;
-import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.NutritionDiseaseCollection;
 import com.dpdocter.collections.PatientAssessmentHistoryCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -266,7 +265,13 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 				historyCollection.setAddiction(null);
 				historyCollection.setDiesease(null);
 				historyCollection.setExistingMedication(null);
+				historyCollection.setFamilyhistory(null);
+				historyCollection.setGeneralRecords(null);
+				historyCollection.setMedicalhistory(null);
+				historyCollection.setSpecialNotes(null);
+				historyCollection.setDrugsAndAllergies(null);
 				historyCollection.setFoodAndAllergies(null);
+				historyCollection.setPersonalHistory(null);
 
 				BeanUtil.map(request, historyCollection);
 //				if (request.getDiesease() != null) {
@@ -346,6 +351,32 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 			response = new AssessmentFormHistoryResponse();
 			BeanUtil.map(historyCollection, response);
 
+			if (historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty()) {
+				diseaseListResponses = new ArrayList<NutritionDisease>();
+				diseasesCollections = (List<NutritionDiseaseCollection>)nutritionDiseaseRepository.findAllById(historyCollection.getFamilyhistory());
+				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
+					for (NutritionDiseaseCollection diseasesCollection : diseasesCollections) {
+						diseaseListResponse = new NutritionDisease();
+						BeanUtil.map(diseasesCollection, diseaseListResponse);
+						diseaseListResponses.add(diseaseListResponse);
+					}
+				}
+				response.setFamilyhistory(diseaseListResponses);
+			}else response.setFamilyhistory(null);
+			
+			if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
+				diseaseListResponses = new ArrayList<NutritionDisease>();
+				diseasesCollections = (List<NutritionDiseaseCollection>)nutritionDiseaseRepository.findAllById(historyCollection.getMedicalhistory());
+				if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
+					for (NutritionDiseaseCollection diseasesCollection : diseasesCollections) {
+						diseaseListResponse = new NutritionDisease();
+						BeanUtil.map(diseasesCollection, diseaseListResponse);
+						diseaseListResponses.add(diseaseListResponse);
+					}
+				}
+				response.setMedicalhistory(diseaseListResponses);
+			}else response.setMedicalhistory(null);
+			
 
 			if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
 				diseaseListResponses = new ArrayList<NutritionDisease>();
@@ -609,10 +640,37 @@ public class AssessmentFormServiceImpl implements AssessmentFormService {
 
 			List<NutritionDiseaseCollection> diseasesCollections = null;
 			NutritionDisease diseaseListResponse = null;
-			HistoryCollection historyCollection = historyRepository.findByAssessmentId(new ObjectId(assessmentId));
+			PatientAssessmentHistoryCollection historyCollection = patientAssessmentHistoryRepository.findByAssessmentId(new ObjectId(assessmentId));
 			if (historyCollection != null) {
 				response = new AssessmentFormHistoryResponse();
 				BeanUtil.map(historyCollection, response);
+
+				if (historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty()) {
+					diseaseListResponses = new ArrayList<NutritionDisease>();
+					diseasesCollections = (List<NutritionDiseaseCollection>)nutritionDiseaseRepository.findAllById(historyCollection.getFamilyhistory());
+					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
+						for (NutritionDiseaseCollection diseasesCollection : diseasesCollections) {
+							diseaseListResponse = new NutritionDisease();
+							BeanUtil.map(diseasesCollection, diseaseListResponse);
+							diseaseListResponses.add(diseaseListResponse);
+						}
+					}
+					response.setFamilyhistory(diseaseListResponses);	
+				}else response.setFamilyhistory(null);
+				
+				if (historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty()) {
+					diseaseListResponses = new ArrayList<NutritionDisease>();
+					diseasesCollections = (List<NutritionDiseaseCollection>)nutritionDiseaseRepository.findAllById(historyCollection.getMedicalhistory());
+					if (diseasesCollections != null && !diseasesCollections.isEmpty()) {
+						for (NutritionDiseaseCollection diseasesCollection : diseasesCollections) {
+							diseaseListResponse = new NutritionDisease();
+							BeanUtil.map(diseasesCollection, diseaseListResponse);
+							diseaseListResponses.add(diseaseListResponse);
+						}
+					}
+					response.setMedicalhistory(diseaseListResponses);
+				}else response.setMedicalhistory(null);
+				
 
 				if (historyCollection.getDiesease() != null && !historyCollection.getDiesease().isEmpty()) {
 					diseaseListResponses = new ArrayList<NutritionDisease>();
