@@ -57,7 +57,15 @@ public class ESRecipeResponse {
 	private Map<String, String> otherNutrients;
 
 	private boolean verified = false;
+	private String principle;
 	
+	public String getPrinciple() {
+		return principle;
+	}
+	public void setPrinciple(String principle) {
+		this.principle = principle;
+	}
+
 	public List<EquivalentQuantities> getEquivalentMeasurements() {
 		return equivalentMeasurements;
 	}

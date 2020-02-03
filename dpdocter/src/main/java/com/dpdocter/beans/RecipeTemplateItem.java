@@ -118,6 +118,14 @@ public class RecipeTemplateItem extends GenericCollection {
 	private List<RecipeNutrientType> nutrientTypes;
 	private List<NutrientGoal> nutrientGoals;
 	private List<Disease> diseases;
+	private String principle;
+	
+	public String getPrinciple() {
+		return principle;
+	}
+	public void setPrinciple(String principle) {
+		this.principle = principle;
+	}
 	
 	public boolean getNutrientValueAtRecipeLevel() {
 		return nutrientValueAtRecipeLevel;

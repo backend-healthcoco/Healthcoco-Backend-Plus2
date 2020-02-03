@@ -47,6 +47,15 @@ public class DietPlanRecipeAddItem {
 	
 	private String option;
 	
+	private String principle;
+	
+	public String getPrinciple() {
+		return principle;
+	}
+	public void setPrinciple(String principle) {
+		this.principle = principle;
+	}
+
 	public String getId() {
 		return id;
 	}

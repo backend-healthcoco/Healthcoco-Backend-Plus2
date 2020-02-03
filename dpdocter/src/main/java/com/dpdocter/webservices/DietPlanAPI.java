@@ -214,4 +214,13 @@ public class DietPlanAPI {
 
 		return response;
 	}
+	
+	@Path(value = PathProxy.DietPlanUrls.UPDATE_DIET_PLAN_TEMPLATE)
+	@GET
+	public Response<DietPlanTemplate> updateDietPlanTemplate() {
+		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
+		response.setData(dietPlansService.updateDietPlanTemplate());
+
+		return response;
+	}
 }

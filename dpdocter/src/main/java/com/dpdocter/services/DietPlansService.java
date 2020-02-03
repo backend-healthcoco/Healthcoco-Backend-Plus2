@@ -32,4 +32,6 @@ public interface DietPlansService {
 
 	public DietPlanTemplate getDietPlanTemplateById(String planId);
 
+	public DietPlanTemplate updateDietPlanTemplate();
+
 }

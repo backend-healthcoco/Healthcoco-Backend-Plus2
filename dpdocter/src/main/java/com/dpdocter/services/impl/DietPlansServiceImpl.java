@@ -472,6 +472,24 @@ public class DietPlansServiceImpl implements DietPlansService {
 				dietPlanTemplateCollection.setUpdatedTime(new Date());
 
 			}
+			
+			if(dietPlanTemplateCollection.getFromAge() != null) {
+				double fromYears = dietPlanTemplateCollection.getFromAge().getYears() 
+						+ (double)dietPlanTemplateCollection.getFromAge().getMonths()/12
+						+ (double)dietPlanTemplateCollection.getFromAge().getDays()/365; 
+
+				dietPlanTemplateCollection.setFromAgeInYears(fromYears);
+			}
+
+			if(dietPlanTemplateCollection.getToAge() != null) {
+				double toYears = dietPlanTemplateCollection.getToAge().getYears() 
+						+ (double)dietPlanTemplateCollection.getToAge().getMonths()/12
+						+ (double)dietPlanTemplateCollection.getToAge().getDays()/365; 
+
+				dietPlanTemplateCollection.setToAgeInYears(toYears);
+			}
+
+
 			dietPlanTemplateCollection = dietPlanTemplateRepository.save(dietPlanTemplateCollection);
 			response = new DietPlanTemplate();
 			BeanUtil.map(dietPlanTemplateCollection, response);
@@ -595,5 +613,39 @@ public class DietPlansServiceImpl implements DietPlansService {
 
 		}
 		return response;
+	}
+
+	@Override
+	public DietPlanTemplate updateDietPlanTemplate() {
+		try {
+			List<DietPlanTemplateCollection> dietPlanTemplateCollections = dietPlanTemplateRepository.findAll();
+				for(DietPlanTemplateCollection dietPlanTemplateCollection : dietPlanTemplateCollections) {
+					if(dietPlanTemplateCollection.getFromAge() != null) {
+						double fromYears = dietPlanTemplateCollection.getFromAge().getYears() 
+								+ (double)dietPlanTemplateCollection.getFromAge().getMonths()/12
+								+ (double)dietPlanTemplateCollection.getFromAge().getDays()/365; 
+
+						dietPlanTemplateCollection.setFromAgeInYears(fromYears);
+					}
+
+					if(dietPlanTemplateCollection.getToAge() != null) {
+						double toYears = dietPlanTemplateCollection.getToAge().getYears() 
+								+ (double)dietPlanTemplateCollection.getToAge().getMonths()/12
+								+ (double)dietPlanTemplateCollection.getToAge().getDays()/365; 
+
+						dietPlanTemplateCollection.setToAgeInYears(toYears);
+					}
+
+
+					dietPlanTemplateCollection = dietPlanTemplateRepository.save(dietPlanTemplateCollection);
+				}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + "Error while deleting Diet Plan Template: " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					" Error while deleting Diet Plan Template: " + e.getCause().getMessage());
+
+		}
+		return null;
 	}
 }

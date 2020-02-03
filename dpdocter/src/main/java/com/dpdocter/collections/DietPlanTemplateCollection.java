@@ -59,7 +59,16 @@ public class DietPlanTemplateCollection extends GenericCollection {
 	private List<FoodCommunity> communities;
 	@Field
 	private String templateName;
+	@Field
+	private String principle;
 	
+	public String getPrinciple() {
+		return principle;
+	}
+	public void setPrinciple(String principle) {
+		this.principle = principle;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}

@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.MultiField;
 
 import com.dpdocter.beans.Disease;
 import com.dpdocter.beans.EquivalentQuantities;
@@ -111,7 +112,7 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Text)
 	private String createdBy;
 
-	@Field(type = FieldType.Nested)
+	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> mealTiming;
 
 	@Field(type = FieldType.Nested)
@@ -198,6 +199,16 @@ public class ESRecipeDocument {
 	@Field(type = FieldType.Nested)
 	private List<Disease> diseases;
 	
+	@Field(type = FieldType.Text)
+	private String principle;
+	
+	public String getPrinciple() {
+		return principle;
+	}
+	public void setPrinciple(String principle) {
+		this.principle = principle;
+	}
+
 	public MealQuantity getCalories() {
 		return calories;
 	}

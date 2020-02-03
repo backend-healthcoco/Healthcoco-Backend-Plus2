@@ -67,7 +67,6 @@ import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Location;
-import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.Patient;
@@ -191,6 +190,7 @@ import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.AcadamicProfileRespository;
 import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.BirthAchievementRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
@@ -465,6 +465,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Autowired
 	private LoginService loginService;
 
+	@Autowired
+	private AcadamicProfileRespository acadamicProfileRespository;
+	
 	@Override
 	@Transactional
 	public User checkIfPatientExist(PatientRegistrationRequest request) {
@@ -1378,7 +1381,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	@Transactional
 	public RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId,
-			String hospitalId) {
+			String hospitalId, Boolean isSuperStar) {
 		RegisteredPatientDetails registeredPatientDetails = null;
 		PatientCollectionResponse patientCard = null;
 		List<Group> groups = null;
@@ -1436,32 +1439,37 @@ public class RegistrationServiceImpl implements RegistrationService {
 				BeanUtil.map(patientCard, patient);
 				patient.setPatientId(patientCard.getUserId());
 
-				Integer prescriptionCount = 0, clinicalNotesCount = 0, recordsCount = 0;
-				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
-					prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(
-							new ObjectId(patientCard.getDoctorId()), patientCard.getUser().getId(),
-							new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
-					clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(
-							new ObjectId(patientCard.getDoctorId()), patientCard.getUser().getId(),
-							new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
-					recordsCount = recordsRepository.getRecordsForOtherDoctors(new ObjectId(patientCard.getDoctorId()),
-							patientCard.getUser().getId(), new ObjectId(patientCard.getHospitalId()),
-							new ObjectId(patientCard.getLocationId()));
-				} else {
-					prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(
-							patientCard.getUser().getId(), new ObjectId(patientCard.getHospitalId()),
-							new ObjectId(patientCard.getLocationId()));
-					clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(
-							patientCard.getUser().getId(), new ObjectId(patientCard.getHospitalId()),
-							new ObjectId(patientCard.getLocationId()));
-					recordsCount = recordsRepository.getRecordsForOtherLocations(patientCard.getUser().getId(),
-							new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
-				}
+				if(isSuperStar) {
+					 Integer academicProfileCount = acadamicProfileRespository.countByUserId(userObjectId);
+					 if(academicProfileCount>0)patient.setIsDataAvailableWithOtherDoctor(true);
+				}else {
+					Integer prescriptionCount = 0, clinicalNotesCount = 0, recordsCount = 0;
+					if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
+						prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(
+								new ObjectId(patientCard.getDoctorId()), patientCard.getUser().getId(),
+								new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
+						clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(
+								new ObjectId(patientCard.getDoctorId()), patientCard.getUser().getId(),
+								new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
+						recordsCount = recordsRepository.getRecordsForOtherDoctors(new ObjectId(patientCard.getDoctorId()),
+								patientCard.getUser().getId(), new ObjectId(patientCard.getHospitalId()),
+								new ObjectId(patientCard.getLocationId()));
+					} else {
+						prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(
+								patientCard.getUser().getId(), new ObjectId(patientCard.getHospitalId()),
+								new ObjectId(patientCard.getLocationId()));
+						clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(
+								patientCard.getUser().getId(), new ObjectId(patientCard.getHospitalId()),
+								new ObjectId(patientCard.getLocationId()));
+						recordsCount = recordsRepository.getRecordsForOtherLocations(patientCard.getUser().getId(),
+								new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
+					}
 
-				if ((prescriptionCount != null && prescriptionCount > 0)
-						|| (clinicalNotesCount != null && clinicalNotesCount > 0)
-						|| (recordsCount != null && recordsCount > 0))
-					patient.setIsDataAvailableWithOtherDoctor(true);
+					if ((prescriptionCount != null && prescriptionCount > 0)
+							|| (clinicalNotesCount != null && clinicalNotesCount > 0)
+							|| (recordsCount != null && recordsCount > 0))
+						patient.setIsDataAvailableWithOtherDoctor(true);
+				}
 
 				patient.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId,
 						patientCard.getUser().getId().toString()));

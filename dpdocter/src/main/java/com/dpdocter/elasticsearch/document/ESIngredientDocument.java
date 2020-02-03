@@ -87,6 +87,16 @@ public class ESIngredientDocument {
 	@Field(type = FieldType.Nested)
 	private Map<String, String> otherNutrients;
 
+	@Field(type = FieldType.Text)
+	private String principle;
+	
+	public String getPrinciple() {
+		return principle;
+	}
+	public void setPrinciple(String principle) {
+		this.principle = principle;
+	}
+
 	public MealQuantity getCalories() {
 		return calories;
 	}

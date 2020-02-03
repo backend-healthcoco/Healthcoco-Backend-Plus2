@@ -196,6 +196,16 @@ public class RecipeCollection extends GenericCollection {
 	@Field
 	private List<DiseasesCollection> diseases;
 	
+	@Field
+	private String principle;
+	
+	public String getPrinciple() {
+		return principle;
+	}
+	public void setPrinciple(String principle) {
+		this.principle = principle;
+	}
+
 	public MealQuantity getFiber() {
 		return fiber;
 	}

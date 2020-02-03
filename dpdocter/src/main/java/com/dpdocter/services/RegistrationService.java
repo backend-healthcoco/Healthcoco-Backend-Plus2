@@ -49,7 +49,7 @@ public interface RegistrationService {
 			String hospitalId, String role, Boolean forChangeNumber);
 
 	RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId,
-			String hospitalId);
+			String hospitalId, Boolean isSuperStar);
 
 	Reference addEditReference(Reference referrence);
 

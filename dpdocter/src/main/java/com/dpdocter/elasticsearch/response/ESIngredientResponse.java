@@ -42,6 +42,15 @@ public class ESIngredientResponse {
 	
 	private Map<String, String> vitaminNutrients;
 
+	private String principle;
+	
+	public String getPrinciple() {
+		return principle;
+	}
+	public void setPrinciple(String principle) {
+		this.principle = principle;
+	}
+
 	public MealQuantity getCalories() {
 		return calories;
 	}

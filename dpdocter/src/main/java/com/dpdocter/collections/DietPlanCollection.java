@@ -36,7 +36,16 @@ public class DietPlanCollection extends GenericCollection {
 	private Boolean isPatientDiscarded = false;
 	@Field
 	private String advice;
+	@Field
+	private String principle;
 	
+	public String getPrinciple() {
+		return principle;
+	}
+	public void setPrinciple(String principle) {
+		this.principle = principle;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}

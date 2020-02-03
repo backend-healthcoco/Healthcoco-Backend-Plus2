@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.Recipe;
+import com.dpdocter.beans.DietPlan;
 import com.dpdocter.enums.MealTimeEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -40,7 +40,7 @@ public class NutritionEngineAPI {
 	@GET
 	@Path(PathProxy.NutritionEngineUrl.GET_RECIPES)
 	@ApiOperation(value = PathProxy.NutritionEngineUrl.GET_RECIPES)
-	public Response<Recipe> getRecipes(@PathParam("userId") String userId,
+	public Response<DietPlan> getRecipes(@PathParam("userId") String userId,
 			@MatrixParam(value = "mealTime") List<MealTimeEnum> mealTime,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId) {
@@ -49,8 +49,8 @@ public class NutritionEngineAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		
-		Response<Recipe> response = new Response<Recipe>();
-		response.setDataList(nutritionEngineService.getRecipes(userId, mealTime, doctorId, locationId, hospitalId));
+		Response<DietPlan> response = new Response<DietPlan>();
+		response.setData(nutritionEngineService.getRecipes(userId, mealTime, doctorId, locationId, hospitalId));
 		return response;
 	}
 

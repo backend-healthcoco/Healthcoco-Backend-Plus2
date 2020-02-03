@@ -53,6 +53,15 @@ public class Ingredient extends GenericCollection {
 	private Map<String, String> mineralNutrients;
 
 	private Map<String, String> otherNutrients;
+	
+	private String principle;
+	
+	public String getPrinciple() {
+		return principle;
+	}
+	public void setPrinciple(String principle) {
+		this.principle = principle;
+	}
 
 	public MealQuantity getCalories() {
 		return calories;
