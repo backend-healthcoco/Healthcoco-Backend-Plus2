@@ -13,6 +13,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.dpdocter.beans.AcadamicProfile;
 import com.dpdocter.beans.DentalAssessment;
@@ -20,12 +22,14 @@ import com.dpdocter.beans.ENTAssessment;
 import com.dpdocter.beans.EyeAssessment;
 import com.dpdocter.beans.GrowthAssessmentAndGeneralBioMetrics;
 import com.dpdocter.beans.NutritionAssessment;
+import com.dpdocter.beans.NutritionRDA;
 import com.dpdocter.beans.PhysicalAssessment;
 import com.dpdocter.beans.RegistrationDetails;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.AcadamicClassResponse;
 import com.dpdocter.response.NutritionSchoolAssociationResponse;
+import com.dpdocter.response.UserAssessment;
 import com.dpdocter.services.CampVisitService;
 
 import common.util.web.DPDoctorUtils;
@@ -311,5 +315,31 @@ public class CampVisitAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.CampVisitUrls.GET_RDA_FOR_USER)
+	@GET
+	@ApiOperation(value = PathProxy.CampVisitUrls.GET_RDA_FOR_USER, notes = PathProxy.CampVisitUrls.GET_RDA_FOR_USER)
+	public Response<NutritionRDA> getRDAForUser(@PathParam("academicProfileId") String academicProfileId, 
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId) {
+		if (academicProfileId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
 
+		Response<NutritionRDA> response = new Response<NutritionRDA>();
+		response.setData(campVisitService.getRDAForUser(academicProfileId, doctorId, locationId, hospitalId));
+		return response;
+	}
+	
+	@Path(value = PathProxy.CampVisitUrls.GET_USER_ASSESSMENT)
+	@GET
+	@ApiOperation(value = PathProxy.CampVisitUrls.GET_USER_ASSESSMENT, notes = PathProxy.CampVisitUrls.GET_USER_ASSESSMENT)
+	public Response<UserAssessment> getUserAssessment(@PathParam("academicProfileId") String academicProfileId,
+			@QueryParam(value = "doctorId") String doctorId) {
+		Response<UserAssessment> response = new Response<UserAssessment>();
+		if (DPDoctorUtils.anyStringEmpty(academicProfileId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Id should not null or Empty");
+		}
+		response.setData(campVisitService.getUserAssessment(academicProfileId, doctorId));
+		return response;
+	}
 }

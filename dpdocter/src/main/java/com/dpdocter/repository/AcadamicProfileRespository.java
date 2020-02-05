@@ -10,4 +10,6 @@ public interface AcadamicProfileRespository extends MongoRepository<AcadamicProf
 
 	@Query(value = "{'userId': ?0}", count = true)
 	Integer countByUserId(ObjectId userId);
+	
+	AcadamicProfileCollection findByUserId(ObjectId userId);
 }

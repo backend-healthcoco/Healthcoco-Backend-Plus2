@@ -85,6 +85,7 @@ import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserAddress;
 import com.dpdocter.beans.UserReminders;
+import com.dpdocter.collections.AcadamicProfileCollection;
 import com.dpdocter.collections.AdmitCardCollection;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.AppointmentGeneralFeedbackCollection;
@@ -1440,8 +1441,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patient.setPatientId(patientCard.getUserId());
 
 				if(isSuperStar) {
-					 Integer academicProfileCount = acadamicProfileRespository.countByUserId(userObjectId);
-					 if(academicProfileCount>0)patient.setIsDataAvailableWithOtherDoctor(true);
+					 AcadamicProfileCollection academicProfile = acadamicProfileRespository.findByUserId(userObjectId);
+					 if(academicProfile != null) {
+						 patient.setIsDataAvailableWithOtherDoctor(true);
+						 registeredPatientDetails.setIsSuperStar(academicProfile.getIsSuperStar());
+					 }
 				}else {
 					Integer prescriptionCount = 0, clinicalNotesCount = 0, recordsCount = 0;
 					if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {

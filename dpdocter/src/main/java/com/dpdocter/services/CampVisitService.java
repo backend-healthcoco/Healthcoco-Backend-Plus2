@@ -11,11 +11,13 @@ import com.dpdocter.beans.ENTAssessment;
 import com.dpdocter.beans.EyeAssessment;
 import com.dpdocter.beans.GrowthAssessmentAndGeneralBioMetrics;
 import com.dpdocter.beans.NutritionAssessment;
+import com.dpdocter.beans.NutritionRDA;
 import com.dpdocter.beans.PhysicalAssessment;
 import com.dpdocter.beans.RegistrationDetails;
 import com.dpdocter.response.AcadamicClassResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.NutritionSchoolAssociationResponse;
+import com.dpdocter.response.UserAssessment;
 
 public interface CampVisitService {
 
@@ -124,4 +126,8 @@ public interface CampVisitService {
 	
 	public List<AcadamicProfile> getProfile(int page, int size, String userId, Boolean discarded, String searchTerm);
 	public Integer countProfile(String userId, Boolean discarded, String searchTerm);
+
+	NutritionRDA getRDAForUser(String academicProfileId, String doctorId, String locationId, String hospitalId);
+
+	UserAssessment getUserAssessment(String academicProfileId, String doctorId);
 }

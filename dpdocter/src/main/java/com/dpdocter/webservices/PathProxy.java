@@ -2247,7 +2247,8 @@ public interface PathProxy {
 		public static final String GET_ACADAMIC_CLASSES = "acadamic/class/{branchId}/{schoolId}/get";
 		
 		public static final String GET_DOCTOR_ACADAMIC_PROFILE = "/profile/{userId}/get";
-		
+		public static final String GET_RDA_FOR_USER = "/rda/{academicProfileId}";
+		public static final String GET_USER_ASSESSMENT = "/userAssessment/{academicProfileId}";
 	}
 
 

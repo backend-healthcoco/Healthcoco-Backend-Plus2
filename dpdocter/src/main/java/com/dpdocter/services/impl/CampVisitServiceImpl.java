@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -29,6 +30,7 @@ import com.dpdocter.beans.ENTAssessment;
 import com.dpdocter.beans.EyeAssessment;
 import com.dpdocter.beans.GrowthAssessmentAndGeneralBioMetrics;
 import com.dpdocter.beans.NutritionAssessment;
+import com.dpdocter.beans.NutritionRDA;
 import com.dpdocter.beans.PhysicalAssessment;
 import com.dpdocter.beans.RegistrationDetails;
 import com.dpdocter.collections.AcadamicClassCollection;
@@ -40,8 +42,12 @@ import com.dpdocter.collections.ENTAssessmentCollection;
 import com.dpdocter.collections.EyeAssessmentCollection;
 import com.dpdocter.collections.GrowthAssessmentAndGeneralBioMetricsCollection;
 import com.dpdocter.collections.NutritionAssessmentCollection;
+import com.dpdocter.collections.NutritionRDACollection;
 import com.dpdocter.collections.NutritionSchoolAssociationCollection;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PatientLifeStyleCollection;
 import com.dpdocter.collections.PhysicalAssessmentCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -53,10 +59,12 @@ import com.dpdocter.repository.ENTAssessmentRepository;
 import com.dpdocter.repository.EyeAssessmentRepository;
 import com.dpdocter.repository.GrowthAssessmentAndGeneralBioMetricsRepository;
 import com.dpdocter.repository.NutritionAssessmentRepository;
+import com.dpdocter.repository.PatientLifeStyleRepository;
 import com.dpdocter.repository.PhysicalAssessmentRepository;
 import com.dpdocter.response.AcadamicClassResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.NutritionSchoolAssociationResponse;
+import com.dpdocter.response.UserAssessment;
 import com.dpdocter.services.CampVisitService;
 import com.dpdocter.services.FileManager;
 import com.mongodb.BasicDBObject;
@@ -88,7 +96,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 
 	@Autowired
 	private NutritionAssessmentRepository nutritionAssessmentRepository;
-
 	
 	@Autowired
 	private AcadamicProfileRespository acadamicProfileRespository;
@@ -102,6 +109,8 @@ public class CampVisitServiceImpl implements CampVisitService {
 	@Autowired
 	private FileManager fileManager;
 
+	@Autowired
+	private PatientLifeStyleRepository patientLifeStyleRepository;
 	@Override
 	@Transactional
 	public GrowthAssessmentAndGeneralBioMetrics addEditGrowthAssessmentAndGeneralBioMetrics(
@@ -1357,7 +1366,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 						Aggregation.lookup("acadamic_class_cl", "classId", "_id", "acadamicClass"),
 						Aggregation.unwind("acadamicClass"),
 						Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "acadamicSection"),
-						Aggregation.unwind("acadamicSection"), projectList,
+						Aggregation.unwind("acadamicSection", true), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "firstName")),
 
 						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
@@ -1367,7 +1376,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 						Aggregation.lookup("acadamic_class_cl", "classId", "_id", "acadamicClass"),
 						Aggregation.unwind("acadamicClass"),
 						Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "acadamicSection"),
-						Aggregation.unwind("acadamicSection"), projectList,
+						Aggregation.unwind("acadamicSection", true), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "firstName")));
 			}
 			response = mongoTemplate.aggregate(aggregation, AcadamicProfileCollection.class, AcadamicProfile.class)
@@ -1503,7 +1512,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 					Aggregation.lookup("acadamic_class_cl", "classId", "_id", "acadamicClass"),
 					Aggregation.unwind("acadamicClass"),
 					Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "acadamicSection"),
-					Aggregation.unwind("acadamicSection"),
+					Aggregation.unwind("acadamicSection", true),
 
 					new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id"))));
 
@@ -1688,9 +1697,9 @@ public class CampVisitServiceImpl implements CampVisitService {
 
 
 						Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "section"),
-						Aggregation.unwind("section"),
+						Aggregation.unwind("section", true),
 						Aggregation.lookup("acadamic_profile_cl", "teacherId", "_id", "teacher"),
-						Aggregation.unwind("teacher"), projectList,
+						Aggregation.unwind("teacher", true), projectList,
 
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 
@@ -1700,9 +1709,9 @@ public class CampVisitServiceImpl implements CampVisitService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 
 						Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "section"),
-						Aggregation.unwind("section"),
+						Aggregation.unwind("section", true),
 						Aggregation.lookup("acadamic_profile_cl", "teacherId", "_id", "teacher"),
-						Aggregation.unwind("teacher"), projectList,
+						Aggregation.unwind("teacher", true), projectList,
 
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			}
@@ -1743,9 +1752,9 @@ public class CampVisitServiceImpl implements CampVisitService {
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "section"),
-					Aggregation.unwind("section"),
+					Aggregation.unwind("section", true),
 					Aggregation.lookup("acadamic_profile_cl", "teacherId", "_id", "teacher"),
-					Aggregation.unwind("teacher"), projectList);
+					Aggregation.unwind("teacher", true), projectList);
 			response = mongoTemplate.aggregate(aggregation, AcadamicClassCollection.class, AcadamicClassResponse.class)
 					.getMappedResults().size();
 
@@ -1892,6 +1901,125 @@ public class CampVisitServiceImpl implements CampVisitService {
 			e.printStackTrace();
 			logger.error(e + " Error occured while count Student Profile List");
 			throw new BusinessException(ServiceError.Unknown, "Error occured while count Student Profile list");
+		}
+		return response;
+	}
+
+	@Override
+	public NutritionRDA getRDAForUser(String academicProfileId, String doctorId, String locationId, String hospitalId) {
+		NutritionRDA response = null;
+		try {
+			AcadamicProfileCollection acadamicProfileCollection = acadamicProfileRespository.findById(new ObjectId(academicProfileId)).orElse(null);
+			if(acadamicProfileCollection == null) {
+				logger.warn("No academic profile found with this Id");
+				throw new BusinessException(ServiceError.InvalidInput, "No academic profile found with this Id");
+			}
+//			UserCollection userCollection = userRepository.findById(new ObjectId(patientId)).orElse(null);
+//			if(userCollection == null) {
+//				logger.warn("No user found with this Id");
+//				throw new BusinessException(ServiceError.InvalidInput, "No user found with this Id");
+//			}
+//			PatientCollection patientCollection = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
+//					new ObjectId(patientId), !DPDoctorUtils.anyStringEmpty(doctorId) ? new ObjectId(doctorId) : null, 
+//							!DPDoctorUtils.anyStringEmpty(locationId) ? new ObjectId(locationId) : null,
+//							!DPDoctorUtils.anyStringEmpty(hospitalId) ? new ObjectId(hospitalId) : null);
+//			
+//			if(patientCollection == null){
+//				logger.warn("No patient found with this Id");
+//				throw new BusinessException(ServiceError.InvalidInput, "No patient found with this Id");
+//			}
+			
+			if(acadamicProfileCollection.getAddress() == null || DPDoctorUtils.allStringsEmpty(acadamicProfileCollection.getAddress().getCountry())) {
+				logger.warn("Patient country is null or empty");
+				throw new BusinessException(ServiceError.InvalidInput, "Patient country is null or empty");
+			}
+			
+			if(DPDoctorUtils.allStringsEmpty(acadamicProfileCollection.getGender())) {
+				logger.warn("Patient gender is null or empty");
+				throw new BusinessException(ServiceError.InvalidInput, "Patient gender is null or empty");
+			}
+			
+			if(acadamicProfileCollection.getDob() == null) {
+				logger.warn("Patient date of birth is null or empty");
+				throw new BusinessException(ServiceError.InvalidInput, "Patient date of birth is null or empty");
+			}
+			
+			List<PatientLifeStyleCollection> patientLifeStyleCollections = patientLifeStyleRepository.findByPatientId(acadamicProfileCollection.getUserId(), 
+					PageRequest.of(0, 1, new Sort(Direction.DESC, "createdTime")));
+			if(patientLifeStyleCollections == null || patientLifeStyleCollections.isEmpty()) {
+				logger.warn("No assessment is set for this patient");
+				throw new BusinessException(ServiceError.InvalidInput, "No assessment is set for this patient");
+			}
+			Criteria criteria = new Criteria("country").is(acadamicProfileCollection.getAddress().getCountry())
+					.and("gender").is(acadamicProfileCollection.getGender())
+					.and("type").is(patientLifeStyleCollections.get(0).getType());
+			
+			double ageInYears = acadamicProfileCollection.getDob().getAge().getYears() 
+					+ (double)acadamicProfileCollection.getDob().getAge().getMonths()/12
+					+ (double)acadamicProfileCollection.getDob().getAge().getDays()/365; 
+
+			criteria.and("fromAgeInYears").lte(ageInYears).and("toAgeInYears").gte(ageInYears);
+					
+			if(patientLifeStyleCollections.get(0).getPregnancyCategory() == null || patientLifeStyleCollections.get(0).getPregnancyCategory().isEmpty()) {
+				List<String> emptyArr = new ArrayList<String>();
+				criteria.orOperator(new Criteria("pregnancyCategory").is(null), new Criteria("pregnancyCategory").is(emptyArr));
+			}else criteria.and("pregnancyCategory").is(patientLifeStyleCollections.get(0).getPregnancyCategory());
+			
+			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), NutritionRDACollection.class ,NutritionRDA.class).getUniqueMappedResult(); 
+		}catch(BusinessException e) {
+			logger.error("Error while getting RDA for user " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting RDA for user " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public UserAssessment getUserAssessment(String academicProfileId, String doctorId) {
+		UserAssessment response = new UserAssessment();
+		try {
+			response.setRegistrationDetails(getAcadamicProfile(academicProfileId));
+			Criteria criteria = new Criteria("academicProfileId").is(new ObjectId(academicProfileId)).and("discarded").is(false);
+			
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			GrowthAssessmentAndGeneralBioMetrics growthAssessmentAndGeneralBioMetrics = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(Direction.DESC, "createdTime"),
+							Aggregation.limit(1)), GrowthAssessmentAndGeneralBioMetricsCollection.class, GrowthAssessmentAndGeneralBioMetrics.class).getUniqueMappedResult();
+			response.setGrowthAssessmentAndGeneralBioMetrics(growthAssessmentAndGeneralBioMetrics);
+			
+			PhysicalAssessment physicalAssessment = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(Direction.DESC, "createdTime"),
+							Aggregation.limit(1)), PhysicalAssessmentCollection.class, PhysicalAssessment.class).getUniqueMappedResult();
+			response.setPhysicalAssessment(physicalAssessment);
+			
+			
+			ENTAssessment entAssessment = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(Direction.DESC, "createdTime"),
+							Aggregation.limit(1)), ENTAssessmentCollection.class, ENTAssessment.class).getUniqueMappedResult();
+			response.setEntAssessment(entAssessment);
+			
+			DentalAssessment dentalAssessment = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(Direction.DESC, "createdTime"),
+							Aggregation.limit(1)), DentalAssessmentCollection.class, DentalAssessment.class).getUniqueMappedResult();
+			response.setDentalAssessment(dentalAssessment);
+			
+			EyeAssessment eyeAssessment = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(Direction.DESC, "createdTime"),
+							Aggregation.limit(1)), EyeAssessmentCollection.class, EyeAssessment.class).getUniqueMappedResult();
+			
+			response.setEyeAssessment(eyeAssessment);
+			
+			NutritionAssessment nutritionAssessment = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(Direction.DESC, "createdTime"),
+							Aggregation.limit(1)), NutritionAssessmentCollection.class, NutritionAssessment.class).getUniqueMappedResult();
+			
+			response.setNutritionAssessment(nutritionAssessment);
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return response;
 	}

@@ -74,6 +74,8 @@ public class RegisteredPatientDetails extends GenericCollection {
 
 	private String landlineNumber;
 	
+	private Boolean isSuperStar = false;
+	
 	public List<UserNutritionSubscriptionResponse> getUserNutritionSubscriptions() {
 		return userNutritionSubscriptions;
 	}
@@ -332,6 +334,14 @@ public class RegisteredPatientDetails extends GenericCollection {
 		this.landlineNumber = landlineNumber;
 	}
 
+	public Boolean getIsSuperStar() {
+		return isSuperStar;
+	}
+
+	public void setIsSuperStar(Boolean isSuperStar) {
+		this.isSuperStar = isSuperStar;
+	}
+
 	@Override
 	public String toString() {
 		return "RegisteredPatientDetails [firstName=" + firstName + ", localPatientName=" + localPatientName
@@ -345,7 +355,6 @@ public class RegisteredPatientDetails extends GenericCollection {
 				+ consultantDoctorIds + ", isPatientDiscarded=" + isPatientDiscarded + ", PNUM=" + PNUM
 				+ ", userNutritionSubscriptions=" + userNutritionSubscriptions + ", isChild=" + isChild
 				+ ", fatherName=" + fatherName + ", motherName=" + motherName + ", landlineNumber=" + landlineNumber
-				+ "]";
+				+ ", isSuperStar=" + isSuperStar + "]";
 	}
-
 }

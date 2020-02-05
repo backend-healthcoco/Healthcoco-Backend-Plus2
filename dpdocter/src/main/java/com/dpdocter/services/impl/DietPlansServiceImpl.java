@@ -537,10 +537,10 @@ public class DietPlansServiceImpl implements DietPlansService {
 				criteria.and("country").is(country);
 			
 			if (fromAge!= null)
-				criteria.and("fromAgeInYears").gte(fromAge);
+				criteria.and("fromAgeInYears").lte(fromAge);
 			
 			if (toAge!= null)
-				criteria.and("toAgeInYears").lte(toAge);
+				criteria.and("toAgeInYears").gte(toAge);
 			
 			if (!DPDoctorUtils.anyStringEmpty(community))
 				criteria.and("communities.value").is(community);
