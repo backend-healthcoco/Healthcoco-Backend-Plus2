@@ -798,12 +798,13 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
 
 	// Appointment Reminder to Doctor, if appointment > 0
-	@Scheduled(cron = "${appointment.reminder.to.doctor.cron.time}", zone = "IST")
+	@Scheduled(cron = "0 0 22 * * ?", zone = "IST")
+//	@Scheduled(cron = "${appointment.reminder.to.doctor.cron.time}", zone = "IST")
 	@Override
 	@Transactional
 	public void sendReminderToDoctor() {
 		try {
-			if (sendSMS) {
+	//		if (sendSMS) {
 				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 				localCalendar.setTime(new Date());
@@ -899,7 +900,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 //								null, response.getUserDevices());
 					}
 				}
-			}
+	//		}
 			sendAppointmentScheduleToClinicAdmin();
 		} catch (Exception e) {
 			e.printStackTrace();
