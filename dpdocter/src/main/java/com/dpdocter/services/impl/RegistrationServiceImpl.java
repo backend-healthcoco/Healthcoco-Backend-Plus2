@@ -1265,6 +1265,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 							}
 							user.setIsPartOfClinic(isPartOfClinic);
 							user.setIsPartOfConsultantDoctor(isPartOfConsultantDoctor);
+							AcadamicProfileCollection academicProfile = acadamicProfileRespository.findByUserId(new ObjectId(userLookupResponse.getId()));
+							if(academicProfile != null) {
+								user.setIsSuperStar(academicProfile.getIsSuperStar());
+							}
 						}
 						if(forChangeNumber) {
 							if(!user.getIsPartOfClinic())users.add(user);
@@ -1382,7 +1386,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	@Transactional
 	public RegisteredPatientDetails getPatientProfileByUserId(String userId, String doctorId, String locationId,
-			String hospitalId, Boolean isSuperStar) {
+			String hospitalId) {
 		RegisteredPatientDetails registeredPatientDetails = null;
 		PatientCollectionResponse patientCard = null;
 		List<Group> groups = null;
@@ -1440,13 +1444,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 				BeanUtil.map(patientCard, patient);
 				patient.setPatientId(patientCard.getUserId());
 
-				if(isSuperStar) {
-					 AcadamicProfileCollection academicProfile = acadamicProfileRespository.findByUserId(userObjectId);
-					 if(academicProfile != null) {
+				AcadamicProfileCollection academicProfile = acadamicProfileRespository.findByUserId(userObjectId);
+				if(academicProfile != null) {
 						 patient.setIsDataAvailableWithOtherDoctor(true);
 						 registeredPatientDetails.setIsSuperStar(academicProfile.getIsSuperStar());
-					 }
-				}else {
+				}
+				
 					Integer prescriptionCount = 0, clinicalNotesCount = 0, recordsCount = 0;
 					if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
 						prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(
@@ -1473,7 +1476,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 							|| (clinicalNotesCount != null && clinicalNotesCount > 0)
 							|| (recordsCount != null && recordsCount > 0))
 						patient.setIsDataAvailableWithOtherDoctor(true);
-				}
+				
 
 				patient.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId,
 						patientCard.getUser().getId().toString()));

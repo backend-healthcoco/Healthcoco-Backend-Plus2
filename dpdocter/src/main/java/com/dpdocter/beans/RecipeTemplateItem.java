@@ -119,7 +119,15 @@ public class RecipeTemplateItem extends GenericCollection {
 	private List<NutrientGoal> nutrientGoals;
 	private List<Disease> diseases;
 	private String principle;
+	private Map<String, String> multilingualName;
 	
+	public Map<String, String> getMultilingualName() {
+		return multilingualName;
+	}
+
+	public void setMultilingualName(Map<String, String> multilingualName) {
+		this.multilingualName = multilingualName;
+	}
 	public String getPrinciple() {
 		return principle;
 	}
@@ -638,6 +646,7 @@ public class RecipeTemplateItem extends GenericCollection {
 				+ isProBiotic + ", cookingMethod=" + cookingMethod + ", medicineDosage=" + medicineDosage
 				+ ", foodPreparationTemperature=" + foodPreparationTemperature + ", communities=" + communities
 				+ ", foodGroups=" + foodGroups + ", nutrientTypes=" + nutrientTypes + ", nutrientGoals=" + nutrientGoals
-				+ ", diseases=" + diseases + "]";
+				+ ", diseases=" + diseases + ", principle=" + principle + ", multilingualName=" + multilingualName
+				+ "]";
 	}
 }

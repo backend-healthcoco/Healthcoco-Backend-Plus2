@@ -2080,6 +2080,7 @@ public interface PathProxy {
 		public static final String DELETE_DIET_PLAN_TEMPLATE = "/template/{planId}/delete";
 		public static final String GET_DIET_PLAN_TEMPLATE = "/template/{planId}/get";
 		public static final String UPDATE_DIET_PLAN_TEMPLATE = "/template/update";
+		public static final String GET_LANGUAGES = "/language";
 	}
 
 	public static final String COUNTER_BASE_URL = BASE_URL + "/counter";

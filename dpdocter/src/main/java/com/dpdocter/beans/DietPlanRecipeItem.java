@@ -51,6 +51,16 @@ public class DietPlanRecipeItem {
 	
 	private String principle;
 	
+	private Map<ObjectId, String> multilingualName;
+	
+	public Map<ObjectId, String> getMultilingualName() {
+		return multilingualName;
+	}
+
+	public void setMultilingualName(Map<ObjectId, String> multilingualName) {
+		this.multilingualName = multilingualName;
+	}
+	
 	public String getPrinciple() {
 		return principle;
 	}
@@ -234,6 +244,6 @@ public class DietPlanRecipeItem {
 				+ lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", mineralNutrients="
 				+ mineralNutrients + ", otherNutrients=" + otherNutrients + ", vitaminNutrients=" + vitaminNutrients
 				+ ", equivalentMeasurements=" + equivalentMeasurements + ", advice=" + advice + ", option=" + option
-				+ "]";
-	}	
+				+ ", principle=" + principle + ", multilingualName=" + multilingualName + "]";
+	}
 }

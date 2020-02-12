@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -13,6 +14,7 @@ import com.dpdocter.beans.Age;
 import com.dpdocter.beans.DietplanItem;
 import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.MealQuantity;
+import com.dpdocter.beans.NutritionDisease;
 import com.dpdocter.enums.LifeStyleType;
 @Document(collection = "diet_plan_template_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
@@ -61,7 +63,23 @@ public class DietPlanTemplateCollection extends GenericCollection {
 	private String templateName;
 	@Field
 	private String principle;
+	@Field
+	private String foodPreference;
+	@Field
+	private List<NutritionDisease> diseases;
+	@Field
+	private double bmiFrom;
+	@Field
+	private double bmiTo;
+	@Field
+	private Map<ObjectId, String> multilingualTemplateName;
 	
+	public Map<ObjectId, String> getMultilingualTemplateName() {
+		return multilingualTemplateName;
+	}
+	public void setMultilingualTemplateName(Map<ObjectId, String> multilingualTemplateName) {
+		this.multilingualTemplateName = multilingualTemplateName;
+	}
 	public String getPrinciple() {
 		return principle;
 	}
@@ -236,7 +254,30 @@ public class DietPlanTemplateCollection extends GenericCollection {
 	public void setTemplateName(String templateName) {
 		this.templateName = templateName;
 	}
-
+	public String getFoodPreference() {
+		return foodPreference;
+	}
+	public void setFoodPreference(String foodPreference) {
+		this.foodPreference = foodPreference;
+	}
+	public List<NutritionDisease> getDiseases() {
+		return diseases;
+	}
+	public void setDiseases(List<NutritionDisease> diseases) {
+		this.diseases = diseases;
+	}
+	public double getBmiFrom() {
+		return bmiFrom;
+	}
+	public void setBmiFrom(double bmiFrom) {
+		this.bmiFrom = bmiFrom;
+	}
+	public double getBmiTo() {
+		return bmiTo;
+	}
+	public void setBmiTo(double bmiTo) {
+		this.bmiTo = bmiTo;
+	}
 	@Override
 	public String toString() {
 		return "DietPlanTemplateCollection [id=" + id + ", uniquePlanId=" + uniquePlanId + ", doctorId=" + doctorId
@@ -245,7 +286,8 @@ public class DietPlanTemplateCollection extends GenericCollection {
 				+ isPatientDiscarded + ", advice=" + advice + ", country=" + country + ", fromAge=" + fromAge
 				+ ", toAge=" + toAge + ", fromAgeInYears=" + fromAgeInYears + ", toAgeInYears=" + toAgeInYears
 				+ ", gender=" + gender + ", type=" + type + ", pregnancyCategory=" + pregnancyCategory
-				+ ", communities=" + communities + ", templateName=" + templateName + "]";
+				+ ", communities=" + communities + ", templateName=" + templateName + ", principle=" + principle
+				+ ", foodPreference=" + foodPreference + ", diseases=" + diseases + ", bmiFrom=" + bmiFrom + ", bmiTo="
+				+ bmiTo + ", multilingualTemplateName=" + multilingualTemplateName + "]";
 	}
-
 }

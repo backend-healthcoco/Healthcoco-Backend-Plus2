@@ -1,6 +1,7 @@
 package com.dpdocter.request;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.MealQuantity;
@@ -25,7 +26,16 @@ public class RecipeCounterAddItem {
 	private MealQuantity carbohydrate;
 
 	private MealQuantity fiber;
+	
+	private Map<String, String> multilingualName;
+	
+	public Map<String, String> getMultilingualName() {
+		return multilingualName;
+	}
 
+	public void setMultilingualName(Map<String, String> multilingualName) {
+		this.multilingualName = multilingualName;
+	}
 	public String getId() {
 		return id;
 	}
@@ -106,4 +116,11 @@ public class RecipeCounterAddItem {
 		this.fiber = fiber;
 	}
 
+	@Override
+	public String toString() {
+		return "RecipeCounterAddItem [id=" + id + ", name=" + name + ", quantity=" + quantity + ", note=" + note
+				+ ", calories=" + calories + ", equivalentMeasurements=" + equivalentMeasurements + ", fat=" + fat
+				+ ", protein=" + protein + ", carbohydrate=" + carbohydrate + ", fiber=" + fiber + ", multilingualName="
+				+ multilingualName + "]";
+	}
 }

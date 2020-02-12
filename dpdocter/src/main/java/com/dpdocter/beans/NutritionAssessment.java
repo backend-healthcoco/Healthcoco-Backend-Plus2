@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.LifeStyleType;
 import com.dpdocter.response.ImageURLResponse;
 
 public class NutritionAssessment extends GenericCollection {
@@ -39,6 +40,9 @@ public class NutritionAssessment extends GenericCollection {
 	private Long familyIncomePerMonth;
 	private Boolean discarded = Boolean.FALSE;
 	private String otherTests;
+	private LifeStyleType type;
+	private List<FoodCommunity> communities;
+	private List<NutritionDisease> diseases;
 	
 	public String getId() {
 		return id;
@@ -296,6 +300,30 @@ public class NutritionAssessment extends GenericCollection {
 		this.exerciseTimeDuration = exerciseTimeDuration;
 	}
 
+	public LifeStyleType getType() {
+		return type;
+	}
+
+	public void setType(LifeStyleType type) {
+		this.type = type;
+	}
+
+	public List<FoodCommunity> getCommunities() {
+		return communities;
+	}
+
+	public void setCommunities(List<FoodCommunity> communities) {
+		this.communities = communities;
+	}
+
+	public List<NutritionDisease> getDiseases() {
+		return diseases;
+	}
+
+	public void setDiseases(List<NutritionDisease> diseases) {
+		this.diseases = diseases;
+	}
+
 	@Override
 	public String toString() {
 		return "NutritionAssessment [id=" + id + ", academicProfileId=" + academicProfileId + ", branchId=" + branchId
@@ -310,7 +338,7 @@ public class NutritionAssessment extends GenericCollection {
 				+ ", oilConsumpationPerMonth=" + oilConsumpationPerMonth + ", foodSource=" + foodSource
 				+ ", cravingItems=" + cravingItems + ", idealTimeForFeedback=" + idealTimeForFeedback
 				+ ", clinicalManifestation=" + clinicalManifestation + ", familyIncomePerMonth=" + familyIncomePerMonth
-				+ ", discarded=" + discarded + ", otherTests=" + otherTests + "]";
+				+ ", discarded=" + discarded + ", otherTests=" + otherTests + ", type=" + type + ", communities="
+				+ communities + ", diseases=" + diseases + "]";
 	}
-
 }

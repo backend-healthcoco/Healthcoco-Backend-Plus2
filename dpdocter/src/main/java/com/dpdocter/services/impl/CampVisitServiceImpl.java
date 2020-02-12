@@ -1914,20 +1914,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 				logger.warn("No academic profile found with this Id");
 				throw new BusinessException(ServiceError.InvalidInput, "No academic profile found with this Id");
 			}
-//			UserCollection userCollection = userRepository.findById(new ObjectId(patientId)).orElse(null);
-//			if(userCollection == null) {
-//				logger.warn("No user found with this Id");
-//				throw new BusinessException(ServiceError.InvalidInput, "No user found with this Id");
-//			}
-//			PatientCollection patientCollection = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
-//					new ObjectId(patientId), !DPDoctorUtils.anyStringEmpty(doctorId) ? new ObjectId(doctorId) : null, 
-//							!DPDoctorUtils.anyStringEmpty(locationId) ? new ObjectId(locationId) : null,
-//							!DPDoctorUtils.anyStringEmpty(hospitalId) ? new ObjectId(hospitalId) : null);
-//			
-//			if(patientCollection == null){
-//				logger.warn("No patient found with this Id");
-//				throw new BusinessException(ServiceError.InvalidInput, "No patient found with this Id");
-//			}
 			
 			if(acadamicProfileCollection.getAddress() == null || DPDoctorUtils.allStringsEmpty(acadamicProfileCollection.getAddress().getCountry())) {
 				logger.warn("Patient country is null or empty");
@@ -1944,15 +1930,17 @@ public class CampVisitServiceImpl implements CampVisitService {
 				throw new BusinessException(ServiceError.InvalidInput, "Patient date of birth is null or empty");
 			}
 			
-			List<PatientLifeStyleCollection> patientLifeStyleCollections = patientLifeStyleRepository.findByPatientId(acadamicProfileCollection.getUserId(), 
-					PageRequest.of(0, 1, new Sort(Direction.DESC, "createdTime")));
-			if(patientLifeStyleCollections == null || patientLifeStyleCollections.isEmpty()) {
+			NutritionAssessmentCollection nutritionAssessment = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("academicProfileId").is(new ObjectId(academicProfileId)).and("discarded").is(false)), Aggregation.sort(Direction.DESC, "createdTime"),
+							Aggregation.limit(1)), NutritionAssessmentCollection.class, NutritionAssessmentCollection.class).getUniqueMappedResult();
+			
+			if(nutritionAssessment == null) {
 				logger.warn("No assessment is set for this patient");
 				throw new BusinessException(ServiceError.InvalidInput, "No assessment is set for this patient");
 			}
 			Criteria criteria = new Criteria("country").is(acadamicProfileCollection.getAddress().getCountry())
 					.and("gender").is(acadamicProfileCollection.getGender())
-					.and("type").is(patientLifeStyleCollections.get(0).getType());
+					.and("type").is(nutritionAssessment.getType());
 			
 			double ageInYears = acadamicProfileCollection.getDob().getAge().getYears() 
 					+ (double)acadamicProfileCollection.getDob().getAge().getMonths()/12
@@ -1960,10 +1948,8 @@ public class CampVisitServiceImpl implements CampVisitService {
 
 			criteria.and("fromAgeInYears").lte(ageInYears).and("toAgeInYears").gte(ageInYears);
 					
-			if(patientLifeStyleCollections.get(0).getPregnancyCategory() == null || patientLifeStyleCollections.get(0).getPregnancyCategory().isEmpty()) {
-				List<String> emptyArr = new ArrayList<String>();
+			List<String> emptyArr = new ArrayList<String>();
 				criteria.orOperator(new Criteria("pregnancyCategory").is(null), new Criteria("pregnancyCategory").is(emptyArr));
-			}else criteria.and("pregnancyCategory").is(patientLifeStyleCollections.get(0).getPregnancyCategory());
 			
 			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), NutritionRDACollection.class ,NutritionRDA.class).getUniqueMappedResult(); 
 		}catch(BusinessException e) {

@@ -7,9 +7,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.FoodPattern;
 import com.dpdocter.beans.MealTiming;
+import com.dpdocter.beans.NutritionDisease;
 import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.enums.LifeStyleType;
 import com.dpdocter.response.Drug;
 import com.dpdocter.response.ImageURLResponse;
 
@@ -81,6 +84,13 @@ public class NutritionAssessmentCollection extends GenericCollection {
 
 	@Field
 	private String otherTests;
+	@Field
+	private LifeStyleType type;
+	
+	@Field
+	private List<FoodCommunity> communities;
+	@Field
+	private List<NutritionDisease> diseases;
 	
 	public ObjectId getId() {
 		return id;
@@ -338,6 +348,30 @@ public class NutritionAssessmentCollection extends GenericCollection {
 		this.exerciseTimeDuration = exerciseTimeDuration;
 	}
 
+	public LifeStyleType getType() {
+		return type;
+	}
+
+	public void setType(LifeStyleType type) {
+		this.type = type;
+	}
+
+	public List<FoodCommunity> getCommunities() {
+		return communities;
+	}
+
+	public void setCommunities(List<FoodCommunity> communities) {
+		this.communities = communities;
+	}
+
+	public List<NutritionDisease> getDiseases() {
+		return diseases;
+	}
+
+	public void setDiseases(List<NutritionDisease> diseases) {
+		this.diseases = diseases;
+	}
+
 	@Override
 	public String toString() {
 		return "NutritionAssessmentCollection [id=" + id + ", academicProfileId=" + academicProfileId + ", branchId="
@@ -352,7 +386,7 @@ public class NutritionAssessmentCollection extends GenericCollection {
 				+ ", noOfFamilyMembers=" + noOfFamilyMembers + ", oilConsumpationPerMonth=" + oilConsumpationPerMonth
 				+ ", foodSource=" + foodSource + ", cravingItems=" + cravingItems + ", idealTimeForFeedback="
 				+ idealTimeForFeedback + ", clinicalManifestation=" + clinicalManifestation + ", familyIncomePerMonth="
-				+ familyIncomePerMonth + ", discarded=" + discarded + ", otherTests=" + otherTests + "]";
+				+ familyIncomePerMonth + ", discarded=" + discarded + ", otherTests=" + otherTests + ", type=" + type
+				+ ", communities=" + communities + ", diseases=" + diseases + "]";
 	}
-
 }

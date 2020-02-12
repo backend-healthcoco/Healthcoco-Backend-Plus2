@@ -280,7 +280,7 @@ public class RegistrationApi {
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE, notes = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE, response = Response.class)
 	public Response<RegisteredPatientDetails> getPatientProfile(@PathParam("userId") String userId,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId, @DefaultValue("false") @QueryParam("isSuperStar") Boolean isSuperStar) {
+			@QueryParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -289,7 +289,7 @@ public class RegistrationApi {
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 
 		RegisteredPatientDetails registeredPatientDetails = registrationService.getPatientProfileByUserId(userId,
-				doctorId, locationId, hospitalId, isSuperStar);
+				doctorId, locationId, hospitalId);
 		if (registeredPatientDetails != null) {
 			registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 			registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));

@@ -1,6 +1,7 @@
 package com.dpdocter.response;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dpdocter.beans.EquivalentQuantities;
 import com.dpdocter.beans.MealQuantity;
@@ -29,7 +30,17 @@ public class RecipeItemResponse {
 	private MealQuantity carbohydrate;
 
 	private MealQuantity fiber;
+	
+	private Map<String, String> multilingualName;
+	
+	public Map<String, String> getMultilingualName() {
+		return multilingualName;
+	}
 
+	public void setMultilingualName(Map<String, String> multilingualName) {
+		this.multilingualName = multilingualName;
+	}
+	
 	public String getId() {
 		return id;
 	}
@@ -118,4 +129,11 @@ public class RecipeItemResponse {
 		this.costType = costType;
 	}
 
+	@Override
+	public String toString() {
+		return "RecipeItemResponse [id=" + id + ", name=" + name + ", cost=" + cost + ", costType=" + costType
+				+ ", quantity=" + quantity + ", equivalentMeasurements=" + equivalentMeasurements + ", calories="
+				+ calories + ", fat=" + fat + ", protein=" + protein + ", carbohydrate=" + carbohydrate + ", fiber="
+				+ fiber + ", multilingualName=" + multilingualName + "]";
+	}
 }

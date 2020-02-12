@@ -985,7 +985,11 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 													new BasicDBObject("$first", "$locationAdminEmailAddress"))
 											.append("userDevices", new BasicDBObject("$first", "$userDevices"))
 											.append("drAppointments",
-													new BasicDBObject("$push", "$drAppointments")))));
+													new BasicDBObject("$addToSet", "$drAppointments")))),
+									
+									new CustomAggregationOperation(new Document("$sort",
+											new BasicDBObject("drAppointments.time.fromTime", 1)))		
+									);
 
 
 					List<LocationAdminAppointmentLookupResponse> aggregationResults = mongoTemplate

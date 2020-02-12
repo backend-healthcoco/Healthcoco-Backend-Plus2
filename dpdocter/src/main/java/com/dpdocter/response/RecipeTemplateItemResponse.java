@@ -123,6 +123,15 @@ public class RecipeTemplateItemResponse {
 	private List<NutrientGoal> nutrientGoals;
 	private List<Disease> diseases;
 	private String principle;
+	private Map<String, String> multilingualName;
+	
+	public Map<String, String> getMultilingualName() {
+		return multilingualName;
+	}
+
+	public void setMultilingualName(Map<String, String> multilingualName) {
+		this.multilingualName = multilingualName;
+	}
 	
 	public String getPrinciple() {
 		return principle;
@@ -496,6 +505,7 @@ public class RecipeTemplateItemResponse {
 	public void setDiseases(List<Disease> diseases) {
 		this.diseases = diseases;
 	}
+
 	@Override
 	public String toString() {
 		return "RecipeTemplateItemResponse [id=" + id + ", quantity=" + quantity + ", mealTime=" + mealTime
@@ -519,6 +529,7 @@ public class RecipeTemplateItemResponse {
 				+ isProBiotic + ", cookingMethod=" + cookingMethod + ", medicineDosage=" + medicineDosage
 				+ ", foodPreparationTemperature=" + foodPreparationTemperature + ", communities=" + communities
 				+ ", foodGroups=" + foodGroups + ", nutrientTypes=" + nutrientTypes + ", nutrientGoals=" + nutrientGoals
-				+ ", diseases=" + diseases + "]";
+				+ ", diseases=" + diseases + ", principle=" + principle + ", multilingualName=" + multilingualName
+				+ "]";
 	}
 }

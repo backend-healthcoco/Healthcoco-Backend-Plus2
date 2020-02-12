@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.LifeStyleType;
@@ -49,6 +50,22 @@ public class DietPlanTemplate extends GenericCollection {
 	
 	private String principle;
 	
+	private String foodPreference;
+	
+	private List<NutritionDisease> diseases;
+	
+	private double bmiFrom;
+	
+	private double bmiTo;
+	
+	private Map<String, String> multilingualTemplateName;
+	
+	public Map<String, String> getMultilingualTemplateName() {
+		return multilingualTemplateName;
+	}
+	public void setMultilingualTemplateName(Map<String, String> multilingualTemplateName) {
+		this.multilingualTemplateName = multilingualTemplateName;
+	}
 	public String getPrinciple() {
 		return principle;
 	}
@@ -215,7 +232,30 @@ public class DietPlanTemplate extends GenericCollection {
 	public void setTemplateName(String templateName) {
 		this.templateName = templateName;
 	}
-
+	public String getFoodPreference() {
+		return foodPreference;
+	}
+	public void setFoodPreference(String foodPreference) {
+		this.foodPreference = foodPreference;
+	}
+	public List<NutritionDisease> getDiseases() {
+		return diseases;
+	}
+	public void setDiseases(List<NutritionDisease> diseases) {
+		this.diseases = diseases;
+	}
+	public double getBmiFrom() {
+		return bmiFrom;
+	}
+	public void setBmiFrom(double bmiFrom) {
+		this.bmiFrom = bmiFrom;
+	}
+	public double getBmiTo() {
+		return bmiTo;
+	}
+	public void setBmiTo(double bmiTo) {
+		this.bmiTo = bmiTo;
+	}
 	@Override
 	public String toString() {
 		return "DietPlanTemplate [id=" + id + ", uniquePlanId=" + uniquePlanId + ", doctorId=" + doctorId
@@ -224,7 +264,8 @@ public class DietPlanTemplate extends GenericCollection {
 				+ advice + ", country=" + country + ", fromAge=" + fromAge + ", toAge=" + toAge + ", fromAgeInYears="
 				+ fromAgeInYears + ", toAgeInYears=" + toAgeInYears + ", gender=" + gender + ", type=" + type
 				+ ", pregnancyCategory=" + pregnancyCategory + ", communities=" + communities + ", templateName="
-				+ templateName + "]";
+				+ templateName + ", principle=" + principle + ", foodPreference=" + foodPreference + ", diseases="
+				+ diseases + ", bmiFrom=" + bmiFrom + ", bmiTo=" + bmiTo + ", multilingualTemplateName="
+				+ multilingualTemplateName + "]";
 	}
-
 }

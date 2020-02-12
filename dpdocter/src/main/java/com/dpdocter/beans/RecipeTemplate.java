@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import java.util.List;
+import java.util.Map;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.RecipeTemplateItemResponse;
@@ -23,6 +24,16 @@ public class RecipeTemplate extends GenericCollection{
 	
 	private List<String> recipeIds;
 
+	private Map<String, String> multilingualName;
+	
+	public Map<String, String> getMultilingualName() {
+		return multilingualName;
+	}
+
+	public void setMultilingualName(Map<String, String> multilingualName) {
+		this.multilingualName = multilingualName;
+	}
+	
 	public String getId() {
 		return id;
 	}
@@ -91,6 +102,6 @@ public class RecipeTemplate extends GenericCollection{
 	public String toString() {
 		return "RecipeTemplate [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", items=" + items + ", recipeIds="
-				+ recipeIds + "]";
+				+ recipeIds + ", multilingualName=" + multilingualName + "]";
 	}
 }

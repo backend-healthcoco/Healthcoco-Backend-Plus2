@@ -199,6 +199,17 @@ public class RecipeCollection extends GenericCollection {
 	@Field
 	private String principle;
 	
+	@Field
+	private Map<ObjectId, String> multilingualName;
+	
+	public Map<ObjectId, String> getMultilingualName() {
+		return multilingualName;
+	}
+
+	public void setMultilingualName(Map<ObjectId, String> multilingualName) {
+		this.multilingualName = multilingualName;
+	}
+	
 	public String getPrinciple() {
 		return principle;
 	}
@@ -680,26 +691,26 @@ public class RecipeCollection extends GenericCollection {
 	@Override
 	public String toString() {
 		return "RecipeCollection [id=" + id + ", name=" + name + ", recipeDescription=" + recipeDescription
-				+ ", quantity=" + quantity + ", equivalentMeasurements="
-				+ equivalentMeasurements + ", videoUrl=" + videoUrl + ", recipeImages=" + recipeImages
-				+ ", includeIngredients=" + includeIngredients + ", excludeIngredients=" + excludeIngredients
-				+ ", ingredients=" + ingredients + ", userId=" + userId + ", locationId=" + locationId + ", doctorId="
-				+ doctorId + ", hospitalId=" + hospitalId + ", dishType=" + dishType + ", technique=" + technique
-				+ ", isPopular=" + isPopular + ", isHoliday=" + isHoliday + ", discarded=" + discarded + ", direction="
-				+ direction + ", dietaryConcerns=" + dietaryConcerns + ", forMember=" + forMember + ", cost=" + cost
-				+ ", costType=" + costType + ", meal=" + meal + ", cuisine=" + cuisine + ", course=" + course
-				+ ", preparationTime=" + preparationTime + ", verified=" + verified + ", mealTiming=" + mealTiming
-				+ ", calories=" + calories + ", fat=" + fat + ", protein=" + protein + ", carbohydrate=" + carbohydrate
-				+ ", fiber=" + fiber + ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients
-				+ ", lipidNutrients=" + lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients
-				+ ", vitaminNutrients=" + vitaminNutrients + ", mineralNutrients=" + mineralNutrients
-				+ ", otherNutrients=" + otherNutrients + ", nutrientValueAtRecipeLevel=" + nutrientValueAtRecipeLevel
-				+ ", planIds=" + planIds + ", dietoryEvaluation=" + dietoryEvaluation + ", phLevel=" + phLevel
-				+ ", giLevel=" + giLevel + ", communities=" + communities + ", foodCultures=" + foodCultures
-				+ ", diseaseFriendly=" + diseaseFriendly + ", isPrebiotic=" + isPrebiotic + ", isProBiotic="
-				+ isProBiotic + ", cookingMethod=" + cookingMethod + ", medicineDosage=" + medicineDosage
-				+ ", foodPreparationTemperature=" + foodPreparationTemperature + ", foodGroups=" + foodGroups
-				+ ", nutrientTypes=" + nutrientTypes + ", nutrientGoals=" + nutrientGoals + ", diseases=" + diseases
-				+ "]";
+				+ ", quantity=" + quantity + ", equivalentMeasurements=" + equivalentMeasurements + ", videoUrl="
+				+ videoUrl + ", recipeImages=" + recipeImages + ", includeIngredients=" + includeIngredients
+				+ ", excludeIngredients=" + excludeIngredients + ", ingredients=" + ingredients + ", userId=" + userId
+				+ ", locationId=" + locationId + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", dishType="
+				+ dishType + ", technique=" + technique + ", isPopular=" + isPopular + ", isHoliday=" + isHoliday
+				+ ", discarded=" + discarded + ", direction=" + direction + ", dietaryConcerns=" + dietaryConcerns
+				+ ", forMember=" + forMember + ", cost=" + cost + ", costType=" + costType + ", meal=" + meal
+				+ ", cuisine=" + cuisine + ", course=" + course + ", preparationTime=" + preparationTime + ", verified="
+				+ verified + ", mealTiming=" + mealTiming + ", calories=" + calories + ", fat=" + fat + ", protein="
+				+ protein + ", carbohydrate=" + carbohydrate + ", fiber=" + fiber + ", generalNutrients="
+				+ generalNutrients + ", carbNutrients=" + carbNutrients + ", lipidNutrients=" + lipidNutrients
+				+ ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", vitaminNutrients=" + vitaminNutrients
+				+ ", mineralNutrients=" + mineralNutrients + ", otherNutrients=" + otherNutrients
+				+ ", nutrientValueAtRecipeLevel=" + nutrientValueAtRecipeLevel + ", planIds=" + planIds
+				+ ", dietoryEvaluation=" + dietoryEvaluation + ", phLevel=" + phLevel + ", giLevel=" + giLevel
+				+ ", communities=" + communities + ", foodCultures=" + foodCultures + ", diseaseFriendly="
+				+ diseaseFriendly + ", isPrebiotic=" + isPrebiotic + ", isProBiotic=" + isProBiotic + ", cookingMethod="
+				+ cookingMethod + ", medicineDosage=" + medicineDosage + ", foodPreparationTemperature="
+				+ foodPreparationTemperature + ", foodGroups=" + foodGroups + ", nutrientTypes=" + nutrientTypes
+				+ ", nutrientGoals=" + nutrientGoals + ", diseases=" + diseases + ", principle=" + principle
+				+ ", multilingualName=" + multilingualName + "]";
 	}
 }

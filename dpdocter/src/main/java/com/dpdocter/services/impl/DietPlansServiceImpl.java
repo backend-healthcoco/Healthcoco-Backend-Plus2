@@ -12,18 +12,22 @@ import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DietPlan;
 import com.dpdocter.beans.DietPlanJasperDetail;
@@ -32,10 +36,12 @@ import com.dpdocter.beans.DietPlanRecipeItem;
 import com.dpdocter.beans.DietPlanTemplate;
 import com.dpdocter.beans.DietplanAddItem;
 import com.dpdocter.beans.DietplanItem;
+import com.dpdocter.beans.Language;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.RecipeItem;
 import com.dpdocter.collections.DietPlanCollection;
 import com.dpdocter.collections.DietPlanTemplateCollection;
+import com.dpdocter.collections.LanguageCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
@@ -53,8 +59,10 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
 
 @Service
 public class DietPlansServiceImpl implements DietPlansService {
@@ -453,6 +461,9 @@ public class DietPlansServiceImpl implements DietPlansService {
 				if (dietPlanTemplateCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, " No Diet Plan Template found with Id ");
 				}
+				dietPlanTemplateCollection.setCommunities(null);
+				dietPlanTemplateCollection.setItems(null);
+				dietPlanTemplateCollection.setPregnancyCategory(null);
 				request.setCreatedBy(dietPlanTemplateCollection.getCreatedBy());
 				request.setCreatedTime(dietPlanTemplateCollection.getCreatedTime());
 				request.setUniquePlanId(dietPlanTemplateCollection.getUniquePlanId());
@@ -462,6 +473,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 
 			} else {
 				dietPlanTemplateCollection = new DietPlanTemplateCollection();
+				
 				BeanUtil.map(request, dietPlanTemplateCollection);
 				dietPlanTemplateCollection
 						.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -505,10 +517,12 @@ public class DietPlansServiceImpl implements DietPlansService {
 	}
 
 	@Override
-	public List<DietPlanTemplate> getDietPlanTemplates(int page, int size, String doctorId, String hospitalId, String locationId,
+	public Response<DietPlanTemplate> getDietPlanTemplates(int page, int size, String doctorId, String hospitalId, String locationId,
 			long updatedTime, boolean discarded, String gender, String country, Double fromAge, Double toAge,
-			String community, String type, String pregnancyCategory, String searchTerm) {
-		List<DietPlanTemplate> response = null;
+			String community, String type, String pregnancyCategory, String searchTerm,
+			String foodPreference, String disease, double bmiFrom, double bmiTo, String languageId) {
+		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
+		List<DietPlanTemplate> dietPlanTemplates = null;
 		try {
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTime));
@@ -551,20 +565,51 @@ public class DietPlansServiceImpl implements DietPlansService {
 			if (!DPDoctorUtils.anyStringEmpty(pregnancyCategory))
 				criteria.and("pregnancyCategory").is(pregnancyCategory);
 			
-			Aggregation aggregation = null;
+			if (!DPDoctorUtils.anyStringEmpty(foodPreference))
+				criteria.and("foodPreference").is(foodPreference);
+			
+			if (!DPDoctorUtils.anyStringEmpty(disease))
+				criteria.and("diseases.disease").is(disease);
+			
+			if (bmiFrom > 0)
+				criteria.and("bmiFrom").lte(bmiFrom);
+			
+			if (bmiTo > 0)
+				criteria.and("bmiTo").gte(bmiTo);
+			
+			int count = (int) mongoTemplate.count(new Query(criteria), DietPlanTemplateCollection.class);
+			if(count > 0) {
+				Aggregation aggregation = null;
 
-			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size),
-						Aggregation.limit(size));
-			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+//				if(!DPDoctorUtils.anyStringEmpty(languageId)) {
+//					if (size > 0) {
+//						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+//								new CustomAggregationOperation(new Document("$set", new BasicDBObject(key, value)))
+//								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size),
+//								Aggregation.limit(size));
+//					} else {
+//						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+//								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+//
+//					}
+//				}else {
+					if (size > 0) {
+						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size),
+								Aggregation.limit(size));
+					} else {
+						aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
+					}
+//				}
+				
+				AggregationResults<DietPlanTemplate> aggregationResults = mongoTemplate.aggregate(aggregation,
+						DietPlanTemplateCollection.class, DietPlanTemplate.class);
+				dietPlanTemplates = aggregationResults.getMappedResults();
+				response.setDataList(dietPlanTemplates);
 			}
-			AggregationResults<DietPlanTemplate> aggregationResults = mongoTemplate.aggregate(aggregation,
-					DietPlanTemplateCollection.class, DietPlanTemplate.class);
-			response = aggregationResults.getMappedResults();
+			response.setCount(count);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -576,7 +621,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 	}
 	
 	@Override
-	public DietPlanTemplate getDietPlanTemplateById(String planId) {
+	public DietPlanTemplate getDietPlanTemplateById(String planId, String languageId) {
 		DietPlanTemplate response = null;
 		try {
 			DietPlanTemplateCollection dietPlanTemplateCollection = dietPlanTemplateRepository.findById(new ObjectId(planId)).orElse(null);
@@ -648,4 +693,53 @@ public class DietPlansServiceImpl implements DietPlansService {
 		}
 		return null;
 	}
+	
+	@Override
+	public Integer countLanguage(Boolean discarded, String searchTerm) {
+		Integer response = null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
+					new Criteria("name").regex("^" + searchTerm));
+
+			response = (int) mongoTemplate.count(new Query(criteria), LanguageCollection.class);
+		} catch (BusinessException e) {
+			logger.error("Error while counting language " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while counting language " + e.getMessage());
+
+		}
+		return response;
+	}
+	
+	@Override
+	public List<Language> getLanguages(int size, int page, Boolean discarded, String searchTerm) {
+		List<Language> response = null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("disease").regex("^" + searchTerm, "i"),
+						new Criteria("disease").regex("^" + searchTerm));
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, LanguageCollection.class, Language.class)
+					.getMappedResults();
+		} catch (BusinessException e) {
+			logger.error("Error while getting language " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting actilanguagevity " + e.getMessage());
+
+		}
+		return response;
+
+	}
+
 }

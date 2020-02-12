@@ -4,6 +4,9 @@ import java.util.List;
 
 import com.dpdocter.beans.DietPlan;
 import com.dpdocter.beans.DietPlanTemplate;
+import com.dpdocter.beans.Language;
+
+import common.util.web.Response;
 
 public interface DietPlansService {
 
@@ -24,14 +27,18 @@ public interface DietPlansService {
 
 	public DietPlanTemplate addEditDietPlanTemplate(DietPlanTemplate request);
 
-	public List<DietPlanTemplate> getDietPlanTemplates(int page, int size, String doctorId, String hospitalId, String locationId,
+	public Response<DietPlanTemplate> getDietPlanTemplates(int page, int size, String doctorId, String hospitalId, String locationId,
 			long updatedTime, boolean discarded, String gender, String country, Double fromAge, Double toAge,
-			String community, String type, String pregnancyCategory, String searchTerm);
+			String community, String type, String pregnancyCategory, String searchTerm, String foodPreference, String disease, double bmiFrom, double bmiTo, String languageId);
 
 	public DietPlanTemplate deleteDietPlanTemplate(String planId, Boolean discarded);
 
-	public DietPlanTemplate getDietPlanTemplateById(String planId);
+	public DietPlanTemplate getDietPlanTemplateById(String planId, String languageId);
 
 	public DietPlanTemplate updateDietPlanTemplate();
+
+	public Integer countLanguage(Boolean discarded, String searchTerm);
+
+	public List<Language> getLanguages(int size, int page, Boolean discarded, String searchTerm);
 
 }

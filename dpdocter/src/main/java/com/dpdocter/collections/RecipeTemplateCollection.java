@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -40,6 +41,17 @@ public class RecipeTemplateCollection extends GenericCollection{
 	@Field
 	private List<ObjectId> recipeIds;
 
+	@Field
+	private Map<ObjectId, String> multilingualName;
+	
+	public Map<ObjectId, String> getMultilingualName() {
+		return multilingualName;
+	}
+
+	public void setMultilingualName(Map<ObjectId, String> multilingualName) {
+		this.multilingualName = multilingualName;
+	}
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -108,6 +120,6 @@ public class RecipeTemplateCollection extends GenericCollection{
 	public String toString() {
 		return "RecipeTemplateCollection [id=" + id + ", name=" + name + ", doctorId=" + doctorId + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", items=" + items
-				+ ", recipeIds=" + recipeIds + "]";
+				+ ", recipeIds=" + recipeIds + ", multilingualName=" + multilingualName + "]";
 	}
 }

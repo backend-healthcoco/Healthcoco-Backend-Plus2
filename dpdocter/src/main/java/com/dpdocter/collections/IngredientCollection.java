@@ -89,6 +89,16 @@ public class IngredientCollection extends GenericCollection {
 	@Field
 	private String principle;
 	
+	@Field
+	private Map<ObjectId, String> multilingualName;
+	
+	public Map<ObjectId, String> getMultilingualName() {
+		return multilingualName;
+	}
+
+	public void setMultilingualName(Map<ObjectId, String> multilingualName) {
+		this.multilingualName = multilingualName;
+	}
 	public String getPrinciple() {
 		return principle;
 	}
@@ -288,4 +298,16 @@ public class IngredientCollection extends GenericCollection {
 		this.costType = costType;
 	}
 
+	@Override
+	public String toString() {
+		return "IngredientCollection [id=" + id + ", name=" + name + ", quantity=" + quantity
+				+ ", equivalentMeasurements=" + equivalentMeasurements + ", nutrients=" + nutrients + ", locationId="
+				+ locationId + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", cost=" + cost
+				+ ", costType=" + costType + ", note=" + note + ", discarded=" + discarded + ", calories=" + calories
+				+ ", fat=" + fat + ", protein=" + protein + ", carbohydrate=" + carbohydrate + ", fiber=" + fiber
+				+ ", generalNutrients=" + generalNutrients + ", carbNutrients=" + carbNutrients + ", lipidNutrients="
+				+ lipidNutrients + ", proteinAminoAcidNutrients=" + proteinAminoAcidNutrients + ", vitaminNutrients="
+				+ vitaminNutrients + ", mineralNutrients=" + mineralNutrients + ", otherNutrients=" + otherNutrients
+				+ ", principle=" + principle + ", multilingualName=" + multilingualName + "]";
+	}
 }

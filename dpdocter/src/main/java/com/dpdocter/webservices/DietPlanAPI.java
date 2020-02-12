@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DietPlan;
 import com.dpdocter.beans.DietPlanTemplate;
+import com.dpdocter.beans.Language;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.DietPlansService;
@@ -176,10 +177,13 @@ public class DietPlanAPI {
 			@QueryParam("gender") String gender, @QueryParam("country") String country, @QueryParam("fromAge") Double fromAge,
 			@QueryParam("toAge") Double toAge, @QueryParam("community") String community,
 			@QueryParam("type") String type, @QueryParam("pregnancyCategory") String pregnancyCategory,
-			@QueryParam("searchTerm") String searchTerm) {
-		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
-		response.setDataList(dietPlansService.getDietPlanTemplates(page, size, doctorId, hospitalId, locationId,
-				updatedTime, discarded, gender, country, fromAge, toAge, community, type, pregnancyCategory, searchTerm));
+			@QueryParam("searchTerm") String searchTerm, @QueryParam("foodPreference") String foodPreference,
+			@QueryParam("disease") String disease, @QueryParam("bmiFrom") double bmiFrom, @QueryParam("bmiTo") double bmiTo,
+			@QueryParam("languageId") String languageId) {
+		
+		Response<DietPlanTemplate> response = dietPlansService.getDietPlanTemplates(page, size, doctorId, hospitalId, locationId,
+				updatedTime, discarded, gender, country, fromAge, toAge, community, type, pregnancyCategory, searchTerm, 
+				foodPreference, disease, bmiFrom, bmiTo, languageId);
 		return response;
 	}
 
@@ -202,7 +206,7 @@ public class DietPlanAPI {
 	@Path(value = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATE)
 	@GET
 	@ApiOperation(value = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATE, notes = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATE)
-	public Response<DietPlanTemplate> getDietPlanTemplateById(@PathParam("planId") String planId) {
+	public Response<DietPlanTemplate> getDietPlanTemplateById(@PathParam("planId") String planId, @QueryParam("languageId") String languageId) {
 
 		if (planId == null) {
 			logger.warn("Invalid Input");
@@ -210,7 +214,7 @@ public class DietPlanAPI {
 		}
 
 		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
-		response.setData(dietPlansService.getDietPlanTemplateById(planId));
+		response.setData(dietPlansService.getDietPlanTemplateById(planId, languageId));
 
 		return response;
 	}
@@ -221,6 +225,19 @@ public class DietPlanAPI {
 		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
 		response.setData(dietPlansService.updateDietPlanTemplate());
 
+		return response;
+	}
+	
+	@Path(value = PathProxy.DietPlanUrls.GET_LANGUAGES)
+	@GET
+	@ApiOperation(value = PathProxy.DietPlanUrls.GET_LANGUAGES, notes = PathProxy.DietPlanUrls.GET_LANGUAGES)
+	public Response<Language> getLanguages(@QueryParam("size") int size, @QueryParam("page") int page,
+			@QueryParam("discarded") Boolean discarded, @QueryParam("searchTerm") String searchTerm) {
+		Integer count = dietPlansService.countLanguage(discarded, searchTerm);
+		Response<Language> response = new Response<Language>();
+		if (count > 0)
+			response.setDataList(dietPlansService.getLanguages(size, page, discarded, searchTerm));
+		response.setCount(count);
 		return response;
 	}
 }
