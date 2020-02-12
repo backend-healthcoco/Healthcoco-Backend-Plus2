@@ -29,7 +29,7 @@ public interface DietPlansService {
 
 	public Response<DietPlanTemplate> getDietPlanTemplates(int page, int size, String doctorId, String hospitalId, String locationId,
 			long updatedTime, boolean discarded, String gender, String country, Double fromAge, Double toAge,
-			String community, String type, String pregnancyCategory, String searchTerm, String foodPreference, String disease, double bmiFrom, double bmiTo, String languageId);
+			String community, String type, String pregnancyCategory, String searchTerm, String foodPreference, String disease, Double bmiFrom, Double bmiTo, String languageId, Double age, Double bmi);
 
 	public DietPlanTemplate deleteDietPlanTemplate(String planId, Boolean discarded);
 

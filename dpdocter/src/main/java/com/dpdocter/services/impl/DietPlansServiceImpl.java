@@ -464,6 +464,8 @@ public class DietPlansServiceImpl implements DietPlansService {
 				dietPlanTemplateCollection.setCommunities(null);
 				dietPlanTemplateCollection.setItems(null);
 				dietPlanTemplateCollection.setPregnancyCategory(null);
+				dietPlanTemplateCollection.setDiseases(null);
+				dietPlanTemplateCollection.setMultilingualTemplateName(null);
 				request.setCreatedBy(dietPlanTemplateCollection.getCreatedBy());
 				request.setCreatedTime(dietPlanTemplateCollection.getCreatedTime());
 				request.setUniquePlanId(dietPlanTemplateCollection.getUniquePlanId());
@@ -520,7 +522,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 	public Response<DietPlanTemplate> getDietPlanTemplates(int page, int size, String doctorId, String hospitalId, String locationId,
 			long updatedTime, boolean discarded, String gender, String country, Double fromAge, Double toAge,
 			String community, String type, String pregnancyCategory, String searchTerm,
-			String foodPreference, String disease, double bmiFrom, double bmiTo, String languageId) {
+			String foodPreference, String disease, Double bmiFrom, Double bmiTo, String languageId, Double age, Double bmi) {
 		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
 		List<DietPlanTemplate> dietPlanTemplates = null;
 		try {
@@ -530,6 +532,14 @@ public class DietPlansServiceImpl implements DietPlansService {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
 						new Criteria("templateName").regex(searchTerm));
+			}
+			
+			if (age != null) {
+				fromAge = toAge = age;
+			}
+			
+			if (bmi != null) {
+				bmiFrom = bmiTo = bmi;
 			}
 			
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
@@ -571,10 +581,10 @@ public class DietPlansServiceImpl implements DietPlansService {
 			if (!DPDoctorUtils.anyStringEmpty(disease))
 				criteria.and("diseases.disease").is(disease);
 			
-			if (bmiFrom > 0)
+			if (bmiFrom != null)
 				criteria.and("bmiFrom").lte(bmiFrom);
 			
-			if (bmiTo > 0)
+			if (bmiTo != null)
 				criteria.and("bmiTo").gte(bmiTo);
 			
 			int count = (int) mongoTemplate.count(new Query(criteria), DietPlanTemplateCollection.class);

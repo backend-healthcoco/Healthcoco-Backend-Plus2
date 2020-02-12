@@ -178,12 +178,12 @@ public class DietPlanAPI {
 			@QueryParam("toAge") Double toAge, @QueryParam("community") String community,
 			@QueryParam("type") String type, @QueryParam("pregnancyCategory") String pregnancyCategory,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("foodPreference") String foodPreference,
-			@QueryParam("disease") String disease, @QueryParam("bmiFrom") double bmiFrom, @QueryParam("bmiTo") double bmiTo,
-			@QueryParam("languageId") String languageId) {
+			@QueryParam("disease") String disease, @QueryParam("bmiFrom") Double bmiFrom, @QueryParam("bmiTo") Double bmiTo,
+			@QueryParam("languageId") String languageId, @QueryParam("age") Double age, @QueryParam("bmi") Double bmi) {
 		
 		Response<DietPlanTemplate> response = dietPlansService.getDietPlanTemplates(page, size, doctorId, hospitalId, locationId,
 				updatedTime, discarded, gender, country, fromAge, toAge, community, type, pregnancyCategory, searchTerm, 
-				foodPreference, disease, bmiFrom, bmiTo, languageId);
+				foodPreference, disease, bmiFrom, bmiTo, languageId, age, bmi);
 		return response;
 	}
 
