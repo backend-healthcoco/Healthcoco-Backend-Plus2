@@ -102,7 +102,7 @@ public class DietPlanAPI {
 	@Path(value = PathProxy.DietPlanUrls.GET_DIET_PLAN)
 	@GET
 	@ApiOperation(value = PathProxy.DietPlanUrls.GET_DIET_PLAN, notes = PathProxy.DietPlanUrls.GET_DIET_PLAN)
-	public Response<DietPlan> getDietPlan(@PathParam("planId") String planId) {
+	public Response<DietPlan> getDietPlan(@PathParam("planId") String planId, @QueryParam("languageId") String languageId) {
 
 		if (planId == null) {
 			logger.warn("Invalid Input");
@@ -110,7 +110,7 @@ public class DietPlanAPI {
 		}
 
 		Response<DietPlan> response = new Response<DietPlan>();
-		response.setData(dietPlansService.getDietPlanById(planId));
+		response.setData(dietPlansService.getDietPlanById(planId, languageId));
 
 		return response;
 	}

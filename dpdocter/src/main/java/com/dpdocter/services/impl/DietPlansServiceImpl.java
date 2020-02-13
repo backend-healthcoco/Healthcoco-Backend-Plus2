@@ -38,6 +38,7 @@ import com.dpdocter.beans.DietplanAddItem;
 import com.dpdocter.beans.DietplanItem;
 import com.dpdocter.beans.Language;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.RecipeAddItem;
 import com.dpdocter.beans.RecipeItem;
 import com.dpdocter.collections.DietPlanCollection;
 import com.dpdocter.collections.DietPlanTemplateCollection;
@@ -225,12 +226,24 @@ public class DietPlansServiceImpl implements DietPlansService {
 	}
 
 	@Override
-	public DietPlan getDietPlanById(String planId) {
+	public DietPlan getDietPlanById(String planId, String languageId) {
 		DietPlan response = null;
 		try {
-			DietPlanCollection dietPlanCollection = dietPlanRepository.findById(new ObjectId(planId)).orElse(null);
-			response = new DietPlan();
-			BeanUtil.map(dietPlanCollection, response);
+			response = mongoTemplate.findById(new ObjectId(planId), DietPlan.class, "diet_plan_cl");
+			
+			if(!DPDoctorUtils.anyStringEmpty(languageId)) {
+				for(DietplanAddItem dietplanAddItem : response.getItems()) {
+					for(DietPlanRecipeAddItem recipeAddItem : dietplanAddItem.getRecipes()) {
+						if(recipeAddItem.getMultilingualName() != null)
+							recipeAddItem.setName(recipeAddItem.getMultilingualName().getOrDefault(languageId, recipeAddItem.getName()));
+						
+						for(RecipeAddItem ingredients : recipeAddItem.getIngredients()) {
+							if(ingredients.getMultilingualName() != null)
+								ingredients.setName(ingredients.getMultilingualName().getOrDefault(languageId, ingredients.getName()));						
+						}
+					}	
+				}	
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + "Error while getting Diet Plan : " + e.getCause().getMessage());

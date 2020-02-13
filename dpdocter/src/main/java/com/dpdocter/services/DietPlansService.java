@@ -12,7 +12,7 @@ public interface DietPlansService {
 
 	public DietPlan addEditDietPlan(DietPlan request);
 
-	public DietPlan getDietPlanById(String planId);
+	public DietPlan getDietPlanById(String planId, String languageId);
 
 	public DietPlan discardDietPlan(String planId, Boolean discarded);
 
