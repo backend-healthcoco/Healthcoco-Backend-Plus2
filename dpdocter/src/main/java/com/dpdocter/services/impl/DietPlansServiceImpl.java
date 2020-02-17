@@ -12,7 +12,6 @@ import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DietPlan;
 import com.dpdocter.beans.DietPlanJasperDetail;
@@ -42,8 +40,10 @@ import com.dpdocter.beans.RecipeAddItem;
 import com.dpdocter.beans.RecipeItem;
 import com.dpdocter.collections.DietPlanCollection;
 import com.dpdocter.collections.DietPlanTemplateCollection;
+import com.dpdocter.collections.IngredientCollection;
 import com.dpdocter.collections.LanguageCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
+import com.dpdocter.collections.RecipeCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -52,6 +52,8 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DietPlanRepository;
 import com.dpdocter.repository.DietPlanTemplateRepository;
+import com.dpdocter.repository.IngredientRepository;
+import com.dpdocter.repository.RecipeRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
@@ -60,7 +62,6 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
-import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -93,6 +94,12 @@ public class DietPlansServiceImpl implements DietPlansService {
 
 	@Autowired
 	private DietPlanTemplateRepository dietPlanTemplateRepository;
+	
+	@Autowired
+	private RecipeRepository recipeRepository;
+	
+	@Autowired
+	private IngredientRepository ingredientRepository;
 	
 	@Override
 	public DietPlan addEditDietPlan(DietPlan request) {
@@ -232,14 +239,18 @@ public class DietPlansServiceImpl implements DietPlansService {
 			response = mongoTemplate.findById(new ObjectId(planId), DietPlan.class, "diet_plan_cl");
 			
 			if(!DPDoctorUtils.anyStringEmpty(languageId)) {
+				ObjectId languageObjectid = new ObjectId(languageId);
 				for(DietplanAddItem dietplanAddItem : response.getItems()) {
 					for(DietPlanRecipeAddItem recipeAddItem : dietplanAddItem.getRecipes()) {
-						if(recipeAddItem.getMultilingualName() != null)
-							recipeAddItem.setName(recipeAddItem.getMultilingualName().getOrDefault(languageId, recipeAddItem.getName()));
+						RecipeCollection recipeCollection = recipeRepository.findById(new ObjectId(recipeAddItem.getId())).orElse(null);
+
+						if(recipeCollection.getMultilingualName() != null)
+							recipeAddItem.setName(recipeCollection.getMultilingualName().getOrDefault(languageObjectid, recipeCollection.getName()));
 						
 						for(RecipeAddItem ingredients : recipeAddItem.getIngredients()) {
-							if(ingredients.getMultilingualName() != null)
-								ingredients.setName(ingredients.getMultilingualName().getOrDefault(languageId, ingredients.getName()));						
+							IngredientCollection ingredientCollection = ingredientRepository.findById(new ObjectId(ingredients.getId())).orElse(null);
+							if(ingredientCollection.getMultilingualName() != null) 
+								ingredients.setName(ingredientCollection.getMultilingualName().getOrDefault(languageObjectid, ingredientCollection.getName()));		
 						}
 					}	
 				}	
