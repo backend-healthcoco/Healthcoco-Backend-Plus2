@@ -546,7 +546,7 @@ public class DietPlansServiceImpl implements DietPlansService {
 	public Response<DietPlanTemplate> getDietPlanTemplates(int page, int size, String doctorId, String hospitalId, String locationId,
 			long updatedTime, boolean discarded, String gender, String country, Double fromAge, Double toAge,
 			String community, String type, String pregnancyCategory, String searchTerm,
-			String foodPreference, String disease, Double bmiFrom, Double bmiTo, String languageId, Double age, Double bmi) {
+			String foodPreference, List<String> disease, Double bmiFrom, Double bmiTo, String languageId, Double age, Double bmi) {
 		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
 		List<DietPlanTemplate> dietPlanTemplates = null;
 		try {
@@ -602,8 +602,9 @@ public class DietPlansServiceImpl implements DietPlansService {
 			if (!DPDoctorUtils.anyStringEmpty(foodPreference))
 				criteria.and("foodPreference").is(foodPreference);
 			
-			if (!DPDoctorUtils.anyStringEmpty(disease))
-				criteria.and("diseases.disease").is(disease);
+			if (disease!= null && !disease.isEmpty()) {
+				criteria.and("diseases.disease").in(disease);
+			}
 			
 			if (bmiFrom != null)
 				criteria.and("bmiFrom").lte(bmiFrom);
