@@ -804,7 +804,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Transactional
 	public void sendReminderToDoctor() {
 		try {
-	//		if (sendSMS) {
+			if (sendSMS) {
 				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 				localCalendar.setTime(new Date());
@@ -900,7 +900,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 //								null, response.getUserDevices());
 					}
 				}
-	//		}
+			}
 			sendAppointmentScheduleToClinicAdmin();
 		} catch (Exception e) {
 			e.printStackTrace();
