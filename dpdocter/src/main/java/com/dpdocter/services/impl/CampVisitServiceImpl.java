@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -44,10 +43,7 @@ import com.dpdocter.collections.GrowthAssessmentAndGeneralBioMetricsCollection;
 import com.dpdocter.collections.NutritionAssessmentCollection;
 import com.dpdocter.collections.NutritionRDACollection;
 import com.dpdocter.collections.NutritionSchoolAssociationCollection;
-import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PatientLifeStyleCollection;
 import com.dpdocter.collections.PhysicalAssessmentCollection;
-import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -1381,6 +1377,47 @@ public class CampVisitServiceImpl implements CampVisitService {
 			}
 			response = mongoTemplate.aggregate(aggregation, AcadamicProfileCollection.class, AcadamicProfile.class)
 					.getMappedResults();
+			if(response != null) {
+				for(AcadamicProfile acadamicProfile : response) {
+					
+					Criteria assessmentCriteria = new Criteria("schoolId").is(new ObjectId(schoolId));
+					
+					if (!DPDoctorUtils.anyStringEmpty(branchId)) {
+						assessmentCriteria.and("branchId").is(new ObjectId(branchId));
+					}
+
+//					if (!DPDoctorUtils.anyStringEmpty(campId)) {
+//						assessmentCriteria.and("campId").is(new ObjectId(campId));
+//					}
+//				
+//					if(fromDateTime != null && toDateTime != null) {
+//						assessmentCriteria.and("createdTime").gte(fromDateTime).lte(toDateTime);
+//					}else if(fromDateTime != null) {
+//						assessmentCriteria.and("createdTime").gte(fromDateTime);
+//					}else if(toDateTime != null) {
+//						assessmentCriteria.and("createdTime").lte(toDateTime);
+//					}
+					
+					assessmentCriteria.and("academicProfileId").is(new ObjectId(acadamicProfile.getId()));
+					Integer growthAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), GrowthAssessmentAndGeneralBioMetricsCollection.class);
+					if(growthAssessmentCount > 0)acadamicProfile.setIsGrowthAssessmentPresent(true);
+					
+					Integer physicalAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), PhysicalAssessmentCollection.class);
+					if(physicalAssessmentCount > 0)acadamicProfile.setIsPhysicalAssessmentPresent(true);
+					
+					Integer eyeAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), EyeAssessmentCollection.class);
+					if(eyeAssessmentCount > 0)acadamicProfile.setIsEyeAssessmentPresent(true);
+					
+					Integer entAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), ENTAssessmentCollection.class);
+					if(entAssessmentCount > 0)acadamicProfile.setIsENTAssessmentPresent(true);
+					
+					Integer dentalAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), DentalAssessmentCollection.class);
+					if(dentalAssessmentCount > 0)acadamicProfile.setIsDentalAssessmentPresent(true);
+					
+					Integer nutritionAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), NutritionAssessmentCollection.class);
+					if(nutritionAssessmentCount > 0)acadamicProfile.setIsNutritionalAssessmentPresent(true);
+				}
+			}
 			/*
 			 * for (AcadamicProfile acadamicProfile : response) { if
 			 * (!DPDoctorUtils.anyStringEmpty(acadamicProfile.getImageUrl())) {
@@ -1603,7 +1640,45 @@ public class CampVisitServiceImpl implements CampVisitService {
 						response.setAcadamicSection(acadamicClassSeection.getSection());
 					}
 				}
+				if(response != null) {
+						
+						Criteria assessmentCriteria = new Criteria("schoolId").is(new ObjectId(response.getSchoolId()));
+						
+						if (!DPDoctorUtils.anyStringEmpty(response.getBranchId())) {
+							assessmentCriteria.and("branchId").is(new ObjectId(response.getBranchId()));
+						}
 
+//						if (!DPDoctorUtils.anyStringEmpty(campId)) {
+//							assessmentCriteria.and("campId").is(new ObjectId(campId));
+//						}
+//					
+//						if(fromDateTime != null && toDateTime != null) {
+//							assessmentCriteria.and("createdTime").gte(fromDateTime).lte(toDateTime);
+//						}else if(fromDateTime != null) {
+//							assessmentCriteria.and("createdTime").gte(fromDateTime);
+//						}else if(toDateTime != null) {
+//							assessmentCriteria.and("createdTime").lte(toDateTime);
+//						}
+						
+						assessmentCriteria.and("academicProfileId").is(new ObjectId(profileId));
+						Integer growthAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), GrowthAssessmentAndGeneralBioMetricsCollection.class);
+						if(growthAssessmentCount > 0)response.setIsGrowthAssessmentPresent(true);
+						
+						Integer physicalAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), PhysicalAssessmentCollection.class);
+						if(physicalAssessmentCount > 0)response.setIsPhysicalAssessmentPresent(true);
+						
+						Integer eyeAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), EyeAssessmentCollection.class);
+						if(eyeAssessmentCount > 0)response.setIsEyeAssessmentPresent(true);
+						
+						Integer entAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), ENTAssessmentCollection.class);
+						if(entAssessmentCount > 0)response.setIsENTAssessmentPresent(true);
+						
+						Integer dentalAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), DentalAssessmentCollection.class);
+						if(dentalAssessmentCount > 0)response.setIsDentalAssessmentPresent(true);
+						
+						Integer nutritionAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), NutritionAssessmentCollection.class);
+						if(nutritionAssessmentCount > 0)response.setIsNutritionalAssessmentPresent(true);
+				}
 				/*
 				 * if (!DPDoctorUtils.anyStringEmpty(response.getImageUrl())) {
 				 * response.setImageUrl(imagePath + response.getImageUrl()); } if

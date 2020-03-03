@@ -42,6 +42,18 @@ public class AcadamicProfile extends GenericCollection {
 
 	private School school;
 	
+	private Boolean isGrowthAssessmentPresent = false;
+	
+	private Boolean isPhysicalAssessmentPresent = false;
+	
+	private Boolean isEyeAssessmentPresent = false;
+	
+	private Boolean isDentalAssessmentPresent = false;
+	
+	private Boolean isENTAssessmentPresent = false;
+	
+	private Boolean isNutritionalAssessmentPresent = false;
+	
 	public SchoolBranch getBranch() {
 		return branch;
 	}
@@ -178,11 +190,64 @@ public class AcadamicProfile extends GenericCollection {
 		this.admissionDate = admissionDate;
 	}
 
+	public Boolean getIsGrowthAssessmentPresent() {
+		return isGrowthAssessmentPresent;
+	}
+
+	public void setIsGrowthAssessmentPresent(Boolean isGrowthAssessmentPresent) {
+		this.isGrowthAssessmentPresent = isGrowthAssessmentPresent;
+	}
+
+	public Boolean getIsPhysicalAssessmentPresent() {
+		return isPhysicalAssessmentPresent;
+	}
+
+	public void setIsPhysicalAssessmentPresent(Boolean isPhysicalAssessmentPresent) {
+		this.isPhysicalAssessmentPresent = isPhysicalAssessmentPresent;
+	}
+
+	public Boolean getIsEyeAssessmentPresent() {
+		return isEyeAssessmentPresent;
+	}
+
+	public void setIsEyeAssessmentPresent(Boolean isEyeAssessmentPresent) {
+		this.isEyeAssessmentPresent = isEyeAssessmentPresent;
+	}
+
+	public Boolean getIsDentalAssessmentPresent() {
+		return isDentalAssessmentPresent;
+	}
+
+	public void setIsDentalAssessmentPresent(Boolean isDentalAssessmentPresent) {
+		this.isDentalAssessmentPresent = isDentalAssessmentPresent;
+	}
+
+	public Boolean getIsENTAssessmentPresent() {
+		return isENTAssessmentPresent;
+	}
+
+	public void setIsENTAssessmentPresent(Boolean isENTAssessmentPresent) {
+		this.isENTAssessmentPresent = isENTAssessmentPresent;
+	}
+
+	public Boolean getIsNutritionalAssessmentPresent() {
+		return isNutritionalAssessmentPresent;
+	}
+
+	public void setIsNutritionalAssessmentPresent(Boolean isNutritionalAssessmentPresent) {
+		this.isNutritionalAssessmentPresent = isNutritionalAssessmentPresent;
+	}
+
 	@Override
 	public String toString() {
 		return "AcadamicProfile [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", localPatientName="
-				+ localPatientName + ", mobileNumber=" + mobileNumber + ", uniqueId=" + uniqueId + ", type=" + type
-				+ "]";
+				+ localPatientName + ", mobileNumber=" + mobileNumber + ", uniqueId=" + uniqueId + ", rollNo=" + rollNo
+				+ ", acadamicClass=" + acadamicClass + ", emailAddress=" + emailAddress + ", acadamicSection="
+				+ acadamicSection + ", admissionDate=" + admissionDate + ", type=" + type + ", imageUrl=" + imageUrl
+				+ ", thumbnailUrl=" + thumbnailUrl + ", isSuperStar=" + isSuperStar + ", branch=" + branch + ", school="
+				+ school + ", isGrowthAssessmentPresent=" + isGrowthAssessmentPresent + ", isPhysicalAssessmentPresent="
+				+ isPhysicalAssessmentPresent + ", isEyeAssessmentPresent=" + isEyeAssessmentPresent
+				+ ", isDentalAssessmentPresent=" + isDentalAssessmentPresent + ", isENTAssessmentPresent="
+				+ isENTAssessmentPresent + ", isNutritionalAssessmentPresent=" + isNutritionalAssessmentPresent + "]";
 	}
-
 }

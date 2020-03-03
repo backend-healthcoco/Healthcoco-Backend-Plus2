@@ -82,6 +82,18 @@ public class RegistrationDetails extends GenericCollection {
 
 	private Date admissionDate;
 
+	private Boolean isGrowthAssessmentPresent = false;
+	
+	private Boolean isPhysicalAssessmentPresent = false;
+	
+	private Boolean isEyeAssessmentPresent = false;
+	
+	private Boolean isDentalAssessmentPresent = false;
+	
+	private Boolean isENTAssessmentPresent = false;
+	
+	private Boolean isNutritionalAssessmentPresent = false;
+	
 	public Date getAdmissionDate() {
 		return admissionDate;
 	}
@@ -338,20 +350,6 @@ public class RegistrationDetails extends GenericCollection {
 		this.motherName = motherName;
 	}
 
-	@Override
-	public String toString() {
-		return "RegistereDetails [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", localPatientName="
-				+ localPatientName + ", mobileNumber=" + mobileNumber + ", uniqueId=" + uniqueId + ", gender=" + gender
-				+ ", dob=" + dob + ", age=" + age + ", rollNo=" + rollNo + ", type=" + type + ", emailAddress="
-				+ emailAddress + ", bloodGroup=" + bloodGroup + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
-				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
-				+ insuranceId + ", insuranceName=" + insuranceName + ", address=" + address + ", dateOfVisit="
-				+ dateOfVisit + ", patientNumber=" + patientNumber + ", schoolId=" + schoolId + ", branchId=" + branchId
-				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
-				+ lifestyleQuestionAnswers + ", imageUrl=" + imageUrl + ", personalInformation=" + personalInformation
-				+ ", fatherName=" + fatherName + ", motherName=" + motherName + "]";
-	}
-
 	public Boolean getIsSuperStar() {
 		return isSuperStar;
 	}
@@ -392,5 +390,73 @@ public class RegistrationDetails extends GenericCollection {
 		this.acadamicSection = acadamicSection;
 	}
 
+	public Boolean getIsGrowthAssessmentPresent() {
+		return isGrowthAssessmentPresent;
+	}
+
+	public void setIsGrowthAssessmentPresent(Boolean isGrowthAssessmentPresent) {
+		this.isGrowthAssessmentPresent = isGrowthAssessmentPresent;
+	}
+
+	public Boolean getIsPhysicalAssessmentPresent() {
+		return isPhysicalAssessmentPresent;
+	}
+
+	public void setIsPhysicalAssessmentPresent(Boolean isPhysicalAssessmentPresent) {
+		this.isPhysicalAssessmentPresent = isPhysicalAssessmentPresent;
+	}
+
+	public Boolean getIsEyeAssessmentPresent() {
+		return isEyeAssessmentPresent;
+	}
+
+	public void setIsEyeAssessmentPresent(Boolean isEyeAssessmentPresent) {
+		this.isEyeAssessmentPresent = isEyeAssessmentPresent;
+	}
+
+	public Boolean getIsDentalAssessmentPresent() {
+		return isDentalAssessmentPresent;
+	}
+
+	public void setIsDentalAssessmentPresent(Boolean isDentalAssessmentPresent) {
+		this.isDentalAssessmentPresent = isDentalAssessmentPresent;
+	}
+
+	public Boolean getIsENTAssessmentPresent() {
+		return isENTAssessmentPresent;
+	}
+
+	public void setIsENTAssessmentPresent(Boolean isENTAssessmentPresent) {
+		this.isENTAssessmentPresent = isENTAssessmentPresent;
+	}
+
+	public Boolean getIsNutritionalAssessmentPresent() {
+		return isNutritionalAssessmentPresent;
+	}
+
+	public void setIsNutritionalAssessmentPresent(Boolean isNutritionalAssessmentPresent) {
+		this.isNutritionalAssessmentPresent = isNutritionalAssessmentPresent;
+	}
+
+	@Override
+	public String toString() {
+		return "RegistrationDetails [id=" + id + ", userId=" + userId + ", firstName=" + firstName
+				+ ", localPatientName=" + localPatientName + ", mobileNumber=" + mobileNumber + ", uniqueId=" + uniqueId
+				+ ", gender=" + gender + ", dob=" + dob + ", age=" + age + ", rollNo=" + rollNo + ", type=" + type
+				+ ", emailAddress=" + emailAddress + ", bloodGroup=" + bloodGroup + ", secMobile=" + secMobile
+				+ ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId="
+				+ drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", address="
+				+ address + ", dateOfVisit=" + dateOfVisit + ", patientNumber=" + patientNumber + ", schoolId="
+				+ schoolId + ", branchId=" + branchId + ", classId=" + classId + ", sectionId=" + sectionId
+				+ ", acadamicClass=" + acadamicClass + ", acadamicSection=" + acadamicSection
+				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
+				+ lifestyleQuestionAnswers + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl
+				+ ", personalInformation=" + personalInformation + ", fatherName=" + fatherName + ", motherName="
+				+ motherName + ", isSuperStar=" + isSuperStar + ", admissionDate=" + admissionDate
+				+ ", isGrowthAssessmentPresent=" + isGrowthAssessmentPresent + ", isPhysicalAssessmentPresent="
+				+ isPhysicalAssessmentPresent + ", isEyeAssessmentPresent=" + isEyeAssessmentPresent
+				+ ", isDentalAssessmentPresent=" + isDentalAssessmentPresent + ", isENTAssessmentPresent="
+				+ isENTAssessmentPresent + ", isNutritionalAssessmentPresent=" + isNutritionalAssessmentPresent + "]";
+	}
 	
 }
