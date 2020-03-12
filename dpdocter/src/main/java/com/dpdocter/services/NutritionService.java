@@ -17,7 +17,10 @@ import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.request.NutritionPlanRequest;
 import com.dpdocter.response.NutritionPlanResponse;
 import com.dpdocter.response.NutritionPlanWithCategoryResponse;
+import com.dpdocter.response.NutritionistReport;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
+
+import common.util.web.Response;
 
 public interface NutritionService {
 
@@ -72,5 +75,8 @@ public interface NutritionService {
 	SugarSetting addEditSugarSetting(SugarSetting request);
 
 	public NutritionRDA getRDAForPatient(String patientId, String doctorId, String locationId, String hospitalId);
+
+	public Response<NutritionistReport> getNutrionistReportOfDietPlan(String nutritionistId, String fromDate, String toDate, int size,
+			int page, Boolean discarded, String searchTerm);
 
 }

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.dpdocter.beans.AcadamicProfile;
+import com.dpdocter.beans.AcademicProfile;
 import com.dpdocter.beans.DentalAssessment;
 import com.dpdocter.beans.ENTAssessment;
 import com.dpdocter.beans.EyeAssessment;
@@ -234,7 +234,7 @@ public class CampVisitAPI {
 	@Path(PathProxy.CampVisitUrls.GET_ACADAMIC_PROFILE)
 	@ApiOperation(value = PathProxy.CampVisitUrls.GET_ACADAMIC_PROFILE, notes = PathProxy.CampVisitUrls.GET_ACADAMIC_PROFILE)
 	@GET
-	public Response<AcadamicProfile> getAcadamicProfile(@PathParam("profileType") String profileType,
+	public Response<AcademicProfile> getAcadamicProfile(@PathParam("profileType") String profileType,
 			@PathParam("branchId") String branchId, @PathParam("schoolId") String schoolId,
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("classId") String classId,
 			@QueryParam("sectionId") String sectionId, @QueryParam("searchTerm") String searchTerm,
@@ -245,7 +245,7 @@ public class CampVisitAPI {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"schoolId,branchId,profileType should not null or Empty");
 		}
-		Response<AcadamicProfile> response = new Response<AcadamicProfile>();
+		Response<AcademicProfile> response = new Response<AcademicProfile>();
 		if (profileType.equalsIgnoreCase("STUDENT")) {
 			response.setDataList(campVisitService.getStudentProfile(page, size, branchId, schoolId, classId, sectionId,
 					searchTerm, discarded, profileType, userId, updatedTime));
@@ -306,10 +306,10 @@ public class CampVisitAPI {
 	@ApiOperation(value = PathProxy.CampVisitUrls.GET_DOCTOR_ACADAMIC_PROFILE, notes = PathProxy.CampVisitUrls.GET_DOCTOR_ACADAMIC_PROFILE)
 	@GET
 	
-	public Response<AcadamicProfile> getAcadamicProfile(
+	public Response<AcademicProfile> getAcadamicProfile(
 			@PathParam("userId") String userId, @QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("discarded") Boolean discarded) {
-		Response<AcadamicProfile> response = new Response<AcadamicProfile>();
+		Response<AcademicProfile> response = new Response<AcademicProfile>();
 		response.setDataList(campVisitService.getProfile(page, size, userId, discarded, searchTerm));
 		response.setCount(campVisitService.countProfile(userId, discarded, searchTerm));
 		return response;

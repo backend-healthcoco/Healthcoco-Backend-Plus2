@@ -38,6 +38,12 @@ public class DietPlanCollection extends GenericCollection {
 	private String advice;
 	@Field
 	private String principle;
+	@Field
+	private long timeTaken;
+	@Field
+	private ObjectId cloneTemplateId;
+	@Field
+	private String cloneTemplateName;
 	
 	public String getPrinciple() {
 		return principle;
@@ -133,12 +139,30 @@ public class DietPlanCollection extends GenericCollection {
 	public void setAdvice(String advice) {
 		this.advice = advice;
 	}
+	public long getTimeTaken() {
+		return timeTaken;
+	}
+	public void setTimeTaken(long timeTaken) {
+		this.timeTaken = timeTaken;
+	}
+	public ObjectId getCloneTemplateId() {
+		return cloneTemplateId;
+	}
+	public void setCloneTemplateId(ObjectId cloneTemplateId) {
+		this.cloneTemplateId = cloneTemplateId;
+	}
+	public String getCloneTemplateName() {
+		return cloneTemplateName;
+	}
+	public void setCloneTemplateName(String cloneTemplateName) {
+		this.cloneTemplateName = cloneTemplateName;
+	}
 	@Override
 	public String toString() {
 		return "DietPlanCollection [id=" + id + ", uniquePlanId=" + uniquePlanId + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
 				+ ", discarded=" + discarded + ", items=" + items + ", calories=" + calories + ", isPatientDiscarded="
-				+ isPatientDiscarded + "]";
+				+ isPatientDiscarded + ", advice=" + advice + ", principle=" + principle + ", timeTaken=" + timeTaken
+				+ ", cloneTemplateId=" + cloneTemplateId + ", cloneTemplateName=" + cloneTemplateName + "]";
 	}
-
 }

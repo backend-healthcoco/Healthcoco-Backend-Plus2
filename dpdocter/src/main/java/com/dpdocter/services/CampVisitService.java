@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.dpdocter.beans.AcadamicProfile;
+import com.dpdocter.beans.AcademicProfile;
 import com.dpdocter.beans.DentalAssessment;
 import com.dpdocter.beans.DrugInfo;
 import com.dpdocter.beans.ENTAssessment;
@@ -101,10 +101,10 @@ public interface CampVisitService {
 
 	Integer getDrugInfoCount(String updatedTime, String searchTerm);
 
-	List<AcadamicProfile> getTeacherProfile(int page, int size, String branchId, String schoolId, String searchTerm,
+	List<AcademicProfile> getTeacherProfile(int page, int size, String branchId, String schoolId, String searchTerm,
 			Boolean discarded, String profileType, String userId, String updatedTime);
 
-	List<AcadamicProfile> getStudentProfile(int page, int size, String branchId, String schoolId, String classId,
+	List<AcademicProfile> getStudentProfile(int page, int size, String branchId, String schoolId, String classId,
 			String sectionId, String searchTerm, Boolean discarded, String profileType, String userId,
 			String updatedTime);
 
@@ -124,7 +124,7 @@ public interface CampVisitService {
 
 	Integer countAcadamicClass(String branchId, String schoolId, String searchTerm, Boolean discarded);
 	
-	public List<AcadamicProfile> getProfile(int page, int size, String userId, Boolean discarded, String searchTerm);
+	public List<AcademicProfile> getProfile(int page, int size, String userId, Boolean discarded, String searchTerm);
 	public Integer countProfile(String userId, Boolean discarded, String searchTerm);
 
 	NutritionRDA getRDAForUser(String academicProfileId, String doctorId, String locationId, String hospitalId);

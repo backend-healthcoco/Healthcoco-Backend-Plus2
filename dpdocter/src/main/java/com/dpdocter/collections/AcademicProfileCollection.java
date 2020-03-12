@@ -16,7 +16,7 @@ import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.enums.ProfileType;
 
 @Document(collection = "acadamic_profile_cl")
-public class AcadamicProfileCollection extends GenericCollection {
+public class AcademicProfileCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 

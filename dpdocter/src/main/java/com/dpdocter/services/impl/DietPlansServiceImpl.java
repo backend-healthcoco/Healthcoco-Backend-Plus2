@@ -203,11 +203,28 @@ public class DietPlansServiceImpl implements DietPlansService {
 		try {
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTime)).and("discarded").is(discarded);
-			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			ObjectId patientObjectId = null;
+			
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
 			if (!DPDoctorUtils.anyStringEmpty(patientObjectId))
 				criteria.and("patientId").is(patientObjectId);
+			
+			Aggregation aggregation = null;
+
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			}
+			
+			AggregationResults<DietPlan> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DietPlanCollection.class, DietPlan.class);
+			response = aggregationResults.getMappedResults();
 			
 			for (DietPlan dietPlan : response) {
 				for (DietplanAddItem dietplanAddItem : dietPlan.getItems()) {
@@ -604,6 +621,9 @@ public class DietPlansServiceImpl implements DietPlansService {
 			
 			if (disease!= null && !disease.isEmpty()) {
 				criteria.and("diseases.disease").in(disease);
+			}else {
+				List<String> emptyArr = new ArrayList<String>();
+				criteria.orOperator(new Criteria("diseases").is(null), new Criteria("diseases").is(emptyArr));
 			}
 			
 			if (bmiFrom != null)

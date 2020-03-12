@@ -46,6 +46,7 @@ import com.dpdocter.response.AssessmentFormHistoryResponse;
 import com.dpdocter.response.NutritionPlanResponse;
 import com.dpdocter.response.NutritionPlanWithCategoryResponse;
 import com.dpdocter.response.NutritionReferenceResponse;
+import com.dpdocter.response.NutritionistReport;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.services.AssessmentFormService;
 import com.dpdocter.services.NutritionRecordService;
@@ -753,4 +754,19 @@ public class NutritionAPI {
 		return response;
 	}
 	
+	@Path(value = PathProxy.NutritionUrl.GET_NUTRITIONIST_REPORT_OF_DIET_PLAN)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITIONIST_REPORT_OF_DIET_PLAN, notes = PathProxy.NutritionUrl.GET_NUTRITIONIST_REPORT_OF_DIET_PLAN)
+	public Response<NutritionistReport> getNutrionistReportOfDietPlan(@PathParam("nutritionistId") String nutritionistId, 
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate, 
+			@QueryParam("size") int size, @QueryParam("page") int page,
+			@QueryParam("discarded") Boolean discarded){ 
+//			@QueryParam("searchTerm") String searchTerm) {
+		if (nutritionistId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<NutritionistReport> response = nutritionService.getNutrionistReportOfDietPlan(nutritionistId, fromDate, toDate, size, page, discarded, null);
+		return response;
+	}
 }

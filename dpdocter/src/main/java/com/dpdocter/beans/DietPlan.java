@@ -27,8 +27,15 @@ public class DietPlan extends GenericCollection {
 	private List<EquivalentQuantities> equivalentMeasurements;
 	
 	private String advice;
+	
 	private String principle;
 	
+	private long timeTaken;
+	
+	private String cloneTemplateId;
+	
+	private String cloneTemplateName;
+	  
 	public String getPrinciple() {
 		return principle;
 	}
@@ -123,4 +130,31 @@ public class DietPlan extends GenericCollection {
 	public void setAdvice(String advice) {
 		this.advice = advice;
 	}
+	public long getTimeTaken() {
+		return timeTaken;
+	}
+	public void setTimeTaken(long timeTaken) {
+		this.timeTaken = timeTaken;
+	}
+	public String getCloneTemplateId() {
+		return cloneTemplateId;
+	}
+	public void setCloneTemplateId(String cloneTemplateId) {
+		this.cloneTemplateId = cloneTemplateId;
+	}
+	public String getCloneTemplateName() {
+		return cloneTemplateName;
+	}
+	public void setCloneTemplateName(String cloneTemplateName) {
+		this.cloneTemplateName = cloneTemplateName;
+	}
+	@Override
+	public String toString() {
+		return "DietPlan [id=" + id + ", uniquePlanId=" + uniquePlanId + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", discarded=" + discarded
+				+ ", items=" + items + ", calories=" + calories + ", equivalentMeasurements=" + equivalentMeasurements
+				+ ", advice=" + advice + ", principle=" + principle + ", timeTaken=" + timeTaken + ", cloneTemplateId="
+				+ cloneTemplateId + ", cloneTemplateName=" + cloneTemplateName + "]";
+	}
+	
 }

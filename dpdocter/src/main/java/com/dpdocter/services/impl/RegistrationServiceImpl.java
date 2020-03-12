@@ -85,7 +85,7 @@ import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserAddress;
 import com.dpdocter.beans.UserReminders;
-import com.dpdocter.collections.AcadamicProfileCollection;
+import com.dpdocter.collections.AcademicProfileCollection;
 import com.dpdocter.collections.AdmitCardCollection;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.AppointmentGeneralFeedbackCollection;
@@ -1265,7 +1265,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 							}
 							user.setIsPartOfClinic(isPartOfClinic);
 							user.setIsPartOfConsultantDoctor(isPartOfConsultantDoctor);
-							AcadamicProfileCollection academicProfile = acadamicProfileRespository.findByUserId(new ObjectId(userLookupResponse.getId()));
+							AcademicProfileCollection academicProfile = acadamicProfileRespository.findByUserId(new ObjectId(userLookupResponse.getId()));
 							if(academicProfile != null) {
 								user.setIsSuperStar(academicProfile.getIsSuperStar());
 							}
@@ -1444,7 +1444,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				BeanUtil.map(patientCard, patient);
 				patient.setPatientId(patientCard.getUserId());
 
-				AcadamicProfileCollection academicProfile = acadamicProfileRespository.findByUserId(userObjectId);
+				AcademicProfileCollection academicProfile = acadamicProfileRespository.findByUserId(userObjectId);
 				if(academicProfile != null) {
 						 patient.setIsDataAvailableWithOtherDoctor(true);
 						 registeredPatientDetails.setIsSuperStar(academicProfile.getIsSuperStar());

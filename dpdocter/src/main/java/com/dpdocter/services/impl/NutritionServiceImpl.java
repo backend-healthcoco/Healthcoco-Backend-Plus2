@@ -5,10 +5,13 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -24,8 +27,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.AcademicProfile;
 import com.dpdocter.beans.BloodGlucose;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.FoodCommunity;
+import com.dpdocter.beans.NutritionDisease;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.NutritionRDA;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
@@ -34,7 +40,9 @@ import com.dpdocter.beans.SugarSetting;
 import com.dpdocter.beans.Testimonial;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserNutritionSubscription;
+import com.dpdocter.collections.AcademicProfileCollection;
 import com.dpdocter.collections.BloodGlucoseCollection;
+import com.dpdocter.collections.DietPlanCollection;
 import com.dpdocter.collections.NutritionPlanCollection;
 import com.dpdocter.collections.NutritionRDACollection;
 import com.dpdocter.collections.PatientCollection;
@@ -46,6 +54,7 @@ import com.dpdocter.collections.TestimonialCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserNutritionSubscriptionCollection;
 import com.dpdocter.elasticsearch.response.NutritionPlanWithCategoryShortResponse;
+import com.dpdocter.enums.LifeStyleType;
 import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -62,12 +71,14 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.NutritionPlanRequest;
 import com.dpdocter.response.NutritionPlanResponse;
 import com.dpdocter.response.NutritionPlanWithCategoryResponse;
+import com.dpdocter.response.NutritionistReport;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.scheduler.AsyncService;
 import com.dpdocter.services.NutritionService;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
 
 @Service
 public class NutritionServiceImpl implements NutritionService {
@@ -1143,6 +1154,108 @@ public class NutritionServiceImpl implements NutritionService {
 			logger.error("Error while getting RDA for patient " + e.getMessage());
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting RDA for patient " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public Response<NutritionistReport> getNutrionistReportOfDietPlan(String nutritionistId, String fromDate, String toDate, int size,
+			int page, Boolean discarded, String searchTerm) {
+		Response<NutritionistReport> response = new Response<NutritionistReport>();
+		try {
+			Criteria criteria = new Criteria("doctorId").is(new ObjectId(nutritionistId));
+			
+			if(discarded != null)criteria.and("discarded").is(discarded);
+			
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			DateTime fromDateTime = null, toDateTime = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+				criteria.and("fromDate").gte(fromDateTime);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(toDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+				criteria.and("toDate").lte(toDateTime);
+			}
+			
+			if(fromDateTime != null && toDateTime != null) {
+				criteria.and("createdTime").gte(fromDateTime).lte(toDateTime);
+			}else if(fromDateTime != null) {
+				criteria.and("createdTime").gte(fromDateTime);
+			}else if(toDateTime != null) {
+				criteria.and("createdTime").lte(toDateTime);
+			}
+			
+			Integer count = (int) mongoTemplate.count(new Query(criteria), DietPlanCollection.class);
+			if(count > 0) {
+				CustomAggregationOperation projectList = new CustomAggregationOperation(new Document("$project", 
+						new BasicDBObject("id", "$_id").append("timeTaken", "$timeTaken")
+						.append("cloneTemplateId", "$cloneTemplateId")
+						.append("cloneTemplateName", "$cloneTemplateName")
+						.append("profile", "$profile")
+						.append("bmiClassification", "$growthAssessment.bmiClassification")
+						.append("bmi", "$growthAssessment.bmi")
+						.append("type", "$nutritionAssessment.type")
+						.append("communities", "$nutritionAssessment.communities")
+						.append("diseases", "$nutritionAssessment.diseases")
+						.append("foodPreference", "$nutritionAssessment.foodPreference")));
+				
+				Aggregation aggregation = null;
+				if (size > 0) {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("acadamic_profile_cl", "patientId", "_id", "profile"),
+							Aggregation.unwind("profile"),
+							Aggregation.lookup("school_branch_cl", "profile.branchId", "_id", "profile.branch"),
+							Aggregation.unwind("profile.branch", true), 
+							Aggregation.lookup("school_cl", "profile.schoolId", "_id", "profile.school"), 
+							Aggregation.unwind("profile.school", true),
+							Aggregation.lookup("growth_assessment_and_general_bio_metrics_cl", "profile._id", "academicProfileId", "growthAssessment"),
+							Aggregation.unwind("growthAssessment", true), 
+							Aggregation.lookup("nutrition_assessment_cl", "profile._id", "academicProfileId", "nutritionAssessment"), 
+							Aggregation.unwind("nutritionAssessment", true),
+							projectList,
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+							Aggregation.skip((long) (page) * size), Aggregation.limit(size));
+				} else {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("acadamic_profile_cl", "patientId", "_id", "profile"),
+							Aggregation.unwind("profile"),
+							Aggregation.lookup("school_branch_cl", "profile.branchId", "_id", "profile.branch"),
+							Aggregation.unwind("profile.branch"), 
+							Aggregation.lookup("school_cl", "profile.schoolId", "_id", "profile.school"), 
+							Aggregation.unwind("profile.school"),
+							Aggregation.lookup("growth_assessment_and_general_bio_metrics_cl", "profile._id", "academicProfileId", "growthAssessment"),
+							Aggregation.unwind("growthAssessment", true), 
+							Aggregation.lookup("nutrition_assessment_cl", "profile._id", "academicProfileId", "nutritionAssessment"), 
+							Aggregation.unwind("nutritionAssessment", true),
+							projectList,
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				}
+				List<NutritionistReport> nutritionistReports = mongoTemplate.aggregate(aggregation, DietPlanCollection.class, NutritionistReport.class)
+						.getMappedResults();
+				response.setCount(count);
+				response.setDataList(nutritionistReports);
+			}
+			
+		}catch(BusinessException e) {
+			logger.error("Error while getting Nutrionist Report Of DietPlan " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Nutrionist Report Of DietPlan " + e.getMessage());
 
 		}
 		return response;

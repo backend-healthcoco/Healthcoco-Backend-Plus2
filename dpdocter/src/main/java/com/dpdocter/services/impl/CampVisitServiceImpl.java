@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.dpdocter.beans.AcadamicProfile;
+import com.dpdocter.beans.AcademicProfile;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DentalAssessment;
 import com.dpdocter.beans.DrugInfo;
@@ -34,8 +34,9 @@ import com.dpdocter.beans.PhysicalAssessment;
 import com.dpdocter.beans.RegistrationDetails;
 import com.dpdocter.collections.AcadamicClassCollection;
 import com.dpdocter.collections.AcadamicClassSectionCollection;
-import com.dpdocter.collections.AcadamicProfileCollection;
+import com.dpdocter.collections.AcademicProfileCollection;
 import com.dpdocter.collections.DentalAssessmentCollection;
+import com.dpdocter.collections.DietPlanCollection;
 import com.dpdocter.collections.DrugInfoCollection;
 import com.dpdocter.collections.ENTAssessmentCollection;
 import com.dpdocter.collections.EyeAssessmentCollection;
@@ -1311,10 +1312,10 @@ public class CampVisitServiceImpl implements CampVisitService {
 	}
 	
 	@Override
-	public List<AcadamicProfile> getStudentProfile(int page, int size, String branchId, String schoolId, String classId,
+	public List<AcademicProfile> getStudentProfile(int page, int size, String branchId, String schoolId, String classId,
 			String sectionId, String searchTerm, Boolean discarded, String profileType, String userId,
 			String updatedTime) {
-		List<AcadamicProfile> response = null;
+		List<AcademicProfile> response = null;
 		try {
 			Criteria criteria = new Criteria("branchId").is(new ObjectId(branchId)).and("schoolId")
 					.is(new ObjectId(schoolId));
@@ -1375,10 +1376,10 @@ public class CampVisitServiceImpl implements CampVisitService {
 						Aggregation.unwind("acadamicSection", true), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "firstName")));
 			}
-			response = mongoTemplate.aggregate(aggregation, AcadamicProfileCollection.class, AcadamicProfile.class)
+			response = mongoTemplate.aggregate(aggregation, AcademicProfileCollection.class, AcademicProfile.class)
 					.getMappedResults();
 			if(response != null) {
-				for(AcadamicProfile acadamicProfile : response) {
+				for(AcademicProfile acadamicProfile : response) {
 					
 					Criteria assessmentCriteria = new Criteria("schoolId").is(new ObjectId(schoolId));
 					
@@ -1416,6 +1417,9 @@ public class CampVisitServiceImpl implements CampVisitService {
 					
 					Integer nutritionAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), NutritionAssessmentCollection.class);
 					if(nutritionAssessmentCount > 0)acadamicProfile.setIsNutritionalAssessmentPresent(true);
+					
+					Integer dietPlanCount = (int) mongoTemplate.count(new Query(new Criteria("academicProfileId").is(new ObjectId(acadamicProfile.getId()))), DietPlanCollection.class);
+					if(dietPlanCount > 0)acadamicProfile.setIsDietPlanPresent(true);
 				}
 			}
 			/*
@@ -1439,9 +1443,9 @@ public class CampVisitServiceImpl implements CampVisitService {
 	}
 	
 	@Override
-	public List<AcadamicProfile> getTeacherProfile(int page, int size, String branchId, String schoolId,
+	public List<AcademicProfile> getTeacherProfile(int page, int size, String branchId, String schoolId,
 			String searchTerm, Boolean discarded, String profileType, String userId, String updatedTime) {
-		List<AcadamicProfile> response = null;
+		List<AcademicProfile> response = null;
 		try {
 			Criteria criteria = new Criteria("branchId").is(new ObjectId(branchId)).and("schoolId")
 					.is(new ObjectId(schoolId));
@@ -1486,7 +1490,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "firstName")));
 			}
-			response = mongoTemplate.aggregate(aggregation, AcadamicProfileCollection.class, AcadamicProfile.class)
+			response = mongoTemplate.aggregate(aggregation, AcademicProfileCollection.class, AcademicProfile.class)
 					.getMappedResults();
 			/*
 			 * for (AcadamicProfile acadamicProfile : response) { if
@@ -1553,7 +1557,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 
 					new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id"))));
 
-			response = mongoTemplate.aggregate(aggregation, AcadamicProfileCollection.class, AcadamicProfile.class)
+			response = mongoTemplate.aggregate(aggregation, AcademicProfileCollection.class, AcademicProfile.class)
 					.getMappedResults().size();
 
 		} catch (BusinessException be) {
@@ -1601,7 +1605,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$_id"))));
 
-			response = mongoTemplate.aggregate(aggregation, AcadamicProfileCollection.class, AcadamicProfile.class)
+			response = mongoTemplate.aggregate(aggregation, AcademicProfileCollection.class, AcademicProfile.class)
 					.getMappedResults().size();
 
 		} catch (BusinessException be) {
@@ -1619,7 +1623,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 	public RegistrationDetails getAcadamicProfile(String profileId) {
 		RegistrationDetails response = null;
 		try {
-			AcadamicProfileCollection acadamicProfileCollection = acadamicProfileRespository
+			AcademicProfileCollection acadamicProfileCollection = acadamicProfileRespository
 					.findById(new ObjectId(profileId)).orElse(null);
 			if (acadamicProfileCollection != null) {
 				response = new RegistrationDetails();
@@ -1678,6 +1682,9 @@ public class CampVisitServiceImpl implements CampVisitService {
 						
 						Integer nutritionAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), NutritionAssessmentCollection.class);
 						if(nutritionAssessmentCount > 0)response.setIsNutritionalAssessmentPresent(true);
+						
+						Integer dietPlanCount = (int) mongoTemplate.count(new Query(new Criteria("academicProfileId").is(new ObjectId(profileId))), DietPlanCollection.class);
+						if(dietPlanCount > 0)response.setIsDietPlanPresent(true);
 				}
 				/*
 				 * if (!DPDoctorUtils.anyStringEmpty(response.getImageUrl())) {
@@ -1846,8 +1853,8 @@ public class CampVisitServiceImpl implements CampVisitService {
 	
 	
 	@Override
-	public List<AcadamicProfile> getProfile(int page, int size, String userId, Boolean discarded, String searchTerm) {
-		List<AcadamicProfile> response = null;
+	public List<AcademicProfile> getProfile(int page, int size, String userId, Boolean discarded, String searchTerm) {
+		List<AcademicProfile> response = null;
 		try {
 			Criteria criteria = new Criteria();
 
@@ -1908,7 +1915,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 						Aggregation.match(new Criteria("school.isActivated").is(true)), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "firstName")));
 			}
-			response = mongoTemplate.aggregate(aggregation, AcadamicProfileCollection.class, AcadamicProfile.class)
+			response = mongoTemplate.aggregate(aggregation, AcademicProfileCollection.class, AcademicProfile.class)
 					.getMappedResults();
 //			for (AcadamicProfile acadamicProfile : response) {
 //				if (!DPDoctorUtils.anyStringEmpty(acadamicProfile.getImageUrl())) {
@@ -1966,7 +1973,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 						Aggregation.lookup("school_cl", "schoolId", "_id", "school"), Aggregation.unwind("school"),
 						Aggregation.match(new Criteria("school.isActivated").is(true)));
 			
-			response = mongoTemplate.aggregate(aggregation, AcadamicProfileCollection.class, AcadamicProfile.class)
+			response = mongoTemplate.aggregate(aggregation, AcademicProfileCollection.class, AcademicProfile.class)
 					.getMappedResults().size();
 			
 		} catch (BusinessException be) {
@@ -1984,7 +1991,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 	public NutritionRDA getRDAForUser(String academicProfileId, String doctorId, String locationId, String hospitalId) {
 		NutritionRDA response = null;
 		try {
-			AcadamicProfileCollection acadamicProfileCollection = acadamicProfileRespository.findById(new ObjectId(academicProfileId)).orElse(null);
+			AcademicProfileCollection acadamicProfileCollection = acadamicProfileRespository.findById(new ObjectId(academicProfileId)).orElse(null);
 			if(acadamicProfileCollection == null) {
 				logger.warn("No academic profile found with this Id");
 				throw new BusinessException(ServiceError.InvalidInput, "No academic profile found with this Id");

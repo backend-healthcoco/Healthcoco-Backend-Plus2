@@ -6,7 +6,7 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ProfileType;
 import com.dpdocter.response.AcadamicClassResponse;
 
-public class AcadamicProfile extends GenericCollection {
+public class AcademicProfile extends GenericCollection {
 
 	private String id;
 
@@ -22,6 +22,10 @@ public class AcadamicProfile extends GenericCollection {
 
 	private String rollNo;
 
+	private String gender;
+
+	private DOB dob;
+	
 	private AcadamicClassResponse acadamicClass;
 
 	private String emailAddress;
@@ -53,6 +57,8 @@ public class AcadamicProfile extends GenericCollection {
 	private Boolean isENTAssessmentPresent = false;
 	
 	private Boolean isNutritionalAssessmentPresent = false;
+	
+	private Boolean isDietPlanPresent = false;
 	
 	public SchoolBranch getBranch() {
 		return branch;
@@ -238,16 +244,43 @@ public class AcadamicProfile extends GenericCollection {
 		this.isNutritionalAssessmentPresent = isNutritionalAssessmentPresent;
 	}
 
+	public Boolean getIsDietPlanPresent() {
+		return isDietPlanPresent;
+	}
+
+	public void setIsDietPlanPresent(Boolean isDietPlanPresent) {
+		this.isDietPlanPresent = isDietPlanPresent;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public DOB getDob() {
+		return dob;
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
+
 	@Override
 	public String toString() {
-		return "AcadamicProfile [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", localPatientName="
+		return "AcademicProfile [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", localPatientName="
 				+ localPatientName + ", mobileNumber=" + mobileNumber + ", uniqueId=" + uniqueId + ", rollNo=" + rollNo
-				+ ", acadamicClass=" + acadamicClass + ", emailAddress=" + emailAddress + ", acadamicSection="
-				+ acadamicSection + ", admissionDate=" + admissionDate + ", type=" + type + ", imageUrl=" + imageUrl
-				+ ", thumbnailUrl=" + thumbnailUrl + ", isSuperStar=" + isSuperStar + ", branch=" + branch + ", school="
-				+ school + ", isGrowthAssessmentPresent=" + isGrowthAssessmentPresent + ", isPhysicalAssessmentPresent="
-				+ isPhysicalAssessmentPresent + ", isEyeAssessmentPresent=" + isEyeAssessmentPresent
-				+ ", isDentalAssessmentPresent=" + isDentalAssessmentPresent + ", isENTAssessmentPresent="
-				+ isENTAssessmentPresent + ", isNutritionalAssessmentPresent=" + isNutritionalAssessmentPresent + "]";
+				+ ", gender=" + gender + ", dob=" + dob + ", acadamicClass=" + acadamicClass + ", emailAddress="
+				+ emailAddress + ", acadamicSection=" + acadamicSection + ", admissionDate=" + admissionDate + ", type="
+				+ type + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", isSuperStar=" + isSuperStar
+				+ ", branch=" + branch + ", school=" + school + ", isGrowthAssessmentPresent="
+				+ isGrowthAssessmentPresent + ", isPhysicalAssessmentPresent=" + isPhysicalAssessmentPresent
+				+ ", isEyeAssessmentPresent=" + isEyeAssessmentPresent + ", isDentalAssessmentPresent="
+				+ isDentalAssessmentPresent + ", isENTAssessmentPresent=" + isENTAssessmentPresent
+				+ ", isNutritionalAssessmentPresent=" + isNutritionalAssessmentPresent + ", isDietPlanPresent="
+				+ isDietPlanPresent + "]";
 	}
+
 }

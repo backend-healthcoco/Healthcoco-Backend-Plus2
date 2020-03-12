@@ -94,6 +94,8 @@ public class RegistrationDetails extends GenericCollection {
 	
 	private Boolean isNutritionalAssessmentPresent = false;
 	
+	private Boolean isDietPlanPresent = false;
+
 	public Date getAdmissionDate() {
 		return admissionDate;
 	}
@@ -438,6 +440,14 @@ public class RegistrationDetails extends GenericCollection {
 		this.isNutritionalAssessmentPresent = isNutritionalAssessmentPresent;
 	}
 
+	public Boolean getIsDietPlanPresent() {
+		return isDietPlanPresent;
+	}
+
+	public void setIsDietPlanPresent(Boolean isDietPlanPresent) {
+		this.isDietPlanPresent = isDietPlanPresent;
+	}
+
 	@Override
 	public String toString() {
 		return "RegistrationDetails [id=" + id + ", userId=" + userId + ", firstName=" + firstName
@@ -456,7 +466,7 @@ public class RegistrationDetails extends GenericCollection {
 				+ ", isGrowthAssessmentPresent=" + isGrowthAssessmentPresent + ", isPhysicalAssessmentPresent="
 				+ isPhysicalAssessmentPresent + ", isEyeAssessmentPresent=" + isEyeAssessmentPresent
 				+ ", isDentalAssessmentPresent=" + isDentalAssessmentPresent + ", isENTAssessmentPresent="
-				+ isENTAssessmentPresent + ", isNutritionalAssessmentPresent=" + isNutritionalAssessmentPresent + "]";
+				+ isENTAssessmentPresent + ", isNutritionalAssessmentPresent=" + isNutritionalAssessmentPresent
+				+ ", isDietPlanPresent=" + isDietPlanPresent + "]";
 	}
-	
 }

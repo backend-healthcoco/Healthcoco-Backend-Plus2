@@ -4,12 +4,12 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-import com.dpdocter.collections.AcadamicProfileCollection;
+import com.dpdocter.collections.AcademicProfileCollection;
 
-public interface AcadamicProfileRespository extends MongoRepository<AcadamicProfileCollection, ObjectId> {
+public interface AcadamicProfileRespository extends MongoRepository<AcademicProfileCollection, ObjectId> {
 
 	@Query(value = "{'userId': ?0}", count = true)
 	Integer countByUserId(ObjectId userId);
 	
-	AcadamicProfileCollection findByUserId(ObjectId userId);
+	AcademicProfileCollection findByUserId(ObjectId userId);
 }
