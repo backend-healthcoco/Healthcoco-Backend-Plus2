@@ -68,6 +68,9 @@ public interface BillingService {
 
 	public Boolean sendDueRemainderToPatient(String doctorId, String locationId, String hospitalId, String patientId,
 			String mobileNumber);
+	
+	public Boolean sendInvoiceToPatient(String doctorId, String locationId, String hospitalId, String patientId,
+			String mobileNumber);
 
 	String downloadMultipleReceipt(List<String> ids);
 
