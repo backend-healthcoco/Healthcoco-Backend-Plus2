@@ -1935,6 +1935,7 @@ public interface PathProxy {
 		public static final String GET_SUGAR_MEDICINE_REMINDER_BY_ID = "/sugarMedicineReminder/get/{id}";
 		public static final String GET_RDA_FOR_PATIENT = "rda/patient/{patientId}";
 		public static final String GET_NUTRITIONIST_REPORT_OF_DIET_PLAN = "/report/dietPlan/{nutritionistId}";
+		public static final String GET_CLUSTERS_OF_STUDENTS = "/studentCluster/{schoolId}";
 	}
 
 	public static final String DENTAL_IMAGING_URL = BASE_URL + "/dentalImaging";

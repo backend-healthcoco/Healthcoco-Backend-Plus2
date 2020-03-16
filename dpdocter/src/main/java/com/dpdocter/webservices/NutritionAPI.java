@@ -769,4 +769,18 @@ public class NutritionAPI {
 		Response<NutritionistReport> response = nutritionService.getNutrionistReportOfDietPlan(nutritionistId, fromDate, toDate, size, page, discarded, null);
 		return response;
 	}
+	
+	@Path(value = PathProxy.NutritionUrl.GET_CLUSTERS_OF_STUDENTS)
+	@GET
+	@ApiOperation(value = PathProxy.NutritionUrl.GET_CLUSTERS_OF_STUDENTS, notes = PathProxy.NutritionUrl.GET_CLUSTERS_OF_STUDENTS)
+	public Response<String> getClusterOfStudents(@PathParam("schoolId") String schoolId, 
+			@QueryParam("branchId") String branchId, @QueryParam("size") int size, @QueryParam("page") int page) {
+		if (schoolId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+		}
+
+		Response<String> response = new Response<String>();
+		response.setData(nutritionService.getClusterOfStudents(schoolId, branchId, size, page));
+		return response;
+	}
 }

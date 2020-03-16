@@ -1418,7 +1418,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 					Integer nutritionAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), NutritionAssessmentCollection.class);
 					if(nutritionAssessmentCount > 0)acadamicProfile.setIsNutritionalAssessmentPresent(true);
 					
-					Integer dietPlanCount = (int) mongoTemplate.count(new Query(new Criteria("academicProfileId").is(new ObjectId(acadamicProfile.getId()))), DietPlanCollection.class);
+					Integer dietPlanCount = (int) mongoTemplate.count(new Query(new Criteria("patientId").is(new ObjectId(acadamicProfile.getUserId()))), DietPlanCollection.class);
 					if(dietPlanCount > 0)acadamicProfile.setIsDietPlanPresent(true);
 				}
 			}

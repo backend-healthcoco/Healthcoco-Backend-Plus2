@@ -34,10 +34,10 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 
 	List<PatientCollection> findByLocationIdAndHospitalIdAndRegistrationDateBetween(ObjectId locationId, ObjectId hospitalId, Long startTimeinMillis, Long endTimeinMillis, Pageable pageRequest);
 	
-	@Query("{'locationId': ?0, 'hospitalId': ?1, 'PNUM': {$ne: null}}")
+	@Query("{'locationId': ?0, 'hospitalId': ?1, 'pNUM': {$ne: null}}")
 	PatientCollection findByLocationIdAndHospitalIdAndPNUMNotNull(ObjectId locationObjectId, ObjectId hospitalObjectId, Sort sort);
 
-	@Query("{'locationId': ?0, 'hospitalId': ?1, 'PNUM': {$ne: null}}")
+	@Query("{'locationId': ?0, 'hospitalId': ?1, 'pNUM': {$ne: null}}")
 	List<PatientCollection> findByLocationIdAndHospitalIdAndPNUMNotNull(ObjectId locationObjectId, ObjectId hospitalObjectId, Pageable pageRequest);
 	
 	@Query(value = "{'userId': ?0, 'locationId': ?1, 'hospitalId': ?2}", count = true)
@@ -52,7 +52,7 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 	@Query(value = "{'doctorId':?0, 'locationId':?1, 'hospitalId': ?2, 'PID':?3, 'userId': {'$ne' : ?4}}", count = true)
 	Integer findPatientByPID(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String generatedId, ObjectId userId);
 	
-	@Query(value = "{'locationId': ?0, 'hospitalId': ?1, 'PNUM': {'$ne' : ?2}}", count = true)
+	@Query(value = "{'locationId': ?0, 'hospitalId': ?1, 'pNUM': {'$ne' : ?2}}", count = true)
 	Integer findCountByLocationIDHospitalIDAndNotPNUM(ObjectId locationId, ObjectId hospitalId, String pnum);
 
 }

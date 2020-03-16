@@ -1,13 +1,24 @@
 package com.dpdocter.services.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -27,19 +38,22 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.AcademicProfile;
 import com.dpdocter.beans.BloodGlucose;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.NutritionDisease;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.NutritionRDA;
+import com.dpdocter.beans.StudentCluster;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.SugarMedicineReminder;
 import com.dpdocter.beans.SugarSetting;
 import com.dpdocter.beans.Testimonial;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserNutritionSubscription;
+import com.dpdocter.collections.AcadamicClassCollection;
 import com.dpdocter.collections.AcademicProfileCollection;
 import com.dpdocter.collections.BloodGlucoseCollection;
 import com.dpdocter.collections.DietPlanCollection;
@@ -54,11 +68,11 @@ import com.dpdocter.collections.TestimonialCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserNutritionSubscriptionCollection;
 import com.dpdocter.elasticsearch.response.NutritionPlanWithCategoryShortResponse;
-import com.dpdocter.enums.LifeStyleType;
 import com.dpdocter.enums.NutritionPlanType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.AcadamicClassRepository;
 import com.dpdocter.repository.BloodGlucoseRepository;
 import com.dpdocter.repository.NutritionPlanRepository;
 import com.dpdocter.repository.PatientLifeStyleRepository;
@@ -69,13 +83,16 @@ import com.dpdocter.repository.SugarSettingRepository;
 import com.dpdocter.repository.UserNutritionSubscriptionRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.NutritionPlanRequest;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.NutritionPlanResponse;
 import com.dpdocter.response.NutritionPlanWithCategoryResponse;
 import com.dpdocter.response.NutritionistReport;
 import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.scheduler.AsyncService;
+import com.dpdocter.services.FileManager;
 import com.dpdocter.services.NutritionService;
 import com.mongodb.BasicDBObject;
+import com.opencsv.CSVWriter;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -120,6 +137,14 @@ public class NutritionServiceImpl implements NutritionService {
 
 	@Autowired
 	private PatientLifeStyleRepository patientLifeStyleRepository;
+	
+	@Autowired
+	private FileManager fileManager;
+	
+	private static final String NEW_LINE_SEPARATOR = "\n";
+	
+	@Autowired
+	private AcadamicClassRepository acadamicClassRepository;
 	
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null)
@@ -1178,8 +1203,6 @@ public class NutritionServiceImpl implements NutritionService {
 
 				fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				criteria.and("fromDate").gte(fromDateTime);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
 				localCalendar.setTime(new Date(Long.parseLong(toDate)));
@@ -1190,7 +1213,6 @@ public class NutritionServiceImpl implements NutritionService {
 				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-				criteria.and("toDate").lte(toDateTime);
 			}
 			
 			if(fromDateTime != null && toDateTime != null) {
@@ -1236,9 +1258,9 @@ public class NutritionServiceImpl implements NutritionService {
 							Aggregation.lookup("acadamic_profile_cl", "patientId", "_id", "profile"),
 							Aggregation.unwind("profile"),
 							Aggregation.lookup("school_branch_cl", "profile.branchId", "_id", "profile.branch"),
-							Aggregation.unwind("profile.branch"), 
+							Aggregation.unwind("profile.branch", true), 
 							Aggregation.lookup("school_cl", "profile.schoolId", "_id", "profile.school"), 
-							Aggregation.unwind("profile.school"),
+							Aggregation.unwind("profile.school", true),
 							Aggregation.lookup("growth_assessment_and_general_bio_metrics_cl", "profile._id", "academicProfileId", "growthAssessment"),
 							Aggregation.unwind("growthAssessment", true), 
 							Aggregation.lookup("nutrition_assessment_cl", "profile._id", "academicProfileId", "nutritionAssessment"), 
@@ -1259,6 +1281,232 @@ public class NutritionServiceImpl implements NutritionService {
 
 		}
 		return response;
+	}
+
+	@Override
+	public String getClusterOfStudents(String schoolId, String branchId, int size, int page) {
+		String response = null;
+		FileWriter fileWriter = null;
+		try {
+			Criteria criteria = new Criteria("schoolId").is(new ObjectId(schoolId));
+			if(!DPDoctorUtils.anyStringEmpty(branchId))
+				criteria.and("branchId").is(new ObjectId(branchId));
+
+			CustomAggregationOperation projectList = new CustomAggregationOperation(new Document("$project", 
+					new BasicDBObject("id", "$_id").append("branchName", "$branch.branchName")
+					.append("acadamicClassName", "$acadamicClass.name")
+					.append("sectionName", "$section.section")
+					.append("studentName", "$localPatientName")
+					.append("gender", "$gender")
+					.append("dob", "$dob")
+					.append("height", "$growthAssessment.height")
+					.append("weight", "$growthAssessment.weight")
+					.append("lifestyle", "$nutritionAssessment.type")
+					.append("communities", "$nutritionAssessment.communities")
+					.append("diseases", "$nutritionAssessment.diseases")
+					.append("foodPreference", "$nutritionAssessment.foodPreference")
+					.append("generalSigns", "$physicalAssessment.generalSigns")
+					.append("deficienciesSuspected", "$physicalAssessment.deficienciesSuspected")));
+			
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group", 
+					new BasicDBObject("id", "$_id").append("branchName", new BasicDBObject("$first", "$branchName"))
+					.append("acadamicClassName", new BasicDBObject("$first", "$acadamicClassName"))
+					.append("sectionName", new BasicDBObject("$first", "$sectionName"))
+					.append("studentName", new BasicDBObject("$first", "$studentName"))
+					.append("gender", new BasicDBObject("$first", "$gender"))
+					.append("dob", new BasicDBObject("$first", "$dob"))
+					.append("height", new BasicDBObject("$first", "$gheight"))
+					.append("weight", new BasicDBObject("$first", "$weight"))
+					.append("lifestyle", new BasicDBObject("$first", "$lifestyle"))
+					.append("communities", new BasicDBObject("$first", "$communities"))
+					.append("diseases", new BasicDBObject("$first", "$diseases"))
+					.append("foodPreference", new BasicDBObject("$first", "$foodPreference"))
+					.append("generalSigns", new BasicDBObject("$first", "$generalSigns"))
+					.append("deficienciesSuspected", new BasicDBObject("$first", "$deficienciesSuspectedd"))));
+			
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("school_branch_cl", "branchId", "_id", "branch"),
+						Aggregation.unwind("branch", true), 				
+						Aggregation.lookup("acadamic_class_cl", "classId", "_id", "acadamicClass"),
+						Aggregation.unwind("acadamicClass"),
+						Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "section"),
+						Aggregation.unwind("section", true), 									
+						Aggregation.lookup("growth_assessment_and_general_bio_metrics_cl", "_id", "academicProfileId", "growthAssessment"),
+						Aggregation.unwind("growthAssessment"), 
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("growthAssessment.createdTime", -1))),
+						Aggregation.lookup("nutrition_assessment_cl", "_id", "academicProfileId", "nutritionAssessment"), 
+						Aggregation.unwind("nutritionAssessment"),
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("nutritionAssessment.createdTime", -1))),
+						Aggregation.lookup("physical_assessment_cl", "_id", "academicProfileId", "physicalAssessment"),
+						Aggregation.unwind("physicalAssessment"),
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("physicalAssessment.createdTime", -1))),
+						projectList,
+						group,
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "localPatientName")),
+						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("school_branch_cl", "branchId", "_id", "branch"),
+						Aggregation.unwind("branch", true), 				
+						Aggregation.lookup("acadamic_class_cl", "classId", "_id", "acadamicClass"),
+						Aggregation.unwind("acadamicClass", true), 					
+						Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "section"),
+						Aggregation.unwind("section", true), 									
+						Aggregation.lookup("growth_assessment_and_general_bio_metrics_cl", "_id", "academicProfileId", "growthAssessment"),
+						Aggregation.unwind("growthAssessment"), 
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("growthAssessment.createdTime", -1))),
+						Aggregation.lookup("nutrition_assessment_cl", "_id", "academicProfileId", "nutritionAssessment"), 
+						Aggregation.unwind("nutritionAssessment"),
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("nutritionAssessment.createdTime", -1))),
+						Aggregation.lookup("physical_assessment_cl", "_id", "academicProfileId", "physicalAssessment"),
+						Aggregation.unwind("physicalAssessment"),
+						new CustomAggregationOperation(new Document("$sort", new BasicDBObject("physicalAssessment.createdTime", -1))),
+						projectList,
+						group,
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "localPatientName")));
+			}
+			
+			List<StudentCluster> studentClusters = mongoTemplate.aggregate(aggregation, AcademicProfileCollection.class, StudentCluster.class).getMappedResults();
+			
+			if(studentClusters != null) {
+				List<String> headerString = new ArrayList<String>();
+				headerString.add("Branch Name");
+				headerString.add("Class");
+				headerString.add("Section");
+				headerString.add("Student Name");
+				headerString.add("Gender");
+				headerString.add("Age");
+				headerString.add("Height");
+				headerString.add("Weight");
+				headerString.add("Community");
+				headerString.add("Food Preference");
+				headerString.add("Lifestyle");
+				headerString.add("Deficiency/Disease");
+				//csvWriter.writeNext(headerString.toArray(new String[0]));
+				
+				fileWriter = new FileWriter("/home/ubuntu/StudentCluster.csv");
+				fileWriter.append(headerString.stream().collect(Collectors.joining(",")));
+				fileWriter.append(NEW_LINE_SEPARATOR);
+				
+				List<String> dataString = null;
+				
+				for(StudentCluster studentCluster : studentClusters) {
+					dataString = new ArrayList<String>();
+					dataString.add(studentCluster.getBranchName());
+					
+					dataString.add(studentCluster.getAcadamicClassName());
+					dataString.add(studentCluster.getSectionName());
+					dataString.add(studentCluster.getStudentName());
+					dataString.add(studentCluster.getGender());
+					
+					dataString.add(getAgeRange(studentCluster.getDob()));
+					dataString.add(getHeightRange(studentCluster.getHeight()));
+					dataString.add(getWeightRange(studentCluster.getWeight()));
+					
+					if(studentCluster.getCommunities() != null && !studentCluster.getCommunities().isEmpty()) {
+						dataString.add(studentCluster.getCommunities().stream().map(FoodCommunity::getValue).collect(Collectors.joining(";")));
+					}else {
+						dataString.add("N/A");
+					}
+					
+					dataString.add(!DPDoctorUtils.anyStringEmpty(studentCluster.getFoodPreference()) ? studentCluster.getFoodPreference() : "N/A");
+					dataString.add(!DPDoctorUtils.anyStringEmpty(studentCluster.getLifestyle()) ? studentCluster.getLifestyle() : "N/A");
+					
+					String disease = "";
+					if(studentCluster.getDiseases() != null && !studentCluster.getDiseases().isEmpty()) {
+						disease = studentCluster.getDiseases().stream().map(NutritionDisease::getDisease).collect(Collectors.joining(";"));
+					}
+					
+					if(studentCluster.getDeficienciesSuspected() != null && !studentCluster.getDeficienciesSuspected().isEmpty()) {
+						disease = disease.concat(studentCluster.getDeficienciesSuspected().stream().collect(Collectors.joining(";")));
+					}
+					if(studentCluster.getGeneralSigns() != null && !studentCluster.getGeneralSigns().isEmpty()) {
+						disease = disease.concat(studentCluster.getGeneralSigns().stream().collect(Collectors.joining(";")));
+					}
+					dataString.add(disease);
+							
+					//csvWriter.writeNext(dataString.toArray(new String [0]));
+					fileWriter.append(dataString.stream().collect(Collectors.joining(",")));
+					fileWriter.append(NEW_LINE_SEPARATOR);
+				}
+				if (fileWriter != null) {
+					fileWriter.flush();
+					fileWriter.close();
+				}
+				File file = new File("/home/ubuntu/StudentCluster.csv");
+				
+				byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
+			    String encoding = new String(encoded, StandardCharsets.US_ASCII);
+				
+				System.out.println(encoding);
+				FileDetails fileDetails = new FileDetails();
+				fileDetails.setFileEncoded(encoding);
+				fileDetails.setFileName("StudentCluster_"+new Date().getTime());
+				fileDetails.setFileExtension("csv");
+				ImageURLResponse path = fileManager.saveImageAndReturnImageUrl(fileDetails, "studentCluster", false);
+				response = imagePath + path.getImageUrl();
+			}
+		}catch(Exception e) {
+			logger.error("Error while getting cluster of Students " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting cluster of Students " + e.getMessage());
+		}
+		return response;
+	}
+
+	private String getAgeRange(DOB dob) {
+		if(dob != null) {
+			double ageInYears = dob.getAge().getYears() 
+					+ (double)dob.getAge().getMonths()/12
+					+ (double)dob.getAge().getDays()/365; 
+			
+			if(4 <= ageInYears && ageInYears <= 6) {
+				return "4-6";
+			}else if(6 < ageInYears && ageInYears <= 8) {
+				return "6-8";
+			}else if(8 < ageInYears && ageInYears <= 10) {
+				return "8-10";
+			}else if(10 < ageInYears && ageInYears <= 12) {
+				return "10-12";
+			}else if(12 < ageInYears && ageInYears <= 14) {
+				return "12-14";
+			}else if(14 < ageInYears && ageInYears <= 16) {
+				return "14-16";
+			}else if(16 < ageInYears && ageInYears <= 18) {
+				return "16-18";
+			}
+		}
+		return "N/A";
+	}
+	
+	private String getHeightRange(Integer height) {
+		if(height != null) {
+			//0-200 4
+			if(height % 4 == 0) {
+				return height+"-"+(height+4);
+			}
+			while(height % 4 != 0) {			
+				height = height - 1;
+			}
+			return height+"-"+(height+4);
+		}
+		return "N/A";
+	}
+	
+	private String getWeightRange(Double weight) {
+		if(weight != null) {
+			//0-120 2
+			if(weight % 2 == 0) {
+				return weight+"-"+(weight+2);
+			}
+			while(weight % 4 != 0) {			
+				weight = weight - 1;
+			}
+			return weight+"-"+(weight+2);
+		}
+		return "N/A";
 	}
 }
 

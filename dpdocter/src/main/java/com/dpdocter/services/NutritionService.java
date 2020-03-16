@@ -1,5 +1,6 @@
 package com.dpdocter.services;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -78,5 +79,7 @@ public interface NutritionService {
 
 	public Response<NutritionistReport> getNutrionistReportOfDietPlan(String nutritionistId, String fromDate, String toDate, int size,
 			int page, Boolean discarded, String searchTerm);
+
+	public String getClusterOfStudents(String schoolId, String branchId, int size, int page);
 
 }
