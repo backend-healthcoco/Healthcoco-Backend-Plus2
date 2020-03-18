@@ -142,6 +142,8 @@ public class DoctorClinicProfile {
 	private Boolean isVaccinationModuleOn = false;
 
 	private String feedbackURL;
+	
+	private Boolean isDefaultClinic=false;
 
 	public Boolean getIsSuperAdmin() {
 		return isSuperAdmin;
@@ -669,6 +671,16 @@ public class DoctorClinicProfile {
 
 	public void setIsAdminNutritionist(Boolean isAdminNutritionist) {
 		this.isAdminNutritionist = isAdminNutritionist;
+	}
+	
+	
+
+	public Boolean getIsDefaultClinic() {
+		return isDefaultClinic;
+	}
+
+	public void setIsDefaultClinic(Boolean isDefaultClinic) {
+		this.isDefaultClinic = isDefaultClinic;
 	}
 
 	@Override

@@ -144,6 +144,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private String feedbackURL;
+	
+	@Field
+	private Boolean isDefaultClinic=false;
 
 	public ObjectId getId() {
 		return id;
@@ -479,6 +482,16 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setIsAdminNutritionist(Boolean isAdminNutritionist) {
 		this.isAdminNutritionist = isAdminNutritionist;
+	}
+	
+	
+
+	public Boolean getIsDefaultClinic() {
+		return isDefaultClinic;
+	}
+
+	public void setIsDefaultClinic(Boolean isDefaultClinic) {
+		this.isDefaultClinic = isDefaultClinic;
 	}
 
 	@Override

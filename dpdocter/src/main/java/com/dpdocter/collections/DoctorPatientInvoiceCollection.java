@@ -73,6 +73,18 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 	@Field
 	private Boolean isPatientDiscarded = false;
 	
+	@Field
+	private String timeOfAdmission;
+	
+	@Field
+	private String timeOfDischarge;
+	
+	@Field
+	private Date admissionDate;
+	
+	@Field
+	private Date dischargeDate;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -217,6 +229,38 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 		this.isPatientDiscarded = isPatientDiscarded;
 	}
 
+	public String getTimeOfAdmission() {
+		return timeOfAdmission;
+	}
+
+	public void setTimeOfAdmission(String timeOfAdmission) {
+		this.timeOfAdmission = timeOfAdmission;
+	}
+
+	public String getTimeOfDischarge() {
+		return timeOfDischarge;
+	}
+
+	public void setTimeOfDischarge(String timeOfDischarge) {
+		this.timeOfDischarge = timeOfDischarge;
+	}
+
+	public Date getAdmissionDate() {
+		return admissionDate;
+	}
+
+	public void setAdmissionDate(Date admissionDate) {
+		this.admissionDate = admissionDate;
+	}
+
+	public Date getDischargeDate() {
+		return dischargeDate;
+	}
+
+	public void setDischargeDate(Date dischargeDate) {
+		this.dischargeDate = dischargeDate;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientInvoiceCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -225,7 +269,10 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 				+ ", totalCost=" + totalCost + ", totalTax=" + totalTax + ", grandTotal=" + grandTotal
 				+ ", usedAdvanceAmount=" + usedAdvanceAmount + ", refundAmount=" + refundAmount + ", balanceAmount="
 				+ balanceAmount + ", discarded=" + discarded + ", invoiceDate=" + invoiceDate + ", isPatientDiscarded="
-				+ isPatientDiscarded + "]";
+				+ isPatientDiscarded + ", timeOfAdmission=" + timeOfAdmission + ", timeOfDischarge=" + timeOfDischarge
+				+ ", admissionDate=" + admissionDate + ", dischargeDate=" + dischargeDate + "]";
 	}
+
+	
 
 }

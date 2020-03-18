@@ -1315,7 +1315,7 @@ public class NutritionServiceImpl implements NutritionService {
 					.append("studentName", new BasicDBObject("$first", "$studentName"))
 					.append("gender", new BasicDBObject("$first", "$gender"))
 					.append("dob", new BasicDBObject("$first", "$dob"))
-					.append("height", new BasicDBObject("$first", "$gheight"))
+					.append("height", new BasicDBObject("$first", "$height"))
 					.append("weight", new BasicDBObject("$first", "$weight"))
 					.append("lifestyle", new BasicDBObject("$first", "$lifestyle"))
 					.append("communities", new BasicDBObject("$first", "$communities"))

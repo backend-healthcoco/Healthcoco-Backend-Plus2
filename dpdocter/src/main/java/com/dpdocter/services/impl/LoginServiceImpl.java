@@ -52,6 +52,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorLoginPinRepository;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
@@ -87,6 +88,9 @@ public class LoginServiceImpl implements LoginService {
 
 	@Autowired
 	private DoctorRepository doctorRepository;
+	
+	@Autowired
+	private LocationRepository locationRepository;
 
 	@Autowired
 	private SpecialityRepository specialityRepository;
@@ -210,6 +214,16 @@ public class LoginServiceImpl implements LoginService {
 						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active or you dont have login access,please contact your admin.");
 
 					}
+					
+//					String	defaultLocationId=null;
+//					if (!DPDoctorUtils.anyStringEmpty(doctorClinicProfileLookupResponses.get(0).getId())) {
+//						locationCollection = locationRepository
+//								.findById(locationCollection.getId()).orElse(null);
+//						defaultLocationId = locationCollection.getDefaultLocationId().toString();
+//							
+//							
+//						
+//					}
 					if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
 						List<Hospital> hospitals = new ArrayList<Hospital>();
 						Map<String, Hospital> checkHospitalId = new HashMap<String, Hospital>();
@@ -228,6 +242,21 @@ public class LoginServiceImpl implements LoginService {
 									doctorClinicProfileLookupResponse.getIsVaccinationModuleOn());
 							locationAndAccessControl.setIsNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
 							locationAndAccessControl.setIsAdminNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
+							
+
+//							
+//							locationAndAccessControl.setIsDefaultClinic(false);
+//							if (!DPDoctorUtils.anyStringEmpty(defaultLocationId)) {
+//								locationAndAccessControl.setIsDefaultClinic(false);
+//								if (locationCollection.getId().toString().equals(defaultLocationId))
+//								{
+//									locationAndAccessControl.setIsDefaultClinic(true);
+//
+//							}
+//							}		
+//					//	locationAndAccessControl.setDefaultHospitalId(locationCollection.getDefaultHospitalId().toString());
+							
+							
 							List<Role> roles = null;
 
 							Boolean isStaff = false;

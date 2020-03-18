@@ -1,5 +1,6 @@
 package com.dpdocter.beans;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -40,6 +41,8 @@ public class InvoiceItem {
 	private String note;
 	
 	private List<Fields> treatmentFields;
+	
+	
 	
 	public ObjectId getItemId() {
 		return itemId;
@@ -168,7 +171,8 @@ public class InvoiceItem {
 	public void setTreatmentFields(List<Fields> treatmentFields) {
 		this.treatmentFields = treatmentFields;
 	}
-
+	
+	
 	@Override
 	public String toString() {
 		return "InvoiceItem [itemId=" + itemId + ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", name="

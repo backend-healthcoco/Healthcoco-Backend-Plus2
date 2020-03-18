@@ -83,6 +83,8 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	private String feedbackURL;
 	
 	private Boolean isAdminNutritionist = false;
+	
+	private Boolean isDefaultClinic =false;
 
 	public ObjectId getId() {
 		return id;
@@ -355,6 +357,16 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	public void setIsAdminNutritionist(Boolean isAdminNutritionist) {
 		this.isAdminNutritionist = isAdminNutritionist;
+	}
+	
+	
+
+	public Boolean getIsDefaultClinic() {
+		return isDefaultClinic;
+	}
+
+	public void setIsDefaultClinic(Boolean isDefaultClinic) {
+		this.isDefaultClinic = isDefaultClinic;
 	}
 
 	@Override

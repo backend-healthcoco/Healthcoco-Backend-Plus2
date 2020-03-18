@@ -8,6 +8,8 @@ import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.ECGDetails;
 import com.dpdocter.beans.EarsExamination;
 import com.dpdocter.beans.Echo;
+import com.dpdocter.beans.EyeObservation;
+import com.dpdocter.beans.EyeSpecialityObservation;
 import com.dpdocter.beans.GeneralExam;
 import com.dpdocter.beans.Holter;
 import com.dpdocter.beans.IndicationOfUSG;
@@ -176,6 +178,8 @@ public class ClinicalNotesAddRequest {
 	private List<NeckExamination> neckExaminations;
 
 	private List<EarsExamination> earsExaminations;
+	
+	private List<EyeSpecialityObservation> eyeObservations;
 
 	private String globalDiagnoses;
 
@@ -1228,6 +1232,16 @@ public class ClinicalNotesAddRequest {
 
 	public void setSendNotificationToDoctor(Boolean sendNotificationToDoctor) {
 		this.sendNotificationToDoctor = sendNotificationToDoctor;
+	}
+	
+	
+
+	public List<EyeSpecialityObservation> getEyeObservations() {
+		return eyeObservations;
+	}
+
+	public void setEyeObservations(List<EyeSpecialityObservation> eyeObservations) {
+		this.eyeObservations = eyeObservations;
 	}
 
 	@Override

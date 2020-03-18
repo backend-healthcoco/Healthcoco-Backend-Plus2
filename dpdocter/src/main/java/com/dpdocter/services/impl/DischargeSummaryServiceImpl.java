@@ -2730,7 +2730,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(doctorObjectId);
 
-			if (!discarded)
+			//if (!discarded)
 				criteria.and("discarded").is(discarded);
 			Aggregation aggregation = null;
 

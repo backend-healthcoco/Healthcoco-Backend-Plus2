@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1545,7 +1546,7 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	private JasperReportResponse createJasper(DoctorPatientInvoiceCollection doctorPatientInvoiceCollection,
-			PatientCollection patient, UserCollection user) throws IOException {
+			PatientCollection patient, UserCollection user) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		List<InvoiceItemJasperDetails> invoiceItemJasperDetails = null;
@@ -1556,7 +1557,13 @@ public class BillingServiceImpl implements BillingService {
 			Boolean showDiscount = false;
 			Boolean showStatus = false;
 			Boolean showTax = false;
+			Boolean showAdmissionDate = false;
+			Boolean showDischargeDate=false;
+			Boolean showTimeOfDischarge=false;
+			Boolean showTimeOfAdmission = false;
 			int no = 0;
+			String pattern = "dd/MM/yyyy";
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 			for (InvoiceItem invoiceItem : doctorPatientInvoiceCollection.getInvoiceItems()) {
 				InvoiceItemJasperDetails invoiceItemJasperDetail = new InvoiceItemJasperDetails();
 
@@ -1626,11 +1633,47 @@ public class BillingServiceImpl implements BillingService {
 				invoiceItemJasperDetail.setTotal(invoiceItem.getFinalCost() + "");
 				invoiceItemJasperDetails.add(invoiceItemJasperDetail);
 			}
+			if (doctorPatientInvoiceCollection.getAdmissionDate() != null) {
+				showAdmissionDate = true;
+				parameters.put("AdmissionDate", simpleDateFormat.format(doctorPatientInvoiceCollection.getAdmissionDate()));
+			}
+
+			
+			if (doctorPatientInvoiceCollection.getDischargeDate() != null) {
+				showDischargeDate = true;
+				parameters.put("DischargeDate", simpleDateFormat.format(doctorPatientInvoiceCollection.getDischargeDate()));
+			}
+	
+			
+			if (!DPDoctorUtils.allStringsEmpty(doctorPatientInvoiceCollection.getTimeOfAdmission())) {
+				showTimeOfAdmission = true;
+				SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
+				Date dt = sdfForMins.parse(doctorPatientInvoiceCollection.getTimeOfAdmission());
+				sdfForMins = new SimpleDateFormat("hh:mm a");
+				parameters.put("TimeOfAdmission", sdfForMins.format(dt));
+			}
+
+		
+			if (!DPDoctorUtils.allStringsEmpty(doctorPatientInvoiceCollection.getTimeOfDischarge())) {
+				showTimeOfDischarge = true;
+				SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
+				Date dt = sdfForMins.parse(doctorPatientInvoiceCollection.getTimeOfDischarge());
+				sdfForMins = new SimpleDateFormat("hh:mm a");
+				parameters.put("TimeOfDischarge", sdfForMins.format(dt));
+			}
+
+
 			parameters.put("showDiscount", showDiscount);
 			parameters.put("showTax", showTax);
 			parameters.put("showStatus", showStatus);
 			parameters.put("showInvoiceItemQuantity", showInvoiceItemQuantity);
 			parameters.put("items", invoiceItemJasperDetails);
+
+			parameters.put("showAdmissionDate",showAdmissionDate);
+			parameters.put("showDischargeDate", showDischargeDate);
+			parameters.put("showTimeOfAdmission", showTimeOfAdmission);
+			parameters.put("showTimeOfDischarge",showTimeOfDischarge);
+
 			String total = "";
 			if (doctorPatientInvoiceCollection.getTotalCost() > 0)
 				total = "<b>Total Cost :</b> ₹" + doctorPatientInvoiceCollection.getTotalCost() + " &nbsp;&nbsp;&nbsp;";
@@ -2696,9 +2739,91 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	@Override
-	public Boolean sendInvoiceToPatient(String doctorId, String locationId, String hospitalId, String patientId,
+	public Boolean sendInvoiceToPatient(String doctorId, String locationId, String hospitalId, String invoiceId,
 			String mobileNumber) {
+
 		// TODO Auto-generated method stub
-		return null;
+		
+
+		Boolean response = false;
+		try {
+
+			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findByIdAndDoctorIdAndLocationIdAndHospitalId(
+					new ObjectId(invoiceId), new ObjectId(doctorId), new ObjectId(locationId),
+					new ObjectId(hospitalId));
+			if (doctorPatientInvoiceCollection != null) {
+				UserCollection patient = userRepository.findById(doctorPatientInvoiceCollection.getPatientId()).orElse(null);
+
+				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
+				smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
+				smsTrackDetail.setLocationId(new ObjectId(locationId));
+				smsTrackDetail.setType(ComponentType.INVOICE.getType());
+				SMSDetail smsDetail = new SMSDetail();
+				smsDetail.setUserId(doctorPatientInvoiceCollection.getPatientId());
+				smsDetail.setUserName(patient.getFirstName());
+				SMS sms = new SMS();
+				//String message = invoiceRemainderSMS;
+				String invoiceDetails=null;
+				int i=0;
+				if(doctorPatientInvoiceCollection.getInvoiceItems()!=null && !doctorPatientInvoiceCollection.getInvoiceItems().isEmpty())
+				for (InvoiceItem doctorPatientCollection : doctorPatientInvoiceCollection.getInvoiceItems()) {
+				 i++;
+				String serviceName=	doctorPatientCollection.getName() !=null
+						?(!DPDoctorUtils.anyStringEmpty(doctorPatientCollection.getName())
+								? doctorPatientCollection.getName()
+								: "")
+						: "";
+								String cost =	doctorPatientCollection.getCost() !=null
+										?(!DPDoctorUtils.anyStringEmpty(doctorPatientCollection.getCost().toString())
+												? doctorPatientCollection.getCost().toString()
+												: "")
+												:"";
+						
+								invoiceDetails = invoiceDetails + " " + i + ")" + serviceName + " "
+										+ cost;
+				}
+
+//				Collection<String> tests = CollectionUtils.collect(
+//						(List<DiagnosticTestCollection>) diagnosticTestRepository.findAllById(testIds),
+//						new BeanToPropertyValueTransformer("testName"));
+//				prescriptionDetails = prescriptionDetails + " "
+//						+ tests.toString().replaceAll("\\[", "").replaceAll("\\]", "");
+//			}
+//		
+				sms.setSmsText("Hi " + patient.getFirstName() + ", your invoice "
+						+ doctorPatientInvoiceCollection.getUniqueInvoiceId() + " by " + locationCollection.getLocationName() + ". "
+						+ invoiceDetails+" and the total cost is "+doctorPatientInvoiceCollection.getGrandTotal() + ". For queries,contact clinic" + locationCollection.getClinicNumber() + ".");
+
+//				sms.setSmsText(message.replace("{patientName}", patient.getFirstName())
+//						.replace("{clinicNumber}",
+//								locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber()
+//										: "")
+//						.replace("{clinicName}", locationCollection.getLocationName())
+//						
+//						.replace("{serviceName}", doctorPatientInvoiceCollection.getInvoiceItems().get(0).getName().toString())
+//						.replace("{cost}", doctorPatientInvoiceCollection.getInvoiceItems().get(0).getFinalCost().toString())
+//						.replace("{totalAmount}", doctorPatientInvoiceCollection.getGrandTotal().toString()));
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(mobileNumber);
+				sms.setSmsAddress(smsAddress);
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				smsServices.sendSMS(smsTrackDetail, true);
+				response = true;
+			}
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			logger.error("Error while sending sms invoices" + e);
+			throw new BusinessException(ServiceError.Unknown, "Error while sending sms invoices" + e);
+		}
+		return response;
+
 	}
 }

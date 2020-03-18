@@ -43,6 +43,14 @@ public class DoctorPatientInvoice extends GenericCollection {
 	private Boolean discarded = false;
 
 	private List<String> receiptIds;
+	
+	private String timeOfAdmission;
+	
+	private String timeOfDischarge;
+	
+	private Date admissionDate;
+	
+	private Date dischargeDate;
 
 	private Date invoiceDate;
 
@@ -191,6 +199,39 @@ public class DoctorPatientInvoice extends GenericCollection {
 		this.oldGrantTotal = oldGrantTotal;
 	}
 
+	
+	public String getTimeOfAdmission() {
+		return timeOfAdmission;
+	}
+
+	public void setTimeOfAdmission(String timeOfAdmission) {
+		this.timeOfAdmission = timeOfAdmission;
+	}
+
+	public String getTimeOfDischarge() {
+		return timeOfDischarge;
+	}
+
+	public void setTimeOfDischarge(String timeOfDischarge) {
+		this.timeOfDischarge = timeOfDischarge;
+	}
+
+	public Date getAdmissionDate() {
+		return admissionDate;
+	}
+
+	public void setAdmissionDate(Date admissionDate) {
+		this.admissionDate = admissionDate;
+	}
+
+	public Date getDischargeDate() {
+		return dischargeDate;
+	}
+
+	public void setDischargeDate(Date dischargeDate) {
+		this.dischargeDate = dischargeDate;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientInvoice [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -198,8 +239,11 @@ public class DoctorPatientInvoice extends GenericCollection {
 				+ ", invoiceItems=" + invoiceItems + ", totalDiscount=" + totalDiscount + ", totalCost=" + totalCost
 				+ ", totalTax=" + totalTax + ", grandTotal=" + grandTotal + ", oldGrantTotal=" + oldGrantTotal
 				+ ", usedAdvanceAmount=" + usedAdvanceAmount + ", refundAmount=" + refundAmount + ", balanceAmount="
-				+ balanceAmount + ", discarded=" + discarded + ", receiptIds=" + receiptIds + ", invoiceDate="
-				+ invoiceDate + "]";
+				+ balanceAmount + ", discarded=" + discarded + ", receiptIds=" + receiptIds + ", timeOfAdmission="
+				+ timeOfAdmission + ", timeOfDischarge=" + timeOfDischarge + ", admissionDate=" + admissionDate
+				+ ", dischargeDate=" + dischargeDate + ", invoiceDate=" + invoiceDate + "]";
 	}
+
+	
 
 }

@@ -37,6 +37,8 @@ public class ClinicDoctorResponse {
 	private Boolean isSuperAdmin = false;
 	
 	private Boolean hasLoginAccess;
+	
+	private Boolean isDefaultClinic=false;
 
 	public Boolean getHasLoginAccess() {
 		return hasLoginAccess;
@@ -156,6 +158,14 @@ public class ClinicDoctorResponse {
 
 	public void setIsSuperAdmin(Boolean isSuperAdmin) {
 		this.isSuperAdmin = isSuperAdmin;
+	}
+	
+	public Boolean getIsDefaultClinic() {
+		return isDefaultClinic;
+	}
+
+	public void setIsDefaultClinic(Boolean isDefaultClinic) {
+		this.isDefaultClinic = isDefaultClinic;
 	}
 
 	@Override

@@ -160,6 +160,12 @@ public class LocationCollection extends GenericCollection {
 
 	@Field
 	private String smsCode;
+	
+	@Field
+	private ObjectId defaultLocationId;
+	
+	@Field
+	private Boolean isDefaultClinic=false;
 
 	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;
@@ -551,6 +557,29 @@ public class LocationCollection extends GenericCollection {
 
 	public void setSmsCode(String smsCode) {
 		this.smsCode = smsCode;
+	}
+	
+	
+
+	
+	
+
+	
+
+	public Boolean getIsDefaultClinic() {
+		return isDefaultClinic;
+	}
+
+	public void setIsDefaultClinic(Boolean isDefaultClinic) {
+		this.isDefaultClinic = isDefaultClinic;
+	}
+
+	public ObjectId getDefaultLocationId() {
+		return defaultLocationId;
+	}
+
+	public void setDefaultLocationId(ObjectId defaultLocationId) {
+		this.defaultLocationId = defaultLocationId;
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.Date;
+
 public class InvoiceItemJasperDetails {
 	private int no;
 
@@ -16,6 +18,8 @@ public class InvoiceItemJasperDetails {
 	private String status;
 
 	private String total;
+
+	
 
 	public int getNo() {
 		return no;
@@ -80,5 +84,17 @@ public class InvoiceItemJasperDetails {
 	public void setTotal(String total) {
 		this.total = total;
 	}
+
+	@Override
+	public String toString() {
+		return "InvoiceItemJasperDetails [no=" + no + ", serviceName=" + serviceName + ", quantity=" + quantity
+				+ ", cost=" + cost + ", tax=" + tax + ", discount=" + discount + ", status=" + status + ", total="
+				+ total + "]";
+	}
+
+	
+	
+	
+	
 
 }

@@ -143,7 +143,7 @@ public class ReportsServiceImpl implements ReportsService {
 				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
 			}
 			
-			if (!discarded)
+			//if (!discarded)
 				criteria.and("discarded").is(discarded);
 			
 			if (size > 0)
@@ -260,7 +260,7 @@ public class ReportsServiceImpl implements ReportsService {
 				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
 			}
 
-			if (!discarded)
+			//if (!discarded)
 				criteria.and("discarded").is(discarded);
 			
 			if (size > 0)
@@ -391,7 +391,7 @@ public class ReportsServiceImpl implements ReportsService {
 				criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(Long.parseLong(to))));
 			}
 
-			if (!discarded)
+		//	if (!discarded)
 				criteria.and("discarded").is(discarded);
 			
 			if (size > 0)

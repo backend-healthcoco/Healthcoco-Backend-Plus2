@@ -90,6 +90,10 @@ public class LocationAndAccessControl {
 	private Boolean isAdminNutritionist = false;
 
     private String googleMapShortUrl;
+    
+    private String defaultHospitalId;
+    
+    private Boolean isDefaultClinic=false;
 
 	public String getId() {
 		return id;
@@ -424,6 +428,26 @@ public class LocationAndAccessControl {
 
 	public void setGoogleMapShortUrl(String googleMapShortUrl) {
 		this.googleMapShortUrl = googleMapShortUrl;
+	}
+	
+	
+
+	public String getDefaultHospitalId() {
+		return defaultHospitalId;
+	}
+
+	public void setDefaultHospitalId(String defaultHospitalId) {
+		this.defaultHospitalId = defaultHospitalId;
+	}
+	
+	
+
+	public Boolean getIsDefaultClinic() {
+		return isDefaultClinic;
+	}
+
+	public void setIsDefaultClinic(Boolean isDefaultClinic) {
+		this.isDefaultClinic = isDefaultClinic;
 	}
 
 	@Override

@@ -1442,7 +1442,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
 					.is(patientObjectId).and("isPatientDiscarded").ne(true);
-			if (!discarded)
+		
 				criteria.and("discarded").is(discarded);
 			if (inHistory)
 				criteria.and("inHistory").is(inHistory);

@@ -21,7 +21,13 @@ public interface DoctorPatientInvoiceRepository extends MongoRepository<DoctorPa
 	
 	DoctorPatientInvoiceCollection findByUniqueInvoiceIdAndDoctorIdAndLocationIdAndHospitalId(String uniqueInvoiceId, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId);
 
+
 	DoctorPatientInvoiceCollection findByPatientIdAndDoctorIdAndLocationIdAndHospitalId(ObjectId objectId,
 			ObjectId objectId2, ObjectId objectId3, ObjectId objectId4);
+
+
+	DoctorPatientInvoiceCollection findByIdAndDoctorIdAndLocationIdAndHospitalId(ObjectId invoiceId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
+
+	
 
 }

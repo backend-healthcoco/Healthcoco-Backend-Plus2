@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.Date;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.AppType;
@@ -19,6 +21,7 @@ public class VersionControl {
 	private Integer majorVersion;
 	private Integer minorVersion;
 	private Integer patchVersion;
+	private Date currentDate;
 
 	public String getId() {
 		return id;
@@ -66,6 +69,16 @@ public class VersionControl {
 
 	public void setPatchVersion(Integer patchVersion) {
 		this.patchVersion = patchVersion;
+	}
+	
+	
+
+	public Date getCurrentDate() {
+		return currentDate;
+	}
+
+	public void setCurrentDate(Date currentDate) {
+		this.currentDate = currentDate;
 	}
 
 	@Override

@@ -105,7 +105,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
 					.is(patientObjectId).and("isPatientDiscarded").ne(true);
-			if (!discarded)
+			if (discarded !=null)
 				criteria.and("discarded").is(discarded);
 			if (inHistory)
 				criteria.and("inHistory").is(inHistory);

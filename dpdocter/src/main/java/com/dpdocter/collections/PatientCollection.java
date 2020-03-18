@@ -411,8 +411,8 @@ public class PatientCollection extends GenericCollection {
 		return PNUM;
 	}
 
-	public void setPNUM(String pNUM) {
-		PNUM = pNUM;
+	public void setPNUM(String PNUM) {
+		this.PNUM = PNUM;
 	}
 
 	public Boolean getIsNutritionActive() {
