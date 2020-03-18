@@ -1457,10 +1457,10 @@ public class NutritionServiceImpl implements NutritionService {
 	}
 
 	private String getAgeRange(DOB dob) {
-		if(dob != null) {
-			double ageInYears = dob.getAge().getYears() 
-					+ (double)dob.getAge().getMonths()/12
-					+ (double)dob.getAge().getDays()/365; 
+		if(dob != null && dob.getAge() != null) {
+			int ageInYears = dob.getAge().getYears() 
+					+ dob.getAge().getMonths()/12
+					+ dob.getAge().getDays()/365; 
 			
 			if(4 <= ageInYears && ageInYears <= 6) {
 				return "4-6";
@@ -1482,27 +1482,31 @@ public class NutritionServiceImpl implements NutritionService {
 	}
 	
 	private String getHeightRange(Integer height) {
-		if(height != null) {
+		if(height != null && height > 0) {
 			//0-200 4
 			if(height % 4 == 0) {
 				return height+"-"+(height+4);
 			}
 			while(height % 4 != 0) {			
 				height = height - 1;
+				if(height == 0)break;
 			}
 			return height+"-"+(height+4);
 		}
 		return "N/A";
 	}
 	
-	private String getWeightRange(Double weight) {
-		if(weight != null) {
+	private String getWeightRange(Double weightInDouble) {
+		
+		if(weightInDouble != null && weightInDouble > 0) {
+			int weight = weightInDouble.intValue();
 			//0-120 2
 			if(weight % 2 == 0) {
 				return weight+"-"+(weight+2);
 			}
-			while(weight % 4 != 0) {			
+			while(weight % 2 != 0) {			
 				weight = weight - 1;
+				if(weight == 0)break;
 			}
 			return weight+"-"+(weight+2);
 		}
