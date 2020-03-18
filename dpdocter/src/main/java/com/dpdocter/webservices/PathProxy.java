@@ -234,6 +234,16 @@ public interface PathProxy {
 
 		public static final String CHECK_IF_PNUM_EXIST = "/checkIfPnumExist/{locationId}/{hospitalId}/{PNUM}";
 
+		public static final String SET_DEFAULT_CLINIC_IN_LIST = "set/default/{locationId}/{hospitalId}/clinic";
+		
+		public static final String ADD_EDIT_EYE_SPECILITY = "/eye/Speciality/addEdit";
+		
+		public static final String GET_EYE_SPECILITY = "/eye/Speciality/get";
+		
+		public static final String DELETE_EYE_SPECILITY = "/eye/Speciality/{id}/delete";
+		
+		public static final String GET_CLINICS ="/get/{locationId}/{hospitalId}/clinic";
+
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
@@ -1402,6 +1412,9 @@ public interface PathProxy {
 
 		public static final String EMAIL_INVOICE = "invoice/{invoiceId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
+		public static final String SMS_INVOICE = "invoice/{patientId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
+
+		
 		public static final String EMAIL_RECEIPT = "receipt/{receiptId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
 		public static final String DUE_AMOUNT_REMAINDER = "dueAmount/{patientId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/remainder";

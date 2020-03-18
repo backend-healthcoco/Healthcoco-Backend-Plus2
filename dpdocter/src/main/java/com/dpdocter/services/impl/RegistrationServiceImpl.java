@@ -61,8 +61,11 @@ import com.dpdocter.beans.ConsentFormItemJasperdetails;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DefaultPrintSettings;
+import com.dpdocter.beans.DoctorClinicProfile;
+import com.dpdocter.beans.EyeSpeciality;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FileDetails;
+import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
@@ -117,9 +120,11 @@ import com.dpdocter.collections.DynamicUICollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.EyeObservationCollection;
 import com.dpdocter.collections.EyePrescriptionCollection;
+import com.dpdocter.collections.EyeSpecialityCollection;
 import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.collections.FeedbackRecommendationCollection;
 import com.dpdocter.collections.FlowsheetCollection;
+import com.dpdocter.collections.FoodCommunityCollection;
 import com.dpdocter.collections.FormContentCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.GrowthChartCollection;
@@ -200,6 +205,8 @@ import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorLabReportRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DynamicUIRepository;
+import com.dpdocter.repository.EyeAssessmentRepository;
+import com.dpdocter.repository.EyeSpecialityRepository;
 import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.FormContentRepository;
 import com.dpdocter.repository.GroupRepository;
@@ -469,6 +476,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Autowired
 	private AcadamicProfileRespository acadamicProfileRespository;
 	
+	@Autowired
+	private EyeSpecialityRepository eyeSpecialityRepository;
+	
 	@Override
 	@Transactional
 	public User checkIfPatientExist(PatientRegistrationRequest request) {
@@ -564,6 +574,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCollection.setFirstName(request.getLocalPatientName());
 				patientCollection.setLocalPatientName(request.getLocalPatientName());
 				patientCollection.setUserId(userCollection.getId());
+				patientCollection.setRegistrationDate(request.getRegistrationDate());
 				patientRepository.save(patientCollection);
 			}
 			// save Patient Info
@@ -888,6 +899,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 						if (infoType.contains("MEDICAL"))
 							patientCollection.setMedicalQuestionAnswers(request.getMedicalQuestionAnswers());
 					}
+//					if (request.getRegistrationDate() != null)
+//					patientCollection.setRegistrationDate(request.getRegistrationDate().longValue());
 
 					if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
 						patientCollection.setPID(request.getPID());
@@ -902,6 +915,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					}
 					
 					patientCollection.setIsChild(request.getIsChild());
+				//	patientCollection.setRegistrationDate(request.getRegistrationDate());
 				} else {
 					logger.error("Incorrect User Id, DoctorId, LocationId, HospitalId");
 					throw new BusinessException(ServiceError.InvalidInput,
@@ -917,7 +931,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 					userCollection.setThumbnailUrl(null);
 				}
-
+			//	patientCollection.setRegistrationDate(request.getRegistrationDate());
 				patientCollection.setUpdatedTime(new Date());
 				userCollection = userRepository.save(userCollection);
 				patientCollection = patientRepository.save(patientCollection);
@@ -954,11 +968,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 					if (DPDoctorUtils.anyStringEmpty(request.getPID())) PID = patientCollection.getPID();
 					if (DPDoctorUtils.anyStringEmpty(request.getPNUM())) PNUM = patientCollection.getPNUM();
 
-					request.setRegistrationDate(patientCollection.getRegistrationDate());
+				//	request.setRegistrationDate(patientCollection.getRegistrationDate());
 					BeanUtil.map(request, patientCollection);
 					patientCollection.setId(patientId);
 					patientCollection.setUpdatedTime(new Date());
 					patientCollection.setDoctorId(patientDoctorId);
+					if (request.getRegistrationDate() != null)
+						patientCollection.setRegistrationDate(request.getRegistrationDate());
+					else
+						patientCollection.setRegistrationDate(new Date().getTime());
+				
 				} else {
 					patientCollection = new PatientCollection();
 					patientCollection.setCreatedTime(new Date());
@@ -5128,6 +5147,73 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return response;
 	}
 
+	
+	@Override
+	public Boolean setDefaultClinic(String id, String hospitalId, String defaultLocationId) {
+		Boolean response = false;
+
+		LocationCollection location=locationRepository.findByIdAndHospitalId(new ObjectId(id), new ObjectId(hospitalId));
+		if(!location.equals(null)) {
+			location.setDefaultLocationId(new ObjectId(defaultLocationId));
+		location=locationRepository.save(location);
+		response = true;
+		
+	}
+		return response;
+	}
+	
+@Override	
+public List<Location>getClinics(int page, int size, String locationId,String hospitalId)
+{
+	List<Location> response = null;
+	
+	try {
+		Location location=new Location();
+		LocationCollection locationCollection = null;
+		Criteria criteria = new Criteria();
+	
+		
+		String	defaultLocationId=null;
+		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+			 locationCollection = locationRepository
+					.findById(new ObjectId(locationId)).orElse(null);
+		}
+			defaultLocationId = locationCollection.getDefaultLocationId().toString();
+
+		
+	if(locationCollection.getId().toString().equals(defaultLocationId))
+	{
+		locationCollection.setIsDefaultClinic(true);
+	}
+	
+	response=new ArrayList<Location>();	
+	
+	
+		BeanUtil.map(locationCollection, location);
+		response.add(location);
+		
+	
+	} catch (Exception e) {
+		e.printStackTrace();
+		logger.error(e);
+		throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	}
+	return response;
+}
+
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
 	/*
 	 * @Async
 	 * 
@@ -5318,6 +5404,96 @@ public class RegistrationServiceImpl implements RegistrationService {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public EyeSpeciality addEditSpeciality(EyeSpeciality request) {
+		EyeSpeciality response = null;
+		try {
+			EyeSpecialityCollection eyeCollection = null;
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				eyeCollection = eyeSpecialityRepository.findById(new ObjectId(request.getId())).orElse(null);
+				if (eyeCollection == null) {
+					throw new BusinessException(ServiceError.NotFound, "Eye Speciality Not found with Id");
+				}
+				request.setUpdatedTime(new Date());
+				request.setCreatedBy(eyeCollection.getCreatedBy());
+				request.setCreatedTime(eyeCollection.getCreatedTime());
+				BeanUtil.map(request,eyeCollection);
+
+			} else {
+				eyeCollection = new EyeSpecialityCollection();
+				BeanUtil.map(request, eyeCollection);
+				eyeCollection.setCreatedBy("ADMIN");
+				eyeCollection.setUpdatedTime(new Date());
+				eyeCollection.setCreatedTime(new Date());
+			}
+			eyeCollection = eyeSpecialityRepository.save(eyeCollection);
+			response = new EyeSpeciality();
+			BeanUtil.map(eyeCollection, response);
+
+		} catch (BusinessException e) {
+			logger.error("Error while add/edit eye Speciality " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while add/edit eye Speciality " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public List<EyeSpeciality> getSpeciality(int page, int size, String searchTerm, Boolean discarded) {
+		
+			List<EyeSpeciality> response = null;
+			try {
+				Criteria criteria = new Criteria("discarded").is(discarded);
+				if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+					criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
+							new Criteria("name").regex("^" + searchTerm));
+
+				Aggregation aggregation = null;
+				if (size > 0) {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+							Aggregation.limit(size));
+				} else {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+				}
+				response = mongoTemplate.aggregate(aggregation, EyeSpecialityCollection.class, EyeSpeciality.class)
+						.getMappedResults();
+			} catch (BusinessException e) {
+				logger.error("Error while getting eye specialities " + e.getMessage());
+				e.printStackTrace();
+				throw new BusinessException(ServiceError.Unknown, "Error while getting eye specialities " + e.getMessage());
+
+			}
+			return response;
+		}
+
+	
+
+	@Override
+	public EyeSpeciality deleteSpeciality(String id,Boolean discarded) {
+		EyeSpeciality response = null;
+		try {
+			EyeSpecialityCollection eyeCollection = eyeSpecialityRepository.findById(new ObjectId(id)).orElse(null);
+			if (eyeCollection == null) {
+				throw new BusinessException(ServiceError.NotFound, "Eye Speciality Not found with Id");
+			}
+			eyeCollection.setDiscarded(discarded);
+			eyeCollection.setUpdatedTime(new Date());
+			eyeCollection = eyeSpecialityRepository.save(eyeCollection);
+			
+			response = new EyeSpeciality();
+			BeanUtil.map(eyeCollection, response);
+		} catch (BusinessException e) {
+			logger.error("Error while discarding Eye Speciality " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while discarding Eye Speciality " + e.getMessage());
+
 		}
 		return response;
 	}

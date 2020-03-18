@@ -70,7 +70,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
 
 			}
-			if (!discarded)
+			if (discarded != null)
 				criteria.and("discarded").is(discarded);
 			if (inHistory)
 				criteria.and("inHistory").is(inHistory);

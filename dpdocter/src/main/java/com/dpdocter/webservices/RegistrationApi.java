@@ -22,6 +22,12 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
@@ -32,8 +38,11 @@ import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.ConsentForm;
+import com.dpdocter.beans.EyeSpeciality;
 import com.dpdocter.beans.Feedback;
+import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.FormContent;
+import com.dpdocter.beans.Language;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.Profession;
@@ -1260,6 +1269,41 @@ public class RegistrationApi {
 		return response;
 	}
 	
+	@Path(value = PathProxy.RegistrationUrls.SET_DEFAULT_CLINIC_IN_LIST)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.SET_DEFAULT_CLINIC_IN_LIST, notes = PathProxy.RegistrationUrls.SET_DEFAULT_CLINIC_IN_LIST)
+	public Response<Boolean> setDefaultDoctor(
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("defaultLocationId") String defaultLocationId) {
+		if (DPDoctorUtils.anyStringEmpty( locationId, hospitalId)) {
+			logger.warn(invalidInput);
+			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(registrationService.setDefaultClinic(locationId, hospitalId, defaultLocationId));
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.RegistrationUrls.GET_CLINICS)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.GET_CLINICS, notes = PathProxy.RegistrationUrls.GET_CLINICS)	
+	public Response<Location> getUsers(
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size) {
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+			logger.warn(invalidInput);
+			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+		}
+		List<Location> professionResponse = registrationService.getClinics(page, size, locationId, hospitalId);
+		Response<Location> response = new Response<Location>();
+		response.setDataList(professionResponse);
+		return response;
+	}
+//	
+//	
+	
 	@Path(value = "update")
 	@GET
 	public Response<Boolean> update() {
@@ -1286,6 +1330,52 @@ public class RegistrationApi {
 
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(registrationService.checkIfPNUMExist(locationId, hospitalId, PNUM));
+		return response;
+	}
+	
+	@Path(value=PathProxy.RegistrationUrls.ADD_EDIT_EYE_SPECILITY)
+	@POST
+	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_EDIT_EYE_SPECILITY, notes = PathProxy.RegistrationUrls.ADD_EDIT_EYE_SPECILITY)
+	public Response<EyeSpeciality> addEditEyeSpeciality(@RequestBody EyeSpeciality request)
+	{
+		
+	if (request == null) {
+		logger.warn("Invalid Input");
+		throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	} 
+	Response<EyeSpeciality> response = new Response<EyeSpeciality>();
+	response.setData(registrationService.addEditSpeciality(request));
+	return response;
+	}
+	
+	@Path(value=PathProxy.RegistrationUrls.GET_EYE_SPECILITY)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.GET_EYE_SPECILITY, notes = PathProxy.RegistrationUrls.GET_EYE_SPECILITY)
+	public Response<EyeSpeciality> getSpeciality(	@QueryParam("page") int page,
+			@QueryParam("size") int size,
+			@QueryParam("discarded") Boolean discarded, 
+			@QueryParam("searchTerm") String searchTerm) 
+	{
+		
+		Response<EyeSpeciality> response = new Response<EyeSpeciality>();
+	
+			response.setDataList(registrationService.getSpeciality(page, size, searchTerm, discarded));
+		
+		return response;
+	}
+	
+	@Path(value = PathProxy.RegistrationUrls.DELETE_EYE_SPECILITY)
+	@DELETE
+	@ApiOperation(value =PathProxy.RegistrationUrls.DELETE_EYE_SPECILITY, notes = PathProxy.RegistrationUrls.DELETE_EYE_SPECILITY)
+	public Response<EyeSpeciality> discardEyeSpeciality(@PathParam("id") String id,
+			@QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+
+		}
+		Response<EyeSpeciality> response = new Response<EyeSpeciality>();
+		response.setData(registrationService.deleteSpeciality(id, discarded));
 		return response;
 	}
 }

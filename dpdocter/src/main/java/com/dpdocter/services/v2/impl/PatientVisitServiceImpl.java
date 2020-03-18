@@ -496,7 +496,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp)).and("patientId")
 					.is(patientObjectId).and("visitedFor").in(visitedFors).and("isPatientDiscarded").ne(true);
 
-			if (!discarded)
+			if (discarded !=null)
 				criteria.and("discarded").is(discarded);
 			
 			if (!isOTPVerified) {

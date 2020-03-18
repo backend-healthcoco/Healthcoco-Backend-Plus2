@@ -151,7 +151,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
 					.is(patientObjectId).and("isPatientDiscarded").ne(true);
-			if (!discarded)
+			if (discarded)
 				criteria.and("discarded").is(discarded);
 			if (inHistory)
 				criteria.and("inHistory").is(inHistory);
@@ -709,7 +709,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Override
 	@Transactional
 	public List<Prescription> getPrescriptionsForEMR(int page, int size, String doctorId, String hospitalId,
-			String locationId, String patientId, String updatedTime, boolean isOTPVerified, boolean discarded,
+			String locationId, String patientId, String updatedTime, boolean isOTPVerified,Boolean discarded,
 			boolean inHistory) {
 		List<Prescription> prescriptions = null;
 		List<Boolean> discards = new ArrayList<Boolean>();
@@ -729,8 +729,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
 					.is(patientObjectId).and("isPatientDiscarded").ne(true);
-			if (!discarded)
-				criteria.and("discarded").is(discarded);
+			
+			
 			if (inHistory)
 				criteria.and("inHistory").is(inHistory);
 
@@ -743,6 +743,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				pushNotificationServices.notifyUser(patientId, "Global records", null, null, null);
 			}
 
+			if (discarded != null)
+				criteria.and("discarded").is(discarded);
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
 					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),

@@ -2,6 +2,9 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
@@ -11,6 +14,7 @@ import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.ConsentForm;
+import com.dpdocter.beans.EyeSpeciality;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.Location;
@@ -174,9 +178,19 @@ public interface RegistrationService {
 	
 	Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId,String defaultDoctorId);
 
+	Boolean setDefaultClinic( String locationId, String hospitalId,String defaultHospitalId);
+	
+	List<Location> getClinics(int page,int  size,String locationId,String hospitalId);
+
 	Boolean update();
 
 	Boolean checkIfPNUMExist(String locationId, String hospitalId, String pNUM);
 
 	void loginAccessUser(String userId, String locationId, Boolean hasLoginAccess);
+	
+	public EyeSpeciality addEditSpeciality(EyeSpeciality request);
+	
+	public List<EyeSpeciality> getSpeciality(int page,int size,String searchTerm,Boolean discarded);
+	
+	public EyeSpeciality deleteSpeciality(String id,Boolean discarded);
 }
