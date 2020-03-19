@@ -2696,9 +2696,93 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	@Override
-	public Boolean sendInvoiceToPatient(String doctorId, String locationId, String hospitalId, String patientId,
+	public Boolean sendInvoiceToPatient(String doctorId, String locationId, String hospitalId, String invoiceId,
 			String mobileNumber) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		
+	
+	 		// TODO Auto-generated method stub
+		
+			
+	
+			Boolean response = false;
+			try {
+	
+				DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findByIdAndDoctorIdAndLocationIdAndHospitalId(
+						new ObjectId(invoiceId), new ObjectId(doctorId), new ObjectId(locationId),
+						new ObjectId(hospitalId));
+				if (doctorPatientInvoiceCollection != null) {
+					UserCollection patient = userRepository.findById(doctorPatientInvoiceCollection.getPatientId()).orElse(null);
+	
+					LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
+					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+					smsTrackDetail.setDoctorId(new ObjectId(doctorId));
+					smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
+					smsTrackDetail.setLocationId(new ObjectId(locationId));
+					smsTrackDetail.setType(ComponentType.INVOICE.getType());
+					SMSDetail smsDetail = new SMSDetail();
+					smsDetail.setUserId(doctorPatientInvoiceCollection.getPatientId());
+					smsDetail.setUserName(patient.getFirstName());
+					SMS sms = new SMS();
+					//String message = invoiceRemainderSMS;
+					String invoiceDetails=null;
+					int i=0;
+					if(doctorPatientInvoiceCollection.getInvoiceItems()!=null && !doctorPatientInvoiceCollection.getInvoiceItems().isEmpty())
+					for (InvoiceItem doctorPatientCollection : doctorPatientInvoiceCollection.getInvoiceItems()) {
+					 i++;
+					String serviceName=	doctorPatientCollection.getName() !=null
+							?(!DPDoctorUtils.anyStringEmpty(doctorPatientCollection.getName())
+									? doctorPatientCollection.getName()
+									: "")
+							: "";
+									String cost =	doctorPatientCollection.getCost() !=null
+											?(!DPDoctorUtils.anyStringEmpty(doctorPatientCollection.getCost().toString())
+													? doctorPatientCollection.getCost().toString()
+													: "")
+													:"";
+							
+									invoiceDetails = invoiceDetails + " " + i + ")" + serviceName + " "
+											+ cost;
+					}
+	
+	//				Collection<String> tests = CollectionUtils.collect(
+	//						(List<DiagnosticTestCollection>) diagnosticTestRepository.findAllById(testIds),
+	//						new BeanToPropertyValueTransformer("testName"));
+	//				prescriptionDetails = prescriptionDetails + " "
+	//						+ tests.toString().replaceAll("\\[", "").replaceAll("\\]", "");
+	//			}
+	//		
+					sms.setSmsText("Hi " + patient.getFirstName() + ", your invoice "
+							+ doctorPatientInvoiceCollection.getUniqueInvoiceId() + " by " + locationCollection.getLocationName() + ". "
+							+ invoiceDetails+" and the total cost is "+doctorPatientInvoiceCollection.getGrandTotal() + ". For queries,contact clinic" + locationCollection.getClinicNumber() + ".");
+	
+	//				sms.setSmsText(message.replace("{patientName}", patient.getFirstName())
+	//						.replace("{clinicNumber}",
+	//								locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber()
+	//										: "")
+	//						.replace("{clinicName}", locationCollection.getLocationName())
+	//						
+	//						.replace("{serviceName}", doctorPatientInvoiceCollection.getInvoiceItems().get(0).getName().toString())
+	//						.replace("{cost}", doctorPatientInvoiceCollection.getInvoiceItems().get(0).getFinalCost().toString())
+	//						.replace("{totalAmount}", doctorPatientInvoiceCollection.getGrandTotal().toString()));
+					SMSAddress smsAddress = new SMSAddress();
+					smsAddress.setRecipient(mobileNumber);
+					sms.setSmsAddress(smsAddress);
+					smsDetail.setSms(sms);
+					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+					smsDetails.add(smsDetail);
+					smsTrackDetail.setSmsDetails(smsDetails);
+					smsServices.sendSMS(smsTrackDetail, true);
+					response = true;
+				}
+			} catch (BusinessException be) {
+				logger.error(be);
+				throw be;
+			} catch (Exception e) {
+				logger.error("Error while sending sms invoices" + e);
+				throw new BusinessException(ServiceError.Unknown, "Error while sending sms invoices" + e);
+			}
+			return response;
+	
+	 	}
 }

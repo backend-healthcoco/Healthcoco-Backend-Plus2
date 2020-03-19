@@ -117,6 +117,10 @@ public class Location {
 	private String smsCode;
 
     private String googleMapShortUrl;
+    
+    private Boolean isDefaultClinic=false;
+    
+    private String defaultLocationId;
 
 	public Boolean getIsMobileNumberOptional() {
 		return isMobileNumberOptional;
@@ -540,6 +544,24 @@ public class Location {
 
 	public void setGoogleMapShortUrl(String googleMapShortUrl) {
 		this.googleMapShortUrl = googleMapShortUrl;
+	}
+	
+	
+
+	public Boolean getIsDefaultClinic() {
+		return isDefaultClinic;
+	}
+
+	public void setIsDefaultClinic(Boolean isDefaultClinic) {
+		this.isDefaultClinic = isDefaultClinic;
+	}
+
+	public String getDefaultLocationId() {
+		return defaultLocationId;
+	}
+
+	public void setDefaultLocationId(String defaultLocationId) {
+		this.defaultLocationId = defaultLocationId;
 	}
 
 	@Override

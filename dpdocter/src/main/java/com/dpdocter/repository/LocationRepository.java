@@ -19,4 +19,6 @@ public interface LocationRepository extends MongoRepository<LocationCollection, 
 	@Override
     Page<LocationCollection> findAll(Pageable pageable);
 
+	LocationCollection findByIdAndHospitalId(ObjectId objectId, ObjectId objectId2);
+
 }

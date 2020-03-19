@@ -1412,7 +1412,7 @@ public interface PathProxy {
 
 		public static final String EMAIL_INVOICE = "invoice/{invoiceId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
-		public static final String SMS_INVOICE = "invoice/{patientId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
+		public static final String SMS_INVOICE = "invoice/{invoiceId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
 
 		
 		public static final String EMAIL_RECEIPT = "receipt/{receiptId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
