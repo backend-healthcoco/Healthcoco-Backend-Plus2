@@ -2724,7 +2724,7 @@ public class BillingServiceImpl implements BillingService {
 					smsDetail.setUserName(patient.getFirstName());
 					SMS sms = new SMS();
 					//String message = invoiceRemainderSMS;
-					String invoiceDetails=null;
+					String invoiceDetails="";
 					int i=0;
 					if(doctorPatientInvoiceCollection.getInvoiceItems()!=null && !doctorPatientInvoiceCollection.getInvoiceItems().isEmpty())
 					for (InvoiceItem doctorPatientCollection : doctorPatientInvoiceCollection.getInvoiceItems()) {

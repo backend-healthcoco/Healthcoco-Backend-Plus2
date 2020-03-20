@@ -515,6 +515,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				String link = RESET_PASSWORD_LINK + "?uid=" + tokenId;
 				String shortUrl = DPDoctorUtils.urlShortner(link);
 				String message = "Please click on the button below and follow the subsequent instructions to reset your account’s password. "+shortUrl;
+			//	System.out.println(message);
+				
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setType("RESET_PASSWORD_SMS");
 				SMSDetail smsDetail = new SMSDetail();
