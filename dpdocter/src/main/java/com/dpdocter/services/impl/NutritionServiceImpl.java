@@ -1,12 +1,8 @@
 package com.dpdocter.services.impl;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -18,7 +14,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -53,7 +48,6 @@ import com.dpdocter.beans.SugarSetting;
 import com.dpdocter.beans.Testimonial;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserNutritionSubscription;
-import com.dpdocter.collections.AcadamicClassCollection;
 import com.dpdocter.collections.AcademicProfileCollection;
 import com.dpdocter.collections.BloodGlucoseCollection;
 import com.dpdocter.collections.DietPlanCollection;
@@ -92,7 +86,6 @@ import com.dpdocter.scheduler.AsyncService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.NutritionService;
 import com.mongodb.BasicDBObject;
-import com.opencsv.CSVWriter;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -1237,6 +1230,18 @@ public class NutritionServiceImpl implements NutritionService {
 						.append("diseases", "$nutritionAssessment.diseases")
 						.append("foodPreference", "$nutritionAssessment.foodPreference")));
 				
+				CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group", 
+						new BasicDBObject("id", "$_id").append("timeTaken", new BasicDBObject("$first", "$timeTaken"))
+						.append("cloneTemplateId", new BasicDBObject("$first", "$cloneTemplateId"))
+						.append("cloneTemplateName", new BasicDBObject("$first", "$cloneTemplateName"))
+						.append("profile", new BasicDBObject("$first", "$profile"))
+						.append("bmiClassification", new BasicDBObject("$first", "$bmiClassification"))
+						.append("bmi", new BasicDBObject("$first", "$bmi"))
+						.append("type", new BasicDBObject("$first", "$type"))
+						.append("communities", new BasicDBObject("$first", "$communities"))
+						.append("diseases", new BasicDBObject("$first", "$diseases"))
+						.append("foodPreference", new BasicDBObject("$first", "$foodPreference"))));
+				
 				Aggregation aggregation = null;
 				if (size > 0) {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1248,9 +1253,12 @@ public class NutritionServiceImpl implements NutritionService {
 							Aggregation.unwind("profile.school", true),
 							Aggregation.lookup("growth_assessment_and_general_bio_metrics_cl", "profile._id", "academicProfileId", "growthAssessment"),
 							Aggregation.unwind("growthAssessment", true), 
+							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("growthAssessment.createdTime", -1))),
 							Aggregation.lookup("nutrition_assessment_cl", "profile._id", "academicProfileId", "nutritionAssessment"), 
 							Aggregation.unwind("nutritionAssessment", true),
+							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("nutritionAssessment.createdTime", -1))),
 							projectList,
+							group,
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
 							Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 				} else {
@@ -1263,9 +1271,12 @@ public class NutritionServiceImpl implements NutritionService {
 							Aggregation.unwind("profile.school", true),
 							Aggregation.lookup("growth_assessment_and_general_bio_metrics_cl", "profile._id", "academicProfileId", "growthAssessment"),
 							Aggregation.unwind("growthAssessment", true), 
+							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("growthAssessment.createdTime", -1))),
 							Aggregation.lookup("nutrition_assessment_cl", "profile._id", "academicProfileId", "nutritionAssessment"), 
 							Aggregation.unwind("nutritionAssessment", true),
+							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("nutritionAssessment.createdTime", -1))),
 							projectList,
+							group,
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				}
 				List<NutritionistReport> nutritionistReports = mongoTemplate.aggregate(aggregation, DietPlanCollection.class, NutritionistReport.class)
@@ -1440,7 +1451,6 @@ public class NutritionServiceImpl implements NutritionService {
 				byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
 			    String encoding = new String(encoded, StandardCharsets.US_ASCII);
 				
-				System.out.println(encoding);
 				FileDetails fileDetails = new FileDetails();
 				fileDetails.setFileEncoded(encoding);
 				fileDetails.setFileName("StudentCluster_"+new Date().getTime());
