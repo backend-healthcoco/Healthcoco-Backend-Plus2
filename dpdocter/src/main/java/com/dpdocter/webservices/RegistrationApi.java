@@ -38,7 +38,7 @@ import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.ConsentForm;
-import com.dpdocter.beans.EyeSpeciality;
+
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.FormContent;
@@ -1333,49 +1333,5 @@ public class RegistrationApi {
 		return response;
 	}
 	
-	@Path(value=PathProxy.RegistrationUrls.ADD_EDIT_EYE_SPECILITY)
-	@POST
-	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_EDIT_EYE_SPECILITY, notes = PathProxy.RegistrationUrls.ADD_EDIT_EYE_SPECILITY)
-	public Response<EyeSpeciality> addEditEyeSpeciality(@RequestBody EyeSpeciality request)
-	{
-		
-	if (request == null) {
-		logger.warn("Invalid Input");
-		throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	} 
-	Response<EyeSpeciality> response = new Response<EyeSpeciality>();
-	response.setData(registrationService.addEditSpeciality(request));
-	return response;
-	}
 	
-	@Path(value=PathProxy.RegistrationUrls.GET_EYE_SPECILITY)
-	@GET
-	@ApiOperation(value = PathProxy.RegistrationUrls.GET_EYE_SPECILITY, notes = PathProxy.RegistrationUrls.GET_EYE_SPECILITY)
-	public Response<EyeSpeciality> getSpeciality(	@QueryParam("page") int page,
-			@QueryParam("size") int size,
-			@QueryParam("discarded") Boolean discarded, 
-			@QueryParam("searchTerm") String searchTerm) 
-	{
-		
-		Response<EyeSpeciality> response = new Response<EyeSpeciality>();
-	
-			response.setDataList(registrationService.getSpeciality(page, size, searchTerm, discarded));
-		
-		return response;
-	}
-	
-	@Path(value = PathProxy.RegistrationUrls.DELETE_EYE_SPECILITY)
-	@DELETE
-	@ApiOperation(value =PathProxy.RegistrationUrls.DELETE_EYE_SPECILITY, notes = PathProxy.RegistrationUrls.DELETE_EYE_SPECILITY)
-	public Response<EyeSpeciality> discardEyeSpeciality(@PathParam("id") String id,
-			@QueryParam("discarded") Boolean discarded) {
-		if (DPDoctorUtils.anyStringEmpty(id)) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-
-		}
-		Response<EyeSpeciality> response = new Response<EyeSpeciality>();
-		response.setData(registrationService.deleteSpeciality(id, discarded));
-		return response;
-	}
 }

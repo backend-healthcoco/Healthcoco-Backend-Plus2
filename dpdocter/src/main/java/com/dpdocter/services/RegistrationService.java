@@ -14,7 +14,7 @@ import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.ConsentForm;
-import com.dpdocter.beans.EyeSpeciality;
+
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.Location;
@@ -188,9 +188,4 @@ public interface RegistrationService {
 
 	void loginAccessUser(String userId, String locationId, Boolean hasLoginAccess);
 	
-	public EyeSpeciality addEditSpeciality(EyeSpeciality request);
-	
-	public List<EyeSpeciality> getSpeciality(int page,int size,String searchTerm,Boolean discarded);
-	
-	public EyeSpeciality deleteSpeciality(String id,Boolean discarded);
-}
+	}

@@ -2751,9 +2751,15 @@ public class BillingServiceImpl implements BillingService {
 	//						+ tests.toString().replaceAll("\\[", "").replaceAll("\\]", "");
 	//			}
 	//		
+					String clinicNumber=locationCollection.getClinicNumber() !=null
+							?(!DPDoctorUtils.anyStringEmpty(locationCollection.getClinicNumber())
+									? locationCollection.getClinicNumber()
+									: "")
+							: "";
+									
 					sms.setSmsText("Hi " + patient.getFirstName() + ", your invoice "
 							+ doctorPatientInvoiceCollection.getUniqueInvoiceId() + " by " + locationCollection.getLocationName() + ". "
-							+ invoiceDetails+" and the total cost is "+doctorPatientInvoiceCollection.getGrandTotal() + ". For queries,contact clinic" + locationCollection.getClinicNumber() + ".");
+							+ invoiceDetails+" and the total cost is "+doctorPatientInvoiceCollection.getGrandTotal() + ". For queries,contact clinic" + clinicNumber + ".");
 	
 	//				sms.setSmsText(message.replace("{patientName}", patient.getFirstName())
 	//						.replace("{clinicNumber}",

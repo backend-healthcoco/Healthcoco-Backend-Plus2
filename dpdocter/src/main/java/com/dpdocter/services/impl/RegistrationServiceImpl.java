@@ -62,7 +62,6 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DoctorClinicProfile;
-import com.dpdocter.beans.EyeSpeciality;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.FoodCommunity;
@@ -120,7 +119,6 @@ import com.dpdocter.collections.DynamicUICollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.EyeObservationCollection;
 import com.dpdocter.collections.EyePrescriptionCollection;
-import com.dpdocter.collections.EyeSpecialityCollection;
 import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.collections.FeedbackRecommendationCollection;
 import com.dpdocter.collections.FlowsheetCollection;
@@ -206,7 +204,7 @@ import com.dpdocter.repository.DoctorLabReportRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DynamicUIRepository;
 import com.dpdocter.repository.EyeAssessmentRepository;
-import com.dpdocter.repository.EyeSpecialityRepository;
+
 import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.FormContentRepository;
 import com.dpdocter.repository.GroupRepository;
@@ -476,8 +474,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Autowired
 	private AcadamicProfileRespository acadamicProfileRespository;
 	
-	@Autowired
-	private EyeSpecialityRepository eyeSpecialityRepository;
+	
 	
 	@Override
 	@Transactional
@@ -5408,93 +5405,5 @@ public List<Location>getClinics(int page, int size, String locationId,String hos
 		return response;
 	}
 
-	@Override
-	public EyeSpeciality addEditSpeciality(EyeSpeciality request) {
-		EyeSpeciality response = null;
-		try {
-			EyeSpecialityCollection eyeCollection = null;
-			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				eyeCollection = eyeSpecialityRepository.findById(new ObjectId(request.getId())).orElse(null);
-				if (eyeCollection == null) {
-					throw new BusinessException(ServiceError.NotFound, "Eye Speciality Not found with Id");
-				}
-				request.setUpdatedTime(new Date());
-				request.setCreatedBy(eyeCollection.getCreatedBy());
-				request.setCreatedTime(eyeCollection.getCreatedTime());
-				BeanUtil.map(request,eyeCollection);
-
-			} else {
-				eyeCollection = new EyeSpecialityCollection();
-				BeanUtil.map(request, eyeCollection);
-				eyeCollection.setCreatedBy("ADMIN");
-				eyeCollection.setUpdatedTime(new Date());
-				eyeCollection.setCreatedTime(new Date());
-			}
-			eyeCollection = eyeSpecialityRepository.save(eyeCollection);
-			response = new EyeSpeciality();
-			BeanUtil.map(eyeCollection, response);
-
-		} catch (BusinessException e) {
-			logger.error("Error while add/edit eye Speciality " + e.getMessage());
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while add/edit eye Speciality " + e.getMessage());
-
-		}
-		return response;
-	}
-
-	@Override
-	public List<EyeSpeciality> getSpeciality(int page, int size, String searchTerm, Boolean discarded) {
-		
-			List<EyeSpeciality> response = null;
-			try {
-				Criteria criteria = new Criteria("discarded").is(discarded);
-				if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-					criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
-							new Criteria("name").regex("^" + searchTerm));
-
-				Aggregation aggregation = null;
-				if (size > 0) {
-					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
-							Aggregation.limit(size));
-				} else {
-					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
-				}
-				response = mongoTemplate.aggregate(aggregation, EyeSpecialityCollection.class, EyeSpeciality.class)
-						.getMappedResults();
-			} catch (BusinessException e) {
-				logger.error("Error while getting eye specialities " + e.getMessage());
-				e.printStackTrace();
-				throw new BusinessException(ServiceError.Unknown, "Error while getting eye specialities " + e.getMessage());
-
-			}
-			return response;
-		}
-
 	
-
-	@Override
-	public EyeSpeciality deleteSpeciality(String id,Boolean discarded) {
-		EyeSpeciality response = null;
-		try {
-			EyeSpecialityCollection eyeCollection = eyeSpecialityRepository.findById(new ObjectId(id)).orElse(null);
-			if (eyeCollection == null) {
-				throw new BusinessException(ServiceError.NotFound, "Eye Speciality Not found with Id");
-			}
-			eyeCollection.setDiscarded(discarded);
-			eyeCollection.setUpdatedTime(new Date());
-			eyeCollection = eyeSpecialityRepository.save(eyeCollection);
-			
-			response = new EyeSpeciality();
-			BeanUtil.map(eyeCollection, response);
-		} catch (BusinessException e) {
-			logger.error("Error while discarding Eye Speciality " + e.getMessage());
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while discarding Eye Speciality " + e.getMessage());
-
-		}
-		return response;
-	}
 }
