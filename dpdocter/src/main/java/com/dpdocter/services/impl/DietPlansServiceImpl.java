@@ -570,9 +570,19 @@ public class DietPlansServiceImpl implements DietPlansService {
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTime));
 			
-			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
-						new Criteria("templateName").regex(searchTerm));
+			if (disease!= null && !disease.isEmpty()) {
+				criteria.and("diseases.disease").in(disease);
+				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					criteria = criteria.andOperator(new Criteria().orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
+							new Criteria("templateName").regex(searchTerm)));
+				}
+			}else {
+				List<String> emptyArr = new ArrayList<String>();
+				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+					criteria = criteria.andOperator(new Criteria().orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
+							new Criteria("templateName").regex(searchTerm)), new Criteria().orOperator(new Criteria("diseases").is(null), new Criteria("diseases").is(emptyArr)));
+				}
+				else criteria.andOperator(new Criteria().orOperator(new Criteria("diseases").is(null), new Criteria("diseases").is(emptyArr)));
 			}
 			
 			if (age != null) {
