@@ -73,6 +73,15 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 	@Field
 	private Boolean isPatientDiscarded = false;
 	
+	@Field
+	private String timeOfAdmission;
+	@Field
+	private String timeOfDischarge;
+	@Field
+	private Date admissionDate;
+	@Field
+	private Date dischargeDate;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -215,6 +224,40 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
+	}
+	
+	
+
+	public String getTimeOfAdmission() {
+		return timeOfAdmission;
+	}
+
+	public void setTimeOfAdmission(String timeOfAdmission) {
+		this.timeOfAdmission = timeOfAdmission;
+	}
+
+	public String getTimeOfDischarge() {
+		return timeOfDischarge;
+	}
+
+	public void setTimeOfDischarge(String timeOfDischarge) {
+		this.timeOfDischarge = timeOfDischarge;
+	}
+
+	public Date getAdmissionDate() {
+		return admissionDate;
+	}
+
+	public void setAdmissionDate(Date admissionDate) {
+		this.admissionDate = admissionDate;
+	}
+
+	public Date getDischargeDate() {
+		return dischargeDate;
+	}
+
+	public void setDischargeDate(Date dischargeDate) {
+		this.dischargeDate = dischargeDate;
 	}
 
 	@Override

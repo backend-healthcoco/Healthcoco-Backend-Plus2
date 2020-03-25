@@ -129,6 +129,9 @@ public class ClinicalNotes extends GenericCollection {
 	private int noOfFemaleChildren;
 
 	private int noOfMaleChildren;
+	
+	private EyeSpecialityObservation eyeObservation;
+
 
 	public Appointment getAppointmentRequest() {
 		return appointmentRequest;
@@ -640,6 +643,16 @@ public class ClinicalNotes extends GenericCollection {
 
 	public void setPriorConsultations(String priorConsultations) {
 		this.priorConsultations = priorConsultations;
+	}
+	
+	
+
+	public EyeSpecialityObservation getEyeObservation() {
+		return eyeObservation;
+	}
+
+	public void setEyeObservation(EyeSpecialityObservation eyeObservation) {
+		this.eyeObservation = eyeObservation;
 	}
 
 	@Override

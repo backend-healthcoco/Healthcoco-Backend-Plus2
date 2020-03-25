@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.Date;
+
 public class InvoiceItemJasperDetails {
 	private int no;
 
@@ -16,6 +18,15 @@ public class InvoiceItemJasperDetails {
 	private String status;
 
 	private String total;
+	
+	private String timeOfAdmission;
+	
+	private String timeOfDischarge;
+		
+	private Date admissionDate;
+	
+	private Date dischargeDate;
+
 
 	public int getNo() {
 		return no;
@@ -80,5 +91,38 @@ public class InvoiceItemJasperDetails {
 	public void setTotal(String total) {
 		this.total = total;
 	}
+
+	public String getTimeOfAdmission() {
+		return timeOfAdmission;
+	}
+
+	public void setTimeOfAdmission(String timeOfAdmission) {
+		this.timeOfAdmission = timeOfAdmission;
+	}
+
+	public String getTimeOfDischarge() {
+		return timeOfDischarge;
+	}
+
+	public void setTimeOfDischarge(String timeOfDischarge) {
+		this.timeOfDischarge = timeOfDischarge;
+	}
+
+	public Date getAdmissionDate() {
+		return admissionDate;
+	}
+
+	public void setAdmissionDate(Date admissionDate) {
+		this.admissionDate = admissionDate;
+	}
+
+	public Date getDischargeDate() {
+		return dischargeDate;
+	}
+
+	public void setDischargeDate(Date dischargeDate) {
+		this.dischargeDate = dischargeDate;
+	}
+	
 
 }

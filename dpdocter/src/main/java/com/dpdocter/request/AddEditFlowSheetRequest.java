@@ -3,6 +3,7 @@ package com.dpdocter.request;
 import java.util.List;
 
 import com.dpdocter.beans.FlowSheet;
+import com.dpdocter.beans.MonitoringChart;
 
 public class AddEditFlowSheetRequest {
 
@@ -14,6 +15,8 @@ public class AddEditFlowSheetRequest {
 	private String patientId;
 	private Boolean discarded = false;
 	private List<FlowSheet> flowSheets;
+	private List<MonitoringChart> monitoringChart;
+
 	private String uniqueId;
 	
 
@@ -89,6 +92,15 @@ public class AddEditFlowSheetRequest {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	
+	public List<MonitoringChart> getMonitoringChart() {
+		return monitoringChart;
+	}
+
+	public void setMonitoringChart(List<MonitoringChart> monitoringChart) {
+		this.monitoringChart = monitoringChart;
 	}
 
 	@Override

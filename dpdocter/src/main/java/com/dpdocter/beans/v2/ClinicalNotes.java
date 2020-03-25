@@ -6,6 +6,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.beans.EyeSpecialityObservation;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
@@ -132,6 +133,9 @@ public class ClinicalNotes extends GenericCollection {
 	private int noOfMaleChildren;
 
 	private String priorConsultations;
+	
+	private EyeSpecialityObservation eyeObservation;
+
 
 	public AppointmentDetails getAppointmentRequest() {
 		return appointmentRequest;
@@ -643,6 +647,16 @@ public class ClinicalNotes extends GenericCollection {
 
 	public void setPriorConsultations(String priorConsultations) {
 		this.priorConsultations = priorConsultations;
+	}
+	
+	
+
+	public EyeSpecialityObservation getEyeObservation() {
+		return eyeObservation;
+	}
+
+	public void setEyeObservation(EyeSpecialityObservation eyeObservation) {
+		this.eyeObservation = eyeObservation;
 	}
 
 	@Override

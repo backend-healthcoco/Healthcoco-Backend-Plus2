@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.EyeSpecialityObservation;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
 
@@ -206,6 +207,9 @@ public class ClinicalNotesCollection extends GenericCollection {
 
 	@Field
 	private Boolean isPatientDiscarded = false;
+	
+	@Field
+	private EyeSpecialityObservation eyeObservation;
 
 	public String getProcedureNote() {
 		return procedureNote;
@@ -741,6 +745,16 @@ public class ClinicalNotesCollection extends GenericCollection {
 
 	public void setPriorConsultations(String priorConsultations) {
 		this.priorConsultations = priorConsultations;
+	}
+	
+	
+
+	public EyeSpecialityObservation getEyeObservation() {
+		return eyeObservation;
+	}
+
+	public void setEyeObservation(EyeSpecialityObservation eyeObservation) {
+		this.eyeObservation = eyeObservation;
 	}
 
 	@Override

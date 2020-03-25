@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
 
+import java.util.List;
+
 import common.util.web.JacksonUtil;
 
 public class FlowSheet {
@@ -30,6 +32,22 @@ public class FlowSheet {
 	private String complaint;
 
 	private String advice;
+	
+	private String iBP;
+	
+	private String cVP;
+	
+	private String fiO2;
+	
+	private String venhlatorMode;
+	
+	private String urineOutput;
+	
+	private String feeding;
+	
+	private String otherVitals;
+	
+	
 
 	public Long getDate() {
 		return date;
@@ -134,6 +152,69 @@ public class FlowSheet {
 	public void setAdvice(String advice) {
 		this.advice = advice;
 	}
+	
+	
+
+	public String getiBP() {
+		return iBP;
+	}
+
+	public void setiBP(String iBP) {
+		this.iBP = iBP;
+	}
+
+	public String getcVP() {
+		return cVP;
+	}
+
+	public void setcVP(String cVP) {
+		this.cVP = cVP;
+	}
+
+	public String getFiO2() {
+		return fiO2;
+	}
+
+	public void setFiO2(String fiO2) {
+		this.fiO2 = fiO2;
+	}
+
+	public String getVenhlatorMode() {
+		return venhlatorMode;
+	}
+
+	public void setVenhlatorMode(String venhlatorMode) {
+		this.venhlatorMode = venhlatorMode;
+	}
+
+	
+	
+
+	public String getUrineOutput() {
+		return urineOutput;
+	}
+
+	public void setUrineOutput(String urineOutput) {
+		this.urineOutput = urineOutput;
+	}
+
+	public String getFeeding() {
+		return feeding;
+	}
+
+	public void setFeeding(String feeding) {
+		this.feeding = feeding;
+	}
+
+	public String getOtherVitals() {
+		return otherVitals;
+	}
+
+	public void setOtherVitals(String otherVitals) {
+		this.otherVitals = otherVitals;
+	}
+
+	
 
 	@Override
 	public String toString() {

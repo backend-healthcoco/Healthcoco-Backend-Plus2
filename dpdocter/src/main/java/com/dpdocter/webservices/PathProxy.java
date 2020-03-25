@@ -2274,4 +2274,13 @@ public interface PathProxy {
 	public interface NutritionEngineUrl {
 		public static final String GET_RECIPES = "/recipes/{userId}";
 	}
+	
+	public static final String SYMPTOM_BASE_URL = BASE_URL + "/userSymptom";
+	public interface SymptomUrls{
+		
+		
+		
+		public static final String GET_USER_SYMPTOM = "/userSymptoms/get";
+		
+	}
 }
