@@ -10,6 +10,8 @@ public class FlowSheetJasperBean {
 	private String complaint;
 
 	private String advice;
+	
+	private String monitoringChart =" ";
 
 	public Integer getNo() {
 		return no;
@@ -50,5 +52,15 @@ public class FlowSheetJasperBean {
 	public void setAdvice(String advice) {
 		this.advice = advice;
 	}
+
+	public String getMonitoringChart() {
+		return monitoringChart;
+	}
+
+	public void setMonitoringChart(String monitoringChart) {
+		this.monitoringChart = monitoringChart;
+	}
+	
+	
 
 }

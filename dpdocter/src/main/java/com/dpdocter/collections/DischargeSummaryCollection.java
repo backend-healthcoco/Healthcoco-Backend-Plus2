@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.FlowSheet;
+import com.dpdocter.beans.MonitoringChart;
 import com.dpdocter.beans.PrescriptionAndAdvice;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
@@ -155,6 +156,10 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private Boolean isPatientDiscarded = false;
 	@Field
 	private List<FlowSheet> flowSheets;
+	
+	@Field
+	private List<MonitoringChart> monitoringChart;
+
 	@Field
 	private List<String> diagrams;
 
@@ -893,6 +898,16 @@ public class DischargeSummaryCollection extends GenericCollection {
 
 	public void setHospitalCourse(String hospitalCourse) {
 		this.hospitalCourse = hospitalCourse;
+	}
+	
+	
+
+	public List<MonitoringChart> getMonitoringChart() {
+		return monitoringChart;
+	}
+
+	public void setMonitoringChart(List<MonitoringChart> monitoringChart) {
+		this.monitoringChart = monitoringChart;
 	}
 
 	@Override

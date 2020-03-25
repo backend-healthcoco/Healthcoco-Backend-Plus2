@@ -2277,10 +2277,18 @@ public interface PathProxy {
 		public static final String GET_RECIPES = "/recipes/{userId}";
 	}
 	
+<<<<<<< HEAD
 	public static final String SYMPTOM_BASE_URL = BASE_URL + "/symptom";
 	public interface SymptomUrls{
 		
 
+=======
+	public static final String SYMPTOM_BASE_URL = BASE_URL + "/userSymptom";
+	public interface SymptomUrls{
+		
+		
+		
+>>>>>>> ca99d29... HAPPY-5588 HAPPY-5509 clinical notes and flowsheet new requirements
 		public static final String GET_USER_SYMPTOM = "/userSymptoms/get";
 		
 	}

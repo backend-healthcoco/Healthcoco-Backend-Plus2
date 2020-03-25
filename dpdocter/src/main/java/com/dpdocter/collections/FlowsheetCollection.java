@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.FlowSheet;
+import com.dpdocter.beans.MonitoringChart;
 
 @Document(collection = "flowsheet_cl")
 public class FlowsheetCollection extends GenericCollection {
@@ -20,6 +21,10 @@ public class FlowsheetCollection extends GenericCollection {
 	private String uniqueId;
 	@Field
 	private List<FlowSheet> flowSheets;
+	
+	@Field
+	private List<MonitoringChart> monitoringChart;
+
 	@Field
 	private ObjectId doctorId;
 	@Field
@@ -121,6 +126,14 @@ public class FlowsheetCollection extends GenericCollection {
 
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	public List<MonitoringChart> getMonitoringChart() {
+		return monitoringChart;
+	}
+
+	public void setMonitoringChart(List<MonitoringChart> monitoringChart) {
+		this.monitoringChart = monitoringChart;
 	}
 
 	@Override

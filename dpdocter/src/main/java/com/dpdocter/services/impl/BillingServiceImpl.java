@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1545,7 +1546,7 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	private JasperReportResponse createJasper(DoctorPatientInvoiceCollection doctorPatientInvoiceCollection,
-			PatientCollection patient, UserCollection user) throws IOException {
+			PatientCollection patient, UserCollection user) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		List<InvoiceItemJasperDetails> invoiceItemJasperDetails = null;
@@ -1556,6 +1557,10 @@ public class BillingServiceImpl implements BillingService {
 			Boolean showDiscount = false;
 			Boolean showStatus = false;
 			Boolean showTax = false;
+			Boolean show=false;
+			String pattern = "dd/MM/yyyy";
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+			simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 			int no = 0;
 			for (InvoiceItem invoiceItem : doctorPatientInvoiceCollection.getInvoiceItems()) {
 				InvoiceItemJasperDetails invoiceItemJasperDetail = new InvoiceItemJasperDetails();
@@ -1657,6 +1662,42 @@ public class BillingServiceImpl implements BillingService {
 
 			total = "<b>Balance:</b>  ₹" + doctorPatientInvoiceCollection.getBalanceAmount() + "  &nbsp;";
 			parameters.put("balance", total);
+			
+			if (doctorPatientInvoiceCollection.getAdmissionDate() != null) {
+				show = true;
+				String admission="<b>Admission Date</b>" +simpleDateFormat.format(doctorPatientInvoiceCollection.getAdmissionDate());
+				parameters.put("Admission Date",admission);
+			}
+			parameters.put("showDOA", show);
+			show = false;
+			if (doctorPatientInvoiceCollection.getDischargeDate() != null) {
+				show = true;
+				String discharge="<b>Discharge Date</b>"+simpleDateFormat.format(doctorPatientInvoiceCollection.getDischargeDate());
+				parameters.put("Discharge Date",discharge );
+			}
+			parameters.put("showDOD", show);
+			show = false;
+			if (!DPDoctorUtils.allStringsEmpty(doctorPatientInvoiceCollection.getTimeOfAdmission())) {
+				show = true;
+				SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
+				Date dt = sdfForMins.parse(doctorPatientInvoiceCollection.getTimeOfAdmission());
+				sdfForMins = new SimpleDateFormat("hh:mm a");
+				String admissionTime="<b>Time of Admission: </b>"+sdfForMins.format(dt);
+				parameters.put("Time of Admission", admissionTime);
+			}
+			parameters.put("showTOA", show);
+			show = false;
+			if (!DPDoctorUtils.allStringsEmpty(doctorPatientInvoiceCollection.getTimeOfDischarge())) {
+				show = true;
+				SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
+				Date dt = sdfForMins.parse(doctorPatientInvoiceCollection.getTimeOfDischarge());
+				sdfForMins = new SimpleDateFormat("hh:mm a");
+				String dischargeTime="<b>Time of Discharge: </b>"+sdfForMins.format(dt);
+				
+				parameters.put("Time of Discharge",dischargeTime );
+			}
+			parameters.put("showTOD", show);
+
 			PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
 					doctorPatientInvoiceCollection.getDoctorId(), doctorPatientInvoiceCollection.getLocationId(),
 					doctorPatientInvoiceCollection.getHospitalId(), ComponentType.ALL.getType());

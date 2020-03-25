@@ -8,6 +8,7 @@ import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.ECGDetails;
 import com.dpdocter.beans.EarsExamination;
 import com.dpdocter.beans.Echo;
+import com.dpdocter.beans.EyeSpecialityObservation;
 import com.dpdocter.beans.GeneralExam;
 import com.dpdocter.beans.Holter;
 import com.dpdocter.beans.IndicationOfUSG;
@@ -266,6 +267,9 @@ public class ClinicalNotesAddRequest {
 	private String priorConsultations;
 
 	private Boolean sendNotificationToDoctor = true;
+	
+	private EyeSpecialityObservation eyeObservation;
+
 
 	public Date getCreatedTime() {
 		return createdTime;
@@ -1228,6 +1232,16 @@ public class ClinicalNotesAddRequest {
 
 	public void setSendNotificationToDoctor(Boolean sendNotificationToDoctor) {
 		this.sendNotificationToDoctor = sendNotificationToDoctor;
+	}
+	
+	
+
+	public EyeSpecialityObservation getEyeObservation() {
+		return eyeObservation;
+	}
+
+	public void setEyeObservation(EyeSpecialityObservation eyeObservation) {
+		this.eyeObservation = eyeObservation;
 	}
 
 	@Override

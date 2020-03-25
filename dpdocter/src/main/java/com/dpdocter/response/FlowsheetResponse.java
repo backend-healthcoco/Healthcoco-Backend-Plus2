@@ -3,6 +3,7 @@ package com.dpdocter.response;
 import java.util.List;
 
 import com.dpdocter.beans.FlowSheet;
+import com.dpdocter.beans.MonitoringChart;
 import com.dpdocter.collections.GenericCollection;
 
 public class FlowsheetResponse extends GenericCollection {
@@ -17,6 +18,8 @@ public class FlowsheetResponse extends GenericCollection {
 	private Boolean discarded = false;
 	private String dischargeSummaryUniqueEMRId;
 	private List<FlowSheet> flowSheets;
+	private List<MonitoringChart> monitoringChart;
+
 
 	public String getUniqueId() {
 		return uniqueId;
@@ -96,6 +99,16 @@ public class FlowsheetResponse extends GenericCollection {
 
 	public void setDischargeSummaryUniqueEMRId(String dischargeSummaryUniqueEMRId) {
 		this.dischargeSummaryUniqueEMRId = dischargeSummaryUniqueEMRId;
+	}
+	
+	
+
+	public List<MonitoringChart> getMonitoringChart() {
+		return monitoringChart;
+	}
+
+	public void setMonitoringChart(List<MonitoringChart> monitoringChart) {
+		this.monitoringChart = monitoringChart;
 	}
 
 	@Override
