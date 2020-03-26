@@ -32,4 +32,7 @@ public interface DoctorPatientReceiptRepository extends MongoRepository<DoctorPa
 	DoctorPatientReceiptCollection findByUniqueReceiptIdAndLocationIdAndHospitalId(String uniqueReceiptId, ObjectId locationObjectId, ObjectId hospitalObjectId);
 	
 	DoctorPatientReceiptCollection findByUniqueInvoiceIdAndLocationIdAndHospitalId(String uniqueInvoiceId, ObjectId locationObjectId, ObjectId hospitalObjectId);
+
+	DoctorPatientReceiptCollection findByIdAndDoctorIdAndLocationIdAndHospitalId(ObjectId receiptId, ObjectId doctorId,
+			ObjectId locationId, ObjectId hospitalId);
 }

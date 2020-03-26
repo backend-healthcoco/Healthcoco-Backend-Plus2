@@ -1414,6 +1414,7 @@ public interface PathProxy {
 
 		public static final String SMS_INVOICE = "invoice/{invoiceId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
 
+		public static final String SMS_RECEIPT = "receipt/{receiptId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
 		
 		public static final String EMAIL_RECEIPT = "receipt/{receiptId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
@@ -2275,11 +2276,11 @@ public interface PathProxy {
 		public static final String GET_RECIPES = "/recipes/{userId}";
 	}
 	
-	public static final String SYMPTOM_BASE_URL = BASE_URL + "/userSymptom";
+
+	public static final String SYMPTOM_BASE_URL = BASE_URL + "/symptom";
 	public interface SymptomUrls{
 		
-		
-		
+
 		public static final String GET_USER_SYMPTOM = "/userSymptoms/get";
 		
 	}

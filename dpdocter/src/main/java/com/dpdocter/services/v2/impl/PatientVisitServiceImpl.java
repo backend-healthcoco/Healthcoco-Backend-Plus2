@@ -492,6 +492,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				locationObjectId = new ObjectId(locationId);
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
+			
+			
+			
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp)).and("patientId")
 					.is(patientObjectId).and("visitedFor").in(visitedFors).and("isPatientDiscarded").ne(true);

@@ -324,7 +324,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 
 				if (request.getCreatedTime() != null) {
-					patientTreatmentCollection.setCreatedTime(request.getCreatedTime());
+					patientTreatmentCollection.setCreatedTime(new Date());
 				} else {
 					patientTreatmentCollection.setCreatedTime(new Date());
 				}
@@ -358,7 +358,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 					BeanUtil.map(request, patientTreatmentCollection);
 					if (request.getCreatedTime() != null) {
-						patientTreatmentCollection.setCreatedTime(request.getCreatedTime());
+						patientTreatmentCollection.setCreatedTime(new Date());
 					} else {
 						patientTreatmentCollection.setCreatedTime(oldPatientTreatmentCollection.getCreatedTime());
 					}
