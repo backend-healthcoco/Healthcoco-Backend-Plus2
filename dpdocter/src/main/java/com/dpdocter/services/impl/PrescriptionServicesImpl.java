@@ -860,7 +860,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			Date createdTime = new Date();
 			if (request.getCreatedTime() != null) {
-				prescriptionCollection.setCreatedTime(request.getCreatedTime());
+				prescriptionCollection.setCreatedTime(new Date());
 			} else {
 				prescriptionCollection.setCreatedTime(createdTime);
 			}

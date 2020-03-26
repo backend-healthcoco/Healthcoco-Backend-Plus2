@@ -342,7 +342,7 @@ public class BillingApi {
 	@Path(value = PathProxy.BillingUrls.SMS_INVOICE)
 		@GET
 		@ApiOperation(value = PathProxy.BillingUrls.SMS_INVOICE, notes = PathProxy.BillingUrls.SMS_INVOICE)
-		public Response<Boolean> sendRemainder(@PathParam("invoiceId") String invoiceId,
+		public Response<Boolean> sendInvoice(@PathParam("invoiceId") String invoiceId,
 				@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 				@PathParam("hospitalId") String hospitalId, @PathParam("mobileNumber") String mobileNumber) {
 			billingService.sendInvoiceToPatient(doctorId, locationId, hospitalId, invoiceId, mobileNumber);
@@ -350,6 +350,19 @@ public class BillingApi {
 			response.setData(true);
 			return response;
 		}
+
+	
+	@Path(value = PathProxy.BillingUrls.SMS_RECEIPT)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.SMS_RECEIPT, notes = PathProxy.BillingUrls.SMS_RECEIPT)
+	public Response<Boolean> sendReceipt(@PathParam("receiptId") String receiptId,
+			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId, @PathParam("mobileNumber") String mobileNumber) {
+		billingService.sendReceiptToPatient(doctorId, locationId, hospitalId, receiptId, mobileNumber);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
 
 
 	@Path(value = PathProxy.BillingUrls.EMAIL_RECEIPT)

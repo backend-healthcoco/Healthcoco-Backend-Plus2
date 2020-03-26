@@ -308,7 +308,7 @@ public class BillingServiceImpl implements BillingService {
 							"Invoice cannot be edited as old invoice's total is less than paid amount.");
 				}
 				if (request.getCreatedTime() != null) {
-					doctorPatientInvoiceCollection.setCreatedTime(request.getCreatedTime());
+					doctorPatientInvoiceCollection.setCreatedTime(new Date());
 				}
 
 				if (!doctorPatientInvoiceCollection.getDoctorId().toString().equalsIgnoreCase(request.toString())) {
@@ -819,6 +819,7 @@ public class BillingServiceImpl implements BillingService {
 								}
 
 								receiptIdWithAmounts.add(invoiceIdWithAmount);
+								receiptCollection.setCreatedTime(new Date());
 								receiptCollection.setUpdatedTime(new Date());
 
 								doctorPatientReceiptRepository.save(receiptCollection);
@@ -2832,4 +2833,67 @@ public class BillingServiceImpl implements BillingService {
 			return response;
 	
 	 	}
+
+	@Override
+	public Boolean sendReceiptToPatient(String doctorId, String locationId, String hospitalId, String receiptId,
+			String mobileNumber) {
+		Boolean response = false;
+		try {
+			String pattern = "dd/MM/yyyy";
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+			DoctorPatientReceiptCollection doctorPatientReceiptCollection = doctorPatientReceiptRepository.findByIdAndDoctorIdAndLocationIdAndHospitalId(
+					new ObjectId(receiptId), new ObjectId(doctorId), new ObjectId(locationId),
+					new ObjectId(hospitalId));
+			if (doctorPatientReceiptCollection != null) {
+				UserCollection patient = userRepository.findById(doctorPatientReceiptCollection.getPatientId()).orElse(null);
+
+				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
+				smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
+				smsTrackDetail.setLocationId(new ObjectId(locationId));
+				smsTrackDetail.setType(ComponentType.INVOICE.getType());
+				SMSDetail smsDetail = new SMSDetail();
+				smsDetail.setUserId(doctorPatientReceiptCollection.getPatientId());
+				smsDetail.setUserName(patient.getFirstName());
+				SMS sms = new SMS();
+				//String message = invoiceRemainderSMS;
+							String clinicNumber=locationCollection.getClinicNumber() !=null
+						?(!DPDoctorUtils.anyStringEmpty(locationCollection.getClinicNumber())
+								? locationCollection.getClinicNumber()
+								: "")
+						: "";
+								
+
+								String content = "Received with thanks from  " + patient.getFirstName()
+										+ ",The sum of Rupees:- " + doctorPatientReceiptCollection.getAmountPaid() + " By "
+										+ doctorPatientReceiptCollection.getModeOfPayment() + 
+										" at "+locationCollection.getLocationName()+
+										" On Date:-"
+										+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate())+
+												" For queries,contact clinic " + clinicNumber + " Stay Healthy & Happy.\n" + 
+														"Powered by healthcoco.";
+								
+								sms.setSmsText(content);
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(mobileNumber);
+				sms.setSmsAddress(smsAddress);
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				smsServices.sendSMS(smsTrackDetail, true);
+				response = true;
+			}
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			logger.error("Error while sending sms invoices" + e);
+			throw new BusinessException(ServiceError.Unknown, "Error while sending sms invoices" + e);
+		}
+		return response;
+
+	}
 }

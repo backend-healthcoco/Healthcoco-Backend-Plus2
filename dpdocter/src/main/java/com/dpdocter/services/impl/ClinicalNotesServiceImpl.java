@@ -382,7 +382,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			if (request.getCreatedTime() != null) {
-				clinicalNotesCollection.setCreatedTime(request.getCreatedTime());
+				clinicalNotesCollection.setCreatedTime(new Date());
 			} else {
 				clinicalNotesCollection.setCreatedTime(new Date());
 			}
@@ -1557,7 +1557,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			if (request.getCreatedTime() != null) {
-				clinicalNotesCollection.setCreatedTime(request.getCreatedTime());
+				clinicalNotesCollection.setCreatedTime(new Date());
 			} else {
 				clinicalNotesCollection.setCreatedTime(oldClinicalNotesCollection.getCreatedTime());
 			}

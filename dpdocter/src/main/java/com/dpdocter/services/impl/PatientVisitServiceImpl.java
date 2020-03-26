@@ -759,7 +759,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientVisitCollection = patientVisitRepository.findById(new ObjectId(visitId)).orElse(null);
 				patientVisitCollection.setUpdatedTime(new Date());
 				if (request.getCreatedTime() != null) {
+
 				//	patientVisitCollection.setCreatedTime(request.getCreatedTime());
+
+
 					patientVisitCollection.setCreatedTime(new Date());
 				} else {
 					patientVisitCollection.setCreatedTime(patientVisitCollection.getCreatedTime());
