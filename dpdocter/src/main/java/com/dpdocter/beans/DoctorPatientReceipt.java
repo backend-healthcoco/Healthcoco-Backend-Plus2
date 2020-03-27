@@ -26,6 +26,8 @@ public class DoctorPatientReceipt extends GenericCollection{
 	
 	private ModeOfPayment modeOfPayment;
 	
+	private String transactionId;
+	
 	private List<AdvanceReceiptIdWithAmountResponse> advanceReceiptIdWithAmounts;   
 	
 	private String invoiceId; 
@@ -177,6 +179,16 @@ public class DoctorPatientReceipt extends GenericCollection{
 
 	public void setUsedAdvanceAmount(Double usedAdvanceAmount) {
 		this.usedAdvanceAmount = usedAdvanceAmount;
+	}
+	
+	
+
+	public String getTransactionId() {
+		return transactionId;
+	}
+
+	public void setTransactionId(String transactionId) {
+		this.transactionId = transactionId;
 	}
 
 	@Override

@@ -1152,7 +1152,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptionCollection.setCreatedBy(oldPrescription.getCreatedBy());
 			prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
 			if (request.getCreatedTime() != null) {
-				prescriptionCollection.setCreatedTime(request.getCreatedTime());
+				prescriptionCollection.setCreatedTime(new Date());
 			} else {
 				prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
 			}

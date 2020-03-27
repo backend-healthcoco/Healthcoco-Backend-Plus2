@@ -39,6 +39,9 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 
 	@Field
 	private ModeOfPayment modeOfPayment;
+	
+	@Field
+	private String transactionId;
 
 	@Field
 	private List<AdvanceReceiptIdWithAmount> advanceReceiptIdWithAmounts; // For
@@ -212,6 +215,16 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
+	}
+	
+	
+
+	public String getTransactionId() {
+		return transactionId;
+	}
+
+	public void setTransactionId(String transactionId) {
+		this.transactionId = transactionId;
 	}
 
 	@Override

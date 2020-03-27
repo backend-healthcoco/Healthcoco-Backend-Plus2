@@ -345,6 +345,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 			patientVisitCollection.setUpdatedTime(new Date());
+			patientVisitCollection.setCreatedTime(new Date());
 			patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
 		} catch (Exception e) {
 			e.printStackTrace();

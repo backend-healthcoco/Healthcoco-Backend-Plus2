@@ -20,6 +20,8 @@ public class InvoiceItem {
 	private InvoiceItemType type;// = [SERVICE || PRODUCT]
 
 	private Quantity quantity;
+	
+	private Quantity day;
 
 	private Long inventoryQuantity;
 	
@@ -167,6 +169,16 @@ public class InvoiceItem {
 
 	public void setTreatmentFields(List<Fields> treatmentFields) {
 		this.treatmentFields = treatmentFields;
+	}
+	
+	
+
+	public Quantity getDay() {
+		return day;
+	}
+
+	public void setDay(Quantity day) {
+		this.day = day;
 	}
 
 	@Override
