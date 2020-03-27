@@ -6,6 +6,7 @@ import java.util.List;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.EarsExamination;
+import com.dpdocter.beans.EyeSpecialityObservation;
 import com.dpdocter.beans.GeneralExam;
 import com.dpdocter.beans.IndirectLarygoscopyExamination;
 import com.dpdocter.beans.Investigation;
@@ -176,6 +177,9 @@ public class ClinicalNotesEditRequest {
 	private Date createdTime;
 	
 	private String priorConsultations;
+	
+	private EyeSpecialityObservation eyeObservation;
+
 
 	public Date getLmp() {
 		return lmp;
@@ -1150,6 +1154,16 @@ public class ClinicalNotesEditRequest {
 
 	public void setPriorConsultations(String priorConsultations) {
 		this.priorConsultations = priorConsultations;
+	}
+	
+	
+
+	public EyeSpecialityObservation getEyeObservation() {
+		return eyeObservation;
+	}
+
+	public void setEyeObservation(EyeSpecialityObservation eyeObservation) {
+		this.eyeObservation = eyeObservation;
 	}
 
 	@Override

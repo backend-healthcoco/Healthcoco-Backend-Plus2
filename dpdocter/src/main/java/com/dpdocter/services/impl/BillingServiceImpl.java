@@ -2852,7 +2852,7 @@ public class BillingServiceImpl implements BillingService {
 				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
 				smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
 				smsTrackDetail.setLocationId(new ObjectId(locationId));
-				smsTrackDetail.setType(ComponentType.INVOICE.getType());
+				smsTrackDetail.setType(ComponentType.RECEIPT.getType());
 				SMSDetail smsDetail = new SMSDetail();
 				smsDetail.setUserId(doctorPatientReceiptCollection.getPatientId());
 				smsDetail.setUserName(patient.getFirstName());
@@ -2871,9 +2871,10 @@ public class BillingServiceImpl implements BillingService {
 										" at "+locationCollection.getLocationName()+
 										" On Date:-"
 										+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate())+
-												" For queries,contact clinic " + clinicNumber + " Stay Healthy & Happy.\n" + 
+												" .For queries,contact clinic " + clinicNumber + " Stay Healthy & Happy.\n" + 
 														"Powered by healthcoco.";
-								
+							
+								System.out.println(content);
 								sms.setSmsText(content);
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(mobileNumber);

@@ -24,6 +24,8 @@ public class DoctorPatientReceiptRequest {
 	
 	private ModeOfPayment modeOfPayment;
 	
+	private String transactionId;
+	
 	private List<String> invoiceIds;   
 	
 	private Double amountPaid= 0.0;
@@ -126,6 +128,16 @@ public class DoctorPatientReceiptRequest {
 
 	public void setReceivedDate(Date receivedDate) {
 		this.receivedDate = receivedDate;
+	}
+	
+	
+
+	public String getTransactionId() {
+		return transactionId;
+	}
+
+	public void setTransactionId(String transactionId) {
+		this.transactionId = transactionId;
 	}
 
 	@Override
