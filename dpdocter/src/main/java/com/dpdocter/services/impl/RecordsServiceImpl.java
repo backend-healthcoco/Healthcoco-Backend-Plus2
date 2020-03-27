@@ -1099,6 +1099,7 @@ public class RecordsServiceImpl implements RecordsService {
 			recordsCollection.setRecordsLabel(label);
 			recordsCollection.setExplanation(explanation);
 			recordsCollection.setUpdatedTime(new Date());
+			recordsCollection.setCreatedTime(new Date());
 			recordsRepository.save(recordsCollection);
 		} catch (Exception e) {
 			e.printStackTrace();
