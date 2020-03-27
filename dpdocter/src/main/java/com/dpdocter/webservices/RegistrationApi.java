@@ -1290,15 +1290,14 @@ public class RegistrationApi {
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_CLINICS, notes = PathProxy.RegistrationUrls.GET_CLINICS)	
 	public Response<Location> getUsers(
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size) {
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
-		List<Location> professionResponse = registrationService.getClinics(page, size, locationId, hospitalId);
+		Location location = registrationService.getClinics(locationId, hospitalId);
 		Response<Location> response = new Response<Location>();
-		response.setDataList(professionResponse);
+		response.setData(location);
 		return response;
 	}
 //	

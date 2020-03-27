@@ -5160,34 +5160,36 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 	
 @Override	
-public List<Location>getClinics(int page, int size, String locationId,String hospitalId)
+public Location getClinics(String locationId,String hospitalId)
 {
-	List<Location> response = null;
+	Location response = null;
 	
 	try {
-		Location location=new Location();
+		
 		LocationCollection locationCollection = null;
-		Criteria criteria = new Criteria();
-	
 		
 		String	defaultLocationId=null;
 		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 			 locationCollection = locationRepository
 					.findById(new ObjectId(locationId)).orElse(null);
+			 
 		}
-			defaultLocationId = locationCollection.getDefaultLocationId().toString();
-
 		
-	if(locationCollection.getId().toString().equals(defaultLocationId))
-	{
-		locationCollection.setIsDefaultClinic(true);
-	}
+		if(locationCollection.getDefaultLocationId() !=null)
+			defaultLocationId=locationCollection.getDefaultLocationId().toString();
+		
+				
+				if(locationCollection.getId().toString().equals(defaultLocationId))
+				{
+					locationCollection.setIsDefaultClinic(true);
+				}
+		
 	
-	response=new ArrayList<Location>();	
+	response=new Location();	
 	
 	
-		BeanUtil.map(locationCollection, location);
-		response.add(location);
+		BeanUtil.map(locationCollection, response);
+		//response.add(location);
 		
 	
 	} catch (Exception e) {

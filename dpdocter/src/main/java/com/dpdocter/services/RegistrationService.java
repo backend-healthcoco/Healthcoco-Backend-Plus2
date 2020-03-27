@@ -180,7 +180,7 @@ public interface RegistrationService {
 
 	Boolean setDefaultClinic( String locationId, String hospitalId,String defaultHospitalId);
 	
-	List<Location> getClinics(int page,int  size,String locationId,String hospitalId);
+	Location getClinics(String locationId,String hospitalId);
 
 	Boolean update();
 
