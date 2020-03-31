@@ -69,14 +69,14 @@ public class PrescriptionApi {
 	public Response<Prescription> getPrescriptionForEMR(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,@QueryParam("from") String from,@QueryParam("to") String to,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
 		List<Prescription> prescriptions = null;
 
-		prescriptions = prescriptionServices.getPrescriptionsForEMR(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded, false);
+		prescriptions = prescriptionServices.getPrescriptionsForEMR(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId),from,to, discarded, false);
 
 		Response<Prescription> response = new Response<Prescription>();
 		response.setDataList(prescriptions);

@@ -109,6 +109,7 @@ public class BillingApi {
 			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+			@QueryParam("from") String from,@QueryParam("to") String to,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn("Invalid Input");
@@ -116,7 +117,7 @@ public class BillingApi {
 		}
 
 		List<DoctorPatientInvoice> doctorPatientInvoices = billingService.getInvoices(type, page, size, doctorId,
-				locationId, hospitalId, patientId, updatedTime, discarded);
+				locationId, hospitalId, patientId, updatedTime,from,to, discarded);
 
 		Response<DoctorPatientInvoice> response = new Response<DoctorPatientInvoice>();
 		response.setDataList(doctorPatientInvoices);
@@ -199,6 +200,7 @@ public class BillingApi {
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+			@QueryParam("from") String from,@QueryParam("to") String to,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn("Invalid Input");
@@ -206,7 +208,7 @@ public class BillingApi {
 		}
 
 		List<DoctorPatientReceipt> doctorPatientReceipts = billingService.getReceipts(page, size, doctorId, locationId,
-				hospitalId, patientId, updatedTime, discarded);
+				hospitalId, patientId, updatedTime,from,to, discarded);
 
 		Response<DoctorPatientReceipt> response = new Response<DoctorPatientReceipt>();
 		response.setDataList(doctorPatientReceipts);

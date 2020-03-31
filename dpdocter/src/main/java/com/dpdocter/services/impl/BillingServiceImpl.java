@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,6 +19,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -567,7 +570,7 @@ public class BillingServiceImpl implements BillingService {
 
 	@Override
 	public List<DoctorPatientInvoice> getInvoices(String type, long page, int size, String doctorId, String locationId,
-			String hospitalId, String patientId, String updatedTime, Boolean discarded) {
+			String hospitalId, String patientId, String updatedTime,String from,String to, Boolean discarded) {
 		List<DoctorPatientInvoice> responses = null;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
@@ -583,6 +586,34 @@ public class BillingServiceImpl implements BillingService {
 				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
+			
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			DateTime fromDateTime = null, toDateTime= null;
+			if (!DPDoctorUtils.anyStringEmpty(from)) {
+				localCalendar.setTime(new Date(Long.parseLong(from)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				 fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));				
+			}
+			if (!DPDoctorUtils.anyStringEmpty(to)) {
+				localCalendar.setTime(new Date(Long.parseLong(to)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				 toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));			
+			}
+			if(fromDateTime!= null && toDateTime != null) {
+				criteria.and("invoiceDate").gte(fromDateTime).lte(toDateTime);
+			}else if(fromDateTime!= null) {
+				criteria.and("invoiceDate").gte(fromDateTime);
+			}else if(toDateTime != null) {
+				criteria.and("invoiceDate").lte(toDateTime);
+			}
+
 
 			switch (BillingType.valueOf(type.toUpperCase())) {
 			case SETTLE:
@@ -940,13 +971,15 @@ public class BillingServiceImpl implements BillingService {
 
 	@Override
 	public List<DoctorPatientReceipt> getReceipts(long page, int size, String doctorId, String locationId,
-			String hospitalId, String patientId, String updatedTime, Boolean discarded) {
+			String hospitalId, String patientId, String updatedTime, String from,String to,Boolean discarded) {
 		List<DoctorPatientReceipt> responses = null;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded")
 					.ne(true);
+			
+			
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
@@ -956,6 +989,35 @@ public class BillingServiceImpl implements BillingService {
 				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
+			
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			DateTime fromDateTime = null, toDateTime= null;
+			if (!DPDoctorUtils.anyStringEmpty(from)) {
+				localCalendar.setTime(new Date(Long.parseLong(from)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				 fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));				
+			}
+			if (!DPDoctorUtils.anyStringEmpty(to)) {
+				localCalendar.setTime(new Date(Long.parseLong(to)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				 toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));			
+			}
+			if(fromDateTime!= null && toDateTime != null) {
+				criteria.and("receivedDate").gte(fromDateTime).lte(toDateTime);
+			}else if(fromDateTime!= null) {
+				criteria.and("receivedDate").gte(fromDateTime);
+			}else if(toDateTime != null) {
+				criteria.and("receivedDate").lte(toDateTime);
+			}
+
+
 
 			if (size > 0) {
 				responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
