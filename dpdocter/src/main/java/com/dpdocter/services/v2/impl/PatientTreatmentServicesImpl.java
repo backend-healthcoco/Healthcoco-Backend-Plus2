@@ -1,12 +1,16 @@
 package com.dpdocter.services.v2.impl;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -45,7 +49,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	@Override
 	@Transactional
 	public List<PatientTreatmentResponse> getPatientTreatments(int page, int size, String doctorId, String locationId,
-			String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded,
+			String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified,String from,String to, Boolean discarded,
 			Boolean inHistory, String status) {
 		List<PatientTreatmentResponse> response = null;
 		try {
@@ -63,6 +67,36 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
 					.is(patientObjectId).and("isPatientDiscarded").ne(true);
+			
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			DateTime fromDateTime = null, toDateTime= null;
+			if (!DPDoctorUtils.anyStringEmpty(from)) {
+				localCalendar.setTime(new Date(Long.parseLong(from)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				 fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));				
+			}
+			if (!DPDoctorUtils.anyStringEmpty(to)) {
+				localCalendar.setTime(new Date(Long.parseLong(to)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				 toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));			
+			}
+			if(fromDateTime!= null && toDateTime != null) {
+				criteria.and("createdTime").gte(fromDateTime).lte(toDateTime);
+			}else if(fromDateTime!= null) {
+				criteria.and("createdTime").gte(fromDateTime);
+			}else if(toDateTime != null) {
+				criteria.and("createdTime").lte(toDateTime);
+			}
+
+
+			
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(doctorId))
 					criteria.and("doctorId").is(doctorObjectId);

@@ -48,12 +48,12 @@ public class ClinicalNotesApi {
 	public Response<ClinicalNotes> getNotes(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,@QueryParam("from") String from,@QueryParam("to") String to,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
 		List<ClinicalNotes> clinicalNotes = clinicalNotesService.getClinicalNotes(page, size, doctorId, locationId,
 				hospitalId, patientId, updatedTime,
-				otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded, false);
+				otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), from,to,discarded, false);
 
 		if (clinicalNotes != null && !clinicalNotes.isEmpty()) {
 			for (ClinicalNotes clinicalNote : clinicalNotes) {

@@ -11,7 +11,7 @@ public interface ClinicalNotesService {
 	List<ClinicalNotes> getClinicalNotes(String patientId, int page, int size, String updatedTime, Boolean discarded);
 
 	List<ClinicalNotes> getClinicalNotes(int page, int size, String doctorId, String locationId, String hospitalId,
-			String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded, Boolean inHistory);
+			String patientId, String updatedTime, Boolean isOTPVerified,String from,String to, Boolean discarded, Boolean inHistory);
 
 	ClinicalNotes getNotesById(String id, ObjectId visitId);
 

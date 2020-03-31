@@ -24,14 +24,14 @@ public interface BillingService {
 	DoctorPatientInvoice addEditInvoice(DoctorPatientInvoice request);
 
 	List<DoctorPatientInvoice> getInvoices(String type, long page, int size, String doctorId, String locationId,
-			String hospitalId, String patientId, String updatedTime, Boolean discarded);
+			String hospitalId, String patientId, String updatedTime,String from,String to, Boolean discarded);
 
 	DoctorPatientInvoice deleteInvoice(String invoiceId, Boolean discarded);
 
 	DoctorPatientReceiptAddEditResponse addEditReceipt(DoctorPatientReceiptRequest request);
 
 	List<DoctorPatientReceipt> getReceipts(long page, int size, String doctorId, String locationId, String hospitalId,
-			String patientId, String updatedTime, Boolean discarded);
+			String patientId, String updatedTime, String from,String to,Boolean discarded);
 
 	DoctorPatientReceipt deleteReceipt(String receiptId, Boolean discarded);
 
