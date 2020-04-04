@@ -563,26 +563,33 @@ public class DietPlansServiceImpl implements DietPlansService {
 	public Response<DietPlanTemplate> getDietPlanTemplates(int page, int size, String doctorId, String hospitalId, String locationId,
 			long updatedTime, boolean discarded, String gender, String country, Double fromAge, Double toAge,
 			String community, String type, String pregnancyCategory, String searchTerm,
-			String foodPreference, List<String> disease, Double bmiFrom, Double bmiTo, String languageId, Double age, Double bmi) {
+			String foodPreference, List<String> disease, Double bmiFrom, Double bmiTo, String languageId, Double age, Double bmi, boolean allDisease) {
 		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
 		List<DietPlanTemplate> dietPlanTemplates = null;
 		try {
 
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTime));
 			
-			if (disease!= null && !disease.isEmpty()) {
-				criteria.and("diseases.disease").in(disease);
+			if(allDisease) {
 				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 					criteria = criteria.andOperator(new Criteria().orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
 							new Criteria("templateName").regex(searchTerm)));
 				}
 			}else {
-				List<String> emptyArr = new ArrayList<String>();
-				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-					criteria = criteria.andOperator(new Criteria().orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
-							new Criteria("templateName").regex(searchTerm)), new Criteria().orOperator(new Criteria("diseases").is(null), new Criteria("diseases").is(emptyArr)));
+				if (disease!= null && !disease.isEmpty()) {
+					criteria.and("diseases.disease").in(disease);
+					if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+						criteria = criteria.andOperator(new Criteria().orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
+								new Criteria("templateName").regex(searchTerm)));
+					}
+				}else {
+					List<String> emptyArr = new ArrayList<String>();
+					if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+						criteria = criteria.andOperator(new Criteria().orOperator(new Criteria("templateName").regex("^" + searchTerm, "i"),
+								new Criteria("templateName").regex(searchTerm)), new Criteria().orOperator(new Criteria("diseases").is(null), new Criteria("diseases").is(emptyArr)));
+					}
+					else criteria.andOperator(new Criteria().orOperator(new Criteria("diseases").is(null), new Criteria("diseases").is(emptyArr)));
 				}
-				else criteria.andOperator(new Criteria().orOperator(new Criteria("diseases").is(null), new Criteria("diseases").is(emptyArr)));
 			}
 			
 			if (age != null) {

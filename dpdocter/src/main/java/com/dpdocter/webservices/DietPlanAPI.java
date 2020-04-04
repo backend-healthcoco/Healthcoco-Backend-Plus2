@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
@@ -182,11 +183,12 @@ public class DietPlanAPI {
 			@QueryParam("type") String type, @QueryParam("pregnancyCategory") String pregnancyCategory,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("foodPreference") String foodPreference,
 			@MatrixParam("disease") List<String> disease, @QueryParam("bmiFrom") Double bmiFrom, @QueryParam("bmiTo") Double bmiTo,
-			@QueryParam("languageId") String languageId, @QueryParam("age") Double age, @QueryParam("bmi") Double bmi) {
+			@QueryParam("languageId") String languageId, @QueryParam("age") Double age, @QueryParam("bmi") Double bmi,
+			@QueryParam("allDisease") @DefaultValue("false") boolean allDisease) {
 		
 		Response<DietPlanTemplate> response = dietPlansService.getDietPlanTemplates(page, size, doctorId, hospitalId, locationId,
 				updatedTime, discarded, gender, country, fromAge, toAge, community, type, pregnancyCategory, searchTerm, 
-				foodPreference, disease, bmiFrom, bmiTo, languageId, age, bmi);
+				foodPreference, disease, bmiFrom, bmiTo, languageId, age, bmi, allDisease);
 		return response;
 	}
 

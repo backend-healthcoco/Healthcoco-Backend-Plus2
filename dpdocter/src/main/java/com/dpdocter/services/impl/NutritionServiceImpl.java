@@ -1228,7 +1228,8 @@ public class NutritionServiceImpl implements NutritionService {
 						.append("type", "$nutritionAssessment.type")
 						.append("communities", "$nutritionAssessment.communities")
 						.append("diseases", "$nutritionAssessment.diseases")
-						.append("foodPreference", "$nutritionAssessment.foodPreference")));
+						.append("foodPreference", "$nutritionAssessment.foodPreference")
+						.append("createdTime", "$createdTime")));
 				
 				CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group", 
 						new BasicDBObject("id", "$_id").append("timeTaken", new BasicDBObject("$first", "$timeTaken"))
@@ -1240,7 +1241,8 @@ public class NutritionServiceImpl implements NutritionService {
 						.append("type", new BasicDBObject("$first", "$type"))
 						.append("communities", new BasicDBObject("$first", "$communities"))
 						.append("diseases", new BasicDBObject("$first", "$diseases"))
-						.append("foodPreference", new BasicDBObject("$first", "$foodPreference"))));
+						.append("foodPreference", new BasicDBObject("$first", "$foodPreference")
+						.append("createdTime", new BasicDBObject("$first", "$createdTime")))));
 				
 				Aggregation aggregation = null;
 				if (size > 0) {
@@ -1251,6 +1253,12 @@ public class NutritionServiceImpl implements NutritionService {
 							Aggregation.unwind("profile.branch", true), 
 							Aggregation.lookup("school_cl", "profile.schoolId", "_id", "profile.school"), 
 							Aggregation.unwind("profile.school", true),
+							
+							Aggregation.lookup("acadamic_class_cl", "profile.classId", "_id", "profile.acadamicClass"),
+							Aggregation.unwind("profile.acadamicClass"),
+							Aggregation.lookup("acadamic_section_cl", "profile.sectionId", "_id", "profile.acadamicClassSection"),
+							Aggregation.unwind("profile.acadamicClassSection", true),
+							
 							Aggregation.lookup("growth_assessment_and_general_bio_metrics_cl", "profile._id", "academicProfileId", "growthAssessment"),
 							Aggregation.unwind("growthAssessment", true), 
 							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("growthAssessment.createdTime", -1))),
@@ -1269,6 +1277,12 @@ public class NutritionServiceImpl implements NutritionService {
 							Aggregation.unwind("profile.branch", true), 
 							Aggregation.lookup("school_cl", "profile.schoolId", "_id", "profile.school"), 
 							Aggregation.unwind("profile.school", true),
+							
+							Aggregation.lookup("acadamic_class_cl", "profile.classId", "_id", "profile.acadamicClass"),
+							Aggregation.unwind("profile.acadamicClass"),
+							Aggregation.lookup("acadamic_section_cl", "profile.sectionId", "_id", "profile.acadamicClassSection"),
+							Aggregation.unwind("profile.acadamicClassSection", true),
+							
 							Aggregation.lookup("growth_assessment_and_general_bio_metrics_cl", "profile._id", "academicProfileId", "growthAssessment"),
 							Aggregation.unwind("growthAssessment", true), 
 							new CustomAggregationOperation(new Document("$sort", new BasicDBObject("growthAssessment.createdTime", -1))),

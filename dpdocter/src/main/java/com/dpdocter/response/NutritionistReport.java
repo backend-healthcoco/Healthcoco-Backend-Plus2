@@ -5,9 +5,10 @@ import java.util.List;
 import com.dpdocter.beans.AcademicProfile;
 import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.NutritionDisease;
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.LifeStyleType;
 
-public class NutritionistReport {
+public class NutritionistReport extends GenericCollection{
 
 	private String id;
 	

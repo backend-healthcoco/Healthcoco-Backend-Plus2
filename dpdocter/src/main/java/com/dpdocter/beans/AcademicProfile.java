@@ -2,6 +2,7 @@ package com.dpdocter.beans;
 
 import java.util.Date;
 
+import com.dpdocter.collections.AcadamicClassSectionCollection;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ProfileType;
 import com.dpdocter.response.AcadamicClassResponse;
@@ -31,7 +32,9 @@ public class AcademicProfile extends GenericCollection {
 	private String emailAddress;
 
 	private String acadamicSection;
-
+	
+	private AcadamicClassSectionCollection acadamicClassSection;
+	
 	private Date admissionDate;
 
 	private ProfileType type = ProfileType.STUDENT;
@@ -268,19 +271,26 @@ public class AcademicProfile extends GenericCollection {
 		this.dob = dob;
 	}
 
+	public AcadamicClassSectionCollection getAcadamicClassSection() {
+		return acadamicClassSection;
+	}
+
+	public void setAcadamicClassSection(AcadamicClassSectionCollection acadamicClassSection) {
+		this.acadamicClassSection = acadamicClassSection;
+	}
+
 	@Override
 	public String toString() {
 		return "AcademicProfile [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", localPatientName="
 				+ localPatientName + ", mobileNumber=" + mobileNumber + ", uniqueId=" + uniqueId + ", rollNo=" + rollNo
 				+ ", gender=" + gender + ", dob=" + dob + ", acadamicClass=" + acadamicClass + ", emailAddress="
-				+ emailAddress + ", acadamicSection=" + acadamicSection + ", admissionDate=" + admissionDate + ", type="
-				+ type + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", isSuperStar=" + isSuperStar
-				+ ", branch=" + branch + ", school=" + school + ", isGrowthAssessmentPresent="
-				+ isGrowthAssessmentPresent + ", isPhysicalAssessmentPresent=" + isPhysicalAssessmentPresent
-				+ ", isEyeAssessmentPresent=" + isEyeAssessmentPresent + ", isDentalAssessmentPresent="
-				+ isDentalAssessmentPresent + ", isENTAssessmentPresent=" + isENTAssessmentPresent
-				+ ", isNutritionalAssessmentPresent=" + isNutritionalAssessmentPresent + ", isDietPlanPresent="
-				+ isDietPlanPresent + "]";
+				+ emailAddress + ", acadamicSection=" + acadamicSection + ", acadamicClassSection="
+				+ acadamicClassSection + ", admissionDate=" + admissionDate + ", type=" + type + ", imageUrl="
+				+ imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", isSuperStar=" + isSuperStar + ", branch=" + branch
+				+ ", school=" + school + ", isGrowthAssessmentPresent=" + isGrowthAssessmentPresent
+				+ ", isPhysicalAssessmentPresent=" + isPhysicalAssessmentPresent + ", isEyeAssessmentPresent="
+				+ isEyeAssessmentPresent + ", isDentalAssessmentPresent=" + isDentalAssessmentPresent
+				+ ", isENTAssessmentPresent=" + isENTAssessmentPresent + ", isNutritionalAssessmentPresent="
+				+ isNutritionalAssessmentPresent + ", isDietPlanPresent=" + isDietPlanPresent + "]";
 	}
-
 }
