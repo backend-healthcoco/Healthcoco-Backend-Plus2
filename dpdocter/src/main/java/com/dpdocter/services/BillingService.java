@@ -9,6 +9,7 @@ import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.ExpenseType;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
+import com.dpdocter.beans.VendorExpense;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
 import com.dpdocter.request.InvoiceItemChangeStatusRequest;
@@ -84,7 +85,7 @@ public interface BillingService {
 	DoctorExpense addEditDoctorExpense(DoctorExpense request);
 
 	List<DoctorExpense> getDoctorExpenses(String expenseType, int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String paymentMode);
+			String hospitalId, String updatedTime,String from,String to, Boolean discarded, String paymentMode);
 
 	DoctorExpense deleteDoctorExpense(String expenseId, Boolean discarded);
 
@@ -101,5 +102,15 @@ public interface BillingService {
 
 	public List<ExpenseType> getExpenseType(int page, int size, String doctorId, String locationId, String hospitalId,
 			String searchTerm, Boolean discarded);
+	
+	VendorExpense addEditVendor(VendorExpense request);
+
+	List<VendorExpense> getVendors(int size, int page, Boolean discarded,String searchTerm);
+
+	VendorExpense discardVendor(String id,Boolean discarded);
+	
+	 Integer countVendorExpense(Boolean discarded, String searchTerm);
+	 
+	 VendorExpense getVendorExpenseById(String id);
 
 }

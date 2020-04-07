@@ -188,4 +188,8 @@ public interface RegistrationService {
 
 	void loginAccessUser(String userId, String locationId, Boolean hasLoginAccess);
 	
+	public Boolean updatePatientAge(); 
+	
+	public Boolean updateDoctorAge();
+	
 	}

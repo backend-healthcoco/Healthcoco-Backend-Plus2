@@ -2388,31 +2388,31 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(1);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-		band = new JRDesignBand();
-		band.setHeight(18);
-
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{AdmissionDate}"));
-		jrDesignTextField.setX(0);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(columnWidth);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-		jrDesignTextField.setBold(true);
-		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setFontSize(Float.valueOf(contentFontSize + 1));
-		band.addElement(jrDesignTextField);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{admissionDate}"));
-		jrDesignTextField.setX(0);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(columnWidth);
-		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setMarkup("html");
-		band.addElement(jrDesignTextField);
+//		band = new JRDesignBand();
+//		band.setHeight(18);
+//
+//		jrDesignTextField = new JRDesignTextField();
+//		jrDesignTextField.setExpression(new JRDesignExpression("$P{AdmissionDate}"));
+//		jrDesignTextField.setX(0);
+//		jrDesignTextField.setY(0);
+//		jrDesignTextField.setHeight(18);
+//		jrDesignTextField.setWidth(columnWidth);
+//		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+//		jrDesignTextField.setBold(true);
+//		jrDesignTextField.setStretchWithOverflow(true);
+//		jrDesignTextField.setFontSize(Float.valueOf(contentFontSize + 1));
+//		band.addElement(jrDesignTextField);
+//		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+//		
+//		jrDesignTextField = new JRDesignTextField();
+//		jrDesignTextField.setExpression(new JRDesignExpression("$F{admissionDate}"));
+//		jrDesignTextField.setX(0);
+//		jrDesignTextField.setY(0);
+//		jrDesignTextField.setHeight(18);
+//		jrDesignTextField.setWidth(columnWidth);
+//		jrDesignTextField.setStretchWithOverflow(true);
+//		jrDesignTextField.setMarkup("html");
+//		band.addElement(jrDesignTextField);
 		
 		
 		

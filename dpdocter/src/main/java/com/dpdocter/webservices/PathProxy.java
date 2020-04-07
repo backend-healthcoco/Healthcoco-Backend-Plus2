@@ -243,6 +243,8 @@ public interface PathProxy {
 		public static final String DELETE_EYE_SPECILITY = "/eye/Speciality/{id}/delete";
 		
 		public static final String GET_CLINICS ="/get/{locationId}/{hospitalId}/clinic";
+		
+		public static final String UPDATE_AGE = "/patientAge";
 
 	}
 
@@ -1443,6 +1445,15 @@ public interface PathProxy {
 		public static final String DELETE_EXPENSE_TYPE = "/expenseType/{expenseTypeId}/delete";
 
 		public static final String GET_EXPENSE_TYPE_BY_ID = "/expenseType/{expenseTypeId}/view";
+
+		
+		public static final String ADD_EDIT_VENDOR_EXPENSE = "/vendorExpence/addEdit";
+
+		public static final String GET_VENDOR_EXPENSE = "/vendorExpense/get";
+
+		public static final String DELETE_VENDOR_EXPENSE = "/vendorExpense/{vendorExpenseId}/delete";
+
+		public static final String GET_VENDOR_EXPENSE_BY_ID = "/vendorExpense/{vendorExpenseId}/get";
 
 	}
 

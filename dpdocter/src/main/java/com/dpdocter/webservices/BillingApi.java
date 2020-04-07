@@ -22,6 +22,7 @@ import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.ExpenseType;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
+import com.dpdocter.beans.VendorExpense;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
@@ -460,6 +461,8 @@ public class BillingApi {
 	public Response<DoctorExpense> getExpenses(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId,
+			@QueryParam("from") String from,
+			@QueryParam("to") String to,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
 			@QueryParam("expenseType") String expenseType, @QueryParam("paymentMode") String paymentMode) {
@@ -469,7 +472,7 @@ public class BillingApi {
 		}
 
 		List<DoctorExpense> expenses = billingService.getDoctorExpenses(expenseType, page, size, doctorId, locationId,
-				hospitalId, updatedTime, discarded, paymentMode);
+				hospitalId, updatedTime,from,to ,discarded, paymentMode);
 
 		Response<DoctorExpense> response = new Response<DoctorExpense>();
 		response.setDataList(expenses);
@@ -588,4 +591,62 @@ public class BillingApi {
 		response.setData(billingService.deleteExpenseType(expenseTypeId, discarded));
 		return response;
 	}
+	
+	@Path(value = PathProxy.BillingUrls.ADD_EDIT_VENDOR_EXPENSE)
+	@POST
+	@ApiOperation(value = PathProxy.BillingUrls.ADD_EDIT_VENDOR_EXPENSE, notes = PathProxy.BillingUrls.ADD_EDIT_VENDOR_EXPENSE)
+	public Response<VendorExpense> addEditVendorExpense(VendorExpense request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		VendorExpense vendorExpense = billingService.addEditVendor(request);
+
+		Response<VendorExpense> response = new Response<VendorExpense>();
+		response.setData(vendorExpense);
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.GET_VENDOR_EXPENSE)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.GET_VENDOR_EXPENSE, notes = PathProxy.BillingUrls.GET_VENDOR_EXPENSE)
+	public Response<VendorExpense> getVendorExpense(@QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,	
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		
+
+		List<VendorExpense> doctorPatientInvoices = billingService.getVendors(size, page, discarded, searchTerm);
+		Integer count=billingService.countVendorExpense(discarded, searchTerm);
+		Response<VendorExpense> response = new Response<VendorExpense>();
+		response.setDataList(doctorPatientInvoices);
+		response.setCount(count);
+		return response;
+	}
+	
+	@Path(value = PathProxy.BillingUrls.DELETE_VENDOR_EXPENSE)
+	@DELETE
+	@ApiOperation(value = PathProxy.BillingUrls.DELETE_VENDOR_EXPENSE, notes = PathProxy.BillingUrls.DELETE_VENDOR_EXPENSE)
+	public Response<VendorExpense> deleteVendorExpense(@PathParam("vendorExpenseId") String vendorExpenseId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(vendorExpenseId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<VendorExpense> response = new Response<VendorExpense>();
+		response.setData(billingService.discardVendor(vendorExpenseId, discarded));
+		return response;
+	}
+	
+	@Path(value = PathProxy.BillingUrls.GET_VENDOR_EXPENSE_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.GET_VENDOR_EXPENSE_BY_ID, notes = PathProxy.BillingUrls.GET_VENDOR_EXPENSE_BY_ID)
+	public Response<VendorExpense> getVendorExpenseById(@QueryParam("vendorExpenseId") String vendorExpenseId) {
+		if (DPDoctorUtils.anyStringEmpty(vendorExpenseId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<VendorExpense> response = new Response<VendorExpense>();
+		response.setData(billingService.getVendorExpenseById(vendorExpenseId));
+		return response;
+	}
+
 }
