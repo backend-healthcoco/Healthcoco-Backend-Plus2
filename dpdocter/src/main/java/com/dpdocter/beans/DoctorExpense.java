@@ -16,6 +16,8 @@ public class DoctorExpense extends GenericCollection {
 	public Double cost = 0.0;
 	public Date toDate = new Date();
 	public String notes;
+	
+	public VendorExpense vendor;
 	public Boolean discarded = false;
 	public String uniqueExpenseId;
 
@@ -114,5 +116,15 @@ public class DoctorExpense extends GenericCollection {
 	public void setUniqueExpenseId(String uniqueExpenseId) {
 		this.uniqueExpenseId = uniqueExpenseId;
 	}
+
+	public VendorExpense getVendor() {
+		return vendor;
+	}
+
+	public void setVendor(VendorExpense vendor) {
+		this.vendor = vendor;
+	}
+	
+	
 
 }

@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AdvanceReceiptIdWithAmount;
+import com.dpdocter.beans.Age;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DoctorExpense;
@@ -49,11 +50,14 @@ import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.InvoiceItemJasperDetails;
+import com.dpdocter.beans.Language;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.ReceiptJasperDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.VendorExpense;
 import com.dpdocter.collections.DoctorExpenseCollection;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
@@ -62,15 +66,19 @@ import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.ExpenseTypeCollection;
+import com.dpdocter.collections.LanguageCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
+import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.VendorExpenseCollection;
 import com.dpdocter.elasticsearch.document.ESExpenseTypeDocument;
 import com.dpdocter.elasticsearch.services.ESExpenseTypeService;
 import com.dpdocter.enums.BillingType;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.FONTSTYLE;
 import com.dpdocter.enums.InvoiceItemType;
 import com.dpdocter.enums.ReceiptType;
 import com.dpdocter.enums.SMSStatus;
@@ -88,7 +96,9 @@ import com.dpdocter.repository.ExpenseTypeRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
+import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.repository.VendorExpenseRepository;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
 import com.dpdocter.request.InvoiceItemChangeStatusRequest;
@@ -151,6 +161,10 @@ public class BillingServiceImpl implements BillingService {
 
 	@Autowired
 	private InventoryService inventoryService;
+	
+	@Autowired
+	private ReferenceRepository referenceRepository;
+
 
 	@Autowired
 	private MailService mailService;
@@ -205,6 +219,9 @@ public class BillingServiceImpl implements BillingService {
 
 	@Autowired
 	private ESExpenseTypeService esExpenseTypeService;
+	
+	@Autowired
+	private VendorExpenseRepository vendorExpenseRepository;
 
 	@Override
 	public InvoiceAndReceiptInitials getInitials(String locationId) {
@@ -607,11 +624,11 @@ public class BillingServiceImpl implements BillingService {
 				 toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));			
 			}
 			if(fromDateTime!= null && toDateTime != null) {
-				criteria.and("invoiceDate").gte(fromDateTime).lte(toDateTime);
+				criteria.and("createdTime").gte(fromDateTime).lte(toDateTime);
 			}else if(fromDateTime!= null) {
-				criteria.and("invoiceDate").gte(fromDateTime);
+				criteria.and("createdTime").gte(fromDateTime);
 			}else if(toDateTime != null) {
-				criteria.and("invoiceDate").lte(toDateTime);
+				criteria.and("createdTime").lte(toDateTime);
 			}
 
 
@@ -1771,14 +1788,16 @@ public class BillingServiceImpl implements BillingService {
 				BeanUtil.map(defaultPrintSettings, printSettings);
 			}
 
-			patientVisitService.generatePatientDetails(
+			generatePatientDetails(
 					(printSettings != null && printSettings.getHeaderSetup() != null
 							? printSettings.getHeaderSetup().getPatientDetails()
 							: null),
 					patient,
 					"<b>INVID: </b>" + (doctorPatientInvoiceCollection.getUniqueInvoiceId() != null
 							? doctorPatientInvoiceCollection.getUniqueInvoiceId()
-							: "--"),
+							: "--"),doctorPatientInvoiceCollection.getAdmissionDate(),
+					doctorPatientInvoiceCollection.getDischargeDate(),
+					doctorPatientInvoiceCollection.getTimeOfAdmission(),doctorPatientInvoiceCollection.getTimeOfDischarge(),
 					patient.getLocalPatientName(), user.getMobileNumber(), parameters,
 					doctorPatientInvoiceCollection.getCreatedTime() != null
 							? doctorPatientInvoiceCollection.getCreatedTime()
@@ -1818,6 +1837,186 @@ public class BillingServiceImpl implements BillingService {
 		return response;
 
 	}
+	
+	public void generatePatientDetails(PatientDetails patientDetails, PatientCollection patientCard, String uniqueEMRId,Date admissionDate,Date dischargeDate,String timeOfAdmission,String timeOfDischarge,
+			String firstName, String mobileNumber, Map<String, Object> parameters, Date date, String hospitalUId,
+			Boolean isPidHasDate) throws ParseException {
+		String age = null,
+				gender = (patientCard != null && patientCard.getGender() != null ? patientCard.getGender() : null),
+				patientLeftText = "", patientRightText = "";
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+		sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+
+		if (patientDetails == null) {
+			patientDetails = new PatientDetails();
+		}
+
+		if (patientDetails.getShowPatientDetailsInCertificate() != null
+				&& patientDetails.getShowPatientDetailsInCertificate()) {
+			List<String> patientDetailList = new ArrayList<String>();
+			patientDetailList.add("<b>Patient Name: " + firstName.toUpperCase() + "</b>");
+
+			if (!DPDoctorUtils.anyStringEmpty(patientDetails.getPIDKey())) {
+				if (patientDetails.getPIDKey().equalsIgnoreCase("false")) {
+
+					if (isPidHasDate != null && !isPidHasDate)
+						patientDetails.setPIDKey("PNUM");
+					else
+						patientDetails.setPIDKey("UHID");
+				}
+				if (isPidHasDate != null && !isPidHasDate && !DPDoctorUtils.anyStringEmpty(patientCard.getPNUM()))
+					patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
+							+ (patientCard != null && patientCard.getPNUM() != null ? patientCard.getPNUM() : "--"));
+
+				else if (patientCard != null)
+					patientDetailList.add("<b>" + patientDetails.getPIDKey() + ": </b>"
+							+ (patientCard.getPID() != null ? patientCard.getPID() : "--"));
+			} else {
+				if (isPidHasDate != null && !isPidHasDate && !DPDoctorUtils.anyStringEmpty(patientCard.getPNUM()))
+					patientDetailList.add("<b>Patient ID: </b>"
+							+ (patientCard != null && patientCard.getPNUM() != null ? patientCard.getPNUM() : "--"));
+				else
+					patientDetailList.add("<b>Patient ID: </b>"
+							+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
+			}
+
+			if (patientCard != null && patientCard.getDob() != null && patientCard.getDob().getAge() != null) {
+				Age ageObj = patientCard.getDob().getAge();
+				if (ageObj.getYears() > 14)
+					age = ageObj.getYears() + "yrs";
+				else {
+					if (ageObj.getYears() > 0)
+						age = ageObj.getYears() + "yrs";
+					else {
+						if (ageObj.getYears() > 0)
+							age = ageObj.getYears() + "yrs";
+						if (ageObj.getMonths() > 0) {
+							if (DPDoctorUtils.anyStringEmpty(age))
+								age = ageObj.getMonths() + "months";
+							else
+								age = age + " " + ageObj.getMonths() + " months";
+						}
+						if (ageObj.getDays() > 0) {
+							if (DPDoctorUtils.anyStringEmpty(age))
+								age = ageObj.getDays() + "days";
+							else
+								age = age + " " + ageObj.getDays() + "days";
+						}
+					}
+				}
+
+				if (patientDetails.getShowDOB()) {
+					if (!DPDoctorUtils.anyStringEmpty(age, gender))
+						patientDetailList.add("<b>Age | Gender: </b>" + age + " | " + gender);
+					else if (!DPDoctorUtils.anyStringEmpty(age))
+						patientDetailList.add("<b>Age | Gender: </b>" + age + " | --");
+					else if (!DPDoctorUtils.anyStringEmpty(gender))
+						patientDetailList.add("<b>Age | Gender: </b>-- | " + gender);
+				}
+			}
+			if (!DPDoctorUtils.anyStringEmpty(uniqueEMRId))
+				patientDetailList.add(uniqueEMRId);
+			if (patientDetails.getShowDOB()) {
+				if (patientDetails.getShowDate())
+					patientDetailList.add("<b>Date: </b>" + sdf.format(date));
+				patientDetailList
+						.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+			} else {
+				patientDetailList
+						.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+				if (patientDetails.getShowDate())
+					patientDetailList.add("<b>Date: </b>" + sdf.format(date));
+			}
+
+			if (admissionDate !=null)
+				patientDetailList.add("<b>Admission Date: </b>"+sdf.format(admissionDate));
+
+			if (dischargeDate !=null)
+				patientDetailList.add("<b>Discharge Date: </b>"+sdf.format(dischargeDate));
+
+			if (!DPDoctorUtils.anyStringEmpty(timeOfAdmission)) {
+				SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
+				Date dt = sdfForMins.parse(timeOfAdmission);
+				sdfForMins = new SimpleDateFormat("hh:mm a");
+			    
+				patientDetailList.add("<b>Time Of Admission: </b>"+sdfForMins.format(dt));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(timeOfDischarge)) {
+				SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
+				Date dt = sdfForMins.parse(timeOfDischarge);
+				sdfForMins = new SimpleDateFormat("hh:mm a");
+			    
+				patientDetailList.add("<b>Time Of Discharge: </b>"+sdfForMins.format(dt));
+			}
+			
+			if (patientDetails.getShowBloodGroup() && patientCard != null
+					&& !DPDoctorUtils.anyStringEmpty(patientCard.getBloodGroup())) {
+				patientDetailList.add("<b>Blood Group: </b>" + patientCard.getBloodGroup());
+			}
+			if (patientDetails.getShowCity() && patientCard != null && !DPDoctorUtils
+					.anyStringEmpty(patientCard.getAddress() != null ? patientCard.getAddress().getCity() : null)) {
+				patientDetailList.add("<b>City: </b>" + patientCard.getAddress().getCity());
+			}
+			if (patientDetails.getShowReferedBy() && patientCard != null && patientCard.getReferredBy() != null) {
+				ReferencesCollection referencesCollection = referenceRepository.findById(patientCard.getReferredBy()).orElse(null);
+				if (referencesCollection != null && !DPDoctorUtils.allStringsEmpty(referencesCollection.getReference()))
+					patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
+
+			} else if (parameters.get("referredby") != null)
+				patientDetailList.add("<b>Referred By: </b>" + parameters.get("referredby").toString());
+
+			if (patientDetails.getShowHospitalId() != null && patientDetails.getShowHospitalId()
+					&& !DPDoctorUtils.anyStringEmpty(hospitalUId)) {
+				patientDetailList.add("<b>Hospital Id: </b>" + hospitalUId);
+			}
+
+			boolean isBold = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null
+					? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle())
+					: false;
+			boolean isItalic = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null
+					? containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle())
+					: false;
+			String fontSize = patientDetails.getStyle() != null && patientDetails.getStyle().getFontSize() != null
+					? patientDetails.getStyle().getFontSize()
+					: "";
+
+			for (int i = 0; i < patientDetailList.size(); i++) {
+				String text = patientDetailList.get(i);
+				if (!DPDoctorUtils.anyStringEmpty(text)) {
+					if (isItalic)
+						text = "<i>" + text + "</i>";
+					if (isBold)
+						text = "<b>" + text + "</b>";
+					text = "<span style='font-size:" + fontSize + "'>" + text + "</span>";
+
+					if (i % 2 == 0) {
+						if (!DPDoctorUtils.anyStringEmpty(patientLeftText))
+							patientLeftText = patientLeftText + "<br>" + text;
+						else
+							patientLeftText = text;
+					} else {
+						if (!DPDoctorUtils.anyStringEmpty(patientRightText))
+							patientRightText = patientRightText + "<br>" + text;
+						else
+							patientRightText = text;
+					}
+				}
+			}
+			parameters.put("patientLeftText", patientLeftText);
+			parameters.put("patientRightText", patientRightText);
+		}
+	}
+	
+	public boolean containsIgnoreCase(String str, List<String> list) {
+		if (list != null && !list.isEmpty())
+			for (String i : list) {
+				if (i.equalsIgnoreCase(str))
+					return true;
+			}
+		return false;
+	}
+
 
 	@Override
 	public String downloadReceipt(String receiptId) {
@@ -1863,7 +2062,11 @@ public class BillingServiceImpl implements BillingService {
 		}
 		String content = "<br>Received with thanks from &nbsp;&nbsp; " + userName + user.getFirstName()
 				+ "<br>The sum of Rupees:- " + doctorPatientReceiptCollection.getAmountPaid() + "<br> By "
-				+ doctorPatientReceiptCollection.getModeOfPayment() + "&nbsp;&nbsp;&nbsp;On Date:-"
+				+ doctorPatientReceiptCollection.getModeOfPayment()+
+				"<br>TransactionId:- "+(doctorPatientReceiptCollection.getTransactionId()!= null
+						? doctorPatientReceiptCollection.getTransactionId()
+						: "--")
+				+ "&nbsp;&nbsp;&nbsp;On Date:-"
 				+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate());
 		parameters.put("content", content);
 		parameters.put("paid", "Rs.&nbsp;" + doctorPatientReceiptCollection.getAmountPaid());
@@ -2569,7 +2772,7 @@ public class BillingServiceImpl implements BillingService {
 
 	@Override
 	public List<DoctorExpense> getDoctorExpenses(String expenseType, int page, int size, String doctorId,
-			String locationId, String hospitalId, String updatedTime, Boolean discarded, String paymentMode) {
+			String locationId, String hospitalId, String updatedTime,String from,String to, Boolean discarded, String paymentMode) {
 		List<DoctorExpense> response = null;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
@@ -2588,6 +2791,35 @@ public class BillingServiceImpl implements BillingService {
 			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
 				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
 			}
+			
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			DateTime fromDateTime = null, toDateTime= null;
+			if (!DPDoctorUtils.anyStringEmpty(from)) {
+				localCalendar.setTime(new Date(Long.parseLong(from)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				 fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));				
+			}
+			if (!DPDoctorUtils.anyStringEmpty(to)) {
+				localCalendar.setTime(new Date(Long.parseLong(to)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				 toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));			
+			}
+			if(fromDateTime!= null && toDateTime != null) {
+				criteria.and("toDate").gte(fromDateTime).lte(toDateTime);
+			}else if(fromDateTime!= null) {
+				criteria.and("toDate").gte(fromDateTime);
+			}else if(toDateTime != null) {
+				criteria.and("toDate").lte(toDateTime);
+			}
+
+
 			if (size > 0) {
 				response = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
@@ -2848,13 +3080,7 @@ public class BillingServiceImpl implements BillingService {
 											+ cost;
 					}
 	
-	//				Collection<String> tests = CollectionUtils.collect(
-	//						(List<DiagnosticTestCollection>) diagnosticTestRepository.findAllById(testIds),
-	//						new BeanToPropertyValueTransformer("testName"));
-	//				prescriptionDetails = prescriptionDetails + " "
-	//						+ tests.toString().replaceAll("\\[", "").replaceAll("\\]", "");
-	//			}
-	//		
+
 					String clinicNumber=locationCollection.getClinicNumber() !=null
 							?(!DPDoctorUtils.anyStringEmpty(locationCollection.getClinicNumber())
 									? locationCollection.getClinicNumber()
@@ -2865,16 +3091,7 @@ public class BillingServiceImpl implements BillingService {
 							+ doctorPatientInvoiceCollection.getUniqueInvoiceId() + " by " + locationCollection.getLocationName() + ". "
 							+ invoiceDetails+" and the total cost is "+doctorPatientInvoiceCollection.getGrandTotal() + ". For queries,contact clinic" + clinicNumber + ".");
 	
-	//				sms.setSmsText(message.replace("{patientName}", patient.getFirstName())
-	//						.replace("{clinicNumber}",
-	//								locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber()
-	//										: "")
-	//						.replace("{clinicName}", locationCollection.getLocationName())
-	//						
-	//						.replace("{serviceName}", doctorPatientInvoiceCollection.getInvoiceItems().get(0).getName().toString())
-	//						.replace("{cost}", doctorPatientInvoiceCollection.getInvoiceItems().get(0).getFinalCost().toString())
-	//						.replace("{totalAmount}", doctorPatientInvoiceCollection.getGrandTotal().toString()));
-					SMSAddress smsAddress = new SMSAddress();
+						SMSAddress smsAddress = new SMSAddress();
 					smsAddress.setRecipient(mobileNumber);
 					sms.setSmsAddress(smsAddress);
 					smsDetail.setSms(sms);
@@ -2958,5 +3175,138 @@ public class BillingServiceImpl implements BillingService {
 		}
 		return response;
 
+	}
+
+	@Transactional
+	@Override
+	public VendorExpense addEditVendor(VendorExpense request) {
+		
+			VendorExpense response = null;
+			try {
+				VendorExpenseCollection vendorExpenseCollection = null;
+				if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+					vendorExpenseCollection = vendorExpenseRepository.findById(new ObjectId(request.getId())).orElse(null);
+					if (vendorExpenseCollection == null) {
+						throw new BusinessException(ServiceError.NotFound, "Id Not found");
+					}
+					request.setUpdatedTime(new Date());
+					request.setCreatedBy(vendorExpenseCollection.getCreatedBy());
+					request.setCreatedTime(vendorExpenseCollection.getCreatedTime());
+					BeanUtil.map(request, vendorExpenseCollection);
+
+				} else {
+					vendorExpenseCollection = new VendorExpenseCollection();
+					BeanUtil.map(request, vendorExpenseCollection);
+					vendorExpenseCollection.setUpdatedTime(new Date());
+					vendorExpenseCollection.setCreatedTime(new Date());
+				}
+				vendorExpenseCollection = vendorExpenseRepository.save(vendorExpenseCollection);
+				response = new VendorExpense();
+				BeanUtil.map(vendorExpenseCollection, response);
+
+			} catch (BusinessException e) {
+				logger.error("Error while add/edit Vendor Expense  " + e.getMessage());
+				e.printStackTrace();
+				throw new BusinessException(ServiceError.Unknown, "Error while add/edit Vendor Expense " + e.getMessage());
+
+			}
+		
+			
+			return response;
+		}
+
+	
+
+	@Override
+	public List<VendorExpense> getVendors(int size, int page, Boolean discarded,String searchTerm) {
+		List<VendorExpense> response = null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("vendorName").regex("^" + searchTerm, "i"),
+						new Criteria("vendorName").regex("^" + searchTerm));
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, VendorExpenseCollection.class, VendorExpense.class)
+					.getMappedResults();
+		} catch (BusinessException e) {
+			logger.error("Error while getting Vendor Expense " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Vendor Expense  " + e.getMessage());
+
+		}
+
+		return response;
+	}
+
+	@Override
+	public VendorExpense discardVendor(String id,Boolean discarded) {
+		VendorExpense response=null;
+		try {
+			VendorExpenseCollection vendorExpenseCollection=vendorExpenseRepository.findById(new ObjectId(id)).orElse(null);
+		if(vendorExpenseCollection==null)
+		{
+			throw new BusinessException(ServiceError.NotFound,"Error no such id to delete");
+		}
+		vendorExpenseCollection.setDiscarded(discarded);
+		vendorExpenseCollection.setUpdatedTime(new Date());
+		vendorExpenseCollection = vendorExpenseRepository.save(vendorExpenseCollection);
+		response=new VendorExpense();
+		BeanUtil.map(vendorExpenseCollection, response);
+		}
+		catch (BusinessException e) {
+			logger.error("Error while deleting the vendor Expense  "+e.getMessage());
+			throw new BusinessException(ServiceError.Unknown,"Error while deleting the vendor Expense");
+		}
+		return response;
+	}
+
+	@Override
+	public Integer countVendorExpense(Boolean discarded, String searchTerm) {
+		Integer response=null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+		    criteria = criteria.orOperator(new Criteria("vendorName").regex("^" + searchTerm, "i"),
+				new Criteria("vendorName").regex("^" + searchTerm));
+	
+	response = (int) mongoTemplate.count(new Query(criteria), VendorExpenseCollection.class);
+} catch (BusinessException e) {
+	logger.error("Error while counting Vendor Expense " + e.getMessage());
+	e.printStackTrace();
+	throw new BusinessException(ServiceError.Unknown, "Error while Vendor Expense " + e.getMessage());
+
+}
+		return response;
+	
+	}
+	
+	
+	@Override
+	public VendorExpense getVendorExpenseById(String id) {
+		VendorExpense response=null;
+		try {
+			VendorExpenseCollection vendorExpenseCollection=vendorExpenseRepository.findById(new ObjectId(id)).orElse(null);
+		    if(vendorExpenseCollection==null)
+		    {
+		    	throw new BusinessException(ServiceError.NotFound,"Error no such id");
+		    }
+			
+			BeanUtil.map(vendorExpenseCollection, response);
+		
+		}
+		catch (BusinessException e) {
+			logger.error("Error while searching the id "+e.getMessage());
+			throw new BusinessException(ServiceError.Unknown,"Error while searching the id");
+		}
+		
+		return response;
 	}
 }

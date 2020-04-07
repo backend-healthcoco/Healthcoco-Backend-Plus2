@@ -43,6 +43,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -1198,6 +1199,98 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return registeredPatientDetails;
 	}
 
+	
+	//@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
+	@Override
+	public Boolean updatePatientAge() {
+		PatientCollection patientCollection = null;
+		Boolean response=false;
+		try {
+			
+			
+			List<PatientCollection> doctorExperiences = patientRepository.findAll();
+			
+			for(PatientCollection doctorEperience:doctorExperiences)
+			{
+			String id=doctorEperience.getId().toString();
+			patientCollection = patientRepository.findById(new ObjectId(id)).orElse(null);
+				int i=0;
+				
+					if(patientCollection.getDob() !=null) {
+						i=1;
+				Integer birthYear=patientCollection.getDob().getYears();
+				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			
+					Integer currentYear = localCalendar.get(Calendar.YEAR);
+					
+					Integer year=currentYear-birthYear;
+					
+				if(patientCollection.getDob().getAge() !=null)
+					patientCollection.getDob().getAge().setYears(year);
+					
+					patientRepository.save(patientCollection);
+					i++;
+					response=true;
+					}
+					System.out.println(i);
+				}
+			
+						
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Updating patient age");
+			throw new BusinessException(ServiceError.Unknown, "Error While updating patient age "+e.getMessage());
+		}
+		return response;
+	
+	}
+	
+	//@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
+	@Override
+	public Boolean updateDoctorAge() {
+		DoctorCollection doctorCollection = null;
+		Boolean response =false;
+		try {
+			
+			
+			List<DoctorCollection> doctorExperiences = doctorRepository.findAll();
+			
+			for(DoctorCollection doctorEperience:doctorExperiences)
+			{
+			String id=doctorEperience.getId().toString();
+				doctorCollection = doctorRepository.findById(new ObjectId(id)).orElse(null);
+				
+				if(doctorCollection.getDob() !=null)
+				{
+					Integer birthYear=doctorCollection.getDob().getYears();
+					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+				
+						Integer currentYear = localCalendar.get(Calendar.YEAR);
+						
+						Integer year=currentYear-birthYear;
+					
+						if(doctorCollection.getDob().getAge() !=null)
+						doctorCollection.getDob().getAge().setYears(year);
+						
+						doctorRepository.save(doctorCollection);
+						response=true;
+				}
+				
+			}
+				
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Editing Doctor Profile");
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
+		}
+		return response;
+	
+	}
+
+
+	
+	
+	
 	@Override
 	@Transactional
 	public void checkPatientCount(String mobileNumber) {
@@ -5181,7 +5274,11 @@ public Location getClinics(String locationId,String hospitalId)
 				
 				if(locationCollection.getId().toString().equals(defaultLocationId))
 				{
+					
+					locationCollection.setDefaultLocationId(null);
+					locationRepository.save(locationCollection);
 					locationCollection.setIsDefaultClinic(true);
+					
 				}
 		
 	

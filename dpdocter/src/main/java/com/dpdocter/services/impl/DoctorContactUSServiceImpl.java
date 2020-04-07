@@ -24,6 +24,7 @@ import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.DoctorContactUsCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TokenCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
@@ -107,7 +108,32 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 				
 				body = mailBodyGenerator.generateContactEmailBody(doctorContactUs, "Doctor");
 				mailService.sendEmail(mailTo, signupRequestSubject, body, null);
-
+				
+				
+			//	Thank you for signing up, we are excited to get you started with Healthcoco+. Our representative will reach out to you within 1 working day.
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+					
+						smsTrackDetail.setType(ComponentType.SIGNED_UP.getType());
+						SMSDetail smsDetail = new SMSDetail();
+						
+						smsDetail.setUserName(doctorContactUs.getFirstName());
+						SMS sms = new SMS();
+						
+						sms.setSmsText("Greetings Dr. " + doctorContactUs.getFirstName() + ", Welcome to Healthcoco ,You can click on this link for further steps "
+								+ welcomeLink + "/"+ tokenCollection.getId());
+		
+							SMSAddress smsAddress = new SMSAddress();
+						smsAddress.setRecipient(doctorContactUs.getMobileNumber());
+						sms.setSmsAddress(smsAddress);
+						smsDetail.setSms(sms);
+						smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+						smsDetails.add(smsDetail);
+						smsTrackDetail.setSmsDetails(smsDetails);
+						smsServices.sendSMS(smsTrackDetail, true);
+				
+				
+				
 				if (doctorContactUsCollection != null) {
 					response = doctorWelcomeMessage;
 				}
