@@ -9,25 +9,25 @@ public class EyeTest {
 
 	private String nearSPH;
 
-	private Double distanceCylinder;
+	private String distanceCylinder;
 
-	private Double nearCylinder;
+	private String nearCylinder;
 
-	private Integer distanceAxis;
+	private String distanceAxis;
 
-	private Integer nearAxis;
+	private String nearAxis;
 
 	private String nearVA;
 
 	private String distanceVA;
 
-	private Double nearBaseCurve;
+	private String nearBaseCurve;
 
-	private Double distanceBaseCurve;
+	private String distanceBaseCurve;
 
-	private Double nearDiameter;
+	private String nearDiameter;
 
-	private Double distanceDiameter;
+	private String distanceDiameter;
 
 	public String getDistanceSPH() {
 		return distanceSPH;
@@ -45,35 +45,35 @@ public class EyeTest {
 		this.nearSPH = nearSPH;
 	}
 
-	public Double getDistanceCylinder() {
+	public String getDistanceCylinder() {
 		return distanceCylinder;
 	}
 
-	public void setDistanceCylinder(Double distanceCylinder) {
+	public void setDistanceCylinder(String distanceCylinder) {
 		this.distanceCylinder = distanceCylinder;
 	}
 
-	public Double getNearCylinder() {
+	public String getNearCylinder() {
 		return nearCylinder;
 	}
 
-	public void setNearCylinder(Double nearCylinder) {
+	public void setNearCylinder(String nearCylinder) {
 		this.nearCylinder = nearCylinder;
 	}
 
-	public Integer getDistanceAxis() {
+	public String getDistanceAxis() {
 		return distanceAxis;
 	}
 
-	public void setDistanceAxis(Integer distanceAxis) {
+	public void setDistanceAxis(String distanceAxis) {
 		this.distanceAxis = distanceAxis;
 	}
 
-	public Integer getNearAxis() {
+	public String getNearAxis() {
 		return nearAxis;
 	}
 
-	public void setNearAxis(Integer nearAxis) {
+	public void setNearAxis(String nearAxis) {
 		this.nearAxis = nearAxis;
 	}
 
@@ -93,35 +93,35 @@ public class EyeTest {
 		this.distanceVA = distanceVA;
 	}
 
-	public Double getNearBaseCurve() {
+	public String getNearBaseCurve() {
 		return nearBaseCurve;
 	}
 
-	public void setNearBaseCurve(Double nearBaseCurve) {
+	public void setNearBaseCurve(String nearBaseCurve) {
 		this.nearBaseCurve = nearBaseCurve;
 	}
 
-	public Double getDistanceBaseCurve() {
+	public String getDistanceBaseCurve() {
 		return distanceBaseCurve;
 	}
 
-	public void setDistanceBaseCurve(Double distanceBaseCurve) {
+	public void setDistanceBaseCurve(String distanceBaseCurve) {
 		this.distanceBaseCurve = distanceBaseCurve;
 	}
 
-	public Double getNearDiameter() {
+	public String getNearDiameter() {
 		return nearDiameter;
 	}
 
-	public void setNearDiameter(Double nearDiameter) {
+	public void setNearDiameter(String nearDiameter) {
 		this.nearDiameter = nearDiameter;
 	}
 
-	public Double getDistanceDiameter() {
+	public String getDistanceDiameter() {
 		return distanceDiameter;
 	}
 
-	public void setDistanceDiameter(Double distanceDiameter) {
+	public void setDistanceDiameter(String distanceDiameter) {
 		this.distanceDiameter = distanceDiameter;
 	}
 
