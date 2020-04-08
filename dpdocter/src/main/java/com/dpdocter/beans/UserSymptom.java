@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class UserSymptom {
+import com.dpdocter.collections.GenericCollection;
+
+public class UserSymptom extends GenericCollection{
 private String id;
 	
 	private String name;
