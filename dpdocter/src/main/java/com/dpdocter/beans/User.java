@@ -52,6 +52,8 @@ public class User {
 
 	private String role;
 
+	private Boolean isSuperstarAssociated;
+	
 	public User(String firstName, String mobileNumber) {
 		this.firstName = firstName;
 		this.mobileNumber = mobileNumber;
@@ -244,7 +246,8 @@ public class User {
 				+ ", gender=" + gender + ", dob=" + dob + ", bloodGroup=" + bloodGroup + ", secPhoneNumber="
 				+ secPhoneNumber + ", isPartOfClinic=" + isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl="
 				+ thumbnailUrl + ", colorCode=" + colorCode + ", userState=" + userState + ", userUId=" + userUId
-				+ ", specialities=" + specialities + ", parentSpecialities=" + parentSpecialities + "]";
+				+ ", specialities=" + specialities + ", parentSpecialities=" + parentSpecialities + ", role=" + role
+				+ ", isSuperstarAssociated=" + isSuperstarAssociated + "]";
 	}
 
 	public String getRole() {
@@ -253,6 +256,14 @@ public class User {
 
 	public void setRole(String role) {
 		this.role = role;
+	}
+
+	public Boolean getIsSuperstarAssociated() {
+		return isSuperstarAssociated;
+	}
+
+	public void setIsSuperstarAssociated(Boolean isSuperstarAssociated) {
+		this.isSuperstarAssociated = isSuperstarAssociated;
 	}
 
 }

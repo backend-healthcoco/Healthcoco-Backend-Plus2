@@ -13,11 +13,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.dpdocter.beans.AcademicProfile;
 import com.dpdocter.beans.DentalAssessment;
+import com.dpdocter.beans.DoctorSchoolAssociation;
 import com.dpdocter.beans.ENTAssessment;
 import com.dpdocter.beans.EyeAssessment;
 import com.dpdocter.beans.GrowthAssessmentAndGeneralBioMetrics;
@@ -239,7 +238,7 @@ public class CampVisitAPI {
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("classId") String classId,
 			@QueryParam("sectionId") String sectionId, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("discarded") Boolean discarded, @QueryParam("userId") String userId,
-			@QueryParam("updatedTime") String updatedTime) {
+			@QueryParam("updatedTime") String updatedTime, @QueryParam("assesmentType") String assesmentType, @QueryParam("department") String department) {
 
 		if (DPDoctorUtils.anyStringEmpty(branchId, schoolId, profileType)) {
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -248,7 +247,7 @@ public class CampVisitAPI {
 		Response<AcademicProfile> response = new Response<AcademicProfile>();
 		if (profileType.equalsIgnoreCase("STUDENT")) {
 			response.setDataList(campVisitService.getStudentProfile(page, size, branchId, schoolId, classId, sectionId,
-					searchTerm, discarded, profileType, userId, updatedTime));
+					searchTerm, discarded, profileType, userId, updatedTime, assesmentType, department));
 			response.setCount(campVisitService.countStudentProfile(branchId, schoolId, classId, sectionId, searchTerm,
 					discarded, profileType, userId, updatedTime));
 		} else if (profileType.equalsIgnoreCase("TEACHER")) {
@@ -274,10 +273,10 @@ public class CampVisitAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_DOCTOR)
-	@ApiOperation(value = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_DOCTOR, notes = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_DOCTOR)
+	@Path(value = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_NUTRITION)
+	@ApiOperation(value = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_NUTRITION, notes = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_NUTRITION)
 	@GET
-	public Response<NutritionSchoolAssociationResponse> getAssociations(@QueryParam("page") int page,
+	public Response<NutritionSchoolAssociationResponse> getNutritionAssociations(@QueryParam("page") int page,
 			@QueryParam("size") int size, @QueryParam("classId") String classId,
 			@QueryParam("doctorId") String doctorId, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("updatedTime") String updatedTime) {
@@ -286,7 +285,7 @@ public class CampVisitAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "id should not null or Empty");
 		}
 		Response<NutritionSchoolAssociationResponse> response = new Response<NutritionSchoolAssociationResponse>();
-		response.setDataList(campVisitService.getAssociations(page, size, doctorId, searchTerm, updatedTime));
+		response.setDataList(campVisitService.getNutritionAssociations(page, size, doctorId, searchTerm, updatedTime));
 		return response;
 	}
 
@@ -340,6 +339,22 @@ public class CampVisitAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Id should not null or Empty");
 		}
 		response.setData(campVisitService.getUserAssessment(academicProfileId, doctorId));
+		return response;
+	}
+	
+	@Path(value = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_DOCTOR)
+	@ApiOperation(value = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_DOCTOR, notes = PathProxy.CampVisitUrls.GET_ASSOCIATIONS_FOR_DOCTOR)
+	@GET
+	public Response<DoctorSchoolAssociation> getDoctorAssociations(@QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("branchId") String branchId,
+			@QueryParam("doctorId") String doctorId, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("updatedTime") String updatedTime, @QueryParam("department") String department) {
+
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "id should not null or Empty");
+		}
+		Response<DoctorSchoolAssociation> response = new Response<DoctorSchoolAssociation>();
+		response.setDataList(campVisitService.getDoctorAssociations(page, size, doctorId, searchTerm, updatedTime, branchId, department));
 		return response;
 	}
 }

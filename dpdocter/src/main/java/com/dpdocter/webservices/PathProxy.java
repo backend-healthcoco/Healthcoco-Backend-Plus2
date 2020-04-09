@@ -2259,12 +2259,14 @@ public interface PathProxy {
 		public static final String GET_DRUG_INFO_LIST = "/getDrugInfoList";
 		public static final String GET_ACADAMIC_PROFILE = "academicProfile/{profileType}/{branchId}/{schoolId}/get";
 		public static final String GET_ACADAMIC_PROFILE_BY_ID = "academicProfile/{id}/get";
-		public static final String GET_ASSOCIATIONS_FOR_DOCTOR = "getAssociations/";
+		public static final String GET_ASSOCIATIONS_FOR_NUTRITION = "getAssociations/";
 		public static final String GET_ACADAMIC_CLASSES = "acadamic/class/{branchId}/{schoolId}/get";
 		
 		public static final String GET_DOCTOR_ACADAMIC_PROFILE = "/profile/{userId}/get";
 		public static final String GET_RDA_FOR_USER = "/rda/{academicProfileId}";
 		public static final String GET_USER_ASSESSMENT = "/userAssessment/{academicProfileId}";
+		public static final String GET_ASSOCIATIONS_FOR_DOCTOR = "/getDoctorAssociations/";
+
 	}
 
 

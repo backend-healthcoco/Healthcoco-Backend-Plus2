@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dpdocter.beans.AcademicProfile;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DentalAssessment;
+import com.dpdocter.beans.DoctorSchoolAssociation;
 import com.dpdocter.beans.DrugInfo;
 import com.dpdocter.beans.ENTAssessment;
 import com.dpdocter.beans.EyeAssessment;
@@ -37,6 +38,7 @@ import com.dpdocter.collections.AcadamicClassSectionCollection;
 import com.dpdocter.collections.AcademicProfileCollection;
 import com.dpdocter.collections.DentalAssessmentCollection;
 import com.dpdocter.collections.DietPlanCollection;
+import com.dpdocter.collections.DoctorSchoolAssociationCollection;
 import com.dpdocter.collections.DrugInfoCollection;
 import com.dpdocter.collections.ENTAssessmentCollection;
 import com.dpdocter.collections.EyeAssessmentCollection;
@@ -1314,11 +1316,29 @@ public class CampVisitServiceImpl implements CampVisitService {
 	@Override
 	public List<AcademicProfile> getStudentProfile(int page, int size, String branchId, String schoolId, String classId,
 			String sectionId, String searchTerm, Boolean discarded, String profileType, String userId,
-			String updatedTime) {
+			String updatedTime, String assesmentType, String department) {
 		List<AcademicProfile> response = null;
 		try {
 			Criteria criteria = new Criteria("branchId").is(new ObjectId(branchId)).and("schoolId")
 					.is(new ObjectId(schoolId));
+			
+//			List<ObjectId> ids = null;
+//			if(!DPDoctorUtils.anyStringEmpty(assesmentType, department)) {
+//				switch(assesmentType.toUpperCase()) {
+//					case "GROWTH": 
+//						List<GrowthAssessmentAndGeneralBioMetricsCollection> assesment = mongoTemplate.aggregate(
+//								Aggregation.newAggregation(Aggregation.match(
+//										new Criteria("branchId").is(new ObjectId(branchId)).and("schoolId").is(new ObjectId(schoolId)
+//												.and()))), outputType)
+//						break;
+//					case "PHYSICAL":break;
+//					case "DENTAL":break;
+//					case "ENT":break;
+//					case "EYE":break;
+//					case "NUTRITION":break;
+//				}
+//			}
+			
 			if (!DPDoctorUtils.anyStringEmpty(classId)) {
 				criteria.and("classId").is(new ObjectId(classId));
 			}
@@ -1706,7 +1726,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 	
 	
 	@Override
-	public List<NutritionSchoolAssociationResponse> getAssociations(int page, int size, String doctorId,
+	public List<NutritionSchoolAssociationResponse> getNutritionAssociations(int page, int size, String doctorId,
 			String searchTerm, String updatedTime) {
 		List<NutritionSchoolAssociationResponse> response = null;
 		try {
@@ -2088,6 +2108,56 @@ public class CampVisitServiceImpl implements CampVisitService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	public List<DoctorSchoolAssociation> getDoctorAssociations(int page, int size, String doctorId, String searchTerm,
+			String updatedTime, String branchId, String department) {
+		List<DoctorSchoolAssociation> response = null;
+		try {
+			
+			ArrayList<ObjectId> objectIds = new ArrayList<>();
+			objectIds.add(new ObjectId(doctorId));
+			Criteria criteria = new Criteria("doctorId").in(objectIds);
+			
+			if (!DPDoctorUtils.anyStringEmpty(branchId)) {
+				criteria.and("branchId").is(new ObjectId(branchId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(department)) {
+				criteria.and("departments.departments").is(department);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(updatedTime)) {
+				criteria.and("createdTime").gte(new Date(Long.parseLong(updatedTime)));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("branch.branchName").regex("^" + searchTerm, "i"),
+						new Criteria("branch.branchName").regex("^" + searchTerm));
+			}
+
+			Aggregation aggregation = null;
+
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "branch.branchName")),
+
+						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
+			} else {
+
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "branch.branchName")));
+			}
+			response = mongoTemplate.aggregate(aggregation, DoctorSchoolAssociationCollection.class, DoctorSchoolAssociation.class)
+					.getMappedResults();
+
+		} catch (BusinessException be) {
+			logger.warn(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while getting Teacher Profile List");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while getting Teacher Profile list");
 		}
 		return response;
 	}

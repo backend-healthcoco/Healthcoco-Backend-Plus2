@@ -37,6 +37,7 @@ import com.dpdocter.beans.User;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorLoginPinCollection;
+import com.dpdocter.collections.DoctorSchoolAssociationCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -318,6 +319,7 @@ public class LoginServiceImpl implements LoginService {
 							user.setParentSpecialities(parentSpecialities);
 
 						}
+						user.setIsSuperstarAssociated(mongoTemplate.count(new Query(new Criteria("doctorId").is(userCollection.getId())), DoctorSchoolAssociationCollection.class) > 0 ? true : false);
 						response = new LoginResponse();
 						user.setEmailAddress(user.getUserName());
 						response.setUser(user);

@@ -1241,8 +1241,8 @@ public class NutritionServiceImpl implements NutritionService {
 						.append("type", new BasicDBObject("$first", "$type"))
 						.append("communities", new BasicDBObject("$first", "$communities"))
 						.append("diseases", new BasicDBObject("$first", "$diseases"))
-						.append("foodPreference", new BasicDBObject("$first", "$foodPreference")
-						.append("createdTime", new BasicDBObject("$first", "$createdTime")))));
+						.append("foodPreference", new BasicDBObject("$first", "$foodPreference"))
+						.append("createdTime", new BasicDBObject("$first", "$createdTime"))));
 				
 				Aggregation aggregation = null;
 				if (size > 0) {

@@ -90,7 +90,7 @@ public class LocationAndAccessControl {
 	private Boolean isAdminNutritionist = false;
 
     private String googleMapShortUrl;
-
+    
 	public String getId() {
 		return id;
 	}
@@ -425,24 +425,4 @@ public class LocationAndAccessControl {
 	public void setGoogleMapShortUrl(String googleMapShortUrl) {
 		this.googleMapShortUrl = googleMapShortUrl;
 	}
-
-	@Override
-	public String toString() {
-		return "LocationAndAccessControl [id=" + id + ", locationName=" + locationName + ", country=" + country
-				+ ", state=" + state + ", city=" + city + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl
-				+ ", images=" + images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl
-				+ ", hospitalId=" + hospitalId + ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine="
-				+ tagLine + ", landmarkDetails=" + landmarkDetails + ", locationEmailAddress=" + locationEmailAddress
-				+ ", specialization=" + specialization + ", streetAddress=" + streetAddress + ", locality=" + locality
-				+ ", clinicNumber=" + clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers
-				+ ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isTwentyFourSevenOpen="
-				+ isTwentyFourSevenOpen + ", isClinic=" + isClinic + ", isLab=" + isLab + ", isParent=" + isParent
-				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
-				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", isDentalWorksLab=" + isDentalWorksLab
-				+ ", isDentalImagingLab=" + isDentalImagingLab + ", isMobileNumberOptional=" + isMobileNumberOptional
-				+ ", roles=" + roles + ", isActivate=" + isActivate + ", isVerified=" + isVerified + ", patientInitial="
-				+ patientInitial + ", patientCounter=" + patientCounter + ", isPidHasDate=" + isPidHasDate
-				+ ", isVaccinationModuleOn=" + isVaccinationModuleOn + ", googleMapShortUrl=" + googleMapShortUrl + "]";
-	}
-
 }

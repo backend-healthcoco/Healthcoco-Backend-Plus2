@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.AcademicProfile;
 import com.dpdocter.beans.DentalAssessment;
+import com.dpdocter.beans.DoctorSchoolAssociation;
 import com.dpdocter.beans.DrugInfo;
 import com.dpdocter.beans.ENTAssessment;
 import com.dpdocter.beans.EyeAssessment;
@@ -106,7 +107,7 @@ public interface CampVisitService {
 
 	List<AcademicProfile> getStudentProfile(int page, int size, String branchId, String schoolId, String classId,
 			String sectionId, String searchTerm, Boolean discarded, String profileType, String userId,
-			String updatedTime);
+			String updatedTime, String assesmentType, String department);
 
 	Integer countTeacherProfile(String branchId, String schoolId, String searchTerm, Boolean discarded,
 			String profileType, String userId, String updatedTime);
@@ -116,7 +117,7 @@ public interface CampVisitService {
 
 	RegistrationDetails getAcadamicProfile(String profileId);
 
-	List<NutritionSchoolAssociationResponse> getAssociations(int page, int size, String doctorId, String searchTerm,
+	List<NutritionSchoolAssociationResponse> getNutritionAssociations(int page, int size, String doctorId, String searchTerm,
 			String updatedTime);
 
 	List<AcadamicClassResponse> getAcadamicClass(int page, int size, String branchId, String schoolId,
@@ -130,4 +131,7 @@ public interface CampVisitService {
 	NutritionRDA getRDAForUser(String academicProfileId, String doctorId, String locationId, String hospitalId);
 
 	UserAssessment getUserAssessment(String academicProfileId, String doctorId);
+
+	List<DoctorSchoolAssociation> getDoctorAssociations(int page, int size, String doctorId, String searchTerm, String updatedTime,
+			String branchId, String department);
 }
