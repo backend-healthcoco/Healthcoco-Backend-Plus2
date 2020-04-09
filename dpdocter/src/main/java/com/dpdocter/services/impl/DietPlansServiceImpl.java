@@ -636,14 +636,6 @@ public class DietPlansServiceImpl implements DietPlansService {
 			if (!DPDoctorUtils.anyStringEmpty(foodPreference))
 				criteria.and("foodPreference").is(foodPreference);
 			
-//			if (disease!= null && !disease.isEmpty()) {
-//				criteria.and("diseases.disease").in(disease);
-//			}
-//			else {
-//				List<String> emptyArr = new ArrayList<String>();
-//				criteria.orOperator(new Criteria("diseases").is(null), new Criteria("diseases").is(emptyArr));
-//			}
-			
 			if (bmiFrom != null)
 				criteria.and("bmiFrom").lte(bmiFrom);
 			

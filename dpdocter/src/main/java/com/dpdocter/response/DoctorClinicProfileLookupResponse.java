@@ -84,6 +84,8 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	
 	private Boolean isAdminNutritionist = false;
 
+	private List<String> departments;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -357,6 +359,14 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.isAdminNutritionist = isAdminNutritionist;
 	}
 
+	public List<String> getDepartments() {
+		return departments;
+	}
+
+	public void setDepartments(List<String> departments) {
+		this.departments = departments;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileLookupResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -371,6 +381,7 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 				+ ", doctor=" + doctor + ", user=" + user + ", packageType=" + packageType + ", hasLoginAccess="
 				+ hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + ", iskiosk=" + iskiosk
 				+ ", isNutritionist=" + isNutritionist + ", isSuperAdmin=" + isSuperAdmin + ", isVaccinationModuleOn="
-				+ isVaccinationModuleOn + ", feedbackURL=" + feedbackURL + "]";
+				+ isVaccinationModuleOn + ", feedbackURL=" + feedbackURL + ", isAdminNutritionist="
+				+ isAdminNutritionist + ", departments=" + departments + "]";
 	}
 }

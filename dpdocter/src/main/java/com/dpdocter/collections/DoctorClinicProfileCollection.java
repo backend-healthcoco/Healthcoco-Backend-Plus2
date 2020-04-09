@@ -145,6 +145,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private String feedbackURL;
 
+	@Field
+	private List<String> departments;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -481,6 +484,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.isAdminNutritionist = isAdminNutritionist;
 	}
 
+	public List<String> getDepartments() {
+		return departments;
+	}
+
+	public void setDepartments(List<String> departments) {
+		this.departments = departments;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", doctorId="
@@ -496,10 +507,10 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 				+ ", showInventoryCount=" + showInventoryCount + ", showInventory=" + showInventory
 				+ ", saveToInventory=" + saveToInventory + ", iskiosk=" + iskiosk + ", labType=" + labType
 				+ ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + ", isNutritionist="
-				+ isNutritionist + ", isSuperAdmin=" + isSuperAdmin + ", mrCode=" + mrCode + ", divisionIds="
-				+ divisionIds + ", cityId=" + cityId + ", isVaccinationModuleOn=" + isVaccinationModuleOn
-				+ ", defaultDoctorId=" + defaultDoctorId + ", isPidHasDate=" + isPidHasDate + ", feedbackURL="
-				+ feedbackURL + "]";
+				+ isNutritionist + ", isSuperAdmin=" + isSuperAdmin + ", isAdminNutritionist=" + isAdminNutritionist
+				+ ", mrCode=" + mrCode + ", divisionIds=" + divisionIds + ", cityId=" + cityId
+				+ ", isVaccinationModuleOn=" + isVaccinationModuleOn + ", defaultDoctorId=" + defaultDoctorId
+				+ ", isPidHasDate=" + isPidHasDate + ", feedbackURL=" + feedbackURL + ", departments=" + departments
+				+ "]";
 	}
-
 }
