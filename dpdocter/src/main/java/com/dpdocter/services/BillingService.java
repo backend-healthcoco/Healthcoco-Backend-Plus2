@@ -85,7 +85,7 @@ public interface BillingService {
 	DoctorExpense addEditDoctorExpense(DoctorExpense request);
 
 	List<DoctorExpense> getDoctorExpenses(String expenseType, int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime,String from,String to, Boolean discarded, String paymentMode);
+			String hospitalId, String updatedTime,String from,String to,String searchTerm, Boolean discarded, String paymentMode);
 
 	DoctorExpense deleteDoctorExpense(String expenseId, Boolean discarded);
 

@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.VendorExpense;
 import com.dpdocter.enums.ModeOfPayment;
 
 @Document(collection = "doctor_expense_cl")
@@ -33,6 +34,8 @@ public class DoctorExpenseCollection extends GenericCollection {
 	public String notes;
 	@Field
 	public Boolean discarded = false;
+	@Field
+	public VendorExpense vendor;
 	@Field
 	public String uniqueExpenseId;
 
@@ -131,5 +134,15 @@ public class DoctorExpenseCollection extends GenericCollection {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
+
+	public VendorExpense getVendor() {
+		return vendor;
+	}
+
+	public void setVendor(VendorExpense vendor) {
+		this.vendor = vendor;
+	}
+	
+	
 
 }

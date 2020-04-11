@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 public class FlowSheetJasperBean {
+	
 	private Integer no = 0;
 
 	private String date = " ";
@@ -11,7 +12,7 @@ public class FlowSheetJasperBean {
 
 	private String advice;
 	
-	private String monitoringChart =" ";
+	
 
 	public Integer getNo() {
 		return no;
@@ -53,13 +54,7 @@ public class FlowSheetJasperBean {
 		this.advice = advice;
 	}
 
-	public String getMonitoringChart() {
-		return monitoringChart;
-	}
-
-	public void setMonitoringChart(String monitoringChart) {
-		this.monitoringChart = monitoringChart;
-	}
+	
 	
 	
 

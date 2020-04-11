@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class EyeSpecialityObservation {
 
 	private String doctorId;
@@ -10,11 +12,11 @@ public class EyeSpecialityObservation {
 	
 	private String patientId;
 	
-	private EyeExamination eyeExamination;
+	private  List<EyeExamination> eyeExamination;
 	
-	private VisualAcuity rightVisualAcuity;
+	private VisualAcuity rightVisualAcuities;
 	
-	private VisualAcuity leftVisualAcuity;
+	private VisualAcuity leftVisualAcuities;
 	
 	private EyeTest leftEyeTest;
 	
@@ -52,28 +54,28 @@ public class EyeSpecialityObservation {
 		this.patientId = patientId;
 	}
 
-	public EyeExamination getEyeExamination() {
+	public List<EyeExamination> getEyeExamination() {
 		return eyeExamination;
 	}
 
-	public void setEyeExamination(EyeExamination eyeExamination) {
+	public void setEyeExamination(List<EyeExamination> eyeExamination) {
 		this.eyeExamination = eyeExamination;
 	}
 
-	public VisualAcuity getRightVisualAcuity() {
-		return rightVisualAcuity;
+	public VisualAcuity getRightVisualAcuities() {
+		return rightVisualAcuities;
 	}
 
-	public void setRightVisualAcuity(VisualAcuity rightVisualAcuity) {
-		this.rightVisualAcuity = rightVisualAcuity;
+	public void setRightVisualAcuities(VisualAcuity rightVisualAcuities) {
+		this.rightVisualAcuities = rightVisualAcuities;
 	}
 
-	public VisualAcuity getLeftVisualAcuity() {
-		return leftVisualAcuity;
+	public VisualAcuity getLeftVisualAcuities() {
+		return leftVisualAcuities;
 	}
 
-	public void setLeftVisualAcuity(VisualAcuity leftVisualAcuity) {
-		this.leftVisualAcuity = leftVisualAcuity;
+	public void setLeftVisualAcuities(VisualAcuity leftVisualAcuities) {
+		this.leftVisualAcuities = leftVisualAcuities;
 	}
 
 	public EyeTest getLeftEyeTest() {
@@ -96,7 +98,7 @@ public class EyeSpecialityObservation {
 	public String toString() {
 		return "EyeSpecialityObservation [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", patientId=" + patientId + ", eyeExamination=" + eyeExamination
-				+ ", rightVisualAcuity=" + rightVisualAcuity + ", leftVisualAcuity=" + leftVisualAcuity
+				+ ", rightVisualAcuity=" + rightVisualAcuities + ", leftVisualAcuity=" + leftVisualAcuities
 				+ ", leftEyeTest=" + leftEyeTest + ", rightEyeTest=" + rightEyeTest + "]";
 	}
 	
