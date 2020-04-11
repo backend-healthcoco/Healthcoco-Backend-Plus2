@@ -2772,7 +2772,7 @@ public class BillingServiceImpl implements BillingService {
 
 	@Override
 	public List<DoctorExpense> getDoctorExpenses(String expenseType, int page, int size, String doctorId,
-			String locationId, String hospitalId, String updatedTime,String from,String to, Boolean discarded, String paymentMode) {
+			String locationId, String hospitalId, String updatedTime,String from,String to,String searchTerm, Boolean discarded, String paymentMode) {
 		List<DoctorExpense> response = null;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
@@ -2785,11 +2785,17 @@ public class BillingServiceImpl implements BillingService {
 				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
+			
 			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
 				criteria.and("expenseType").is(expenseType.toUpperCase());
 			}
 			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
 				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("expenseType").regex("^" + searchTerm, "i"),
+						new Criteria("expenseType").regex("^" + searchTerm));
 			}
 			
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -2891,6 +2897,7 @@ public class BillingServiceImpl implements BillingService {
 			}
 			expenseCollection.setDiscarded(discarded);
 			expenseCollection.setUpdatedTime(new Date());
+			doctorExpenseRepository.save(expenseCollection);
 			response = new DoctorExpense();
 			BeanUtil.map(expenseCollection, response);
 

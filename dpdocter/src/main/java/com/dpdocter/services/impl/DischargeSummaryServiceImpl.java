@@ -43,14 +43,17 @@ import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.MonitoringChart;
+import com.dpdocter.beans.MonitoringChartJasperBean;
 import com.dpdocter.beans.OperationNote;
 import com.dpdocter.beans.PatientVisitLookupBean;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
+import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.collections.BabyNoteCollection;
 import com.dpdocter.collections.CementCollection;
+import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -70,6 +73,7 @@ import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DischargeSummaryItem;
 import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.LineSpace;
+import com.dpdocter.enums.LineStyle;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.VisitedFor;
@@ -115,6 +119,8 @@ import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.PushNotificationServices;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -301,6 +307,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 			}
 			dischargeSummaryCollection.setFlowSheets(dischargeSummary.getFlowSheets());
+			dischargeSummaryCollection.setMonitoringChart(dischargeSummary.getMonitoringChart());
 			dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
 			if (dischargeSummary.getFlowSheets() != null) {
 				AddEditFlowSheetRequest addEditFlowSheetRequest = new AddEditFlowSheetRequest();
@@ -309,6 +316,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				addEditFlowSheetRequest.setHospitalId(dischargeSummary.getHospitalId());
 				addEditFlowSheetRequest.setPatientId(dischargeSummary.getPatientId());
 				addEditFlowSheetRequest.setFlowSheets(dischargeSummary.getFlowSheets());
+				addEditFlowSheetRequest.setMonitoringChart(dischargeSummary.getMonitoringChart());
 				addEditFlowSheetRequest.setDischargeSummaryId(dischargeSummaryCollection.getId().toString());
 				addEditFlowSheets(addEditFlowSheetRequest);
 			}
@@ -2866,10 +2874,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	private JasperReportResponse createJasperForFlowSheet(FlowsheetCollection flowsheetCollection,
 			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException, ParseException {
 		JasperReportResponse response = null;
+		Boolean showMonitor=false;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		List<FlowSheetJasperBean> jasperBeans = null;
+		List<MonitoringChartJasperBean> monitorBeans=null;
 		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(flowsheetCollection.getDoctorId(),
 				flowsheetCollection.getLocationId(), flowsheetCollection.getHospitalId(), ComponentType.ALL.getType());
 
@@ -2901,6 +2911,10 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			jasperBeans = new ArrayList<FlowSheetJasperBean>();
 			FlowSheetJasperBean jasperBean = null;
 			int i = 1;
+			String contentLineStyle = (printSettings != null
+					&& !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
+							? printSettings.getContentLineStyle()
+							: LineStyle.INLINE.name();
 			for (FlowSheet flowsheet : flowsheetCollection.getFlowSheets()) {
 
 				jasperBean = new FlowSheetJasperBean();
@@ -3011,61 +3025,108 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			parameters.put("flowsheet", jasperBeans);
 		}
 		
+		
+//		List<DBObject> prescriptions = null;
+//		if (! showMonitor) {
+//			if (flowsheetCollection.getId() != null) {
+//				prescriptions = new ArrayList<DBObject>();
+//				for (MonitoringChart monitoringChart : flowsheetCollection.getMonitoringChart()) {
+//					if (monitoringChart !=null) {
+//						DBObject prescriptionItems = new BasicDBObject();
+//						List<MonitoringChartJasperBean> prescriptionJasperDetails = getMonitoringChartJasperDetails( flowsheetCollection.getId().toString(),
+//								   parameters,showMonitor, printSettings);
+//						if (prescriptionJasperDetails != null && !prescriptionJasperDetails.isEmpty())
+//							prescriptionItems.put("items", prescriptionJasperDetails);
+//						if (prescriptionItems.toMap().size() > 1)
+//							prescriptions.add(prescriptionItems);
+//					}
+//				}
+//			}
+//		}
+		
 		if(flowsheetCollection.getMonitoringChart()!=null && !flowsheetCollection.getMonitoringChart().isEmpty()) {
-			jasperBeans = new ArrayList<FlowSheetJasperBean>();
-		FlowSheetJasperBean jasperBean = null;
+			monitorBeans=new ArrayList<MonitoringChartJasperBean>();
+			MonitoringChartJasperBean monitorBean = null;
 		int i = 1;
 			for(MonitoringChart monitoringchart:flowsheetCollection.getMonitoringChart())
 			{
-				jasperBean = new FlowSheetJasperBean();
-				jasperBean.setNo(i);
-				String monitor=" ";
+				monitorBean = new MonitoringChartJasperBean();
+				monitorBean.setNo(i);
 				
-				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.getTime().getFromTime().toString(), monitor) ? ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.getTime().getFromTime().toString())
-								? "FromTime (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.getTime().getFromTime().toString()
-								: "");
+				if (monitoringchart.getTime()!=null) {
+					monitorBean.setTime("<b>Time:-    </b>" + monitoringchart.getTime());
+				}
 				
-				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.getTime().getToTime().toString(), monitor) ? ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.getTime().getToTime().toString())
-								? "ToTime (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.getTime().getToTime().toString()
-								: "");
+				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getIntake())) {
+					monitorBean.setIntake("<b>Intake :-    </b>" + monitoringchart.getIntake());
+				}
 				
-				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.getIntake(), monitor) ? ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.getIntake())
-								? "Intake (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.getIntake()
-								: "");
+				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getOutputDrain())) {
+					monitorBean.setOutputDrain("<b>Bp :-    </b>" + monitoringchart.getOutputDrain());
+				}
 				
-				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.getOutputDrain(), monitor) ? ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.getOutputDrain())
-								? "Output/Drain (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.getOutputDrain()
-								: "");
-				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.getbP(), monitor) ? ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.getbP())
-								? "Bp (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.getbP()
-								: "");
-				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.gethR(), monitor) ? ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.gethR())
-								? "HR (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.gethR()
-								: "");
-				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.getsPO2(), monitor) ? ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.getsPO2())
-								? "SPO2 (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.getsPO2()
-								: "");
+				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getbP())) {
+					monitorBean.setOutputDrain("<b>Hr :-    </b>" + monitoringchart.gethR());
+				}
 				
-				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.getAnySpecialEventsAndStatDrugs(), monitor) ? ", " : "")
-						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.getAnySpecialEventsAndStatDrugs())
-								? "AnySpecialEvents&StatDrugs (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.getAnySpecialEventsAndStatDrugs()
-								: "");
+				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getbP())) {
+					monitorBean.setsPO2("<b>SPO2 :-    </b>" + monitoringchart.getsPO2());
+				}
 				
-				jasperBean.setMonitoringChart(monitor);
+				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getAnySpecialEventsAndStatDrugs())) {
+					monitorBean.setAnySpecialEventsAndStatDrugs("<b>AnySpecialEventsAndStatDrugs:-    </b>" + monitoringchart.getAnySpecialEventsAndStatDrugs());
+				}
+				
+				
+//				String monitor=" ";
+//				
+//				
+//				
+//				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.getTime().getFromTime().toString(), monitor) ? ", " : "")
+//						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.getTime().getFromTime().toString())
+//								? "FromTime (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.getTime().getFromTime().toString()
+//								: "");
+//				
+//				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.getTime().getToTime().toString(), monitor) ? ", " : "")
+//						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.getTime().getToTime().toString())
+//								? "ToTime (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.getTime().getToTime().toString()
+//								: "");
+//				
+//				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.getIntake(), monitor) ? ", " : "")
+//						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.getIntake())
+//								? "Intake (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.getIntake()
+//								: "");
+//				
+//				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.getOutputDrain(), monitor) ? ", " : "")
+//						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.getOutputDrain())
+//								? "Output/Drain (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.getOutputDrain()
+//								: "");
+//				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.getbP(), monitor) ? ", " : "")
+//						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.getbP())
+//								? "Bp (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.getbP()
+//								: "");
+//				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.gethR(), monitor) ? ", " : "")
+//						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.gethR())
+//								? "HR (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.gethR()
+//								: "");
+//				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.getsPO2(), monitor) ? ", " : "")
+//						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.getsPO2())
+//								? "SPO2 (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.getsPO2()
+//								: "");
+//				
+//				monitor = monitor + (!DPDoctorUtils.anyStringEmpty(monitoringchart.getAnySpecialEventsAndStatDrugs(), monitor) ? ", " : "")
+//						+ (!DPDoctorUtils.anyStringEmpty(monitoringchart.getAnySpecialEventsAndStatDrugs())
+//								? "AnySpecialEvents&StatDrugs (" + VitalSignsUnit.SPO2.getUnit() + ") : " + monitoringchart.getAnySpecialEventsAndStatDrugs()
+//								: "");
+//				
+//				
 				
 
 				i++;
-				jasperBeans.add(jasperBean);
+				monitorBeans.add(monitorBean);
 				
 			}
-			parameters.put("monitoringChart", jasperBeans);
+			parameters.put("monitoringChart", monitorBeans);
 		}
 
 		parameters.put("contentLineSpace",
@@ -3116,6 +3177,125 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		return response;
 
 	}
+	
+	private List<MonitoringChartJasperBean> getMonitoringChartJasperDetails(String prescriptionId,
+			 Map<String, Object> parameters, Boolean isMonitoringChart,
+			PrintSettingsCollection printSettings) {
+		FlowsheetCollection prescriptionCollection = null;
+		List<MonitoringChartJasperBean> prescriptionItems = new ArrayList<MonitoringChartJasperBean>();
+		try {
+		
+			prescriptionCollection = flowsheetRepository.findById(new ObjectId(prescriptionId)).orElse(null);
+			Boolean showIntake = false, showOutputDrain = false, showBp = false, showHr = false,showSpo2 = false,showanySpecialEventsAndStatDrugs = false;
+			
+			if (prescriptionCollection.getMonitoringChart() != null) {
+				
+					
+				if (!isMonitoringChart) {
+					
+					int no = 0;
+							String Intake =null,OutputDrain=null,Bp =null,hR=null,sPO2=null,anySpecialEventsAndStatDrugs=null;
+					if (prescriptionCollection.getMonitoringChart() != null)
+						for (MonitoringChart prescriptionItem : prescriptionCollection.getMonitoringChart()) {
+							if (prescriptionItem != null ) {
+								if (prescriptionItem.getIntake() != null ) {
+									 Intake = prescriptionItem.getIntake() != null
+											? prescriptionItem.getIntake()
+											: "";
+											showIntake=true;
+								}
+								
+								if (prescriptionItem.getOutputDrain() != null ) {
+									 OutputDrain = prescriptionItem.getOutputDrain() != null ? prescriptionItem.getOutputDrain() : "";
+									showOutputDrain=true;
+								}
+								if (prescriptionItem.getbP() != null ) {
+									 Bp = prescriptionItem.getbP() != null ? prescriptionItem.getbP(): "";
+									showBp=true;
+								}
+								if (prescriptionItem.gethR() != null ) {
+									hR = prescriptionItem.gethR() !=null
+											? prescriptionItem.gethR()
+											: "";
+											showHr=true;
+								}
+								
+								if (prescriptionItem.getsPO2() != null ) {
+									 sPO2 = prescriptionItem.getsPO2() !=null
+											? prescriptionItem.getsPO2()
+											: "";
+								showSpo2=true;	
+								}
+								
+								if (prescriptionItem.getAnySpecialEventsAndStatDrugs() != null ) {
+											anySpecialEventsAndStatDrugs = prescriptionItem.getAnySpecialEventsAndStatDrugs() !=null
+													? prescriptionItem.getAnySpecialEventsAndStatDrugs()
+													: "";
+								showanySpecialEventsAndStatDrugs=true;			
+								}
+																
+									
+									}
+									
+									MonitoringChartJasperBean prescriptionJasperDetails = null;
+									if (printSettings.getContentSetup() != null) {
+										if (printSettings.getContentSetup().getInstructionAlign() != null
+												&& printSettings.getContentSetup().getInstructionAlign()
+														.equals(FieldAlign.HORIZONTAL)) {
+
+											prescriptionJasperDetails = new MonitoringChartJasperBean(++no, 
+													!DPDoctorUtils.anyStringEmpty(Intake)
+															? Intake
+															: "--",
+															!DPDoctorUtils.anyStringEmpty(OutputDrain)
+															? OutputDrain
+															: "--",
+															!DPDoctorUtils.anyStringEmpty(Bp)
+															? Bp
+															: "--",
+															!DPDoctorUtils.anyStringEmpty(hR)
+															? hR
+															: "--",
+															!DPDoctorUtils.anyStringEmpty(hR)
+															? hR
+															: "--",
+															!DPDoctorUtils.anyStringEmpty(sPO2)
+															? sPO2
+															: "--",
+															!DPDoctorUtils.anyStringEmpty(anySpecialEventsAndStatDrugs)
+															? anySpecialEventsAndStatDrugs
+															: "--");
+										}
+									
+									prescriptionItems.add(prescriptionJasperDetails);
+								}
+							}
+						}
+			
+				
+					parameters.put("showIntake", showIntake);
+					parameters.put("showOutputDrain", showOutputDrain);
+					parameters.put("showBp", showBp);
+					parameters.put("showHr", showHr);
+					parameters.put("showSpo2", showSpo2);
+					parameters.put("showSpo2", showSpo2);
+					parameters.put("showanySpecialEventsAndStatDrugs", showanySpecialEventsAndStatDrugs);
+				}
+
+			 else {
+				logger.warn("Prescription not found.Please check prescriptionId.");
+				throw new BusinessException(ServiceError.Unknown,
+						"Prescription not found.Please check prescriptionId.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+
+		return prescriptionItems;
+	}
+
 
 	@Override
 	@Transactional

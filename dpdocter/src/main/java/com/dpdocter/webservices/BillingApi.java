@@ -463,6 +463,7 @@ public class BillingApi {
 			@QueryParam("hospitalId") String hospitalId,
 			@QueryParam("from") String from,
 			@QueryParam("to") String to,
+			@QueryParam("searchTerm") String searchTerm,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
 			@QueryParam("expenseType") String expenseType, @QueryParam("paymentMode") String paymentMode) {
@@ -472,7 +473,7 @@ public class BillingApi {
 		}
 
 		List<DoctorExpense> expenses = billingService.getDoctorExpenses(expenseType, page, size, doctorId, locationId,
-				hospitalId, updatedTime,from,to ,discarded, paymentMode);
+				hospitalId, updatedTime,from,to,searchTerm,discarded, paymentMode);
 
 		Response<DoctorExpense> response = new Response<DoctorExpense>();
 		response.setDataList(expenses);

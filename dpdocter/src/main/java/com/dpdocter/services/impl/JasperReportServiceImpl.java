@@ -6987,17 +6987,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		
 		
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{MonitoringChart}"));
-		jrDesignTextField.setX(width);
-		jrDesignTextField.setY(4);
-		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setWidth(columnWidth - width);
-		jrDesignTextField.setBold(true);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
-		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
-		band.addElement(jrDesignTextField);
+//		jrDesignTextField = new JRDesignTextField();
+//		jrDesignTextField.setExpression(new JRDesignExpression("$P{MonitoringChart}"));
+//		jrDesignTextField.setX(width);
+//		jrDesignTextField.setY(4);
+//		jrDesignTextField.setHeight(15);
+//		jrDesignTextField.setWidth(columnWidth - width);
+//		jrDesignTextField.setBold(true);
+//		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+//		jrDesignTextField.setStretchWithOverflow(true);
+//		jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+//		band.addElement(jrDesignTextField);
 
 		jrDesignLine = new JRDesignLine();
 		jrDesignLine.setX(0);
@@ -7051,18 +7051,18 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{monitoringChart}"));
-		jrDesignTextField.setPrintWhenExpression(
-				new JRDesignExpression("!$F{monitoringChart}.equals(null) && !$F{monitoringChart}.isEmpty() "));
-		jrDesignTextField.setX(width + 10);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(columnWidth - width);
-		jrDesignTextField.setMarkup("html");
-		jrDesignTextField.setStretchWithOverflow(true);
-		band.addElement(jrDesignTextField);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+//		jrDesignTextField = new JRDesignTextField();
+//		jrDesignTextField.setExpression(new JRDesignExpression("$F{monitoringChart}"));
+//		jrDesignTextField.setPrintWhenExpression(
+//				new JRDesignExpression("!$F{monitoringChart}.equals(null) && !$F{monitoringChart}.isEmpty() "));
+//		jrDesignTextField.setX(width + 10);
+//		jrDesignTextField.setY(0);
+//		jrDesignTextField.setHeight(18);
+//		jrDesignTextField.setWidth(columnWidth - width);
+//		jrDesignTextField.setMarkup("html");
+//		jrDesignTextField.setStretchWithOverflow(true);
+//		band.addElement(jrDesignTextField);
+//		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 
 		band = new JRDesignBand();

@@ -6,6 +6,7 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.beans.FlowSheet;
+import com.dpdocter.beans.MonitoringChart;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.beans.v2.Prescription;
@@ -76,6 +77,7 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String treatmentAdviceForBaby;
 	private String pediatricianName;
 	private List<FlowSheet> flowSheets;
+	private List<MonitoringChart>monitoringChart;
 	private List<String> diagrams;
 	private String timeOfEntryInOt;
 	private String timeOfExitFromOt;
@@ -451,6 +453,16 @@ public class DischargeSummaryResponse extends GenericCollection {
 
 	public void setUniqueEmrId(String uniqueEmrId) {
 		this.uniqueEmrId = uniqueEmrId;
+	}
+	
+	
+
+	public List<MonitoringChart> getMonitoringChart() {
+		return monitoringChart;
+	}
+
+	public void setMonitoringChart(List<MonitoringChart> monitoringChart) {
+		this.monitoringChart = monitoringChart;
 	}
 
 	@Override
