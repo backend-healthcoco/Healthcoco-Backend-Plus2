@@ -1442,7 +1442,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$F{notes}", fieldWidth, false, 0, false);
-		addItems(jasperDesign, columnWidth, "$P{EyeObservation}", "$F{eyeObservation}", fieldWidth, false, 0, false);
+//		addItems(jasperDesign, columnWidth, "$P{EyeObservation}", "$F{eyeObservation}", fieldWidth, false, 0, false);
 //		band = new JRDesignBand();
 //		band.setHeight(2);
 //		jrDesignLine = new JRDesignLine();

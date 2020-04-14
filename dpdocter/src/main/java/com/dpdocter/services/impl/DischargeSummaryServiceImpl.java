@@ -2980,26 +2980,26 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				
 				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getiBP(), field) ? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getiBP())
-								? "IBP (" + VitalSignsUnit.SPO2.getUnit() + ") : " + flowsheet.getiBP()
+								? "IBP (" + VitalSignsUnit.IBP.getUnit() + ") : " + flowsheet.getiBP()
 								: "");
 				
 				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getcVP(), field) ? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getcVP())
-								? "CVP (" + VitalSignsUnit.SPO2.getUnit() + ") : " + flowsheet.getcVP()
+								? "CVP (" + VitalSignsUnit.CVP.getUnit() + ") : " + flowsheet.getcVP()
 								: "");
 				
 				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getFiO2(), field) ? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getFiO2())
-								? "FiO2 (" + VitalSignsUnit.SPO2.getUnit() + ") : " + flowsheet.getFiO2()
+								? "FiO2 (" + VitalSignsUnit.FIO2.getUnit() + ") : " + flowsheet.getFiO2()
 								: "");
 				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getVenhlatorMode(), field) ? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getVenhlatorMode())
-								? "VenhlatorMode (" + VitalSignsUnit.SPO2.getUnit() + ") : " + flowsheet.getVenhlatorMode()
+								? "VenhlatorMode (" + VitalSignsUnit.VENTILATION_MODE.getUnit() + ") : " + flowsheet.getVenhlatorMode()
 								: "");
 				
 				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getUrineOutput(), field) ? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getUrineOutput())
-								? "UrineOutput (" + VitalSignsUnit.SPO2.getUnit() + ") : " + flowsheet.getUrineOutput()
+								? "UrineOutput (" + VitalSignsUnit.URINE.getUnit() + ") : " + flowsheet.getUrineOutput()
 								: "");
 				
 				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getFeeding(), field) ? ", " : "")
@@ -3044,39 +3044,39 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 //			}
 //		}
 		
-		if(flowsheetCollection.getMonitoringChart()!=null && !flowsheetCollection.getMonitoringChart().isEmpty()) {
-			monitorBeans=new ArrayList<MonitoringChartJasperBean>();
-			MonitoringChartJasperBean monitorBean = null;
-		int i = 1;
-			for(MonitoringChart monitoringchart:flowsheetCollection.getMonitoringChart())
-			{
-				monitorBean = new MonitoringChartJasperBean();
-				monitorBean.setNo(i);
-				
-				if (monitoringchart.getTime()!=null) {
-					monitorBean.setTime("<b>Time:-    </b>" + monitoringchart.getTime());
-				}
-				
-				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getIntake())) {
-					monitorBean.setIntake("<b>Intake :-    </b>" + monitoringchart.getIntake());
-				}
-				
-				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getOutputDrain())) {
-					monitorBean.setOutputDrain("<b>Bp :-    </b>" + monitoringchart.getOutputDrain());
-				}
-				
-				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getbP())) {
-					monitorBean.setOutputDrain("<b>Hr :-    </b>" + monitoringchart.gethR());
-				}
-				
-				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getbP())) {
-					monitorBean.setsPO2("<b>SPO2 :-    </b>" + monitoringchart.getsPO2());
-				}
-				
-				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getAnySpecialEventsAndStatDrugs())) {
-					monitorBean.setAnySpecialEventsAndStatDrugs("<b>AnySpecialEventsAndStatDrugs:-    </b>" + monitoringchart.getAnySpecialEventsAndStatDrugs());
-				}
-				
+//		if(flowsheetCollection.getMonitoringChart()!=null && !flowsheetCollection.getMonitoringChart().isEmpty()) {
+//			monitorBeans=new ArrayList<MonitoringChartJasperBean>();
+//			MonitoringChartJasperBean monitorBean = null;
+//		int i = 1;
+//			for(MonitoringChart monitoringchart:flowsheetCollection.getMonitoringChart())
+//			{
+//				monitorBean = new MonitoringChartJasperBean();
+//				monitorBean.setNo(i);
+//				
+//				if (monitoringchart.getTime()!=null) {
+//					monitorBean.setTime("<b>Time:-    </b>" + monitoringchart.getTime());
+//				}
+//				
+//				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getIntake())) {
+//					monitorBean.setIntake("<b>Intake :-    </b>" + monitoringchart.getIntake());
+//				}
+//				
+//				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getOutputDrain())) {
+//					monitorBean.setOutputDrain("<b>Bp :-    </b>" + monitoringchart.getOutputDrain());
+//				}
+//				
+//				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getbP())) {
+//					monitorBean.setOutputDrain("<b>Hr :-    </b>" + monitoringchart.gethR());
+//				}
+//				
+//				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getbP())) {
+//					monitorBean.setsPO2("<b>SPO2 :-    </b>" + monitoringchart.getsPO2());
+//				}
+//				
+//				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getAnySpecialEventsAndStatDrugs())) {
+//					monitorBean.setAnySpecialEventsAndStatDrugs("<b>AnySpecialEventsAndStatDrugs:-    </b>" + monitoringchart.getAnySpecialEventsAndStatDrugs());
+//				}
+//				
 				
 //				String monitor=" ";
 //				
@@ -3122,12 +3122,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 //				
 				
 
-				i++;
-				monitorBeans.add(monitorBean);
-				
-			}
-			parameters.put("monitoringChart", monitorBeans);
-		}
+//				i++;
+//				monitorBeans.add(monitorBean);
+//				
+//			}
+//			parameters.put("monitoringChart", monitorBeans);
+//		}
 
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))

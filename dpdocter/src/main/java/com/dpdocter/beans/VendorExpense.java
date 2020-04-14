@@ -5,6 +5,9 @@ import com.dpdocter.collections.GenericCollection;
 public class VendorExpense extends GenericCollection{
 	
 	private String id;
+	public String doctorId;
+	public String locationId;
+	public String hospitalId;
 	private String vendorName;
 	private String licenseNumber;
 	private Boolean discarded=false;
@@ -33,6 +36,26 @@ public class VendorExpense extends GenericCollection{
 	}
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+	
+	
+	public String getDoctorId() {
+		return doctorId;
+	}
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+	public String getLocationId() {
+		return locationId;
+	}
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+	public String getHospitalId() {
+		return hospitalId;
+	}
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
 	}
 	@Override
 	public String toString() {

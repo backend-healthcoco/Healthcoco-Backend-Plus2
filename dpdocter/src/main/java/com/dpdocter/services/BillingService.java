@@ -105,12 +105,14 @@ public interface BillingService {
 	
 	VendorExpense addEditVendor(VendorExpense request);
 
-	List<VendorExpense> getVendors(int size, int page, Boolean discarded,String searchTerm);
-
+	
 	VendorExpense discardVendor(String id,Boolean discarded);
 	
 	 Integer countVendorExpense(Boolean discarded, String searchTerm);
 	 
 	 VendorExpense getVendorExpenseById(String id);
+
+	List<VendorExpense> getVendors(int size, int page, String searchTerm, Boolean discarded, String doctorId,
+			String locationId, String hospitalId);
 
 }

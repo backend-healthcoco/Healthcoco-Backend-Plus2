@@ -350,6 +350,13 @@ public class BillingServiceImpl implements BillingService {
 						.setBalanceAmount((request.getGrandTotal() - doctorPatientInvoiceCollection.getGrandTotal())
 								+ doctorPatientInvoiceCollection.getBalanceAmount());
 				doctorPatientInvoiceCollection.setGrandTotal(request.getGrandTotal());
+				
+				doctorPatientInvoiceCollection.setAdmissionDate(request.getAdmissionDate());
+				doctorPatientInvoiceCollection.setDischargeDate(request.getDischargeDate());
+				doctorPatientInvoiceCollection.setTimeOfAdmission(request.getTimeOfAdmission());
+				doctorPatientInvoiceCollection.setTimeOfDischarge(request.getTimeOfDischarge());
+				
+				
 				if (doctorPatientInvoiceCollection.getBalanceAmount() < 0) {
 					doctorPatientInvoiceCollection
 							.setRefundAmount(doctorPatientInvoiceCollection.getBalanceAmount() * (-1));
@@ -2063,7 +2070,7 @@ public class BillingServiceImpl implements BillingService {
 		String content = "<br>Received with thanks from &nbsp;&nbsp; " + userName + user.getFirstName()
 				+ "<br>The sum of Rupees:- " + doctorPatientReceiptCollection.getAmountPaid() + "<br> By "
 				+ doctorPatientReceiptCollection.getModeOfPayment()+
-				"<br>TransactionId:- "+(doctorPatientReceiptCollection.getTransactionId()!= null
+				"<br>Cheque no:- "+(doctorPatientReceiptCollection.getTransactionId()!= null
 						? doctorPatientReceiptCollection.getTransactionId()
 						: "--")
 				+ "&nbsp;&nbsp;&nbsp;On Date:-"
@@ -2988,15 +2995,18 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			Criteria criteria = new Criteria();
 
-			new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(new ObjectId(locationId))
-					.and("hospitalId").is(new ObjectId(hospitalId));
-
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
 						new Criteria("name").regex("^" + searchTerm));
 			}
-			if (!discarded)
-				criteria.and("discarded").is(discarded);
+			
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -3133,36 +3143,34 @@ public class BillingServiceImpl implements BillingService {
 			if (doctorPatientReceiptCollection != null) {
 				UserCollection patient = userRepository.findById(doctorPatientReceiptCollection.getPatientId()).orElse(null);
 
+			
 				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
 				smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
 				smsTrackDetail.setLocationId(new ObjectId(locationId));
-				smsTrackDetail.setType(ComponentType.RECEIPT.getType());
+				smsTrackDetail.setType(ComponentType.INVOICE.getType());
 				SMSDetail smsDetail = new SMSDetail();
 				smsDetail.setUserId(doctorPatientReceiptCollection.getPatientId());
 				smsDetail.setUserName(patient.getFirstName());
 				SMS sms = new SMS();
 				//String message = invoiceRemainderSMS;
-							String clinicNumber=locationCollection.getClinicNumber() !=null
+				
+				
+				
+
+
+				String clinicNumber=locationCollection.getClinicNumber() !=null
 						?(!DPDoctorUtils.anyStringEmpty(locationCollection.getClinicNumber())
 								? locationCollection.getClinicNumber()
 								: "")
 						: "";
 								
+				sms.setSmsText("Hi " + patient.getFirstName() + ", your receipt for the invoice "
+						+ doctorPatientReceiptCollection.getUniqueInvoiceId() + " by " + locationCollection.getLocationName() + ". "
+						+ " and the total amount paid is "+doctorPatientReceiptCollection.getAmountPaid() +" on Date:"+simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate()) +". For queries,contact clinic " + clinicNumber + ".");
 
-								String content = "Received with thanks from  " + patient.getFirstName()
-										+ ",The sum of Rupees:- " + doctorPatientReceiptCollection.getAmountPaid() + " By "
-										+ doctorPatientReceiptCollection.getModeOfPayment() + 
-										" at "+locationCollection.getLocationName()+
-										" On Date:-"
-										+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate())+
-												" .For queries,contact clinic " + clinicNumber + " Stay Healthy & Happy.\n" + 
-														"Powered by healthcoco.";
-							
-								System.out.println(content);
-								sms.setSmsText(content);
-				SMSAddress smsAddress = new SMSAddress();
+					SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(mobileNumber);
 				sms.setSmsAddress(smsAddress);
 				smsDetail.setSms(sms);
@@ -3172,6 +3180,57 @@ public class BillingServiceImpl implements BillingService {
 				smsTrackDetail.setSmsDetails(smsDetails);
 				smsServices.sendSMS(smsTrackDetail, true);
 				response = true;
+
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+//				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
+//				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+//				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
+//				smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
+//				smsTrackDetail.setLocationId(new ObjectId(locationId));
+//				smsTrackDetail.setType(ComponentType.RECEIPT.getType());
+//				SMSDetail smsDetail = new SMSDetail();
+//				smsDetail.setUserId(doctorPatientReceiptCollection.getPatientId());
+//				smsDetail.setUserName(patient.getFirstName());
+//				SMS sms = new SMS();
+//				//String message = invoiceRemainderSMS;
+//							String clinicNumber=locationCollection.getClinicNumber() !=null
+//						?(!DPDoctorUtils.anyStringEmpty(locationCollection.getClinicNumber())
+//								? locationCollection.getClinicNumber()
+//								: "")
+//						: "";
+//								
+//
+//								sms.setSmsText("Received with thanks from  " + patient.getFirstName()
+//										+ ",The sum of Rupees:- " + doctorPatientReceiptCollection.getAmountPaid() + " By "
+//										+ doctorPatientReceiptCollection.getModeOfPayment() + 
+//										" at "+locationCollection.getLocationName()+
+//										" On Date:-"
+//										+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate())+
+//												" .For queries,contact clinic " + clinicNumber + " Stay Healthy & Happy.\n" + 
+//														"Powered by healthcoco.");
+//							
+//						//		System.out.println(content);
+//							
+//								SMSAddress smsAddress = new SMSAddress();
+//								smsAddress.setRecipient(mobileNumber);
+//								sms.setSmsAddress(smsAddress);
+//								smsDetail.setSms(sms);
+//								smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+//								List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+//								smsDetails.add(smsDetail);
+//								smsTrackDetail.setSmsDetails(smsDetails);
+//								smsServices.sendSMS(smsTrackDetail, true);
+//								response = true;
 			}
 		} catch (BusinessException be) {
 			logger.error(be);
@@ -3191,6 +3250,7 @@ public class BillingServiceImpl implements BillingService {
 			VendorExpense response = null;
 			try {
 				VendorExpenseCollection vendorExpenseCollection = null;
+				UserCollection userCollection=null;
 				if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 					vendorExpenseCollection = vendorExpenseRepository.findById(new ObjectId(request.getId())).orElse(null);
 					if (vendorExpenseCollection == null) {
@@ -3202,6 +3262,10 @@ public class BillingServiceImpl implements BillingService {
 					BeanUtil.map(request, vendorExpenseCollection);
 
 				} else {
+					userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+					if (userCollection == null) {
+						throw new BusinessException(ServiceError.NoRecord, "Doctor found with DoctorId");
+					}
 					vendorExpenseCollection = new VendorExpenseCollection();
 					BeanUtil.map(request, vendorExpenseCollection);
 					vendorExpenseCollection.setUpdatedTime(new Date());
@@ -3225,25 +3289,42 @@ public class BillingServiceImpl implements BillingService {
 	
 
 	@Override
-	public List<VendorExpense> getVendors(int size, int page, Boolean discarded,String searchTerm) {
+	public List<VendorExpense> getVendors(int size, int page, String searchTerm, Boolean discarded, String doctorId,
+			String locationId, String hospitalId) {
 		List<VendorExpense> response = null;
 		try {
-			Criteria criteria = new Criteria("discarded").is(discarded);
-			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-				criteria = criteria.orOperator(new Criteria("vendorName").regex("^" + searchTerm, "i"),
-						new Criteria("vendorName").regex("^" + searchTerm));
+		
 
-			Aggregation aggregation = null;
-			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
-						Aggregation.limit(size));
-			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			Criteria criteria = new Criteria();
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			
+		
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("vendorName").regex("^" + searchTerm, "i"),
+						new Criteria("vendorName").regex("^" + searchTerm));
 			}
-			response = mongoTemplate.aggregate(aggregation, VendorExpenseCollection.class, VendorExpense.class)
-					.getMappedResults();
+			
+			
+
+			if (size > 0) {
+				response = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								
+								Aggregation.skip((page) * size), Aggregation.limit(size)),
+						VendorExpenseCollection.class, VendorExpense.class).getMappedResults();
+			} else {
+				response = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime"))),
+						VendorExpenseCollection.class,VendorExpense.class).getMappedResults();
+			}
+
 		} catch (BusinessException e) {
 			logger.error("Error while getting Vendor Expense " + e.getMessage());
 			e.printStackTrace();

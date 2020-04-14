@@ -11,6 +11,12 @@ public class VendorExpenseCollection extends GenericCollection{
 	@Id
 	private ObjectId id;
 	@Field
+	public ObjectId doctorId;
+	@Field
+	public ObjectId locationId;
+	@Field
+	public ObjectId hospitalId;
+	@Field
 	private String vendorName;
 	@Field
 	private String licenseNumber;
@@ -41,6 +47,33 @@ public class VendorExpenseCollection extends GenericCollection{
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
+	
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
+	public ObjectId getLocationId() {
+		return locationId;
+	}
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+	@Override
+	public String toString() {
+		return "VendorExpenseCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", vendorName=" + vendorName + ", licenseNumber=" + licenseNumber
+				+ ", discarded=" + discarded + "]";
+	}
+	
+	
 	
 	
 }

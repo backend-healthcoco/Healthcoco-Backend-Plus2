@@ -614,10 +614,12 @@ public class BillingApi {
 	@ApiOperation(value = PathProxy.BillingUrls.GET_VENDOR_EXPENSE, notes = PathProxy.BillingUrls.GET_VENDOR_EXPENSE)
 	public Response<VendorExpense> getVendorExpense(@QueryParam("page") int page,
 			@QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,	
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		
 
-		List<VendorExpense> doctorPatientInvoices = billingService.getVendors(size, page, discarded, searchTerm);
+		List<VendorExpense> doctorPatientInvoices = billingService.getVendors(size, page, searchTerm, discarded,doctorId,locationId,hospitalId);
 		Integer count=billingService.countVendorExpense(discarded, searchTerm);
 		Response<VendorExpense> response = new Response<VendorExpense>();
 		response.setDataList(doctorPatientInvoices);

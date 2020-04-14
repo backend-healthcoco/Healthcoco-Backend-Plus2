@@ -118,9 +118,10 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 						
 						smsDetail.setUserName(doctorContactUs.getFirstName());
 						SMS sms = new SMS();
-						
-						sms.setSmsText("Greetings Dr. " + doctorContactUs.getFirstName() + ", Welcome to Healthcoco ,You can click on this link for further steps "
-								+ welcomeLink + "/"+ tokenCollection.getId());
+						String link = welcomeLink + "/" + tokenCollection.getId()+"/";
+						String shortUrl = DPDoctorUtils.urlShortner(link);
+						sms.setSmsText("Please set your Healthcoco+ password, link is valid for 60 min only. Password set link  " 
+								+ shortUrl);
 		
 							SMSAddress smsAddress = new SMSAddress();
 						smsAddress.setRecipient(doctorContactUs.getMobileNumber());
