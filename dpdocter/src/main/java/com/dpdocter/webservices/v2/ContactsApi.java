@@ -134,6 +134,13 @@ public class ContactsApi {
 
 		List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId,
 				locationId, hospitalId, updatedTime, discarded, role, page, size, searchTerm);
+		
+		if (registeredPatientDetails != null && !registeredPatientDetails.isEmpty()) {
+			for (RegisteredPatientDetails registeredPatientDetail : registeredPatientDetails) {
+				registeredPatientDetail.setImageUrl(getFinalImageURL(registeredPatientDetail.getImageUrl()));
+				registeredPatientDetail.setThumbnailUrl(getFinalImageURL(registeredPatientDetail.getThumbnailUrl()));
+			}
+		}
 
 		Response<Object> response = new Response<Object>();
 		response.setDataList(registeredPatientDetails);

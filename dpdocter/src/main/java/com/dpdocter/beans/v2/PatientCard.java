@@ -53,6 +53,11 @@ public class PatientCard extends GenericCollection {
 	private List<PatientGroupCollection> patientGroupCollections;
 
 	private Boolean isPatientDiscarded = false;
+	
+	private String imageUrl;
+
+	
+
 
 	public User getUser() {
 		return user;
@@ -212,6 +217,16 @@ public class PatientCard extends GenericCollection {
 
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
+	}
+
+	
+	
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 	@Override

@@ -42,6 +42,11 @@ public class RegisteredPatientDetails extends GenericCollection {
 	private Boolean isChild = false;
 
 	private List<String> groupIds;
+	
+	private String imageUrl;
+
+	private String thumbnailUrl;
+
 
 	public String getFirstName() {
 		return firstName;
@@ -179,4 +184,21 @@ public class RegisteredPatientDetails extends GenericCollection {
 		this.groupIds = groupIds;
 	}
 
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
+
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
+
+	
 }

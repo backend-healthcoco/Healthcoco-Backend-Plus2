@@ -104,6 +104,8 @@ public class PatientRegistrationRequest {
 	private String fatherName;
 
 	private String motherName;
+	
+	private String imageUrl;
 
 	public String getRecordId() {
 		return recordId;
@@ -471,6 +473,16 @@ public class PatientRegistrationRequest {
 
 	public void setLandlineNumber(String landlineNumber) {
 		this.landlineNumber = landlineNumber;
+	}
+	
+	
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 	@Override

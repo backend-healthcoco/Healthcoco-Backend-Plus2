@@ -854,6 +854,8 @@ public class ContactsServiceImpl implements ContactsService {
 					registeredPatientDetail.setPID(patientCard.getPID());
 					registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
 					registeredPatientDetail.setBackendPatientId(patientCard.getId());
+				//	registeredPatientDetail.setImageUrl(patientCard.getImageUrl());
+				//	registeredPatientDetail.setThumbnailUrl(patientCard.getThumbnailUrl());
 					registeredPatientDetail.setColorCode(patientCard.getUser().getColorCode());
 					if (groupIds != null) {
 						groupIdList = new ArrayList<>();

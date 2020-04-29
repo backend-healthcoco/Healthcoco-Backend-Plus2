@@ -1591,6 +1591,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						patientCard.getUser().getId().toString()));
 				registeredPatientDetails.setPatient(patient);
 				registeredPatientDetails.setAddress(patientCard.getAddress());
+				registeredPatientDetails.setBackendPatientId(patientCard.getId());
 				@SuppressWarnings("unchecked")
 				Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
 						new BeanToPropertyValueTransformer("groupId"));
@@ -2032,31 +2033,31 @@ public class RegistrationServiceImpl implements RegistrationService {
 				BeanUtil.map(request, locationCollection);
 			}
 
-			List<GeocodedLocation> geocodedLocations = locationServices
-					.geocodeLocation((!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-							? locationCollection.getStreetAddress() + ", "
-							: "")
-							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-									? locationCollection.getLandmarkDetails() + ", "
-									: "")
-							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-									? locationCollection.getLocality() + ", "
-									: "")
-							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-									? locationCollection.getCity() + ", "
-									: "")
-							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-									? locationCollection.getState() + ", "
-									: "")
-							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-									? locationCollection.getCountry() + ", "
-									: "")
-							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-									? locationCollection.getPostalCode()
-									: ""));
-
-			if (geocodedLocations != null && !geocodedLocations.isEmpty())
-				BeanUtil.map(geocodedLocations.get(0), locationCollection);
+//			List<GeocodedLocation> geocodedLocations = locationServices
+//					.geocodeLocation((!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+//							? locationCollection.getStreetAddress() + ", "
+//							: "")
+//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+//									? locationCollection.getLandmarkDetails() + ", "
+//									: "")
+//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+//									? locationCollection.getLocality() + ", "
+//									: "")
+//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+//									? locationCollection.getCity() + ", "
+//									: "")
+//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+//									? locationCollection.getState() + ", "
+//									: "")
+//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+//									? locationCollection.getCountry() + ", "
+//									: "")
+//							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+//									? locationCollection.getPostalCode()
+//									: ""));
+//
+//			if (geocodedLocations != null && !geocodedLocations.isEmpty())
+//				BeanUtil.map(geocodedLocations.get(0), locationCollection);
 			if (DPDoctorUtils.anyStringEmpty(request.getLocationName()))
 				locationCollection.setLocationName(locationName);
 			locationCollection.setAlternateClinicNumbers(request.getAlternateClinicNumbers());
