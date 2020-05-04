@@ -15,6 +15,7 @@ import com.dpdocter.beans.NutritionAssessment;
 import com.dpdocter.beans.NutritionRDA;
 import com.dpdocter.beans.PhysicalAssessment;
 import com.dpdocter.beans.RegistrationDetails;
+import com.dpdocter.beans.UserTreatment;
 import com.dpdocter.response.AcadamicClassResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.NutritionSchoolAssociationResponse;
@@ -107,7 +108,7 @@ public interface CampVisitService {
 
 	List<AcademicProfile> getStudentProfile(int page, int size, String branchId, String schoolId, String classId,
 			String sectionId, String searchTerm, Boolean discarded, String profileType, String userId,
-			String updatedTime, String assesmentType, String department);
+			String updatedTime, String assesmentType, String department, String departmentValue);
 
 	Integer countTeacherProfile(String branchId, String schoolId, String searchTerm, Boolean discarded,
 			String profileType, String userId, String updatedTime);
@@ -134,4 +135,16 @@ public interface CampVisitService {
 
 	List<DoctorSchoolAssociation> getDoctorAssociations(int page, int size, String doctorId, String searchTerm, String updatedTime,
 			String branchId, String department);
+
+	UserTreatment addUserTreatment(UserTreatment request);
+
+	UserTreatment getUserTreatmentById(String id);
+
+	List<UserTreatment> getUserTreatments(int size, int page, String userId, String doctorId, String locationId,
+			String hospitalId, Boolean discarded, String updatedTime, String department);
+
+	UserTreatment deleteUserTreatment(String id, Boolean discarded);
+
+	List<Object> getUserTreatmentAnalyticsData(String doctorId, String locationId, String hospitalId, long fromDate,
+			long toDate, String department, Boolean discarded);
 }

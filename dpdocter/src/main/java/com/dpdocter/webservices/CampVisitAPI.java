@@ -1,8 +1,12 @@
 package com.dpdocter.webservices;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -24,9 +28,11 @@ import com.dpdocter.beans.NutritionAssessment;
 import com.dpdocter.beans.NutritionRDA;
 import com.dpdocter.beans.PhysicalAssessment;
 import com.dpdocter.beans.RegistrationDetails;
+import com.dpdocter.beans.UserTreatment;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.AcadamicClassResponse;
+import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.NutritionSchoolAssociationResponse;
 import com.dpdocter.response.UserAssessment;
 import com.dpdocter.services.CampVisitService;
@@ -238,7 +244,8 @@ public class CampVisitAPI {
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("classId") String classId,
 			@QueryParam("sectionId") String sectionId, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("discarded") Boolean discarded, @QueryParam("userId") String userId,
-			@QueryParam("updatedTime") String updatedTime, @QueryParam("assesmentType") String assesmentType, @QueryParam("department") String department) {
+			@QueryParam("updatedTime") String updatedTime, @QueryParam("assesmentType") String assesmentType, @QueryParam("department") String department,
+			@QueryParam("departmentValue") String departmentValue) {
 
 		if (DPDoctorUtils.anyStringEmpty(branchId, schoolId, profileType)) {
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -247,7 +254,7 @@ public class CampVisitAPI {
 		Response<AcademicProfile> response = new Response<AcademicProfile>();
 		if (profileType.equalsIgnoreCase("STUDENT")) {
 			response.setDataList(campVisitService.getStudentProfile(page, size, branchId, schoolId, classId, sectionId,
-					searchTerm, discarded, profileType, userId, updatedTime, assesmentType, department));
+					searchTerm, discarded, profileType, userId, updatedTime, assesmentType, department, departmentValue));
 			response.setCount(campVisitService.countStudentProfile(branchId, schoolId, classId, sectionId, searchTerm,
 					discarded, profileType, userId, updatedTime));
 		} else if (profileType.equalsIgnoreCase("TEACHER")) {
@@ -355,6 +362,73 @@ public class CampVisitAPI {
 		}
 		Response<DoctorSchoolAssociation> response = new Response<DoctorSchoolAssociation>();
 		response.setDataList(campVisitService.getDoctorAssociations(page, size, doctorId, searchTerm, updatedTime, branchId, department));
+		return response;
+	}
+	
+	@Path(value = PathProxy.CampVisitUrls.ADD_USER_TREATMENT)
+	@ApiOperation(value = PathProxy.CampVisitUrls.ADD_USER_TREATMENT, notes = PathProxy.CampVisitUrls.ADD_USER_TREATMENT)
+	@POST
+	public Response<UserTreatment> addUserTreatment(UserTreatment request) {
+		if(request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Request should not null or Empty");
+		}
+		Response<UserTreatment> response = new Response<UserTreatment>();
+		response.setData(campVisitService.addUserTreatment(request));
+		return response;
+	}
+
+	@Path(value = PathProxy.CampVisitUrls.GET_USER_TREATMENT_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.CampVisitUrls.GET_USER_TREATMENT_BY_ID, notes = PathProxy.CampVisitUrls.GET_USER_TREATMENT_BY_ID)
+	public Response<UserTreatment> getUserTreatmentById(@PathParam("id") String id) {
+		if (id == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+
+		Response<UserTreatment> response = new Response<UserTreatment>();
+		response.setData(campVisitService.getUserTreatmentById(id));
+		return response;
+	}
+	
+	@Path(value = PathProxy.CampVisitUrls.GET_USER_TREATMENTS)
+	@GET
+	@ApiOperation(value = PathProxy.CampVisitUrls.GET_USER_TREATMENTS, notes = PathProxy.CampVisitUrls.GET_USER_TREATMENTS)
+	public Response<UserTreatment> getUserTreatments(@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("userId") String userId, 
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam("locationId") String locationId, 
+			@QueryParam("hospitalId") String hospitalId, @QueryParam("discarded") Boolean discarded,
+			@QueryParam("updatedTime") String updatedTime, @QueryParam("department") String department) {
+		Response<UserTreatment> response = new Response<UserTreatment>();
+		response.setDataList(campVisitService.getUserTreatments(size, page, userId, doctorId, locationId, hospitalId, discarded, updatedTime, department));
+		return response;
+	}
+	
+	@Path(value = PathProxy.CampVisitUrls.DELETE_TREATMENT)
+	@ApiOperation(value = PathProxy.CampVisitUrls.DELETE_TREATMENT, notes = PathProxy.CampVisitUrls.DELETE_TREATMENT)
+	@DELETE
+	public Response<UserTreatment> deleteUserTreatment(@PathParam("id") String id, @QueryParam("discarded") Boolean discarded) {
+		if (id == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
+		}
+		Response<UserTreatment> response = new Response<UserTreatment>();
+		response.setData(campVisitService.deleteUserTreatment(id, discarded));
+		return response;
+	}
+	
+	@Path(value = PathProxy.CampVisitUrls.GET_USER_TREATMENT_ANALYTICS_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.CampVisitUrls.GET_USER_TREATMENT_ANALYTICS_DATA, notes = PathProxy.CampVisitUrls.GET_USER_TREATMENT_ANALYTICS_DATA)
+	public Response<Object> getUserTreatmentAnalyticsData(@QueryParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("fromDate") long fromDate, @QueryParam("toDate") long toDate,
+			@QueryParam("department") String department, @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, " locationId, hospitalId should not be empty");
+		}
+		List<Object> analyticResponse = campVisitService.getUserTreatmentAnalyticsData(
+				doctorId, locationId, hospitalId, fromDate, toDate, department, discarded);
+
+		Response<Object> response = new Response<Object>();
+		response.setDataList(analyticResponse);
 		return response;
 	}
 }

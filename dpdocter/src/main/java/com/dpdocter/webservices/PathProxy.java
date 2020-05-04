@@ -2279,6 +2279,11 @@ public interface PathProxy {
 		public static final String GET_USER_ASSESSMENT = "/userAssessment/{academicProfileId}";
 		public static final String GET_ASSOCIATIONS_FOR_DOCTOR = "/getDoctorAssociations/";
 
+		public static final String ADD_USER_TREATMENT = "/treatment/add";
+		public static final String GET_USER_TREATMENT_BY_ID = "/treatment/{id}";
+		public static final String GET_USER_TREATMENTS = "/treatment";
+		public static final String DELETE_TREATMENT = "/treatment/delete/{id}";
+		public static final String GET_USER_TREATMENT_ANALYTICS_DATA = "/treatment/analytics";
 	}
 
 
