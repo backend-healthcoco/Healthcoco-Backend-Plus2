@@ -196,5 +196,17 @@ public interface PathProxy {
 		public static final String SEARCH_DRUG = "searchDrug/{range}";
 
 	}
+	
+	public static final String SIGNUP_BASE_URL = BASE_URL + "/signup";
+	
+	public interface SignUpUrls {
+	
+	public static final String DOCTOR_SIGNUP = "/doctor";
+	
+	public static final String VERIFY_USER = "/verify/{tokenId}";
+	
+	public static final String DOCTOR_REGISTER = "/doctorRegister";
+	
+	}
 
 }
