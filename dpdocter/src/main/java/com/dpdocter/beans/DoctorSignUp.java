@@ -8,6 +8,8 @@ public class DoctorSignUp {
     private User user;
 
     private Hospital hospital;
+    
+    private Boolean isEmailVerified=false;
 
     public User getUser() {
 	return user;
@@ -24,8 +26,18 @@ public class DoctorSignUp {
     public void setHospital(Hospital hospital) {
 	this.hospital = hospital;
     }
+    
+    
 
-    @Override
+    public Boolean getIsEmailVerified() {
+		return isEmailVerified;
+	}
+
+	public void setIsEmailVerified(Boolean isEmailVerified) {
+		this.isEmailVerified = isEmailVerified;
+	}
+
+	@Override
     public String toString() {
 	return "DoctorSignUp [user=" + user + ", hospital=" + hospital + "]";
     }

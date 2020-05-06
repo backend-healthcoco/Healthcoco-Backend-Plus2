@@ -88,6 +88,11 @@ public class UserCollection extends GenericCollection {
 	@Field
 	private Boolean isPasswordSet = false;
 	
+	@Field
+	private Boolean isMedicalStudent=false;
+	
+	
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -293,6 +298,16 @@ public class UserCollection extends GenericCollection {
 
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
+	}
+	
+	
+
+	public Boolean getIsMedicalStudent() {
+		return isMedicalStudent;
+	}
+
+	public void setIsMedicalStudent(Boolean isMedicalStudent) {
+		this.isMedicalStudent = isMedicalStudent;
 	}
 
 	public UserCollection(ObjectId id, String title, String firstName, String lastName, String middleName,
