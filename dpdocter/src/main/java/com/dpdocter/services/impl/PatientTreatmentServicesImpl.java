@@ -324,7 +324,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 
 				if (request.getCreatedTime() != null) {
-					patientTreatmentCollection.setCreatedTime(new Date());
+					patientTreatmentCollection.setCreatedTime(request.getCreatedTime());
 				} else {
 					patientTreatmentCollection.setCreatedTime(new Date());
 				}

@@ -98,4 +98,21 @@ public class OTPApi {
 		response.setData(verifyOTPResponse);
 		return response;
 	}
+	
+	
+	@Path(value = PathProxy.OTPUrls.VERIFY_OTP_SIGNUP)
+	@GET
+	@ApiOperation(value = PathProxy.OTPUrls.VERIFY_OTP_SIGNUP, notes = PathProxy.OTPUrls.VERIFY_OTP_SIGNUP)
+	public Response<Boolean> verifySignUpOTP(@PathParam("mobileNumber") String mobileNumber,
+			@PathParam("otpNumber") String otpNumber,@PathParam("countryCode") String countryCode) {
+		if (DPDoctorUtils.anyStringEmpty(otpNumber, mobileNumber,countryCode)) {
+			logger.warn("Invalid Input. mobileNumber,countryCode, OTP Number Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. mobileNumber,countryCode, OTP Number Cannot Be Empty");
+		}
+		Boolean verifyOTPResponse = otpService.verifyOTP(mobileNumber, otpNumber,countryCode);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(verifyOTPResponse);
+		return response;
+	}
 }

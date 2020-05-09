@@ -9,6 +9,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -393,6 +394,40 @@ public class SignUpApi {
 		response.setData(doctorSignUp);
 		return response;
 	}
-
+	
+	
+//	@Produces(MediaType.APPLICATION_JSON)
+//	@Path(value = PathProxy.SignUpUrls.DOCTOR_REGISTER)
+//	@GET
+//	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_REGISTER, notes = PathProxy.SignUpUrls.DOCTOR_REGISTER)
+//	 public Response<Boolean> DoctorRegister(@QueryParam(value = "mobileNumber") String mobileNumber) {
+//			if (mobileNumber == null || mobileNumber.isEmpty()) {
+//			    logger.warn("Mobile number is null");
+//			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+//			}
+//			Boolean registerResponse = signUpService.DoctorRegister(mobileNumber);
+//		
+//			Response<Boolean> response = new Response<Boolean>();
+//			if (response != null)
+//			    response.setData(registerResponse);
+//			
+//		    
+//			return response;
+//		}
+	
+//	@Produces(MediaType.APPLICATION_JSON)
+//	@Path(value = PathProxy.SignUpUrls.VERIFY_EMAIL_ADDRESS)
+//	@GET
+//	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_EMAIL_ADDRESS, notes = PathProxy.SignUpUrls.VERIFY_EMAIL_ADDRESS)
+//	public Response<Boolean> verifyEmail(@PathParam(value = "emailaddress") String emailaddress) {
+//		if (DPDoctorUtils.anyStringEmpty(emailaddress)) {
+//			logger.warn("Invalid Input");
+//			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+//		}
+//		Response<Boolean> response = new Response<Boolean>();
+//		response.setData(signUpService.verifyEmailAddress(emailaddress));
+//		return response;
+//	}
+//
 	
 }

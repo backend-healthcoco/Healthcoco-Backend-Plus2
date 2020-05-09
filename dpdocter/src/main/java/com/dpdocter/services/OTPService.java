@@ -20,4 +20,6 @@ public interface OTPService {
 
 	Boolean checkOTPVerifiedForPatient(String mobileNumber, String otpNumber);
 
+	Boolean verifyOTP(String mobileNumber, String otpNumber, String countryCode);
+
 }

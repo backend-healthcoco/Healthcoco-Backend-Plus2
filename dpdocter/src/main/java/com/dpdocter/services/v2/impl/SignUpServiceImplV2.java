@@ -28,6 +28,7 @@ import com.dpdocter.beans.User;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorContactUsCollection;
+import com.dpdocter.collections.DoctorOtpSignUpCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.OTPCollection;
@@ -50,6 +51,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorContactUsRepository;
+import com.dpdocter.repository.DoctorOtpSignUpRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
@@ -60,6 +62,8 @@ import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.TokenRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
+import com.dpdocter.request.DoctorOtpRequest;
+import com.dpdocter.response.DoctorRegisterResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.MailBodyGenerator;
@@ -118,7 +122,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 	private ForgotPasswordService forgotPasswordService;
 	
 	@Autowired
-	private DoctorContactUsRepository doctorContactUsRepository;
+	private DoctorOtpSignUpRepository doctorOtpSignUpRepository;
 
 
 	@Autowired
@@ -147,29 +151,21 @@ public class SignUpServiceImplV2 implements SignUpService{
 	
 
 	@Override
-	public Boolean DoctorRegister(String mobileNumber) {
-		Boolean response=false;
+	public DoctorRegisterResponse DoctorRegister(DoctorOtpRequest request) {
+		DoctorRegisterResponse response=null;
 		try {
 		
-		List<DoctorContactUsCollection> doctorContactUsCollections = doctorContactUsRepository.findByMobileNumber(mobileNumber);
-
-	DoctorContactUsCollection doctorContactUsCollection=null;
-//	if(doctorContactUsCollections.get(0)!=null)
-//		if(doctorContactUsCollections.get(0).getMobileNumber() !=null)
-//	{
-//		throw new BusinessException(ServiceError.Unknown, "Please Signup you have registered already.");
-//
-//	}
-//	else {
-			doctorContactUsCollection=new DoctorContactUsCollection();
-				 doctorContactUsCollection.setCreatedTime(new Date());
-				 doctorContactUsCollection.setUserName("aman.gmail.com");
-				 doctorContactUsCollection.setMobileNumber(mobileNumber);
+		DoctorOtpSignUpCollection doctorOtpSignUCollection=new DoctorOtpSignUpCollection();
+		doctorOtpSignUCollection.setCreatedTime(new Date());
+		doctorOtpSignUCollection.setMobileNumber(request.getMobileNumber());
+		doctorOtpSignUCollection.setCountryCode(request.getCountryCode());
+		doctorOtpSignUpRepository.save(doctorOtpSignUCollection);
 			
-//	}		 
-				 doctorContactUsRepository.save(doctorContactUsCollection);
-				 System.out.println(doctorContactUsCollection);
-				 response=otpGenerator(mobileNumber);
+				 response=new DoctorRegisterResponse();
+				 BeanUtil.map(doctorOtpSignUCollection, response);
+				 
+				 System.out.println(doctorOtpSignUCollection);
+				 otpGenerator(request.getMobileNumber(),request.getCountryCode());
 				 
 			 
 		}
@@ -181,7 +177,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 		return response;
 	}
 	
-	  public Boolean otpGenerator(String mobileNumber) {
+	  public Boolean otpGenerator(String mobileNumber,String countryCode) {
 	    	Boolean response = false;
 		String OTP = null;
 		try {
@@ -213,6 +209,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 		    otpCollection.setOtpNumber(OTP);
 		    otpCollection.setGeneratorId(mobileNumber);
 		    otpCollection.setMobileNumber(mobileNumber);
+		    otpCollection.setCountryCode(countryCode);
 		    otpCollection.setCreatedBy(mobileNumber);
 		    otpCollection = otpRepository.save(otpCollection);
 
@@ -273,7 +270,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 
 			userCollection.setUserState(UserState.NOTVERIFIED);
 			userCollection.setIsVerified(false);
-			if(request.getPassword()!=null&&request.getPassword().toCharArray().length>0)
+			if(request.getPassword()!=null&&request.getPassword().length>0)
 			userCollection.setPassword(passwordEncoder.encode(String.valueOf(request.getPassword())).toCharArray());
 //			userCollection.setPassword(request.getPassword());
 			userCollection.setIsPasswordSet(true);
@@ -377,91 +374,9 @@ public class SignUpServiceImplV2 implements SignUpService{
 				userRoleCollections.add(userRoleCollection);
 			}
 			
-		/*	if(request.getMrCode() != null)
-			{
-				pcUserCollection = pcUserRepository.findByMRCode(request.getMrCode());
-				List<PharmaLicenseResponse> pharmaLicenseResponses = pharmaService.getLicenses(pcUserCollection.getCompanyId().toString(), 0, 0);
-				for(PharmaLicenseResponse pharmaLicenseResponse : pharmaLicenseResponses)
-				{
-					if(pharmaLicenseResponse.getAvailable() > 0)
-					{
-						licenseResponse = pharmaLicenseResponse;
-						break;
-					}
-				}
-			}
+					userRoleRepository.saveAll(userRoleCollections);
+
 			
-			// Subscribe Doctor with Clinic
-			SubscriptionDetail detail = new SubscriptionDetail();
-			detail.setCreatedBy("Admin");
-			detail.setDoctorId(userCollection.getId().toString());
-			detail.setIsDemo(true);
-			detail.setMonthsforSms(1);
-			detail.setMonthsforSuscrption(1);
-			detail.setNoOfsms(500);
-			Set<String> locationSet = new HashSet<String>();
-			locationSet.add(locationCollection.getId().toString());
-			detail.setLocationIds(locationSet);
-			if(licenseResponse != null)
-			{
-				detail.setIsDemo(false);
-				detail.setFromDate(new Date());
-				detail.setToDate(DateUtils.addMonths(new Date(), licenseResponse.getDuration()));
-				detail.setLicenseId(licenseResponse.getId());
-				licenseResponse.setAvailable(licenseResponse.getAvailable() - 1);
-				licenseResponse.setConsumed(licenseResponse.getConsumed() + 1);
-				PharmaLicenseCollection pharmaLicenseCollection = new PharmaLicenseCollection();
-				BeanUtil.map(licenseResponse, pharmaL"isVerified" : falseicenseCollection);
-				pharmaLicenseRepository.save(pharmaLicenseCollection);
-				
-			}
-			subscriptionService.activate(detail);*/
-			userRoleRepository.saveAll(userRoleCollections);
-
-			/*
-			 * if(request.getMrCode() != null) { pcUserCollection =
-			 * pcUserRepository.findByMRCode(request.getMrCode());
-			 * List<PharmaLicenseResponse> pharmaLicenseResponses =
-			 * pharmaService.getLicenses(pcUserCollection.getCompanyId().toString(), 0, 0);
-			 * for(PharmaLicenseResponse pharmaLicenseResponse : pharmaLicenseResponses) {
-			 * if(pharmaLicenseResponse.getAvailable() > 0) { licenseResponse =
-			 * pharmaLicenseResponse; break; } } }
-			 * 
-			 * // Subscribe Doctor with Clinic SubscriptionDetail detail = new
-			 * SubscriptionDetail(); detail.setCreatedBy("Admin");
-			 * detail.setDoctorId(userCollection.getId().toString());
-			 * detail.setIsDemo(true); detail.setMonthsforSms(1);
-			 * detail.setMonthsforSuscrption(1); detail.setNoOfsms(500); Set<String>
-			 * locationSet = new HashSet<String>();
-			 * locationSet.add(locationCollection.getId().toString());
-			 * detail.setLocationIds(locationSet); if(licenseResponse != null) {
-			 * detail.setIsDemo(false); detail.setFromDate(new Date());
-			 * detail.setToDate(DateUtils.addMonths(new Date(),
-			 * licenseResponse.getDuration()));
-			 * detail.setLicenseId(licenseResponse.getId());
-			 * licenseResponse.setAvailable(licenseResponse.getAvailable() - 1);
-			 * licenseResponse.setConsumed(licenseResponse.getConsumed() + 1);
-			 * PharmaLicenseCollection pharmaLicenseCollection = new
-			 * PharmaLicenseCollection(); BeanUtil.map(licenseResponse, pharmaL"isVerified"
-			 * : falseicenseCollection);
-			 * pharmaLicenseRepository.save(pharmaLicenseCollection);
-			 * 
-			 * } subscriptionService.activate(detail);
-			 */
-
-			// Subscribe Doctor with Clinic
-			/*
-			 * SubscriptionDetail detail = new SubscriptionDetail();
-			 * detail.setCreatedBy("Admin");
-			 * detail.setDoctorId(userCollection.getId().toString());
-			 * detail.setIsDemo(true); detail.setMonthsforSms(1);
-			 * detail.setMonthsforSuscrption(1); detail.setNoOfsms(500); Set<String>
-			 * locationSet = new HashSet<String>();
-			 * locationSet.add(locationCollection.getId().toString());
-			 * detail.setLocationIds(locationSet);
-			 * subscriptionDetailServices.activate(detail);
-			 */
-
 			// save token
 			TokenCollection tokenCollection = new TokenCollection();
 			tokenCollection.setResourceId(doctorClinicProfileCollection.getId());
@@ -473,46 +388,11 @@ public class SignUpServiceImplV2 implements SignUpService{
 			
 			
 			// send activation email
+			String body = mailBodyGenerator.generateActivationEmailBody(
+					(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName(),
+					tokenCollection.getId(), "verifyDoctor.vm", null,null,null);
+			mailService.sendEmail(userCollection.getEmailAddress(),signupRequestSubject, body, null);
 			
-//			
-//			  String body = mailBodyGenerator .generateActivationEmailBody(
-//			  (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") +
-//			  userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm",
-//			  null, null); mailService.sendEmail(userCollection.getEmailAddress(),
-//					  signupSubject, body, null);
-			 
-
-			/*
-			 * String body = mailBodyGenerator.generateActivationEmailBody(
-			 * (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") +
-			 * userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm",
-			 * null, null); mailService.sendEmail(userCollection.getEmailAddress(),
-			 * signupSubject, body, null);
-			 */
-
-			// user.setPassword(null);
-			/*
-			 * if (userCollection.getMobileNumber() != null) { SMSTrackDetail smsTrackDetail
-			 * = new SMSTrackDetail();
-			 * 
-			 * smsTrackDetail.setType("BEFORE_VERIFICATION_TO_DOCTOR"); SMSDetail smsDetail
-			 * = new SMSDetail(); smsDetail.setUserId(userCollection.getId());
-			 * smsDetail.setUserName(userCollection.getFirstName()); SMS sms = new SMS();
-			 * sms.setSmsText("Welcome " + (userCollection.getTitle() != null ?
-			 * userCollection.getTitle() + " " : "") + userCollection.getFirstName() +
-			 * " to Healthcoco. We will contact you shortly to get you started. Download the Healthcoco+ app now: "
-			 * + doctorAppLink +
-			 * ". For queries, please feel free to contact us at support@healthcoco.com");
-			 * 
-			 * SMSAddress smsAddress = new SMSAddress();
-			 * smsAddress.setRecipient(userCollection.getMobileNumber());
-			 * sms.setSmsAddress(smsAddress);
-			 * 
-			 * smsDetail.setSms(sms); smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-			 * List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-			 * smsDetails.add(smsDetail); smsTrackDetail.setSmsDetails(smsDetails);
-			 * sMSServices.sendSMS(smsTrackDetail, true); }
-			 */
 			response = new DoctorSignUp();
 			User user = new User();
 			userCollection.setPassword(null);

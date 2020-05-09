@@ -13,4 +13,7 @@ public interface OTPRepository extends MongoRepository<OTPCollection, ObjectId>,
 	OTPCollection findByMobileNumberAndOtpNumberAndGeneratorId(String mobileNumber, String otpNumber, String generatorId);
 
     List<OTPCollection> findByStateNot(String expired);
+
+	OTPCollection findByMobileNumberAndOtpNumberAndCountryCode(String mobileNumber, String otpNumber,
+			String mobileNumber2);
 }

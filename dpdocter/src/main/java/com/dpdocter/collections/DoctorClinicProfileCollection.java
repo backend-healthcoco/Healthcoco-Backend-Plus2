@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -11,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.WorkingSchedule;
+import com.dpdocter.enums.DoctorConsultation;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.PackageType;
@@ -53,6 +55,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private List<WorkingSchedule> workingSchedules;
+	
+	@Field
+	private List<WorkingSchedule> onlineWorkingSchedules;
 
 	@Field
 	private DoctorFacility facility = DoctorFacility.CALL;
@@ -147,6 +152,10 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private List<String> departments;
+	
+	@Field
+	private Map<DoctorConsultation, String> consultationType;
+
 	
 	public ObjectId getId() {
 		return id;
@@ -490,6 +499,26 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setDepartments(List<String> departments) {
 		this.departments = departments;
+	}
+	
+	
+
+	public List<WorkingSchedule> getOnlineWorkingSchedules() {
+		return onlineWorkingSchedules;
+	}
+
+	public void setOnlineWorkingSchedules(List<WorkingSchedule> onlineWorkingSchedules) {
+		this.onlineWorkingSchedules = onlineWorkingSchedules;
+	}
+	
+	
+
+	public Map<DoctorConsultation, String> getConsultationType() {
+		return consultationType;
+	}
+
+	public void setConsultationType(Map<DoctorConsultation, String> consultationType) {
+		this.consultationType = consultationType;
 	}
 
 	@Override

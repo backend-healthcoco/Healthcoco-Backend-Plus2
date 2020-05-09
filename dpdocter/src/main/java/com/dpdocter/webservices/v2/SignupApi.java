@@ -14,12 +14,15 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.request.DoctorSignupRequest;
+import com.dpdocter.request.DoctorOtpRequest;
+import com.dpdocter.response.DoctorRegisterResponse;
+import com.dpdocter.beans.v2.DoctorSignupRequest;
 import com.dpdocter.services.v2.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.webservices.v2.PathProxy;
@@ -110,16 +113,18 @@ public class SignupApi {
 	
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SignUpUrls.DOCTOR_REGISTER)
-	@GET
+	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_REGISTER, notes = PathProxy.SignUpUrls.DOCTOR_REGISTER)
-	 public Response<Boolean> DoctorRegister(@QueryParam(value = "mobileNumber") String mobileNumber) {
-			if (mobileNumber == null || mobileNumber.isEmpty()) {
+	 public Response<DoctorRegisterResponse> DoctorRegister(@RequestBody DoctorOtpRequest request) {
+	//	@QueryParam(value = "mobileNumber") String mobileNumber,
+	//	 @QueryParam(value = "countryCode") String countryCode
+			if (request == null || request.getMobileNumber().isEmpty()) {
 			    logger.warn("Mobile number is null");
 			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
-			Boolean registerResponse = signUpService.DoctorRegister(mobileNumber);
+			DoctorRegisterResponse registerResponse = signUpService.DoctorRegister(request);
 		
-			Response<Boolean> response = new Response<Boolean>();
+			Response<DoctorRegisterResponse> response = new Response<DoctorRegisterResponse>();
 			if (response != null)
 			    response.setData(registerResponse);
 			

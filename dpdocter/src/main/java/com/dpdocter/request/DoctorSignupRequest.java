@@ -44,6 +44,10 @@ public class DoctorSignupRequest {
 	private String cityId;
 
 	private String deviceType;
+	
+	private String promoCode;
+	
+	private Boolean isMedicalStudent=false;
 
 	public DOB getDob() {
 		return dob;
@@ -179,6 +183,24 @@ public class DoctorSignupRequest {
 
 	public void setDeviceType(String deviceType) {
 		this.deviceType = deviceType;
+	}
+	
+	
+
+	public String getPromoCode() {
+		return promoCode;
+	}
+
+	public void setPromoCode(String promoCode) {
+		this.promoCode = promoCode;
+	}
+
+	public Boolean getIsMedicalStudent() {
+		return isMedicalStudent;
+	}
+
+	public void setIsMedicalStudent(Boolean isMedicalStudent) {
+		this.isMedicalStudent = isMedicalStudent;
 	}
 
 	@Override

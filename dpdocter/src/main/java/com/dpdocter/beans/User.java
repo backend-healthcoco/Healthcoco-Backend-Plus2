@@ -54,6 +54,10 @@ public class User {
 
 	private Boolean isSuperstarAssociated;
 	
+	private Boolean isEmailVerified=false;
+	
+	private Boolean isMedicalStudent=false;
+	
 	public User(String firstName, String mobileNumber) {
 		this.firstName = firstName;
 		this.mobileNumber = mobileNumber;
@@ -265,5 +269,23 @@ public class User {
 	public void setIsSuperstarAssociated(Boolean isSuperstarAssociated) {
 		this.isSuperstarAssociated = isSuperstarAssociated;
 	}
+
+	public Boolean getIsEmailVerified() {
+		return isEmailVerified;
+	}
+
+	public void setIsEmailVerified(Boolean isEmailVerified) {
+		this.isEmailVerified = isEmailVerified;
+	}
+
+	public Boolean getIsMedicalStudent() {
+		return isMedicalStudent;
+	}
+
+	public void setIsMedicalStudent(Boolean isMedicalStudent) {
+		this.isMedicalStudent = isMedicalStudent;
+	}
+	
+	
 
 }

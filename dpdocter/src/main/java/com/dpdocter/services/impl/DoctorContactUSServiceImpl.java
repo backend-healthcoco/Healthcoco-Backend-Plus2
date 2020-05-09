@@ -24,6 +24,7 @@ import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.DoctorContactUsCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TokenCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.enums.SMSStatus;
@@ -32,6 +33,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorContactUsRepository;
 import com.dpdocter.repository.TokenRepository;
+import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.services.DoctorContactUsService;
 import com.dpdocter.services.ForgotPasswordService;
@@ -82,11 +84,24 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 	@Autowired
 	private ForgotPasswordService forgotPasswordService;
 
+	@Autowired
+	private UserRepository userRepository;
+	
 	@Override
 	@Transactional
 	public String submitDoctorContactUSInfo(DoctorContactUs doctorContactUs) {
 		String response = null;
 		DoctorContactUsCollection doctorContactUsCollection = new DoctorContactUsCollection();
+		DoctorContactUsCollection doctorContactUsCollections = doctorContactUsRepository.findByEmailAddressIgnoreCase(doctorContactUs.getEmailAddress());
+	
+	if(doctorContactUsCollections!=null)
+		if(doctorContactUsCollections.getEmailAddress() !=null) {
+			throw new BusinessException(ServiceError.Unknown,
+					"This emailId "+ doctorContactUs.getEmailAddress()+" already exists,Please Contact our Support number 8459802223.");
+		}
+		
+		
+		
 		if (doctorContactUs != null) {
 			BeanUtil.map(doctorContactUs, doctorContactUsCollection);
 			try {
@@ -100,7 +115,10 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 				tokenCollection.setCreatedTime(new Date());
 				tokenCollection = tokenRepository.save(tokenCollection);
 				
-				String body = mailBodyGenerator.generateActivationEmailBody(
+				String body=null;
+				
+				
+				 body = mailBodyGenerator.generateActivationEmailBody(
 						doctorContactUs.getTitle() + " " + doctorContactUs.getFirstName(), tokenCollection.getId(),
 						"doctorWelcomeTemplate.vm", null, null, null);
 				mailService.sendEmail(doctorContactUs.getEmailAddress(), doctorWelcomeSubject, body, null);

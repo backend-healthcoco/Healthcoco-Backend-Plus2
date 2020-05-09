@@ -761,10 +761,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientVisitCollection.setUpdatedTime(new Date());
 				if (request.getCreatedTime() != null) {
 
-				//	patientVisitCollection.setCreatedTime(request.getCreatedTime());
+					patientVisitCollection.setCreatedTime(request.getCreatedTime());
 
 
-					patientVisitCollection.setCreatedTime(new Date());
+			//		patientVisitCollection.setCreatedTime(new Date());
 				} else {
 					patientVisitCollection.setCreatedTime(patientVisitCollection.getCreatedTime());
 				}
@@ -788,7 +788,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientVisitCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 				patientVisitCollection.setPatientId(new ObjectId(request.getPatientId()));
 				if (request.getCreatedTime() != null) {
-					patientVisitCollection.setCreatedTime(new Date());
+					patientVisitCollection.setCreatedTime(request.getCreatedTime());
 
 				} else {
 					patientVisitCollection.setCreatedTime(new Date());

@@ -44,6 +44,10 @@ public interface PathProxy {
 		public static final String DOCTOR_SIGNUP = "/doctor";
 
 		public static final String VERIFY_CONFERENCE_USER = "/conference/user/verify/{tokenId}";
+		
+		public static final String DOCTOR_REGISTER = "/doctorRegister";
+		
+		public static final String VERIFY_EMAIL_ADDRESS = "/verify/{emailaddress}";
 
 	}
 
@@ -1173,6 +1177,8 @@ public interface PathProxy {
 		public static final String VERIFY_OTP = "/{doctorId}/{locationId}/{hospitalId}/{patientId}/{otpNumber}/verify";
 
 		public static final String VERIFY_OTP_MOBILE = "/{mobileNumber}/{otpNumber}/verify";
+		
+		public static final String VERIFY_OTP_SIGNUP = "/{mobileNumber}/{otpNumber}/{countryCode}/verify";
 
 	}
 
@@ -2304,4 +2310,14 @@ public interface PathProxy {
 		public static final String GET_USER_SYMPTOM = "/userSymptoms/get";
 		
 	}
+	
+	public static final String BANK_DETAILS_BASE_URL = BASE_URL + "/bankDetails";
+	public interface BankDetailsUrls{
+		
+		public static final String GET_BANK_DETAILS_BY_DOCTORID = "/get";
+		
+		public static final String ADD_EDIT_BANK_DETAILS = "/addEdit";
+		
+	}
+	
 }

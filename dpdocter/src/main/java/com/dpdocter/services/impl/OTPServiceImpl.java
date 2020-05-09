@@ -299,7 +299,7 @@ public class OTPServiceImpl implements OTPService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error While Generating OTP");
-			throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP");
+			throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP "+e.getMessage());
 		}
 		return response;
 	}
@@ -348,4 +348,35 @@ public class OTPServiceImpl implements OTPService {
 		}
 		return response;
 	}
+	
+	
+	@Override
+	@Transactional
+	public Boolean verifyOTP(String mobileNumber, String otpNumber,String countryCode) {
+		Boolean response = false;
+		try {
+			OTPCollection otpCollection = otpRepository.findByMobileNumberAndOtpNumberAndCountryCode(mobileNumber, otpNumber, countryCode);
+			System.out.println(otpCollection);
+			if (otpCollection != null) {
+				if (isOTPValid(otpCollection.getCreatedTime())) {
+					otpCollection.setState(OTPState.VERIFIED);
+					otpCollection = otpRepository.save(otpCollection);
+					response = true;
+				} else {
+					logger.error("OTP is expired");
+					throw new BusinessException(ServiceError.NotFound, "OTP is expired");
+				}
+
+			} else {
+				logger.error("Incorrect OTP");
+				throw new BusinessException(ServiceError.NotFound, "Incorrect OTP");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error While Verifying OTP");
+			throw new BusinessException(ServiceError.Unknown, "Error While Verifying OTP");
+		}
+		return response;
+	}
+
 }

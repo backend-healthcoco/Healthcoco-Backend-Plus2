@@ -41,6 +41,7 @@ import com.dpdocter.collections.DoctorContactUsCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.PCUserCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
@@ -54,6 +55,7 @@ import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.SMSStatus;
@@ -70,6 +72,7 @@ import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocaleRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.PCUserRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RoleRepository;
@@ -96,6 +99,7 @@ import com.dpdocter.tokenstore.CustomPasswordEncoder;
 import com.mongodb.DuplicateKeyException;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.LoginUtils;
 
 @Service
 public class SignUpServiceImpl implements SignUpService {
@@ -202,6 +206,9 @@ public class SignUpServiceImpl implements SignUpService {
 		
 	@Value(value = "${welcome.link}")
 	private String welcomeLink;
+	
+	@Autowired
+	private OTPRepository otpRepository;
 
 	@Override
 	@Transactional
@@ -1238,5 +1245,104 @@ public class SignUpServiceImpl implements SignUpService {
 		}
 
 	}
+	
+	
+	@Override
+	public Boolean DoctorRegister(String mobileNumber) {
+		Boolean response=false;
+//		try {
+//		
+//		DoctorContactUsCollection doctorContactUsCollection = doctorContactUsRepository.findByMobileNumber(mobileNumber);
+//
+//	//	if(DPDoctorUtils.anyStringEmpty(doctorContactUsCollection.getMobileNumber()))
+//		//if(doctorContactUsCollection.getMobileNumber().equals(null))
+//	if(doctorContactUsCollection!=null)
+//	{
+//		throw new BusinessException(ServiceError.Unknown, "Please Signup you have registered already.");
+//
+//	}
+//	else {
+//			doctorContactUsCollection=new DoctorContactUsCollection();
+//				 doctorContactUsCollection.setCreatedTime(new Date());
+//				 doctorContactUsCollection.setUserName("aman.gmail.com");
+//				 doctorContactUsCollection.setMobileNumber(mobileNumber);
+//			
+//	}		 
+//				 doctorContactUsRepository.save(doctorContactUsCollection);
+//				 response=otpGenerator(mobileNumber);
+//				 
+//			 
+//		}
+//	 catch (Exception e) {
+//		e.printStackTrace();
+//		logger.error(e + " Error occured while generating otp through mobile number");
+//		throw new BusinessException(ServiceError.Unknown, "Error occured while generating mobile number "+e.getMessage());
+//	}
+		return response;
+	}
+	
+	  public Boolean otpGenerator(String mobileNumber) {
+	    	Boolean response = false;
+		String OTP = null;
+		try {
+		    OTP = LoginUtils.generateOTP();
+		    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+			
+			smsTrackDetail.setType(ComponentType.SIGNED_UP.getType());
+			SMSDetail smsDetail = new SMSDetail();
+			
+		//	smsDetail.setUserName(doctorContactUs.getFirstName());
+			SMS sms = new SMS();
+		
+		//	String link = welcomeLink + "/" + tokenCollection.getId()+"/";
+		//	String shortUrl = DPDoctorUtils.urlShortner(link);
+			sms.setSmsText(OTP+" is your Healthcoco OTP. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy! OTPVerification");
+
+				SMSAddress smsAddress = new SMSAddress();
+			smsAddress.setRecipient(mobileNumber);
+			sms.setSmsAddress(smsAddress);
+			smsDetail.setSms(sms);
+			smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+			List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+			smsDetails.add(smsDetail);
+			smsTrackDetail.setSmsDetails(smsDetails);
+			smsServices.sendSMS(smsTrackDetail, true);
+
+		    OTPCollection otpCollection = new OTPCollection();
+		    otpCollection.setCreatedTime(new Date());
+		    otpCollection.setOtpNumber(OTP);
+		    otpCollection.setGeneratorId(mobileNumber);
+		    otpCollection.setMobileNumber(mobileNumber);
+		    otpCollection.setCreatedBy(mobileNumber);
+		    otpCollection = otpRepository.save(otpCollection);
+
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error While Generating OTP");
+		    throw new BusinessException(ServiceError.Unknown, "Error While Generating OTP");
+		}
+		return response;
+	    }
+
+	@Override
+	@Transactional
+	public Boolean verifyEmailAddress(String email) {
+	
+			try {
+				DoctorContactUsCollection userCollections = doctorContactUsRepository.findByEmailAddressIgnoreCase(email);
+				if (userCollections != null) {
+						return true;
+					} else {
+						return false;
+					}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e);
+				throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			}
+		}
+	
+
 
 }

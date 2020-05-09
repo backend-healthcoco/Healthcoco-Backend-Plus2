@@ -15,7 +15,7 @@ public class DoctorSignupRequest {
 
 	private String firstName;
 
-	private String password;
+	private char[] password;
 
 	private String emailAddress;
 
@@ -65,26 +65,20 @@ public class DoctorSignupRequest {
 		this.firstName = firstName;
 	}
 
-//	public char[] getPassword() {
-//		return password;
-//	}
-//
-//	public void setPassword(char[] password) {
-//		this.password = password;
-//	}
+	public char[] getPassword() {
+		return password;
+	}
+
+	public void setPassword(char[] password) {
+		this.password = password;
+	}
 	
 
 	public String getEmailAddress() {
 		return emailAddress != null ? emailAddress.toLowerCase() : emailAddress;
 	}
 
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
+	
 
 	public String getMobileNumber() {
 		return mobileNumber;

@@ -1,10 +1,12 @@
 package com.dpdocter.beans;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.enums.DoctorConsultation;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.RegularCheckUpTypeEnum;
@@ -44,6 +46,7 @@ public class DoctorClinicProfile {
 	private AppointmentSlot appointmentSlot;
 
 	private List<WorkingSchedule> workingSchedules;
+	
 
 	private DoctorFacility facility;
 
@@ -142,6 +145,11 @@ public class DoctorClinicProfile {
 	private Boolean isVaccinationModuleOn = false;
 
 	private String feedbackURL;
+	
+	private List<WorkingSchedule> onlineWorkingSchedules;
+	
+	private Map<DoctorConsultation, String> consultationType;
+
 
 	public Boolean getIsSuperAdmin() {
 		return isSuperAdmin;
@@ -669,6 +677,27 @@ public class DoctorClinicProfile {
 
 	public void setIsAdminNutritionist(Boolean isAdminNutritionist) {
 		this.isAdminNutritionist = isAdminNutritionist;
+	}
+	
+	
+
+	public List<WorkingSchedule> getOnlineWorkingSchedules() {
+		return onlineWorkingSchedules;
+	}
+
+	public void setOnlineWorkingSchedules(List<WorkingSchedule> onlineWorkingSchedules) {
+		this.onlineWorkingSchedules = onlineWorkingSchedules;
+	}
+	
+	
+	
+
+	public Map<DoctorConsultation, String> getConsultationType() {
+		return consultationType;
+	}
+
+	public void setConsultationType(Map<DoctorConsultation, String> consultationType) {
+		this.consultationType = consultationType;
 	}
 
 	@Override
