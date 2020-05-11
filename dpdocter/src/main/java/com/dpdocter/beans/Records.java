@@ -17,6 +17,8 @@ public class Records extends GenericCollection {
     private String hospitalId;
 
     private String patientId;
+    
+    private String appointmentId;
 
     private String recordsUrl;
 
@@ -225,6 +227,16 @@ public class Records extends GenericCollection {
 
 	public void setRecordsState(String recordsState) {
 		this.recordsState = recordsState;
+	}
+	
+	
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
 	}
 
 	@Override

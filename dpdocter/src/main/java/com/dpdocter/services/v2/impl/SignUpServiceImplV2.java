@@ -391,7 +391,8 @@ public class SignUpServiceImplV2 implements SignUpService{
 			String body = mailBodyGenerator.generateActivationEmailBody(
 					(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName(),
 					tokenCollection.getId(), "verifyDoctor.vm", null,null,null);
-			mailService.sendEmail(userCollection.getEmailAddress(),signupRequestSubject, body, null);
+	Boolean mail=	mailService.sendEmail(userCollection.getEmailAddress(),signupRequestSubject, body, null);
+			System.out.println(mail);
 			
 			response = new DoctorSignUp();
 			User user = new User();

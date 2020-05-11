@@ -174,25 +174,27 @@ public class LoginServiceImpl implements LoginService {
 					throw new BusinessException(ServiceError.NotAuthorized, "Invalid User");
 
 				} else {
-
-					if (!userCollection.getIsVerified()) {
-						response = new LoginResponse();
-						user.setUserState(UserState.NOTVERIFIED);
-						response.setUser(user);
-						return response;
-					}
-					if (!userCollection.getIsActive()) {
-						response = new LoginResponse();
-						user.setUserState(UserState.NOTACTIVATED);
-						response.setUser(user);
-						return response;
-					}
-
+//commented for new signup---
+//					if (!userCollection.getIsVerified()) {
+//						response = new LoginResponse();
+//						user.setUserState(UserState.NOTVERIFIED);
+//						response.setUser(user);
+//						return response;
+//					}
+//					if (!userCollection.getIsActive()) {
+//						response = new LoginResponse();
+//						user.setUserState(UserState.NOTACTIVATED);
+//						response.setUser(user);
+//						return response;
+//					}
+//--
 					userCollection.setLastSession(new Date());
 					userCollection = userRepository.save(userCollection);
-					criteria = new Criteria("doctorId").is(userCollection.getId()).and("isActivate").is(true)
-							.and("hasLoginAccess").ne(false);
-
+					criteria = new Criteria("doctorId").is(userCollection.getId());
+				//commented for new signup---
+					//.and("isActivate").is(true)
+					//		.and("hasLoginAccess").ne(false);
+//---
 					//criteria.and("isNutritionist").is(isNutritionist);
 					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate
 							.aggregate(
@@ -319,7 +321,9 @@ public class LoginServiceImpl implements LoginService {
 							user.setParentSpecialities(parentSpecialities);
 
 						}
-						user.setIsSuperstarAssociated(mongoTemplate.count(new Query(new Criteria("doctorId").is(userCollection.getId())), DoctorSchoolAssociationCollection.class) > 0 ? true : false);
+	//comment for new signup
+						//	user.setIsSuperstarAssociated(mongoTemplate.count(new Query(new Criteria("doctorId").is(userCollection.getId())), DoctorSchoolAssociationCollection.class) > 0 ? true : false);
+	//					user.setIsSuperstarAssociated(mongoTemplate.exists(new Query(new Criteria("doctorId").is(userCollection.getId())), DoctorSchoolAssociationCollection.class));
 						response = new LoginResponse();
 						user.setEmailAddress(user.getUserName());
 						response.setUser(user);
@@ -338,7 +342,7 @@ public class LoginServiceImpl implements LoginService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error occured while login");
-			throw new BusinessException(ServiceError.Unknown, "Error occured while login");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while login"+e.getMessage());
 		}
 		return response;
 	}

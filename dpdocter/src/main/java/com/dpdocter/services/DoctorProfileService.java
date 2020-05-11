@@ -26,6 +26,7 @@ import com.dpdocter.request.DoctorExperienceDetailAddEditRequest;
 import com.dpdocter.request.DoctorGenderAddEditRequest;
 import com.dpdocter.request.DoctorMultipleDataAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
+import com.dpdocter.request.DoctorOnlineWorkingTimeRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalStatementAddEditRequest;
 import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
@@ -122,5 +123,8 @@ public interface DoctorProfileService {
 	Boolean addEditDrugTypePlacement(String doctorId, String drugTypePlacement);
 
 	List<Services> getServices(int page, int size, String updatedTime);
+	
+	DoctorOnlineWorkingTimeRequest addEditOnlineWorkingTime(DoctorOnlineWorkingTimeRequest request);
+	
 
 }

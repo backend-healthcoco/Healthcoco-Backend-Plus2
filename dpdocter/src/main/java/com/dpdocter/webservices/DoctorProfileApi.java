@@ -17,6 +17,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dpdocter.beans.AddEditSEORequest;
 import com.dpdocter.beans.Clinic;
@@ -49,6 +50,7 @@ import com.dpdocter.request.DoctorExperienceDetailAddEditRequest;
 import com.dpdocter.request.DoctorGenderAddEditRequest;
 import com.dpdocter.request.DoctorMultipleDataAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
+import com.dpdocter.request.DoctorOnlineWorkingTimeRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalStatementAddEditRequest;
 import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
@@ -848,6 +850,29 @@ public class DoctorProfileApi {
 		response.setData(doctorProfileService.updateShowInventoryCount(doctorId, locationId, showInventoryCount));
 		return response;
 	}
+	
+	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_TIME)
+	@POST
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_TIME, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_TIME)
+
+	public Response<DoctorOnlineWorkingTimeRequest> addEditOnlineConsultationTime(@RequestBody DoctorOnlineWorkingTimeRequest request) {
+		if (request == null) {
+			logger.warn("Doctor Contact Request Is Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
+		} else if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
+			logger.warn("Doctor Id, LocationId Is Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
+		}
+		DoctorOnlineWorkingTimeRequest addEditVisitingTimeResponse = doctorProfileService.addEditOnlineWorkingTime(request);
+		transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
+		if (addEditVisitingTimeResponse!=null)
+			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
+		Response<DoctorOnlineWorkingTimeRequest> response = new Response<DoctorOnlineWorkingTimeRequest>();
+		response.setData(addEditVisitingTimeResponse);
+		return response;
+	
+	}
+
 	
 
 }

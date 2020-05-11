@@ -84,6 +84,9 @@ public class RecordsCollection extends GenericCollection {
 
 	@Field
 	private List<String> messages;
+	
+	@Field
+	private ObjectId appointmentId;
 
 	@Field
 	private Boolean isPatientDiscarded = false;
@@ -278,6 +281,16 @@ public class RecordsCollection extends GenericCollection {
 
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
+	}
+	
+	
+
+	public ObjectId getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(ObjectId appointmentId) {
+		this.appointmentId = appointmentId;
 	}
 
 	@Override

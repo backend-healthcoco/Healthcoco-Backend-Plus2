@@ -18,4 +18,7 @@ public interface DoctorClinicProfileRepository extends MongoRepository<DoctorCli
 	DoctorClinicProfileCollection findByDoctorIdAndLocationId(ObjectId doctorObjectId, ObjectId locationObjectId);
 
 	List<DoctorClinicProfileCollection> findByLocationId(ObjectId objectId);
-}
+
+	DoctorClinicProfileCollection findByDoctorIdAndConsultationType(ObjectId doctorObjectId, String consultationType);
+
+	}

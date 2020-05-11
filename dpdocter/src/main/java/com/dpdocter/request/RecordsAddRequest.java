@@ -45,6 +45,8 @@ public class RecordsAddRequest {
 	private Date createdTime;
 
 	private Boolean shareWithPatient = false;
+	
+	private String appointmentId;
 
 	public Date getCreatedTime() {
 		return createdTime;
@@ -196,6 +198,16 @@ public class RecordsAddRequest {
 
 	public void setMobileNumber(String mobileNumber) {
 		this.mobileNumber = mobileNumber;
+	}
+	
+	
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
 	}
 
 	@Override

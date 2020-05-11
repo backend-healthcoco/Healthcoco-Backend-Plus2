@@ -18,4 +18,7 @@ public interface AppointmentBookedSlotRepository extends MongoRepository<Appoint
 
 	AppointmentBookedSlotCollection findByAppointmentId(String appointmentId);
 
+	List<AppointmentBookedSlotCollection> findByDoctorIdAndType(ObjectId doctorObjectId, String consultationType,
+			DateTime start, DateTime end, Sort sort);
+
 }

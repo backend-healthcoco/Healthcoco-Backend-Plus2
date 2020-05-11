@@ -5650,6 +5650,141 @@ try {
 		return true;
 	}
 
+	@Override
+	@Transactional
+	public SlotDataResponse getOnlineConsultationTimeSlots(String doctorId, String consultationType, Date date,
+			Boolean isPatient) {
+		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+		List<Slot> slotResponse = null;
+		SlotDataResponse response = null;
+		try {
+			ObjectId doctorObjectId = null, locationObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			
+			
+			
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndConsultationType(doctorObjectId,consultationType);
+			if (doctorClinicProfileCollection != null) {
+
+				if (!isPatient) {
+					UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdAndLocationId(doctorObjectId,
+							locationObjectId);
+					if (userRoleCollection != null) {
+						RoleCollection roleCollection = roleRepository.findById(userRoleCollection.getId()).orElse(null);
+						if (roleCollection != null)
+							if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.RECEPTIONIST_NURSE.getRole())
+									|| roleCollection.getRole().equalsIgnoreCase("RECEPTIONIST")) {
+								throw new BusinessException(ServiceError.NotAuthorized,
+										"You are not authorized to have slots.");
+							}
+					}
+				}
+				Integer startTime = 0, endTime = 0;
+				float slotTime = 15;
+				SimpleDateFormat sdf = new SimpleDateFormat("EEEEE");
+				sdf.setTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
+				String day = sdf.format(date);
+				if (doctorClinicProfileCollection.getOnlineWorkingSchedules() != null
+						&& doctorClinicProfileCollection.getAppointmentSlot() != null) {
+					slotTime = doctorClinicProfileCollection.getAppointmentSlot().getTime();
+					if(slotTime == 0.0)slotTime = 15;
+
+					response = new SlotDataResponse();
+					response.setAppointmentSlot(doctorClinicProfileCollection.getAppointmentSlot());
+					slotResponse = new ArrayList<Slot>();
+					List<WorkingHours> workingHours = null;
+					for (WorkingSchedule workingSchedule : doctorClinicProfileCollection.getOnlineWorkingSchedules()) {
+						if (workingSchedule.getWorkingDay().getDay().equalsIgnoreCase(day)) {
+							workingHours = workingSchedule.getWorkingHours();
+						}
+					}
+					if (workingHours != null && !workingHours.isEmpty()) {
+
+						Calendar localCalendar = Calendar
+								.getInstance(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
+						localCalendar.setTime(date);
+						int dayOfDate = localCalendar.get(Calendar.DATE);
+						int monthOfDate = localCalendar.get(Calendar.MONTH) + 1;
+						int yearOfDate = localCalendar.get(Calendar.YEAR);
+
+						DateTime start = new DateTime(yearOfDate, monthOfDate, dayOfDate, 0, 0, 0, DateTimeZone
+								.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
+						DateTime end = new DateTime(yearOfDate, monthOfDate, dayOfDate, 23, 59, 59, DateTimeZone
+								.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
+						List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
+								.findByDoctorIdAndType(doctorObjectId,consultationType, start, end,
+										new Sort(Direction.ASC, "time.fromTime"));
+						int i = 0;
+						for (WorkingHours hours : workingHours) {
+							startTime = hours.getFromTime();
+							endTime = hours.getToTime();
+
+							if (bookedSlots != null && !bookedSlots.isEmpty()) {
+								while (i < bookedSlots.size()) {
+									AppointmentBookedSlotCollection bookedSlot = bookedSlots.get(i);
+									if (endTime > startTime) {
+										if (bookedSlot.getTime().getFromTime() >= startTime
+												|| bookedSlot.getTime().getToTime() >= endTime) {
+											if (!bookedSlot.getFromDate().equals(bookedSlot.getToDate())) {
+												if (bookedSlot.getIsAllDayEvent()) {
+													if (bookedSlot.getFromDate().equals(date))
+														bookedSlot.getTime().setToTime(719);
+													if (bookedSlot.getToDate().equals(date))
+														bookedSlot.getTime().setFromTime(0);
+												}
+											}
+											List<Slot> slots = DateAndTimeUtility.sliceTime(startTime,
+													bookedSlot.getTime().getFromTime(), Math.round(slotTime), true);
+											if (slots != null)
+												slotResponse.addAll(slots);
+
+											slots = DateAndTimeUtility.sliceTime(bookedSlot.getTime().getFromTime(),
+													bookedSlot.getTime().getToTime(), Math.round(slotTime), false);
+											if (slots != null)
+												slotResponse.addAll(slots);
+											startTime = bookedSlot.getTime().getToTime();
+											i++;
+										} else {
+											i++;
+											break;
+										}
+									} else {
+										i++;
+										break;
+									}
+								}
+							}
+
+							if (endTime > startTime) {
+								List<Slot> slots = DateAndTimeUtility.sliceTime(startTime, endTime,
+										Math.round(slotTime), true);
+								if (slots != null)
+									slotResponse.addAll(slots);
+							}
+						}
+
+						if (checkToday(localCalendar.get(Calendar.DAY_OF_YEAR), yearOfDate,
+								doctorClinicProfileCollection.getTimeZone()))
+							for (Slot slot : slotResponse) {
+								if (slot.getMinutesOfDay() < getMinutesOfDay(date)) {
+									slot.setIsAvailable(false);
+									slotResponse.set(slotResponse.indexOf(slot), slot);
+								}
+							}
+					}
+					response.setSlots(slotResponse);
+				}
+			}
+		} catch (
+
+		Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting online time slots");
+		}
+		return response;
+	}
+
 	
 
 	

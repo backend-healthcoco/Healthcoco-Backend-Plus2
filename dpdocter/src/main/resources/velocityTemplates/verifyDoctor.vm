@@ -23,7 +23,7 @@
          We have received a request to authorize this email address for use with Healthcoco+.
           If you requested this verification, please click Verify Email or go to the following URL to confirm that you are authorized to use this email address..<br><br>
          Kindly verify your email ID by clicking on the link below:<br>
-         <a style="color: #0077b5;text-decoration:none;"href="${link}" target="_blank" >Verify Email</a><br><br>
+         <a style="color: #0077b5;text-decoration:none;"href="${verify.link}" target="_blank" >Verify Email</a><br><br>
          For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >${contactUsEmail}</a>
 
           <br><br>Stay Healthy and Happy,<br>Team Healthcoco.

@@ -718,4 +718,26 @@ public class AppointmentApi {
 		response.setData(appointmentService.update());
 		return response;
 	}
+	
+	@Path(value = PathProxy.AppointmentUrls.GET_ONLINE_CONSULTATION_TIME_SLOTS)
+	@GET
+	@ApiOperation(value = PathProxy.AppointmentUrls.GET_ONLINE_CONSULTATION_TIME_SLOTS, notes = PathProxy.AppointmentUrls.GET_ONLINE_CONSULTATION_TIME_SLOTS)
+	public Response<SlotDataResponse> getOnlineConsultationTimeSlots(@PathParam("doctorId") String doctorId,
+			@QueryParam(value="consultationType") String consultationtype, @PathParam("date") String date,
+			@DefaultValue(value = "true") @QueryParam(value = "isPatient") Boolean isPatient)
+			throws MessagingException {
+
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			logger.warn("Doctor Id Cannot Be Empty");
+			mailService.sendExceptionMail("Invalid input :: Doctor Id cannot be empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
+		}
+		Date dateObj = new Date(Long.parseLong(date));
+		SlotDataResponse slotDataResponse = appointmentService.getOnlineConsultationTimeSlots(doctorId, consultationtype, dateObj, isPatient);
+		Response<SlotDataResponse> response = new Response<SlotDataResponse>();
+		response.setData(slotDataResponse);
+		return response;
+	}
+
+
 }

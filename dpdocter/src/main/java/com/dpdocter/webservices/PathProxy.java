@@ -833,6 +833,9 @@ public interface PathProxy {
 		public static final String ADD_EDIT_SERVICES = "/addEditServices";
 
 		public static final String GET_SERVICES = "/services";
+		
+		public static final String ADD_EDIT_ONLINE_CONSULTATION_TIME = "/clinicProfile/addEditOnlineConsultationTime";
+
 
 	}
 
@@ -1076,6 +1079,9 @@ public interface PathProxy {
 		public static final String ADD_NUTRITION_APPOINTMENT = "/nutrition/add";
 
 		public static final String UPDATE_BOOKED_SLOT = "/update";
+		
+		public static final String GET_ONLINE_CONSULTATION_TIME_SLOTS = "getOnlineConsulationTimeSlots/{doctorId}/{date}";
+
 	}
 
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";
@@ -1117,6 +1123,8 @@ public interface PathProxy {
 		public static final String EMAIL_PATIENT_TREATMENT_WEB = "/{treatmentId}/{emailAddress}/mail";
 
 		public static final String DELETE_PATIENT_TREATMENT_WEB = "/{treatmentId}/delete";
+		
+		
 
 	}
 
@@ -2319,5 +2327,15 @@ public interface PathProxy {
 		public static final String ADD_EDIT_BANK_DETAILS = "/addEdit";
 		
 	}
+	
+	public static final String CONSULTATION_PROBLEM_DETAILS_BASE_URL = BASE_URL + "/consultationProblemDetails";
+	public interface ConsultationproblemDetailsUrls{
+		
+		
+		public static final String ADD_EDIT_CONSULTATION_PROBLEM_DETAILS="/addEdit";
+		public static final String GET_CONSULTATION_PROBLEM_DETAILS = "/get";
+		
+	}
+	
 	
 }

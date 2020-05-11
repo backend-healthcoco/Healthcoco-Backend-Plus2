@@ -90,6 +90,7 @@ import com.dpdocter.request.DoctorExperienceDetailAddEditRequest;
 import com.dpdocter.request.DoctorGenderAddEditRequest;
 import com.dpdocter.request.DoctorMultipleDataAddEditRequest;
 import com.dpdocter.request.DoctorNameAddEditRequest;
+import com.dpdocter.request.DoctorOnlineWorkingTimeRequest;
 import com.dpdocter.request.DoctorProfessionalAddEditRequest;
 import com.dpdocter.request.DoctorProfessionalStatementAddEditRequest;
 import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
@@ -1749,4 +1750,33 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
+
+	@Override
+	@Transactional
+	public DoctorOnlineWorkingTimeRequest addEditOnlineWorkingTime(DoctorOnlineWorkingTimeRequest request) {
+		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+		DoctorOnlineWorkingTimeRequest response = null;
+		try {
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
+					new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()));
+			if (doctorClinicProfileCollection == null) {
+				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+				doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
+				doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
+				doctorClinicProfileCollection.setCreatedTime(new Date());
+			}
+			doctorClinicProfileCollection.setOnlineWorkingSchedules(request.getOnlineWorkingSchedules());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = new DoctorOnlineWorkingTimeRequest();
+			BeanUtil.map(doctorClinicProfileCollection, response);
+			response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Editing Doctor Clinic Profile");
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Clinic Profile");
+		}
+		return response;
+	}
+
 }

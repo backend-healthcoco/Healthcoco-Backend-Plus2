@@ -134,6 +134,8 @@ public interface AppointmentService {
 
 	Boolean update();
 
+	SlotDataResponse getOnlineConsultationTimeSlots(String doctorId, String consultationType, Date date, Boolean isPatient);
+
 	//new
 //	Appointment addAppointment(AppointmentRequest request,
 	//		Boolean isFormattedResponseRequired);
