@@ -6,6 +6,7 @@ import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
+import com.dpdocter.beans.DoctorConsultation;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.GenericCollection;
@@ -86,6 +87,11 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	private List<String> departments;
 	
+	private List<WorkingSchedule> onlineWorkingSchedules;
+	
+	private List<DoctorConsultation>  consultationType;
+
+	private Boolean isOnlineConsultationAvailable = false;
 	public ObjectId getId() {
 		return id;
 	}
@@ -367,6 +373,30 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 		this.departments = departments;
 	}
 
+	public List<WorkingSchedule> getOnlineWorkingSchedules() {
+		return onlineWorkingSchedules;
+	}
+
+	public void setOnlineWorkingSchedules(List<WorkingSchedule> onlineWorkingSchedules) {
+		this.onlineWorkingSchedules = onlineWorkingSchedules;
+	}
+
+	public List<DoctorConsultation> getConsultationType() {
+		return consultationType;
+	}
+
+	public void setConsultationType(List<DoctorConsultation> consultationType) {
+		this.consultationType = consultationType;
+	}
+
+	public Boolean getIsOnlineConsultationAvailable() {
+		return isOnlineConsultationAvailable;
+	}
+
+	public void setIsOnlineConsultationAvailable(Boolean isOnlineConsultationAvailable) {
+		this.isOnlineConsultationAvailable = isOnlineConsultationAvailable;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileLookupResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -382,6 +412,10 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 				+ hasLoginAccess + ", hasBillingAccess=" + hasBillingAccess + ", iskiosk=" + iskiosk
 				+ ", isNutritionist=" + isNutritionist + ", isSuperAdmin=" + isSuperAdmin + ", isVaccinationModuleOn="
 				+ isVaccinationModuleOn + ", feedbackURL=" + feedbackURL + ", isAdminNutritionist="
-				+ isAdminNutritionist + ", departments=" + departments + "]";
+				+ isAdminNutritionist + ", departments=" + departments + ", onlineWorkingSchedules="
+				+ onlineWorkingSchedules + ", consultationType=" + consultationType + ", isOnlineConsultationAvailable="
+				+ isOnlineConsultationAvailable + "]";
 	}
+
+	
 }

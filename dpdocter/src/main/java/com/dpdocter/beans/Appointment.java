@@ -8,6 +8,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
+import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.response.PatientTreatmentResponse;
 
@@ -104,6 +105,10 @@ public class Appointment extends GenericCollection {
 	
 	private PatientTreatmentResponse patientTreatmentResponse;
 
+	private ConsultationType consultationType;
+	
+	private Date consultationStartedOn;
+	
 	public PatientTreatmentResponse getPatientTreatmentResponse() {
 		return patientTreatmentResponse;
 	}
@@ -464,6 +469,22 @@ public class Appointment extends GenericCollection {
 		this.branch = branch;
 	}
 
+	public ConsultationType getConsultationType() {
+		return consultationType;
+	}
+
+	public void setConsultationType(ConsultationType consultationType) {
+		this.consultationType = consultationType;
+	}
+
+	public Date getConsultationStartedOn() {
+		return consultationStartedOn;
+	}
+
+	public void setConsultationStartedOn(Date consultationStartedOn) {
+		this.consultationStartedOn = consultationStartedOn;
+	}
+
 	@Override
 	public String toString() {
 		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
@@ -481,7 +502,8 @@ public class Appointment extends GenericCollection {
 				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", count=" + count
 				+ ", category=" + category + ", branch=" + branch + ", cancelledByProfile=" + cancelledByProfile
 				+ ", localPatientName=" + localPatientName + ", treatmentFields=" + treatmentFields
-				+ ", isCreatedByPatient=" + isCreatedByPatient + "]";
+				+ ", isCreatedByPatient=" + isCreatedByPatient + ", patientTreatmentResponse="
+				+ patientTreatmentResponse + ", consultationType=" + consultationType + ", consultationStartedOn="
+				+ consultationStartedOn + "]";
 	}
-
 }

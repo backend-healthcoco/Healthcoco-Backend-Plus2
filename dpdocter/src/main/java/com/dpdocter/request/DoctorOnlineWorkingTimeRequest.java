@@ -2,6 +2,7 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+import com.dpdocter.beans.DoctorConsultation;
 import com.dpdocter.beans.WorkingSchedule;
 
 public class DoctorOnlineWorkingTimeRequest {
@@ -10,9 +11,13 @@ public class DoctorOnlineWorkingTimeRequest {
 
     private String doctorId;
     
-    private String locationId;
+  //  private String locationId;
 
     private List<WorkingSchedule> onlineWorkingSchedules;
+
+    private List<DoctorConsultation> consultationType;
+
+	private Boolean isOnlineConsultationAvailable;
 
 	public String getId() {
 		return id;
@@ -38,16 +43,34 @@ public class DoctorOnlineWorkingTimeRequest {
 		this.onlineWorkingSchedules = onlineWorkingSchedules;
 	}
 
-	public String getLocationId() {
-		return locationId;
+	public List<DoctorConsultation> getConsultationType() {
+		return consultationType;
 	}
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
+	public void setConsultationType(List<DoctorConsultation> consultationType) {
+		this.consultationType = consultationType;
 	}
-    
-    
-    
-    
-    
+
+	public Boolean getIsOnlineConsultationAvailable() {
+		return isOnlineConsultationAvailable;
+	}
+
+	public void setIsOnlineConsultationAvailable(Boolean isOnlineConsultationAvailable) {
+		this.isOnlineConsultationAvailable = isOnlineConsultationAvailable;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorOnlineWorkingTimeRequest [id=" + id + ", doctorId=" + doctorId + ", onlineWorkingSchedules="
+				+ onlineWorkingSchedules + ", consultationType=" + consultationType + ", isOnlineConsultationAvailable="
+				+ isOnlineConsultationAvailable + "]";
+	}
+
+//	public String getLocationId() {
+//		return locationId;
+//	}
+//
+//	public void setLocationId(String locationId) {
+//		this.locationId = locationId;
+//	}
 }

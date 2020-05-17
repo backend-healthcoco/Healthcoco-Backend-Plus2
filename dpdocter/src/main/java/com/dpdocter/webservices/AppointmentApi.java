@@ -292,10 +292,10 @@ public class AppointmentApi {
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "patientId") String patientId,
 			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
 			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
-			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime) {
+			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "type") String type) {
 
 		Response<Object> response = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from, to,
-				page, size, updatedTime);
+				page, size, updatedTime, type);
 		return response;
 	}
 

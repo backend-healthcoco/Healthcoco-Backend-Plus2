@@ -17,7 +17,6 @@ import com.dpdocter.beans.PatientQueue;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
-import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.request.PrintPatientCardRequest;
 import com.dpdocter.response.AVGTimeDetail;
 import com.dpdocter.response.LocationWithAppointmentCount;
@@ -47,7 +46,7 @@ public interface AppointmentService {
 			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb);
 
 	Response<Object> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime);
+			String to, int page, int size, String updatedTime, String type);
 
 	Lab getLab(String locationId, String patientId, Boolean active);
 

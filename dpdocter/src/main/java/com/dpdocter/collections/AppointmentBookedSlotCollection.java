@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentType;
+import com.dpdocter.enums.ConsultationType;
 
 @Document(collection = "appointment_booked_slot_cl")
 @CompoundIndexes({
@@ -55,6 +56,12 @@ public class AppointmentBookedSlotCollection extends GenericCollection {
     
     @Field
 	private AppointmentType type = AppointmentType.APPOINTMENT;
+    
+    @Field
+    private ConsultationType consultationType;
+	
+    @Field
+	private Date consultationStartedOn;
     
 	public ObjectId getId() {
 		return id;
@@ -152,12 +159,28 @@ public class AppointmentBookedSlotCollection extends GenericCollection {
 		this.type = type;
 	}
 
+	public ConsultationType getConsultationType() {
+		return consultationType;
+	}
+
+	public void setConsultationType(ConsultationType consultationType) {
+		this.consultationType = consultationType;
+	}
+
+	public Date getConsultationStartedOn() {
+		return consultationStartedOn;
+	}
+
+	public void setConsultationStartedOn(Date consultationStartedOn) {
+		this.consultationStartedOn = consultationStartedOn;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentBookedSlotCollection [id=" + id + ", appointmentId=" + appointmentId + ", doctorId="
 				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", time=" + time
 				+ ", fromDate=" + fromDate + ", toDate=" + toDate + ", isAllDayEvent=" + isAllDayEvent
-				+ ", isPatientDiscarded=" + isPatientDiscarded + ", doctorIds=" + doctorIds + ", type=" + type + "]";
+				+ ", isPatientDiscarded=" + isPatientDiscarded + ", doctorIds=" + doctorIds + ", type=" + type
+				+ ", consultationType=" + consultationType + ", consultationStartedOn=" + consultationStartedOn + "]";
 	}
-
 }

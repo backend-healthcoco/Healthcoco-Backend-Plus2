@@ -11,6 +11,7 @@ import com.dpdocter.beans.v2.PatientCard;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
+import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.response.PatientTreatmentResponse;
 
@@ -97,6 +98,10 @@ public class AppointmentLookupResponse extends GenericCollection {
 	private List<Fields> treatmentFields;
 	
 	private PatientTreatmentResponse patientTreatmentResponse;
+
+	private ConsultationType consultationType;
+	
+	private Date consultationStartedOn;
 
 	public PatientTreatmentResponse getPatientTreatmentResponse() {
 		return patientTreatmentResponse;
@@ -427,6 +432,22 @@ public class AppointmentLookupResponse extends GenericCollection {
 		this.treatmentFields = treatmentFields;
 	}
 
+	public ConsultationType getConsultationType() {
+		return consultationType;
+	}
+
+	public void setConsultationType(ConsultationType consultationType) {
+		this.consultationType = consultationType;
+	}
+
+	public Date getConsultationStartedOn() {
+		return consultationStartedOn;
+	}
+
+	public void setConsultationStartedOn(Date consultationStartedOn) {
+		this.consultationStartedOn = consultationStartedOn;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentLookupResponse [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -442,7 +463,8 @@ public class AppointmentLookupResponse extends GenericCollection {
 				+ ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt
 				+ ", count=" + count + ", category=" + category + ", branch=" + branch + ", cancelledByProfile="
 				+ cancelledByProfile + ", localPatientName=" + localPatientName + ", isCreatedByPatient="
-				+ isCreatedByPatient + ", treatmentFields=" + treatmentFields + "]";
+				+ isCreatedByPatient + ", treatmentFields=" + treatmentFields + ", patientTreatmentResponse="
+				+ patientTreatmentResponse + ", consultationType=" + consultationType + ", consultationStartedOn="
+				+ consultationStartedOn + "]";
 	}
-
 }

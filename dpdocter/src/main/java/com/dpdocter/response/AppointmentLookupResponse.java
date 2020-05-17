@@ -11,6 +11,7 @@ import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
+import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.QueueStatus;
 
 public class AppointmentLookupResponse extends GenericCollection {
@@ -95,6 +96,10 @@ public class AppointmentLookupResponse extends GenericCollection {
 
 	private Boolean isCreatedByPatient = false;
 
+	private ConsultationType consultationType;
+	
+	private Date consultationStartedOn;
+	
 	public String getId() {
 		return id;
 	}
@@ -415,6 +420,22 @@ public class AppointmentLookupResponse extends GenericCollection {
 		this.branch = branch;
 	}
 
+	public ConsultationType getConsultationType() {
+		return consultationType;
+	}
+
+	public void setConsultationType(ConsultationType consultationType) {
+		this.consultationType = consultationType;
+	}
+
+	public Date getConsultationStartedOn() {
+		return consultationStartedOn;
+	}
+
+	public void setConsultationStartedOn(Date consultationStartedOn) {
+		this.consultationStartedOn = consultationStartedOn;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentLookupResponse [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -430,6 +451,7 @@ public class AppointmentLookupResponse extends GenericCollection {
 				+ ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt
 				+ ", count=" + count + ", category=" + category + ", branch=" + branch + ", cancelledByProfile="
 				+ cancelledByProfile + ", localPatientName=" + localPatientName + ", treatmentFields=" + treatmentFields
-				+ ", isCreatedByPatient=" + isCreatedByPatient + "]";
+				+ ", isCreatedByPatient=" + isCreatedByPatient + ", consultationType=" + consultationType
+				+ ", consultationStartedOn=" + consultationStartedOn + "]";
 	}
 }

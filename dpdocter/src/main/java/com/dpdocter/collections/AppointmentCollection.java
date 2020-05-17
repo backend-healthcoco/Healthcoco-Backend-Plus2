@@ -15,8 +15,8 @@ import com.dpdocter.beans.FieldsCollection;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
+import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.QueueStatus;
-import com.dpdocter.response.PatientTreatmentResponse;
 
 @Document(collection = "appointment_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
@@ -124,7 +124,6 @@ public class AppointmentCollection extends GenericCollection {
 	@Field
 	private String localPatientName;
 	
-
 	@Field
 	private List<ObjectId> doctorIds;
 
@@ -144,6 +143,12 @@ public class AppointmentCollection extends GenericCollection {
 //	public void setPatientTreatmentResponse(PatientTreatmentResponse patientTreatmentResponse) {
 //		this.patientTreatmentResponse = patientTreatmentResponse;
 //	}
+
+	@Field
+	private ConsultationType consultationType;
+	
+	@Field
+	private Date consultationStartedOn;
 
 	public String getCancelledByProfile() {
 		return cancelledByProfile;
@@ -441,6 +446,22 @@ public class AppointmentCollection extends GenericCollection {
 		this.branch = branch;
 	}
 
+	public ConsultationType getConsultationType() {
+		return consultationType;
+	}
+
+	public void setConsultationType(ConsultationType consultationType) {
+		this.consultationType = consultationType;
+	}
+
+	public Date getConsultationStartedOn() {
+		return consultationStartedOn;
+	}
+
+	public void setConsultationStartedOn(Date consultationStartedOn) {
+		this.consultationStartedOn = consultationStartedOn;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentCollection [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -456,6 +477,7 @@ public class AppointmentCollection extends GenericCollection {
 				+ category + ", branch=" + branch + ", isPatientDiscarded=" + isPatientDiscarded
 				+ ", cancelledByProfile=" + cancelledByProfile + ", localPatientName=" + localPatientName
 				+ ", doctorIds=" + doctorIds + ", treatmentFields=" + treatmentFields + ", isCreatedByPatient="
-				+ isCreatedByPatient + "]";
+				+ isCreatedByPatient + ", consultationType=" + consultationType + ", consultationStartedOn="
+				+ consultationStartedOn + "]";
 	}
 }

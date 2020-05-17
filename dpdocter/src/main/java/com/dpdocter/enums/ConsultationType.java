@@ -1,12 +1,12 @@
 package com.dpdocter.enums;
 
-public enum DoctorConsultation {
+public enum ConsultationType {
 
-SMS("SMS"),VOICE("VOICE"),VIDEO("VIDEO");
+	CHAT("CHAT"), AUDIO("AUDIO"),VIDEO("VIDEO");
 	
 	private String type;
 
-	private DoctorConsultation(String type) {
+	private ConsultationType(String type) {
 		this.type = type;
 	}
 

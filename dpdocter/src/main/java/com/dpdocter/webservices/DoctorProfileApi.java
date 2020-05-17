@@ -855,20 +855,20 @@ public class DoctorProfileApi {
 	@POST
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_TIME, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_TIME)
 
-	public Response<DoctorOnlineWorkingTimeRequest> addEditOnlineConsultationTime(@RequestBody DoctorOnlineWorkingTimeRequest request) {
+	public Response<Boolean> addEditOnlineConsultationTime(@RequestBody DoctorOnlineWorkingTimeRequest request) {
 		if (request == null) {
 			logger.warn("Doctor Contact Request Is Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
-		} else if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId())) {
-			logger.warn("Doctor Id, LocationId Is Empty");
-			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
+		} else if (DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+			logger.warn("Doctor Id Is Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id");
 		}
-		DoctorOnlineWorkingTimeRequest addEditVisitingTimeResponse = doctorProfileService.addEditOnlineWorkingTime(request);
+		Boolean addEditOnlineWorkingTime = doctorProfileService.addEditOnlineWorkingTime(request);
 		transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
-		if (addEditVisitingTimeResponse!=null)
+		if (addEditOnlineWorkingTime!=null)
 			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
-		Response<DoctorOnlineWorkingTimeRequest> response = new Response<DoctorOnlineWorkingTimeRequest>();
-		response.setData(addEditVisitingTimeResponse);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(addEditOnlineWorkingTime);
 		return response;
 	
 	}

@@ -21,7 +21,7 @@ public interface AppointmentService {
 			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb, Boolean discarded,String branch);
 
 	Response<Object> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime);
+			String to, int page, int size, String updatedTime, String type);
 
 
 	SlotDataResponse getTimeSlots(String doctorId, String locationId, Date date, Boolean isPatient);

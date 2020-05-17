@@ -1819,15 +1819,22 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Override
 	@Transactional
 	public Response<Object> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime) {
+			String to, int page, int size, String updatedTime, String type) {
 		Response<Object> response = new Response<Object>();
 		List<Appointment> appointments = null;
 		List<AppointmentLookupResponse> appointmentLookupResponses = null;
 	
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
-			Criteria criteria = new Criteria("type").is(AppointmentType.APPOINTMENT.getType()).and("updatedTime")
+			Criteria criteria = new Criteria("updatedTime")
 					.gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").is(false);
+			
+			if(!DPDoctorUtils.anyStringEmpty(type)) {
+				criteria.and("type").is(type.toUpperCase());
+			}else {
+				criteria.and("type").is(AppointmentType.APPOINTMENT.getType());
+			}
+			
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 

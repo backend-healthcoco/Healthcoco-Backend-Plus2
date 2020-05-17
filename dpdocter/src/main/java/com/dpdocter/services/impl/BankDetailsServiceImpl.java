@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.BankDetails;
@@ -14,6 +15,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BankDetailsRepository;
+import com.dpdocter.security.AES;
 import com.dpdocter.services.BankDetailsService;
 
 import common.util.web.DPDoctorUtils;
@@ -26,6 +28,9 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 	@Autowired
 	private BankDetailsRepository bankDetailsRepository;
 	
+	@Value(value = "${secret.key.account.details}")
+	private String secretKeyAccountDetails;
+	
 	@Override
 	public Boolean addEditBankDetails(BankDetails request) {
 		Boolean response=false;
@@ -37,16 +42,21 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 					throw new BusinessException(ServiceError.NotFound, "bankDetailsId Not found");
 				}
 			request.setUpdatedTime(new Date());
-			BeanUtil.map(request, bankDetailsCollection);
-			
-			
+			BeanUtil.map(request, bankDetailsCollection);		
 		}
 		else{
 			bankDetailsCollection=new BankDetailsCollection();
-			bankDetailsCollection.setCreatedTime(new Date());
-			bankDetailsCollection.setUpdatedTime(new Date());
+			request.setCreatedTime(new Date());
+			request.setUpdatedTime(new Date());
 			BeanUtil.map(request, bankDetailsCollection);
 		}
+		bankDetailsCollection.setAccountholderName(AES.encrypt(bankDetailsCollection.getAccountholderName(), secretKeyAccountDetails));
+		bankDetailsCollection.setAccountNumber(AES.encrypt(bankDetailsCollection.getAccountNumber(), secretKeyAccountDetails));
+		bankDetailsCollection.setIfscNumber(AES.encrypt(bankDetailsCollection.getIfscNumber(), secretKeyAccountDetails));
+		bankDetailsCollection.setPanCardNumber(AES.encrypt(bankDetailsCollection.getPanCardNumber(), secretKeyAccountDetails));
+		bankDetailsCollection.setBankName(AES.encrypt(bankDetailsCollection.getBankName(), secretKeyAccountDetails));
+		bankDetailsCollection.setBranchCity(AES.encrypt(bankDetailsCollection.getBranchCity(), secretKeyAccountDetails));
+		
 		bankDetailsRepository.save(bankDetailsCollection);
 		response=true;
 		} catch (BusinessException e) {
@@ -69,7 +79,12 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 		    {
 		    	throw new BusinessException(ServiceError.NotFound,"Error no such id");
 		    }
-			
+		 bankDetailsCollection.setAccountholderName(AES.decrypt(bankDetailsCollection.getAccountholderName(), secretKeyAccountDetails));
+			bankDetailsCollection.setAccountNumber(AES.decrypt(bankDetailsCollection.getAccountNumber(), secretKeyAccountDetails));
+			bankDetailsCollection.setIfscNumber(AES.decrypt(bankDetailsCollection.getIfscNumber(), secretKeyAccountDetails));
+			bankDetailsCollection.setPanCardNumber(AES.decrypt(bankDetailsCollection.getPanCardNumber(), secretKeyAccountDetails));
+			bankDetailsCollection.setBankName(AES.decrypt(bankDetailsCollection.getBankName(), secretKeyAccountDetails));
+			bankDetailsCollection.setBranchCity(AES.decrypt(bankDetailsCollection.getBranchCity(), secretKeyAccountDetails));
 			BeanUtil.map(bankDetailsCollection, response);
 		
 		}

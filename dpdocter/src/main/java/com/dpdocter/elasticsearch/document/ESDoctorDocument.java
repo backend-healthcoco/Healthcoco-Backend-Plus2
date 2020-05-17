@@ -13,6 +13,7 @@ import org.springframework.data.elasticsearch.annotations.MultiField;
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.DoctorConsultation;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorRegistrationDetail;
 import com.dpdocter.beans.Education;
@@ -155,6 +156,15 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	@MultiField(mainField = @Field(type = FieldType.Text))
 	private List<String> divisionIds;
+	
+	@Field(type = FieldType.Nested)
+	private List<DoctorConsultation> consultationType;
+	
+	@Field(type = FieldType.Boolean)
+	private Boolean isOnlineConsultationAvailable = false;
+	
+	@Field(type = FieldType.Nested)
+	private List<WorkingSchedule> onlineWorkingSchedules;
 	
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;
@@ -534,6 +544,30 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 		this.professionalMemberships = professionalMemberships;
 	}
 
+	public List<DoctorConsultation> getConsultationType() {
+		return consultationType;
+	}
+
+	public void setConsultationType(List<DoctorConsultation> consultationType) {
+		this.consultationType = consultationType;
+	}
+
+	public Boolean getIsOnlineConsultationAvailable() {
+		return isOnlineConsultationAvailable;
+	}
+
+	public void setIsOnlineConsultationAvailable(Boolean isOnlineConsultationAvailable) {
+		this.isOnlineConsultationAvailable = isOnlineConsultationAvailable;
+	}
+
+	public List<WorkingSchedule> getOnlineWorkingSchedules() {
+		return onlineWorkingSchedules;
+	}
+
+	public void setOnlineWorkingSchedules(List<WorkingSchedule> onlineWorkingSchedules) {
+		this.onlineWorkingSchedules = onlineWorkingSchedules;
+	}
+
 	@Override
 	public String toString() {
 		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
@@ -553,6 +587,7 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 				+ ", userUId=" + userUId + ", isDoctorListed=" + isDoctorListed + ", timeZone=" + timeZone
 				+ ", rankingCount=" + rankingCount + ", noOfRecommenations=" + noOfRecommenations + ", doctorSlugURL="
 				+ doctorSlugURL + ", isNutritionist=" + isNutritionist + ", mrCode=" + mrCode + ", divisionIds="
-				+ divisionIds + "]";
+				+ divisionIds + ", consultationType=" + consultationType + ", isOnlineConsultationAvailable="
+				+ isOnlineConsultationAvailable + ", onlineWorkingSchedules=" + onlineWorkingSchedules + "]";
 	}
 }

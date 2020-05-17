@@ -1,7 +1,6 @@
 package com.dpdocter.collections;
 
 import java.util.List;
-import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -11,8 +10,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
+import com.dpdocter.beans.DoctorConsultation;
 import com.dpdocter.beans.WorkingSchedule;
-import com.dpdocter.enums.DoctorConsultation;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.PackageType;
@@ -154,8 +153,10 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	private List<String> departments;
 	
 	@Field
-	private Map<DoctorConsultation, String> consultationType;
+	private List<DoctorConsultation> consultationType;
 
+	@Field
+	private Boolean isOnlineConsultationAvailable = false;
 	
 	public ObjectId getId() {
 		return id;
@@ -500,8 +501,6 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setDepartments(List<String> departments) {
 		this.departments = departments;
 	}
-	
-	
 
 	public List<WorkingSchedule> getOnlineWorkingSchedules() {
 		return onlineWorkingSchedules;
@@ -509,16 +508,22 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setOnlineWorkingSchedules(List<WorkingSchedule> onlineWorkingSchedules) {
 		this.onlineWorkingSchedules = onlineWorkingSchedules;
-	}
-	
-	
+	}	
 
-	public Map<DoctorConsultation, String> getConsultationType() {
+	public List<DoctorConsultation> getConsultationType() {
 		return consultationType;
 	}
 
-	public void setConsultationType(Map<DoctorConsultation, String> consultationType) {
+	public void setConsultationType(List<DoctorConsultation> consultationType) {
 		this.consultationType = consultationType;
+	}
+
+	public Boolean getIsOnlineConsultationAvailable() {
+		return isOnlineConsultationAvailable;
+	}
+
+	public void setIsOnlineConsultationAvailable(Boolean isOnlineConsultationAvailable) {
+		this.isOnlineConsultationAvailable = isOnlineConsultationAvailable;
 	}
 
 	@Override
@@ -527,10 +532,11 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 				+ doctorId + ", locationId=" + locationId + ", isActivate=" + isActivate + ", isVerified=" + isVerified
 				+ ", discarded=" + discarded + ", appointmentBookingNumber=" + appointmentBookingNumber
 				+ ", consultationFee=" + consultationFee + ", revisitConsultationFee=" + revisitConsultationFee
-				+ ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility="
-				+ facility + ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations
-				+ ", timeZone=" + timeZone + ", isDoctorListed=" + isDoctorListed + ", rankingCount=" + rankingCount
-				+ ", isSendBirthdaySMS=" + isSendBirthdaySMS + ", isAutoSMS=" + isAutoSMS + ", isSendRegularCheckupSMS="
+				+ ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules
+				+ ", onlineWorkingSchedules=" + onlineWorkingSchedules + ", facility=" + facility + ", noOfReviews="
+				+ noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", timeZone=" + timeZone
+				+ ", isDoctorListed=" + isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS="
+				+ isSendBirthdaySMS + ", isAutoSMS=" + isAutoSMS + ", isSendRegularCheckupSMS="
 				+ isSendRegularCheckupSMS + ", regularCheckUpMonths=" + regularCheckUpMonths + ", checkUpTypeEnum="
 				+ checkUpTypeEnum + ", packageType=" + packageType + ", doctorSlugURL=" + doctorSlugURL
 				+ ", showInventoryCount=" + showInventoryCount + ", showInventory=" + showInventory
@@ -540,6 +546,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 				+ ", mrCode=" + mrCode + ", divisionIds=" + divisionIds + ", cityId=" + cityId
 				+ ", isVaccinationModuleOn=" + isVaccinationModuleOn + ", defaultDoctorId=" + defaultDoctorId
 				+ ", isPidHasDate=" + isPidHasDate + ", feedbackURL=" + feedbackURL + ", departments=" + departments
-				+ "]";
+				+ ", consultationType=" + consultationType + ", isOnlineConsultationAvailable="
+				+ isOnlineConsultationAvailable + "]";
 	}
 }

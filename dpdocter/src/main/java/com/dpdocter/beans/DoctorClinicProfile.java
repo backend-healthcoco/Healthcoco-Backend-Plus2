@@ -5,8 +5,9 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.enums.DoctorConsultation;
+import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.RegularCheckUpTypeEnum;
@@ -148,8 +149,9 @@ public class DoctorClinicProfile {
 	
 	private List<WorkingSchedule> onlineWorkingSchedules;
 	
-	private Map<DoctorConsultation, String> consultationType;
+	private List<DoctorConsultation>  consultationType;
 
+	private Boolean isOnlineConsultationAvailable = false;
 
 	public Boolean getIsSuperAdmin() {
 		return isSuperAdmin;
@@ -688,16 +690,21 @@ public class DoctorClinicProfile {
 	public void setOnlineWorkingSchedules(List<WorkingSchedule> onlineWorkingSchedules) {
 		this.onlineWorkingSchedules = onlineWorkingSchedules;
 	}
-	
-	
-	
 
-	public Map<DoctorConsultation, String> getConsultationType() {
+	public List<DoctorConsultation> getConsultationType() {
 		return consultationType;
 	}
 
-	public void setConsultationType(Map<DoctorConsultation, String> consultationType) {
+	public void setConsultationType(List<DoctorConsultation> consultationType) {
 		this.consultationType = consultationType;
+	}
+
+	public Boolean getIsOnlineConsultationAvailable() {
+		return isOnlineConsultationAvailable;
+	}
+
+	public void setIsOnlineConsultationAvailable(Boolean isOnlineConsultationAvailable) {
+		this.isOnlineConsultationAvailable = isOnlineConsultationAvailable;
 	}
 
 	@Override
@@ -724,8 +731,12 @@ public class DoctorClinicProfile {
 				+ ", saveToInventory=" + saveToInventory + ", isMobileNumberOptional=" + isMobileNumberOptional
 				+ ", iskiosk=" + iskiosk + ", hasLoginAccess=" + hasLoginAccess + ", hasBillingAccess="
 				+ hasBillingAccess + ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter
-				+ ", isPidHasDate=" + isPidHasDate + ", isNutritionist=" + isNutritionist + ", isSuperAdmin="
-				+ isSuperAdmin + ", mrCode=" + mrCode + ", divisionIds=" + divisionIds + ", cityId=" + cityId
-				+ ", isVaccinationModuleOn=" + isVaccinationModuleOn + ", feedbackURL=" + feedbackURL + "]";
+				+ ", isPidHasDate=" + isPidHasDate + ", isNutritionist=" + isNutritionist + ", isAdminNutritionist="
+				+ isAdminNutritionist + ", isSuperAdmin=" + isSuperAdmin + ", mrCode=" + mrCode + ", divisionIds="
+				+ divisionIds + ", cityId=" + cityId + ", isVaccinationModuleOn=" + isVaccinationModuleOn
+				+ ", feedbackURL=" + feedbackURL + ", onlineWorkingSchedules=" + onlineWorkingSchedules
+				+ ", consultationType=" + consultationType + ", isOnlineConsultationAvailable="
+				+ isOnlineConsultationAvailable + "]";
 	}
+
 }

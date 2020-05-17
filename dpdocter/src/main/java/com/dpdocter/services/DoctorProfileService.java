@@ -124,7 +124,7 @@ public interface DoctorProfileService {
 
 	List<Services> getServices(int page, int size, String updatedTime);
 	
-	DoctorOnlineWorkingTimeRequest addEditOnlineWorkingTime(DoctorOnlineWorkingTimeRequest request);
+	Boolean addEditOnlineWorkingTime(DoctorOnlineWorkingTimeRequest request);
 	
 
 }

@@ -1753,24 +1753,21 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Override
 	@Transactional
-	public DoctorOnlineWorkingTimeRequest addEditOnlineWorkingTime(DoctorOnlineWorkingTimeRequest request) {
-		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
-		DoctorOnlineWorkingTimeRequest response = null;
+	public Boolean addEditOnlineWorkingTime(DoctorOnlineWorkingTimeRequest request) {
+		List<DoctorClinicProfileCollection> doctorClinicProfileCollections = null;
+		Boolean response = false;
 		try {
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
-					new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()));
-			if (doctorClinicProfileCollection == null) {
-				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-				doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
-				doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
-				doctorClinicProfileCollection.setCreatedTime(new Date());
+			doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorId(new ObjectId(request.getDoctorId()));
+			if (doctorClinicProfileCollections != null) {
+				for(DoctorClinicProfileCollection clinicProfileCollection : doctorClinicProfileCollections) {
+					clinicProfileCollection.setOnlineWorkingSchedules(request.getOnlineWorkingSchedules());
+					clinicProfileCollection.setIsOnlineConsultationAvailable(request.getIsOnlineConsultationAvailable());
+					clinicProfileCollection.setConsultationType(request.getConsultationType());
+					clinicProfileCollection.setUpdatedTime(new Date());
+					doctorClinicProfileRepository.save(clinicProfileCollection);
+					response = true;
+				}
 			}
-			doctorClinicProfileCollection.setOnlineWorkingSchedules(request.getOnlineWorkingSchedules());
-			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-			response = new DoctorOnlineWorkingTimeRequest();
-			BeanUtil.map(doctorClinicProfileCollection, response);
-			response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Editing Doctor Clinic Profile");
