@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -12,6 +13,7 @@ import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DoctorConsultation;
 import com.dpdocter.beans.WorkingSchedule;
+import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.PackageType;
@@ -154,6 +156,10 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	
 	@Field
 	private List<DoctorConsultation> consultationType;
+
+//	@Field
+//	private List<ConsultationType> onlineConsultationType;
+
 
 	@Field
 	private Boolean isOnlineConsultationAvailable = false;
@@ -510,6 +516,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.onlineWorkingSchedules = onlineWorkingSchedules;
 	}	
 
+//<<<<<<< Updated upstream
 	public List<DoctorConsultation> getConsultationType() {
 		return consultationType;
 	}
@@ -517,6 +524,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setConsultationType(List<DoctorConsultation> consultationType) {
 		this.consultationType = consultationType;
 	}
+	
 
 	public Boolean getIsOnlineConsultationAvailable() {
 		return isOnlineConsultationAvailable;
@@ -546,7 +554,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 				+ ", mrCode=" + mrCode + ", divisionIds=" + divisionIds + ", cityId=" + cityId
 				+ ", isVaccinationModuleOn=" + isVaccinationModuleOn + ", defaultDoctorId=" + defaultDoctorId
 				+ ", isPidHasDate=" + isPidHasDate + ", feedbackURL=" + feedbackURL + ", departments=" + departments
-				+ ", consultationType=" + consultationType + ", isOnlineConsultationAvailable="
+				 + ", isOnlineConsultationAvailable="
 				+ isOnlineConsultationAvailable + "]";
 	}
 }

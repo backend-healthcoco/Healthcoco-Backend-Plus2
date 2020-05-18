@@ -17,10 +17,14 @@ public class DoctorConsultation {
 	public void setConsultationType(ConsultationType consultationType) {
 		this.consultationType = consultationType;
 	}
+	
+	
 
 	public Double getCost() {
 		return cost;
 	}
+
+	
 
 	public void setCost(Double cost) {
 		this.cost = cost;

@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.AccountType;
 
-@Document
+@Document(collection = "bank_details_cl")
 public class BankDetailsCollection extends GenericCollection {
 
 	@Id

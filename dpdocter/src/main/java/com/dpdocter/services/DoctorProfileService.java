@@ -6,6 +6,7 @@ import com.dpdocter.beans.AddEditSEORequest;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.DoctorGeneralInfo;
+import com.dpdocter.beans.DoctorOnlineConsultationFees;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
@@ -125,6 +126,18 @@ public interface DoctorProfileService {
 	List<Services> getServices(int page, int size, String updatedTime);
 	
 	Boolean addEditOnlineWorkingTime(DoctorOnlineWorkingTimeRequest request);
+
+//	DoctorOnlineWorkingTimeRequest addEditOnlineWorkingTime(DoctorOnlineWorkingTimeRequest request);
+
+	public DoctorOnlineWorkingTimeRequest getOnlineWorkTiming(String doctorId);
+
+	public Integer countOnlineTiming(Boolean discarded, String searchTerm);
+
 	
+	DoctorOnlineConsultationFees addEditOnlineConsultingFees(DoctorOnlineConsultationFees request);
+
+	public DoctorOnlineConsultationFees getOnlineConsultingfees(String doctorId);
+
+	public Integer countOnlineConsultingfees(Boolean discarded, String searchTerm);
 
 }

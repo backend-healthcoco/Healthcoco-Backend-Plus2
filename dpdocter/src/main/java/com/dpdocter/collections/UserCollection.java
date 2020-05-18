@@ -91,6 +91,9 @@ public class UserCollection extends GenericCollection {
 	@Field
 	private Boolean isMedicalStudent=false;
 	
+	@Field
+	private String timeZone ;
+	
 	
 	
 	public ObjectId getId() {
@@ -301,6 +304,14 @@ public class UserCollection extends GenericCollection {
 	}
 	
 	
+
+	public String getTimeZone() {
+		return timeZone;
+	}
+
+	public void setTimeZone(String timeZone) {
+		this.timeZone = timeZone;
+	}
 
 	public Boolean getIsMedicalStudent() {
 		return isMedicalStudent;

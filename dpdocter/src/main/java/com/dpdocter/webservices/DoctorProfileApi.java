@@ -25,6 +25,7 @@ import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.DoctorGeneralInfo;
+import com.dpdocter.beans.DoctorOnlineConsultationFees;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
@@ -33,6 +34,7 @@ import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Services;
 import com.dpdocter.beans.Speciality;
+import com.dpdocter.beans.UserSymptom;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
@@ -871,6 +873,59 @@ public class DoctorProfileApi {
 		response.setData(addEditOnlineWorkingTime);
 		return response;
 	
+	}
+	
+	@Path(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_TIME)
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_TIME, notes = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_TIME)
+	@GET
+	public Response<DoctorOnlineWorkingTimeRequest> getOnlineConsultationTime(@PathParam("doctorId") String doctorId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			logger.warn("Doctor Id Is Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Is Empty");
+		}
+		Response<DoctorOnlineWorkingTimeRequest> response = new Response<DoctorOnlineWorkingTimeRequest>();
+		
+		response.setData(doctorProfileService.getOnlineWorkTiming(doctorId));
+	//	response.setCount(count);
+		return response;
+	}
+		
+	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_FEES)
+	@POST
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_FEES, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_FEES)
+
+	public Response<DoctorOnlineConsultationFees> addEditOnlineConsultationFees(@RequestBody DoctorOnlineConsultationFees request) {
+		if (request == null) {
+			logger.warn("Doctor Contact Request Is Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
+		} else if (DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+			logger.warn("Doctor Id Is Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Is Empty");
+		}
+		DoctorOnlineConsultationFees addEditVisitingTimeResponse = doctorProfileService.addEditOnlineConsultingFees(request);
+		transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
+		if (addEditVisitingTimeResponse!=null)
+			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
+		Response<DoctorOnlineConsultationFees> response = new Response<DoctorOnlineConsultationFees>();
+		response.setData(addEditVisitingTimeResponse);
+		return response;
+	
+	}
+	
+	@Path(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_FEES)
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_FEES, notes = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_FEES)
+	@GET
+	public Response<DoctorOnlineConsultationFees> getOnlineConsultationFees(@PathParam("doctorId") String doctorId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			logger.warn("Doctor Id Is Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Is Empty");
+		}
+		//	Integer count = doctorProfileService.countOnlineConsultingfees(discarded, searchTerm);
+		Response<DoctorOnlineConsultationFees> response = new Response<DoctorOnlineConsultationFees>();
+		
+		response.setData(doctorProfileService.getOnlineConsultingfees(doctorId));
+	//	response.setCount(count);
+		return response;
 	}
 
 	

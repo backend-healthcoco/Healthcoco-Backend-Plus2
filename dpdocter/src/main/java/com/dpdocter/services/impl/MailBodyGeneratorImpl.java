@@ -490,5 +490,24 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
+	
+	@Override
+	@Transactional
+	public String verifyEmailBody(String firstName,String tokenId, String templatePath)throws Exception {
+		
+		VelocityContext context = new VelocityContext();
+		context.put("fName", firstName);
+		context.put("link",link+"?uid=" + tokenId);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("fbLink", fbLink);
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		
+	    String text = mergeTemplate(context, templatePath);
+		return text;
+	}
+
 
 }

@@ -9,6 +9,7 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ConsultationType;
+
 import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.response.PatientTreatmentResponse;
 
@@ -104,6 +105,8 @@ public class Appointment extends GenericCollection {
 	private Boolean isCreatedByPatient = false;
 	
 	private PatientTreatmentResponse patientTreatmentResponse;
+	
+	private DoctorConsultation OnlineConsultationType;
 
 	private ConsultationType consultationType;
 	
@@ -467,6 +470,16 @@ public class Appointment extends GenericCollection {
 
 	public void setBranch(String branch) {
 		this.branch = branch;
+	}
+	
+	
+
+	public DoctorConsultation getOnlineConsultationType() {
+		return OnlineConsultationType;
+	}
+
+	public void setOnlineConsultationType(DoctorConsultation onlineConsultationType) {
+		OnlineConsultationType = onlineConsultationType;
 	}
 
 	public ConsultationType getConsultationType() {

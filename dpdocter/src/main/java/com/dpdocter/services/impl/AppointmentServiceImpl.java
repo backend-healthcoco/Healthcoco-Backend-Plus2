@@ -1003,6 +1003,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 				appointmentCollection = new AppointmentCollection();
 				BeanUtil.map(request, appointmentCollection);
 				appointmentCollection.setCreatedTime(new Date());
+				if(request.getType() !=null)
+				appointmentCollection.setType(request.getType());
 				appointmentCollection
 						.setAppointmentId(UniqueIdInitial.APPOINTMENT.getInitial() + DPDoctorUtils.generateRandomId());
 
@@ -1827,12 +1829,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Response<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
-			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb) {
+			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb,String type) {
 		Response<Appointment> response = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("type").is(AppointmentType.APPOINTMENT.getType()).and("updatedTime")
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(type)) {
+				criteria.and("type").is(type);
+				}
+				else {
+				criteria.and("type").is(AppointmentType.APPOINTMENT.getType());
+				}
+			
+			
+		 criteria.and("updatedTime")
 					.gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
@@ -5661,7 +5672,7 @@ try {
 	@Transactional
 	public SlotDataResponse getOnlineConsultationTimeSlots(String doctorId, String consultationType, Date date,
 			Boolean isPatient) {
-		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+		List<DoctorClinicProfileCollection> doctorClinicProfileCollections = null;
 		List<Slot> slotResponse = null;
 		SlotDataResponse response = null;
 		try {
@@ -5671,7 +5682,8 @@ try {
 			
 			
 			
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdAndConsultationType(doctorObjectId,consultationType);
+			doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorId(doctorObjectId);
+			DoctorClinicProfileCollection doctorClinicProfileCollection=doctorClinicProfileCollections.get(0);
 			if (doctorClinicProfileCollection != null) {
 
 				if (!isPatient) {
@@ -5694,7 +5706,8 @@ try {
 				String day = sdf.format(date);
 				if (doctorClinicProfileCollection.getOnlineWorkingSchedules() != null
 						&& doctorClinicProfileCollection.getAppointmentSlot() != null) {
-					slotTime = doctorClinicProfileCollection.getAppointmentSlot().getTime();
+					slotTime = 15;
+						//	doctorClinicProfileCollection.getAppointmentSlot().getTime();
 					if(slotTime == 0.0)slotTime = 15;
 
 					response = new SlotDataResponse();
@@ -5793,6 +5806,5 @@ try {
 	}
 
 	
-
 	
 }

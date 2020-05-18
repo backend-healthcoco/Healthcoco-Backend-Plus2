@@ -4,11 +4,14 @@ import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.DoctorConsultation;
 import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.beans.v2.PatientTreatment;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
+import com.dpdocter.enums.AppointmentType;
+
 import com.dpdocter.enums.QueueStatus;
 
 public class AppointmentRequest {
@@ -86,6 +89,10 @@ public class AppointmentRequest {
 	private Boolean isCreatedByPatient = false;
 
 	private Boolean isTreatmentEdited = false;
+	
+	private AppointmentType type;
+	
+	private DoctorConsultation OnlineConsultationType;
 
 	public Boolean getIsTreatmentEdited() {
 		return isTreatmentEdited;
@@ -381,6 +388,26 @@ public class AppointmentRequest {
 
 	public void setPatientTreatments(PatientTreatmentAddEditRequest patientTreatments) {
 		this.patientTreatments = patientTreatments;
+	}
+	
+	
+
+	public AppointmentType getType() {
+		return type;
+	}
+
+	public void setType(AppointmentType type) {
+		this.type = type;
+	}
+	
+	
+
+	public DoctorConsultation getOnlineConsultationType() {
+		return OnlineConsultationType;
+	}
+
+	public void setOnlineConsultationType(DoctorConsultation onlineConsultationType) {
+		OnlineConsultationType = onlineConsultationType;
 	}
 
 	@Override

@@ -48,6 +48,8 @@ public class DoctorSignupRequest {
 	private String promoCode;
 	
 	private Boolean isMedicalStudent=false;
+	
+	private String timeZone ;
 
 	public DOB getDob() {
 		return dob;
@@ -204,6 +206,16 @@ public class DoctorSignupRequest {
 
 	public void setIsMedicalStudent(Boolean isMedicalStudent) {
 		this.isMedicalStudent = isMedicalStudent;
+	}
+	
+	
+
+	public String getTimeZone() {
+		return timeZone;
+	}
+
+	public void setTimeZone(String timeZone) {
+		this.timeZone = timeZone;
 	}
 
 	@Override

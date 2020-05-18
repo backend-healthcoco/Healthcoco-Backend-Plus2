@@ -43,7 +43,7 @@ public interface AppointmentService {
 
 	Response<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
-			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb);
+			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb,String type);
 
 	Response<Object> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String type);
@@ -135,7 +135,7 @@ public interface AppointmentService {
 
 	SlotDataResponse getOnlineConsultationTimeSlots(String doctorId, String consultationType, Date date, Boolean isPatient);
 
-	//new
+	
 //	Appointment addAppointment(AppointmentRequest request,
 	//		Boolean isFormattedResponseRequired);
 }

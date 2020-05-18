@@ -62,7 +62,7 @@ public class DoctorOnlineWorkingTimeRequest {
 	@Override
 	public String toString() {
 		return "DoctorOnlineWorkingTimeRequest [id=" + id + ", doctorId=" + doctorId + ", onlineWorkingSchedules="
-				+ onlineWorkingSchedules + ", consultationType=" + consultationType + ", isOnlineConsultationAvailable="
+				+ onlineWorkingSchedules  + ", isOnlineConsultationAvailable="
 				+ isOnlineConsultationAvailable + "]";
 	}
 

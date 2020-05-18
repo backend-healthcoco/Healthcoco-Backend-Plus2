@@ -836,6 +836,11 @@ public interface PathProxy {
 		
 		public static final String ADD_EDIT_ONLINE_CONSULTATION_TIME = "/clinicProfile/addEditOnlineConsultationTime";
 
+		public static final String	GET_ONLINE_CONSULTATION_TIME = "/clinicProfile/{doctorId}/getOnlineConsultationTime";
+
+		public static final String ADD_EDIT_ONLINE_CONSULTATION_FEES = "/clinicProfile/addEditOnlineConsultationFees";
+
+		public static final String	GET_ONLINE_CONSULTATION_FEES = "/clinicProfile/{doctorId}/getOnlineConsultationFees";
 
 	}
 
@@ -2322,7 +2327,7 @@ public interface PathProxy {
 	public static final String BANK_DETAILS_BASE_URL = BASE_URL + "/bankDetails";
 	public interface BankDetailsUrls{
 		
-		public static final String GET_BANK_DETAILS_BY_DOCTORID = "/get";
+		public static final String GET_BANK_DETAILS_BY_DOCTORID = "/{doctorId}/get";
 		
 		public static final String ADD_EDIT_BANK_DETAILS = "/addEdit";
 		

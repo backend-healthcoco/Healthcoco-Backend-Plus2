@@ -149,9 +149,15 @@ public class DoctorClinicProfile {
 	
 	private List<WorkingSchedule> onlineWorkingSchedules;
 	
+//<<<<<<< Updated upstream
 	private List<DoctorConsultation>  consultationType;
 
 	private Boolean isOnlineConsultationAvailable = false;
+//=======
+//	private Map<DoctorConsultation, String> onlineConsultationFees;
+
+//	private List<ConsultationType> onlineConsultationType;
+//>>>>>>> Stashed changes
 
 	public Boolean getIsSuperAdmin() {
 		return isSuperAdmin;
@@ -690,6 +696,7 @@ public class DoctorClinicProfile {
 	public void setOnlineWorkingSchedules(List<WorkingSchedule> onlineWorkingSchedules) {
 		this.onlineWorkingSchedules = onlineWorkingSchedules;
 	}
+//<<<<<<< Updated upstream
 
 	public List<DoctorConsultation> getConsultationType() {
 		return consultationType;
@@ -697,7 +704,35 @@ public class DoctorClinicProfile {
 
 	public void setConsultationType(List<DoctorConsultation> consultationType) {
 		this.consultationType = consultationType;
+
+	
+
+//	public Map<DoctorConsultation, String> getOnlineConsultationFees() {
+//		return onlineConsultationFees;
+//	}
+//
+//	public void setOnlineConsultationFees(Map<DoctorConsultation, String> onlineConsultationFees) {
+//		this.onlineConsultationFees = onlineConsultationFees;
+//	}
+
+	
+//	public List<DoctorConsultation> getOnlineConsultationType() {
+//		return onlineConsultationType;
+//	}
+//
+//	public void setOnlineConsultationType(List<DoctorConsultation> onlineConsultationType) {
+//		this.onlineConsultationType = onlineConsultationType;
+//>>>>>>> Stashed changes
 	}
+	
+
+//	public List<ConsultationType> getOnlineConsultationType() {
+//		return onlineConsultationType;
+//	}
+//
+//	public void setOnlineConsultationType(List<ConsultationType> onlineConsultationType) {
+//		this.onlineConsultationType = onlineConsultationType;
+//	}
 
 	public Boolean getIsOnlineConsultationAvailable() {
 		return isOnlineConsultationAvailable;
@@ -735,7 +770,7 @@ public class DoctorClinicProfile {
 				+ isAdminNutritionist + ", isSuperAdmin=" + isSuperAdmin + ", mrCode=" + mrCode + ", divisionIds="
 				+ divisionIds + ", cityId=" + cityId + ", isVaccinationModuleOn=" + isVaccinationModuleOn
 				+ ", feedbackURL=" + feedbackURL + ", onlineWorkingSchedules=" + onlineWorkingSchedules
-				+ ", consultationType=" + consultationType + ", isOnlineConsultationAvailable="
+				 + ", isOnlineConsultationAvailable="
 				+ isOnlineConsultationAvailable + "]";
 	}
 

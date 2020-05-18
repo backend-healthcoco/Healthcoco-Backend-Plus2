@@ -34,8 +34,9 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 	@Override
 	public Boolean addEditBankDetails(BankDetails request) {
 		Boolean response=false;
-		BankDetailsCollection bankDetailsCollection=null;
+		
 		try {
+			BankDetailsCollection bankDetailsCollection=new BankDetailsCollection();
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				bankDetailsCollection = bankDetailsRepository.findById(new ObjectId(request.getId())).orElse(null);
 				if (bankDetailsCollection == null) {
@@ -73,18 +74,23 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 	public BankDetails getBankDetailsByDoctorId(String doctorId) {
 		BankDetails response=null;
 		try {
-		BankDetailsCollection bankDetailsCollection=bankDetailsRepository.findById(new ObjectId(doctorId)).orElse(null);
+		BankDetailsCollection bankDetailsCollection=bankDetailsRepository.findByDoctorId(new ObjectId(doctorId)).orElse(null);
 		
 		 if(bankDetailsCollection==null)
 		    {
 		    	throw new BusinessException(ServiceError.NotFound,"Error no such id");
 		    }
+
 		 bankDetailsCollection.setAccountholderName(AES.decrypt(bankDetailsCollection.getAccountholderName(), secretKeyAccountDetails));
 			bankDetailsCollection.setAccountNumber(AES.decrypt(bankDetailsCollection.getAccountNumber(), secretKeyAccountDetails));
 			bankDetailsCollection.setIfscNumber(AES.decrypt(bankDetailsCollection.getIfscNumber(), secretKeyAccountDetails));
 			bankDetailsCollection.setPanCardNumber(AES.decrypt(bankDetailsCollection.getPanCardNumber(), secretKeyAccountDetails));
 			bankDetailsCollection.setBankName(AES.decrypt(bankDetailsCollection.getBankName(), secretKeyAccountDetails));
 			bankDetailsCollection.setBranchCity(AES.decrypt(bankDetailsCollection.getBranchCity(), secretKeyAccountDetails));
+
+			
+		 response=new BankDetails();
+
 			BeanUtil.map(bankDetailsCollection, response);
 		
 		}

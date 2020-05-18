@@ -9,6 +9,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -31,6 +32,7 @@ public class BankDetailsApi {
 
 	private static Logger logger = Logger.getLogger(BankDetailsApi.class.getName());
 	
+	@Autowired
 	private BankDetailsService bankDetailsService;
 	
 	
@@ -45,15 +47,16 @@ public class BankDetailsApi {
 		}
 		
 		Response<Boolean> response = new Response<Boolean>();
+		bankDetailsService.addEditBankDetails(request);
 		
-		response.setData(bankDetailsService.addEditBankDetails(request));
+		response.setData(true);
 		return response;
 	}
 	
 	@Path(value = PathProxy.BankDetailsUrls.GET_BANK_DETAILS_BY_DOCTORID)
 	@GET
 	@ApiOperation(value = PathProxy.BankDetailsUrls.GET_BANK_DETAILS_BY_DOCTORID, notes = PathProxy.BankDetailsUrls.GET_BANK_DETAILS_BY_DOCTORID)
-	public Response<BankDetails> getBankDetails(@PathParam("id") String doctorId) {
+	public Response<BankDetails> getBankDetails(@PathParam("doctorId") String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "id is NULL");

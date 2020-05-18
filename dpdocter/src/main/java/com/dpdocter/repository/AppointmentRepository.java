@@ -28,4 +28,6 @@ public interface AppointmentRepository extends MongoRepository<AppointmentCollec
 	
 	AppointmentCollection findByDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndTimeFromTimeAndTimeToTimeAndFromDateAndToDate(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId, int from, int to, Date fromDate, Date toDate);
 
+	
+
 }

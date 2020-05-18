@@ -323,7 +323,7 @@ public class LoginServiceImpl implements LoginService {
 						}
 	//comment for new signup
 						//	user.setIsSuperstarAssociated(mongoTemplate.count(new Query(new Criteria("doctorId").is(userCollection.getId())), DoctorSchoolAssociationCollection.class) > 0 ? true : false);
-	//					user.setIsSuperstarAssociated(mongoTemplate.exists(new Query(new Criteria("doctorId").is(userCollection.getId())), DoctorSchoolAssociationCollection.class));
+			//			user.setIsSuperstarAssociated(mongoTemplate.exists(new Query(new Criteria("doctorId").is(userCollection.getId())), DoctorSchoolAssociationCollection.class));
 						response = new LoginResponse();
 						user.setEmailAddress(user.getUserName());
 						response.setUser(user);

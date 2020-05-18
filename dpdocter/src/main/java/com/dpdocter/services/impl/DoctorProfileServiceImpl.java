@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -23,10 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.AddEditSEORequest;
+import com.dpdocter.beans.BankDetails;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
+import com.dpdocter.beans.DoctorOnlineConsultationFees;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.DoctorRegistrationDetail;
 import com.dpdocter.beans.EducationInstitute;
@@ -40,6 +43,8 @@ import com.dpdocter.beans.Services;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.beans.UIPermissions;
+import com.dpdocter.beans.UserSymptom;
+import com.dpdocter.collections.BankDetailsCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorProfileViewCollection;
@@ -58,6 +63,7 @@ import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
+import com.dpdocter.collections.UserSymptomCollection;
 import com.dpdocter.enums.CardioPermissionEnum;
 import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.enums.GynacPermissionsEnum;
@@ -636,6 +642,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 				// set clinic profile details
 				doctorProfile.setClinicProfile(clinicProfile);
+			//	doctorProfile.setConsultationType(clinicProfile.get(0).getConsultationType());
+			//	doctorProfile.setOnlineWorkingSchedules(clinicProfile.get(0).getOnlineWorkingSchedules());
+			//	doctorProfile.setOnlineConsultationType(clinicProfile.get(0).getOnlineConsultationType());
+
 			}
 		} catch (BusinessException be) {
 			logger.error(be);
@@ -1753,6 +1763,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Override
 	@Transactional
+//<<<<<<< Updated upstream
 	public Boolean addEditOnlineWorkingTime(DoctorOnlineWorkingTimeRequest request) {
 		List<DoctorClinicProfileCollection> doctorClinicProfileCollections = null;
 		Boolean response = false;
@@ -1768,6 +1779,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					response = true;
 				}
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Editing Doctor Clinic Profile");
@@ -1775,5 +1787,138 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
+	
+	@Override
+	public DoctorOnlineWorkingTimeRequest getOnlineWorkTiming(String doctorId) {
+		DoctorOnlineWorkingTimeRequest response = null;
+	
+		try {
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections=doctorClinicProfileRepository.findByDoctorId(new ObjectId(doctorId));
+		
+		 if(doctorClinicProfileCollections==null)
+		    {
+		    	throw new BusinessException(ServiceError.NotFound,"Error no such id");
+		    }
+			
+		 response=new DoctorOnlineWorkingTimeRequest();
+		 DoctorClinicProfileCollection doctorClinicProfileCollection=new DoctorClinicProfileCollection();
+		 
+		 if(doctorClinicProfileCollections !=null)
+			 doctorClinicProfileCollection=doctorClinicProfileCollections.get(0);
+		
+			BeanUtil.map(doctorClinicProfileCollection, response);
+		
+		}
+		catch (BusinessException e) {
+			logger.error("Error while searching the id "+e.getMessage());
+			throw new BusinessException(ServiceError.Unknown,"Error while searching the id");
+		}
+		return response;
+
+	}
+	
+	 @Override
+		public Integer countOnlineTiming(Boolean discarded, String searchTerm) {
+			Integer response=null;
+			try {
+				Criteria criteria = new Criteria("discarded").is(discarded);
+//			    criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
+//					new Criteria("name").regex("^" + searchTerm));
+
+		response = (int) mongoTemplate.count(new Query(criteria), DoctorClinicProfileCollection.class);
+	} catch (BusinessException e) {
+		logger.error("Error while counting online timing " + e.getMessage());
+		e.printStackTrace();
+		throw new BusinessException(ServiceError.Unknown, "Error while counting online timing " + e.getMessage());
+
+	}
+			return response;
+		}
+
+	@Override
+	public DoctorOnlineConsultationFees addEditOnlineConsultingFees(DoctorOnlineConsultationFees request) {
+		List<DoctorClinicProfileCollection> doctorClinicProfileCollections = new ArrayList<DoctorClinicProfileCollection>();
+		DoctorOnlineConsultationFees response = null;
+		DoctorClinicProfileCollection oldDoctorClinicProfileCollection=new DoctorClinicProfileCollection();
+		
+		try {
+			doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorId(
+					new ObjectId(request.getDoctorId()));
+			if (doctorClinicProfileCollections != null) 
+			for(DoctorClinicProfileCollection doctorClinicProfileCollection:doctorClinicProfileCollections)
+			{
+				doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
+		
+			
+			doctorClinicProfileCollection.setConsultationType(request.getConsultationType());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			}
+			response = new DoctorOnlineConsultationFees();
+			//BeanUtil.map(doctorClinicProfileCollections, oldDoctorClinicProfileCollection);
+			if(doctorClinicProfileCollections!=null)
+				oldDoctorClinicProfileCollection=doctorClinicProfileCollections.get(0);
+			
+			BeanUtil.map(oldDoctorClinicProfileCollection,response);
+			
+	//		response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error While add/edit Online Consulting fees");
+			throw new BusinessException(ServiceError.Unknown, "Error While Add/Edit Online Consulting fees");
+		}
+		return response;
+
+	}
+
+	@Override
+	public DoctorOnlineConsultationFees getOnlineConsultingfees(String doctorId) {
+		DoctorOnlineConsultationFees response=null;
+		try {
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections=doctorClinicProfileRepository.findByDoctorId(new ObjectId(doctorId));
+		
+		 if(doctorClinicProfileCollections==null)
+		    {
+		    	throw new BusinessException(ServiceError.NotFound,"Error no such id");
+		    }
+			
+		 response=new DoctorOnlineConsultationFees();
+		 DoctorClinicProfileCollection doctorClinicProfileCollection=new DoctorClinicProfileCollection();
+		 
+		 if(doctorClinicProfileCollections !=null)
+			 doctorClinicProfileCollection=doctorClinicProfileCollections.get(0);
+		 
+		 BeanUtil.map(doctorClinicProfileCollection, response);
+		
+		}
+		catch (BusinessException e) {
+			logger.error("Error while searching the id "+e.getMessage());
+			throw new BusinessException(ServiceError.Unknown,"Error while searching the id");
+		}
+		return response;
+	}	
+
+
+	
+
+	@Override
+	public Integer countOnlineConsultingfees(Boolean discarded, String searchTerm) {
+		Integer response=null;
+		try {
+			Criteria criteria = new Criteria("discarded").is(discarded);
+//		    criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
+//				new Criteria("name").regex("^" + searchTerm));
+
+	response = (int) mongoTemplate.count(new Query(criteria), DoctorClinicProfileCollection.class);
+} catch (BusinessException e) {
+	logger.error("Error while counting online consulting fees " + e.getMessage());
+	e.printStackTrace();
+	throw new BusinessException(ServiceError.Unknown, "Error while counting online fees " + e.getMessage());
+
+}
+		return response;
+	}
+	
+
 
 }

@@ -72,4 +72,6 @@ public interface MailBodyGenerator {
 
 	String generateActivationEmailBodyForStaff(String fName, String tokenId, String templatePath, String doctorName,
 			String clinicName, String addedBy) throws Exception;
+	
+	public String verifyEmailBody(String firstName,String tokenId, String templatePath) throws Exception;
 }

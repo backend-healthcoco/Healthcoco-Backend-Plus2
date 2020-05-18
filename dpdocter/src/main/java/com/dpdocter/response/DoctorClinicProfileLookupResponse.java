@@ -13,6 +13,7 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.DoctorFacility;
 
 public class DoctorClinicProfileLookupResponse extends GenericCollection {
@@ -90,6 +91,8 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	private List<WorkingSchedule> onlineWorkingSchedules;
 	
 	private List<DoctorConsultation>  consultationType;
+	
+	//private List<ConsultationType> onlineConsultationType;
 
 	private Boolean isOnlineConsultationAvailable = false;
 	public ObjectId getId() {
@@ -396,6 +399,10 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	public void setIsOnlineConsultationAvailable(Boolean isOnlineConsultationAvailable) {
 		this.isOnlineConsultationAvailable = isOnlineConsultationAvailable;
 	}
+	
+	
+
+	
 
 	@Override
 	public String toString() {

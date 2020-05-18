@@ -1,10 +1,12 @@
 package com.dpdocter.beans;
 
 import java.util.List;
+import java.util.Map;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.PackageType;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
@@ -84,6 +86,15 @@ public class DoctorProfile extends GenericCollection {
 	private String drugTypePlacement = "PREFIX";
 
 	private String freshchatRestoreId;
+	
+	private List<WorkingSchedule> onlineWorkingSchedules;
+	
+	//private Map<DoctorConsultation, String> onlineConsultationFees;
+	
+//	private List<DoctorConsultation> consultationType;
+	
+	//private List<ConsultationType> onlineConsultationType;
+
 
 	public String getId() {
 		return id;
@@ -388,7 +399,19 @@ public class DoctorProfile extends GenericCollection {
 	public void setFreshchatRestoreId(String freshchatRestoreId) {
 		this.freshchatRestoreId = freshchatRestoreId;
 	}
+	
+	
 
+	public List<WorkingSchedule> getOnlineWorkingSchedules() {
+		return onlineWorkingSchedules;
+	}
+
+	public void setOnlineWorkingSchedules(List<WorkingSchedule> onlineWorkingSchedules) {
+		this.onlineWorkingSchedules = onlineWorkingSchedules;
+	}
+
+	
+	
 	@Override
 	public String toString() {
 		return "DoctorProfile [id=" + id + ", userId=" + userId + ", doctorId=" + doctorId + ", title=" + title
