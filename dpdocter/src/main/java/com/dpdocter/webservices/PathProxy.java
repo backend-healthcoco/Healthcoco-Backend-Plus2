@@ -2334,6 +2334,7 @@ public interface PathProxy {
 	}
 	
 	public static final String CONSULTATION_PROBLEM_DETAILS_BASE_URL = BASE_URL + "/consultationProblemDetails";
+
 	public interface ConsultationproblemDetailsUrls{
 		
 		
@@ -2341,6 +2342,16 @@ public interface PathProxy {
 		public static final String GET_CONSULTATION_PROBLEM_DETAILS = "/get";
 		
 	}
+	
+	public static final String FITNESS_ASSESSMENT_BASE_URL="/fitnessAssessment";
+	public interface FitnessUrls{
+		public static final String GET_FITNESS_ASSESSMENT="/get";
+		public static final String GET_FITNESS_ASSESSMENT_BY_ID="/get/{id}";
+		public static final String ADD_EDIT_FITNESS_ASSESSMENT="/addEdit";
+		public static final String DELETE_FITNESS_ASSESSMENT="/delete/{id}";
+		public static final String DOWNLOAD_FITNESS_ASSESSMENT = "/download/{id}";
+		
+	};
 	
 	
 }
