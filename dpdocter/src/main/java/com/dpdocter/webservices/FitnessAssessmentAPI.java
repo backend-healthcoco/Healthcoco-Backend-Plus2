@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.FitnessAssessment;
@@ -28,7 +29,7 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@RestController
+@Component
 @Path(PathProxy.FITNESS_ASSESSMENT_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

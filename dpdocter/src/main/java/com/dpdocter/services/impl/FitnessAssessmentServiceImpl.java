@@ -19,6 +19,8 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
@@ -53,7 +55,7 @@ import com.dpdocter.services.JasperReportService;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
-
+@Service
 public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 	private static Logger logger = Logger.getLogger(RecipeServiceImpl.class.getName());
 	@Autowired
@@ -272,6 +274,7 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 	}
 
 	@Override
+	@Transactional
 	public FitnessAssessment addEditFitnessAssessment(FitnessAssessment request) {
 		FitnessAssessment response = null;
 		FitnessAssessmentCollection fitnessAssessmentCollection = null;

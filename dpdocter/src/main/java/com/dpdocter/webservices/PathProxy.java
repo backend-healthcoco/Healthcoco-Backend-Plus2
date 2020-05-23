@@ -2343,7 +2343,7 @@ public interface PathProxy {
 		
 	}
 	
-	public static final String FITNESS_ASSESSMENT_BASE_URL="/fitnessAssessment";
+	public static final String FITNESS_ASSESSMENT_BASE_URL= BASE_URL + "/fitnessAssessment";
 	public interface FitnessUrls{
 		public static final String GET_FITNESS_ASSESSMENT="/get";
 		public static final String GET_FITNESS_ASSESSMENT_BY_ID="/get/{id}";
