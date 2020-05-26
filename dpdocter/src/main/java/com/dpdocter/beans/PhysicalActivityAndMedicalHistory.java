@@ -6,7 +6,7 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.FluctuateWeightType;
 import com.dpdocter.enums.StressAreaOfLife;
 
-public class PhysicalActivityAndMedicalHistory extends GenericCollection {
+public class PhysicalActivityAndMedicalHistory  {
 	
 	private String id;
 	

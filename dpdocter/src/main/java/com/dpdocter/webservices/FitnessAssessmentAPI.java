@@ -15,12 +15,14 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.FitnessAssessment;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.FitnessAssessmentRequest;
 import com.dpdocter.services.FitnessAssessmentService;
 import com.dpdocter.services.TransactionalManagementService;
 
@@ -45,9 +47,7 @@ public class FitnessAssessmentAPI {
 	@Path(value = PathProxy.FitnessUrls.DELETE_FITNESS_ASSESSMENT)
 	@DELETE
 	@ApiOperation(value = PathProxy.FitnessUrls.DELETE_FITNESS_ASSESSMENT, notes = PathProxy.FitnessUrls.DELETE_FITNESS_ASSESSMENT)
-	public Response<FitnessAssessment> deleteFitness(@PathParam("fitnessId") String fitnessId,
-			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId,
+	public Response<Boolean> deleteFitness(@PathParam("fitnessId") String fitnessId,
 			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(fitnessId)) {
@@ -55,7 +55,7 @@ public class FitnessAssessmentAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 
 		}
-		Response<FitnessAssessment> response = new Response<FitnessAssessment>();
+		Response<Boolean> response = new Response<Boolean>();
 		response.setData(fitnessAssessmentService.discardFitnessAssessment(fitnessId, discarded));
 		return response;
 	}
@@ -64,9 +64,9 @@ public class FitnessAssessmentAPI {
 	@GET
 	@ApiOperation(value = PathProxy.FitnessUrls.GET_FITNESS_ASSESSMENT, notes = PathProxy.FitnessUrls.GET_FITNESS_ASSESSMENT)
 	public Response<FitnessAssessment> getFitnessAssessment(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId,
 			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("patientId") String patientId,@QueryParam("updatedTime") long updatedTime) {
+			@QueryParam("searchTerm") String searchTerm,@QueryParam("updatedTime") long updatedTime) {
 
 		Response<FitnessAssessment> response = new Response<FitnessAssessment>();
 		response.setDataList(fitnessAssessmentService.getFitnessAssessmentList(size, page, discarded, searchTerm,
@@ -91,13 +91,13 @@ public class FitnessAssessmentAPI {
 	@Path(value = PathProxy.FitnessUrls.ADD_EDIT_FITNESS_ASSESSMENT)
 	@POST
 	@ApiOperation(value = PathProxy.FitnessUrls.ADD_EDIT_FITNESS_ASSESSMENT, notes = PathProxy.FitnessUrls.ADD_EDIT_FITNESS_ASSESSMENT)
-	public Response<FitnessAssessment> addEditFitnessAssessment(FitnessAssessment request) {
+	public Response<FitnessAssessment> addEditFitnessAssessment(@RequestBody FitnessAssessmentRequest request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+		if (DPDoctorUtils.anyStringEmpty(request.getId(), request.getLocationId(), request.getHospitalId(),
 				request.getPatientId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput,

@@ -7,7 +7,7 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.BloodPressureType;
 import com.dpdocter.enums.ResistanceTrainingProgramType;
 
-public class ExerciseAndMovement extends GenericCollection {
+public class ExerciseAndMovement  {
 	private String id;
 	private String doctorId;
 	private String locationId;

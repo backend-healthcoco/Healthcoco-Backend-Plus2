@@ -8,7 +8,7 @@ import com.dpdocter.enums.BloodPressureType;
 import com.dpdocter.enums.DiabetesType;
 import com.dpdocter.enums.ThyroidType;
 
-public class TreatmentAndDiagnosis extends GenericCollection {
+public class TreatmentAndDiagnosis {
 	private String id;
 	private String doctorId;
 	private String locationId;

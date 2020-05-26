@@ -3,17 +3,18 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.FitnessAssessment;
+import com.dpdocter.request.FitnessAssessmentRequest;
 
 public interface FitnessAssessmentService {
 
-	FitnessAssessment discardFitnessAssessment(String fitnessId, Boolean discarded);
+	Boolean discardFitnessAssessment(String fitnessId, Boolean discarded);
 
 	List<?> getFitnessAssessmentList(int size, int page, boolean discarded, String searchTerm, String doctorId,
 			String locationId, String hospitalId, String patientId,long updatedTime);
 
 	FitnessAssessment getFitnessAssessmentById(String fitnessId);
 
-	FitnessAssessment addEditFitnessAssessment(FitnessAssessment request);
+	FitnessAssessment addEditFitnessAssessment(FitnessAssessmentRequest request);
 
 	String getFitnessAssessmentFile(String fitnessId);
 
