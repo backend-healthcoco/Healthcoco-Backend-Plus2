@@ -11,7 +11,7 @@ import com.dpdocter.beans.v2.PatientTreatment;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
-
+import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.QueueStatus;
 
 public class AppointmentRequest {
@@ -92,7 +92,9 @@ public class AppointmentRequest {
 	
 	private AppointmentType type;
 	
-	private DoctorConsultation OnlineConsultationType;
+	private ConsultationType consultationType;
+	
+	private String problemDetailsId;
 
 	public Boolean getIsTreatmentEdited() {
 		return isTreatmentEdited;
@@ -402,12 +404,24 @@ public class AppointmentRequest {
 	
 	
 
-	public DoctorConsultation getOnlineConsultationType() {
-		return OnlineConsultationType;
+	
+	
+	
+
+	public ConsultationType getConsultationType() {
+		return consultationType;
 	}
 
-	public void setOnlineConsultationType(DoctorConsultation onlineConsultationType) {
-		OnlineConsultationType = onlineConsultationType;
+	public void setConsultationType(ConsultationType consultationType) {
+		this.consultationType = consultationType;
+	}
+
+	public String getProblemDetailsId() {
+		return problemDetailsId;
+	}
+
+	public void setProblemDetailsId(String problemDetailsId) {
+		this.problemDetailsId = problemDetailsId;
 	}
 
 	@Override

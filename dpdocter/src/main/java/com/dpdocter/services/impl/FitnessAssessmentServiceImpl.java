@@ -85,8 +85,8 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 	@Autowired
 	private JasperReportService jasperReportService;
 
-	@Value(value = "${jasper.print.fitnessAssessment.a4.fileName}")
-	private String fitnessAssessmentA4FileName;
+//	@Value(value = "${jasper.print.fitnessAssessment.a4.fileName}")
+//	private String fitnessAssessmentA4FileName;
 
 	@Autowired
 	@Value(value = "${image.path}")
@@ -381,86 +381,86 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 	@Override
 	public String getFitnessAssessmentFile(String fitnessId) {
 		String response = null;
-
-		try {
-			FitnessAssessmentCollection fitnessAssessmentCollection = fitnessAssessmentRepository
-					.findById(new ObjectId(fitnessId)).orElse(null);
-			if (fitnessAssessmentCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
-						fitnessAssessmentCollection.getPatientId(), fitnessAssessmentCollection.getLocationId(),
-						fitnessAssessmentCollection.getHospitalId());
-
-				UserCollection user = userRepository.findById(fitnessAssessmentCollection.getPatientId()).orElse(null);
-				JasperReportResponse jasperReportResponse = createJasper(fitnessAssessmentCollection, patient, user);
-				if (jasperReportResponse != null)
-					response = getFinalImageURL(jasperReportResponse.getPath());
-				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
-					if (jasperReportResponse.getFileSystemResource().getFile().exists())
-						jasperReportResponse.getFileSystemResource().getFile().delete();
-			} else {
-				logger.warn("Invoice Id does not exist");
-				throw new BusinessException(ServiceError.NotFound, "Id does not exist");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, "Exception in download Discharge Summary ");
-		}
+//
+//		try {
+//			FitnessAssessmentCollection fitnessAssessmentCollection = fitnessAssessmentRepository
+//					.findById(new ObjectId(fitnessId)).orElse(null);
+//			if (fitnessAssessmentCollection != null) {
+//				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
+//						fitnessAssessmentCollection.getPatientId(), fitnessAssessmentCollection.getLocationId(),
+//						fitnessAssessmentCollection.getHospitalId());
+//
+//				UserCollection user = userRepository.findById(fitnessAssessmentCollection.getPatientId()).orElse(null);
+//				JasperReportResponse jasperReportResponse = createJasper(fitnessAssessmentCollection, patient, user);
+//				if (jasperReportResponse != null)
+//					response = getFinalImageURL(jasperReportResponse.getPath());
+//				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+//					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+//						jasperReportResponse.getFileSystemResource().getFile().delete();
+//			} else {
+//				logger.warn("Invoice Id does not exist");
+//				throw new BusinessException(ServiceError.NotFound, "Id does not exist");
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e);
+//			throw new BusinessException(ServiceError.Unknown, "Exception in download Discharge Summary ");
+//		}
 		return response;
 	}
 
-	private JasperReportResponse createJasper(FitnessAssessmentCollection fitnessAssessmentCollection,
-			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException, ParseException {
-		JasperReportResponse response = null;
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		String pattern = "dd/MM/yyyy";
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-		Boolean show = false;
-
-		PrintSettingsCollection printSettings = printSettingsRepository
-				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(fitnessAssessmentCollection.getDoctorId(),
-						fitnessAssessmentCollection.getLocationId(), fitnessAssessmentCollection.getHospitalId(),
-						ComponentType.ALL.getType());
-
-		if (printSettings == null) {
-			printSettings = new PrintSettingsCollection();
-			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
-			BeanUtil.map(defaultPrintSettings, printSettings);
-		}
-		String pdfName = (user != null ? user.getFirstName() : "") + "FITNESS-ASSESSMENT-"
-				+ fitnessAssessmentCollection.getId() + new Date().getTime();
-
-		String layout = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
-				: "PORTRAIT";
-		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
-				: "A4";
-		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
-				: 20;
-		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
-				: 20;
-		Integer leftMargin = printSettings != null
-				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
-						? printSettings.getPageSetup().getLeftMargin()
-						: 20)
-				: 20;
-		Integer rightMargin = printSettings != null
-				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin()
-						: 20)
-				: 20;
-		response = jasperReportService.createPDF(ComponentType.FITNESS_ASSESSMENT, parameters,
-				fitnessAssessmentA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
-				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
-
-		return response;
-
-	}
-
+//	private JasperReportResponse createJasper(FitnessAssessmentCollection fitnessAssessmentCollection,
+//			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException, ParseException {
+//		JasperReportResponse response = null;
+//		Map<String, Object> parameters = new HashMap<String, Object>();
+//		String pattern = "dd/MM/yyyy";
+//		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+//		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+//		Boolean show = false;
+//
+//		PrintSettingsCollection printSettings = printSettingsRepository
+//				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(fitnessAssessmentCollection.getDoctorId(),
+//						fitnessAssessmentCollection.getLocationId(), fitnessAssessmentCollection.getHospitalId(),
+//						ComponentType.ALL.getType());
+//
+//		if (printSettings == null) {
+//			printSettings = new PrintSettingsCollection();
+//			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+//			BeanUtil.map(defaultPrintSettings, printSettings);
+//		}
+//		String pdfName = (user != null ? user.getFirstName() : "") + "FITNESS-ASSESSMENT-"
+//				+ fitnessAssessmentCollection.getId() + new Date().getTime();
+//
+//		String layout = printSettings != null
+//				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+//				: "PORTRAIT";
+//		String pageSize = printSettings != null
+//				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+//				: "A4";
+//		Integer topMargin = printSettings != null
+//				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+//				: 20;
+//		Integer bottonMargin = printSettings != null
+//				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+//				: 20;
+//		Integer leftMargin = printSettings != null
+//				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
+//						? printSettings.getPageSetup().getLeftMargin()
+//						: 20)
+//				: 20;
+//		Integer rightMargin = printSettings != null
+//				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+//						? printSettings.getPageSetup().getRightMargin()
+//						: 20)
+//				: 20;
+//		response = jasperReportService.createPDF(ComponentType.FITNESS_ASSESSMENT, parameters,
+//				fitnessAssessmentA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+//				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+//
+//		return response;
+//
+//	}
+//
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null) {
 			return imagePath + imageURL;

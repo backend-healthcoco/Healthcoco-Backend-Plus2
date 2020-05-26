@@ -149,6 +149,9 @@ public class AppointmentCollection extends GenericCollection {
 	
 	@Field
 	private Date consultationStartedOn;
+	
+	@Field
+	private ObjectId problemDetailsId;
 
 	public String getCancelledByProfile() {
 		return cancelledByProfile;
@@ -460,6 +463,16 @@ public class AppointmentCollection extends GenericCollection {
 
 	public void setConsultationStartedOn(Date consultationStartedOn) {
 		this.consultationStartedOn = consultationStartedOn;
+	}
+	
+	
+
+	public ObjectId getProblemDetailsId() {
+		return problemDetailsId;
+	}
+
+	public void setProblemDetailsId(ObjectId problemDetailsId) {
+		this.problemDetailsId = problemDetailsId;
 	}
 
 	@Override

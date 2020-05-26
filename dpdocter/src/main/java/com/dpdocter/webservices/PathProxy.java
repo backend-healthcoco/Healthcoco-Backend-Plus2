@@ -842,6 +842,7 @@ public interface PathProxy {
 
 		public static final String	GET_ONLINE_CONSULTATION_FEES = "/clinicProfile/{doctorId}/getOnlineConsultationFees";
 
+		public static final String UPLOAD_REGISTRATION_DETAILS = "/uploadRegistrationDetails";
 	}
 
 	public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";

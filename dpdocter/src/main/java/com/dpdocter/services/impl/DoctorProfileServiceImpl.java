@@ -32,6 +32,7 @@ import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorOnlineConsultationFees;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.DoctorRegistrationDetail;
+import com.dpdocter.beans.DoctorRegistrationDetails;
 import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.Feedback;
@@ -68,6 +69,7 @@ import com.dpdocter.enums.CardioPermissionEnum;
 import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.enums.GynacPermissionsEnum;
 import com.dpdocter.enums.OpthoPermissionEnums;
+import com.dpdocter.enums.RegistrationType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
@@ -1919,6 +1921,50 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		return response;
 	}
 	
+	
+	@Override
+	@Transactional
+	public String uploadRegistrationDetails(DoctorRegistrationDetails request) {
+		DoctorCollection doctorCollection = null;
+		String response = "";
+		try {
+			doctorCollection = doctorRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+			DoctorClinicProfileCollection doctorclinic=doctorClinicProfileRepository.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()));
+			
+			if (request.getImage() != null) {
+				String path = "registration-Docs";
+				// save image
+				request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
+				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path,
+						true);
+				if(request.getType().equals(RegistrationType.REGISTRATION_DETAILS.getType())) {
+					doctorCollection.setRegistrationImageUrl(imageURLResponse.getImageUrl());
+					doctorCollection.setRegistrationThumbnailUrl(imageURLResponse.getThumbnailUrl());
+					response = doctorCollection.getRegistrationImageUrl();
+				}
+				if(request.getType().equals(RegistrationType.CLINIC_OWNERSHIP.getType())) {
+					doctorclinic.setClinicOwnershipImageUrl(imageURLResponse.getImageUrl());
+					doctorClinicProfileRepository.save(doctorclinic);
+					response =doctorclinic.getClinicOwnershipImageUrl();
+					
+					}
+				if(request.getType().equals(RegistrationType.PHOTOID_PROOF.getType())) {
+					doctorCollection.setPhotoIdImageUrl(imageURLResponse.getImageUrl());
+					response = doctorCollection.getPhotoIdImageUrl();
+					
+					}
+				
+				doctorCollection= doctorRepository.save(doctorCollection);
+		
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error uploading registration details");
+			throw new BusinessException(ServiceError.Unknown, "Error  uploading registration details");
+		}
+		return response;
+	}
+
 
 
 }

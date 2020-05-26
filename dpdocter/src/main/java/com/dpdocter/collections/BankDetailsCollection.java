@@ -33,6 +33,14 @@ public class BankDetailsCollection extends GenericCollection {
 	private String bankName;
 	@Field
 	private String branchCity;
+	@Field
+	private String mobileNumber;
+	@Field
+	private String emailAddress;
+	@Field
+	private String razorPayAccountId;
+
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -86,6 +94,24 @@ public class BankDetailsCollection extends GenericCollection {
 	}
 	public void setBranchCity(String branchCity) {
 		this.branchCity = branchCity;
+	}
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+	public String getRazorPayAccountId() {
+		return razorPayAccountId;
+	}
+	public void setRazorPayAccountId(String razorPayAccountId) {
+		this.razorPayAccountId = razorPayAccountId;
 	}
 	
 	

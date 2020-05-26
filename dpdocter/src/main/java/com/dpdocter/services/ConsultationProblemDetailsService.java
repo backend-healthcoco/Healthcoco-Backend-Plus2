@@ -9,7 +9,7 @@ public interface ConsultationProblemDetailsService {
 	
 	ConsultationProblemDetails addEditProblemDetails(ConsultationProblemDetailsRequest request);
 	
-	List<ConsultationProblemDetails> getProblemDetails(int page,int size,String searchTerm,Boolean discarded);
+	ConsultationProblemDetails getProblemDetails(String problemDetailsId);
 
 	Integer countConsultationProblemDetails(Boolean discarded, String searchTerm);
 }

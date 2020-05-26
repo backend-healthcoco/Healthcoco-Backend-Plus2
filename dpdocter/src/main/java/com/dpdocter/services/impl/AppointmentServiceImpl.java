@@ -906,12 +906,23 @@ public class AppointmentServiceImpl implements AppointmentService {
 					response.setLatitude(appointmentLookupResponse.getLocation().getLatitude());
 					response.setLongitude(appointmentLookupResponse.getLocation().getLongitude());
 				}
+				//for Online consultation
+				if(request.getType().equals(AppointmentType.ONLINE_CONSULTATION.getType())) {
+					List<DoctorClinicProfileCollection> doctorClinicProfileCollectionn = doctorClinicProfileRepository
+							.findByDoctorId(new ObjectId(request.getDoctorId()));
+					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollectionn) 
+						pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
+								"New Online appointment created.", ComponentType.ONLINE_CONSULTATION.getType(), null, null);
+					}
+				
+				
 				List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 						.findByLocationId(new ObjectId(request.getLocationId()));
 				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 					pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
 							"Appointment updated.", ComponentType.APPOINTMENT_REFRESH.getType(), null, null);
 				}
+				
 			} else {
 				logger.error(incorrectAppointmentId);
 				throw new BusinessException(ServiceError.InvalidInput, incorrectAppointmentId);
@@ -1162,12 +1173,24 @@ public class AppointmentServiceImpl implements AppointmentService {
 							response.setLongitude(locationCollection.getLongitude());
 						}
 					}
+					
+					//for online consultation	
+					if(request.getType().equals(AppointmentType.ONLINE_CONSULTATION.getType())) {
+					List<DoctorClinicProfileCollection> doctorClinicProfileCollectionn = doctorClinicProfileRepository
+							.findByDoctorId(doctorId);
+					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollectionn) 
+						pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
+								"New Online appointment created.", ComponentType.ONLINE_CONSULTATION.getType(), null, null);
+					}
+					
 					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 							.findByLocationId(locationId);
 					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 						pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
+								//"New appointment created.", ComponentType.APPOINTMENT_REFRESH.getType(), null, null);
 								"New appointment created.", ComponentType.APPOINTMENT_REFRESH.getType(), null, null);
 					}
+					
 				}
 			}
 
@@ -1997,9 +2020,29 @@ public class AppointmentServiceImpl implements AppointmentService {
 									patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 
 								}
+								BeanUtil.map(collection, appointment);
+								appointment.setPatient(patientCard);
 							}
-							BeanUtil.map(collection, appointment);
-							appointment.setPatient(patientCard);
+				//			BeanUtil.map(collection, appointment);
+				//			appointment.setPatient(patientCard);
+//for online consultation
+							if (collection.getType().getType().equals(AppointmentType.ONLINE_CONSULTATION.getType())) {
+								patientCard = collection.getPatientCard();
+								if (patientCard != null) {
+									patientCard.setBackendPatientId(patientCard.getId());
+									patientCard.setId(patientCard.getUserId());
+
+									if (patientCard.getUser() != null) {
+										patientCard.setColorCode(patientCard.getUser().getColorCode());
+										patientCard.setMobileNumber(patientCard.getUser().getMobileNumber());
+									}
+									patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+									patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
+
+								}
+								BeanUtil.map(collection, appointment);
+								appointment.setPatient(patientCard);
+							}
 
 							// -----------------------------------------
 

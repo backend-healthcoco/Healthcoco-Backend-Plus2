@@ -3,6 +3,7 @@ package com.dpdocter.request;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.GenderType;
 
 public class ConsultationProblemDetailsRequest extends GenericCollection{
 
@@ -13,10 +14,14 @@ public class ConsultationProblemDetailsRequest extends GenericCollection{
 	private String userId;
 	
 	private List<String>recordId;
-	
-	private String appointmentId;
-	
+		
 	private String problemDetail;
+	
+	private String transactionId;
+	
+	private GenderType gender;
+	
+	private Integer age;
 
 	public String getId() {
 		return id;
@@ -50,13 +55,6 @@ public class ConsultationProblemDetailsRequest extends GenericCollection{
 		this.recordId = recordId;
 	}
 
-	public String getAppointmentId() {
-		return appointmentId;
-	}
-
-	public void setAppointmentId(String appointmentId) {
-		this.appointmentId = appointmentId;
-	}
 
 	public String getProblemDetail() {
 		return problemDetail;
@@ -64,6 +62,30 @@ public class ConsultationProblemDetailsRequest extends GenericCollection{
 
 	public void setProblemDetail(String problemDetail) {
 		this.problemDetail = problemDetail;
+	}
+
+	public String getTransactionId() {
+		return transactionId;
+	}
+
+	public void setTransactionId(String transactionId) {
+		this.transactionId = transactionId;
+	}
+
+	public GenderType getGender() {
+		return gender;
+	}
+
+	public void setGender(GenderType gender) {
+		this.gender = gender;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
 	}
 	
 	

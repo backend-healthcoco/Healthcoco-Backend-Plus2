@@ -153,6 +153,8 @@ public class DoctorClinicProfile {
 	private List<DoctorConsultation>  consultationType;
 
 	private Boolean isOnlineConsultationAvailable = false;
+	
+	private String clinicOwnershipImageUrl;
 //=======
 //	private Map<DoctorConsultation, String> onlineConsultationFees;
 
@@ -733,6 +735,14 @@ public class DoctorClinicProfile {
 //	public void setOnlineConsultationType(List<ConsultationType> onlineConsultationType) {
 //		this.onlineConsultationType = onlineConsultationType;
 //	}
+
+	public String getClinicOwnershipImageUrl() {
+		return clinicOwnershipImageUrl;
+	}
+
+	public void setClinicOwnershipImageUrl(String clinicOwnershipImageUrl) {
+		this.clinicOwnershipImageUrl = clinicOwnershipImageUrl;
+	}
 
 	public Boolean getIsOnlineConsultationAvailable() {
 		return isOnlineConsultationAvailable;

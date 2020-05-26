@@ -159,7 +159,8 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 //	@Field
 //	private List<ConsultationType> onlineConsultationType;
-
+	@Field
+	private String clinicOwnershipImageUrl;
 
 	@Field
 	private Boolean isOnlineConsultationAvailable = false;
@@ -532,6 +533,16 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setIsOnlineConsultationAvailable(Boolean isOnlineConsultationAvailable) {
 		this.isOnlineConsultationAvailable = isOnlineConsultationAvailable;
+	}
+	
+	
+
+	public String getClinicOwnershipImageUrl() {
+		return clinicOwnershipImageUrl;
+	}
+
+	public void setClinicOwnershipImageUrl(String clinicOwnershipImageUrl) {
+		this.clinicOwnershipImageUrl = clinicOwnershipImageUrl;
 	}
 
 	@Override

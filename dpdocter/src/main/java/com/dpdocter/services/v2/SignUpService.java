@@ -14,4 +14,6 @@ public interface SignUpService {
 	DoctorSignUp doctorSignUp(DoctorSignupRequest request);
 	
 	String verifyUser(String tokenId);
+	
+	Boolean resendVerificationEmail(String emailaddress);
 }

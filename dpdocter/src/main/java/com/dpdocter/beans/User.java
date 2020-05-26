@@ -58,6 +58,8 @@ public class User {
 	
 	private Boolean isMedicalStudent=false;
 	
+	private String timeZone;
+	
 	public User(String firstName, String mobileNumber) {
 		this.firstName = firstName;
 		this.mobileNumber = mobileNumber;
@@ -240,6 +242,16 @@ public class User {
 
 	public void setParentSpecialities(List<String> parentSpecialities) {
 		this.parentSpecialities = parentSpecialities;
+	}
+	
+	
+
+	public String getTimeZone() {
+		return timeZone;
+	}
+
+	public void setTimeZone(String timeZone) {
+		this.timeZone = timeZone;
 	}
 
 	@Override

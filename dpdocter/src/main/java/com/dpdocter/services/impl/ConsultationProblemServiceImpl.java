@@ -76,26 +76,19 @@ public class ConsultationProblemServiceImpl implements ConsultationProblemDetail
 
 
 	@Override
-	public List<ConsultationProblemDetails> getProblemDetails(int page, int size, String searchTerm,Boolean discarded) {
-		List<ConsultationProblemDetails> response = null;
+	public ConsultationProblemDetails getProblemDetails(String problemDetailsId) {
+		ConsultationProblemDetails response = null;
 		try {
 			
-			Criteria criteria = new Criteria("discarded").is(discarded);
-			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-				criteria = criteria.orOperator(new Criteria("problemDetail").regex("^" + searchTerm, "i"),
-						new Criteria("problemDetail").regex("^" + searchTerm));
-
-			Aggregation aggregation = null;
-			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
-						Aggregation.limit(size));
-			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
-			}
-			response = mongoTemplate.aggregate(aggregation,ConsultationProblemDetailsCollection.class, ConsultationProblemDetails.class)
-					.getMappedResults();
+		ConsultationProblemDetailsCollection problemDetailsCollection=consultationProblemDetailsRepository.findById(new ObjectId(problemDetailsId)).orElse(null);
+			
+		if(problemDetailsCollection ==null)
+		 {
+	    	throw new BusinessException(ServiceError.NotFound,"Error no such id");
+	    }
+		
+			response = new ConsultationProblemDetails();
+			BeanUtil.map(problemDetailsCollection, response);
 		} catch (BusinessException e) {
 			logger.error("Error while getting consultation problem details " + e.getMessage());
 			e.printStackTrace();

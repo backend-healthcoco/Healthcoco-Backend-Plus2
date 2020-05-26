@@ -101,6 +101,14 @@ public class DoctorCollection extends GenericCollection {
 
 	@Field
 	private String freshchatRestoreId;
+	
+	@Field
+	private String RegistrationImageUrl;
+	@Field
+	private String RegistrationThumbnailUrl;
+	
+	@Field
+	private String photoIdImageUrl;
 
 	public Boolean getIsPrescriptionSMS() {
 		return isPrescriptionSMS;
@@ -326,6 +334,33 @@ public class DoctorCollection extends GenericCollection {
 
 	public void setFreshchatRestoreId(String freshchatRestoreId) {
 		this.freshchatRestoreId = freshchatRestoreId;
+	}
+	
+	
+
+	public String getRegistrationImageUrl() {
+		return RegistrationImageUrl;
+	}
+
+	public void setRegistrationImageUrl(String registrationImageUrl) {
+		RegistrationImageUrl = registrationImageUrl;
+	}
+
+	public String getRegistrationThumbnailUrl() {
+		return RegistrationThumbnailUrl;
+	}
+
+	public void setRegistrationThumbnailUrl(String registrationThumbnailUrl) {
+		RegistrationThumbnailUrl = registrationThumbnailUrl;
+	}
+
+	
+	public String getPhotoIdImageUrl() {
+		return photoIdImageUrl;
+	}
+
+	public void setPhotoIdImageUrl(String photoIdImageUrl) {
+		this.photoIdImageUrl = photoIdImageUrl;
 	}
 
 	@Override

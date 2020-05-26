@@ -22,6 +22,7 @@ import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.ObstetricHistory;
 import com.dpdocter.beans.OralCavityAndThroatExamination;
 import com.dpdocter.beans.PV;
+import com.dpdocter.beans.PhysioExamination;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
 import com.dpdocter.beans.PresentingComplaintEars;
@@ -269,6 +270,8 @@ public class ClinicalNotesAddRequest {
 	private Boolean sendNotificationToDoctor = true;
 	
 	private EyeSpecialityObservation eyeObservation;
+	
+	private PhysioExamination physioExamination;	
 
 
 	public Date getCreatedTime() {
@@ -1242,6 +1245,16 @@ public class ClinicalNotesAddRequest {
 
 	public void setEyeObservation(EyeSpecialityObservation eyeObservation) {
 		this.eyeObservation = eyeObservation;
+	}
+	
+	
+
+	public PhysioExamination getPhysioExamination() {
+		return physioExamination;
+	}
+
+	public void setPhysioExamination(PhysioExamination physioExamination) {
+		this.physioExamination = physioExamination;
 	}
 
 	@Override

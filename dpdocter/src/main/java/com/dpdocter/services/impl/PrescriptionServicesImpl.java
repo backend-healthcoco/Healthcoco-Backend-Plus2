@@ -5570,8 +5570,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error while getting Patient Visits PDF");
-			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Visits PDF");
+			logger.error(e + " Error while getting Lens prescription PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Lens prescription PDF");
 		}
 		return response;
 
@@ -5600,27 +5600,27 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			if (prescriptionCollection.getLeftEyeTest().getDistanceCylinder() != null) {
 				eyResponse.setDistanceCylinder(
-						String.format("%.2f", prescriptionCollection.getLeftEyeTest().getDistanceCylinder()));
+						String.format("%.2f", Double.parseDouble(prescriptionCollection.getLeftEyeTest().getDistanceCylinder())));
 			}
 			if (prescriptionCollection.getLeftEyeTest().getDistanceBaseCurve() != null) {
 				eyResponse.setDistanceBaseCurve(
-						String.format("%.2f", prescriptionCollection.getLeftEyeTest().getDistanceBaseCurve()));
+						String.format("%.2f", Double.parseDouble(prescriptionCollection.getLeftEyeTest().getDistanceBaseCurve())));
 			}
 			if (prescriptionCollection.getLeftEyeTest().getDistanceDiameter() != null) {
 				eyResponse.setDistanceDiameter(
-						String.format("%.2f", prescriptionCollection.getLeftEyeTest().getDistanceDiameter()));
+						String.format("%.2f", Double.parseDouble(prescriptionCollection.getLeftEyeTest().getDistanceDiameter())));
 			}
 			if (prescriptionCollection.getLeftEyeTest().getNearCylinder() != null) {
 				eyResponse.setNearCylinder(
-						String.format("%.2f", prescriptionCollection.getLeftEyeTest().getNearCylinder()));
+						String.format("%.2f", Double.parseDouble(prescriptionCollection.getLeftEyeTest().getNearCylinder())));
 			}
 			if (prescriptionCollection.getLeftEyeTest().getNearBaseCurve() != null) {
 				eyResponse.setNearBaseCurve(
-						String.format("%.2f", prescriptionCollection.getLeftEyeTest().getNearBaseCurve()));
+						String.format("%.2f", Double.parseDouble(prescriptionCollection.getLeftEyeTest().getNearBaseCurve())));
 			}
 			if (prescriptionCollection.getLeftEyeTest().getDistanceBaseCurve() != null) {
 				eyResponse.setNearDiameter(
-						String.format("%.2f", prescriptionCollection.getLeftEyeTest().getNearDiameter()));
+						String.format("%.2f", Double.parseDouble(prescriptionCollection.getLeftEyeTest().getNearDiameter())));
 			}
 		}
 		parameters.put("leftEyeTest", eyResponse);
@@ -5642,27 +5642,27 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			if (prescriptionCollection.getRightEyeTest().getDistanceCylinder() != null) {
 				eyResponse.setDistanceCylinder(
-						String.format("%.2f", prescriptionCollection.getRightEyeTest().getDistanceCylinder()));
+						String.format("%.2f", Double.parseDouble(prescriptionCollection.getRightEyeTest().getDistanceCylinder())));
 			}
 			if (prescriptionCollection.getRightEyeTest().getDistanceBaseCurve() != null) {
 				eyResponse.setDistanceBaseCurve(
-						String.format("%.2f", prescriptionCollection.getRightEyeTest().getDistanceBaseCurve()));
+						String.format("%.2f", Double.parseDouble(prescriptionCollection.getRightEyeTest().getDistanceBaseCurve())));
 			}
 			if (prescriptionCollection.getRightEyeTest().getDistanceDiameter() != null) {
 				eyResponse.setDistanceDiameter(
-						String.format("%.2f", prescriptionCollection.getRightEyeTest().getDistanceDiameter()));
+						String.format("%.2f", Double.parseDouble(prescriptionCollection.getRightEyeTest().getDistanceDiameter())));
 			}
 			if (prescriptionCollection.getRightEyeTest().getNearCylinder() != null) {
 				eyResponse.setNearCylinder(
-						String.format("%.2f", prescriptionCollection.getRightEyeTest().getNearCylinder()));
+						String.format("%.2f", Double.parseDouble(prescriptionCollection.getRightEyeTest().getNearCylinder())));
 			}
 			if (prescriptionCollection.getRightEyeTest().getNearBaseCurve() != null) {
 				eyResponse.setNearBaseCurve(
-						String.format("%.2f", prescriptionCollection.getRightEyeTest().getNearBaseCurve()));
+						String.format("%.2f", Double.parseDouble(prescriptionCollection.getRightEyeTest().getNearBaseCurve())));
 			}
 			if (prescriptionCollection.getRightEyeTest().getDistanceBaseCurve() != null) {
 				eyResponse.setNearDiameter(
-						String.format("%.2f", prescriptionCollection.getRightEyeTest().getNearDiameter()));
+						String.format("%.2f", Double.parseDouble(prescriptionCollection.getRightEyeTest().getNearDiameter())));
 			}
 		}
 		parameters.put("rightEyeTest", eyResponse);

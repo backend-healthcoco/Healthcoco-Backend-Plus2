@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.GenderType;
 
 public class ConsultationProblemDetails extends GenericCollection{
 
@@ -14,11 +15,17 @@ public class ConsultationProblemDetails extends GenericCollection{
 	
 	private List<String>recordId;
 	
-	private String appointmentId;
+	
 	
 	private String problemDetail;
 	
 	private Boolean discarded=false;
+	
+	private String transactionId;
+	
+	private GenderType gender;
+	
+	private Integer age;
 
 	public String getId() {
 		return id;
@@ -52,13 +59,7 @@ public class ConsultationProblemDetails extends GenericCollection{
 		this.recordId = recordId;
 	}
 
-	public String getAppointmentId() {
-		return appointmentId;
-	}
-
-	public void setAppointmentId(String appointmentId) {
-		this.appointmentId = appointmentId;
-	}
+	
 
 	public String getProblemDetail() {
 		return problemDetail;
@@ -77,11 +78,37 @@ public class ConsultationProblemDetails extends GenericCollection{
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
+	
+	
+
+	public String getTransactionId() {
+		return transactionId;
+	}
+
+	public void setTransactionId(String transactionId) {
+		this.transactionId = transactionId;
+	}
+
+	public GenderType getGender() {
+		return gender;
+	}
+
+	public void setGender(GenderType gender) {
+		this.gender = gender;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
 
 	@Override
 	public String toString() {
 		return "ConsultationProblemDetails [id=" + id + ", doctorId=" + doctorId + ", userId=" + userId + ", recordId="
-				+ recordId + ", appointmentId=" + appointmentId + ", problemDetail=" + problemDetail + "]";
+				+ recordId + ", problemDetail=" + problemDetail + "]";
 	}
 	
 	

@@ -96,6 +96,8 @@ public class UserCollection extends GenericCollection {
 	
 	
 	
+	
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -320,7 +322,10 @@ public class UserCollection extends GenericCollection {
 	public void setIsMedicalStudent(Boolean isMedicalStudent) {
 		this.isMedicalStudent = isMedicalStudent;
 	}
+	
+	
 
+	
 	public UserCollection(ObjectId id, String title, String firstName, String lastName, String middleName,
 			String userName, char[] password, char[] salt, String emailAddress, String mobileNumber, String imageUrl,
 			String thumbnailUrl, Boolean isActive, Boolean isVerified, String coverImageUrl,

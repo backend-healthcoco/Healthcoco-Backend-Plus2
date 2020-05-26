@@ -11,6 +11,7 @@ public class VisualAcuity {
 	private String presentLens;
 	private EyeSightednessUnit presentLensUnit;
 	private EyeType eyeType;
+	private String pinHole;
 
 	public String getUnaided() {
 		return unaided;
@@ -42,6 +43,16 @@ public class VisualAcuity {
 
 	public void setPresentLensUnit(EyeSightednessUnit presentLensUnit) {
 		this.presentLensUnit = presentLensUnit;
+	}
+	
+	
+
+	public String getPinHole() {
+		return pinHole;
+	}
+
+	public void setPinHole(String pinHole) {
+		this.pinHole = pinHole;
 	}
 
 	@Override

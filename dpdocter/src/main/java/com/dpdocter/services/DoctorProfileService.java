@@ -8,6 +8,7 @@ import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorOnlineConsultationFees;
 import com.dpdocter.beans.DoctorProfile;
+import com.dpdocter.beans.DoctorRegistrationDetails;
 import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
@@ -139,5 +140,8 @@ public interface DoctorProfileService {
 	public DoctorOnlineConsultationFees getOnlineConsultingfees(String doctorId);
 
 	public Integer countOnlineConsultingfees(Boolean discarded, String searchTerm);
+	
+	
+	String uploadRegistrationDetails(DoctorRegistrationDetails request);
 
 }

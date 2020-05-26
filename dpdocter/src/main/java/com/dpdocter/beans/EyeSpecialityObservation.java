@@ -21,6 +21,14 @@ public class EyeSpecialityObservation {
 	private EyeTest leftEyeTest;
 	
 	private EyeTest rightEyeTest;
+	
+	private VisionPR vision_PR;
+	
+	private VisionIOP vision_IOP;
+	
+	private  List<EyeExamination> investigation;
+	
+	private EyeFungus fungus;
 
 	public String getDoctorId() {
 		return doctorId;
@@ -92,6 +100,44 @@ public class EyeSpecialityObservation {
 
 	public void setRightEyeTest(EyeTest rightEyeTest) {
 		this.rightEyeTest = rightEyeTest;
+	}
+	
+	
+
+	public VisionPR getVision_PR() {
+		return vision_PR;
+	}
+
+	public void setVision_PR(VisionPR vision_PR) {
+		this.vision_PR = vision_PR;
+	}
+
+	public VisionIOP getVision_IOP() {
+		return vision_IOP;
+	}
+
+	public void setVision_IOP(VisionIOP vision_IOP) {
+		this.vision_IOP = vision_IOP;
+	}
+	
+	
+
+	public List<EyeExamination> getInvestigation() {
+		return investigation;
+	}
+
+	public void setInvestigation(List<EyeExamination> investigation) {
+		this.investigation = investigation;
+	}
+	
+	
+
+	public EyeFungus getFungus() {
+		return fungus;
+	}
+
+	public void setFungus(EyeFungus fungus) {
+		this.fungus = fungus;
 	}
 
 	@Override

@@ -106,11 +106,11 @@ public class Appointment extends GenericCollection {
 	
 	private PatientTreatmentResponse patientTreatmentResponse;
 	
-	private DoctorConsultation OnlineConsultationType;
-
 	private ConsultationType consultationType;
 	
 	private Date consultationStartedOn;
+	
+	private String problemDetailsId;
 	
 	public PatientTreatmentResponse getPatientTreatmentResponse() {
 		return patientTreatmentResponse;
@@ -474,12 +474,14 @@ public class Appointment extends GenericCollection {
 	
 	
 
-	public DoctorConsultation getOnlineConsultationType() {
-		return OnlineConsultationType;
+	
+
+	public String getProblemDetailsId() {
+		return problemDetailsId;
 	}
 
-	public void setOnlineConsultationType(DoctorConsultation onlineConsultationType) {
-		OnlineConsultationType = onlineConsultationType;
+	public void setProblemDetailsId(String problemDetailsId) {
+		this.problemDetailsId = problemDetailsId;
 	}
 
 	public ConsultationType getConsultationType() {

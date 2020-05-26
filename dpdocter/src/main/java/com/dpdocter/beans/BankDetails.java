@@ -9,6 +9,8 @@ public class BankDetails extends GenericCollection{
 	
 	private String doctorId;
 	
+	private String doctorName;
+	
 	private String accountholderName;
 	
 	private String accountNumber;
@@ -22,6 +24,11 @@ public class BankDetails extends GenericCollection{
 	private String bankName;
 	
 	private String branchCity;
+	
+	private String mobileNumber;
+	
+	private String emailAddress;
+
 
 	public String getId() {
 		return id;
@@ -95,6 +102,34 @@ public class BankDetails extends GenericCollection{
 
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
+	}
+	
+	
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+	
+	
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
 	}
 
 	@Override

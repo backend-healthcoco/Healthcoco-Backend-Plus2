@@ -132,6 +132,8 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 	private UserCollection patientUser;
 	
 	private EyeSpecialityObservation eyeObservation;
+	
+	private PhysioExamination physioExamination;
 
 	public ObjectId getId() {
 		return id;
@@ -661,6 +663,16 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 
 	public void setEyeObservation(EyeSpecialityObservation eyeObservation) {
 		this.eyeObservation = eyeObservation;
+	}
+	
+	
+
+	public PhysioExamination getPhysioExamination() {
+		return physioExamination;
+	}
+
+	public void setPhysioExamination(PhysioExamination physioExamination) {
+		this.physioExamination = physioExamination;
 	}
 
 	@Override

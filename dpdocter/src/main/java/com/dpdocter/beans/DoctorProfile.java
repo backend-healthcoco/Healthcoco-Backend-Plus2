@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ConsultationType;
@@ -88,6 +89,12 @@ public class DoctorProfile extends GenericCollection {
 	private String freshchatRestoreId;
 	
 	private List<WorkingSchedule> onlineWorkingSchedules;
+	
+	private String RegistrationImageUrl;
+	
+	private String RegistrationThumbnailUrl;
+	
+	private String photoIdImageUrl;
 	
 	//private Map<DoctorConsultation, String> onlineConsultationFees;
 	
@@ -412,6 +419,34 @@ public class DoctorProfile extends GenericCollection {
 
 	
 	
+	
+	public String getRegistrationImageUrl() {
+		return RegistrationImageUrl;
+	}
+
+	public void setRegistrationImageUrl(String registrationImageUrl) {
+		RegistrationImageUrl = registrationImageUrl;
+	}
+
+	public String getRegistrationThumbnailUrl() {
+		return RegistrationThumbnailUrl;
+	}
+
+	public void setRegistrationThumbnailUrl(String registrationThumbnailUrl) {
+		RegistrationThumbnailUrl = registrationThumbnailUrl;
+	}
+
+	
+	
+	
+	public String getPhotoIdImageUrl() {
+		return photoIdImageUrl;
+	}
+
+	public void setPhotoIdImageUrl(String photoIdImageUrl) {
+		this.photoIdImageUrl = photoIdImageUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorProfile [id=" + id + ", userId=" + userId + ", doctorId=" + doctorId + ", title=" + title

@@ -50,6 +50,8 @@ public class DoctorSignupRequest {
 	private Boolean isMedicalStudent=false;
 	
 	private String timeZone ;
+	
+	private String countryCode;
 
 	public DOB getDob() {
 		return dob;
@@ -216,6 +218,16 @@ public class DoctorSignupRequest {
 
 	public void setTimeZone(String timeZone) {
 		this.timeZone = timeZone;
+	}
+	
+	
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 	@Override

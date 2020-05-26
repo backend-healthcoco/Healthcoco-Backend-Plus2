@@ -12,6 +12,9 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -148,6 +151,9 @@ public class SignUpServiceImplV2 implements SignUpService{
 
 	@Value(value = "${mail.signup.request.subject}")
 	private String signupRequestSubject;
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
 	
 
 	@Override
@@ -493,6 +499,53 @@ public class SignUpServiceImplV2 implements SignUpService{
 		}
 
 	}
+	
+	@Override
+	@Transactional
+	public Boolean resendVerificationEmail(String emailaddress) {
+		UserCollection userCollection = null;
+		Boolean response = false;
+		try {
+			Criteria criteria = new Criteria("userName").regex(emailaddress, "i");
+			Query query = new Query();
+			query.addCriteria(criteria);
+			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
+			if (userCollections != null && !userCollections.isEmpty())
+				userCollection = userCollections.get(0);
+
+			if (userCollection != null) {
+				List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+						.findByDoctorId(userCollection.getId());
+				DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+				if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
+					doctorClinicProfileCollection = doctorClinicProfileCollections.get(0);
+					// save token
+					TokenCollection tokenCollection = new TokenCollection();
+					tokenCollection.setResourceId(doctorClinicProfileCollection.getId());
+					tokenCollection.setCreatedTime(new Date());
+					tokenCollection = tokenRepository.save(tokenCollection);
+
+					// send activation email
+					String body = mailBodyGenerator.verifyEmailBody(
+							(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName(),
+							tokenCollection.getId(), "verifyDoctor.vm");
+			Boolean mail=	mailService.sendEmail(userCollection.getEmailAddress(),signupRequestSubject, body, null);
+					System.out.println(mail);
+					response = true;
+				}
+
+			} else {
+				logger.error("User Not Found For The Given User Id");
+				throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error While sending verification email");
+			throw new BusinessException(ServiceError.Unknown, "Error While sending verification email");
+		}
+		return response;
+	}
+
 
 	
 }

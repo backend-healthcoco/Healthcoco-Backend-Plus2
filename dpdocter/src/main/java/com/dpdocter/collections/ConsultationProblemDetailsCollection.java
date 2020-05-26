@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.enums.GenderType;
+
 @Document(collection = "consultation_problem_detail_cl")
 public class ConsultationProblemDetailsCollection extends GenericCollection{
 
@@ -19,14 +21,20 @@ public class ConsultationProblemDetailsCollection extends GenericCollection{
 	@Field
 	private ObjectId userId;
 	
-	@Field
-	private ObjectId appointmentId;
+	
 	
 	@Field
 	private List<ObjectId>recordId;
 	
 	@Field
 	private String problemDetail;
+	
+	@Field
+	private String transactionId;
+	@Field
+	private GenderType gender;
+	@Field
+	private Integer age;
 	
 	@Field
 	private Boolean discarded=false;
@@ -55,13 +63,7 @@ public class ConsultationProblemDetailsCollection extends GenericCollection{
 		this.userId = userId;
 	}
 
-	public ObjectId getAppointmentId() {
-		return appointmentId;
-	}
-
-	public void setAppointmentId(ObjectId appointmentId) {
-		this.appointmentId = appointmentId;
-	}
+	
 
 	public List<ObjectId> getRecordId() {
 		return recordId;
@@ -85,6 +87,30 @@ public class ConsultationProblemDetailsCollection extends GenericCollection{
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getTransactionId() {
+		return transactionId;
+	}
+
+	public void setTransactionId(String transactionId) {
+		this.transactionId = transactionId;
+	}
+
+	public GenderType getGender() {
+		return gender;
+	}
+
+	public void setGender(GenderType gender) {
+		this.gender = gender;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
 	}
 	
 	

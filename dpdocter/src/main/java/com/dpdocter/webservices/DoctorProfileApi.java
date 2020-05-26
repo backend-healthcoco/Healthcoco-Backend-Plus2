@@ -27,6 +27,7 @@ import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorOnlineConsultationFees;
 import com.dpdocter.beans.DoctorProfile;
+import com.dpdocter.beans.DoctorRegistrationDetails;
 import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.Location;
@@ -925,6 +926,24 @@ public class DoctorProfileApi {
 		
 		response.setData(doctorProfileService.getOnlineConsultingfees(doctorId));
 	//	response.setCount(count);
+		return response;
+	}
+
+	
+	@Path(value = PathProxy.DoctorProfileUrls.UPLOAD_REGISTRATION_DETAILS)
+	@POST
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPLOAD_REGISTRATION_DETAILS, notes = PathProxy.DoctorProfileUrls.UPLOAD_REGISTRATION_DETAILS)
+	public Response<String> uploadRegistrationDetails(DoctorRegistrationDetails request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		String addEditCoverPictureResponse = doctorProfileService.uploadRegistrationDetails(request);
+		if (addEditCoverPictureResponse != null)
+			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
+		addEditCoverPictureResponse = getFinalImageURL(addEditCoverPictureResponse);
+		Response<String> response = new Response<String>();
+		response.setData(addEditCoverPictureResponse);
 		return response;
 	}
 

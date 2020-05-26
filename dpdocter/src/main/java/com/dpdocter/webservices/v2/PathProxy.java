@@ -207,6 +207,9 @@ public interface PathProxy {
 	
 	public static final String DOCTOR_REGISTER = "/doctorRegister";
 	
+	public static final String RESEND_VERIFICATION_EMAIL_TO_DOCTOR = "/resendVerificationEmail/{emailaddress}";
+
+	
 	}
 
 }

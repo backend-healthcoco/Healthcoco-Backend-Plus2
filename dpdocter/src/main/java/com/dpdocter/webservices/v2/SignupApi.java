@@ -14,6 +14,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -136,4 +137,20 @@ public class SignupApi {
 	private String getFinalImageURL(String imageURL) {
 		return imagePath + imageURL;
 	}
+	
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
+	@GET
+	@ApiOperation(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR, notes = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
+	public Response<Boolean> resendVerificationEmail(@PathVariable(value = "emailaddress") String emailaddress) {
+		if (DPDoctorUtils.anyStringEmpty(emailaddress)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(signUpService.resendVerificationEmail(emailaddress));
+		return response;
+	}
+	
+	
 }

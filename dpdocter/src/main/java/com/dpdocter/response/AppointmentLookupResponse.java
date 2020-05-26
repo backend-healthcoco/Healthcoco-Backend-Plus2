@@ -100,6 +100,8 @@ public class AppointmentLookupResponse extends GenericCollection {
 	
 	private Date consultationStartedOn;
 	
+	private String problemDetailsId;
+	
 	public String getId() {
 		return id;
 	}
@@ -434,6 +436,16 @@ public class AppointmentLookupResponse extends GenericCollection {
 
 	public void setConsultationStartedOn(Date consultationStartedOn) {
 		this.consultationStartedOn = consultationStartedOn;
+	}
+	
+	
+
+	public String getProblemDetailsId() {
+		return problemDetailsId;
+	}
+
+	public void setProblemDetailsId(String problemDetailsId) {
+		this.problemDetailsId = problemDetailsId;
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +37,7 @@ public class ConsultationProblemDetailsApi {
 	
 	private static Logger logger = LogManager.getLogger(ConsultationProblemDetailsApi.class.getName());
 	
+	@Autowired
 	private ConsultationProblemDetailsService consultationProblemDetailsService;
 
 	@POST
@@ -56,15 +58,12 @@ public class ConsultationProblemDetailsApi {
 	@Path(value = PathProxy.ConsultationproblemDetailsUrls.GET_CONSULTATION_PROBLEM_DETAILS)
 	@GET
 	@ApiOperation(value = PathProxy.ConsultationproblemDetailsUrls.GET_CONSULTATION_PROBLEM_DETAILS, notes = PathProxy.ConsultationproblemDetailsUrls.GET_CONSULTATION_PROBLEM_DETAILS)
-	public Response<ConsultationProblemDetails> getConsultationDetails(@DefaultValue("0") @QueryParam(value ="size") int size, 
-			@DefaultValue("0") @QueryParam( value ="page") int page,
-			@DefaultValue("false") @QueryParam( value ="discarded" ) Boolean discarded, 
-			@QueryParam(value ="searchTerm") String searchTerm) {
-		Integer count = consultationProblemDetailsService.countConsultationProblemDetails(discarded, searchTerm);
+	public Response<ConsultationProblemDetails> getConsultationDetails( @QueryParam(value ="problemDetailsId") String problemDetailsId) {
+		//Integer count = consultationProblemDetailsService.countConsultationProblemDetails(discarded, searchTerm);
 		Response<ConsultationProblemDetails> response = new Response<ConsultationProblemDetails>();
 		
-			response.setDataList(consultationProblemDetailsService.getProblemDetails(page, size, searchTerm,discarded));
-		response.setCount(count);
+			response.setData(consultationProblemDetailsService.getProblemDetails(problemDetailsId));
+		
 		return response;
 	}
 	

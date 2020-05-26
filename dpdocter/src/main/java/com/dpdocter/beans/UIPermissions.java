@@ -19,6 +19,7 @@ public class UIPermissions {
 	private String landingPagePermissions = "CONTACTS";
 	private List<String> patientCertificatePermissions = new ArrayList<String>();
 	private Boolean showSidePanels = true;
+	private Boolean isIPDIvoice=false;
 	
 	public List<String> getTabPermissions() {
 		return tabPermissions;
@@ -106,6 +107,16 @@ public class UIPermissions {
 
 	public void setShowSidePanels(Boolean showSidePanels) {
 		this.showSidePanels = showSidePanels;
+	}
+	
+	
+
+	public Boolean getIsIPDIvoice() {
+		return isIPDIvoice;
+	}
+
+	public void setIsIPDIvoice(Boolean isIPDIvoice) {
+		this.isIPDIvoice = isIPDIvoice;
 	}
 
 	@Override
