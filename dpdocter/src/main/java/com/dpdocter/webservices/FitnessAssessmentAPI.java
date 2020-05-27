@@ -97,11 +97,11 @@ public class FitnessAssessmentAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		if (DPDoctorUtils.anyStringEmpty(request.getId(), request.getLocationId(), request.getHospitalId(),
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 				request.getPatientId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput,
-					"name,doctorId,locationId or hospitalId should not be null or empty");
+					"doctorId,locationId,PatientIdor hospitalId should not be null or empty");
 
 		}
 		FitnessAssessment fitnessAssessment = fitnessAssessmentService.addEditFitnessAssessment(request);

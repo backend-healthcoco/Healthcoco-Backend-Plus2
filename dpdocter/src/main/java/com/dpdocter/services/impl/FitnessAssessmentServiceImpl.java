@@ -1,15 +1,10 @@
 package com.dpdocter.services.impl;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
-
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -24,10 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.ExerciseAndMovement;
 import com.dpdocter.beans.FitnessAssessment;
-import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PhysicalActivityAndMedicalHistory;
 import com.dpdocter.beans.StructuredCardiorespiratoryProgram;
 import com.dpdocter.beans.TreatmentAndDiagnosis;
@@ -35,10 +28,8 @@ import com.dpdocter.collections.ExerciseMovementCollection;
 import com.dpdocter.collections.FitnessAssessmentCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PhysicalActivityAndMedicalHistoryCollection;
-import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.TreatmentAndDiagnosisCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.enums.ComponentType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -51,7 +42,6 @@ import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.TreatmentAndDiagnosisRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.FitnessAssessmentRequest;
-import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.FitnessAssessmentService;
 import com.dpdocter.services.JasperReportService;
 import com.mongodb.BasicDBObject;
@@ -310,6 +300,9 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 				fitnessAssessmentCollection.setUpdatedTime(new Date());
 				fitnessAssessmentCollection.setCreatedTime(new Date());
 			}
+			fitnessAssessmentCollection = fitnessAssessmentRepository.save(fitnessAssessmentCollection);
+			response = new FitnessAssessment();
+			BeanUtil.map(fitnessAssessmentCollection, response);
 			if (fitnessAssessmentCollection != null) {
 				
 //				List<String> strings = new ArrayList();
@@ -406,9 +399,6 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 					}
 					response.setExerciseAndMovement(exerciseMovement);
 				}
-				fitnessAssessmentCollection = fitnessAssessmentRepository.save(fitnessAssessmentCollection);
-				response = new FitnessAssessment();
-				BeanUtil.map(fitnessAssessmentCollection, response);
 			}
 		} catch (BusinessException e) {
 			logger.error("Error while addedit Fitness Assessment " + e.getMessage());
