@@ -47,16 +47,16 @@ public class FitnessAssessmentAPI {
 	@Path(value = PathProxy.FitnessUrls.DELETE_FITNESS_ASSESSMENT)
 	@DELETE
 	@ApiOperation(value = PathProxy.FitnessUrls.DELETE_FITNESS_ASSESSMENT, notes = PathProxy.FitnessUrls.DELETE_FITNESS_ASSESSMENT)
-	public Response<Boolean> deleteFitness(@PathParam("fitnessId") String fitnessId,
+	public Response<Boolean> deleteFitness(@PathParam("id") String id,
 			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
 
-		if (DPDoctorUtils.anyStringEmpty(fitnessId)) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 
 		}
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(fitnessAssessmentService.discardFitnessAssessment(fitnessId, discarded));
+		response.setData(fitnessAssessmentService.discardFitnessAssessment(id, discarded));
 		return response;
 	}
 
@@ -77,14 +77,14 @@ public class FitnessAssessmentAPI {
 	@Path(value = PathProxy.FitnessUrls.GET_FITNESS_ASSESSMENT_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.FitnessUrls.GET_FITNESS_ASSESSMENT_BY_ID, notes = PathProxy.FitnessUrls.GET_FITNESS_ASSESSMENT_BY_ID)
-	public Response<FitnessAssessment> getFitnessAssessmentById(@PathParam("patientId") String patientId) {
-		if (DPDoctorUtils.anyStringEmpty(patientId)) {
+	public Response<FitnessAssessment> getFitnessAssessmentById(@PathParam("id") String id) {
+		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 
 		}
 		Response<FitnessAssessment> response = new Response<FitnessAssessment>();
-		response.setData(fitnessAssessmentService.getFitnessAssessmentById(patientId));
+		response.setData(fitnessAssessmentService.getFitnessAssessmentById(id));
 		return response;
 	}
 

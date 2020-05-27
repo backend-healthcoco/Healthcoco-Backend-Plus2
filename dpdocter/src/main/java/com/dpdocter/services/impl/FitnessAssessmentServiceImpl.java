@@ -85,11 +85,11 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 	private String imagePath;
 
 	@Override
-	public Boolean discardFitnessAssessment(String fitnessId, Boolean discarded) {
+	public Boolean discardFitnessAssessment(String id, Boolean discarded) {
 		Boolean response = true;
 		FitnessAssessmentCollection fitnessAssessmentCollection = null;
 		try {
-			fitnessAssessmentCollection = fitnessAssessmentRepository.findById(new ObjectId(fitnessId)).orElse(null);
+			fitnessAssessmentCollection = fitnessAssessmentRepository.findById(new ObjectId(id)).orElse(null);
 			if (fitnessAssessmentCollection != null) {
 
 				fitnessAssessmentCollection.setDiscarded(discarded);
@@ -217,11 +217,11 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 	}
 
 	@Override
-	public FitnessAssessment getFitnessAssessmentById(String fitnessId) {
+	public FitnessAssessment getFitnessAssessmentById(String id) {
 		FitnessAssessment response = null;
 		try {
 			FitnessAssessmentCollection fitnessAssessmentCollection = fitnessAssessmentRepository
-					.findById(new ObjectId(fitnessId)).orElse(null);
+					.findById(new ObjectId(id)).orElse(null);
 //
 //		fitnessAssessments = mongoTemplate.aggregate(
 //				Aggregation.newAggregation(Aggregation.match(criteria),
