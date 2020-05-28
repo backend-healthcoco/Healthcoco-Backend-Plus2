@@ -187,13 +187,13 @@ public class LoginServiceImpl implements LoginService {
 //						response.setUser(user);
 //						return response;
 //					}
-//--
+//--comment for new signup
 					userCollection.setLastSession(new Date());
 					userCollection = userRepository.save(userCollection);
 					criteria = new Criteria("doctorId").is(userCollection.getId());
-				//commented for new signup---
-					//.and("isActivate").is(true)
-					//		.and("hasLoginAccess").ne(false);
+				
+//					.and("isActivate").is(true)
+//							.and("hasLoginAccess").ne(false);
 //---
 					//criteria.and("isNutritionist").is(isNutritionist);
 					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate
