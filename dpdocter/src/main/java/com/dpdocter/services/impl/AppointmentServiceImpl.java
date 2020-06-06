@@ -759,7 +759,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}else {
 						appointmentCollection.setTreatmentFields(null);
 					}
-				
+
+					if(request.getType() !=null) {
+						appointmentCollection.setType(request.getType());
+					}
+					else {
+						appointmentCollection.setType(appointmentCollection.getType());
+					}
 
 					appointmentCollection = appointmentRepository.save(appointmentCollection);
 
@@ -1014,8 +1020,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				appointmentCollection = new AppointmentCollection();
 				BeanUtil.map(request, appointmentCollection);
 				appointmentCollection.setCreatedTime(new Date());
-				if(request.getType() !=null)
-				appointmentCollection.setType(request.getType());
+			
 				appointmentCollection
 						.setAppointmentId(UniqueIdInitial.APPOINTMENT.getInitial() + DPDoctorUtils.generateRandomId());
 
@@ -1074,6 +1079,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 					if (patientId != null)
 						userFavouriteService.addRemoveFavourites(request.getPatientId(), request.getDoctorId(),
 								Resource.DOCTOR.getType(), request.getLocationId(), false);
+				}
+				
+				if(request.getType() !=null) {
+					appointmentCollection.setType(request.getType());
+				}
+				else {
+					appointmentCollection.setType(appointmentCollection.getType());
 				}
 				
 				appointmentCollection = appointmentRepository.save(appointmentCollection);
@@ -1854,7 +1866,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Response<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
 			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb,String type) {
-		Response<Appointment> response = null;
+		Response<Appointment> response = new Response<Appointment>();
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
 
@@ -1897,6 +1909,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				criteria.and("fromDate").gte(fromDateTime);
+				System.out.println("fromDate"+fromDateTime);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(to)) {
 				localCalendar.setTime(new Date(Long.parseLong(to)));
@@ -1908,6 +1921,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				criteria.and("toDate").lte(toDateTime);
+				System.out.println("toDateTime"+toDateTime);
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(fromTime))

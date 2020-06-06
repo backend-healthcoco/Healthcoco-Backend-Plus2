@@ -1,25 +1,25 @@
 package com.dpdocter.beans;
 
 public class Palpation {
-private Boolean tenderness;
-private Boolean swell;
-private Boolean spasm;
-public Boolean getTenderness() {
+private Tenderness tenderness;
+private Swell swell;
+private Spasm spasm;
+public Tenderness getTenderness() {
 	return tenderness;
 }
-public void setTenderness(Boolean tenderness) {
+public void setTenderness(Tenderness tenderness) {
 	this.tenderness = tenderness;
 }
-public Boolean getSwell() {
+public Swell getSwell() {
 	return swell;
 }
-public void setSwell(Boolean swell) {
+public void setSwell(Swell swell) {
 	this.swell = swell;
 }
-public Boolean getSpasm() {
+public Spasm getSpasm() {
 	return spasm;
 }
-public void setSpasm(Boolean spasm) {
+public void setSpasm(Spasm spasm) {
 	this.spasm = spasm;
 }
 

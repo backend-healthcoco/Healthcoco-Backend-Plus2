@@ -90,7 +90,7 @@ public class AppointmentRequest {
 
 	private Boolean isTreatmentEdited = false;
 	
-	private AppointmentType type;
+	private AppointmentType type=AppointmentType.APPOINTMENT;
 	
 	private ConsultationType consultationType;
 	

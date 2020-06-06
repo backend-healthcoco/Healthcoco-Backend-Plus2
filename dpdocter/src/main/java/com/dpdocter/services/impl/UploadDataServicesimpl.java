@@ -658,7 +658,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 			Integer pNUMIndex = null, patientNameIndex = null, mobileNumberIndex = null, contactNumberIndex = null, emailAddressIndex = null, alternateMobileNumberIndex = null,
 					genderIndex = null, streetAddressIndex = null, localityIndex = null, cityIndex = null, pincodeIndex = null,
 					nationalIdIndex = null, dobIndex = null, ageIndex = null, bloodGroupIndex = null, remarksIndex = null,
-					medicalHistoryIndex = null, referredByIndex = null, groupsIndex = null, patientNotesIndex = null;
+					medicalHistoryIndex = null, referredByIndex = null, groupsIndex = null, patientNotesIndex = null, patientRegistrationDateIndex=null;
 
 			while (scanner.hasNext()) {
 				csvLine = scanner.nextLine();
@@ -689,6 +689,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								case "REFERREDBY": referredByIndex = i;break;
 								case "GROUPS": groupsIndex = i;break;
 								case "PATIENTNOTES": patientNotesIndex = i;break;
+								case "REGISTRATIONDATE": patientRegistrationDateIndex = i;break;
 								
 								
 								default:
@@ -749,7 +750,25 @@ public class UploadDataServicesimpl implements UploadDateService {
 							}
 
 							if(ageIndex != null && checkIfNotNullOrNone(line.get(ageIndex).replaceAll("'", "").replaceAll("\"", ""))) {
-								request.setAge(Integer.parseInt(line.get(ageIndex).replaceAll("'", "").replaceAll("\"", "")));
+								String ageValue = line.get(ageIndex).replaceAll("'", "").replaceAll("\"", "");
+								String[] age = ageValue.split(" ");
+									int year=0, month = 0, day = 0;
+									for(String str : age) {
+										if(str.contains("Y"))year = Integer.parseInt(str.replace("Y", ""));
+										else if(str.contains("M"))month = Integer.parseInt(str.replace("M", ""));
+										else if(str.contains("D"))day = Integer.parseInt(str.replace("D", ""));
+									}
+									
+									Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+									int currentDay = localCalendar.get(Calendar.DATE)- day;
+									int currentMonth = localCalendar.get(Calendar.MONTH) + 1-month; 
+									int currentYear = localCalendar.get(Calendar.YEAR) - year;
+									if(currentMonth < 0) {
+										currentYear = currentYear-1;
+										currentMonth=12+currentMonth;
+									}
+									
+									request.setDob(new DOB(currentDay, currentMonth, currentYear));
 							}
 								
 							if (emailAddressIndex != null && checkIfNotNullOrNone(line.get(emailAddressIndex).replaceAll("'", "").replaceAll("\"", "")))
@@ -826,31 +845,40 @@ public class UploadDataServicesimpl implements UploadDateService {
 							request.setLocationId(locationId);
 							request.setHospitalId(hospitalId);
 
-							if (pNUMIndex != null && checkIfNotNullOrNone(line.get(pNUMIndex).replaceAll("'", "").replaceAll("\"", ""))) {
-								request.setPNUM(line.get(pNUMIndex).replaceAll("'", ""));
-
-								patientInitial = request.getPNUM().replaceAll("[0-9]", "");
-								
-								Scanner scannerForApp = new Scanner(new File(UPLOAD_TREATMENTS_PLAN_DATA_FILE));
-						        while (scannerForApp.hasNext()) {
-						        		List<String> appLine = CSVUtils.parseLine(scannerForApp.nextLine());
-						        		if (appLine.get(1).equalsIgnoreCase(line.get(pNUMIndex))) {
-											SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
-
-											String dateSTri = appLine.get(0).replace("\"", "");
-											dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-											Date date = dateFormat.parse(dateSTri);
-											request.setRegistrationDate(date.getTime());
-											scannerForApp.close();
-											break;
-										}
-				       		        }
-						        if (scannerForApp != null) {
-									scannerForApp.close();
-						        }
-							} else {
-								request.setRegistrationDate(new Date().getTime());
-							}
+							//05-12-2019 14:51
+							SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-y HH:mm");
+							String dateSTri = line.get(patientRegistrationDateIndex).replace("\"", "");
+							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+							Date date = dateFormat.parse(dateSTri);
+							
+							
+							request.setRegistrationDate(date.getTime());
+							
+//							if (pNUMIndex != null && checkIfNotNullOrNone(line.get(pNUMIndex).replaceAll("'", "").replaceAll("\"", ""))) {
+//								request.setPNUM(line.get(pNUMIndex).replaceAll("'", ""));
+//
+//								patientInitial = request.getPNUM().replaceAll("[0-9]", "");
+//								
+//								Scanner scannerForApp = new Scanner(new File(UPLOAD_TREATMENTS_PLAN_DATA_FILE));
+//						        while (scannerForApp.hasNext()) {
+//						        		List<String> appLine = CSVUtils.parseLine(scannerForApp.nextLine());
+//						        		if (appLine.get(1).equalsIgnoreCase(line.get(pNUMIndex))) {
+//											SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
+//
+//											String dateSTri = appLine.get(0).replace("\"", "");
+//											dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+//											Date date = dateFormat.parse(dateSTri);
+//											request.setRegistrationDate(date.getTime());
+//											scannerForApp.close();
+//											break;
+//										}
+//				       		        }
+//						        if (scannerForApp != null) {
+//									scannerForApp.close();
+//						        }
+//							} else {
+//								request.setRegistrationDate(new Date().getTime());
+//							}
 							
 							List<String> notes = request.getNotes();
 							if(remarksIndex != null && checkIfNotNullOrNone(line.get(remarksIndex).replaceAll("'", "").replaceAll("\"", ""))) {

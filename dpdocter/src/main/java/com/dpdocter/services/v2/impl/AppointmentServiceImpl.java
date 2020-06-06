@@ -1389,9 +1389,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 		
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
-
+//online consultation
 			Criteria criteria = new Criteria("type").is(AppointmentType.APPOINTMENT.getType()).and("updatedTime")
 					.gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").ne(true);
+			
+	//		Criteria criteria = new Criteria("updatedTime")
+	//				.gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").ne(true);
+			
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
@@ -1415,16 +1419,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 			
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
+			DateTime fromDateTime=null,toDateTime=null;
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
 				localCalendar.setTime(new Date(Long.parseLong(from)));
 				int currentDay = localCalendar.get(Calendar.DATE);
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
 
-				DateTime fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+			//	DateTime
+				fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				criteria.and("fromDate").gte(fromDateTime);
+				System.out.println(fromDateTime);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(to)) {
 				localCalendar.setTime(new Date(Long.parseLong(to)));
@@ -1432,8 +1439,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
 
-				DateTime toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+			//	DateTime 
+				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				
+				System.out.println(toDateTime);
 
 				criteria.and("toDate").lte(toDateTime);
 			}

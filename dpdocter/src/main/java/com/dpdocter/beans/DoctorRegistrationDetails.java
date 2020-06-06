@@ -7,7 +7,7 @@ public class DoctorRegistrationDetails {
 	
 	private String locationId;
 
-    private FileDetails image;
+   // private FileDetails image;
     private RegistrationType type;
 	public String getDoctorId() {
 		return doctorId;
@@ -15,12 +15,7 @@ public class DoctorRegistrationDetails {
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
-	public FileDetails getImage() {
-		return image;
-	}
-	public void setImage(FileDetails image) {
-		this.image = image;
-	}
+	
 	public RegistrationType getType() {
 		return type;
 	}
@@ -37,7 +32,7 @@ public class DoctorRegistrationDetails {
 	}
 	@Override
 	public String toString() {
-		return "DoctorRegistrationDetails [doctorId=" + doctorId + ", image=" + image + ", type=" + type + "]";
+		return "DoctorRegistrationDetails [doctorId=" + doctorId  + ", type=" + type + "]";
 	}
     
     

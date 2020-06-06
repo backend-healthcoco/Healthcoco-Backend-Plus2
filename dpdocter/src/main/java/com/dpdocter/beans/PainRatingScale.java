@@ -1,11 +1,13 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class PainRatingScale {
 private Integer NPRS;
 private String onRest;
 private String onActivity;
-private String painAggrevatingFactor;
-private String painReleavingFactor;
+private List<String> painAggrevatingFactor;
+private List<String> painReleavingFactor;
 public Integer getNPRS() {
 	return NPRS;
 }
@@ -24,16 +26,16 @@ public String getOnActivity() {
 public void setOnActivity(String onActivity) {
 	this.onActivity = onActivity;
 }
-public String getPainAggrevatingFactor() {
+public List<String> getPainAggrevatingFactor() {
 	return painAggrevatingFactor;
 }
-public void setPainAggrevatingFactor(String painAggrevatingFactor) {
+public void setPainAggrevatingFactor(List<String> painAggrevatingFactor) {
 	this.painAggrevatingFactor = painAggrevatingFactor;
 }
-public String getPainReleavingFactor() {
+public List<String> getPainReleavingFactor() {
 	return painReleavingFactor;
 }
-public void setPainReleavingFactor(String painReleavingFactor) {
+public void setPainReleavingFactor(List<String> painReleavingFactor) {
 	this.painReleavingFactor = painReleavingFactor;
 }
 
