@@ -46,6 +46,17 @@ public class BankDetailsApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 		}
 		
+		if (DPDoctorUtils.anyStringEmpty(request.getAccountholderName())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "AccountholderName cannot be null");
+		}
+		
+		if (DPDoctorUtils.anyStringEmpty(request.getAccountNumber(),request.getBankName(),request.getIfscNumber(),request.getDoctorId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "AccountNumber,BankName,IfscNumber,DoctorId cannot be null");
+		}
+			
+		
 		Response<Boolean> response = new Response<Boolean>();
 		bankDetailsService.addEditBankDetails(request);
 		
