@@ -345,6 +345,17 @@ public class DoctorProfileApi {
 			if (doctorProfile.getCoverThumbnailImageUrl() != null) {
 				doctorProfile.setCoverThumbnailImageUrl(getFinalImageURL(doctorProfile.getCoverThumbnailImageUrl()));
 			}
+			if (doctorProfile.getRegistrationImageUrl() != null) {
+				doctorProfile.setRegistrationImageUrl(getFinalImageURL(doctorProfile.getRegistrationImageUrl()));
+			}
+			if (doctorProfile.getRegistrationThumbnailUrl() != null) {
+				doctorProfile.setRegistrationThumbnailUrl(getFinalImageURL(doctorProfile.getRegistrationThumbnailUrl()));
+			}
+			
+			if (doctorProfile.getPhotoIdImageUrl() != null) {
+				doctorProfile.setPhotoIdImageUrl(getFinalImageURL(doctorProfile.getPhotoIdImageUrl()));
+			}
+			
 			if (doctorProfile.getClinicProfile() != null & !doctorProfile.getClinicProfile().isEmpty()) {
 				for (DoctorClinicProfile clinicProfile : doctorProfile.getClinicProfile()) {
 					if (clinicProfile.getImages() != null) {
@@ -358,6 +369,11 @@ public class DoctorProfileApi {
 					if (clinicProfile.getLogoUrl() != null) {
 						clinicProfile.setLogoUrl(getFinalImageURL(clinicProfile.getLogoUrl()));
 					}
+					
+					if (clinicProfile.getClinicOwnershipImageUrl() != null) {
+						clinicProfile.setClinicOwnershipImageUrl(getFinalImageURL(clinicProfile.getClinicOwnershipImageUrl()));
+					}
+					
 					if (clinicProfile.getPackageType() == null) {
 						clinicProfile.setPackageType(PackageType.ADVANCE.getType());
 					}

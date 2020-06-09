@@ -76,10 +76,8 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 		try {
 		BankDetailsCollection bankDetailsCollection=bankDetailsRepository.findByDoctorId(new ObjectId(doctorId)).orElse(null);
 		
-		 if(bankDetailsCollection==null)
+		 if(bankDetailsCollection!=null)
 		    {
-		    	throw new BusinessException(ServiceError.NotFound,"Error no such id");
-		    }
 
 		 	bankDetailsCollection.setAccountholderName(AES.decrypt(bankDetailsCollection.getAccountholderName(), secretKeyAccountDetails));
 			bankDetailsCollection.setAccountNumber(AES.decrypt(bankDetailsCollection.getAccountNumber(), secretKeyAccountDetails));
@@ -88,11 +86,12 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 			bankDetailsCollection.setBankName(AES.decrypt(bankDetailsCollection.getBankName(), secretKeyAccountDetails));
 			bankDetailsCollection.setBranchCity(AES.decrypt(bankDetailsCollection.getBranchCity(), secretKeyAccountDetails));
 
-			
-		 response=new BankDetails();
-
+			response=new BankDetails();
 			BeanUtil.map(bankDetailsCollection, response);
+			
+		    }
 		
+			
 		}
 		catch (BusinessException e) {
 			logger.error("Error while searching the id "+e.getMessage());
@@ -100,5 +99,4 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 		}
 		return response;
 	}	
-
 }

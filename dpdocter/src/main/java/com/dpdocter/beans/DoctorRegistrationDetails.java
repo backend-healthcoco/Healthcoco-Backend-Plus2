@@ -7,7 +7,7 @@ public class DoctorRegistrationDetails {
 	
 	private String locationId;
 
-   // private FileDetails image;
+    private FileDetails image;
     private RegistrationType type;
 	public String getDoctorId() {
 		return doctorId;
@@ -24,6 +24,12 @@ public class DoctorRegistrationDetails {
 	}
 	
 	
+	public FileDetails getImage() {
+		return image;
+	}
+	public void setImage(FileDetails image) {
+		this.image = image;
+	}
 	public String getLocationId() {
 		return locationId;
 	}

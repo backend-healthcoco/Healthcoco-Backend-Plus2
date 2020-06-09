@@ -12,6 +12,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -168,6 +169,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Autowired
 	private UserResourceFavouriteRepository userResourceFavouriteRepository;
+	
+	@Value(value = "${image.path}")
+	private String imagePath;
+
 
 	@Override
 	@Transactional
@@ -1928,7 +1933,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		DoctorCollection doctorCollection = null;
 		String response = "";
 		try {
-			doctorCollection = doctorRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+			doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 			DoctorClinicProfileCollection doctorclinic=doctorClinicProfileRepository.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()));
 			
 			if (request.getImage() != null) {
@@ -1937,18 +1942,18 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
 				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path,
 						true);
-				if(request.getType().equals(RegistrationType.REGISTRATION_DETAILS.getType())) {
+				if(request.getType()!=null && request.getType().getType().equalsIgnoreCase(RegistrationType.REGISTRATION_DETAILS.getType())) {
 					doctorCollection.setRegistrationImageUrl(imageURLResponse.getImageUrl());
 					doctorCollection.setRegistrationThumbnailUrl(imageURLResponse.getThumbnailUrl());
 					response = doctorCollection.getRegistrationImageUrl();
 				}
-				if(request.getType().equals(RegistrationType.CLINIC_OWNERSHIP.getType())) {
+				if(request.getType()!=null && request.getType().getType().equalsIgnoreCase(RegistrationType.CLINIC_OWNERSHIP.getType())) {
 					doctorclinic.setClinicOwnershipImageUrl(imageURLResponse.getImageUrl());
 					doctorClinicProfileRepository.save(doctorclinic);
 					response =doctorclinic.getClinicOwnershipImageUrl();
 					
 					}
-				if(request.getType().equals(RegistrationType.PHOTOID_PROOF.getType())) {
+				if(request.getType()!=null && request.getType().getType().equalsIgnoreCase(RegistrationType.PHOTOID_PROOF.getType())) {
 					doctorCollection.setPhotoIdImageUrl(imageURLResponse.getImageUrl());
 					response = doctorCollection.getPhotoIdImageUrl();
 					
@@ -1959,8 +1964,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error uploading registration details");
-			throw new BusinessException(ServiceError.Unknown, "Error  uploading registration details");
+			logger.error(e + " Error while uploading documents");
+			throw new BusinessException(ServiceError.Unknown, "Error while uploading documents");
 		}
 		return response;
 	}
