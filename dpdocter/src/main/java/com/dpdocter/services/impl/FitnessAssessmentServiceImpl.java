@@ -272,14 +272,6 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 		ExerciseAndMovement exerciseMovement = null;
 
 		try {
-			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
-			if (doctor == null) {
-				throw new BusinessException(ServiceError.NotFound, "doctor Not found with Id");
-			}
-			PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
-					new ObjectId(request.getPatientId()), new ObjectId(request.getLocationId()),
-					new ObjectId(request.getHospitalId()));
-
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				fitnessAssessmentCollection = fitnessAssessmentRepository.findById(new ObjectId(request.getId()))
 						.orElse(null);
@@ -287,24 +279,17 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 					throw new BusinessException(ServiceError.NotFound, "Fitness Assessment Not found with Id");
 				}
 				response.setUpdatedTime(new Date());
-				response.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
-						+ " " + doctor.getFirstName());
 				response.setCreatedTime(fitnessAssessmentCollection.getCreatedTime());
 				BeanUtil.map(request, fitnessAssessmentCollection);
 
 			} else {
 				fitnessAssessmentCollection = new FitnessAssessmentCollection();
 				BeanUtil.map(request, fitnessAssessmentCollection);
-				fitnessAssessmentCollection
-						.setCreatedBy((!DPDoctorUtils.anyStringEmpty(doctor.getTitle()) ? doctor.getTitle() : "Dr.")
-								+ " " + doctor.getFirstName());
 				fitnessAssessmentCollection.setUpdatedTime(new Date());
 				fitnessAssessmentCollection.setCreatedTime(new Date());
 			}
 
 			if (fitnessAssessmentCollection != null) {
-
-//				List<String> strings = new ArrayList();
 				if (!DPDoctorUtils.anyStringEmpty(fitnessAssessmentCollection.getDoctorId())) {
 					Map<String, Boolean> physicalMedicalHistoryBoolean = new HashMap<String, Boolean>();
 
@@ -397,8 +382,8 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 					fitnessAssessmentCollection.setExerciseAndMovement(exerciseMovement);
 				}
 			}
-			fitnessAssessmentCollection = fitnessAssessmentRepository.save(fitnessAssessmentCollection);
 			response = new FitnessAssessment();
+			fitnessAssessmentCollection = fitnessAssessmentRepository.save(fitnessAssessmentCollection);
 			BeanUtil.map(fitnessAssessmentCollection, response);
 		} catch (BusinessException e) {
 			logger.error("Error while addedit Fitness Assessment " + e.getMessage());
