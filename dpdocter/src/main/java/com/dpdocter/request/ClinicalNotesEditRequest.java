@@ -17,6 +17,7 @@ import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.ObstetricHistory;
 import com.dpdocter.beans.OralCavityAndThroatExamination;
+import com.dpdocter.beans.PhysioExamination;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
 import com.dpdocter.beans.PresentingComplaintEars;
@@ -179,6 +180,8 @@ public class ClinicalNotesEditRequest {
 	private String priorConsultations;
 	
 	private EyeSpecialityObservation eyeObservation;
+	
+	private PhysioExamination physioExamination;	
 
 
 	public Date getLmp() {
@@ -1157,6 +1160,14 @@ public class ClinicalNotesEditRequest {
 	}
 	
 	
+
+	public PhysioExamination getPhysioExamination() {
+		return physioExamination;
+	}
+
+	public void setPhysioExamination(PhysioExamination physioExamination) {
+		this.physioExamination = physioExamination;
+	}
 
 	public EyeSpecialityObservation getEyeObservation() {
 		return eyeObservation;

@@ -63,7 +63,7 @@ public class SignupApi {
 	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getFirstName(), request.getEmailAddress(),
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getFirstName(), request.getEmailAddress(),request.getCity(),
 				request.getMobileNumber())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
