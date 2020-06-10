@@ -223,31 +223,34 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 		try {
 			FitnessAssessmentCollection fitnessAssessmentCollection = fitnessAssessmentRepository
 					.findById(new ObjectId(id)).orElse(null);
-//
-//		fitnessAssessments = mongoTemplate.aggregate(
-//				Aggregation.newAggregation(Aggregation.match(criteria),
-//						Aggregation.lookup("physical_activity_medical_history_cl",
-//								"physicalActivityAndMedicalHistoryId", "_id", "physicalActivityAndMedicalHistory"),
-//						new CustomAggregationOperation(new Document("$unwind",
-//								new BasicDBObject("path", "$physicalActivityAndMedicalHistory")
-//										.append("preserveNullAndEmptyArrays", true)
-//										.append("includeArrayIndex", "arrayIndex1"))),
-//
-//						Aggregation.lookup("treatment_diagnosis_cl", "treatmentAndDiagnosisId", "_id",
-//								"treatmentAndDiagnosis"),
-//						new CustomAggregationOperation(new Document("$unwind",
-//								new BasicDBObject("path", "$treatmentAndDiagnosis")
-//										.append("preserveNullAndEmptyArrays", true)
-//										.append("includeArrayIndex", "arrayIndex1"))),
-//
-//						Aggregation.lookup("exercise_movement_cl", "exerciseAndMovementId", "_id",
-//								"exerciseAndMovement"),
-//						new CustomAggregationOperation(new Document("$unwind",
-//								new BasicDBObject("path", "$exerciseAndMovementId")
-//										.append("preserveNullAndEmptyArrays", true)
-//										.append("includeArrayIndex", "arrayIndex1"))),
-//						Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
-//				FitnessAssessmentCollection.class, FitnessAssessment.class).getMappedResults();
+			if (fitnessAssessmentCollection == null) {
+				throw new BusinessException(ServiceError.NotFound, "Error no such id");
+			}
+
+		response = mongoTemplate.aggregate(
+				Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(id)),
+						Aggregation.lookup("physical_activity_medical_history_cl",
+								"physicalActivityAndMedicalHistoryId", "_id", "physicalActivityAndMedicalHistory"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$physicalActivityAndMedicalHistory")
+										.append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex1"))),
+
+						Aggregation.lookup("treatment_diagnosis_cl", "treatmentAndDiagnosisId", "_id",
+								"treatmentAndDiagnosis"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$treatmentAndDiagnosis")
+										.append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex1"))),
+
+						Aggregation.lookup("exercise_movement_cl", "exerciseAndMovementId", "_id",
+								"exerciseAndMovement"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$exerciseAndMovementId")
+										.append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex1"))),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+				FitnessAssessmentCollection.class, FitnessAssessment.class).getUniqueMappedResult();
 			response = new FitnessAssessment();
 			BeanUtil.map(fitnessAssessmentCollection, response);
 		} catch (Exception e) {
@@ -261,7 +264,7 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 
 	@Override
 	@Transactional
-	public FitnessAssessment addEditFitnessAssessment(FitnessAssessmentRequest request) {
+	public FitnessAssessment addEditFitnessAssessment(FitnessAssessment request) {
 		FitnessAssessment response = null;
 		FitnessAssessmentCollection fitnessAssessmentCollection = null;
 		PhysicalActivityAndMedicalHistoryCollection physicalActivityAndMedicalHistoryCollection = null;
@@ -273,15 +276,13 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				fitnessAssessmentCollection = fitnessAssessmentRepository.findById(new ObjectId(request.getId()))
-						.orElse(null);
+				fitnessAssessmentCollection = fitnessAssessmentRepository.findById(new ObjectId(request.getId())).orElse(null);
 				if (fitnessAssessmentCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "Fitness Assessment Not found with Id");
 				}
 				BeanUtil.map(request, fitnessAssessmentCollection);
 				fitnessAssessmentCollection.setUpdatedTime(new Date());
-				fitnessAssessmentCollection.setCreatedTime(fitnessAssessmentCollection.getCreatedTime());
-
+				fitnessAssessmentCollection.setCreatedTime(request.getCreatedTime());
 			} else {
 				fitnessAssessmentCollection = new FitnessAssessmentCollection();
 				BeanUtil.map(request, fitnessAssessmentCollection);
@@ -289,101 +290,101 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 				fitnessAssessmentCollection.setCreatedTime(new Date());
 			}
 
-//			if (fitnessAssessmentCollection != null) {
-//				if (!DPDoctorUtils.anyStringEmpty(fitnessAssessmentCollection.getDoctorId())) {
-//					Map<String, Boolean> physicalMedicalHistoryBoolean = new HashMap<String, Boolean>();
-//
-//					Map<String, String> physicalMedicalHistory = new HashMap<String, String>();
-//
-//					Map<String, List<String>> physicalMedicalHistoryList = new HashMap<String, List<String>>();
-//
-//					physicalActivityAndMedicalHistoryCollection = physicalActivityAndMedicalHistoryRepository
-//							.findById(fitnessAssessmentCollection.getDoctorId()).orElse(null);
-//					if (physicalActivityAndMedicalHistoryCollection == null) {
-//						physicalActivityAndMedicalHistory = new PhysicalActivityAndMedicalHistory();
-//
-//						physicalActivityAndMedicalHistoryCollection.getPhysicalMedicalHistory()
-//								.forEach((key, value) -> physicalMedicalHistory.put(key, value));
-//
-//						physicalActivityAndMedicalHistoryCollection.getPhysicalMedicalHistoryBoolean()
-//								.forEach((key, value) -> physicalMedicalHistoryBoolean.put(key, value));
-//
-//						physicalActivityAndMedicalHistoryCollection.getPhysicalMedicalHistoryList()
-//								.forEach((key, value) -> physicalMedicalHistoryList.put(key, new ArrayList()));
-//
-//						BeanUtil.map(physicalActivityAndMedicalHistoryCollection, physicalActivityAndMedicalHistory);
-//
-//						fitnessAssessmentCollection.setPhysicalActivityAndMedicalHistory(physicalActivityAndMedicalHistory);
-//					}
-//
-//				}
-//				if (!DPDoctorUtils.anyStringEmpty(fitnessAssessmentCollection.getDoctorId())) {
-//					treatmentAndDiagnosisCollection = treatmentAndDiagnosisRepository
-//							.findById(fitnessAssessmentCollection.getDoctorId()).orElse(null);
-//					Map<String, Boolean> treatmentAndDiagnosisBoolean = new HashMap<String, Boolean>();
-//
-//					Map<String, String> treatmentAndDiagnosisString = new HashMap<String, String>();
-//
-//					Map<String, List<String>> treatmentAndDiagnosisList = new HashMap<String, List<String>>();
-//
-//					if (treatmentAndDiagnosisCollection == null) {
-//						treatmentAndDiagnosis = new TreatmentAndDiagnosis();
-//						BeanUtil.map(treatmentAndDiagnosisCollection, treatmentAndDiagnosis);
-//						treatmentAndDiagnosisCollection.getTreatmentAndDiagnosisString()
-//								.forEach((key, value) -> treatmentAndDiagnosisString.put(key, value));
-//
-//						treatmentAndDiagnosisCollection.getTreatmentAndDiagnosisBoolen()
-//								.forEach((key, value) -> treatmentAndDiagnosisBoolean.put(key, value));
-//
-//						treatmentAndDiagnosisCollection.getTreatmentAndDiagnosisList()
-//								.forEach((key, value) -> treatmentAndDiagnosisList.put(key, new ArrayList()));
-//
-//						fitnessAssessmentCollection.setTreatmentAndDiagnosis(treatmentAndDiagnosis);
-//					}
-//
-//				}
-//				if (!DPDoctorUtils.anyStringEmpty(fitnessAssessmentCollection.getDoctorId())) {
-//					exerciseMovementCollection = exerciseMovementRepository
-//							.findById(fitnessAssessmentCollection.getDoctorId()).orElse(null);
-//					Map<String, Boolean> exerciseMovementBoolean = new HashMap<String, Boolean>();
-//
-//					Map<String, String> exerciseMovementString = new HashMap<String, String>();
-//
-//					Map<String, List<String>> exerciseMovementList = new HashMap<String, List<String>>();
-//
-//					if (exerciseMovementCollection == null) {
-//						exerciseMovement = new ExerciseAndMovement();
-//						BeanUtil.map(exerciseMovementCollection, exerciseMovement);
-//						exerciseMovementCollection.getExerciseAndMovementString()
-//								.forEach((key, value) -> exerciseMovementString.put(key, value));
-//
-//						exerciseMovementCollection.getExerciseAndMovementBoolen()
-//								.forEach((key, value) -> exerciseMovementBoolean.put(key, value));
-//
-//						exerciseMovementCollection.getExerciseAndMovementList()
-//								.forEach((key, value) -> exerciseMovementList.put(key, new ArrayList()));
-//
-//						if (exerciseMovementCollection.getIsPartInStructuredCardiorespiratoryProgram()) {
-//							StructuredCardiorespiratoryProgram cardiorespiratoryProgram = new StructuredCardiorespiratoryProgram();
-//							if (exerciseMovementCollection.getStructuredCardiorespiratoryProgram() != null
-//									&& exerciseMovementCollection.getStructuredCardiorespiratoryProgram()
-//											.getDaysPerWeek() > 0)
-//								cardiorespiratoryProgram.setDaysPerWeek(exerciseMovementCollection
-//										.getStructuredCardiorespiratoryProgram().getDaysPerWeek());
-//							if (exerciseMovementCollection.getStructuredCardiorespiratoryProgram() != null
-//									&& exerciseMovementCollection.getStructuredCardiorespiratoryProgram()
-//											.getMinutesPerDay() > 0)
-//								cardiorespiratoryProgram.setMinutesPerDay(exerciseMovementCollection
-//										.getStructuredCardiorespiratoryProgram().getMinutesPerDay());
-//
-//							exerciseMovement.setStructuredCardiorespiratoryProgram(cardiorespiratoryProgram);
-//						}
-//					}
-//					fitnessAssessmentCollection.setExerciseAndMovement(exerciseMovement);
-//				}
-//			}
-			response = new FitnessAssessment();
+			if (fitnessAssessmentCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(fitnessAssessmentCollection.getDoctorId())) {
+					Map<String, Boolean> physicalMedicalHistoryBoolean = new HashMap<String, Boolean>();
+
+					Map<String, String> physicalMedicalHistory = new HashMap<String, String>();
+
+					Map<String, List<String>> physicalMedicalHistoryList = new HashMap<String, List<String>>();
+
+					physicalActivityAndMedicalHistoryCollection = physicalActivityAndMedicalHistoryRepository
+							.findById(fitnessAssessmentCollection.getDoctorId()).orElse(null);
+					if (physicalActivityAndMedicalHistoryCollection == null) {
+						physicalActivityAndMedicalHistory = new PhysicalActivityAndMedicalHistory();
+
+						physicalActivityAndMedicalHistoryCollection.getPhysicalMedicalHistory()
+								.forEach((key, value) -> physicalMedicalHistory.put(key, value));
+
+						physicalActivityAndMedicalHistoryCollection.getPhysicalMedicalHistoryBoolean()
+								.forEach((key, value) -> physicalMedicalHistoryBoolean.put(key, value));
+
+						physicalActivityAndMedicalHistoryCollection.getPhysicalMedicalHistoryList()
+								.forEach((key, value) -> physicalMedicalHistoryList.put(key, new ArrayList()));
+
+						BeanUtil.map(physicalActivityAndMedicalHistoryCollection, physicalActivityAndMedicalHistory);
+
+						fitnessAssessmentCollection.setPhysicalActivityAndMedicalHistory(physicalActivityAndMedicalHistory);
+					}
+
+				}
+				if (!DPDoctorUtils.anyStringEmpty(fitnessAssessmentCollection.getDoctorId())) {
+					treatmentAndDiagnosisCollection = treatmentAndDiagnosisRepository
+							.findById(fitnessAssessmentCollection.getDoctorId()).orElse(null);
+					Map<String, Boolean> treatmentAndDiagnosisBoolean = new HashMap<String, Boolean>();
+
+					Map<String, String> treatmentAndDiagnosisString = new HashMap<String, String>();
+
+					Map<String, List<String>> treatmentAndDiagnosisList = new HashMap<String, List<String>>();
+
+					if (treatmentAndDiagnosisCollection == null) {
+						treatmentAndDiagnosis = new TreatmentAndDiagnosis();
+						BeanUtil.map(treatmentAndDiagnosisCollection, treatmentAndDiagnosis);
+						treatmentAndDiagnosisCollection.getTreatmentAndDiagnosisString()
+								.forEach((key, value) -> treatmentAndDiagnosisString.put(key, value));
+
+						treatmentAndDiagnosisCollection.getTreatmentAndDiagnosisBoolen()
+								.forEach((key, value) -> treatmentAndDiagnosisBoolean.put(key, value));
+
+						treatmentAndDiagnosisCollection.getTreatmentAndDiagnosisList()
+								.forEach((key, value) -> treatmentAndDiagnosisList.put(key, new ArrayList()));
+
+						fitnessAssessmentCollection.setTreatmentAndDiagnosis(treatmentAndDiagnosis);
+					}
+
+				}
+				if (!DPDoctorUtils.anyStringEmpty(fitnessAssessmentCollection.getDoctorId())) {
+					exerciseMovementCollection = exerciseMovementRepository
+							.findById(fitnessAssessmentCollection.getDoctorId()).orElse(null);
+					Map<String, Boolean> exerciseMovementBoolean = new HashMap<String, Boolean>();
+
+					Map<String, String> exerciseMovementString = new HashMap<String, String>();
+
+					Map<String, List<String>> exerciseMovementList = new HashMap<String, List<String>>();
+
+					if (exerciseMovementCollection == null) {
+						exerciseMovement = new ExerciseAndMovement();
+						BeanUtil.map(exerciseMovementCollection, exerciseMovement);
+						exerciseMovementCollection.getExerciseAndMovementString()
+								.forEach((key, value) -> exerciseMovementString.put(key, value));
+
+						exerciseMovementCollection.getExerciseAndMovementBoolen()
+								.forEach((key, value) -> exerciseMovementBoolean.put(key, value));
+
+						exerciseMovementCollection.getExerciseAndMovementList()
+								.forEach((key, value) -> exerciseMovementList.put(key, new ArrayList()));
+
+						if (exerciseMovementCollection.getIsPartInStructuredCardiorespiratoryProgram()) {
+							StructuredCardiorespiratoryProgram cardiorespiratoryProgram = new StructuredCardiorespiratoryProgram();
+							if (exerciseMovementCollection.getStructuredCardiorespiratoryProgram() != null
+									&& exerciseMovementCollection.getStructuredCardiorespiratoryProgram()
+											.getDaysPerWeek() > 0)
+								cardiorespiratoryProgram.setDaysPerWeek(exerciseMovementCollection
+										.getStructuredCardiorespiratoryProgram().getDaysPerWeek());
+							if (exerciseMovementCollection.getStructuredCardiorespiratoryProgram() != null
+									&& exerciseMovementCollection.getStructuredCardiorespiratoryProgram()
+											.getMinutesPerDay() > 0)
+								cardiorespiratoryProgram.setMinutesPerDay(exerciseMovementCollection
+										.getStructuredCardiorespiratoryProgram().getMinutesPerDay());
+
+							exerciseMovement.setStructuredCardiorespiratoryProgram(cardiorespiratoryProgram);
+						}
+					}
+					fitnessAssessmentCollection.setExerciseAndMovement(exerciseMovement);
+				}
+			}
 			fitnessAssessmentCollection = fitnessAssessmentRepository.save(fitnessAssessmentCollection);
+			response = new FitnessAssessment();
 			BeanUtil.map(fitnessAssessmentCollection, response);
 		} catch (BusinessException e) {
 			logger.error("Error while addedit Fitness Assessment " + e.getMessage());

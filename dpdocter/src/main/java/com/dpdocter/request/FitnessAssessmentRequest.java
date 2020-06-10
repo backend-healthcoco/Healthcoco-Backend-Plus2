@@ -95,6 +95,15 @@ public class FitnessAssessmentRequest {
 	public void setExerciseAndMovement(ExerciseAndMovement exerciseAndMovement) {
 		this.exerciseAndMovement = exerciseAndMovement;
 	}
+
+	@Override
+	public String toString() {
+		return "FitnessAssessmentRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", discarded=" + discarded
+				+ ", physicalActivityAndMedicalHistory=" + physicalActivityAndMedicalHistory
+				+ ", treatmentAndDiagnosis=" + treatmentAndDiagnosis + ", exerciseAndMovement=" + exerciseAndMovement
+				+ "]";
+	}
 	
 
 }

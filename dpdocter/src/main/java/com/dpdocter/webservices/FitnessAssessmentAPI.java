@@ -91,7 +91,7 @@ public class FitnessAssessmentAPI {
 	@Path(value = PathProxy.FitnessUrls.ADD_EDIT_FITNESS_ASSESSMENT)
 	@POST
 	@ApiOperation(value = PathProxy.FitnessUrls.ADD_EDIT_FITNESS_ASSESSMENT, notes = PathProxy.FitnessUrls.ADD_EDIT_FITNESS_ASSESSMENT)
-	public Response<FitnessAssessment> addEditFitnessAssessment(@RequestBody FitnessAssessmentRequest request) {
+	public Response<FitnessAssessment> addEditFitnessAssessment(@RequestBody FitnessAssessment request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -106,13 +106,7 @@ public class FitnessAssessmentAPI {
 		}
 		FitnessAssessment fitnessAssessment = fitnessAssessmentService.addEditFitnessAssessment(request);
 		Response<FitnessAssessment> response = new Response<FitnessAssessment>();
-
-		if (fitnessAssessment != null) {
-			transnationalService.addResource(new ObjectId(request.getId()), Resource.FITNESS_ASSESMENT, true);
-
-		}
 		response.setData(fitnessAssessment);
-
 		return response;
 	}
 

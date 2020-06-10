@@ -14,7 +14,7 @@ public interface FitnessAssessmentService {
 
 	FitnessAssessment getFitnessAssessmentById(String fitnessId);
 
-	FitnessAssessment addEditFitnessAssessment(FitnessAssessmentRequest request);
+	FitnessAssessment addEditFitnessAssessment(FitnessAssessment request);
 
 	String getFitnessAssessmentFile(String fitnessId);
 
