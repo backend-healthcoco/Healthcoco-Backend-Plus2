@@ -66,11 +66,13 @@ public class FitnessAssessmentAPI {
 	public Response<FitnessAssessment> getFitnessAssessment(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId,
 			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
-			@QueryParam("searchTerm") String searchTerm,@QueryParam("updatedTime") long updatedTime) {
+		@QueryParam("updatedTime") long updatedTime) {
 
 		Response<FitnessAssessment> response = new Response<FitnessAssessment>();
-		response.setDataList(fitnessAssessmentService.getFitnessAssessmentList(size, page, discarded, searchTerm,
+		Integer count = fitnessAssessmentService.countFitnessAssessment(discarded);
+		response.setDataList(fitnessAssessmentService.getFitnessAssessmentList(size, page, discarded,
 				doctorId, locationId, hospitalId, patientId,updatedTime));
+		response.setCount(count);
 		return response;
 	}
 

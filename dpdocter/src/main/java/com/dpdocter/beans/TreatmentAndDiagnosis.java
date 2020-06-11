@@ -9,7 +9,6 @@ import com.dpdocter.enums.DiabetesType;
 import com.dpdocter.enums.ThyroidType;
 
 public class TreatmentAndDiagnosis {
-	private String id;
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
@@ -34,10 +33,7 @@ public class TreatmentAndDiagnosis {
 	private Boolean isChronicSleepProblem;
 	private String chronicSleepProblem;
 
-	public String getId() {
-		return id;
-	}
-
+	
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -80,10 +76,6 @@ public class TreatmentAndDiagnosis {
 
 	public ThyroidType getThyroidType() {
 		return thyroidType;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public void setDoctorId(String doctorId) {
@@ -228,7 +220,7 @@ public class TreatmentAndDiagnosis {
 
 	@Override
 	public String toString() {
-		return "TreatmentAndDiagnosis [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+		return "TreatmentAndDiagnosis [doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", discarded=" + discarded
 				+ ", treatmentAndDiagnosisBoolen=" + treatmentAndDiagnosisBoolen + ", treatmentAndDiagnosisString="
 				+ treatmentAndDiagnosisString + ", treatmentAndDiagnosisList=" + treatmentAndDiagnosisList

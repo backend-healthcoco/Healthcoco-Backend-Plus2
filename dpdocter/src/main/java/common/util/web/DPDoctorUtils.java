@@ -23,6 +23,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 
@@ -207,7 +209,7 @@ public class DPDoctorUtils {
 		long days = ChronoUnit.DAYS.between(birthDate, now);
 		return days;
 	}
-	
+
 	public static SearchQuery createGlobalQuery(Resource resource, long page, int size, String updatedTime,
 			Boolean discarded, String sortBy, String searchTerm, Collection<String> specialities, String category,
 			String disease, String... searchTermFieldName) {
@@ -222,7 +224,8 @@ public class DPDoctorUtils {
 
 			if (searchTermFieldName[0].equalsIgnoreCase("genericNames.name")) {
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("genericNames",
-						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm)), ScoreMode.None));
+						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm)),
+						ScoreMode.None));
 			} else {
 				if (searchTermFieldName.length == 1)
 					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
@@ -248,7 +251,8 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM)
 				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)) {
 			if (specialities != null && !specialities.isEmpty()) {
-				BoolQueryBuilder specialityQueryBuilder = boolQuery().should(boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
+				BoolQueryBuilder specialityQueryBuilder = boolQuery()
+						.should(boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
 					if (!DPDoctorUtils.anyStringEmpty(speciality)) {
 						specialityQueryBuilder.should(QueryBuilders.matchQuery("speciality", speciality));
@@ -264,20 +268,19 @@ public class DPDoctorUtils {
 		}
 		SearchQuery searchQuery = null;
 		if (resource.getType().equalsIgnoreCase(Resource.DRUG.getType())) {
-			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(PageRequest.of(0, 15))
+			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of(0, 15))
 					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
 		} else if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size, Direction.DESC, "updatedTime")).build();
+						.withPageable(PageRequest.of((int) page, size, Direction.DESC, "updatedTime")).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of((int) page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
@@ -290,8 +293,8 @@ public class DPDoctorUtils {
 			String hospitalId, String updatedTime, Boolean discarded, String sortBy, String searchTerm, String category,
 			String disease, String... searchTermFieldName) {
 
-		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime")
-				.from(Long.parseLong(updatedTime)).to(new Date().getTime()));
+		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(
+				QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)).to(new Date().getTime()));
 		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 			boolQueryBuilder.must(QueryBuilders.termQuery("doctorId", doctorId));
 		}
@@ -304,7 +307,8 @@ public class DPDoctorUtils {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0) {
 			if (searchTermFieldName[0].equalsIgnoreCase("genericNames.name")) {
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("genericNames",
-						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm)), ScoreMode.None));
+						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm)),
+						ScoreMode.None));
 			} else {
 				if (searchTermFieldName.length == 1)
 					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
@@ -322,7 +326,7 @@ public class DPDoctorUtils {
 		if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size, Direction.DESC, "updatedTime")).build();
+						.withPageable(PageRequest.of((int) page, size, Direction.DESC, "updatedTime")).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
@@ -330,7 +334,7 @@ public class DPDoctorUtils {
 			if (sortBy.equalsIgnoreCase("rankingCount")) {
 				if (size > 0) {
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-							.withPageable(PageRequest.of((int)page, size))
+							.withPageable(PageRequest.of((int) page, size))
 							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
 				} else {
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -341,7 +345,7 @@ public class DPDoctorUtils {
 			} else {
 				if (size > 0)
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-							.withPageable(PageRequest.of((int)page, size, Direction.ASC, sortBy)).build();
+							.withPageable(PageRequest.of((int) page, size, Direction.ASC, sortBy)).build();
 				else
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
@@ -355,22 +359,20 @@ public class DPDoctorUtils {
 			String searchTerm, Collection<String> specialities, String category, String disease,
 			String... searchTermFieldName) {
 
-		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime")
-				.from(Long.parseLong(updatedTime)).to(new Date().getTime()));
+		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(
+				QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)).to(new Date().getTime()));
 
 		if (!DPDoctorUtils.anyStringEmpty(doctorId))
-			boolQueryBuilder.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")))
-					 .should(QueryBuilders.termQuery("doctorId", doctorId))
-					 .minimumShouldMatch(1));
+			boolQueryBuilder
+					.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")))
+							.should(QueryBuilders.termQuery("doctorId", doctorId)).minimumShouldMatch(1));
 
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			boolQueryBuilder
-			.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")))
-					 .should(QueryBuilders.termQuery("locationId", locationId))
-					 .minimumShouldMatch(1))
-			.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
-					 .should(QueryBuilders.termQuery("hospitalId", hospitalId))
-					 .minimumShouldMatch(1));
+					.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")))
+							.should(QueryBuilders.termQuery("locationId", locationId)).minimumShouldMatch(1))
+					.must(boolQuery().should(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")))
+							.should(QueryBuilders.termQuery("hospitalId", hospitalId)).minimumShouldMatch(1));
 		}
 		if (!DPDoctorUtils.anyStringEmpty(disease))
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("diseases", disease));
@@ -378,7 +380,8 @@ public class DPDoctorUtils {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0) {
 			if (searchTermFieldName[0].equalsIgnoreCase("genericNames.name")) {
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("genericNames",
-						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm)), ScoreMode.None));
+						boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm)),
+						ScoreMode.None));
 			} else {
 				if (searchTermFieldName.length == 1)
 					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
@@ -402,7 +405,8 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)
 				|| resource.equals(Resource.DENTAL_WORKS)) {
 			if (specialities != null && !specialities.isEmpty()) {
-				BoolQueryBuilder specialityQueryBuilder = boolQuery().should(boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
+				BoolQueryBuilder specialityQueryBuilder = boolQuery()
+						.should(boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
 				for (String speciality : specialities) {
 					if (!DPDoctorUtils.anyStringEmpty(speciality)) {
 						specialityQueryBuilder.should(QueryBuilders.matchQuery("speciality", speciality));
@@ -419,20 +423,19 @@ public class DPDoctorUtils {
 		SearchQuery searchQuery = null;
 		if (resource.getType().equalsIgnoreCase(Resource.DRUG.getType())
 				|| resource.getType().equalsIgnoreCase(Resource.TREATMENTSERVICE.getType())) {
-			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-					.withPageable(PageRequest.of(0, 15))
+			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(PageRequest.of(0, 15))
 					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
 		} else if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size, Direction.DESC, "updatedTime")).build();
+						.withPageable(PageRequest.of((int) page, size, Direction.DESC, "updatedTime")).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(PageRequest.of((int)page, size, Direction.ASC, sortBy)).build();
+						.withPageable(PageRequest.of((int) page, size, Direction.ASC, sortBy)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
@@ -534,14 +537,14 @@ public class DPDoctorUtils {
 						new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
 								.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId)),
 						new Criteria("doctorId").is(null).and("locationId").is(null).and("hospitalId").is(null));
-			}
-			else {
-				criteria.orOperator(new Criteria("doctorId").is(new ObjectId(doctorId)), new Criteria("doctorId").is(null));
+			} else {
+				criteria.orOperator(new Criteria("doctorId").is(new ObjectId(doctorId)),
+						new Criteria("doctorId").is(null));
 			}
 		} else if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			criteria.orOperator(new Criteria("locationId").is(new ObjectId(locationId)).and("hospitalId")
 					.is(new ObjectId(hospitalId)), new Criteria("locationId").is(null).and("hospitalId").is(null));
-		} 
+		}
 
 		if (specialities != null && !specialities.isEmpty())
 			criteria.and("speciality").in(specialities);
@@ -573,8 +576,8 @@ public class DPDoctorUtils {
 		return aggregation;
 	}
 
-	public static Aggregation createGlobalAggregationForAdmin(long page, int size, String updatedTime, Boolean discarded,
-			String searchTerm, String searchBy) {
+	public static Aggregation createGlobalAggregationForAdmin(long page, int size, String updatedTime,
+			Boolean discarded, String searchTerm, String searchBy) {
 
 		long createdTimeStamp = Long.parseLong(updatedTime);
 
@@ -596,8 +599,8 @@ public class DPDoctorUtils {
 		return aggregation;
 	}
 
-	public static Aggregation createCustomAggregationForAdmin(long page, int size, String updatedTime, Boolean discarded,
-			String searchTerm, String searchBy) {
+	public static Aggregation createCustomAggregationForAdmin(long page, int size, String updatedTime,
+			Boolean discarded, String searchTerm, String searchBy) {
 
 		long createdTimeStamp = Long.parseLong(updatedTime);
 
@@ -677,7 +680,7 @@ public class DPDoctorUtils {
 				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 	}
-	
+
 	public static DateTime getStartTimeUTC(Date date) {
 
 		Calendar localCalendar = Calendar.getInstance();
@@ -758,7 +761,6 @@ public class DPDoctorUtils {
 
 	}
 
-	
 	public static Long getEndTimeInMillis(Date date) {
 
 		DateTime endTime = null;
@@ -843,38 +845,41 @@ public class DPDoctorUtils {
 			e.printStackTrace();
 			inputStream.close();
 			return null;
-		}finally {
-			if(inputStream != null)inputStream.close();
+		} finally {
+			if (inputStream != null)
+				inputStream.close();
 		}
 	}
-	
-	
-	public static String urlShortner(String link)
-	{
+
+	public static String urlShortner(String link) {
 		String shortUrl = null;
-		
+
 		try {
 			HttpResponse<JsonNode> response = Unirest.post("https://url-shortener-service.p.rapidapi.com/shorten")
 					.header("X-RapidAPI-Host", "url-shortener-service.p.rapidapi.com")
 					.header("X-RapidAPI-Key", "75cbae716dmsh3e15bc0ab75221ep189f87jsnf7a1406117b4")
-					.header("Content-Type", "application/x-www-form-urlencoded")
-					.field("url", link)
-					.asJson();
-		URLShortnerResponse shortnerResponse = JacksonUtil.json2Object(response.getBody().toString(), URLShortnerResponse.class);
-		//System.out.println(shortnerResponse.getResult_url());
-		if(shortnerResponse != null)
-		{
-			shortUrl = shortnerResponse.getResult_url();
-		}
-		else{
-			throw new BusinessException(ServiceError.Unknown , "Something went wrong");
-		}
+					.header("Content-Type", "application/x-www-form-urlencoded").field("url", link).asJson();
+			URLShortnerResponse shortnerResponse = JacksonUtil.json2Object(response.getBody().toString(),
+					URLShortnerResponse.class);
+			// System.out.println(shortnerResponse.getResult_url());
+			if (shortnerResponse != null) {
+				shortUrl = shortnerResponse.getResult_url();
+			} else {
+				throw new BusinessException(ServiceError.Unknown, "Something went wrong");
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return shortUrl;
 	}
-		
+
+	public static boolean isNullOrEmptyList(List<?> list) {
+		return (list == null || list.size() <= 0) ? true : false;
+	}
+
+	public static boolean isNullOrEmptyList(Map<?, ?> hashMap) {
+		return (hashMap == null || hashMap.size() <= 0) ? true : false;
+	}
 }

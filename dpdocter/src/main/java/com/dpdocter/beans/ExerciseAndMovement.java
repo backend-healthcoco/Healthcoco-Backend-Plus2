@@ -8,7 +8,6 @@ import com.dpdocter.enums.BloodPressureType;
 import com.dpdocter.enums.ResistanceTrainingProgramType;
 
 public class ExerciseAndMovement  {
-	private String id;
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
@@ -20,10 +19,6 @@ public class ExerciseAndMovement  {
 	private Boolean isPartInStructuredCardiorespiratoryProgram;
 	private StructuredCardiorespiratoryProgram structuredCardiorespiratoryProgram; 
 	private ResistanceTrainingProgramType resistancetrainingProgramType;
-
-	public String getId() {
-		return id;
-	}
 
 	public String getDoctorId() {
 		return doctorId;
@@ -59,10 +54,6 @@ public class ExerciseAndMovement  {
 
 	public ResistanceTrainingProgramType getResistancetrainingProgramType() {
 		return resistancetrainingProgramType;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public void setDoctorId(String doctorId) {
@@ -120,7 +111,7 @@ public class ExerciseAndMovement  {
 
 	@Override
 	public String toString() {
-		return "ExerciseAndMovement [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+		return "ExerciseAndMovement [doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", discarded=" + discarded
 				+ ", exerciseAndMovementBoolen=" + exerciseAndMovementBoolen + ", exerciseAndMovementString="
 				+ exerciseAndMovementString + ", exerciseAndMovementList=" + exerciseAndMovementList

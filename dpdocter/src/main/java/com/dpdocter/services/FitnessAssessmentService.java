@@ -9,8 +9,8 @@ public interface FitnessAssessmentService {
 
 	Boolean discardFitnessAssessment(String fitnessId, Boolean discarded);
 
-	List<?> getFitnessAssessmentList(int size, int page, boolean discarded, String searchTerm, String doctorId,
-			String locationId, String hospitalId, String patientId,long updatedTime);
+	List<?> getFitnessAssessmentList(int size, int page, boolean discarded, String doctorId, String locationId,
+			String hospitalId, String patientId, long updatedTime);
 
 	FitnessAssessment getFitnessAssessmentById(String fitnessId);
 
@@ -18,5 +18,6 @@ public interface FitnessAssessmentService {
 
 	String getFitnessAssessmentFile(String fitnessId);
 
-	
+	Integer countFitnessAssessment(Boolean isDiscarded);
+
 }

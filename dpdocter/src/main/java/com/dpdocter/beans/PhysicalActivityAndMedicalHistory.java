@@ -2,14 +2,12 @@ package com.dpdocter.beans;
 
 import java.util.List;
 import java.util.Map;
-import com.dpdocter.collections.GenericCollection;
+
 import com.dpdocter.enums.FluctuateWeightType;
 import com.dpdocter.enums.StressAreaOfLife;
 
 public class PhysicalActivityAndMedicalHistory  {
-	
-	private String id;
-	
+		
 	private String doctorId;
 	
 	private String locationId;
@@ -31,14 +29,6 @@ public class PhysicalActivityAndMedicalHistory  {
 	private Integer stressLevelRating;
 	
 	private List<StressAreaOfLife> stressAreaOfLifeList;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getDoctorId() {
 		return doctorId;
@@ -130,7 +120,7 @@ public class PhysicalActivityAndMedicalHistory  {
 
 	@Override
 	public String toString() {
-		return "PhysicalActivityAndMedicalHistory [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+		return "PhysicalActivityAndMedicalHistory  [doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", discarded=" + discarded
 				+ ", physicalMedicalHistoryBoolean=" + physicalMedicalHistoryBoolean + ", physicalMedicalHistory="
 				+ physicalMedicalHistory + ", physicalMedicalHistoryList=" + physicalMedicalHistoryList
