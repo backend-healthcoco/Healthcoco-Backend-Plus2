@@ -1,4 +1,4 @@
-package com.dpdocter.services.impl;
+package com.dpdocter.services.v2.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +66,7 @@ import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.ForgotPasswordService;
-import com.dpdocter.services.LoginService;
+import com.dpdocter.services.v2.LoginService;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.tokenstore.CustomPasswordEncoder;
 
@@ -175,25 +175,25 @@ public class LoginServiceImpl implements LoginService {
 
 				} else {
 //commented for new signup---
-					if (!userCollection.getIsVerified()) {
-						response = new LoginResponse();
-						user.setUserState(UserState.NOTVERIFIED);
-						response.setUser(user);
-						return response;
-					}
-					if (!userCollection.getIsActive()) {
-						response = new LoginResponse();
-						user.setUserState(UserState.NOTACTIVATED);
-						response.setUser(user);
-						return response;
-					}
+//					if (!userCollection.getIsVerified()) {
+//						response = new LoginResponse();
+//						user.setUserState(UserState.NOTVERIFIED);
+//						response.setUser(user);
+//						return response;
+//					}
+//					if (!userCollection.getIsActive()) {
+//						response = new LoginResponse();
+//						user.setUserState(UserState.NOTACTIVATED);
+//						response.setUser(user);
+//						return response;
+//					}
 //--comment for new signup
 					userCollection.setLastSession(new Date());
 					userCollection = userRepository.save(userCollection);
-					criteria = new Criteria("doctorId").is(userCollection.getId())
+					criteria = new Criteria("doctorId").is(userCollection.getId());
 				
-					.and("isActivate").is(true)
-							.and("hasLoginAccess").ne(false);
+//					.and("isActivate").is(true)
+//							.and("hasLoginAccess").ne(false);
 //---
 					//criteria.and("isNutritionist").is(isNutritionist);
 					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate
