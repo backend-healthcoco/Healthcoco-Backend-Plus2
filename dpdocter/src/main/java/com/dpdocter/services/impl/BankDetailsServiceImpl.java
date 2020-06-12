@@ -11,12 +11,15 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.BankDetails;
 import com.dpdocter.collections.BankDetailsCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BankDetailsRepository;
+import com.dpdocter.repository.UserRepository;
 import com.dpdocter.security.AES;
 import com.dpdocter.services.BankDetailsService;
+import com.dpdocter.services.MailService;
 
 import common.util.web.DPDoctorUtils;
 
@@ -31,6 +34,16 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 	@Value(value = "${secret.key.account.details}")
 	private String secretKeyAccountDetails;
 	
+	@Autowired
+	private MailService mailService;
+	
+	@Value(value = "${mail.signup.request.to}")
+	private String mailRequest;
+	
+	@Autowired
+	private UserRepository userRepository;
+
+	
 	@Override
 	public Boolean addEditBankDetails(BankDetails request) {
 		Boolean response=false;
@@ -40,7 +53,7 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				bankDetailsCollection = bankDetailsRepository.findById(new ObjectId(request.getId())).orElse(null);
 				if (bankDetailsCollection == null) {
-					throw new BusinessException(ServiceError.NotFound, "bankDetailsId Not found");
+					throw new BusinessException(ServiceError.NotFound, "bankDetails Id Not found");
 				}
 			request.setUpdatedTime(new Date());
 			BeanUtil.map(request, bankDetailsCollection);		
@@ -50,6 +63,8 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 			request.setCreatedTime(new Date());
 			request.setUpdatedTime(new Date());
 			BeanUtil.map(request, bankDetailsCollection);
+			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+			mailService.sendEmail("aman.verma@healthcoco.com"," New Request for Online Consultation","Doctor Name: "+userCollection.getFirstName()+" "+"EmailAddress: "+userCollection.getEmailAddress()+" "+"DoctorId:"+userCollection.getId(), null);
 		}
 		bankDetailsCollection.setAccountholderName(AES.encrypt(bankDetailsCollection.getAccountholderName(), secretKeyAccountDetails));
 		bankDetailsCollection.setAccountNumber(AES.encrypt(bankDetailsCollection.getAccountNumber(), secretKeyAccountDetails));
@@ -60,7 +75,12 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 		
 		bankDetailsRepository.save(bankDetailsCollection);
 		response=true;
-		} catch (BusinessException e) {
+		
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+			}
+		catch (Exception e) {
 			logger.error("Error while add/edit bank Details " + e.getMessage());
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while add/edit bank Details " + e.getMessage());

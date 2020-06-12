@@ -1779,7 +1779,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			if (doctorClinicProfileCollections != null) {
 				for(DoctorClinicProfileCollection clinicProfileCollection : doctorClinicProfileCollections) {
 					clinicProfileCollection.setOnlineWorkingSchedules(request.getOnlineWorkingSchedules());
-					clinicProfileCollection.setIsOnlineConsultationAvailable(request.getIsOnlineConsultationAvailable());
+				//	clinicProfileCollection.setIsOnlineConsultationAvailable(request.getIsOnlineConsultationAvailable());
 					clinicProfileCollection.setConsultationType(request.getConsultationType());
 					clinicProfileCollection.setUpdatedTime(new Date());
 					doctorClinicProfileRepository.save(clinicProfileCollection);
