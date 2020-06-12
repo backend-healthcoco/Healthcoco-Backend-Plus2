@@ -3,7 +3,6 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.FitnessAssessment;
-import com.dpdocter.request.FitnessAssessmentRequest;
 
 public interface FitnessAssessmentService {
 

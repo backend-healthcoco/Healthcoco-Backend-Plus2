@@ -92,7 +92,7 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 		List<FitnessAssessment> response = null;
 
 		try {
-			Criteria criteria = new Criteria();
+			Criteria criteria = new Criteria("discarded").is(discarded);
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 
@@ -122,8 +122,8 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 			} else {
 				response = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
-	FitnessAssessmentCollection.class, FitnessAssessment.class).getMappedResults();
+								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+						FitnessAssessmentCollection.class, FitnessAssessment.class).getMappedResults();
 			}
 			for (FitnessAssessment fitnessAssessment : response) {
 
@@ -160,26 +160,6 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 
 			response = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(id)),
-							Aggregation.lookup("physical_activity_medical_history_cl",
-									"physicalActivityAndMedicalHistoryId", "_id", "physicalActivityAndMedicalHistory"),
-							new CustomAggregationOperation(new Document("$unwind",
-									new BasicDBObject("path", "$physicalActivityAndMedicalHistory")
-											.append("preserveNullAndEmptyArrays", true)
-											.append("includeArrayIndex", "arrayIndex1"))),
-
-							Aggregation.lookup("treatment_diagnosis_cl", "treatmentAndDiagnosisId", "_id",
-									"treatmentAndDiagnosis"),
-							new CustomAggregationOperation(new Document("$unwind",
-									new BasicDBObject("path", "$treatmentAndDiagnosis")
-											.append("preserveNullAndEmptyArrays", true)
-											.append("includeArrayIndex", "arrayIndex1"))),
-
-							Aggregation.lookup("exercise_movement_cl", "exerciseAndMovementId", "_id",
-									"exerciseAndMovement"),
-							new CustomAggregationOperation(new Document("$unwind",
-									new BasicDBObject("path", "$exerciseAndMovementId")
-											.append("preserveNullAndEmptyArrays", true)
-											.append("includeArrayIndex", "arrayIndex1"))),
 							Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
 					FitnessAssessmentCollection.class, FitnessAssessment.class).getUniqueMappedResult();
 			response = new FitnessAssessment();
@@ -424,14 +404,14 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 	}
 
 	@Override
-	public Integer countFitnessAssessment(Boolean isDiscarded) {
+	public Integer countFitnessAssessment(Boolean discarded) {
 		Integer response = null;
 		try {
 			Criteria criteria = new Criteria();
-			criteria.and("isDiscarded").is(isDiscarded);
+			criteria.and("discarded").is(discarded);
 			response = (int) mongoTemplate.count(new Query(criteria), FitnessAssessmentCollection.class);
 		} catch (BusinessException e) {
-			logger.error("Error while counting employees " + e.getMessage());
+			logger.error("Error while counting Fitness Collection " + e.getMessage());
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
 					"Error while counting Fitness Collection " + e.getMessage());
