@@ -1865,7 +1865,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Response<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
+<<<<<<< Updated upstream
 			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb,String type) {
+=======
+			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb) {
+>>>>>>> Stashed changes
 		Response<Appointment> response = new Response<Appointment>();
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -1955,7 +1959,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				Integer count = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
 				System.out.println("criteria "+criteria);
 				if(count > 0) {
-					response = new Response<Appointment>();
 					if (size > 0) {
 						appointmentLookupResponses = mongoTemplate.aggregate(
 								Aggregation
