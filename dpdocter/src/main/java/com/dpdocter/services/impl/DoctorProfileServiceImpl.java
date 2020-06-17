@@ -555,7 +555,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	@Override
 	@Transactional
 	public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, String patientId,
-			Boolean isMobileApp, Boolean isSearched) {
+			Boolean isMobileApp, Boolean isSearched, String userState) {
 		DoctorProfile doctorProfile = null;
 		UserCollection userCollection = null;
 		DoctorCollection doctorCollection = null;
@@ -569,11 +569,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId));
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
-
 			if (isSearched == false) {
 				criteria.and("isActivate").is(true).and("hasLoginAccess").ne(false);
 			}
-
+			if (!DPDoctorUtils.anyStringEmpty(userState)) {
+				if (userState.equalsIgnoreCase("COMPLETED")) {
+					criteria.and("user.userState").is("USERSTATECOMPLETE");
+				} else {
+					criteria.and("user.userState").is(userState);
+				}
+			}
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
 					Aggregation.lookup("hospital_cl", "location.hospitalId", "_id", "hospital"),

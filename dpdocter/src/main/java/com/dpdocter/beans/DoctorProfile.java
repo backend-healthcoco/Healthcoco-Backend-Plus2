@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.PackageType;
+import com.dpdocter.enums.UserState;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DoctorProfile extends GenericCollection {
@@ -95,6 +96,9 @@ public class DoctorProfile extends GenericCollection {
 	private String RegistrationThumbnailUrl;
 	
 	private String photoIdImageUrl;
+	
+	private UserState userState = UserState.USERSTATECOMPLETE;
+
 	
 	//private Map<DoctorConsultation, String> onlineConsultationFees;
 	
@@ -445,6 +449,14 @@ public class DoctorProfile extends GenericCollection {
 
 	public void setPhotoIdImageUrl(String photoIdImageUrl) {
 		this.photoIdImageUrl = photoIdImageUrl;
+	}
+
+	public UserState getUserState() {
+		return userState;
+	}
+
+	public void setUserState(UserState userState) {
+		this.userState = userState;
 	}
 
 	@Override

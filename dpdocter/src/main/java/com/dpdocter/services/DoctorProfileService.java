@@ -67,7 +67,7 @@ public interface DoctorProfileService {
 	String addEditCoverPicture(DoctorProfilePictureAddEditRequest request);
 
 	DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, String patientId,
-			Boolean isMobileApp, Boolean isSearched);
+			Boolean isMobileApp, Boolean isSearched, String userState);
 
 	List<ProfessionalMembership> getProfessionalMemberships(long page, int size, String updatedTime);
 

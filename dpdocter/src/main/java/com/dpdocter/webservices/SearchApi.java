@@ -133,13 +133,14 @@ public class SearchApi {
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp,
 			@QueryParam(value = "patientId") String patientId,
-			@DefaultValue(value = "true") @QueryParam(value = "isSearched") Boolean isSearched) {
+			@DefaultValue(value = "true") @QueryParam(value = "isSearched") Boolean isSearched,
+			@QueryParam(value = "userState") String userState) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
 		DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId, patientId,
-				isMobileApp, isSearched);
+				isMobileApp, isSearched, userState);
 		if (doctorProfile != null) {
 			if (doctorProfile.getImageUrl() != null) {
 				doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));
