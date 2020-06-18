@@ -838,11 +838,11 @@ public class BillingServiceImpl implements BillingService {
 					if (request.getUsedAdvanceAmount() != null && request.getUsedAdvanceAmount() > 0) {
 
 						List<DoctorPatientReceiptCollection> receiptsOfAdvancePayment = doctorPatientReceiptRepository
-								.findByReceiptTypeAndDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndRemainingAdvanceAmountAndDiscarded(ReceiptType.ADVANCE.name(),
+								.findByReceiptTypeAndDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndDiscarded(ReceiptType.ADVANCE.name(),
 										doctorPatientInvoiceCollection.getDoctorId(),
 										doctorPatientInvoiceCollection.getLocationId(),
 										doctorPatientInvoiceCollection.getHospitalId(),
-										doctorPatientInvoiceCollection.getPatientId(), 0.0, false,
+										doctorPatientInvoiceCollection.getPatientId(), false,
 										new Sort(Direction.ASC, "createdTime"));
 						if (receiptsOfAdvancePayment == null || receiptsOfAdvancePayment.isEmpty())
 							throw new BusinessException(ServiceError.InvalidInput, "Advance Amount is not available");

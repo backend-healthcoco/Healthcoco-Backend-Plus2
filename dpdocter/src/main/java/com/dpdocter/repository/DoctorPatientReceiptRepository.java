@@ -35,4 +35,8 @@ public interface DoctorPatientReceiptRepository extends MongoRepository<DoctorPa
 
 	DoctorPatientReceiptCollection findByIdAndDoctorIdAndLocationIdAndHospitalId(ObjectId receiptId, ObjectId doctorId,
 			ObjectId locationId, ObjectId hospitalId);
+
+	List<DoctorPatientReceiptCollection> findByReceiptTypeAndDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndDiscarded(
+			String name, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId, boolean b,
+			Sort sort);
 }

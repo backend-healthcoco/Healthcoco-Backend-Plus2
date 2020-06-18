@@ -66,6 +66,8 @@ import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.collections.UserSymptomCollection;
+import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.enums.CardioPermissionEnum;
 import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.enums.GynacPermissionsEnum;
@@ -172,6 +174,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	
 	@Value(value = "${image.path}")
 	private String imagePath;
+	
+	@Autowired
+	ESDoctorRepository esdoctorRepository;
 
 
 	@Override
@@ -1781,11 +1786,21 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		Boolean response = false;
 		try {
 			doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorId(new ObjectId(request.getDoctorId()));
+			
+			List<ESDoctorDocument> doctorDocuments=esdoctorRepository.findByUserId(request.getDoctorId());
+			if(doctorDocuments!=null)
+				for(ESDoctorDocument doctorDocument:doctorDocuments)	
+				{
+					doctorDocument.setOnlineWorkingSchedules(request.getOnlineWorkingSchedules());
+					esdoctorRepository.save(doctorDocument);
+				}
+			
+			
 			if (doctorClinicProfileCollections != null) {
 				for(DoctorClinicProfileCollection clinicProfileCollection : doctorClinicProfileCollections) {
 					clinicProfileCollection.setOnlineWorkingSchedules(request.getOnlineWorkingSchedules());
 				//	clinicProfileCollection.setIsOnlineConsultationAvailable(request.getIsOnlineConsultationAvailable());
-					clinicProfileCollection.setConsultationType(request.getConsultationType());
+				//	clinicProfileCollection.setConsultationType(request.getConsultationType());
 					clinicProfileCollection.setUpdatedTime(new Date());
 					doctorClinicProfileRepository.save(clinicProfileCollection);
 					response = true;
@@ -1856,6 +1871,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		try {
 			doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorId(
 					new ObjectId(request.getDoctorId()));
+			List<ESDoctorDocument> doctorDocuments=esdoctorRepository.findByUserId(request.getDoctorId());
+			if(doctorDocuments!=null)
+				for(ESDoctorDocument doctorDocument:doctorDocuments)	
+				{
+					doctorDocument.setConsultationType(request.getConsultationType());
+					esdoctorRepository.save(doctorDocument);
+				}
 			if (doctorClinicProfileCollections != null) 
 			for(DoctorClinicProfileCollection doctorClinicProfileCollection:doctorClinicProfileCollections)
 			{
