@@ -1003,6 +1003,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
 						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
 								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+						if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+							boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
 
 						int count = (int) elasticsearchTemplate.count(
 								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),

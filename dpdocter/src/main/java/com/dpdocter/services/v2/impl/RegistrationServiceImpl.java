@@ -266,7 +266,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 							}
 
-							// clinicDoctorResponse.setRole(roles);
+							 clinicDoctorResponse.setRole(roles);
 
 							/*
 							 * if (clinicDoctorResponse.getRole() != null) { List<String> roleList = new
