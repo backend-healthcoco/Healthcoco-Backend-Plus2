@@ -64,7 +64,8 @@ public interface RegistrationService {
 
 	PatientInitialAndCounter getPatientInitialAndCounter(String locationId);
 
-	Boolean updatePatientInitialAndCounter(String locationId, String patientInitial, int patientCounter, Boolean isPidHasDate);
+	Boolean updatePatientInitialAndCounter(String locationId, String patientInitial, int patientCounter,
+			Boolean isPidHasDate);
 
 	Location getClinicDetails(String clinicId);
 
@@ -96,6 +97,8 @@ public interface RegistrationService {
 
 	Role addRole(Role request);
 
+	RegisterDoctorResponse updateStaffRole(DoctorRegisterRequest request);
+
 	List<Role> getRole(String range, long page, int size, String locationId, String hospitalId, String updatedTime,
 			String role);
 
@@ -104,7 +107,7 @@ public interface RegistrationService {
 	ESDoctorDocument getESDoctorDocument(RegisterDoctorResponse doctorResponse);
 
 	List<ClinicDoctorResponse> getUsers(long page, int size, String locationId, String hospitalId, String updatedTime,
-			String role, Boolean active,Boolean access, String userState);
+			String role, Boolean active, Boolean access, String userState);
 
 	Role deleteRole(String roleId, Boolean discarded);
 
@@ -171,25 +174,26 @@ public interface RegistrationService {
 	Response<Object> deletePatient(String doctorId, String locationId, String hospitalId, String patientId,
 			Boolean discarded, Boolean isMobileApp);
 
-	List<PatientShortCard> getDeletedPatient(String doctorId, String locationId, String hospitalId, int page, int size, String searchTerm, String sortBy);
+	List<PatientShortCard> getDeletedPatient(String doctorId, String locationId, String hospitalId, int page, int size,
+			String searchTerm, String sortBy);
 
 	Boolean updatePatientNumber(String doctorId, String locationId, String hospitalId, String patientId,
 			String newPatientId, String mobileNumber);
-	
-	Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId,String defaultDoctorId);
 
-	Boolean setDefaultClinic( String locationId, String hospitalId,String defaultHospitalId);
-	
-	Location getClinics(String locationId,String hospitalId);
+	Boolean setDefaultDocter(String doctorId, String locationId, String hospitalId, String defaultDoctorId);
+
+	Boolean setDefaultClinic(String locationId, String hospitalId, String defaultHospitalId);
+
+	Location getClinics(String locationId, String hospitalId);
 
 	Boolean update();
 
 	Boolean checkIfPNUMExist(String locationId, String hospitalId, String pNUM);
 
 	void loginAccessUser(String userId, String locationId, Boolean hasLoginAccess);
-	
-	public Boolean updatePatientAge(); 
-	
+
+	public Boolean updatePatientAge();
+
 	public Boolean updateDoctorAge();
-	
-	}
+
+}
