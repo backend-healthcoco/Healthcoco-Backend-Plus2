@@ -104,6 +104,10 @@ public interface PathProxy {
 		public static final String DELETE_BRANCH = "/branch/{branchId}/delete";
 
 		public static final String GET_BRANCHES = "/branch/search";
+		
+		public static final String GENERATE_DELIVERY_REPORT = "/generate/deliveryReport";
+
+		public static final String GET_DELIVERY_REPORT = "/get/deliveryReport";
 
 	}
 

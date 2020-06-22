@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Branch;
+import com.dpdocter.beans.BulKMessage;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
@@ -364,6 +365,34 @@ public class ContactsApi {
 		}
 		Response<Object> response = contactsService.getBranches(page, size, doctorId, locationId, hospitalId, updatedTime,
 				discarded, searchTerm);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ContactsUrls.GENERATE_DELIVERY_REPORT)
+	@POST
+	@ApiOperation(value = PathProxy.ContactsUrls.GENERATE_DELIVERY_REPORT, notes = PathProxy.ContactsUrls.GENERATE_DELIVERY_REPORT)
+	public Response<BulKMessage> generateDeliverReport(BulKMessage request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getRequestId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		BulKMessage branchResponse = contactsService.generateDeliveryReport(request);
+		Response<BulKMessage> response = new Response<BulKMessage>();
+		response.setData(branchResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.ContactsUrls.GET_DELIVERY_REPORT)
+	@GET
+	@ApiOperation(value = PathProxy.ContactsUrls.GET_DELIVERY_REPORT, notes = PathProxy.ContactsUrls.GET_DELIVERY_REPORT)
+	public Response<Object> getDeliveryReports(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("doctorId") String doctorId,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Object> response = contactsService.getDeliveryReport(page, size, doctorId,updatedTime);
 		return response;
 	}
 }

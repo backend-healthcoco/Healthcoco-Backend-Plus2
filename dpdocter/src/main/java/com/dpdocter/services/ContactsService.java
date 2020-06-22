@@ -6,6 +6,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.Branch;
+import com.dpdocter.beans.BulKMessage;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.RegisteredPatientDetails;
@@ -64,5 +65,10 @@ public interface ContactsService {
 
 	Response<Object> getBranches(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm);
+	
+	BulKMessage generateDeliveryReport(BulKMessage request);
+	
+	Response<Object> getDeliveryReport(int page ,int size,String doctorId,String updatedTime);
+	
 
 }

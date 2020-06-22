@@ -704,50 +704,51 @@ public class SMSServicesImpl implements SMSServices {
 		return response;
 	}
 	
-	@Override
-	public String getBulkSMSResponse(List<String> mobileNumbers, String message) {
-
-		StringBuffer response = new StringBuffer();
-		try {
-			Set<String> numbers= new HashSet<>(mobileNumbers);
-			List<String> numberlist = new ArrayList<String> (numbers);
-			String numberString = StringUtils.join(numberlist, ',');
-			// String password = new String(loginRequest.getPassword());
-			
-			message = StringEscapeUtils.unescapeJava(message);
-			String url =  "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + AUTH_KEY + "&mobiles="
-					+ numberString + "&message=" + UriUtils.encode(message, "UTF-8") + "&sender="
-					+ SENDER_ID + "&route=" + PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE+ "&unicode="+UNICODE;
-			URL obj = new URL(url);
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-			// optional default is POST
-			con.setRequestMethod("GET");
-
-			// add request header
-			// con.setRequestProperty("User-Agent", USER_AGENT);
-			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
-			con.setRequestProperty("Accept-Charset", "UTF-8");
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			/* response = new StringBuffer(); */
-
-			while ((inputLine = in.readLine()) != null) {
-
-				response.append(inputLine);
-
-			}
-			in.close();
-		} catch (Exception e) {
-
-			e.printStackTrace();
-			return "Failed";
-		}
-
-		return response.toString();
-
-	}
+//	@Override
+//	public String getBulkSMSResponse(List<String> mobileNumbers, String message) {
+//
+//		StringBuffer response = new StringBuffer();
+//		try {
+//			Set<String> numbers= new HashSet<>(mobileNumbers);
+//			List<String> numberlist = new ArrayList<String> (numbers);
+//			String numberString = StringUtils.join(numberlist, ',');
+//			// String password = new String(loginRequest.getPassword());
+//			
+//			message = StringEscapeUtils.unescapeJava(message);
+//			String url =  "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + AUTH_KEY + "&mobiles="
+//					+ numberString + "&message=" + UriUtils.encode(message, "UTF-8") + "&sender="
+//					+ SENDER_ID + "&route=" + PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE+ "&unicode="+UNICODE;
+//			URL obj = new URL(url);
+//			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+//
+//			System.out.println("url:"+url);
+//			// optional default is POST
+//			con.setRequestMethod("GET");
+//            System.out.println(con.getResponseCode());
+//			// add request header
+//			// con.setRequestProperty("User-Agent", USER_AGENT);
+//			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+//			con.setRequestProperty("Accept-Charset", "UTF-8");
+//
+//			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+//			String inputLine;
+//			/* response = new StringBuffer(); */
+//
+//			while ((inputLine = in.readLine()) != null) {
+//
+//				response.append(inputLine);
+//
+//			}
+//			in.close();
+//		} catch (Exception e) {
+//
+//			e.printStackTrace();
+//			return "Failed";
+//		}
+//
+//		return response.toString();
+//
+//	}
 	
 	@Override
 	public Boolean getOTPSMSResponse(String mobileNumber, String message , String otp) {
@@ -876,4 +877,59 @@ public class SMSServicesImpl implements SMSServices {
 
 		
 	}
+	
+	
+	@Override
+	public String getBulkSMSResponse(List<String> mobileNumbers, String message) {
+		StringBuffer response = new StringBuffer();
+		try {
+			Set<String> numbers = new HashSet<>(mobileNumbers);
+			List<String> numberlist = new ArrayList<String>(numbers);
+			String numberString = StringUtils.join(numberlist, ',');
+			// String password = new String(loginRequest.getPassword());
+
+			message = StringEscapeUtils.unescapeJava(message);
+			String url = null;
+			
+
+				url = "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + AUTH_KEY + "&mobiles=" + numberString
+						+ "&message=" + UriUtils.encode(message, "UTF-8") + "&sender=" + SENDER_ID + "&route="
+						+ PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE + "&unicode=" + UNICODE;
+
+			
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			// optional default is POST
+			con.setRequestMethod("GET");
+
+			// add request header
+			// con.setRequestProperty("User-Agent", USER_AGENT);
+			con.setRequestProperty("User-Agent",
+					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+			con.setRequestProperty("Accept-Charset", "UTF-8");
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			/* response = new StringBuffer(); */
+
+			while ((inputLine = in.readLine()) != null) {
+
+				response.append(inputLine);
+
+			}
+			in.close();
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			return "Failed";
+		}
+
+		return response.toString();
+
+	}
+
+
+	
+	
 }
