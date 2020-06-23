@@ -1022,22 +1022,22 @@ public class ContactsServiceImpl implements ContactsService {
 
 
 			
-			Integer size=100;
+//			Integer size=100;
 			String responseId=null;
 			List<String>messageResponse=new ArrayList<String>();
-			for(int start=0;start<mobileNumbers.size();start+=size)
-			{
-				int end=Math.min(start+size,mobileNumbers.size());
-				List<String> sublist=mobileNumbers.subList(start, end);
-				
-				if (!(responseId=smsServices.getBulkSMSResponse(sublist, message)).equalsIgnoreCase("FAILED")) {
+//			for(int start=0;start<mobileNumbers.size();start+=size)
+//			{
+//				int end=Math.min(start+size,mobileNumbers.size());
+//				List<String> sublist=mobileNumbers.subList(start, end);
+//				
+				if (!(responseId=smsServices.getBulkSMSResponse(mobileNumbers, message)).equalsIgnoreCase("FAILED")) {
 					
 							status = true;
 							messageResponse.add(responseId);
 					}
 				
-				System.out.println(sublist);
-			}
+//				System.out.println(sublist);
+	//		}
 			smsTrackDetail.setResponseIds(messageResponse);
 			smsTrackRepository.save(smsTrackDetail);
 //			 List<String> numbers =new ArrayList<String>(mobileNumbers); 

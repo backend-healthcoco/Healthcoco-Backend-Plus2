@@ -93,9 +93,9 @@ public class SMSServicesAPI {
 	return response;
     }
 
-    @Path(value = PathProxy.SMSUrls.UPDATE_DELIVERY_REPORTS)
+    @Path(value = PathProxy.SMSUrls.UPDATE_DELIVERY_REPORT)
     @POST
-    @ApiOperation(value = PathProxy.SMSUrls.UPDATE_DELIVERY_REPORTS, notes = PathProxy.SMSUrls.UPDATE_DELIVERY_REPORTS)
+    @ApiOperation(value = PathProxy.SMSUrls.UPDATE_DELIVERY_REPORT, notes = PathProxy.SMSUrls.UPDATE_DELIVERY_REPORT)
     public String updateDeliveryReports(String request) {
 
 	try {

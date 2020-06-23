@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -24,6 +26,7 @@ import java.util.Set;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -46,6 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriUtils;
 
 import com.dpdocter.beans.Message;
+import com.dpdocter.beans.MessageXmlbean;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDeliveryReports;
@@ -71,6 +75,8 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DoctorSMSResponse;
 import com.dpdocter.response.SMSResponse;
 import com.dpdocter.services.SMSServices;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.twilio.sdk.TwilioRestException;
 
 import common.util.web.DPDoctorUtils;
@@ -887,27 +893,57 @@ public class SMSServicesImpl implements SMSServices {
 			List<String> numberlist = new ArrayList<String>(numbers);
 			String numberString = StringUtils.join(numberlist, ',');
 			// String password = new String(loginRequest.getPassword());
+			
+			
+			JAXBContext contextObj = JAXBContext.newInstance(MessageXmlbean.class);  
+			Marshaller marshallerObj = contextObj.createMarshaller();  
+		    marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);  
+		    
+		    message = StringEscapeUtils.unescapeJava(message);
+			//String	messages=UriUtils.encode(message, "UTF-8");
+		    
+		    MessageXmlbean xmlBean=new MessageXmlbean(AUTH_KEY,message,mobileNumbers,SENDER_ID,PROMOTIONAL_ROUTE,COUNTRY_CODE,UNICODE);
+		   // marshallerObj.marshal(xmlBean, os);
 
-			message = StringEscapeUtils.unescapeJava(message);
+			
 			String url = null;
+			String strUrl = "http://dndsms.resellergrow.com/api/postsms.php";
 			
-
-				url = "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + AUTH_KEY + "&mobiles=" + numberString
-						+ "&message=" + UriUtils.encode(message, "UTF-8") + "&sender=" + SENDER_ID + "&route="
-						+ PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE + "&unicode=" + UNICODE;
+			System.out.println("Object:"+xmlBean);
+//				url = "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + AUTH_KEY + "&mobiles=" + numberString
+//						+ "&message=" + UriUtils.encode(message, "UTF-8") + "&sender=" + SENDER_ID + "&route="
+//						+ PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE + "&unicode=" + UNICODE;
 
 			
-			URL obj = new URL(url);
+			URL obj = new URL(strUrl);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
+			
+			con.setDoOutput(true);
+			
+			con.setDoInput(true);
 			// optional default is POST
-			con.setRequestMethod("GET");
+			con.setRequestMethod("POST");
+			
+			
 
 			// add request header
 			// con.setRequestProperty("User-Agent", USER_AGENT);
 			con.setRequestProperty("User-Agent",
 					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 			con.setRequestProperty("Accept-Charset", "UTF-8");
+			
+			 DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			 StringWriter sw = new StringWriter();
+			 marshallerObj.marshal(xmlBean,sw);
+             wr.writeBytes(sw.toString());
+             //  wr.write(wr.getBytes("UTF-8")); //for unicode message's instead of wr.writeBytes(param);
+
+             wr.flush();
+             wr.close();
+             con.disconnect();
+
+
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
@@ -916,7 +952,7 @@ public class SMSServicesImpl implements SMSServices {
 			while ((inputLine = in.readLine()) != null) {
 
 				response.append(inputLine);
-
+				System.out.println("response:"+response.toString());
 			}
 			in.close();
 		} catch (Exception e) {
