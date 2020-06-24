@@ -58,6 +58,8 @@ import com.dpdocter.beans.SMSFormat;
 import com.dpdocter.beans.SMSReport;
 import com.dpdocter.beans.SMSTrack;
 import com.dpdocter.beans.UserMobileNumbers;
+import com.dpdocter.beans.XMLMobile;
+import com.dpdocter.beans.XmlMessage;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -901,15 +903,20 @@ public class SMSServicesImpl implements SMSServices {
 		    
 		    message = StringEscapeUtils.unescapeJava(message);
 			//String	messages=UriUtils.encode(message, "UTF-8");
-		    
-		    MessageXmlbean xmlBean=new MessageXmlbean(AUTH_KEY,message,mobileNumbers,SENDER_ID,PROMOTIONAL_ROUTE,COUNTRY_CODE,UNICODE);
+		    List<XMLMobile> numberlists=new ArrayList<XMLMobile>();
+		    XMLMobile mobile=new XMLMobile();
+		    for(String mobiles:mobileNumbers) {
+		    mobile.setMobileNumber(mobiles);    
+		    numberlists.add(mobile);
+		    }
+		    MessageXmlbean xmlBean=new MessageXmlbean(AUTH_KEY,new XmlMessage(message,numberlists),SENDER_ID,PROMOTIONAL_ROUTE,COUNTRY_CODE,UNICODE);
 		   // marshallerObj.marshal(xmlBean, os);
 
 			
 			String url = null;
 			String strUrl = "http://dndsms.resellergrow.com/api/postsms.php";
 			
-			System.out.println("Object:"+xmlBean);
+			
 //				url = "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + AUTH_KEY + "&mobiles=" + numberString
 //						+ "&message=" + UriUtils.encode(message, "UTF-8") + "&sender=" + SENDER_ID + "&route="
 //						+ PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE + "&unicode=" + UNICODE;
@@ -935,8 +942,17 @@ public class SMSServicesImpl implements SMSServices {
 			
 			 DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			 StringWriter sw = new StringWriter();
+			 
 			 marshallerObj.marshal(xmlBean,sw);
-             wr.writeBytes(sw.toString());
+			 
+			String sq= sw.toString();
+			sq.replaceAll("<SMS>","<SMS TEXT=");
+			sq.replaceAll("<ADDRESS>","><ADDRESS TO=");
+			sq.replaceAll("</ADDRESS>","></ADDRESS>");
+			//sq.replaceFirst("</SMS TEXT>","");
+			sq.replaceAll("<SENDER>", "</SMS><SENDER>");
+			System.out.println("Object:"+sq);
+             wr.writeBytes(sq);
              //  wr.write(wr.getBytes("UTF-8")); //for unicode message's instead of wr.writeBytes(param);
 
              wr.flush();
