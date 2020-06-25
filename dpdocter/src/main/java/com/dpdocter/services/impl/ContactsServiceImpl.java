@@ -1024,26 +1024,28 @@ public class ContactsServiceImpl implements ContactsService {
 				
 				smsTrackDetail.setSmsDetails(smsDetails);
 
-
+				if (!smsServices.getBulkSMSResponse(mobileNumbers, message).equalsIgnoreCase("FAILED")) {
+						status = true;
+					}
 			
 //			Integer size=100;
-			String responseId=null;
-			List<String>messageResponse=new ArrayList<String>();
+//			String responseId=null;
+//			List<String>messageResponse=new ArrayList<String>();
 //			for(int start=0;start<mobileNumbers.size();start+=size)
 //			{
 //				int end=Math.min(start+size,mobileNumbers.size());
 //				List<String> sublist=mobileNumbers.subList(start, end);
 //				
-				if (!(responseId=smsServices.getBulkSMSResponse(mobileNumbers, message)).equalsIgnoreCase("FAILED")) {
-					
-							status = true;
-							messageResponse.add(responseId);
-					}
+//				if (!(responseId=smsServices.getBulkSMSResponse(mobileNumbers, message)).equalsIgnoreCase("FAILED")) {
+//					
+//							status = true;
+//							messageResponse.add(responseId);
+//					}
 				
 //				System.out.println(sublist);
 	//		}
-			smsTrackDetail.setResponseIds(messageResponse);
-			smsTrackRepository.save(smsTrackDetail);
+//			smsTrackDetail.setResponseIds(messageResponse);
+//			smsTrackRepository.save(smsTrackDetail);
 //			 List<String> numbers =new ArrayList<String>(mobileNumbers); 
 //			 List<>result=new ArrayList<>();
 //			final int chunkSize = 100; 
@@ -1060,9 +1062,7 @@ public class ContactsServiceImpl implements ContactsService {
 			
 			
 
-			//if (!smsServices.getBulkSMSResponse(mobileNumbers, message).equalsIgnoreCase("FAILED")) {
-		//		status = true;
-		//	}
+		
 
 		} catch (Exception e) {
 			e.printStackTrace();

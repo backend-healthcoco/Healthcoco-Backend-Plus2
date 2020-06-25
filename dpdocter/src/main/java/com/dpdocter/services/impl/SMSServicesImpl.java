@@ -66,6 +66,7 @@ import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.SubscriptionDetailCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -906,6 +907,14 @@ public class SMSServicesImpl implements SMSServices {
 			String numberString = StringUtils.join(numberlist, ',');
 			// String password = new String(loginRequest.getPassword());
 			
+			 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				
+				smsTrackDetail.setType(ComponentType.BULK_SMS.getType());
+				SMSDetail smsDetail = new SMSDetail();
+				SMS sms = new SMS();
+				SMSAddress smsAddress = new SMSAddress();
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+
 			
 			JAXBContext contextObj = JAXBContext.newInstance(MessageXmlbean.class);  
 			Marshaller marshallerObj = contextObj.createMarshaller();  
@@ -916,9 +925,21 @@ public class SMSServicesImpl implements SMSServices {
 		    List<XMLMobile> numberlists=new ArrayList<XMLMobile>();
 		    XMLMobile mobile=new XMLMobile();
 		    for(String mobiles:mobileNumbers) {
+		    	
+		    	sms.setSmsText(message);
+				
+				smsAddress.setRecipient(mobiles);
+				
+				sms.setSmsAddress(smsAddress);
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				smsDetails.add(smsDetail);
+		    	
 		    mobile.setMobileNumber(mobiles);    
 		    numberlists.add(mobile);
 		    }
+		    smsTrackDetail.setSmsDetails(smsDetails);
+		    
 		    MessageXmlbean xmlBean=new MessageXmlbean(AUTH_KEY,new XmlMessage(message,numberlists),SENDER_ID,PROMOTIONAL_ROUTE,COUNTRY_CODE,UNICODE);
 		   // marshallerObj.marshal(xmlBean, os);
 
@@ -956,14 +977,10 @@ public class SMSServicesImpl implements SMSServices {
 			 marshallerObj.marshal(xmlBean,sw);
 			 
 			String sq= sw.toString();
-		//	sq.replaceAll("<SMS>","<SMS TEXT=");
-		//	sq.replaceAll("<ADDRESS>","><ADDRESS TO=");
-		//	sq.replaceAll("</ADDRESS>","></ADDRESS>");
-			//sq.replaceFirst("</SMS TEXT>","");
-		//	sq.replaceAll("<SENDER>", "</SMS><SENDER>");
+		
 			System.out.println("Object:"+sq);
-             wr.writeBytes(sq);
-             //  wr.write(wr.getBytes("UTF-8")); //for unicode message's instead of wr.writeBytes(param);
+          //   wr.writeBytes(sq);
+               wr.write(sq.getBytes("UTF-8")); //for unicode message's instead of wr.writeBytes(param);
 
              wr.flush();
              wr.close();
@@ -980,6 +997,8 @@ public class SMSServicesImpl implements SMSServices {
 				response.append(inputLine);
 				System.out.println("response:"+response.toString());
 			}
+			smsTrackDetail.setResponseId(response.toString());
+			smsTrackRepository.save(smsTrackDetail);
 			in.close();
 		} catch (Exception e) {
 
