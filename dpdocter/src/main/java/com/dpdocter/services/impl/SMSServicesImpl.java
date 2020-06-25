@@ -956,11 +956,11 @@ public class SMSServicesImpl implements SMSServices {
 			 marshallerObj.marshal(xmlBean,sw);
 			 
 			String sq= sw.toString();
-			sq.replaceAll("<SMS>","<SMS TEXT=");
-			sq.replaceAll("<ADDRESS>","><ADDRESS TO=");
-			sq.replaceAll("</ADDRESS>","></ADDRESS>");
+		//	sq.replaceAll("<SMS>","<SMS TEXT=");
+		//	sq.replaceAll("<ADDRESS>","><ADDRESS TO=");
+		//	sq.replaceAll("</ADDRESS>","></ADDRESS>");
 			//sq.replaceFirst("</SMS TEXT>","");
-			sq.replaceAll("<SENDER>", "</SMS><SENDER>");
+		//	sq.replaceAll("<SENDER>", "</SMS><SENDER>");
 			System.out.println("Object:"+sq);
              wr.writeBytes(sq);
              //  wr.write(wr.getBytes("UTF-8")); //for unicode message's instead of wr.writeBytes(param);
