@@ -13,6 +13,8 @@ public class SMSDeliveryReports {
     private List<SMSReport> report;
 
     private String senderId;
+    
+    private String campaignName;
 
     public String getRequestId() {
 	return requestId;
@@ -45,8 +47,18 @@ public class SMSDeliveryReports {
     public void setSenderId(String senderId) {
 	this.senderId = senderId;
     }
+    
+    
 
-    @Override
+    public String getCampaignName() {
+		return campaignName;
+	}
+
+	public void setCampaignName(String campaignName) {
+		this.campaignName = campaignName;
+	}
+
+	@Override
     public String toString() {
 	return "SMSDeliveryReports [requestId=" + requestId + ", userId=" + userId + ", report=" + report + ", senderId=" + senderId + "]";
     }

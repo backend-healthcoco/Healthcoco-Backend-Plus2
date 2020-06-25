@@ -22,6 +22,8 @@ public class SMSDeliveryReportsCollection {
 	private List<SMSReport> report;
 	@Field
 	private String senderId;
+	@Field
+	private String campaignName;
 
 		public ObjectId getId() {
 			return id;
@@ -61,6 +63,14 @@ public class SMSDeliveryReportsCollection {
 
 		public void setSenderId(String senderId) {
 			this.senderId = senderId;
+		}
+
+		public String getCampaignName() {
+			return campaignName;
+		}
+
+		public void setCampaignName(String campaignName) {
+			this.campaignName = campaignName;
 		}
 	    
 	    
