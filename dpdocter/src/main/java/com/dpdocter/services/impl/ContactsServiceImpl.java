@@ -1002,27 +1002,27 @@ public class ContactsServiceImpl implements ContactsService {
 
 				}
 			}
-			 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-				
-				smsTrackDetail.setType(ComponentType.BULK_SMS.getType());
-				SMSDetail smsDetail = new SMSDetail();
-				SMS sms = new SMS();
-				SMSAddress smsAddress = new SMSAddress();
-				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-				for (String mobileNumber : mobileNumbers) {
-						
-				sms.setSmsText(message);
-				
-				smsAddress.setRecipient(mobileNumber);
-				
-				sms.setSmsAddress(smsAddress);
-				smsDetail.setSms(sms);
-				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-				smsDetails.add(smsDetail);
-				}
-				
-				
-				smsTrackDetail.setSmsDetails(smsDetails);
+//			 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+//				
+//				smsTrackDetail.setType(ComponentType.BULK_SMS.getType());
+//				SMSDetail smsDetail = new SMSDetail();
+//				SMS sms = new SMS();
+//				SMSAddress smsAddress = new SMSAddress();
+//				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+//				for (String mobileNumber : mobileNumbers) {
+//						
+//				sms.setSmsText(message);
+//				
+//				smsAddress.setRecipient(mobileNumber);
+//				
+//				sms.setSmsAddress(smsAddress);
+//				smsDetail.setSms(sms);
+//				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+//				smsDetails.add(smsDetail);
+//				}
+//				
+//				
+//				smsTrackDetail.setSmsDetails(smsDetails);
 
 				if (!smsServices.getBulkSMSResponse(mobileNumbers, message).equalsIgnoreCase("FAILED")) {
 						status = true;
