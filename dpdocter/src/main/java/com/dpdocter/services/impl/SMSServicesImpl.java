@@ -61,6 +61,7 @@ import com.dpdocter.beans.UserMobileNumbers;
 import com.dpdocter.beans.XMLMobile;
 import com.dpdocter.beans.XmlMessage;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.SMSDeliveryReportsCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.SubscriptionDetailCollection;
@@ -72,6 +73,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.SMSTrackRepository;
+import com.dpdocter.repository.SmsDeliveryReportsRepository;
 import com.dpdocter.repository.SubscriptionDetailRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DoctorSMSResponse;
@@ -149,6 +151,9 @@ public class SMSServicesImpl implements SMSServices {
 	
 	@Autowired
 	private LocationRepository locationRepository;
+	
+	@Autowired
+	private SmsDeliveryReportsRepository smsDeliveryReportsRepository;
 
 	
 	@Override
@@ -457,7 +462,12 @@ public class SMSServicesImpl implements SMSServices {
 	@Transactional
 	public void updateDeliveryReports(List<SMSDeliveryReports> request) {
 		try {
+			SMSDeliveryReportsCollection smsDeliveryReportsCollection=new SMSDeliveryReportsCollection();
 			for (SMSDeliveryReports smsDeliveryReport : request) {
+		//for checking if request is coming from 3rd party		
+				BeanUtil.map(smsDeliveryReport, smsDeliveryReportsCollection);
+				smsDeliveryReportsRepository.save(smsDeliveryReportsCollection);
+				//
 				SMSTrackDetail smsTrackDetail = smsTrackRepository.findByResponseId(smsDeliveryReport.getRequestId());
 				if (smsTrackDetail != null) {
 					for (SMSDetail smsDetail : smsTrackDetail.getSmsDetails()) {

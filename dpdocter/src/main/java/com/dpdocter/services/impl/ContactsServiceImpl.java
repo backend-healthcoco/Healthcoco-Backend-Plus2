@@ -1007,17 +1007,21 @@ public class ContactsServiceImpl implements ContactsService {
 				smsTrackDetail.setType(ComponentType.BULK_SMS.getType());
 				SMSDetail smsDetail = new SMSDetail();
 				SMS sms = new SMS();
+				SMSAddress smsAddress = new SMSAddress();
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				for (String mobileNumber : mobileNumbers) {
+						
 				sms.setSmsText(message);
 				
-				SMSAddress smsAddress = new SMSAddress();
-				
-				smsAddress.setRecipients(mobileNumbers);
+				smsAddress.setRecipient(mobileNumber);
 				
 				sms.setSmsAddress(smsAddress);
 				smsDetail.setSms(sms);
 				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 				smsDetails.add(smsDetail);
+				}
+				
+				
 				smsTrackDetail.setSmsDetails(smsDetails);
 
 
