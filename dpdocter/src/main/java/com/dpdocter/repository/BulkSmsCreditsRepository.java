@@ -7,7 +7,7 @@ import com.dpdocter.collections.BulkSmsCreditsCollection;
 
 public interface BulkSmsCreditsRepository extends MongoRepository<BulkSmsCreditsCollection,ObjectId>{
 
-	BulkSmsCreditsCollection findbyDoctorId(ObjectId objectId);
+	BulkSmsCreditsCollection findByDoctorId(ObjectId doctorId);
 
 	
 }
