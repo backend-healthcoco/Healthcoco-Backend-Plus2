@@ -923,7 +923,7 @@ public class SMSServicesImpl implements SMSServices {
 		    message = StringEscapeUtils.unescapeJava(message);
 			//String	messages=UriUtils.encode(message, "UTF-8");
 		    List<XMLMobile> numberlists=new ArrayList<XMLMobile>();
-		    XMLMobile mobile1=new XMLMobile();
+		    XMLMobile mobile1=null;
 //		    XMLMobile mobile2=new XMLMobile();
 //		    
 //		    
@@ -942,11 +942,11 @@ public class SMSServicesImpl implements SMSServices {
 				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
 				smsDetails.add(smsDetail);
 		    	
-		     mobile1.setMobileNumber(mobiles);
-		    
+		     //mobile1.setMobileNumber(mobiles);
+		     numberlists.add(new XMLMobile(mobiles));
 		    
 		    }
-		    numberlists.add(mobile1);
+		   
 		    smsTrackDetail.setSmsDetails(smsDetails);
 		   
 		    MessageXmlbean xmlBean=new MessageXmlbean(AUTH_KEY,new XmlMessage(message,(numberlists)),SENDER_ID,PROMOTIONAL_ROUTE,COUNTRY_CODE,UNICODE);
