@@ -923,7 +923,14 @@ public class SMSServicesImpl implements SMSServices {
 		    message = StringEscapeUtils.unescapeJava(message);
 			//String	messages=UriUtils.encode(message, "UTF-8");
 		    List<XMLMobile> numberlists=new ArrayList<XMLMobile>();
-		    XMLMobile mobile=new XMLMobile();
+		    XMLMobile mobile1=new XMLMobile();
+//		    XMLMobile mobile2=new XMLMobile();
+//		    
+//		    
+//		    mobile1.setMobileNumber("9604248471");
+//		    mobile2.setMobileNumber("7219653706");
+//		    numberlists.add(mobile1);
+//		    numberlists.add(mobile2);
 		    for(String mobiles:mobileNumbers) {
 		    	
 		    	sms.setSmsText(message);
@@ -935,12 +942,14 @@ public class SMSServicesImpl implements SMSServices {
 				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
 				smsDetails.add(smsDetail);
 		    	
-		    mobile.setMobileNumber(mobiles);    
-		    numberlists.add(mobile);
-		    }
-		    smsTrackDetail.setSmsDetails(smsDetails);
+		     mobile1.setMobileNumber(mobiles);
 		    
-		    MessageXmlbean xmlBean=new MessageXmlbean(AUTH_KEY,new XmlMessage(message,numberlists),SENDER_ID,PROMOTIONAL_ROUTE,COUNTRY_CODE,UNICODE);
+		    
+		    }
+		    numberlists.add(mobile1);
+		    smsTrackDetail.setSmsDetails(smsDetails);
+		   
+		    MessageXmlbean xmlBean=new MessageXmlbean(AUTH_KEY,new XmlMessage(message,(numberlists)),SENDER_ID,PROMOTIONAL_ROUTE,COUNTRY_CODE,UNICODE);
 		   // marshallerObj.marshal(xmlBean, os);
 
 			

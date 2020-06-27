@@ -41,6 +41,8 @@ import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.BranchCollection;
 import com.dpdocter.collections.BulKMessageCollection;
+import com.dpdocter.collections.BulkSmsCreditsCollection;
+import com.dpdocter.collections.BulkSmsHistoryCollection;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
@@ -58,6 +60,8 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BranchRepository;
 import com.dpdocter.repository.BulkMessageRepository;
+import com.dpdocter.repository.BulkSmsCreditsRepository;
+import com.dpdocter.repository.BulkSmsHistoryRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
@@ -152,6 +156,12 @@ public class ContactsServiceImpl implements ContactsService {
 	
 	@Autowired
 	private BulkMessageRepository bulkMessageRepository;
+	
+	@Autowired
+	private BulkSmsCreditsRepository bulkSmsCreditsRepository;
+	
+	@Autowired
+	private BulkSmsHistoryRepository bulkSmsHistoryRepository;
 
 
 	/**
@@ -1024,6 +1034,28 @@ public class ContactsServiceImpl implements ContactsService {
 //				
 //				smsTrackDetail.setSmsDetails(smsDetails);
 
+			Integer totalLength=160;
+			Integer messageLength=message.length();
+			long credits=(messageLength/totalLength);
+			long  subCredits=credits*(mobileNumbers.size());
+			BulkSmsHistoryCollection bulkHistoryCollection=new BulkSmsHistoryCollection();
+			
+			BulkSmsCreditsCollection bulk=bulkSmsCreditsRepository.findbyDoctorId(new ObjectId(request.getDoctorId()));
+			if(bulk!=null) {
+				if(bulk.getCreditBalance() > subCredits || bulk.getCreditBalance() == subCredits) {
+				bulk.setCreditBalance(bulk.getCreditBalance()-subCredits);
+				bulk.setCreditSpent(bulk.getCreditSpent()+subCredits);
+				bulk.setUpdatedTime(new Date());
+				}
+				else {
+					throw new BusinessException(ServiceError.Unknown, "You have Unsufficient Balance");
+				}
+				BeanUtil.map(bulk, bulkHistoryCollection);
+				bulkSmsHistoryRepository.save(bulkHistoryCollection);
+			}
+			bulkSmsCreditsRepository.save(bulk);
+			
+			
 				if (!smsServices.getBulkSMSResponse(mobileNumbers, message).equalsIgnoreCase("FAILED")) {
 						status = true;
 					}
@@ -1036,14 +1068,14 @@ public class ContactsServiceImpl implements ContactsService {
 //				int end=Math.min(start+size,mobileNumbers.size());
 //				List<String> sublist=mobileNumbers.subList(start, end);
 //				
-//				if (!(responseId=smsServices.getBulkSMSResponse(mobileNumbers, message)).equalsIgnoreCase("FAILED")) {
+//				if (!(responseId=smsServices.getBulkSMSResponse(sublist, message)).equalsIgnoreCase("FAILED")) {
 //					
 //							status = true;
 //							messageResponse.add(responseId);
 //					}
-				
-//				System.out.println(sublist);
-	//		}
+//				
+////				System.out.println(sublist);
+//		}
 //			smsTrackDetail.setResponseIds(messageResponse);
 //			smsTrackRepository.save(smsTrackDetail);
 //			 List<String> numbers =new ArrayList<String>(mobileNumbers); 
