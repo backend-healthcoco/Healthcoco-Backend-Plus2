@@ -1,32 +1,33 @@
 package com.dpdocter.beans;
 
 public class Elbow {
-private Integer hexion;
-private Integer extension;
-private Integer supination;
-private Integer pronotion;
-public Integer getHexion() {
+private String hexion;
+private String extension;
+private String supination;
+private String pronotion;
+
+public String getHexion() {
 	return hexion;
 }
-public void setHexion(Integer hexion) {
+public void setHexion(String hexion) {
 	this.hexion = hexion;
 }
-public Integer getExtension() {
+public String getExtension() {
 	return extension;
 }
-public void setExtension(Integer extension) {
+public void setExtension(String extension) {
 	this.extension = extension;
 }
-public Integer getSupination() {
+public String getSupination() {
 	return supination;
 }
-public void setSupination(Integer supination) {
+public void setSupination(String supination) {
 	this.supination = supination;
 }
-public Integer getPronotion() {
+public String getPronotion() {
 	return pronotion;
 }
-public void setPronotion(Integer pronotion) {
+public void setPronotion(String pronotion) {
 	this.pronotion = pronotion;
 }
 

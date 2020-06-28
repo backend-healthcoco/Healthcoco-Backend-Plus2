@@ -1,27 +1,29 @@
 package com.dpdocter.beans;
 
 public class Wrist {
-private Integer hexion;
-private Integer extension;
-private Integer radial_UlnarDeviation;
-public Integer getHexion() {
+private String hexion;
+private String extension;
+private String radial_UlnarDeviation;
+
+public String getHexion() {
 	return hexion;
 }
-public void setHexion(Integer hexion) {
+public void setHexion(String hexion) {
 	this.hexion = hexion;
 }
-public Integer getExtension() {
+public String getExtension() {
 	return extension;
 }
-public void setExtension(Integer extension) {
+public void setExtension(String extension) {
 	this.extension = extension;
 }
-public Integer getRadial_UlnarDeviation() {
+public String getRadial_UlnarDeviation() {
 	return radial_UlnarDeviation;
 }
-public void setRadial_UlnarDeviation(Integer radial_UlnarDeviation) {
+public void setRadial_UlnarDeviation(String radial_UlnarDeviation) {
 	this.radial_UlnarDeviation = radial_UlnarDeviation;
 }
+
 
 
 }

@@ -37,7 +37,7 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 	@Autowired
 	private MailService mailService;
 	
-	@Value(value = "${mail.signup.request.to}")
+	@Value(value = "${mail.online.consultation.request.to}")
 	private String mailRequest;
 	
 	@Autowired
@@ -64,7 +64,7 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 			request.setUpdatedTime(new Date());
 			BeanUtil.map(request, bankDetailsCollection);
 			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
-			mailService.sendEmail("aman.verma@healthcoco.com"," New Request for Online Consultation","Doctor Name: "+userCollection.getFirstName()+" "+"EmailAddress: "+userCollection.getEmailAddress()+" "+"DoctorId:"+userCollection.getId(), null);
+			mailService.sendEmail(mailRequest," New Request for Online Consultation","Doctor Name: "+userCollection.getFirstName()+" "+"EmailAddress: "+userCollection.getEmailAddress()+" "+"DoctorId:"+userCollection.getId(), null);
 		}
 		bankDetailsCollection.setAccountholderName(AES.encrypt(bankDetailsCollection.getAccountholderName(), secretKeyAccountDetails));
 		bankDetailsCollection.setAccountNumber(AES.encrypt(bankDetailsCollection.getAccountNumber(), secretKeyAccountDetails));

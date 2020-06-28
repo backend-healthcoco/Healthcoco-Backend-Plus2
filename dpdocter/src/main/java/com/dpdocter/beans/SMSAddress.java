@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -11,6 +13,8 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 public class SMSAddress {
 
     private String recipient;
+    
+    private List<String> recipients;
 
     @JsonProperty("recipient")
     public String getRecipient() {
@@ -22,8 +26,19 @@ public class SMSAddress {
     public void setRecipient(String recipient) {
 	this.recipient = recipient;
     }
+    
+    
+    @JsonProperty("recipients")
+    public List<String> getRecipients() {
+		return recipients;
+	}
 
-    @Override
+    @JsonProperty("recipients")
+	public void setRecipients(List<String> recipients) {
+		this.recipients = recipients;
+	}
+
+	@Override
     public String toString() {
 	return "SMSAddress [recipient=" + recipient + "]";
     }

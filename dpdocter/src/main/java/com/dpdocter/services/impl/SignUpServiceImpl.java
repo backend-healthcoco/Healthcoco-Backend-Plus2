@@ -239,7 +239,7 @@ public class SignUpServiceImpl implements SignUpService {
 				tokenCollection.setIsUsed(true);
 				tokenRepository.save(tokenCollection);
 				return "You have successfully verified your email address."
-						+ "If you haven't already done so, download the Healthcoco+ app - Every Doctor's Pocket Clinic."
+						+ "Download the Healthcoco+ app - Every Doctor's Pocket Clinic."
 						+ "Stay Healthy and Happy!";
 			}
 		} catch (IllegalArgumentException argumentException) {

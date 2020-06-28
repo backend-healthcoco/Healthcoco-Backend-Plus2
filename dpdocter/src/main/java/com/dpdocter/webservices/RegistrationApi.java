@@ -714,7 +714,27 @@ public class RegistrationApi {
 		response.setData(professionResponse);
 		return response;
 	}
+	
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_STAFF_ROLE)
+	@PUT
+	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_STAFF_ROLE, notes = PathProxy.RegistrationUrls.UPDATE_STAFF_ROLE)
+	public Response<RegisterDoctorResponse> updateStaffRole(@PathParam("userId") String userId,
+			@PathParam("locationId") String locationId, DoctorRegisterRequest request) {
+		if (request == null
+				|| DPDoctorUtils.anyStringEmpty(userId, locationId, request.getFirstName(), request.getHospitalId())) {
+			logger.warn(invalidInput);
+			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+		}
+		request.setUserId(userId);
+		request.setLocationId(locationId);
+		RegisterDoctorResponse doctorResponse = registrationService.updateStaffRole(request);
 
+		transnationalService.checkDoctor(new ObjectId(request.getUserId()), null);
+		Response<RegisterDoctorResponse> response = new Response<RegisterDoctorResponse>();
+		response.setData(doctorResponse);
+		return response;
+	}
+	
 	@Path(value = PathProxy.RegistrationUrls.GET_ROLE)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_ROLE, notes = PathProxy.RegistrationUrls.GET_ROLE)

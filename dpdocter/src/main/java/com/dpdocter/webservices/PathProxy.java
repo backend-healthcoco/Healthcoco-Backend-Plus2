@@ -44,9 +44,9 @@ public interface PathProxy {
 		public static final String DOCTOR_SIGNUP = "/doctor";
 
 		public static final String VERIFY_CONFERENCE_USER = "/conference/user/verify/{tokenId}";
-		
+
 		public static final String DOCTOR_REGISTER = "/doctorRegister";
-		
+
 		public static final String VERIFY_EMAIL_ADDRESS = "/verify/{emailaddress}";
 
 	}
@@ -104,6 +104,10 @@ public interface PathProxy {
 		public static final String DELETE_BRANCH = "/branch/{branchId}/delete";
 
 		public static final String GET_BRANCHES = "/branch/search";
+		
+		public static final String GENERATE_DELIVERY_REPORT = "/generate/deliveryReport";
+
+		public static final String GET_DELIVERY_REPORT = "/get/deliveryReport";
 
 	}
 
@@ -163,7 +167,9 @@ public interface PathProxy {
 		public static final String GET_PROFESSION = "/settings/profession";
 
 		public static final String ADD_EDIT_ROLE = "/role/addEdit";
-
+		
+		public static final String UPDATE_STAFF_ROLE = "/role/update";
+		
 		public static final String GET_ROLE = "/role/{range}/{locationId}/{hospitalId}";
 
 		public static final String DELETE_ROLE = "/role/{roleId}/delete";
@@ -171,8 +177,8 @@ public interface PathProxy {
 		public static final String GET_USERS = "/users/{locationId}/{hospitalId}";
 
 		public static final String ACTIVATE_DEACTIVATE_USER = "/user/{userId}/{locationId}/activate";
-		
-		public static final String  ACCESS_USER =	"/user/{userId}/{locationId}/loginAccess";
+
+		public static final String ACCESS_USER = "/user/{userId}/{locationId}/loginAccess";
 
 		public static final String ADD_FEEDBACK = "/feedback/add";
 
@@ -239,15 +245,15 @@ public interface PathProxy {
 		public static final String CHECK_IF_PNUM_EXIST = "/checkIfPnumExist/{locationId}/{hospitalId}/{PNUM}";
 
 		public static final String SET_DEFAULT_CLINIC_IN_LIST = "set/default/{locationId}/{hospitalId}/clinic";
-		
+
 		public static final String ADD_EDIT_EYE_SPECILITY = "/eye/Speciality/addEdit";
-		
+
 		public static final String GET_EYE_SPECILITY = "/eye/Speciality/get";
-		
+
 		public static final String DELETE_EYE_SPECILITY = "/eye/Speciality/{id}/delete";
-		
-		public static final String GET_CLINICS ="/get/{locationId}/{hospitalId}/clinic";
-		
+
+		public static final String GET_CLINICS = "/get/{locationId}/{hospitalId}/clinic";
+
 		public static final String UPDATE_AGE = "/patientAge";
 
 	}
@@ -833,14 +839,14 @@ public interface PathProxy {
 		public static final String ADD_EDIT_SERVICES = "/addEditServices";
 
 		public static final String GET_SERVICES = "/services";
-		
+
 		public static final String ADD_EDIT_ONLINE_CONSULTATION_TIME = "/clinicProfile/addEditOnlineConsultationTime";
 
-		public static final String	GET_ONLINE_CONSULTATION_TIME = "/clinicProfile/{doctorId}/getOnlineConsultationTime";
+		public static final String GET_ONLINE_CONSULTATION_TIME = "/clinicProfile/{doctorId}/getOnlineConsultationTime";
 
 		public static final String ADD_EDIT_ONLINE_CONSULTATION_FEES = "/clinicProfile/addEditOnlineConsultationFees";
 
-		public static final String	GET_ONLINE_CONSULTATION_FEES = "/clinicProfile/{doctorId}/getOnlineConsultationFees";
+		public static final String GET_ONLINE_CONSULTATION_FEES = "/clinicProfile/{doctorId}/getOnlineConsultationFees";
 
 		public static final String UPLOAD_REGISTRATION_DETAILS = "/uploadRegistrationDetails";
 	}
@@ -1085,7 +1091,7 @@ public interface PathProxy {
 		public static final String ADD_NUTRITION_APPOINTMENT = "/nutrition/add";
 
 		public static final String UPDATE_BOOKED_SLOT = "/update";
-		
+
 		public static final String GET_ONLINE_CONSULTATION_TIME_SLOTS = "getOnlineConsulationTimeSlots/{doctorId}/{date}";
 
 	}
@@ -1129,8 +1135,6 @@ public interface PathProxy {
 		public static final String EMAIL_PATIENT_TREATMENT_WEB = "/{treatmentId}/{emailAddress}/mail";
 
 		public static final String DELETE_PATIENT_TREATMENT_WEB = "/{treatmentId}/delete";
-		
-		
 
 	}
 
@@ -1191,7 +1195,7 @@ public interface PathProxy {
 		public static final String VERIFY_OTP = "/{doctorId}/{locationId}/{hospitalId}/{patientId}/{otpNumber}/verify";
 
 		public static final String VERIFY_OTP_MOBILE = "/{mobileNumber}/{otpNumber}/verify";
-		
+
 		public static final String VERIFY_OTP_SIGNUP = "/{mobileNumber}/{otpNumber}/{countryCode}/verify";
 
 	}
@@ -1437,7 +1441,7 @@ public interface PathProxy {
 		public static final String SMS_INVOICE = "invoice/{invoiceId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
 
 		public static final String SMS_RECEIPT = "receipt/{receiptId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
-		
+
 		public static final String EMAIL_RECEIPT = "receipt/{receiptId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
 		public static final String DUE_AMOUNT_REMAINDER = "dueAmount/{patientId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/remainder";
@@ -1466,7 +1470,6 @@ public interface PathProxy {
 
 		public static final String GET_EXPENSE_TYPE_BY_ID = "/expenseType/{expenseTypeId}/view";
 
-		
 		public static final String ADD_EDIT_VENDOR_EXPENSE = "/vendorExpence/addEdit";
 
 		public static final String GET_VENDOR_EXPENSE = "/vendorExpense/get";
@@ -2103,7 +2106,7 @@ public interface PathProxy {
 		public static final String GET_RECIPES_TEMPLATE = "template/{doctorId}/{locationId}/{hospitalId}/get";
 		public static final String DELETE_RECIPE_TEMPLATE = "template/{recipeTemplateId}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String GET_RECIPE_TEMPLATE = "template/{recipeTemplateId}/get";
-		
+
 		public static final String GET_FOOD_COMMUNITIES = "/foodCommunity";
 		public static final String GET_FOOD_GROUPS = "/foodGroup";
 		public static final String GET_NUTRIENT_GOALS = "/nutrientGoal";
@@ -2121,7 +2124,7 @@ public interface PathProxy {
 		public static final String DOWNLOAD_DIET_PLAN = "{planId}/download";
 		public static final String SEND_DIET_PLAN_EMAIL = "{planId}/sendEmail";
 		public static final String GET_DIET_PLANS_FOR_PATIENT = "/get/patient";
-		
+
 		public static final String ADD_EDIT_DIET_PLAN_TEMPLATE = "/template/addEdit";
 		public static final String GET_DIET_PLAN_TEMPLATES = "/template/";
 		public static final String DELETE_DIET_PLAN_TEMPLATE = "/template/{planId}/delete";
@@ -2293,7 +2296,7 @@ public interface PathProxy {
 		public static final String GET_ACADAMIC_PROFILE_BY_ID = "academicProfile/{id}/get";
 		public static final String GET_ASSOCIATIONS_FOR_NUTRITION = "getAssociations/";
 		public static final String GET_ACADAMIC_CLASSES = "acadamic/class/{branchId}/{schoolId}/get";
-		
+
 		public static final String GET_DOCTOR_ACADAMIC_PROFILE = "/profile/{userId}/get";
 		public static final String GET_RDA_FOR_USER = "/rda/{academicProfileId}";
 		public static final String GET_USER_ASSESSMENT = "/userAssessment/{academicProfileId}";
@@ -2306,52 +2309,48 @@ public interface PathProxy {
 		public static final String GET_USER_TREATMENT_ANALYTICS_DATA = "/treatment/analytics";
 	}
 
-
-	
 	public static final String NUTRITION_ENGINE_BASE_URL = BASE_URL + "/nutritionEngine";
 
 	public interface NutritionEngineUrl {
 		public static final String GET_RECIPES = "/recipes/{userId}";
 	}
-	
-
-	
 
 	public static final String SYMPTOM_BASE_URL = BASE_URL + "/symptom";
-	public interface SymptomUrls{
-		
+
+	public interface SymptomUrls {
 
 		public static final String GET_USER_SYMPTOM = "/userSymptoms/get";
-		
+
 	}
-	
+
 	public static final String BANK_DETAILS_BASE_URL = BASE_URL + "/bankDetails";
-	public interface BankDetailsUrls{
-		
+
+	public interface BankDetailsUrls {
+
 		public static final String GET_BANK_DETAILS_BY_DOCTORID = "/{doctorId}/get";
-		
+
 		public static final String ADD_EDIT_BANK_DETAILS = "/addEdit";
-		
+
 	}
-	
+
 	public static final String CONSULTATION_PROBLEM_DETAILS_BASE_URL = BASE_URL + "/consultationProblemDetails";
 
-	public interface ConsultationproblemDetailsUrls{
-		
-		
-		public static final String ADD_EDIT_CONSULTATION_PROBLEM_DETAILS="/addEdit";
+	public interface ConsultationproblemDetailsUrls {
+
+		public static final String ADD_EDIT_CONSULTATION_PROBLEM_DETAILS = "/addEdit";
 		public static final String GET_CONSULTATION_PROBLEM_DETAILS = "/get";
-		
+
 	}
-	
-	public static final String FITNESS_ASSESSMENT_BASE_URL= BASE_URL + "/fitnessAssessment";
-	public interface FitnessUrls{
-		public static final String GET_FITNESS_ASSESSMENT="/get";
-		public static final String GET_FITNESS_ASSESSMENT_BY_ID="/get/{id}";
-		public static final String ADD_EDIT_FITNESS_ASSESSMENT="/addEdit";
-		public static final String DELETE_FITNESS_ASSESSMENT="/delete/{id}";
+
+	public static final String FITNESS_ASSESSMENT_BASE_URL = BASE_URL + "/fitnessAssessment";
+
+	public interface FitnessUrls {
+		public static final String GET_FITNESS_ASSESSMENT = "/get";
+		public static final String GET_FITNESS_ASSESSMENT_BY_ID = "/get/{id}";
+		public static final String ADD_EDIT_FITNESS_ASSESSMENT = "/addEdit";
+		public static final String DELETE_FITNESS_ASSESSMENT = "/delete/{id}";
 		public static final String DOWNLOAD_FITNESS_ASSESSMENT = "/download/{id}";
-		
+
 	};
 	
 	public static final String UNIFIED_COMMUNICATION_BASE_URL = BASE_URL + "/communication";

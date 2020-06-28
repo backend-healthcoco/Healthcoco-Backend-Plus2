@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Branch;
+import com.dpdocter.beans.BulKMessage;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
@@ -33,21 +35,29 @@ import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.BranchCollection;
+import com.dpdocter.collections.BulKMessageCollection;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.ReferencesCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BranchRepository;
+import com.dpdocter.repository.BulkMessageRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
@@ -57,6 +67,7 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.ReferenceRepository;
+import com.dpdocter.repository.SMSTrackRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.BulkSMSRequest;
 import com.dpdocter.request.ExportRequest;
@@ -135,6 +146,13 @@ public class ContactsServiceImpl implements ContactsService {
 
 	@Value(value = "${Contacts.BranchNotFound}")
 	private String branchNotFound;
+	
+	@Autowired
+	private SMSTrackRepository smsTrackRepository;
+	
+	@Autowired
+	private BulkMessageRepository bulkMessageRepository;
+
 
 	/**
 	 * This method returns all unblocked or blocked patients (based on param
@@ -984,9 +1002,63 @@ public class ContactsServiceImpl implements ContactsService {
 
 				}
 			}
-			if (!smsServices.getBulkSMSResponse(mobileNumbers, message).equalsIgnoreCase("FAILED")) {
-				status = true;
+			 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				
+				smsTrackDetail.setType(ComponentType.BULK_SMS.getType());
+				SMSDetail smsDetail = new SMSDetail();
+				SMS sms = new SMS();
+				sms.setSmsText(message);
+				
+				SMSAddress smsAddress = new SMSAddress();
+				
+				smsAddress.setRecipients(mobileNumbers);
+				
+				sms.setSmsAddress(smsAddress);
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+
+
+			
+			Integer size=100;
+			String responseId=null;
+			List<String>messageResponse=new ArrayList<String>();
+			for(int start=0;start<mobileNumbers.size();start+=size)
+			{
+				int end=Math.min(start+size,mobileNumbers.size());
+				List<String> sublist=mobileNumbers.subList(start, end);
+				
+				if (!(responseId=smsServices.getBulkSMSResponse(sublist, message)).equalsIgnoreCase("FAILED")) {
+					
+							status = true;
+							messageResponse.add(responseId);
+					}
+				
+				System.out.println(sublist);
 			}
+			smsTrackDetail.setResponseIds(messageResponse);
+			smsTrackRepository.save(smsTrackDetail);
+//			 List<String> numbers =new ArrayList<String>(mobileNumbers); 
+//			 List<>result=new ArrayList<>();
+//			final int chunkSize = 100; 
+//			Integer counter = 1; 
+//			for (String number : numbers) 
+//			{ 
+//				++counter;
+//				if (counter % chunkSize == 0) {
+//				result.add(new ArrayList<>()); 
+//				}
+//				result.get(result.size() - 1).add(number); 
+//				}  
+//			System.out.println(result);
+			
+			
+
+			//if (!smsServices.getBulkSMSResponse(mobileNumbers, message).equalsIgnoreCase("FAILED")) {
+		//		status = true;
+		//	}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1152,5 +1224,77 @@ public class ContactsServiceImpl implements ContactsService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
+	}
+
+	@Override
+	public BulKMessage generateDeliveryReport(BulKMessage request) {
+		BulKMessage response=null;
+		try {
+			BulKMessageCollection bulkCollection=null;
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				bulkCollection=bulkMessageRepository.findById(new ObjectId(request.getId())).orElse(null);
+				if(bulkCollection == null)
+					throw new BusinessException(ServiceError.Unknown,"Id not found");
+				BeanUtil.map(request, bulkCollection);
+				bulkCollection.setUpdatedTime(new Date());
+			}
+			else {	
+			bulkCollection=new BulKMessageCollection();
+			BeanUtil.map(request, bulkCollection);
+			bulkCollection.setCreatedTime(new Date());
+			bulkCollection.setUpdatedTime(new Date());
+			}
+			bulkMessageRepository.save(bulkCollection);
+			
+			BeanUtil.map(bulkCollection, response);
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown,"Error while generating delivery report");
+		}
+		return response;
+	}
+
+	@Override
+	public Response<Object> getDeliveryReport(int page, int size, String doctorId,String updatedTime) {
+		Response<Object> response = new Response<Object>();
+		List<BulKMessage>bulkMessages=null;
+		try {
+			Aggregation aggregation = null;
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (createdTimeStamp > 0) {
+				criteria.and("updatedTime").gte(new Date(createdTimeStamp));
+			}
+			Integer count = (int) mongoTemplate.count(new Query(criteria), BulKMessageCollection.class);
+			if (count > 0) {
+				response = new Response<Object>();
+				response.setCount(count);
+				if (size > 0) {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size));
+
+				} else {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+				}
+				bulkMessages = mongoTemplate.aggregate(aggregation, BulKMessageCollection.class, BulKMessage.class).getMappedResults();
+				response.setDataList(bulkMessages);
+			}
+		
+			
+		}catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e);
+				throw new BusinessException(ServiceError.Unknown,"Error while generating delivery report");
+			}
+			return response;
 	}
 }
