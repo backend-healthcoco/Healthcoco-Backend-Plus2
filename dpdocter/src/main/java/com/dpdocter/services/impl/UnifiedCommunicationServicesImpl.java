@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import com.dpdocter.collections.UnifiedCommunicationDetailsCollection;
 import com.dpdocter.enums.ConsultationType;
@@ -18,6 +19,7 @@ import com.twilio.jwt.accesstoken.AccessToken;
 import com.twilio.jwt.accesstoken.ChatGrant;
 import com.twilio.jwt.accesstoken.VideoGrant;
 
+@Service
 public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationServices {
 	
 	private static Logger logger = Logger.getLogger(UnifiedCommunicationServicesImpl.class);
