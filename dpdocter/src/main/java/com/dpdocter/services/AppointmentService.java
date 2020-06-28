@@ -14,13 +14,16 @@ import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.NutritionAppointment;
 import com.dpdocter.beans.PatientQueue;
+import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
+import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.request.PrintPatientCardRequest;
 import com.dpdocter.response.AVGTimeDetail;
 import com.dpdocter.response.LocationWithAppointmentCount;
 import com.dpdocter.response.LocationWithPatientQueueDetails;
+import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.SlotDataResponse;
 
 import common.util.web.Response;
@@ -134,6 +137,9 @@ public interface AppointmentService {
 	Boolean update();
 
 	SlotDataResponse getOnlineConsultationTimeSlots(String doctorId, String consultationType, Date date, Boolean isPatient);
+
+	PatientTreatmentResponse addPatientTreatmentsThroughAppointments(AppointmentCollection request,
+			PatientTreatmentAddEditRequest patientAddEditRequest);
 
 	
 //	Appointment addAppointment(AppointmentRequest request,

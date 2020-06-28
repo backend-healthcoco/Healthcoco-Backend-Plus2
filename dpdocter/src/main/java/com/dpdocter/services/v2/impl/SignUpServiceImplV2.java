@@ -436,8 +436,8 @@ public class SignUpServiceImplV2 implements SignUpService{
 			locations.add(locationAndAccessControl);
 			hospital.setLocationsAndAccessControl(locations);
 			response.setHospital(hospital);
-			pushNotificationServices.notifyUser(userCollection.getId().toString(),
-					"Your emailId has been verified successfully.", ComponentType.EMAIL_VERIFICATION.getType(), null, null);
+//			pushNotificationServices.notifyUser(userCollection.getId().toString(),
+//					"Your emailId has been verified successfully.", ComponentType.EMAIL_VERIFICATION.getType(), null, null);
 
 
 		} catch (DuplicateKeyException de) {
@@ -445,11 +445,13 @@ public class SignUpServiceImplV2 implements SignUpService{
 			throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
 		} catch (BusinessException be) {
 			logger.error(be);
-			throw be;
+			//throw be;
+			be.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, be.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error occured while creating doctor");
-			throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor" + e.getMessage());
 		}
 		return response;
 	}
