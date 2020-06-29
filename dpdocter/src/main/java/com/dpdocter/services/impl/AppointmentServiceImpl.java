@@ -1225,9 +1225,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 	}
 
-	public PatientTreatmentResponse addPatientTreatmentsThroughAppointments(AppointmentCollection request,
-			PatientTreatmentAddEditRequest patientAddEditRequest)
-
+	@Override
+	public PatientTreatmentResponse addPatientTreatmentsThroughAppointments(AppointmentCollection request, PatientTreatmentAddEditRequest patientAddEditRequest)
+	
 	{
 		PatientTreatmentResponse addEditPatientTreatmentResponse = null;
 		if (patientAddEditRequest != null && patientAddEditRequest.getTreatments() != null) {

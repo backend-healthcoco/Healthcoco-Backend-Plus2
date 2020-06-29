@@ -7,7 +7,6 @@ import com.dpdocter.beans.SMSFormat;
 import com.dpdocter.beans.SMSTrack;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.response.SMSResponse;
-import com.twilio.sdk.TwilioRestException;
 
 public interface SMSServices {
 	Boolean sendSMS(SMSTrackDetail smsTrackDetail, Boolean save);
@@ -29,9 +28,9 @@ public interface SMSServices {
 
     List<SMSFormat> getSmsFormat(String doctorId, String locationId, String hospitalId, String type);
 
-	Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, Boolean save) throws TwilioRestException;
+	Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, Boolean save);
 	
-	Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail,String otp , Boolean save) throws TwilioRestException;
+	Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail,String otp , Boolean save);
 
 	String getBulkSMSResponse(List<String> mobileNumbers, String message);
 
