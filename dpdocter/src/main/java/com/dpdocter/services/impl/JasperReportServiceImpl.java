@@ -246,7 +246,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		JRDesignStyle normalStyle = new JRDesignStyle();
 		normalStyle.setName("Sakal Bharati");
 		normalStyle.setDefault(true);
-		normalStyle.setFontName("Sakal Bharati");
+		normalStyle.setFontName("Noto Sans");
+//		normalStyle.setFontName("Sakal Bharati");
 		normalStyle.setFontSize(new Float(contentFontSize));
 		normalStyle.setPdfFontName("Helvetica");
 		normalStyle.setPdfEncoding("Cp1252");
