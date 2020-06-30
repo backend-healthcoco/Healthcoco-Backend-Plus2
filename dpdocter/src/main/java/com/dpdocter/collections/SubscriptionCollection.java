@@ -29,8 +29,8 @@ public class SubscriptionCollection extends GenericCollection {
 	private PackageType packageName;
 
 	@Field
-	private String amount;
-	
+	private Double amount;
+
 	@Field
 	private String countryCode;
 
@@ -60,6 +60,15 @@ public class SubscriptionCollection extends GenericCollection {
 
 	@Field
 	private Boolean discarded = Boolean.FALSE;
+
+	@Field
+	private String mobileNumber;
+
+	@Field
+	private String emailAddress;
+
+	@Field
+	private String noOfSms;
 
 	public ObjectId getId() {
 		return id;
@@ -117,10 +126,6 @@ public class SubscriptionCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public String getAmount() {
-		return amount;
-	}
-
 	public String getAmountViaCash() {
 		return amountViaCash;
 	}
@@ -137,7 +142,11 @@ public class SubscriptionCollection extends GenericCollection {
 		this.amountViaCheque = amountViaCheque;
 	}
 
-	public void setAmount(String amount) {
+	public Double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
 
@@ -181,13 +190,36 @@ public class SubscriptionCollection extends GenericCollection {
 		this.chequeDate = chequeDate;
 	}
 
-	
 	public String getCountryCode() {
 		return countryCode;
 	}
 
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public String getNoOfSms() {
+		return noOfSms;
+	}
+
+	public void setNoOfSms(String noOfSms) {
+		this.noOfSms = noOfSms;
 	}
 
 	@Override
@@ -197,7 +229,6 @@ public class SubscriptionCollection extends GenericCollection {
 				+ ", amountViaCash=" + amountViaCash + ", amountViaCheque=" + amountViaCheque + ", mode=" + mode
 				+ ", bankName=" + bankName + ", chequeNo=" + chequeNo + ", branch=" + branch + ", chequeDate="
 				+ chequeDate + ", isAdvertisement=" + isAdvertisement + ", discarded=" + discarded + "]";
-	}	
-
+	}
 
 }

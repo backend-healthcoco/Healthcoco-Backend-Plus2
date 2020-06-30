@@ -2362,4 +2362,24 @@ public interface PathProxy {
 		public static final String CREATE_VIDEO_ACCESS_TOKEN = "/video/accessToken/create/{userId}/{room}";
 		
 	}
+	
+	public static final String SUBSCRIPTION_BASE_URL = BASE_URL + "/subscription";
+	public interface SubscriptionUrls {
+
+		public static final String ADD_EDIT_SUBSCRIPTION = "/edit";
+
+		public static final String GET_SUBSCRIPTION = "/get";
+
+		public static final String GET_SUBSCRIPTION_HISTORY = "/history/get";
+
+		public static final String GET_SUBSCRIPTION_BY_ID = "/{id}/get";
+
+		public static final String GET_SUBSCRIPTION_BY_DOCTORID = "/doctor/{doctorId}/get";
+
+		public static final String GET_SUBSCRIPTION_BY_ID_HISTORY = "/history/{id}/get";
+		
+		public static final String GET_PACKAGES_BY_NAME = "/package/get";
+
+
+	}
 }

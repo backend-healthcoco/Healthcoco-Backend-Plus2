@@ -1,61 +1,81 @@
-package com.dpdocter.beans;
+package com.dpdocter.collections;
 
+import java.util.Date;
 
- import java.util.Date;
-
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.PaymentMode;
- 
-public class Subscription extends GenericCollection {
 
-	private String id;
-	
-	private String doctorId;
-	
+@Document(collection = "subscription_History_cl")
+public class SubscriptionHistoryCollection extends GenericCollection{
+
+	@Id
+	private ObjectId id;
+
+	@Field
+	private ObjectId doctorId;
+
+	@Field
 	private Date fromDate;
-	
+
+	@Field
 	private Date toDate;
-	
+
+	@Field
 	private PackageType packageName;
+
+	@Field
+	private String amount;
 	
-	private Double amount;
-	
+	@Field
 	private String amountViaCash;
-	
+
+	@Field
 	private String amountViaCheque;
-	
+
+	@Field
 	private PaymentMode mode;
-	
+
+	@Field
 	private String bankName;
-	
-	private String countryCode;
-	
+
+	@Field
 	private String chequeNo;
 	
+	@Field
+	private String countryCode;
+
+	@Field
 	private String branch;
-	
+
+	@Field
 	private Date chequeDate;
 	
+	@Field
 	private Boolean isAdvertisement = Boolean.FALSE;
-	
-	private Boolean discarded=Boolean.FALSE;
 
-	public String getId() {
+	@Field
+	private Boolean discarded = Boolean.FALSE;
+
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 
-	public String getDoctorId() {
+	
+
+	public ObjectId getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(String doctorId) {
+	public void setDoctorId(ObjectId doctorId) {
 		this.doctorId = doctorId;
 	}
 
@@ -81,10 +101,9 @@ public class Subscription extends GenericCollection {
 
 	public void setPackageName(PackageType packageName) {
 		this.packageName = packageName;
-	}
+	}	
 
-	
-	public Double getAmount() {
+	public String getAmount() {
 		return amount;
 	}
 
@@ -104,7 +123,7 @@ public class Subscription extends GenericCollection {
 		this.amountViaCheque = amountViaCheque;
 	}
 
-	public void setAmount(Double amount) {
+	public void setAmount(String amount) {
 		this.amount = amount;
 	}
 
@@ -162,7 +181,7 @@ public class Subscription extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
-	}
+	}	
 
 	public String getCountryCode() {
 		return countryCode;
@@ -174,14 +193,14 @@ public class Subscription extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "Subscription [id=" + id + ", doctorId=" + doctorId + ", fromDate=" + fromDate + ", toDate=" + toDate
-				+ ", packageName=" + packageName + ", amount=" + amount + ", amountViaCash=" + amountViaCash
-				+ ", amountViaCheque=" + amountViaCheque + ", mode=" + mode + ", bankName=" + bankName
-				+ ", countryCode=" + countryCode + ", chequeNo=" + chequeNo + ", branch=" + branch + ", chequeDate="
+		return "SubscriptionHistoryCollection [id=" + id + ", doctorId=" + doctorId + ", fromDate=" + fromDate
+				+ ", toDate=" + toDate + ", packageName=" + packageName + ", amount=" + amount + ", amountViaCash="
+				+ amountViaCash + ", amountViaCheque=" + amountViaCheque + ", mode=" + mode + ", bankName=" + bankName
+				+ ", chequeNo=" + chequeNo + ", countryCode=" + countryCode + ", branch=" + branch + ", chequeDate="
 				+ chequeDate + ", isAdvertisement=" + isAdvertisement + ", discarded=" + discarded + "]";
 	}
 
 	
 	
-	
+
 }
