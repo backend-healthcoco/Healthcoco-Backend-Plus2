@@ -2352,5 +2352,15 @@ public interface PathProxy {
 		public static final String DOWNLOAD_FITNESS_ASSESSMENT = "/download/{id}";
 
 	};
+	
+	//Free Q/A
+		public static final String FREE_QUE_ANS_BASE_URL =  BASE_URL + "/freeQueAns";
+
+		public interface FreeQueAnsUrls {
+			
+			public static final String ADD_ANSWER = "/addAns";
+			public static final String GET_ANSWERED_QUESTIONS = "/getAnsweredQue";
+			public static final String GET_UNANSWERED_QUESTIONS = "/getUnansweredQue";
+		}
 
 }
