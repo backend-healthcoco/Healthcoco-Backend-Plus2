@@ -1040,7 +1040,7 @@ public class ContactsServiceImpl implements ContactsService {
 			long  subCredits=credits*(mobileNumbers.size());
 			BulkSmsHistoryCollection bulkHistoryCollection=new BulkSmsHistoryCollection();
 			
-			BulkSmsCreditsCollection bulk=bulkSmsCreditsRepository.findbyDoctorId(new ObjectId(request.getDoctorId()));
+			BulkSmsCreditsCollection bulk=bulkSmsCreditsRepository.findByDoctorId(new ObjectId(request.getDoctorId()));
 			if(bulk!=null) {
 				if(bulk.getCreditBalance() > subCredits || bulk.getCreditBalance() == subCredits) {
 				bulk.setCreditBalance(bulk.getCreditBalance()-subCredits);

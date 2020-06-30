@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.enums.PaymentMode;
+
 @Document(collection = "bulk_sms_history_cl")
 public class BulkSmsHistoryCollection {
 
@@ -23,6 +25,11 @@ public class BulkSmsHistoryCollection {
 	private ObjectId locationId;
 	@Field
 	private Date dateOfTransaction=new Date();
+	@Field
+	private String packageName;
+	@Field
+	private PaymentMode paymentMode;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -58,6 +65,18 @@ public class BulkSmsHistoryCollection {
 	}
 	public void setDateOfTransaction(Date dateOfTransaction) {
 		this.dateOfTransaction = dateOfTransaction;
+	}
+	public String getPackageName() {
+		return packageName;
+	}
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
+	}
+	public PaymentMode getPaymentMode() {
+		return paymentMode;
+	}
+	public void setPaymentMode(PaymentMode paymentMode) {
+		this.paymentMode = paymentMode;
 	}
 	
 	

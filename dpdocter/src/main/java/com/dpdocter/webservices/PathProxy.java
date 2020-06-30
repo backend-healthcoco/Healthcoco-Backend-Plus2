@@ -2357,6 +2357,17 @@ public interface PathProxy {
 		public static final String DELETE_FITNESS_ASSESSMENT = "/delete/{id}";
 		public static final String DOWNLOAD_FITNESS_ASSESSMENT = "/download/{id}";
 
-	};
+	}
+	
+	public static final String BULK_SMS_PACKAGE_BASE_URL = BASE_URL + "/bulkSms";
+
+	public interface BulkSmsPackageUrls {
+
+		public static final String ADD_EDIT_PACKAGE = "/addEdit";
+		public static final String GET_SMS_PACKAGE = "/package/get";
+		public static final String GET_BULK_SMS_CREDITS = "/credits/get";
+		public static final String GET_SMS_HISTORY = "/history/get";
+		
+	}
 
 }

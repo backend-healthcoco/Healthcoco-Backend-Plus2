@@ -2,21 +2,21 @@ package com.dpdocter.beans;
 
 public class Ankle {
 	
-private Integer plantarflexion;
-private Integer dorsiflexion;
-
-public Integer getPlantarflexion() {
+private String plantarflexion;
+private String dorsiflexion;
+public String getPlantarflexion() {
 	return plantarflexion;
 }
-public void setPlantarflexion(Integer plantarflexion) {
+public void setPlantarflexion(String plantarflexion) {
 	this.plantarflexion = plantarflexion;
 }
-public Integer getDorsiflexion() {
+public String getDorsiflexion() {
 	return dorsiflexion;
 }
-public void setDorsiflexion(Integer dorsiflexion) {
+public void setDorsiflexion(String dorsiflexion) {
 	this.dorsiflexion = dorsiflexion;
 }
+
 
 
 }

@@ -2,21 +2,22 @@ package com.dpdocter.beans;
 
 public class KneeJoints {
 	
-private Integer hexion;
-private Integer extension;
-
-public Integer getHexion() {
+private String hexion;
+private String extension;
+public String getHexion() {
 	return hexion;
 }
-public void setHexion(Integer hexion) {
+public void setHexion(String hexion) {
 	this.hexion = hexion;
 }
-public Integer getExtension() {
+public String getExtension() {
 	return extension;
 }
-public void setExtension(Integer extension) {
+public void setExtension(String extension) {
 	this.extension = extension;
 }
+
+
 
 
 }
