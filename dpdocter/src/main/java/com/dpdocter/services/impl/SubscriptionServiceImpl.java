@@ -527,8 +527,23 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						subscriptionCollection.setAmount(k);
 
 					}
+				} else if (subscriptionCollection.getPackageName() == PackageType.PRO
+						&& packageName == PackageType.PRO) {
+					double k = PRO;
+					System.out.println(k);
+					subscriptionCollection.setAmount(k);
+				}else if (subscriptionCollection.getPackageName() == PackageType.ADVANCE
+						&& packageName == PackageType.ADVANCE) {
+					double k = ADVANCE;
+					System.out.println(k);
+					subscriptionCollection.setAmount(k);
+				}else if (subscriptionCollection.getPackageName() == PackageType.BASIC
+						&& packageName == PackageType.BASIC) {
+					double k = BASIC;
+					System.out.println(k);
+					subscriptionCollection.setAmount(k);
 				}
-
+				
 			} // if close
 			response = new Subscription();
 			BeanUtil.map(subscriptionCollection, response);
