@@ -5,6 +5,7 @@ private String hexion;
 private String extension;
 private String supination;
 private String pronotion;
+
 public String getHexion() {
 	return hexion;
 }

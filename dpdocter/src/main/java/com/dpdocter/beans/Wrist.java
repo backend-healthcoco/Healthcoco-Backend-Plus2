@@ -4,6 +4,10 @@ public class Wrist {
 private String hexion;
 private String extension;
 private String radial_UlnarDeviation;
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 public String getHexion() {
 	return hexion;
 }
@@ -22,6 +26,7 @@ public String getRadial_UlnarDeviation() {
 public void setRadial_UlnarDeviation(String radial_UlnarDeviation) {
 	this.radial_UlnarDeviation = radial_UlnarDeviation;
 }
+
 
 
 }

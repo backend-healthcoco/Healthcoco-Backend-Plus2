@@ -4,6 +4,7 @@ public class Ankle {
 	
 private String plantarflexion;
 private String dorsiflexion;
+
 public String getPlantarflexion() {
 	return plantarflexion;
 }
@@ -16,6 +17,7 @@ public String getDorsiflexion() {
 public void setDorsiflexion(String dorsiflexion) {
 	this.dorsiflexion = dorsiflexion;
 }
+
 
 
 

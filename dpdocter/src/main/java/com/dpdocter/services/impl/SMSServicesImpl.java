@@ -80,9 +80,12 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DoctorSMSResponse;
 import com.dpdocter.response.SMSResponse;
 import com.dpdocter.services.SMSServices;
+<<<<<<< HEAD
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.twilio.sdk.TwilioRestException;
+=======
+>>>>>>> master
 
 import common.util.web.DPDoctorUtils;
 
@@ -241,6 +244,7 @@ public class SMSServicesImpl implements SMSServices {
 					response = true;
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
@@ -650,7 +654,7 @@ public class SMSServicesImpl implements SMSServices {
 	}
 
 	@Override
-	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, Boolean save) throws TwilioRestException {
+	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
 		Boolean response = false;
 		try {
 //			if (!isEnvProduction) {
@@ -814,7 +818,7 @@ public class SMSServicesImpl implements SMSServices {
 	}
 
 	@Override
-	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, String otp, Boolean save) throws TwilioRestException {
+	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, String otp, Boolean save) {
 		Boolean response = false;
 		try {
 			if(smsTrackDetail.getSmsDetails().size() > 0)
