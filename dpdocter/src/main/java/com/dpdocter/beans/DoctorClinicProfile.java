@@ -107,7 +107,7 @@ public class DoctorClinicProfile {
 
 	private RegularCheckUpTypeEnum checkUpTypeEnum;
 
-	private String packageType = PackageType.ADVANCE.getType();
+	private String packageType = PackageType.BASIC.getType();
 
 	private String doctorSlugURL;
 
