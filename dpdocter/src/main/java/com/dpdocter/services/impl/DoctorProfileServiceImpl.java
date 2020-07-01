@@ -671,8 +671,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 				//set subscription Detail
 				SubscriptionCollection subscriptionCollection  = subscriptionRepository.findByDoctorId(new ObjectId(doctorId));	
+			 if(subscriptionCollection != null) {
 				BeanUtil.map(subscriptionCollection, subscription);
 				doctorProfile.setSubscriptionDetail(subscription);
+			 }
+				
 			}
 		} catch (BusinessException be) {
 			logger.error(be);
