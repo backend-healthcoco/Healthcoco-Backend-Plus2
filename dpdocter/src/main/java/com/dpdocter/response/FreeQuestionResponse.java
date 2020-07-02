@@ -2,7 +2,10 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.beans.QuetionForDetail;
+import com.dpdocter.collections.FreeAnswersDetailCollection;
 import com.dpdocter.enums.ForDetailType;
 
 public class FreeQuestionResponse {
@@ -15,6 +18,8 @@ public class FreeQuestionResponse {
 	private String desc;
 	private List<String> imageUrls;
 	private Long time;
+	private FreeAnswersDetailCollection answersDetails;
+	private Boolean isDiscarded = false;
 
 	public String getId() {
 		return id;
@@ -88,11 +93,33 @@ public class FreeQuestionResponse {
 		this.time = time;
 	}
 
+	public FreeAnswersDetailCollection getAnswersDetails() {
+		return answersDetails;
+	}
+
+	public void setAnswersDetails(FreeAnswersDetailCollection answersDetails) {
+		this.answersDetails = answersDetails;
+	}
+
+	public Boolean getIsDiscarded() {
+		return isDiscarded;
+	}
+
+	public void setIsDiscarded(Boolean isDiscarded) {
+		this.isDiscarded = isDiscarded;
+	}
+
 	@Override
 	public String toString() {
 		return "FreeQuestionResponse [id=" + id + ", userId=" + userId + ", forDetailType=" + forDetailType
 				+ ", forDetail=" + forDetail + ", problemType=" + problemType + ", title=" + title + ", desc=" + desc
-				+ ", imageUrls=" + imageUrls + ", time=" + time + "]";
+				+ ", imageUrls=" + imageUrls + ", time=" + time + ", answersDetails=" + answersDetails
+				+ ", isDiscarded=" + isDiscarded + ", getId()=" + getId() + ", getUserId()=" + getUserId()
+				+ ", getForDetailType()=" + getForDetailType() + ", getForDetail()=" + getForDetail()
+				+ ", getProblemType()=" + getProblemType() + ", getTitle()=" + getTitle() + ", getDesc()=" + getDesc()
+				+ ", getImageUrls()=" + getImageUrls() + ", getTime()=" + getTime() + ", getAnswersDetails()="
+				+ getAnswersDetails() + ", getIsDiscarded()=" + getIsDiscarded() + ", getClass()=" + getClass()
+				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
 	}
 
 }

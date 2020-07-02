@@ -41,7 +41,7 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
-	private static Logger logger = Logger.getLogger(RecipeServiceImpl.class.getName());
+	private static Logger logger = Logger.getLogger(FitnessAssessmentServiceImpl.class.getName());
 	@Autowired
 	private FitnessAssessmentRepository fitnessAssessmentRepository;
 	

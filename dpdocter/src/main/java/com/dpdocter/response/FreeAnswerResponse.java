@@ -116,12 +116,37 @@ public class FreeAnswerResponse {
 		this.time = time;
 	}
 
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
 	@Override
 	public String toString() {
-		return "FreeAnswerResponse [id=" + id + ", userId=" + userId + ", forDetailType=" + forDetailType
-				+ ", forDetail=" + forDetail + ", problemType=" + problemType + ", title=" + title + ", desc=" + desc
-				+ ", questionId=" + questionId + ", nextStep=" + nextStep + ", answerDesc=" + answerDesc
-				+ ", helpfulTips=" + helpfulTips + ", time=" + time + "]";
+		return "FreeAnswerResponse [id=" + id + ", userId=" + userId + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", forDetailType=" + forDetailType + ", forDetail="
+				+ forDetail + ", problemType=" + problemType + ", title=" + title + ", desc=" + desc + ", questionId="
+				+ questionId + ", nextStep=" + nextStep + ", answerDesc=" + answerDesc + ", helpfulTips=" + helpfulTips
+				+ ", time=" + time + "]";
 	}
 
 }
