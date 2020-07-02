@@ -7,7 +7,10 @@ public class Shoulder {
 	private String abduction;
 	private String integerRotation;
 	private String externalRotation;
+<<<<<<< HEAD
+=======
 	
+>>>>>>> master
 	public String getFlexion() {
 		return flexion;
 	}
@@ -39,5 +42,6 @@ public class Shoulder {
 		this.externalRotation = externalRotation;
 	}
 	
+		
 	
 }

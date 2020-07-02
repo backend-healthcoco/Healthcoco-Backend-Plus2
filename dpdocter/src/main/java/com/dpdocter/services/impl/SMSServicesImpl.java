@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -24,6 +26,7 @@ import java.util.Set;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -46,6 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriUtils;
 
 import com.dpdocter.beans.Message;
+import com.dpdocter.beans.MessageXmlbean;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDeliveryReports;
@@ -54,11 +58,15 @@ import com.dpdocter.beans.SMSFormat;
 import com.dpdocter.beans.SMSReport;
 import com.dpdocter.beans.SMSTrack;
 import com.dpdocter.beans.UserMobileNumbers;
+import com.dpdocter.beans.XMLMobile;
+import com.dpdocter.beans.XmlMessage;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.SMSDeliveryReportsCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.SubscriptionDetailCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -66,11 +74,18 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.SMSTrackRepository;
+import com.dpdocter.repository.SmsDeliveryReportsRepository;
 import com.dpdocter.repository.SubscriptionDetailRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DoctorSMSResponse;
 import com.dpdocter.response.SMSResponse;
 import com.dpdocter.services.SMSServices;
+<<<<<<< HEAD
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.twilio.sdk.TwilioRestException;
+=======
+>>>>>>> master
 
 import common.util.web.DPDoctorUtils;
 
@@ -140,6 +155,9 @@ public class SMSServicesImpl implements SMSServices {
 	
 	@Autowired
 	private LocationRepository locationRepository;
+	
+	@Autowired
+	private SmsDeliveryReportsRepository smsDeliveryReportsRepository;
 
 	
 	@Override
@@ -449,7 +467,12 @@ public class SMSServicesImpl implements SMSServices {
 	@Transactional
 	public void updateDeliveryReports(List<SMSDeliveryReports> request) {
 		try {
+			SMSDeliveryReportsCollection smsDeliveryReportsCollection=new SMSDeliveryReportsCollection();
 			for (SMSDeliveryReports smsDeliveryReport : request) {
+		//for checking if request is coming from 3rd party		
+				BeanUtil.map(smsDeliveryReport, smsDeliveryReportsCollection);
+				smsDeliveryReportsRepository.save(smsDeliveryReportsCollection);
+				//
 				SMSTrackDetail smsTrackDetail = smsTrackRepository.findByResponseId(smsDeliveryReport.getRequestId());
 				if (smsTrackDetail != null) {
 					for (SMSDetail smsDetail : smsTrackDetail.getSmsDetails()) {
@@ -887,27 +910,96 @@ public class SMSServicesImpl implements SMSServices {
 			List<String> numberlist = new ArrayList<String>(numbers);
 			String numberString = StringUtils.join(numberlist, ',');
 			// String password = new String(loginRequest.getPassword());
+			
+			 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				
+				smsTrackDetail.setType(ComponentType.BULK_SMS.getType());
+				SMSDetail smsDetail = new SMSDetail();
+				SMS sms = new SMS();
+				SMSAddress smsAddress = new SMSAddress();
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 
-			message = StringEscapeUtils.unescapeJava(message);
+			
+			JAXBContext contextObj = JAXBContext.newInstance(MessageXmlbean.class);  
+			Marshaller marshallerObj = contextObj.createMarshaller();  
+		    marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);  
+		    
+		    message = StringEscapeUtils.unescapeJava(message);
+			//String	messages=UriUtils.encode(message, "UTF-8");
+		    List<XMLMobile> numberlists=new ArrayList<XMLMobile>();
+		    XMLMobile mobile1=null;
+//		    XMLMobile mobile2=new XMLMobile();
+//		    
+//		    
+//		    mobile1.setMobileNumber("9604248471");
+//		    mobile2.setMobileNumber("7219653706");
+//		    numberlists.add(mobile1);
+//		    numberlists.add(mobile2);
+		    for(String mobiles:mobileNumbers) {
+		    	
+		    	sms.setSmsText(message);
+				
+				smsAddress.setRecipient(mobiles);
+				
+				sms.setSmsAddress(smsAddress);
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				smsDetails.add(smsDetail);
+		    	
+		     //mobile1.setMobileNumber(mobiles);
+		     numberlists.add(new XMLMobile(mobiles));
+		    
+		    }
+		   
+		    smsTrackDetail.setSmsDetails(smsDetails);
+		   
+		    MessageXmlbean xmlBean=new MessageXmlbean(AUTH_KEY,new XmlMessage(message,(numberlists)),SENDER_ID,PROMOTIONAL_ROUTE,COUNTRY_CODE,UNICODE);
+		   // marshallerObj.marshal(xmlBean, os);
+
+			
 			String url = null;
+			String strUrl = "http://dndsms.resellergrow.com/api/postsms.php";
 			
-
-				url = "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + AUTH_KEY + "&mobiles=" + numberString
-						+ "&message=" + UriUtils.encode(message, "UTF-8") + "&sender=" + SENDER_ID + "&route="
-						+ PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE + "&unicode=" + UNICODE;
+			
+//				url = "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + AUTH_KEY + "&mobiles=" + numberString
+//						+ "&message=" + UriUtils.encode(message, "UTF-8") + "&sender=" + SENDER_ID + "&route="
+//						+ PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE + "&unicode=" + UNICODE;
 
 			
-			URL obj = new URL(url);
+			URL obj = new URL(strUrl);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
+			
+			con.setDoOutput(true);
+			
+			con.setDoInput(true);
 			// optional default is POST
-			con.setRequestMethod("GET");
+			con.setRequestMethod("POST");
+			
+			
 
 			// add request header
 			// con.setRequestProperty("User-Agent", USER_AGENT);
 			con.setRequestProperty("User-Agent",
 					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 			con.setRequestProperty("Accept-Charset", "UTF-8");
+			
+			 DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			 StringWriter sw = new StringWriter();
+			 
+			 marshallerObj.marshal(xmlBean,sw);
+			 
+			String sq= sw.toString();
+		
+			System.out.println("Object:"+sq);
+          //   wr.writeBytes(sq);
+               wr.write(sq.getBytes("UTF-8")); //for unicode message's instead of wr.writeBytes(param);
+
+             wr.flush();
+             wr.close();
+             con.disconnect();
+
+
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
@@ -916,8 +1008,10 @@ public class SMSServicesImpl implements SMSServices {
 			while ((inputLine = in.readLine()) != null) {
 
 				response.append(inputLine);
-
+				System.out.println("response:"+response.toString());
 			}
+			smsTrackDetail.setResponseId(response.toString());
+			smsTrackRepository.save(smsTrackDetail);
 			in.close();
 		} catch (Exception e) {
 

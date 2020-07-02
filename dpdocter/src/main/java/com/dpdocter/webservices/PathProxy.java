@@ -4,6 +4,12 @@ package com.dpdocter.webservices;
  * @author veeraj
  */
 public interface PathProxy {
+	
+	public static final String BULK_SMS_BASE_URL =  "/bulk";
+
+	public interface BulkSMSUrls {
+	public static final String UPDATE_DELIVERY_REPORTS = "/sms/updateDeliveryReports";
+	}
 
 	public static final String HOME_URL = "/";
 
@@ -107,7 +113,7 @@ public interface PathProxy {
 		
 		public static final String GENERATE_DELIVERY_REPORT = "/generate/deliveryReport";
 
-		public static final String GET_DELIVERY_REPORT = "/get/deliveryReport";
+		public static final String GET_DELIVERY_REPORT = "/update/deliveryReport";
 
 	}
 
@@ -1155,7 +1161,7 @@ public interface PathProxy {
 
 		public static final String GET_SMS_DETAILS = "/getDetails";
 
-		public static final String UPDATE_DELIVERY_REPORTS = "/updateDeliveryReports";
+		public static final String UPDATE_DELIVERY_REPORT = "/updateDeliveryReport";
 
 		public static final String ADD_NUMBER = "/addNumber/{mobileNumber}";
 
@@ -1170,7 +1176,7 @@ public interface PathProxy {
 		public static final String SEND_BULK_SMS = "bulk/{message}";
 
 	}
-
+	
 	public static final String EMAIL_TRACK_BASE_URL = BASE_URL + "/email";
 
 	public interface EmailTrackUrls {
@@ -2351,8 +2357,20 @@ public interface PathProxy {
 		public static final String DELETE_FITNESS_ASSESSMENT = "/delete/{id}";
 		public static final String DOWNLOAD_FITNESS_ASSESSMENT = "/download/{id}";
 
-	};
+
+	}
 	
+	public static final String BULK_SMS_PACKAGE_BASE_URL = BASE_URL + "/bulkSms";
+
+	public interface BulkSmsPackageUrls {
+
+		public static final String ADD_EDIT_PACKAGE = "/addEdit";
+		public static final String GET_SMS_PACKAGE = "/package/get";
+		public static final String GET_BULK_SMS_CREDITS = "/credits/get";
+		public static final String GET_SMS_HISTORY = "/history/get";
+		
+	}
+
 	public static final String UNIFIED_COMMUNICATION_BASE_URL = BASE_URL + "/communication";
 	public interface ChatUrls{
 		
