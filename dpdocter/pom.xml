@@ -79,7 +79,7 @@
 		</profile>
 		<profile>
 			<id>production</id>
-			<activation><activeByDefault>true</activeByDefault></activation>
+<!-- 			<activation><activeByDefault>true</activeByDefault></activation> -->
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -977,9 +977,9 @@
 
 		<!-- https://mvnrepository.com/artifact/com.twilio.sdk/twilio-java-sdk -->
 		<dependency>
-			<groupId>com.twilio.sdk</groupId>
-			<artifactId>twilio-java-sdk</artifactId>
-			<version>5.10.1</version>
+		  <groupId>com.twilio.sdk</groupId>
+		  <artifactId>twilio</artifactId>
+		  <version>7.52.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-fonts -->
 		<dependency>

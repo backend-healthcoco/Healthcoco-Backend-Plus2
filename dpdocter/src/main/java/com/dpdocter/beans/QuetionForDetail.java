@@ -6,7 +6,7 @@ public class QuetionForDetail {
 	private String name;
 	private String relation;
 	private String gender;
-	private Age age;
+	private DOB dob;
 	private String email;
 	private String profession;
 	private String weight;
@@ -43,12 +43,14 @@ public class QuetionForDetail {
 		this.gender = gender;
 	}
 
-	public Age getAge() {
-		return age;
+	
+
+	public DOB getDob() {
+		return dob;
 	}
 
-	public void setAge(Age age) {
-		this.age = age;
+	public void setDob(DOB dob) {
+		this.dob = dob;
 	}
 
 	public String getEmail() {
@@ -141,11 +143,12 @@ public class QuetionForDetail {
 
 	@Override
 	public String toString() {
-		return "QuetionForDetail [name=" + name + ", relation=" + relation + ", gender=" + gender + ", age=" + age
+		return "QuetionForDetail [name=" + name + ", relation=" + relation + ", gender=" + gender + ", dob=" + dob
 				+ ", email=" + email + ", profession=" + profession + ", weight=" + weight + ", height=" + height
 				+ ", isMedication=" + isMedication + ", medication=" + medication + ", isDiagnosedCondition="
 				+ isDiagnosedCondition + ", diagnosedCondition=" + diagnosedCondition + ", isAllergy=" + isAllergy
 				+ ", allergy=" + allergy + ", treatmentType=" + treatmentType + "]";
 	}
+
 	
 }

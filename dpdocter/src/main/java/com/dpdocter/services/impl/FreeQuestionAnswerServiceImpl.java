@@ -24,7 +24,6 @@ import com.dpdocter.repository.FreeQuestionAnswerRepository;
 import com.dpdocter.request.FreeAnswerRequest;
 import com.dpdocter.response.FreeAnswerResponse;
 import com.dpdocter.response.FreeQuestionResponse;
-import com.dpdocter.response.FreeAnswerResponse;
 import com.dpdocter.services.FreeQuestionAnswerService;
 
 import common.util.web.DPDoctorUtils;
@@ -83,8 +82,9 @@ public class FreeQuestionAnswerServiceImpl implements FreeQuestionAnswerService 
 		return response;
 	}
 
+	@SuppressWarnings("static-access")
 	@Override
-	public List<FreeQuestionResponse> getFreeQuestionList(int size, int page, String searchTerm, Boolean isDiscarded,
+	public List<FreeQuestionResponse> getFreeQuestionList(int size, int page, String searchTerm, boolean isDiscarded,
 			String doctorId, long updatedTime) {
 		List<FreeQuestionResponse> response = null;
 		try {
@@ -93,9 +93,9 @@ public class FreeQuestionAnswerServiceImpl implements FreeQuestionAnswerService 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("userId").is(new ObjectId(doctorId));
 
-			if (isDiscarded != null)
+			
 				criteria.and("isDiscarded").is(isDiscarded);
-		
+				criteria.where("answersDetails").equals(null);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				criteria = criteria.orOperator(new Criteria("title").regex("^" + searchTerm, "i"),
@@ -124,7 +124,7 @@ public class FreeQuestionAnswerServiceImpl implements FreeQuestionAnswerService 
 	}
 
 	@Override
-	public List<FreeQuestionResponse> getAnsweredQuestionList(int size, int page, String searchTerm, Boolean isDiscarded,
+	public List<FreeQuestionResponse> getAnsweredQuestionList(int size, int page, String searchTerm, boolean isDiscarded,
 			String doctorId, long updatedTime) {
 		List<FreeQuestionResponse> response = null;
 		try {
@@ -133,8 +133,8 @@ public class FreeQuestionAnswerServiceImpl implements FreeQuestionAnswerService 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("userId").is(new ObjectId(doctorId));
 
-			if (isDiscarded != null)
 				criteria.and("isDiscarded").is(isDiscarded);
+				criteria.where("answersDetails").ne(null);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				criteria = criteria.orOperator(new Criteria("title").regex("^" + searchTerm, "i"),

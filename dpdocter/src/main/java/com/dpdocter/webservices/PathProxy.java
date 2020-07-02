@@ -2353,6 +2353,16 @@ public interface PathProxy {
 
 	};
 
+	public static final String UNIFIED_COMMUNICATION_BASE_URL = BASE_URL + "/communication";
+
+	public interface ChatUrls {
+
+		public static final String CREATE_CHAT_ACCESS_TOKEN = "/chat/accessToken/create/{userId}";
+
+		public static final String CREATE_VIDEO_ACCESS_TOKEN = "/video/accessToken/create/{userId}/{room}";
+
+	}
+
 	// Free Q/A
 	public static final String FREE_QUE_ANS_BASE_URL = BASE_URL + "/freeQueAns";
 

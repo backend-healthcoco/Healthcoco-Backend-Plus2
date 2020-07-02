@@ -107,6 +107,7 @@ import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.InvoiceItemType;
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.QuantityEnum;
+import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.enums.ReceiptType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -141,9 +142,13 @@ import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DrugAddEditRequest;
+import com.dpdocter.request.DrugDirectionAddEditRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.request.PatientTreatmentAddEditRequest;
+import com.dpdocter.request.TreatmentRequest;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.TreatmentServiceUpdateResponse;
+import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PatientTreatmentServices;
@@ -272,6 +277,9 @@ public class UploadDataServicesimpl implements UploadDateService {
 	
 	@Autowired 
 	private ESTreatmentServiceRepository eSTreatmentServiceRepository;
+	
+	@Autowired
+	private AppointmentService appointmentService;
 	
 	@Value(value = "${patient.count}")
 	private String patientCount;
@@ -845,15 +853,17 @@ public class UploadDataServicesimpl implements UploadDateService {
 							request.setLocationId(locationId);
 							request.setHospitalId(hospitalId);
 
-							//05-12-2019 14:51
-							SimpleDateFormat dateFormat = new SimpleDateFormat("M-d-y HH:mm");
+							//05-12-2019 14:51s
+							SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/y HH:mm");
 							String dateSTri = line.get(patientRegistrationDateIndex).replace("\"", "");
 							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 							Date date = dateFormat.parse(dateSTri);
 							
 							
 							request.setRegistrationDate(date.getTime());
-							
+							if (pNUMIndex != null && checkIfNotNullOrNone(line.get(pNUMIndex).replaceAll("'", "").replaceAll("\"", ""))) {
+								request.setPNUM(line.get(pNUMIndex).replaceAll("'", ""));
+							}
 //							if (pNUMIndex != null && checkIfNotNullOrNone(line.get(pNUMIndex).replaceAll("'", "").replaceAll("\"", ""))) {
 //								request.setPNUM(line.get(pNUMIndex).replaceAll("'", ""));
 //
@@ -902,9 +912,11 @@ public class UploadDataServicesimpl implements UploadDateService {
 							if (medicalHistoryIndex != null && checkIfNotNullOrNone(line.get(medicalHistoryIndex).replaceAll("'", "").replaceAll("\"", ""))) {
 								String diseases[] = line.get(medicalHistoryIndex).replaceAll("'", "").split(",");
 								for (String disease : diseases) {
-									DiseasesCollection diseasesCollection = diseasesRepository.find(
+									List<DiseasesCollection> diseasesCollections = diseasesRepository.findDiseases(
 											disease.replace("?", "\\\\?"), doctorObjectId, locationObjectId,
 											hospitalObjectId, false);
+									DiseasesCollection diseasesCollection = null;
+									if(diseasesCollections != null && !diseasesCollections.isEmpty())diseasesCollection = diseasesCollections.get(0);
 									if (diseasesCollection == null) {
 										diseasesCollection = new DiseasesCollection();
 										diseasesCollection.setCreatedTime(new Date());
@@ -1007,27 +1019,101 @@ public class UploadDataServicesimpl implements UploadDateService {
 					Aggregation.newAggregation(
 							Aggregation.match(new Criteria("direction").is("After meal").and("doctorId").is(null))),
 					DrugDirectionCollection.class, DrugDirection.class).getUniqueMappedResult();
+			
+			DrugDirection morningDirection = mongoTemplate.aggregate(
+					Aggregation.newAggregation(
+							Aggregation.match(new Criteria("direction").is("Morning").and("doctorId").is(null))),
+					DrugDirectionCollection.class, DrugDirection.class).getUniqueMappedResult();
+			DrugDirection afternoonDirection = mongoTemplate.aggregate(
+					Aggregation.newAggregation(
+							Aggregation.match(new Criteria("direction").is("Afternoon").and("doctorId").is(null))),
+					DrugDirectionCollection.class, DrugDirection.class).getUniqueMappedResult();
+			DrugDirection nightDirection = mongoTemplate.aggregate(
+					Aggregation.newAggregation(
+							Aggregation.match(new Criteria("direction").is("Night").and("doctorId").is(null))),
+					DrugDirectionCollection.class, DrugDirection.class).getUniqueMappedResult();
+			
+			if(morningDirection == null) {
+				DrugDirectionAddEditRequest drugDirectionAddEditRequest = new DrugDirectionAddEditRequest();
+				drugDirectionAddEditRequest.setDirection("Morning");
+				prescriptionServices.addDrugDirection(drugDirectionAddEditRequest);
+				morningDirection = mongoTemplate.aggregate(
+						Aggregation.newAggregation(
+								Aggregation.match(new Criteria("direction").is("Morning").and("doctorId").is(null))),
+						DrugDirectionCollection.class, DrugDirection.class).getUniqueMappedResult();
+				
+			}
+			if(afternoonDirection == null) {
+				DrugDirectionAddEditRequest drugDirectionAddEditRequest = new DrugDirectionAddEditRequest();
+				drugDirectionAddEditRequest.setDirection("Afternoon");
+				prescriptionServices.addDrugDirection(drugDirectionAddEditRequest);
+				afternoonDirection = mongoTemplate.aggregate(
+						Aggregation.newAggregation(
+								Aggregation.match(new Criteria("direction").is("Afternoon").and("doctorId").is(null))),
+						DrugDirectionCollection.class, DrugDirection.class).getUniqueMappedResult();
+				
+			}
+			if(nightDirection == null) {
+				DrugDirectionAddEditRequest drugDirectionAddEditRequest = new DrugDirectionAddEditRequest();
+				drugDirectionAddEditRequest.setDirection("Night");
+				prescriptionServices.addDrugDirection(drugDirectionAddEditRequest);
+				nightDirection = mongoTemplate.aggregate(
+						Aggregation.newAggregation(
+								Aggregation.match(new Criteria("direction").is("Night").and("doctorId").is(null))),
+						DrugDirectionCollection.class, DrugDirection.class).getUniqueMappedResult();
+				
+			}
 
 			scanner = new Scanner(new File(UPLOAD_PRESCRIPTIONS_DATA_FILE));
-			
+			Integer pNUMIndex = null, drugNameIndex= null, dateIndex = null, doctorNameIndex= null, dosageIndex = null, dosageUnitIndex= null, drugTypeIndex = null,
+					beforeFoodIndex = null, afterFoodIndex = null,morningIndex = null,afternoonIndex = null, nightIndex = null, durationIndex = null, durationUnitIndex = null,
+							instructionsIndex = null, notesIndex = null, deletedOnIndex = null;
 			while (scanner.hasNext()) {
 				csvLine = scanner.nextLine();
 	            List<String> line = CSVUtils.parseLine(csvLine);
-			
-				if (lineCount > 0) {
+	            if(lineCount == 0) {
+            		if(line != null && !line.isEmpty()) {
+            			for(int i=0; i<line.size(); i++) {
+            				
+            				String key = line.get(i).trim().replaceAll("[^a-zA-Z]", "").toUpperCase();
+            				
+            				switch (key) {
+							case "PATIENTNUMBER": pNUMIndex = i;break;
+							case "DRUGNAME": drugNameIndex = i;break;
+							case "DATE": dateIndex = i;break;
+							case "DOCTORNAME": doctorNameIndex = i;break;
+							case "DOSAGE": dosageIndex = i;break;
+							case "DOSAGEUNIT": dosageUnitIndex = i;break;
+							case "DRUGTYPE": drugTypeIndex = i;break;
+							case "BEFOREFOOD": beforeFoodIndex = i;break;
+							case "AFTERFOOD": afterFoodIndex = i;break;
+							case "MORNING": morningIndex = i;break;
+							case "AFTERNOON": afternoonIndex = i;break;
+							case "NIGHT": nightIndex = i;break;
+							case "DURATION": durationIndex = i;break;
+							case "DURATIONUNIT": durationUnitIndex = i;break;
+							case "NOTES": notesIndex = i;break;
+							case "INSTRUCTIONS": instructionsIndex = i;break;
+							case "DELETEDON": deletedOnIndex = i;break;
+							
+							default:
+								break;
+							}
+            			}
+            		}
+            }else {
 					Boolean createVisit = false;
 			
-					if (!DPDoctorUtils.anyStringEmpty(line.get(2), line.get(3))) {
+					if (!DPDoctorUtils.anyStringEmpty(line.get(pNUMIndex), line.get(drugNameIndex))) {
 						PatientCollection patientCollection = patientRepository.findByLocationIdAndHospitalIdAndPNUM(
-								locationObjectId, hospitalObjectId, line.get(2).replace("'", ""));
+								locationObjectId, hospitalObjectId, line.get(pNUMIndex).replace("'", ""));
 						if (patientCollection != null) {
 
 							Date createdTime = new Date();
-							if (!DPDoctorUtils.anyStringEmpty(line.get(0))) {
+							if (!DPDoctorUtils.anyStringEmpty(line.get(dateIndex))) {
 								SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
 
-								String dateSTri = line.get(0).replace("'", "")+ " 13:00:00";
-								System.out.println(dateSTri);
+								String dateSTri = line.get(dateIndex).replace("'", "")+ " 13:00:00";
 								dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 								createdTime = dateFormat.parse(dateSTri);
 							}
@@ -1056,14 +1142,14 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 							List<PrescriptionItem> items = prescriptionCollection.getItems();
 
-							String drugName = line.get(3).replace("'", "")
-									+ ((checkIfNotNullOrNone(line.get(5)) && !DPDoctorUtils.anyStringEmpty(line.get(5)))
-											? " " + line.get(5).replace("'", "") : "")
-									+ ((checkIfNotNullOrNone(line.get(5)) && checkIfNotNullOrNone(line.get(6))
-											&& !DPDoctorUtils.anyStringEmpty(line.get(6)))
-													? " " + line.get(6).replace("'", "") : "");
+							String drugName = line.get(drugNameIndex).replace("'", "")
+									+ ((dosageIndex != null && checkIfNotNullOrNone(line.get(dosageIndex)) && !DPDoctorUtils.anyStringEmpty(line.get(dosageIndex)))
+											? " " + line.get(dosageIndex).replace("'", "") : "")
+									+ ((dosageUnitIndex != null && checkIfNotNullOrNone(line.get(dosageUnitIndex)) && checkIfNotNullOrNone(line.get(dosageUnitIndex))
+											&& !DPDoctorUtils.anyStringEmpty(line.get(dosageUnitIndex)))
+													? " " + line.get(dosageUnitIndex).replace("'", "") : "");
 
-							String drugType = (!DPDoctorUtils.anyStringEmpty(line.get(4))) ? line.get(4).replace("'", "")
+							String drugType = (!DPDoctorUtils.anyStringEmpty(line.get(drugTypeIndex))) ? line.get(drugTypeIndex).replace("'", "")
 									: null;
 							// DrugType
 							DrugType drugTypeObj = null;
@@ -1158,28 +1244,42 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 							// DrugDirection
 							List<DrugDirection> drugDirections = null;
-							if (checkIfNotNullOrNone(line.get(7)) && line.get(7).contains("1")) {
+							if (checkIfNotNullOrNone(line.get(beforeFoodIndex)) && line.get(beforeFoodIndex).contains("1")) {
 								drugDirections = new ArrayList<DrugDirection>();
 								drugDirections.add(beforeMealDirection);
 							}
-							if (checkIfNotNullOrNone(line.get(8)) && line.get(8).contains("1")) {
+							if (checkIfNotNullOrNone(line.get(afterFoodIndex)) && line.get(afterFoodIndex).contains("1")) {
 								if (drugDirections == null)
 									drugDirections = new ArrayList<DrugDirection>();
 								drugDirections.add(afterMealDirection);
 							}
+							if (checkIfNotNullOrNone(line.get(morningIndex)) && line.get(morningIndex).contains("1")) {
+								drugDirections = new ArrayList<DrugDirection>();
+								drugDirections.add(morningDirection);
+							}
+							if (checkIfNotNullOrNone(line.get(afternoonIndex)) && line.get(afternoonIndex).contains("1")) {
+								if (drugDirections == null)
+									drugDirections = new ArrayList<DrugDirection>();
+								drugDirections.add(afternoonDirection);
+							}
+							if (checkIfNotNullOrNone(line.get(nightIndex)) && line.get(nightIndex).contains("1")) {
+								drugDirections = new ArrayList<DrugDirection>();
+								drugDirections.add(nightDirection);
+							}
+							
 							drugAddEditRequest.setDirection(drugDirections);
 
 							// DrugDuration13 14 
 							Duration duration = null;
-							if (checkIfNotNullOrNone(line.get(13)) && checkIfNotNullOrNone(line.get(14))){
+							if (checkIfNotNullOrNone(line.get(durationIndex)) && checkIfNotNullOrNone(line.get(durationUnitIndex))){
 								duration = new Duration();
-								duration.setValue(checkIfNotNullOrNone(line.get(13)) ? line.get(13).replace("'", "") : "");
-								duration.setDurationUnit(drugDurationMap.get(line.get(14).replace("'", "")));
+								duration.setValue(checkIfNotNullOrNone(line.get(durationIndex)) ? line.get(durationIndex).replace("'", "") : "");
+								duration.setDurationUnit(drugDurationMap.get(line.get(durationUnitIndex).replace("'", "")));
 								drugAddEditRequest.setDuration(duration);
 							}
 							
 
-							String instruction = (!DPDoctorUtils.anyStringEmpty(line.get(12))) ? line.get(12).replace("'", "") : null;
+							String instruction = (!DPDoctorUtils.anyStringEmpty(line.get(instructionsIndex))) ? line.get(instructionsIndex).replace("'", "") : null;
 
 							Drug drug = prescriptionServices.addFavouriteDrug(drugAddEditRequest, drugCollection,
 									prescriptionCollection.getCreatedBy());
@@ -1193,6 +1293,12 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 							prescriptionCollection.setItems(items);
 
+							String notes = (!DPDoctorUtils.anyStringEmpty(line.get(notesIndex))) ? line.get(notesIndex).replace("'", "") : null;
+							if(!DPDoctorUtils.anyStringEmpty(notes))prescriptionCollection.setAdvice(notes);
+							
+							Boolean discarded = (deletedOnIndex != null && !DPDoctorUtils.anyStringEmpty(line.get(deletedOnIndex))) ? true : false;
+							prescriptionCollection.setDiscarded(discarded);
+							
 							prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 
 							if (createVisit)
@@ -1218,6 +1324,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 						}
 					}
 				}
+	            System.out.println(line.get(pNUMIndex)+" "+line.get(dateIndex));
 				lineCount++;
 				response = true;
 			}
@@ -1278,18 +1385,40 @@ public class UploadDataServicesimpl implements UploadDateService {
 			AppointmentCollection appointmentCollection = null;
 
 			scanner = new Scanner(new File(UPLOAD_APPOINTMENTS_DATA_FILE));
-
+			Integer pNUMIndex = null, fromDateIndex = null, toDateIndex = null, doctorNameIndex = null, stateIndex = null, statusIndex = null, notesIndex = null, treatmentsIndex= null;
+					
 			while (scanner.hasNext()) {
 				csvLine = scanner.nextLine();
 	            List<String> line = CSVUtils.parseLine(csvLine);
-				if (lineCount > 0) {
-					if (!DPDoctorUtils.anyStringEmpty(line.get(0), line.get(1))) {
+	            if(lineCount == 0) {
+            		if(line != null && !line.isEmpty()) {
+            			for(int i=0; i<line.size(); i++) {
+            				
+            				String key = line.get(i).trim().replaceAll("[^a-zA-Z]", "").toUpperCase();
+            				
+            				switch (key) {
+							case "PATIENTNUMBER": pNUMIndex = i;break;
+							case "FROMDATE": fromDateIndex = i;break;
+							case "TODATE": toDateIndex = i;break;
+							case "DOCTORNAME": doctorNameIndex = i;break;
+							case "STATE": stateIndex = i;break;
+							case "STATUS": statusIndex = i;break;
+							case "NOTES": notesIndex = i;break;
+							case "TREATMENTS": treatmentsIndex = i;break;
+							
+							default:
+								break;
+							}
+            			}
+            		}
+            }else {
+					if (!DPDoctorUtils.anyStringEmpty(line.get(fromDateIndex), line.get(pNUMIndex))) {
 						PatientCollection patientCollection = patientRepository.findByLocationIdAndHospitalIdAndPNUM(
-								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));
+								locationObjectId, hospitalObjectId, line.get(pNUMIndex).replace("'", ""));
 						if (patientCollection != null) {
 
-							SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
-							String dateSTri = line.get(0).replace("'", "");
+							SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/y HH:mm");
+							String dateSTri = line.get(fromDateIndex).replace("'", "");
 							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 							Date fromDate = dateFormat.parse(dateSTri);
 
@@ -1301,7 +1430,19 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 							WorkingHours workingHours = new WorkingHours();
 							workingHours.setFromTime(fromTime);
-							workingHours.setToTime(fromTime + 30);
+							if(toDateIndex != null && checkIfNotNullOrNone(line.get(toDateIndex))) {
+								String todateSTri = line.get(toDateIndex).replace("'", "");
+								dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+								Date toDate = dateFormat.parse(todateSTri);
+
+								c.setTimeZone(TimeZone.getTimeZone("IST"));
+								c.setTime(toDate);
+								int tohour = c.get(Calendar.HOUR_OF_DAY);
+								int toTime = (tohour * 60) + c.get(Calendar.MINUTE);
+								workingHours.setToTime(toTime);
+							}else {
+								workingHours.setToTime(fromTime + 30);
+							}
 
 							appointmentCollection = new AppointmentCollection();
 							appointmentCollection.setTime(workingHours);
@@ -1312,21 +1453,25 @@ public class UploadDataServicesimpl implements UploadDateService {
 							appointmentCollection.setAppointmentId(
 									UniqueIdInitial.APPOINTMENT.getInitial() + DPDoctorUtils.generateRandomId());
 
-							if (checkIfNotNullOrNone(line.get(5))) {
-								String state = line.get(5).replace("'", "");
+							if (checkIfNotNullOrNone(line.get(stateIndex))) {
+								String state = line.get(stateIndex).replace("'", "");
 								if (state.equalsIgnoreCase("CANCEL") || state.equalsIgnoreCase("CANCELLED"))
 									appointmentCollection.setState(AppointmentState.CANCEL);
 								else
 									appointmentCollection.setState(AppointmentState.CONFIRM);
 							}
-							if(checkIfNotNullOrNone(line.get(3)))
-								appointmentCollection.setExplanation(line.get(3).replace("'", ""));
+							if (checkIfNotNullOrNone(line.get(statusIndex))) {
+								String status = line.get(statusIndex).replace("'", "").toUpperCase();
+								appointmentCollection.setStatus(QueueStatus.valueOf(status));
+							}
+							if(checkIfNotNullOrNone(line.get(notesIndex)))
+								appointmentCollection.setExplanation(line.get(notesIndex).replace("'", ""));
 
 							appointmentCollection.setLocationId(locationObjectId);
 							appointmentCollection.setHospitalId(hospitalObjectId);
 							appointmentCollection.setPatientId(patientCollection.getUserId());
 
-							String drName = line.get(4).replace("'", "").replace("Dr. ", "").replace("Dr ", "").replace("Dr.", "").replace("Dr", "");
+							String drName = line.get(doctorNameIndex).replace("'", "").replace("Dr. ", "").replace("Dr ", "").replace("Dr.", "").replace("Dr", "");
 							UserCollection userCollection = doctors.get(drName.toLowerCase());
 							if (userCollection == null) {
 								List<UserCollection> collections = mongoTemplate.aggregate(
@@ -1358,7 +1503,23 @@ public class UploadDataServicesimpl implements UploadDateService {
 																	appointmentCollection.getFromDate(), appointmentCollection.getToDate());
 								if(appointmentToCheck == null) {
 									appointmentCollection = appointmentRepository.save(appointmentCollection);
-
+									
+									if(treatmentsIndex != null && checkIfNotNullOrNone(line.get(treatmentsIndex))) {
+										String treatmentName = line.get(treatmentsIndex).replace("'", "");
+										List<TreatmentServicesCollection> treatmentServicesCollection = 
+												treatmentServicesRepository.findByNameAndDoctorLocationHospital(treatmentName, doctorObjectId, locationObjectId, hospitalObjectId);
+										if(treatmentServicesCollection != null && !treatmentServicesCollection.isEmpty()) {
+											PatientTreatmentAddEditRequest patientTreatmentAddEditRequest = new PatientTreatmentAddEditRequest();
+											TreatmentRequest treatmentRequest = new  TreatmentRequest();
+											BeanUtil.map(treatmentServicesCollection, treatmentRequest);
+											treatmentRequest.setTreatmentServiceId(treatmentServicesCollection.get(0).getId().toString());
+											List<TreatmentRequest> treatments = new ArrayList<TreatmentRequest>();
+											treatments.add(treatmentRequest);
+											patientTreatmentAddEditRequest.setTreatments(treatments);
+											appointmentService.addPatientTreatmentsThroughAppointments(appointmentCollection, patientTreatmentAddEditRequest);
+										}
+									}
+									
 									AppointmentBookedSlotCollection bookedSlotCollection = new AppointmentBookedSlotCollection();
 									BeanUtil.map(appointmentCollection, bookedSlotCollection);
 									bookedSlotCollection.setDoctorId(appointmentCollection.getDoctorId());
@@ -1367,7 +1528,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 									bookedSlotCollection.setId(null);
 									appointmentBookedSlotRepository.save(bookedSlotCollection);
 									
-									System.out.println(line.get(0) +"..." +line.get(1)+"..." +appointmentCollection.getCreatedBy());
+									System.out.println(line.get(pNUMIndex) +"..." +line.get(fromDateIndex)+"..." +appointmentCollection.getCreatedBy());
 									response = true;
 								}else {
 									System.out.println("Already present:" +line.get(0) +"..." +line.get(1)+"..." +appointmentCollection.getCreatedBy());
@@ -1452,24 +1613,48 @@ public class UploadDataServicesimpl implements UploadDateService {
 			PatientTreatmentCollection patientTreatmentCollection = null;
 
 			scanner = new Scanner(new File(UPLOAD_TREATMENTS_PLAN_DATA_FILE));
-			
+			Integer pNUMIndex = null, dateIndex = null, doctorNameIndex = null, treatmentNameIndex = null, costIndex= null, quantityIndex = null, discountTypeIndex = null,
+					discountIndex = null, notesIndex  = null, deletedOnIndex = null;
 			while (scanner.hasNext()) {
 				csvLine = scanner.nextLine();
 	            List<String> line = CSVUtils.parseLine(csvLine);
 
-				if (lineCount > 0) {
+	            if(lineCount == 0) {
+            		if(line != null && !line.isEmpty()) {
+            			for(int i=0; i<line.size(); i++) {
+            				
+            				String key = line.get(i).trim().replaceAll("[^a-zA-Z]", "").toUpperCase();
+            				
+            				switch (key) {
+							case "PATIENTNUMBER": pNUMIndex = i;break;
+							case "DATE": dateIndex = i;break;
+							case "COST": costIndex = i;break;
+							case "DOCTORNAME": doctorNameIndex = i;break;
+							case "QUANTITY": quantityIndex = i;break;
+							case "DISCOUNT": discountIndex = i;break;
+							case "DISCOUNTTYPE": discountTypeIndex = i;break;
+							case "TREATMENTNAME": treatmentNameIndex = i;break;
+							case "NOTES": notesIndex = i;break;
+							case "DELETEDON": deletedOnIndex = i;break;
+							
+							default:
+								break;
+							}
+            			}
+            		}
+	            }else {
 					Boolean createVisit = false;
-					if (!DPDoctorUtils.anyStringEmpty(line.get(0), line.get(1))) {
+					if (!DPDoctorUtils.anyStringEmpty(line.get(pNUMIndex), line.get(dateIndex))) {
 						PatientCollection patientCollection = patientRepository.findByLocationIdAndHospitalIdAndPNUM(
-								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));
+								locationObjectId, hospitalObjectId, line.get(pNUMIndex).replace("'", ""));
 						if (patientCollection != null) {
 
 							SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
-							String dateSTri = line.get(0).replace("'", "");
+							String dateSTri = line.get(dateIndex).replace("'", "");
 							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 							Date fromDate = dateFormat.parse(dateSTri);
 
-							String drName = line.get(3).replace("'", "").replace("Dr. ", "").replace("Dr ", "");
+							String drName = line.get(doctorNameIndex).replace("'", "").replace("Dr. ", "").replace("Dr ", "");
 							UserCollection userCollection = doctors.get(drName.toLowerCase());
 							if (userCollection == null) {
 								List<UserCollection> collections = mongoTemplate.aggregate(
@@ -1524,7 +1709,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								}
 								List<Treatment> treatments = patientTreatmentCollection.getTreatments();
 
-								String treatmentName = line.get(4).replace("'", "");
+								String treatmentName = line.get(treatmentNameIndex).replace("'", "");
 								List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository
 										.findByNameAndDoctorLocationHospital(treatmentName, doctorObjectId,
 												locationObjectId, hospitalObjectId);
@@ -1538,8 +1723,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 									treatmentService.setName(treatmentName);
 								}
 
-								if (checkIfNotNullOrNone(line.get(5)))
-									treatmentService.setCost(Double.parseDouble(line.get(5).replace("'", "")));
+								if (checkIfNotNullOrNone(line.get(costIndex)))
+									treatmentService.setCost(Double.parseDouble(line.get(costIndex).replace("'", "")));
 
 								treatmentService.setDoctorId(patientTreatmentCollection.getDoctorId().toString());
 								treatmentService.setLocationId(patientTreatmentCollection.getLocationId().toString());
@@ -1552,10 +1737,10 @@ public class UploadDataServicesimpl implements UploadDateService {
 								treatment.setTreatmentServiceId(new ObjectId(treatmentService.getId()));
 
 								double cost = treatment.getCost();
-								if (checkIfNotNullOrNone(line.get(6))) {
+								if (checkIfNotNullOrNone(line.get(quantityIndex))) {
 									Quantity quantity = new Quantity();
 									quantity.setType(QuantityEnum.QTY);
-									quantity.setValue(Integer.parseInt(line.get(6).replace("'", "")));
+									quantity.setValue(Integer.parseInt(line.get(quantityIndex).replace("'", "")));
 									treatment.setQuantity(quantity);
 								}else {
 									Quantity quantity = new Quantity();
@@ -1566,17 +1751,17 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 								//treatment.setFinalCost();
 
-								if (checkIfNotNullOrNone(line.get(7))) {
+								if (checkIfNotNullOrNone(line.get(discountIndex))) {
 																		
 									Discount discount = new Discount();
-									if (!checkIfNotNullOrNone(line.get(8))) {
+									if (!checkIfNotNullOrNone(line.get(discountTypeIndex))) {
 										discount.setUnit(UnitType.INR);
-									} else if ((line.get(8).replace("'", "")).equalsIgnoreCase("NUMBER")) {
+									} else if ((line.get(discountTypeIndex).replace("'", "")).equalsIgnoreCase("NUMBER")) {
 										discount.setUnit(UnitType.INR);
 									} else {
-										discount.setUnit(UnitType.valueOf(line.get(8).replace("'", "")));
+										discount.setUnit(UnitType.valueOf(line.get(discountTypeIndex).replace("'", "")));
 									}
-									discount.setValue(Double.parseDouble(line.get(7).replace("'", "")));
+									discount.setValue(Double.parseDouble(line.get(discountIndex).replace("'", "")));
 									treatment.setDiscount(discount);
 
 								}
@@ -1606,8 +1791,8 @@ public class UploadDataServicesimpl implements UploadDateService {
 									treatment.setFinalCost(0.0);
 								}
 							
-								if (checkIfNotNullOrNone(line.get(10)))
-									treatment.setNote(line.get(10).replace("'", ""));
+								if (checkIfNotNullOrNone(line.get(notesIndex)))
+									treatment.setNote(line.get(notesIndex).replace("'", ""));
 
 								if (treatments == null)
 									treatments = new ArrayList<Treatment>();
@@ -1619,7 +1804,10 @@ public class UploadDataServicesimpl implements UploadDateService {
 								patientTreatmentCollection.setGrandTotal(grandTotal + treatment.getFinalCost());
 								patientTreatmentCollection.setTotalDiscount(totalDiscount);
 
-								System.out.println(line.get(0)+".."+line.get(1));
+								Boolean discarded = (deletedOnIndex != null && !DPDoctorUtils.anyStringEmpty(line.get(deletedOnIndex))) ? true : false;
+								patientTreatmentCollection.setDiscarded(discarded);
+								
+								System.out.println(line.get(pNUMIndex)+".."+line.get(dateIndex));
 								patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
 
 								if (createVisit)
@@ -2121,27 +2309,46 @@ public class UploadDataServicesimpl implements UploadDateService {
 			UserCollection drCollection = userRepository.findById(doctorObjectId).orElse(null);
 			
 			List<TreatmentServicesCollection> treatmentServicesCollections = null;
-
+			Integer nameIndex = null, costIndex = null, deletedOnIndex = null;
 			Scanner scanner = new Scanner(new File(UPLOAD_TREATMENT_SERVICES_DATA_FILE));
 	        while (scanner.hasNext()) {
 	            List<String> line = CSVUtils.parseLine(scanner.nextLine());
 	            
-	            if (lineCount > 0) {
-					treatmentServicesCollections = treatmentServicesRepository.findByNameAndLocationHospital(line.get(0), locationObjectId, hospitalObjectId, new Sort(Direction.DESC, "createdTime"));
+	         if(lineCount == 0) {
+            		if(line != null && !line.isEmpty()) {
+            			for(int i=0; i<line.size(); i++) {
+            				
+            				String key = line.get(i).trim().replaceAll("[^a-zA-Z]", "").toUpperCase();
+            				
+            				switch (key) {
+							case "TREATMENTNAME": nameIndex = i;break;
+							case "COST": costIndex = i;break;
+							case "DELETEDON": deletedOnIndex = i;break;
+							
+							default:
+								break;
+							}
+            			}
+            		}
+            }else {
+					treatmentServicesCollections = treatmentServicesRepository.findByNameAndLocationHospital(line.get(nameIndex), locationObjectId, hospitalObjectId, new Sort(Direction.DESC, "createdTime"));
 					if(treatmentServicesCollections == null || treatmentServicesCollections.isEmpty()) {
 						TreatmentServicesCollection servicesCollection = new TreatmentServicesCollection();
 						servicesCollection.setAdminCreatedTime(new Date());
-						if(!DPDoctorUtils.anyStringEmpty(line.get(1)))servicesCollection.setCost(Double.parseDouble(line.get(1)));
+						if(!DPDoctorUtils.anyStringEmpty(line.get(costIndex)))servicesCollection.setCost(Double.parseDouble(line.get(costIndex)));
 						servicesCollection.setCreatedBy(drCollection.getTitle() + " " + drCollection.getFirstName());
 						servicesCollection.setCreatedTime(new Date());
 						servicesCollection.setDiscarded(false);
 						servicesCollection.setDoctorId(doctorObjectId);
 						servicesCollection.setHospitalId(hospitalObjectId);
 						servicesCollection.setLocationId(locationObjectId);
-						servicesCollection.setName(line.get(0));
+						servicesCollection.setName(line.get(nameIndex));
 						servicesCollection.setUpdatedTime(new Date());
 						servicesCollection.setTreatmentCode("TR" + DPDoctorUtils.generateRandomId());
 						servicesCollection.setRankingCount(1);
+						
+						Boolean discarded = (deletedOnIndex != null && !DPDoctorUtils.anyStringEmpty(line.get(deletedOnIndex))) ? true : false;
+						servicesCollection.setDiscarded(discarded);
 						
 						servicesCollection = treatmentServicesRepository.save(servicesCollection);
 						
@@ -2150,7 +2357,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 						ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
 						BeanUtil.map(servicesCollection, esTreatmentServiceDocument);
 						esTreatmentService.addEditService(esTreatmentServiceDocument);
-						System.out.println(line.get(0));
+						System.out.println(line.get(nameIndex));
 					}
 				}
 				lineCount++;
@@ -2203,26 +2410,49 @@ public class UploadDataServicesimpl implements UploadDateService {
 			ClinicalNotesCollection clinicalNotesCollection = null;
 
 			scanner = new Scanner(new File(UPLOAD_CLINICAL_NOTES_DATA_FILE));
-
+			Integer pNUMIndex = null, dateIndex = null, doctorNameIndex = null, complaintsIndex = null, investigationIndex = null, notesIndex = null, deletedOnIndex = null,
+					diagnosisIndex = null;
 			while (scanner.hasNext()) {
 				csvLine = scanner.nextLine();
 	            List<String> line = CSVUtils.parseLine(csvLine);
-	            if (lineCount > 0) {
+	            if(lineCount == 0) {
+            		if(line != null && !line.isEmpty()) {
+            			for(int i=0; i<line.size(); i++) {
+            				
+            				String key = line.get(i).trim().replaceAll("[^a-zA-Z]", "").toUpperCase();
+            				
+            				switch (key) {
+							case "PATIENTNUMBER": pNUMIndex = i;break;
+							case "DOCTORNAME": doctorNameIndex = i;break;
+							case "DATE": dateIndex = i;break;
+							case "COMPLAINTS": complaintsIndex = i;break;
+							case "INVESTIGATION": investigationIndex = i;break;
+							case "DIAGNOSIS": diagnosisIndex =i; break;
+							case "NOTES": notesIndex = i;break;
+							case "DELETEDON": deletedOnIndex = i;break;
+							
+							
+							default:
+								break;
+							}
+            			}
+            		}
+            }else {
 					Boolean createVisit = false;
-					if (!DPDoctorUtils.anyStringEmpty(line.get(1), line.get(4))) {
+					if (!DPDoctorUtils.anyStringEmpty(line.get(pNUMIndex))) {
 						PatientCollection patientCollection = patientRepository.findByLocationIdAndHospitalIdAndPNUM(
-								locationObjectId, hospitalObjectId, line.get(1).replace("'", ""));
+								locationObjectId, hospitalObjectId, line.get(pNUMIndex).replace("'", ""));
 						if (patientCollection != null) {
 
 							Date createdTime = new Date();
-							if (!DPDoctorUtils.anyStringEmpty(line.get(0))) {
+							if (!DPDoctorUtils.anyStringEmpty(line.get(dateIndex))) {
 								SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
-								String dateSTri = line.get(0).replace("'", "")+ " 13:00:00";
+								String dateSTri = line.get(dateIndex).replace("'", "")+ " 13:00:00";
 								dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 								createdTime = dateFormat.parse(dateSTri);
 							}
 
-							String drName = line.get(3).replace("'", "").replace("Dr. ", "").replace("Dr ", "");
+							String drName = line.get(doctorNameIndex).replace("'", "").replace("Dr. ", "").replace("Dr ", "");
 							UserCollection userCollection = doctors.get(drName.toLowerCase());
 							if (userCollection == null) {
 								List<UserCollection> collections = mongoTemplate.aggregate(
@@ -2266,58 +2496,73 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 								}
 								
-								String type = !DPDoctorUtils.anyStringEmpty(line.get(4)) ? line.get(4).replace("'", ""):"";
-								
-								String description = !DPDoctorUtils.anyStringEmpty(line.get(5)) ? line.get(5).replace("'", "") : "";
-								
-								
-								if(type.equalsIgnoreCase("diagnoses")) {
-									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getDiagnosis())) {
-										clinicalNotesCollection.setDiagnosis(description);
-									}else {
-										clinicalNotesCollection.setDiagnosis(clinicalNotesCollection.getDiagnosis() + ", " +description);
-									}
-								}else if(type.equalsIgnoreCase("complaints")) {
-									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getComplaint())) {
-										clinicalNotesCollection.setComplaint(description);
-									}else {
-										clinicalNotesCollection.setComplaint(clinicalNotesCollection.getComplaint() + ", " +description);
-									}
-								}else if(type.equalsIgnoreCase("treatmentnotes")) {
-									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getProcedureNote())) {
-										clinicalNotesCollection.setProcedureNote(description);
-									}else {
-										clinicalNotesCollection.setProcedureNote(clinicalNotesCollection.getProcedureNote() + ", " +description);
-									}
-								}else if(type.equalsIgnoreCase("observations")) {
-									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getObservation())) {
-										clinicalNotesCollection.setObservation(description);
-									}else {
-										clinicalNotesCollection.setObservation(clinicalNotesCollection.getObservation() + ", " +description);
-									}
-								}else if(type.equalsIgnoreCase("investigations")) {
-									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getInvestigation())) {
-										clinicalNotesCollection.setInvestigation(description);
-									}else {
-										clinicalNotesCollection.setInvestigation(clinicalNotesCollection.getInvestigation() + ", " +description);
-									}
-								}else if(type.equalsIgnoreCase("notes")) {
-									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNote())) {
-										clinicalNotesCollection.setNote(description);
-									}else {
-										clinicalNotesCollection.setNote(clinicalNotesCollection.getNote() + ", " +description);
-									}
-								}else if(type.equalsIgnoreCase("comments")) {
-									if(clinicalNotesCollection.getComments() != null && !clinicalNotesCollection.getComments().isEmpty()) {
-										clinicalNotesCollection.getComments().add(description);
-									}else {
-										List<String> comments = new ArrayList<>();
-										comments.add(description);
-										clinicalNotesCollection.setComments(comments);
-									}
-								}
+//								String type = !DPDoctorUtils.anyStringEmpty(line.get(4)) ? line.get(4).replace("'", ""):"";
+//								
+//								String description = !DPDoctorUtils.anyStringEmpty(line.get(5)) ? line.get(5).replace("'", "") : "";
+//								
+//								
+//								if(type.equalsIgnoreCase("diagnoses")) {
+//									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getDiagnosis())) {
+//										clinicalNotesCollection.setDiagnosis(description);
+//									}else {
+//										clinicalNotesCollection.setDiagnosis(clinicalNotesCollection.getDiagnosis() + ", " +description);
+//									}
+//								}else if(type.equalsIgnoreCase("complaints")) {
+//									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getComplaint())) {
+//										clinicalNotesCollection.setComplaint(description);
+//									}else {
+//										clinicalNotesCollection.setComplaint(clinicalNotesCollection.getComplaint() + ", " +description);
+//									}
+//								}else if(type.equalsIgnoreCase("treatmentnotes")) {
+//									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getProcedureNote())) {
+//										clinicalNotesCollection.setProcedureNote(description);
+//									}else {
+//										clinicalNotesCollection.setProcedureNote(clinicalNotesCollection.getProcedureNote() + ", " +description);
+//									}
+//								}else if(type.equalsIgnoreCase("observations")) {
+//									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getObservation())) {
+//										clinicalNotesCollection.setObservation(description);
+//									}else {
+//										clinicalNotesCollection.setObservation(clinicalNotesCollection.getObservation() + ", " +description);
+//									}
+//								}else if(type.equalsIgnoreCase("investigations")) {
+//									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getInvestigation())) {
+//										clinicalNotesCollection.setInvestigation(description);
+//									}else {
+//										clinicalNotesCollection.setInvestigation(clinicalNotesCollection.getInvestigation() + ", " +description);
+//									}
+//								}else if(type.equalsIgnoreCase("notes")) {
+//									if(DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNote())) {
+//										clinicalNotesCollection.setNote(description);
+//									}else {
+//										clinicalNotesCollection.setNote(clinicalNotesCollection.getNote() + ", " +description);
+//									}
+//								}else if(type.equalsIgnoreCase("comments")) {
+//									if(clinicalNotesCollection.getComments() != null && !clinicalNotesCollection.getComments().isEmpty()) {
+//										clinicalNotesCollection.getComments().add(description);
+//									}else {
+//										List<String> comments = new ArrayList<>();
+//										comments.add(description);
+//										clinicalNotesCollection.setComments(comments);
+//									}
+//								}
 									
-								System.out.println(line.get(0)+".."+line.get(1));
+								Boolean discarded = (deletedOnIndex != null && !DPDoctorUtils.anyStringEmpty(line.get(deletedOnIndex))) ? true : false;
+								clinicalNotesCollection.setDiscarded(discarded);
+								
+								String complaints = complaintsIndex != null && !DPDoctorUtils.anyStringEmpty(line.get(complaintsIndex)) ? line.get(complaintsIndex).replace("'", ""):"";
+								clinicalNotesCollection.setComplaint(complaints);
+								
+								String investigation = investigationIndex != null && !DPDoctorUtils.anyStringEmpty(line.get(investigationIndex)) ? line.get(investigationIndex).replace("'", ""):"";
+								clinicalNotesCollection.setInvestigation(investigation);
+								
+								String diagnosis = diagnosisIndex != null && !DPDoctorUtils.anyStringEmpty(line.get(diagnosisIndex)) ? line.get(diagnosisIndex).replace("'", ""):"";
+								clinicalNotesCollection.setDiagnosis(diagnosis);
+								
+								String notes = notesIndex != null && !DPDoctorUtils.anyStringEmpty(line.get(notesIndex)) ? line.get(notesIndex).replace("'", ""):"";
+								clinicalNotesCollection.setNote(notes);
+								
+								System.out.println(line.get(pNUMIndex)+".."+line.get(dateIndex));
 
 								clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 

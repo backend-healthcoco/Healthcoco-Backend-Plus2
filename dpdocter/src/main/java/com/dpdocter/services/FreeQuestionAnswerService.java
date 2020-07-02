@@ -12,10 +12,10 @@ public interface FreeQuestionAnswerService {
 
 	Integer countFreeQuestion(Boolean discarded);
 
-	List<FreeQuestionResponse> getFreeQuestionList(int size, int page, String searchTerm, Boolean discarded, String doctorId,
+	List<FreeQuestionResponse> getFreeQuestionList(int size, int page, String searchTerm, boolean discarded, String doctorId,
 			long updatedTime);
 
-	List<FreeQuestionResponse> getAnsweredQuestionList(int size, int page, String searchTerm, Boolean discarded, String doctorId,
+	List<FreeQuestionResponse> getAnsweredQuestionList(int size, int page, String searchTerm, boolean discarded, String doctorId,
 			long updatedTime);
 
 }
