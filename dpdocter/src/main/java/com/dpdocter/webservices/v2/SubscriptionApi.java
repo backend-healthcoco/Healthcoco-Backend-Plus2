@@ -4,7 +4,9 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
@@ -31,8 +33,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 
-@RestController
-@Component(value = "SubscriptionApi")
+
+@Component(value = "SubscriptionApiV2")
 @Path(PathProxy.SUBSCRIPTION_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -46,13 +48,11 @@ public class SubscriptionApi {
 	private SubscriptionService subscriptionService;
 	
 	
-	
-	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SubscriptionUrls.GET_SUBSCRIPTION_BY_DOCTORID)
 	@GET
 	@ApiOperation(value = PathProxy.SubscriptionUrls.GET_SUBSCRIPTION_BY_DOCTORID, notes = PathProxy.SubscriptionUrls.GET_SUBSCRIPTION_BY_DOCTORID)
-	public Response<Subscription> getSubscriptionByDoctorId(@PathVariable("doctorId") String doctorId,
-			@RequestParam(required = false, value = "packageName") PackageType packageName) {
+	public Response<Subscription> getSubscriptionByDoctorId(@PathParam("doctorId") String doctorId,
+			@QueryParam(value = "packageName") PackageType packageName) {
 		if (doctorId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -66,11 +66,10 @@ public class SubscriptionApi {
 	
 	
 
-	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SubscriptionUrls.GET_PACKAGES_BY_NAME)
 	@GET
 	@ApiOperation(value = PathProxy.SubscriptionUrls.GET_PACKAGES_BY_NAME, notes = PathProxy.SubscriptionUrls.GET_PACKAGES_BY_NAME)
-	public Response<PackageDetailObject> getPackageDetailByPackageName(@RequestParam(required = true, value = "packageName") PackageType packageName) {
+	public Response<PackageDetailObject> getPackageDetailByPackageName(@QueryParam( value = "packageName") PackageType packageName) {
 		if (packageName == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -82,7 +81,6 @@ public class SubscriptionApi {
 
 	}
 	
-	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION)
 	@POST
 	@ApiOperation(value = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION, notes = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION)
