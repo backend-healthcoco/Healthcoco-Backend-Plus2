@@ -235,7 +235,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 					String body = " Your Subscription Plan Changed " + oldPackageName + "to" + newPackageName;
 					try {
-						Boolean ck = mailService.sendEmail("nikita.patil@healthcoco.com", "Update Packege Detail", body,
+						Boolean ck = mailService.sendEmail(userCollection.getEmailAddress(), "Update Packege Detail", body,
 								null);
 						System.out.println("main send" + ck);
 					} catch (MessagingException e) {
