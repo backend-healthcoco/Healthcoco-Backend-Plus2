@@ -17,7 +17,7 @@ public class SubscriptionCollection extends GenericCollection {
 	private ObjectId id;
 
 	@Field
-	private String doctorId;
+	private ObjectId doctorId;
 
 	@Field
 	private Date fromDate;
@@ -78,11 +78,13 @@ public class SubscriptionCollection extends GenericCollection {
 		this.id = id;
 	}
 
-	public String getDoctorId() {
+	
+
+	public ObjectId getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(String doctorId) {
+	public void setDoctorId(ObjectId doctorId) {
 		this.doctorId = doctorId;
 	}
 

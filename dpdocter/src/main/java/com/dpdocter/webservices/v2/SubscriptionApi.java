@@ -34,7 +34,7 @@ import io.swagger.annotations.ApiOperation;
 
 
 
-@Component(value = "SubscriptionApiV2")
+@Component
 @Path(PathProxy.SUBSCRIPTION_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

@@ -20,7 +20,6 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.PackageDetailObject;
 import com.dpdocter.beans.SMS;
@@ -61,7 +60,6 @@ import com.dpdocter.services.SubscriptionService;
 
 import common.util.web.DPDoctorUtils;
 
-@Transactional
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
 
@@ -205,11 +203,72 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				PackageType oldPackageName = subscriptionCollection.getPackageName();
 				PackageType newPackageName = request.getPackageName();
 
-				System.out.println("oldPackageName" + oldPackageName + "newPackageName" + newPackageName);
-
 				request.setUpdatedTime(new Date());
 //				request.setCountryCode(userCollection.getCountryCode());
 				request.setCreatedBy(subscriptionCollection.getCreatedBy());
+				subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
+				subscriptionCollection.setEmailAddress(userCollection.getEmailAddress());
+
+				if (oldPackageName != newPackageName) {
+
+					// clinic package change
+					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+							.findByDoctorId(new ObjectId(request.getDoctorId()));
+
+					if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
+						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+							doctorClinicProfileCollection.setUpdatedTime(new Date());
+							doctorClinicProfileCollection.setPackageType(newPackageName.toString());
+
+							doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+						}
+					}
+
+//				// call sms function  
+					System.out.println(userCollection);
+					String doctorName = userCollection.getTitle() + userCollection.getFirstName();
+					System.out.println(doctorName);
+					subscriptionHistoryCollection = subscriptionHistoryRepository.save(subscriptionHistoryCollection);
+
+					sendSMS(doctorName, userCollection.getMobileNumber(), userCollection.getCountryCode(),
+							oldPackageName, newPackageName);
+
+					String body = " Your Subscription Plan Changed " + oldPackageName + "to" + newPackageName;
+					try {
+						Boolean ck = mailService.sendEmail("nikita.patil@healthcoco.com", "Update Packege Detail", body,
+								null);
+						System.out.println("main send" + ck);
+					} catch (MessagingException e) {
+						System.out.println("main send err");
+						e.printStackTrace();
+					}
+					pushNotificationServices.notifyUser(userCollection.getId().toString(), "Package updated.",
+							ComponentType.PACKAGE_DETAIL.getType(), null, null);
+				}
+
+			} else {
+				SubscriptionCollection subscriptionCkD = subscriptionRepository
+						.findByDoctorId(new ObjectId(request.getDoctorId()));
+				if (subscriptionCkD != null) {
+					throw new BusinessException(ServiceError.NotFound,
+							"Subscription prsent for this doctor with this id" + subscriptionCkD.getId());
+				}
+				subscriptionCollection = new SubscriptionCollection();
+				BeanUtil.map(request, subscriptionCollection);
+				subscriptionCollection.setCreatedBy("ADMIN");
+				subscriptionCollection.setUpdatedTime(new Date());
+				subscriptionCollection.setCreatedTime(new Date());
+
+				BeanUtil.map(subscriptionCollection, subscriptionHistoryCollection);
+				subscriptionHistoryCollection.setDoctorId(subscriptionCollection.getDoctorId());
+				subscriptionHistoryCollection = subscriptionHistoryRepository.save(subscriptionHistoryCollection);
+
+				// get doctor from doctor id;
+				UserCollection userCollection = null;
+				userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+				// set values
+				PackageType oldPackageName = subscriptionCollection.getPackageName();
+				PackageType newPackageName = request.getPackageName();
 				subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
 				subscriptionCollection.setEmailAddress(userCollection.getEmailAddress());
 
@@ -227,36 +286,48 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				}
 
 //				// call sms function  
-				System.out.println(userCollection);
 				String doctorName = userCollection.getTitle() + userCollection.getFirstName();
-				System.out.println(doctorName);
-				subscriptionHistoryCollection = subscriptionHistoryRepository.save(subscriptionHistoryCollection);
 
-				sendSMS(doctorName, userCollection.getMobileNumber(), userCollection.getCountryCode(), oldPackageName,
-						newPackageName);
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
-				String body = " Your Subscription Plan Changed " + oldPackageName + "to" + newPackageName;
+				smsTrackDetail.setType(ComponentType.PACKAGE_DETAIL.getType());
+				SMSDetail smsDetail = new SMSDetail();
+
+				smsDetail.setUserName(doctorName);
+				SMS sms = new SMS();
+
+				sms.setSmsText(doctorName + " Your Subscription Plan Started with to " + newPackageName
+						+ " For 1 year. Stay Healthy and Happy!");
+
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(userCollection.getMobileNumber());
+				sms.setSmsAddress(smsAddress);
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				Boolean ck = smsServices.sendSMS(smsTrackDetail, false);
+				System.out.println("sms send" + smsDetails);
+
+				String body = doctorName + " Your Subscription Plan Started with to " + newPackageName
+						+ " For 1 year. Stay Healthy and Happy!";
 				try {
-					Boolean ck = mailService.sendEmail("nikita.patil@healthcoco.com", "Update Packege Detail", body,
+					Boolean ckM = mailService.sendEmail(userCollection.getEmailAddress(), "Update Packege Detail", body,
 							null);
-					System.out.println("main send" + ck);
+					System.out.println("main send" + ckM);
 				} catch (MessagingException e) {
 					System.out.println("main send err");
 					e.printStackTrace();
 				}
-				pushNotificationServices.notifyUser(userCollection.getId().toString(), "Package updated.",
-						ComponentType.PACKAGE_DETAIL.getType(), null, null);
-
-			} else {
-//				subscriptionCollection = new SubscriptionCollection();
-//				BeanUtil.map(request, subscriptionCollection);
-//				subscriptionCollection.setCreatedBy("ADMIN");
-//				subscriptionCollection.setUpdatedTime(new Date());
-//				subscriptionCollection.setCreatedTime(new Date());
-
-				throw new BusinessException(ServiceError.Unknown, "Id Can not be null");
-
 			}
+			subscriptionCollection = subscriptionRepository.save(subscriptionCollection);
+			response = new Subscription();
+
+			BeanUtil.map(subscriptionCollection, response);
+
+//				throw new BusinessException(ServiceError.Unknown, "Id Can not be null");
+
 			subscriptionCollection = subscriptionRepository.save(subscriptionCollection);
 			response = new Subscription();
 
@@ -314,7 +385,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			SubscriptionCollection subscriptionCollection = subscriptionRepository
 					.findByDoctorId(new ObjectId(doctorId));
 			if (subscriptionCollection == null) {
-				throw new BusinessException(ServiceError.NotFound, "Error no such id");
+				throw new BusinessException(ServiceError.NotFound,
+						"Error no such id Subscription not Added for this Doctor");
 			}
 
 			if (packageName != null) {
@@ -333,217 +405,228 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				double BASIC = packageBasic.getAmount();
 				double PRO = packagePro.getAmount();
 				double ADVANCE = packageAdvance.getAmount();
+				if (subscriptionCollection.getAmount() != null) {
+					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+					LocalDate currentDate = LocalDate.now();
+					localCalendar.setTime(subscriptionCollection.getFromDate());
+					int currentDay = localCalendar.get(Calendar.DATE);
+					int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+					int currentYear = localCalendar.get(Calendar.YEAR);
 
-				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-				LocalDate currentDate = LocalDate.now();
-				localCalendar.setTime(subscriptionCollection.getFromDate());
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+					LocalDate newDate = LocalDate.of(currentYear, currentMonth, currentDay);
+					Period period = Period.between(currentDate, newDate);// get difference bet today & fromdate
+					System.out.println(period + "mon" + period.getMonths());
+					// pro to adv
+					if (subscriptionCollection.getPackageName() == PackageType.PRO
+							&& packageName == PackageType.ADVANCE) {
+						if (period.getMonths() == 0) {// afetr 1 month
+							double k = ADVANCE - (int) (PRO * (90.0f / 100.0f));
+							System.out.println(period.getMonths() + k);
+							subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -1) {// after 2 month
+							double k = ADVANCE - (int) (PRO * (80.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -2) {// after 3 month
+							double k = ADVANCE - (int) (PRO * (70.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-				LocalDate newDate = LocalDate.of(currentYear, currentMonth, currentDay);
-				Period period = Period.between(currentDate, newDate);// get difference bet today & fromdate
-				System.out.println(period + "mon" + period.getMonths());
-				// pro to adv
-				if (subscriptionCollection.getPackageName() == PackageType.PRO && packageName == PackageType.ADVANCE) {
-					if (period.getMonths() == 0) {// afetr 1 month
-						double k = ADVANCE - (int) (PRO * (90.0f / 100.0f));
-						System.out.println(period.getMonths() + k);
-						subscriptionCollection.setAmount(k);
-					} else if (period.getMonths() == -1) {// after 2 month
-						double k = ADVANCE - (int) (PRO * (80.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
-					} else if (period.getMonths() == -2) {// after 3 month
-						double k = ADVANCE - (int) (PRO * (70.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -3) {// after 4 month
+							// 60 % of 10000 is 2000
+							double k = ADVANCE - (int) (PRO * (60.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -3) {// after 4 month
-						// 60 % of 10000 is 2000
-						double k = ADVANCE - (int) (PRO * (60.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -4) {// after 5 month
+							double k = ADVANCE - (int) (PRO * (50.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -4) {// after 5 month
-						double k = ADVANCE - (int) (PRO * (50.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -5) {// after 6 month
+							double k = ADVANCE - (double) (PRO * (40.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -5) {// after 6 month
-						double k = ADVANCE - (double) (PRO * (40.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -6) {// after 7 month
+							double k = ADVANCE - (int) (PRO * (30.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -6) {// after 7 month
-						double k = ADVANCE - (int) (PRO * (30.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -7) {// after 8 month
+							double k = ADVANCE - (int) (PRO * (20.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -7) {// after 8 month
-						double k = ADVANCE - (int) (PRO * (20.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -8) {// after 9 month
+							// 10 % of 10000 is 2000
+							double k = ADVANCE - (int) (PRO * (80.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -8) {// after 9 month
-						// 10 % of 10000 is 2000
-						double k = ADVANCE - (int) (PRO * (80.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -9) {// after 9 month
+							// 10 % of 10000 is 2000
+							double k = ADVANCE - (int) (PRO * (80.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -9) {// after 9 month
-						// 10 % of 10000 is 2000
-						double k = ADVANCE - (int) (PRO * (80.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else {// after 10 month
+							double k = ADVANCE;
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else {// after 10 month
-						double k = ADVANCE;
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						}
 
+					} // basic to adv
+					else if (subscriptionCollection.getPackageName() == PackageType.BASIC
+							&& packageName == PackageType.ADVANCE) {
+						if (period.getMonths() == 0) {// afetr 1 month
+							double k = ADVANCE - (int) (BASIC * (90.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -1) {// after 2 month
+							double k = ADVANCE - (int) (BASIC * (80.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
+
+						} else if (period.getMonths() == -2) {// after 3 month
+							double k = ADVANCE - (int) (BASIC * (70.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
+
+						} else if (period.getMonths() == -3) {// after 4 month
+							// 60 % of 10000 is 2000
+							double k = ADVANCE - (int) (BASIC * (60.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
+
+						} else if (period.getMonths() == -4) {// after 5 month
+							double k = ADVANCE - (int) (BASIC * (50.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
+
+						} else if (period.getMonths() == -5) {// after 6 month
+							double k = ADVANCE - (int) (BASIC * (40.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
+
+						} else if (period.getMonths() == -6) {// after 7 month
+							double k = ADVANCE - (int) (BASIC * (30.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
+
+						} else if (period.getMonths() == -7) {// after 8 month
+							double k = ADVANCE - (int) (BASIC * (20.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
+
+						} else if (period.getMonths() == -8) {// after 9 month
+							// 10 % of 10000 is 2000
+							double k = ADVANCE - (int) (BASIC * (80.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
+
+						} else if (period.getMonths() == -9) {// after 9 month
+							// 10 % of 10000 is 2000
+							double k = ADVANCE - (int) (BASIC * (80.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
+
+						} else {// after 10 month
+							double k = ADVANCE;
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
+							;
+						}
 					}
+					// basic to pro
+					else if (subscriptionCollection.getPackageName() == PackageType.BASIC
+							&& packageName == PackageType.PRO) {
+						if (period.getMonths() == 0) {// afetr 1 month
+							double k = PRO - (int) (BASIC * (90.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -1) {// after 2 month
+							double k = PRO - (int) (BASIC * (80.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-				} // basic to adv
-				else if (subscriptionCollection.getPackageName() == PackageType.BASIC
-						&& packageName == PackageType.ADVANCE) {
-					if (period.getMonths() == 0) {// afetr 1 month
-						double k = ADVANCE - (int) (BASIC * (90.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
-					} else if (period.getMonths() == -1) {// after 2 month
-						double k = ADVANCE - (int) (BASIC * (80.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -2) {// after 3 month
+							double k = PRO - (int) (BASIC * (70.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -2) {// after 3 month
-						double k = ADVANCE - (int) (BASIC * (70.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -3) {// after 4 month
+							// 60 % of 10000 is 2000
+							double k = PRO - (int) (BASIC * (60.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -3) {// after 4 month
-						// 60 % of 10000 is 2000
-						double k = ADVANCE - (int) (BASIC * (60.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -4) {// after 5 month
+							double k = PRO - (int) (BASIC * (50.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -4) {// after 5 month
-						double k = ADVANCE - (int) (BASIC * (50.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -5) {// after 6 month
+							double k = PRO - (int) (BASIC * (40.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -5) {// after 6 month
-						double k = ADVANCE - (int) (BASIC * (40.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -6) {// after 7 month
+							double k = PRO - (int) (BASIC * (30.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -6) {// after 7 month
-						double k = ADVANCE - (int) (BASIC * (30.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -7) {// after 8 month
+							double k = PRO - (int) (BASIC * (20.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -7) {// after 8 month
-						double k = ADVANCE - (int) (BASIC * (20.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -8) {// after 9 month
+							// 10 % of 10000 is 2000
+							double k = PRO - (int) (BASIC * (80.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -8) {// after 9 month
-						// 10 % of 10000 is 2000
-						double k = ADVANCE - (int) (BASIC * (80.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else if (period.getMonths() == -9) {// after 9 month
+							// 10 % of 10000 is 2000
+							double k = PRO - (int) (BASIC * (80.0f / 100.0f));
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else if (period.getMonths() == -9) {// after 9 month
-						// 10 % of 10000 is 2000
-						double k = ADVANCE - (int) (BASIC * (80.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
+						} else {// after 10 month
+							double k = PRO;
+							System.out.println(k);
+							subscriptionCollection.setAmount(k);
 
-					} else {// after 10 month
-						double k = ADVANCE;
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
-						;
-					}
-				}
-				// basic to pro
-				else if (subscriptionCollection.getPackageName() == PackageType.BASIC
-						&& packageName == PackageType.PRO) {
-					if (period.getMonths() == 0) {// afetr 1 month
-						double k = PRO - (int) (BASIC * (90.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
-					} else if (period.getMonths() == -1) {// after 2 month
-						double k = PRO - (int) (BASIC * (80.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
-
-					} else if (period.getMonths() == -2) {// after 3 month
-						double k = PRO - (int) (BASIC * (70.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
-
-					} else if (period.getMonths() == -3) {// after 4 month
-						// 60 % of 10000 is 2000
-						double k = PRO - (int) (BASIC * (60.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
-
-					} else if (period.getMonths() == -4) {// after 5 month
-						double k = PRO - (int) (BASIC * (50.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
-
-					} else if (period.getMonths() == -5) {// after 6 month
-						double k = PRO - (int) (BASIC * (40.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
-
-					} else if (period.getMonths() == -6) {// after 7 month
-						double k = PRO - (int) (BASIC * (30.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
-
-					} else if (period.getMonths() == -7) {// after 8 month
-						double k = PRO - (int) (BASIC * (20.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
-
-					} else if (period.getMonths() == -8) {// after 9 month
-						// 10 % of 10000 is 2000
-						double k = PRO - (int) (BASIC * (80.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
-
-					} else if (period.getMonths() == -9) {// after 9 month
-						// 10 % of 10000 is 2000
-						double k = PRO - (int) (BASIC * (80.0f / 100.0f));
-						System.out.println(k);
-						subscriptionCollection.setAmount(k);
-
-					} else {// after 10 month
+						}
+					} else if (subscriptionCollection.getPackageName() == PackageType.PRO
+							&& packageName == PackageType.PRO) {
 						double k = PRO;
 						System.out.println(k);
 						subscriptionCollection.setAmount(k);
-
+					} else if (subscriptionCollection.getPackageName() == PackageType.ADVANCE
+							&& packageName == PackageType.ADVANCE) {
+						double k = ADVANCE;
+						System.out.println(k);
+						subscriptionCollection.setAmount(k);
+					} else if (subscriptionCollection.getPackageName() == PackageType.BASIC
+							&& packageName == PackageType.BASIC) {
+						double k = BASIC;
+						System.out.println(k);
+						subscriptionCollection.setAmount(k);
 					}
-				} else if (subscriptionCollection.getPackageName() == PackageType.PRO
-						&& packageName == PackageType.PRO) {
-					double k = PRO;
-					System.out.println(k);
-					subscriptionCollection.setAmount(k);
-				}else if (subscriptionCollection.getPackageName() == PackageType.ADVANCE
-						&& packageName == PackageType.ADVANCE) {
-					double k = ADVANCE;
-					System.out.println(k);
-					subscriptionCollection.setAmount(k);
-				}else if (subscriptionCollection.getPackageName() == PackageType.BASIC
-						&& packageName == PackageType.BASIC) {
-					double k = BASIC;
-					System.out.println(k);
-					subscriptionCollection.setAmount(k);
+				} else {
+					// after trial period end
+					if (packageName == PackageType.BASIC) {
+						subscriptionCollection.setAmount(BASIC);
+					} else if (packageName == PackageType.ADVANCE) {
+						subscriptionCollection.setAmount(ADVANCE);
+					} else if (packageName == PackageType.PRO) {
+						subscriptionCollection.setAmount(PRO);
+					}
+
 				}
-				
 			} // if close
 			response = new Subscription();
 			BeanUtil.map(subscriptionCollection, response);
