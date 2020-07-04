@@ -60,14 +60,14 @@ public class FitnessAssessmentAPI {
 	@GET
 	@ApiOperation(value = PathProxy.FitnessUrls.GET_FITNESS_ASSESSMENT, notes = PathProxy.FitnessUrls.GET_FITNESS_ASSESSMENT)
 	public Response<FitnessAssessment> getFitnessAssessment(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId,
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
-		@QueryParam("updatedTime") long updatedTime) {
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("patientId") String patientId, @QueryParam("size") int size, @QueryParam("page") int page,
+			@QueryParam("discarded") boolean discarded, @QueryParam("updatedTime") long updatedTime) {
 
 		Response<FitnessAssessment> response = new Response<FitnessAssessment>();
-		Integer count = fitnessAssessmentService.countFitnessAssessment(discarded);
-		response.setDataList(fitnessAssessmentService.getFitnessAssessmentList(size, page, discarded,
-				doctorId, locationId, hospitalId, patientId,updatedTime));
+		Integer count = fitnessAssessmentService.countFitnessAssessment(discarded, patientId);
+		response.setDataList(fitnessAssessmentService.getFitnessAssessmentList(size, page, discarded, doctorId,
+				locationId, hospitalId, patientId, updatedTime));
 		response.setCount(count);
 		return response;
 	}

@@ -44,7 +44,7 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 	private static Logger logger = Logger.getLogger(RecipeServiceImpl.class.getName());
 	@Autowired
 	private FitnessAssessmentRepository fitnessAssessmentRepository;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
@@ -404,10 +404,13 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 	}
 
 	@Override
-	public Integer countFitnessAssessment(Boolean discarded) {
+	public Integer countFitnessAssessment(Boolean discarded, String patientId) {
 		Integer response = null;
 		try {
 			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria.and("patientId").is(new ObjectId(patientId));
+			}
 			criteria.and("discarded").is(discarded);
 			response = (int) mongoTemplate.count(new Query(criteria), FitnessAssessmentCollection.class);
 		} catch (BusinessException e) {
