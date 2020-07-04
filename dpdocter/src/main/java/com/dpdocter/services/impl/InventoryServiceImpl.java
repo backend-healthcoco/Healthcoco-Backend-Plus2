@@ -724,6 +724,29 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public InventoryItem getInventoryItemByDrugName(String locationId, String hospitalId, String drugName)
+	{
+		InventoryItem response = null;
+		List<InventoryItemCollection> inventoryItemCollection = null;
+		try {
+			inventoryItemCollection = inventoryItemRepository.findByLocationIdAndHospitalIdAndName(new ObjectId(locationId), new ObjectId(hospitalId),drugName);
+			if (inventoryItemCollection != null) {
+				response = new InventoryItem();
+				BeanUtil.map( inventoryItemCollection, response);
+			} else {
+				logger.warn("Inventory item not found");
+			}
+
+		} catch (Exception e) {
+			logger.warn("Error while getting inventory setting");
+			e.printStackTrace();
+		}
+		return response;
+	}
+
 
 
 	@Override

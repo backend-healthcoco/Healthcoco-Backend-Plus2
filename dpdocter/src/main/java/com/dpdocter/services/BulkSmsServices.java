@@ -4,6 +4,10 @@ import java.util.List;
 
 import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.BulkSmsPackage;
+import com.dpdocter.request.OrderRequest;
+import com.dpdocter.request.PaymentSignatureRequest;
+import com.dpdocter.response.BulkSmsPaymentResponse;
+
 
 public interface BulkSmsServices {
 	
@@ -18,5 +22,9 @@ public interface BulkSmsServices {
 	BulkSmsCredits getCreditsByDoctorId(String doctorId);
 	
 	List<BulkSmsCredits> getBulkSmsHistory(int page,int size,String searchTerm,String doctorId);
+	
+	public BulkSmsPaymentResponse createOrder(OrderRequest request);
+	
+	public Boolean verifySignature(PaymentSignatureRequest request);
 
 }

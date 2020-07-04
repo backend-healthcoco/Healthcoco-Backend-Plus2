@@ -1,10 +1,19 @@
 package com.dpdocter.services.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -14,21 +23,41 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.BulkSmsPackage;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.BulkSmsCreditsCollection;
 import com.dpdocter.collections.BulkSmsHistoryCollection;
 import com.dpdocter.collections.BulkSmsPackageCollection;
+import com.dpdocter.collections.BulkSmsPaymentCollection;
+import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BulkSmsCreditsRepository;
 import com.dpdocter.repository.BulkSmsPackageRepository;
+import com.dpdocter.repository.BulkSmsPaymentRepository;
+import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.OrderRequest;
+import com.dpdocter.request.PaymentSignatureRequest;
+import com.dpdocter.response.BulkSmsPaymentResponse;
 import com.dpdocter.services.BulkSmsServices;
+import com.dpdocter.services.SMSServices;
+import com.razorpay.Order;
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
+import com.razorpay.Utils;
 
 import common.util.web.DPDoctorUtils;
 
 @Service
 public class BulkSmsServiceImpl implements BulkSmsServices{
 
+	private static Logger logger = LogManager.getLogger(BulkSmsServiceImpl.class.getName());
+	
 	@Autowired
 	private BulkSmsPackageRepository bulkSmsRepository;
 	
@@ -37,6 +66,23 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 	
 	@Autowired
 	private BulkSmsCreditsRepository bulkSmsCreditRepository;
+	
+	@Value(value = "${rayzorpay.api.secret}")
+	private String secret;
+
+	@Autowired
+	private SMSServices sMSServices;
+
+	@Value(value = "${rayzorpay.api.key}")
+	private String keyId;
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private BulkSmsPaymentRepository bulkSmsPaymentRepository;
+
+
 	
 	@Override
 	public BulkSmsPackage addEditBulkSmsPackage(BulkSmsPackage request) {
@@ -213,5 +259,159 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 		
 			return response;
 		}
+
+	@Override
+	public BulkSmsPaymentResponse createOrder(OrderRequest request) {
+		Order order = null;
+		BulkSmsPaymentResponse response = null;
+		try {
+			RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
+			JSONObject orderRequest = new JSONObject();
+			UserCollection doctor = userRepository
+					.findById(new ObjectId(request.getDoctorId())).orElse(null);
+			if (doctor == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Doctor not found");
+			}
+
+			UserCollection user = userRepository.findById(new ObjectId(request.getUserId())).orElse(null);
+			if (user == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "user not found");
+			}
+			double amount = (request.getDiscountAmount() * 100);
+			// amount in paise
+			orderRequest.put("amount", (int) amount);
+			orderRequest.put("currency", request.getCurrency());
+			orderRequest.put("receipt",  "-RCPT-"
+					+ bulkSmsPaymentRepository.countByDoctorId(new ObjectId(request.getDoctorId()))
+					+ generateId());
+			orderRequest.put("payment_capture", request.getPaymentCapture());
+
+			order = rayzorpayClient.Orders.create(orderRequest);
+
+			if (user != null) {
+				BulkSmsPaymentCollection collection = new BulkSmsPaymentCollection();
+				BeanUtil.map(request, collection);
+				collection.setCreatedTime(new Date());
+				collection.setCreatedBy(user.getTitle() + " " + user.getFirstName());
+				collection.setOrderId(order.get("id").toString());
+				collection.setReciept(order.get("receipt").toString());
+				collection.setTransactionStatus("PENDING");
+				collection = bulkSmsPaymentRepository.save(collection);
+				response = new BulkSmsPaymentResponse();
+				BeanUtil.map(collection, response);
+			}
+		} catch (RazorpayException e) {
+			// Handle Exception
+			
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	public String generateId() {
+		String id = "";
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+		localCalendar.setTime(new Date());
+		int currentSecond = localCalendar.get(Calendar.SECOND);
+		int currentMilliSecond = localCalendar.get(Calendar.MILLISECOND);
+		id = currentSecond + "" + currentMilliSecond;
+		return id;
+	}
+
+
+	@Override
+	public Boolean verifySignature(PaymentSignatureRequest request) {
+		Boolean response = false;
+		try {
+			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+			if (doctor == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "doctor not found");
+			}
+
+			UserCollection user = userRepository.findById(new ObjectId(request.getUserId())).orElse(null);
+			if (user == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "user not found");
+			}
+			JSONObject options = new JSONObject();
+			options.put("razorpay_order_id", request.getOrderId());
+			options.put("razorpay_payment_id", request.getPaymentId());
+			options.put("razorpay_signature", request.getSignature());
+			response = Utils.verifyPaymentSignature(options, secret);
+			if (response) {
+				Criteria criteria = new Criteria("orderId").is(request.getOrderId()).and("userId")
+						.is(new ObjectId(request.getUserId())).and("doctorId")
+						.is(new ObjectId(request.getDoctorId())).and("transactionStatus").is("PENDING");
+				BulkSmsPaymentCollection onlinePaymentCollection = mongoTemplate.findOne(new Query(criteria),
+						BulkSmsPaymentCollection.class);
+				onlinePaymentCollection.setTransactionId(request.getPaymentId());
+				onlinePaymentCollection.setTransactionStatus("SUCCESS");
+				onlinePaymentCollection.setCreatedTime(new Date());
+				onlinePaymentCollection.setUpdatedTime(new Date());
+				bulkSmsPaymentRepository.save(onlinePaymentCollection);
+				response=true;
+		//		user.setPaymentStatus(true);
+		//		String regNo = user.getRegNo().replace("TEM", "");
+	//			user.setRegNo(conferenceCollection.getTitle().substring(0, 2).toUpperCase() + regNo);
+				user = userRepository.save(user);
+				if (onlinePaymentCollection.getTransactionStatus().equalsIgnoreCase("SUCCESS")) {
+					if (user != null) {
+						String message = "";
+						message = StringEscapeUtils.unescapeJava(message);
+						 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+							
+							smsTrackDetail.setType(ComponentType.ONLINE_PAYMENT.getType());
+							SMSDetail smsDetail = new SMSDetail();
+							
+						
+							SMS sms = new SMS();
+						
+							String pattern = "dd/MM/yyyy";
+							SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		
+							sms.setSmsText("Hi " + user.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(onlinePaymentCollection.getCreatedTime())
+							+ " by "+onlinePaymentCollection.getMode()+" and your transactionId is"+onlinePaymentCollection.getTransactionId()+" for the receipt "+onlinePaymentCollection.getReciept()
+							+" and the total cost is "+ onlinePaymentCollection.getDiscountAmount() + ".");
+	
+								SMSAddress smsAddress = new SMSAddress();
+							smsAddress.setRecipient(user.getMobileNumber());
+							sms.setSmsAddress(smsAddress);
+							smsDetail.setSms(sms);
+							smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+							List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+							smsDetails.add(smsDetail);
+							smsTrackDetail.setSmsDetails(smsDetails);
+							sMSServices.sendSMS(smsTrackDetail, false);
+							
+						System.out.println("sms sent");
+						
+						
+						
+//							pushNotificationServices.notifyUser(doctor.getId().toString(),
+//									"You have received a payment from an", ComponentType.APPOINTMENT_REFRESH.getType(), null, null);
+						
+							
+				
+					}
+
+				}
+			}
+
+		} catch (
+
+		RazorpayException e) {
+			// Handle Exception
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return response;
+	}
+
 
 }

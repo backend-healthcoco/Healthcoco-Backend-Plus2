@@ -2369,6 +2369,11 @@ public interface PathProxy {
 		public static final String GET_BULK_SMS_CREDITS = "/credits/get";
 		public static final String GET_SMS_HISTORY = "/history/get";
 		
+		public static final String GENERATE_ID = "/payment/generateId";
+		public static final String CREATE_PAYMENT = "/payment/create";
+		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
+		
+		
 	}
 
 	public static final String UNIFIED_COMMUNICATION_BASE_URL = BASE_URL + "/communication";
@@ -2378,6 +2383,10 @@ public interface PathProxy {
 		public static final String CREATE_CHAT_ACCESS_TOKEN = "/chat/accessToken/create/{userId}";
 		
 		public static final String CREATE_VIDEO_ACCESS_TOKEN = "/video/accessToken/create/{userId}/{room}";
+		
+		public static final String CREATE_TWILIO_NOTIFICATION = "/pushNotification/create";
+		
+		public static final String CREATE_PUSH_NOTIFICATION = "/pushNotify";
 		
 	}
 }

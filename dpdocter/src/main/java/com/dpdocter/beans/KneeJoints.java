@@ -4,10 +4,7 @@ public class KneeJoints {
 	
 private String hexion;
 private String extension;
-<<<<<<< HEAD
-=======
 
->>>>>>> master
 public String getHexion() {
 	return hexion;
 }
@@ -23,8 +20,5 @@ public void setExtension(String extension) {
 
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> master
 }
