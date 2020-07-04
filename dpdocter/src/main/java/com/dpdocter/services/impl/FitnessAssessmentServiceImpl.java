@@ -227,12 +227,12 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 								.isNullOrEmptyList(physicalActivityAndMedicalHistory.getPhysicalMedicalHistoryList()))
 							physicalActivityAndMedicalHistory.getPhysicalMedicalHistoryList().forEach(
 									(key, value) -> physicalMedicalHistoryList.put(key, new ArrayList<String>()));
-						if (!DPDoctorUtils
-								.isNullOrEmptyList(physicalActivityAndMedicalHistory.getStressAreaOfLifeList())) {
-							List<StressAreaOfLife> stressAreaOfLifeList = new ArrayList<StressAreaOfLife>();
-							stressAreaOfLifeList.addAll(physicalActivityAndMedicalHistory.getStressAreaOfLifeList());
-							physicalActivityAndMedicalHistory.setStressAreaOfLifeList(stressAreaOfLifeList);
-						}
+						if (physicalActivityAndMedicalHistory.getStressAreaOfLifeList()!=null) 
+//							List<StressAreaOfLife> stressAreaOfLifeList = new ArrayList<StressAreaOfLife>();
+//							stressAreaOfLifeList.addAll(physicalActivityAndMedicalHistory.getStressAreaOfLifeList());
+							physicalActivityAndMedicalHistory.getStressAreaOfLifeList().clear();
+							physicalActivityAndMedicalHistory.setStressAreaOfLifeList(request.getPhysicalActivityAndMedicalHistory().getStressAreaOfLifeList());
+						
 						fitnessAssessmentCollection
 								.setPhysicalActivityAndMedicalHistory(physicalActivityAndMedicalHistory);
 					}
