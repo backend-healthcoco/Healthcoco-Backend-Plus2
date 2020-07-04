@@ -14,7 +14,6 @@ public class SMSAddress {
 
     private String recipient;
     
-    private List<String> recipients;
 
     @JsonProperty("recipient")
     public String getRecipient() {
@@ -28,16 +27,7 @@ public class SMSAddress {
     }
     
     
-    @JsonProperty("recipients")
-    public List<String> getRecipients() {
-		return recipients;
-	}
-
-    @JsonProperty("recipients")
-	public void setRecipients(List<String> recipients) {
-		this.recipients = recipients;
-	}
-
+    
 	@Override
     public String toString() {
 	return "SMSAddress [recipient=" + recipient + "]";

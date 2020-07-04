@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.BulkSmsPackage;
+import com.dpdocter.beans.BulkSmsReport;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -174,7 +175,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 
 
 	@Override
-	public BulkSmsPackage getBulkSmsPackageByDoctorId(String doctorId) {
+	public BulkSmsPackage getBulkSmsPackageByDoctorId(String doctorId,String locationId) {
 		BulkSmsPackage response=null;
 		try {
 			BulkSmsPackageCollection bulkSms=null;
@@ -218,7 +219,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 	}
 
 	@Override
-	public List<BulkSmsCredits> getBulkSmsHistory(int page, int size, String searchTerm, String doctorId) {
+	public List<BulkSmsCredits> getBulkSmsHistory(int page, int size, String searchTerm, String doctorId,String locationId) {
 		List<BulkSmsCredits> response=null;
 		try {
 		
@@ -259,6 +260,54 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 		
 			return response;
 		}
+	
+	@Override
+	public List<BulkSmsReport> getSmsReport(int page, int size, String searchTerm, String doctorId, String locationId) {
+		List<BulkSmsReport> response=null;
+		try {
+	Criteria criteria = new Criteria();
+			
+			if(!DPDoctorUtils.anyStringEmpty(doctorId))
+			{
+				ObjectId doctorObjectId=new ObjectId(doctorId);
+				criteria.and("doctorId").is(doctorObjectId);
+			}
+			
+			if(!DPDoctorUtils.anyStringEmpty(locationId))
+			{
+				ObjectId locationObjectId=new ObjectId(locationId);
+				criteria.and("locationId").is(locationObjectId);
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("packageName").regex("^" + searchTerm, "i"),
+						new Criteria("packageName").regex("^" + searchTerm));
+			
+			
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(
+						
+						Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
+				
+				} else {
+					aggregation = Aggregation.newAggregation( 
+							Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				}
+				response = mongoTemplate.aggregate(aggregation, SMSTrackDetail.class, BulkSmsReport.class).getMappedResults();
+
+			
+			
+		}catch (BusinessException e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,"Error while getting Bulksms package"+ e.getMessage());
+		}
+		return response;
+	}
+
 
 	@Override
 	public BulkSmsPaymentResponse createOrder(OrderRequest request) {
@@ -413,5 +462,6 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 		return response;
 	}
 
+	
 
 }
