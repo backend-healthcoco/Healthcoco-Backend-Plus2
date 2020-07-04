@@ -18,4 +18,6 @@ public interface FreeQuestionAnswerService {
 	List<FreeQuestionResponse> getAnsweredQuestionList(int size, int page, String searchTerm, boolean discarded, String doctorId,
 			long updatedTime);
 
+	Boolean addQueView(String questionId);
+
 }

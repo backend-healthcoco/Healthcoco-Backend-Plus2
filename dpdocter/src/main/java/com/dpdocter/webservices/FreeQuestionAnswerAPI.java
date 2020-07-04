@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -24,6 +25,7 @@ import com.dpdocter.services.FreeQuestionAnswerService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
 @Component
@@ -47,6 +49,19 @@ public class FreeQuestionAnswerAPI {
 		FreeAnswerResponse freeQuestionResponse = freeQuetionAnswerService.addFreeAnswer(request);
 		Response<FreeAnswerResponse> response = new Response<FreeAnswerResponse>();
 		response.setData(freeQuestionResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.FreeQueAnsUrls.ADD_VIEWS)
+	@POST
+	@ApiOperation(value = PathProxy.FreeQueAnsUrls.ADD_VIEWS, notes = PathProxy.FreeQueAnsUrls.ADD_VIEWS)
+	public Response<Boolean> addQueView(@PathVariable("questionId") String questionId) {
+		if (!DPDoctorUtils.anyStringEmpty(questionId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(freeQuetionAnswerService.addQueView(questionId));
 		return response;
 	}
 
