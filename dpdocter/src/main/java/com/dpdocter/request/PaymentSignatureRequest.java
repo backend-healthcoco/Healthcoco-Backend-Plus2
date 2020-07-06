@@ -1,13 +1,15 @@
 package com.dpdocter.request;
 
+import com.dpdocter.enums.PaymentMode;
+
 public class PaymentSignatureRequest {
 
 	public String orderId;
 	public String paymentId;
 	public String signature;
-	private String userId;
 	private String doctorId;
 	private String bulkSmsPackageId;
+	private PaymentMode mode;
 	public String getOrderId() {
 		return orderId;
 	}
@@ -26,12 +28,7 @@ public class PaymentSignatureRequest {
 	public void setSignature(String signature) {
 		this.signature = signature;
 	}
-	public String getUserId() {
-		return userId;
-	}
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+	
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -45,10 +42,18 @@ public class PaymentSignatureRequest {
 		this.bulkSmsPackageId = bulkSmsPackageId;
 	}
 	
+	
+	
+	public PaymentMode getMode() {
+		return mode;
+	}
+	public void setMode(PaymentMode mode) {
+		this.mode = mode;
+	}
 	@Override
 	public String toString() {
 		return "PaymentSignatureRequest [orderId=" + orderId + ", paymentId=" + paymentId + ", signature=" + signature
-				+ ", userId=" + userId + ", doctorId=" + doctorId + ", bulkSmsPackageId=" + bulkSmsPackageId + "]";
+				+ ", doctorId=" + doctorId + ", bulkSmsPackageId=" + bulkSmsPackageId + "]";
 	}
 	
 	

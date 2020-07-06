@@ -10,9 +10,7 @@ public class OrderRequest {
 
 	private Boolean paymentCapture = true;
 
-	private String userId;
-
-	private String problemDetailsId;
+	private String bulkSmsPackageId;
 	
 	private String doctorId;
 
@@ -46,21 +44,7 @@ public class OrderRequest {
 		this.paymentCapture = paymentCapture;
 	}
 
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public String getProblemDetailsId() {
-		return problemDetailsId;
-	}
-
-	public void setProblemDetailsId(String problemDetailsId) {
-		this.problemDetailsId = problemDetailsId;
-	}
+	
 
 	public String getDoctorId() {
 		return doctorId;
@@ -93,6 +77,16 @@ public class OrderRequest {
 	public void setTransferAmount(Double transferAmount) {
 		this.transferAmount = transferAmount;
 	}
+
+	public String getBulkSmsPackageId() {
+		return bulkSmsPackageId;
+	}
+
+	public void setBulkSmsPackageId(String bulkSmsPackageId) {
+		this.bulkSmsPackageId = bulkSmsPackageId;
+	}
+
+	
 	
 	
 

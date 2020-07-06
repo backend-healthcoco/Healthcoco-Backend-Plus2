@@ -15,9 +15,9 @@ public class BulkSmsCreditsCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private long creditBalance;
+	private Long creditBalance;
 	@Field
-	private long creditSpent;
+	private Long creditSpent;
 	@Field
 	private ObjectId doctorId;
 	@Field
@@ -42,7 +42,7 @@ public class BulkSmsCreditsCollection extends GenericCollection {
 		return creditBalance;
 	}
 
-	public void setCreditBalance(long creditBalance) {
+	public void setCreditBalance(Long creditBalance) {
 		this.creditBalance = creditBalance;
 	}
 
@@ -50,7 +50,7 @@ public class BulkSmsCreditsCollection extends GenericCollection {
 		return creditSpent;
 	}
 
-	public void setCreditSpent(long creditSpent) {
+	public void setCreditSpent(Long creditSpent) {
 		this.creditSpent = creditSpent;
 	}
 

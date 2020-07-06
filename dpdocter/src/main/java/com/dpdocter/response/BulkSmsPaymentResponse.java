@@ -7,13 +7,11 @@ public class BulkSmsPaymentResponse {
 
 	private String id;
 
-	private String userId;
-
-	private String problemDetailsId;
+	private String bulkSmsPackageId;
 
 	private String transactionId;
 
-//	private String transactionStatus;
+	private String transactionStatus;
 
 	private String doctorId;	
 	
@@ -43,22 +41,7 @@ public class BulkSmsPaymentResponse {
 		this.id = id;
 	}
 
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public String getProblemDetailsId() {
-		return problemDetailsId;
-	}
-
-	public void setProblemDetailsId(String problemDetailsId) {
-		this.problemDetailsId = problemDetailsId;
-	}
-
+	
 	public String getTransactionId() {
 		return transactionId;
 	}
@@ -129,6 +112,24 @@ public class BulkSmsPaymentResponse {
 
 	public void setReciept(String reciept) {
 		this.reciept = reciept;
+	}
+
+	
+
+	public String getBulkSmsPackageId() {
+		return bulkSmsPackageId;
+	}
+
+	public void setBulkSmsPackageId(String bulkSmsPackageId) {
+		this.bulkSmsPackageId = bulkSmsPackageId;
+	}
+
+	public String getTransactionStatus() {
+		return transactionStatus;
+	}
+
+	public void setTransactionStatus(String transactionStatus) {
+		this.transactionStatus = transactionStatus;
 	}
 	
 	

@@ -31,9 +31,11 @@ import com.dpdocter.collections.BulkSmsCreditsCollection;
 import com.dpdocter.collections.BulkSmsHistoryCollection;
 import com.dpdocter.collections.BulkSmsPackageCollection;
 import com.dpdocter.collections.BulkSmsPaymentCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.PaymentMode;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -310,19 +312,22 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 
 
 	@Override
-	public BulkSmsPaymentResponse createOrder(OrderRequest request) {
+	public BulkSmsPaymentResponse addCredits(OrderRequest request) {
 		Order order = null;
 		BulkSmsPaymentResponse response = null;
 		try {
 			RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
 			JSONObject orderRequest = new JSONObject();
-			UserCollection doctor = userRepository
-					.findById(new ObjectId(request.getDoctorId())).orElse(null);
-			if (doctor == null) {
-				throw new BusinessException(ServiceError.InvalidInput, "Doctor not found");
+			
+			BulkSmsPackageCollection bulkPackage=bulkSmsRepository.findById(new ObjectId(request.getBulkSmsPackageId())).orElse(null);
+			
+			if(bulkPackage==null)
+			{
+				throw new BusinessException(ServiceError.InvalidInput, "Sms Package not found");
 			}
-
-			UserCollection user = userRepository.findById(new ObjectId(request.getUserId())).orElse(null);
+			
+			
+			UserCollection user = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (user == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "user not found");
 			}
@@ -377,22 +382,19 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 		Boolean response = false;
 		try {
 			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+			
+		
 			if (doctor == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "doctor not found");
 			}
 
-			UserCollection user = userRepository.findById(new ObjectId(request.getUserId())).orElse(null);
-			if (user == null) {
-				throw new BusinessException(ServiceError.InvalidInput, "user not found");
-			}
 			JSONObject options = new JSONObject();
 			options.put("razorpay_order_id", request.getOrderId());
 			options.put("razorpay_payment_id", request.getPaymentId());
 			options.put("razorpay_signature", request.getSignature());
 			response = Utils.verifyPaymentSignature(options, secret);
 			if (response) {
-				Criteria criteria = new Criteria("orderId").is(request.getOrderId()).and("userId")
-						.is(new ObjectId(request.getUserId())).and("doctorId")
+				Criteria criteria = new Criteria("orderId").is(request.getOrderId()).and("doctorId")
 						.is(new ObjectId(request.getDoctorId())).and("transactionStatus").is("PENDING");
 				BulkSmsPaymentCollection onlinePaymentCollection = mongoTemplate.findOne(new Query(criteria),
 						BulkSmsPaymentCollection.class);
@@ -401,13 +403,31 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 				onlinePaymentCollection.setCreatedTime(new Date());
 				onlinePaymentCollection.setUpdatedTime(new Date());
 				bulkSmsPaymentRepository.save(onlinePaymentCollection);
+				
+			
 				response=true;
 		//		user.setPaymentStatus(true);
 		//		String regNo = user.getRegNo().replace("TEM", "");
 	//			user.setRegNo(conferenceCollection.getTitle().substring(0, 2).toUpperCase() + regNo);
-				user = userRepository.save(user);
+				doctor = userRepository.save(doctor);
 				if (onlinePaymentCollection.getTransactionStatus().equalsIgnoreCase("SUCCESS")) {
-					if (user != null) {
+					if (doctor != null) {
+						
+						BulkSmsCreditsCollection creditCollection=new BulkSmsCreditsCollection();
+						BulkSmsPackageCollection packageCollection=bulkSmsRepository.findById(new ObjectId(request.getBulkSmsPackageId())).orElse(null);
+					
+						if(packageCollection==null)
+							throw new BusinessException(ServiceError.InvalidInput, "Sms Package not found");
+						
+						creditCollection.setDoctorId(doctor.getId());
+						creditCollection.setCreditBalance(packageCollection.getSmsCredits());
+						creditCollection.setDateOfTransaction(new Date());
+						creditCollection.setPaymentMode(request.getMode());
+						creditCollection.setCreatedTime(new Date());
+						bulkSmsCreditRepository.save(creditCollection);
+						
+						
+						
 						String message = "";
 						message = StringEscapeUtils.unescapeJava(message);
 						 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
@@ -421,12 +441,12 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							String pattern = "dd/MM/yyyy";
 							SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		
-							sms.setSmsText("Hi " + user.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(onlinePaymentCollection.getCreatedTime())
+							sms.setSmsText("Hi " + doctor.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(onlinePaymentCollection.getCreatedTime())
 							+ " by "+onlinePaymentCollection.getMode()+" and your transactionId is"+onlinePaymentCollection.getTransactionId()+" for the receipt "+onlinePaymentCollection.getReciept()
 							+" and the total cost is "+ onlinePaymentCollection.getDiscountAmount() + ".");
 	
 								SMSAddress smsAddress = new SMSAddress();
-							smsAddress.setRecipient(user.getMobileNumber());
+							smsAddress.setRecipient(doctor.getMobileNumber());
 							sms.setSmsAddress(smsAddress);
 							smsDetail.setSms(sms);
 							smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);

@@ -26,8 +26,10 @@ public interface BulkSmsServices {
 	
 	List<BulkSmsReport> getSmsReport(int page,int size,String searchTerm,String doctorId,String locationId);
 	
-	public BulkSmsPaymentResponse createOrder(OrderRequest request);
+//	public BulkSmsPaymentResponse createOrder(OrderRequest request);
 	
 	public Boolean verifySignature(PaymentSignatureRequest request);
+
+	BulkSmsPaymentResponse addCredits(OrderRequest request);
 
 }

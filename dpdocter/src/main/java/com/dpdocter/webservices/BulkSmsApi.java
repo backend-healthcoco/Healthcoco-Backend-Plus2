@@ -79,7 +79,8 @@ public class BulkSmsApi {
 	@GET
 	public Response<BulkSmsCredits> getBulkSmsHistory(@DefaultValue("0")@QueryParam(value ="size") int size, 
 			@DefaultValue("0")	@QueryParam(value ="page") int page,
-			@QueryParam(value ="doctorId") String doctorId, 
+			@QueryParam(value ="doctorId") String doctorId,
+			@QueryParam(value ="locationIdId") String locationId,
 			@QueryParam(value ="searchTerm") String searchTerm) {
 
 		Response<BulkSmsCredits> response = new Response<BulkSmsCredits>();
@@ -87,7 +88,7 @@ public class BulkSmsApi {
 			logger.warn("doctorId send  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId send  is NULL");
 		}
-			response.setDataList(bulkSmsServices.getBulkSmsHistory(page, size, searchTerm, doctorId));
+			response.setDataList(bulkSmsServices.getBulkSmsHistory(page, size, searchTerm, doctorId,locationId));
 	
 		return response;
 	}
@@ -101,8 +102,8 @@ public class BulkSmsApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		if (DPDoctorUtils.anyStringEmpty(request.getProblemDetailsId(), request.getUserId(),request.getDoctorId())) {
-			logger.warn("userId,problemDetailId and doctorId should not be Null or empty");
+		if (DPDoctorUtils.anyStringEmpty(request.getBulkSmsId(),request.getDoctorId())) {
+			logger.warn(" doctorId should not be Null or empty");
 			throw new BusinessException(ServiceError.InvalidInput, "userId,problemDetailId and doctorId should not be Null or empty");
 		}
 
