@@ -2351,7 +2351,7 @@ public interface PathProxy {
 	public static final String FITNESS_ASSESSMENT_BASE_URL = BASE_URL + "/fitnessAssessment";
 
 	public interface FitnessUrls {
-		public static final String GET_FITNESS_ASSESSMENT = "/get";
+		public static final String GET_FITNESS_ASSESSMENT = "/get/{doctorId}/{locationId}/{hospitalId}/{patientId}";
 		public static final String GET_FITNESS_ASSESSMENT_BY_ID = "/get/{id}";
 		public static final String ADD_EDIT_FITNESS_ASSESSMENT = "/addEdit";
 		public static final String DELETE_FITNESS_ASSESSMENT = "/delete/{id}";

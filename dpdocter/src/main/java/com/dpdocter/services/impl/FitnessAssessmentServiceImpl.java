@@ -44,7 +44,7 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 	private static Logger logger = Logger.getLogger(FitnessAssessmentServiceImpl.class.getName());
 	@Autowired
 	private FitnessAssessmentRepository fitnessAssessmentRepository;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
@@ -227,12 +227,12 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 								.isNullOrEmptyList(physicalActivityAndMedicalHistory.getPhysicalMedicalHistoryList()))
 							physicalActivityAndMedicalHistory.getPhysicalMedicalHistoryList().forEach(
 									(key, value) -> physicalMedicalHistoryList.put(key, new ArrayList<String>()));
-						if (!DPDoctorUtils
-								.isNullOrEmptyList(physicalActivityAndMedicalHistory.getStressAreaOfLifeList())) {
-							List<StressAreaOfLife> stressAreaOfLifeList = new ArrayList<StressAreaOfLife>();
-							stressAreaOfLifeList.addAll(physicalActivityAndMedicalHistory.getStressAreaOfLifeList());
-							physicalActivityAndMedicalHistory.setStressAreaOfLifeList(stressAreaOfLifeList);
-						}
+						if (physicalActivityAndMedicalHistory.getStressAreaOfLifeList()!=null) 
+//							List<StressAreaOfLife> stressAreaOfLifeList = new ArrayList<StressAreaOfLife>();
+//							stressAreaOfLifeList.addAll(physicalActivityAndMedicalHistory.getStressAreaOfLifeList());
+							physicalActivityAndMedicalHistory.getStressAreaOfLifeList().clear();
+							physicalActivityAndMedicalHistory.setStressAreaOfLifeList(request.getPhysicalActivityAndMedicalHistory().getStressAreaOfLifeList());
+						
 						fitnessAssessmentCollection
 								.setPhysicalActivityAndMedicalHistory(physicalActivityAndMedicalHistory);
 					}
@@ -404,10 +404,13 @@ public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
 	}
 
 	@Override
-	public Integer countFitnessAssessment(Boolean discarded) {
+	public Integer countFitnessAssessment(Boolean discarded, String patientId) {
 		Integer response = null;
 		try {
 			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
+				criteria.and("patientId").is(new ObjectId(patientId));
+			}
 			criteria.and("discarded").is(discarded);
 			response = (int) mongoTemplate.count(new Query(criteria), FitnessAssessmentCollection.class);
 		} catch (BusinessException e) {

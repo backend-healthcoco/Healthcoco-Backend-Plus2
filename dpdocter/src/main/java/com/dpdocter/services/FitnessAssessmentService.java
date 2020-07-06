@@ -17,6 +17,6 @@ public interface FitnessAssessmentService {
 
 	String getFitnessAssessmentFile(String fitnessId);
 
-	Integer countFitnessAssessment(Boolean isDiscarded);
+	Integer countFitnessAssessment(Boolean isDiscarded,String patientId);
 
 }
