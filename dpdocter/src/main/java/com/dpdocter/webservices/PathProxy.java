@@ -2394,6 +2394,10 @@ public interface PathProxy {
 		public static final String CREATE_PAYMENT = "/payment/create";
 		
 		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
+		
+		public static final String GET_COUNTRYLIST = "/country/get";
+		
+		public static final String GET_PACKAGES = "/package/getList";
 
 	}
 

@@ -15,11 +15,12 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.apache.velocity.VelocityContext;
 import org.bson.types.ObjectId;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -27,15 +28,15 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.Country;
 import com.dpdocter.beans.PackageDetailObject;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.Subscription;
 import com.dpdocter.beans.SubscriptionDetail;
-import com.dpdocter.collections.ConfexUserCollection;
+import com.dpdocter.collections.CountryCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
-import com.dpdocter.collections.DoctorConferenceCollection;
 import com.dpdocter.collections.DoctorSubscriptionPaymentCollection;
 import com.dpdocter.collections.PackageDetailObjectCollection;
 import com.dpdocter.collections.RoleCollection;
@@ -46,7 +47,6 @@ import com.dpdocter.collections.SubscriptionHistoryCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.ComponentType;
-import com.dpdocter.enums.ConfexUserState;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.SMSStatus;
@@ -839,4 +839,101 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		return response;
 	}
 
+	
+	@Override
+	public List<Country> getCountry(int size, int page, Boolean isDiscarded, String searchTerm) {
+		List<Country> response = null;
+		try {
+			Criteria criteria = new Criteria("isDiscarded").is(isDiscarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("countryName").regex("^" + searchTerm, "i"),
+						new Criteria("countryName").regex("^" + searchTerm));
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, CountryCollection.class, Country.class).getMappedResults();
+
+		} catch (BusinessException e) {
+			logger.error("Error while getting Country " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Country " + e.getMessage());
+
+		}
+		return response;
+
+	}
+
+	@Override
+	public Integer countCountry(Boolean isDiscarded, String searchTerm) {
+		Integer response = null;
+		try {
+			Criteria criteria = new Criteria("isDiscarded").is(isDiscarded);
+			criteria = criteria.orOperator(new Criteria("countryName").regex("^" + searchTerm, "i"),
+					new Criteria("countryName").regex("^" + searchTerm));
+
+			response = (int) mongoTemplate.count(new Query(criteria), CountryCollection.class);
+		} catch (BusinessException e) {
+			logger.error("Error while counting Country " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while Country " + e.getMessage());
+
+		}
+		return response;
+	}
+	
+	@Override
+	public List<PackageDetailObject> getPackages(int size, int page, Boolean isDiscarded, String searchTerm) {
+		List<PackageDetailObject> response = null;
+		try {
+			Criteria criteria = new Criteria("isDiscarded").is(isDiscarded);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("packageName").regex("^" + searchTerm, "i"),
+						new Criteria("packageName").regex("^" + searchTerm));
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, PackageDetailObjectCollection.class, PackageDetailObject.class)
+					.getMappedResults();
+
+		} catch (BusinessException e) {
+			logger.error("Error while getting Package detail " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Package detail " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public Integer countPackages(Boolean isDiscarded, String searchTerm) {
+		Integer response = null;
+		try {
+			Criteria criteria = new Criteria("isDiscarded").is(isDiscarded);
+			criteria = criteria.orOperator(new Criteria("packageName").regex("^" + searchTerm, "i"),
+					new Criteria("packageName").regex("^" + searchTerm));
+
+			response = (int) mongoTemplate.count(new Query(criteria), PackageDetailObjectCollection.class);
+		} catch (BusinessException e) {
+			logger.error("Error while counting Package detail " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while Package detail " + e.getMessage());
+
+		}
+		return response;
+
+	}
 }

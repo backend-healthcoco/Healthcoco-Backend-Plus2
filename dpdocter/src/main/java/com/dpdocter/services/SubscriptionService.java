@@ -8,6 +8,7 @@ import com.dpdocter.beans.SubscriptionDetail;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.request.SubscriptionPaymentSignatureRequest;
 import com.dpdocter.request.SubscriptionRequest;
+import com.dpdocter.beans.Country;
 
 public interface SubscriptionService {
 	public List<SubscriptionDetail> addsubscriptionData();
@@ -21,5 +22,12 @@ public interface SubscriptionService {
 	
 	public Boolean verifySignature(SubscriptionPaymentSignatureRequest request);
 
+	public List<Country> getCountry(int size, int page, Boolean isDiscarded, String searchTerm);
+	
+	public Integer countCountry(Boolean isDiscarded, String searchTerm);
+	
+	public List<PackageDetailObject> getPackages(int size, int page, Boolean isDiscarded, String searchTerm);
 
+	public Integer countPackages(Boolean isDiscarded, String searchTerm);
+	
 }

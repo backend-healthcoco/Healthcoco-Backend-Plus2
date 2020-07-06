@@ -1,6 +1,9 @@
 package com.dpdocter.webservices.v2;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.dpdocter.beans.Country;
 import com.dpdocter.beans.PackageDetailObject;
 import com.dpdocter.beans.Subscription;
 import com.dpdocter.enums.PackageType;
@@ -115,4 +119,33 @@ public class SubscriptionApi {
 		response.setData(subscriptionService.verifySignature(request));
 		return response;
 	}
+	
+	@Path(value = PathProxy.SubscriptionUrls.GET_COUNTRYLIST)
+	@GET
+	@ApiOperation(value = PathProxy.SubscriptionUrls.GET_COUNTRYLIST, notes = PathProxy.SubscriptionUrls.GET_COUNTRYLIST)
+	public Response<Country> getCountryList(@QueryParam("page") int page, @QueryParam("size") int size,			
+			@DefaultValue("false") @QueryParam(value = "isDiscarded") Boolean isDiscarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+
+		Integer count = subscriptionService.countCountry(isDiscarded, searchTerm);
+		Response<Country> response = new Response<Country>();
+		if (count > 0)
+			response.setDataList(subscriptionService.getCountry(size, page, isDiscarded, searchTerm));
+		response.setCount(count);
+		return response;
+	}
+	
+	@Path(value = PathProxy.SubscriptionUrls.GET_PACKAGES)
+	@GET
+	@ApiOperation(value = PathProxy.SubscriptionUrls.GET_PACKAGES, notes = PathProxy.SubscriptionUrls.GET_PACKAGES)
+	public Response<PackageDetailObject> getPackagesList(@QueryParam("page") int page, @QueryParam("size") int size,			
+			@DefaultValue("false") @QueryParam(value = "isDiscarded") Boolean isDiscarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+		Integer count = subscriptionService.countPackages(isDiscarded, searchTerm);
+		Response<PackageDetailObject> response = new Response<PackageDetailObject>();
+		if (count > 0)
+			response.setDataList(subscriptionService.getPackages(size, page, isDiscarded, searchTerm));
+		response.setCount(count);
+		return response;
+	}	
 }
