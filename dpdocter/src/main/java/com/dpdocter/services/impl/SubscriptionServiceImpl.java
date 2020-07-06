@@ -237,7 +237,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				}
 				// add payment in collection
 				System.out.println(request.getPaymentStatus());
-				if (request.getPaymentStatus() != null && request.getPaymentStatus() == true) {
+				if (request.getPaymentStatus() == true) {
 					double amount = (request.getAmount() * 100);
 					// amount in paise
 					orderRequest.put("amount", (int) amount);

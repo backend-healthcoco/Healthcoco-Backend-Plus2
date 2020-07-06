@@ -2379,6 +2379,7 @@ public interface PathProxy {
 
 		public static final String CREATE_VIDEO_ACCESS_TOKEN = "/video/accessToken/create/{userId}/{room}";
 
+		public static final String CREATE_PUSH_NOTIFICATION = "/pushNotify";
 	}
 	
 	public static final String SUBSCRIPTION_BASE_URL = BASE_URL + "/subscription";
