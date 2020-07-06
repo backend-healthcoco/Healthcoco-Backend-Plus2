@@ -858,7 +858,10 @@ public class SignUpServiceImpl implements SignUpService {
 				throw new BusinessException(ServiceError.InvalidInput, "Email Address cannot be null");
 			}
 			
+
 			List<UserCollection>userCollections=userRepository.findByEmailAddressIgnoreCase(request.getEmailAddress());
+
+
 			
 			if(userCollections!=null && !userCollections.isEmpty())
 				if(userCollections.get(0).getEmailAddress() !=null && userCollections.get(0).getPassword()!=null)
@@ -1174,7 +1177,7 @@ public class SignUpServiceImpl implements SignUpService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error occured while creating doctor");
-			throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor"+request.getEmailAddress());
 		}
 		return response;
 	}
