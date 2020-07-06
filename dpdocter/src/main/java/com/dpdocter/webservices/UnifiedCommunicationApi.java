@@ -67,4 +67,17 @@ public class UnifiedCommunicationApi {
 	return response;
 
 	}
+	
+	@Path(value = PathProxy.ChatUrls.CREATE_TWILIO_NOTIFICATION)
+	@GET
+	@ApiOperation(value = PathProxy.ChatUrls.CREATE_TWILIO_NOTIFICATION, notes = PathProxy.ChatUrls.CREATE_TWILIO_NOTIFICATION)
+	public Response<Boolean> createTwilioPushNotifition()
+	throws MessagingException {
+	   
+	Response<Boolean> response = new Response<Boolean>();
+	Boolean push=unifiedCommunicationServices.twilioPushNotification();
+	response.setData(push);
+	return response;
+
+	}
 }

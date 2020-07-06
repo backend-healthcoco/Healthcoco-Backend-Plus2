@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import com.dpdocter.collections.UnifiedCommunicationDetailsCollection;
 import com.dpdocter.enums.ComponentType;
@@ -17,11 +16,14 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.UnifiedCommunicationDetailsRepository;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.UnifiedCommunicationServices;
+import com.twilio.Twilio;
 import com.twilio.jwt.accesstoken.AccessToken;
 import com.twilio.jwt.accesstoken.ChatGrant;
 import com.twilio.jwt.accesstoken.VideoGrant;
+import com.twilio.rest.chat.v2.Service;
 
-@Service
+
+@org.springframework.stereotype.Service
 public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationServices {
 
 	private static Logger logger = Logger.getLogger(UnifiedCommunicationServicesImpl.class);
@@ -43,6 +45,9 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 
 	@Value(value = "${twilio.video.ttl}")
 	private int TWILIO_VIDEO_TTL;
+	
+	@Value(value = "${twilio.auth.token}")
+	private String TWILIO_AUTH_TOKEN;
 	
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
@@ -129,5 +134,29 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 		return response;
 
 	}
+	
+	@Override
+	public Boolean twilioPushNotification() {
+	Boolean response=false;
+	try{
+	Twilio.init(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+	       Service service = Service.updater(SERVICE_SID)
+	           .setNotificationsAddedToChannelEnabled(
+	               true)
+	           .setNotificationsAddedToChannelSound(
+	               "default")
+	           .setNotificationsAddedToChannelTemplate(
+	               "A New message in ${CHANNEL} from ${USER}: ${MESSAGE}")
+	           .update();
+
+	       System.out.println(service.getFriendlyName());
+	response=true;
+	}catch (Exception e) {
+	logger.error("Error : " + e.getMessage());
+	throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+	}
+	return response;
+	}
+
 
 }
