@@ -68,7 +68,16 @@ public class SubscriptionCollection extends GenericCollection {
 	private String emailAddress;
 
 	@Field
-	private String noOfSms;
+	private String orderId;
+
+	@Field
+	private String reciept;
+
+	@Field
+	private Boolean paymentStatus;
+
+	@Field
+	private String transactionStatus;
 
 	public ObjectId getId() {
 		return id;
@@ -77,8 +86,6 @@ public class SubscriptionCollection extends GenericCollection {
 	public void setId(ObjectId id) {
 		this.id = id;
 	}
-
-	
 
 	public ObjectId getDoctorId() {
 		return doctorId;
@@ -216,12 +223,36 @@ public class SubscriptionCollection extends GenericCollection {
 		this.emailAddress = emailAddress;
 	}
 
-	public String getNoOfSms() {
-		return noOfSms;
+	public String getOrderId() {
+		return orderId;
 	}
 
-	public void setNoOfSms(String noOfSms) {
-		this.noOfSms = noOfSms;
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getReciept() {
+		return reciept;
+	}
+
+	public void setReciept(String reciept) {
+		this.reciept = reciept;
+	}
+
+	public Boolean getPaymentStatus() {
+		return paymentStatus;
+	}
+
+	public void setPaymentStatus(Boolean paymentStatus) {
+		this.paymentStatus = paymentStatus;
+	}
+
+	public String getTransactionStatus() {
+		return transactionStatus;
+	}
+
+	public void setTransactionStatus(String transactionStatus) {
+		this.transactionStatus = transactionStatus;
 	}
 
 	@Override

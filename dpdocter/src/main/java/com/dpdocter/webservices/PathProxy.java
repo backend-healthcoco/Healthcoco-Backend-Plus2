@@ -2390,6 +2390,9 @@ public interface PathProxy {
 		
 		public static final String GET_PACKAGES_BY_NAME = "/package/get";
 
+		public static final String CREATE_PAYMENT = "/payment/create";
+		
+		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
 
 	}
 

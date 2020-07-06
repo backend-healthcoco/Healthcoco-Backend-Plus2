@@ -11,10 +11,13 @@ import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.PaymentMode;
 
 @Document(collection = "subscription_History_cl")
-public class SubscriptionHistoryCollection extends GenericCollection{
+public class SubscriptionHistoryCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
+
+	@Field
+	private ObjectId subscriptionId;
 
 	@Field
 	private ObjectId doctorId;
@@ -30,7 +33,7 @@ public class SubscriptionHistoryCollection extends GenericCollection{
 
 	@Field
 	private String amount;
-	
+
 	@Field
 	private String amountViaCash;
 
@@ -45,7 +48,7 @@ public class SubscriptionHistoryCollection extends GenericCollection{
 
 	@Field
 	private String chequeNo;
-	
+
 	@Field
 	private String countryCode;
 
@@ -54,12 +57,21 @@ public class SubscriptionHistoryCollection extends GenericCollection{
 
 	@Field
 	private Date chequeDate;
-	
+
 	@Field
 	private Boolean isAdvertisement = Boolean.FALSE;
 
 	@Field
-	private Boolean discarded = Boolean.FALSE;
+	private Boolean isDiscarded = Boolean.FALSE;
+
+	@Field
+	private String transactionStatus;
+
+	@Field
+	private String orderId;
+
+	@Field
+	private String reciept;
 
 	public ObjectId getId() {
 		return id;
@@ -68,8 +80,6 @@ public class SubscriptionHistoryCollection extends GenericCollection{
 	public void setId(ObjectId id) {
 		this.id = id;
 	}
-
-	
 
 	public ObjectId getDoctorId() {
 		return doctorId;
@@ -101,7 +111,7 @@ public class SubscriptionHistoryCollection extends GenericCollection{
 
 	public void setPackageName(PackageType packageName) {
 		this.packageName = packageName;
-	}	
+	}
 
 	public String getAmount() {
 		return amount;
@@ -175,14 +185,6 @@ public class SubscriptionHistoryCollection extends GenericCollection{
 		this.isAdvertisement = isAdvertisement;
 	}
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
-
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}	
-
 	public String getCountryCode() {
 		return countryCode;
 	}
@@ -191,16 +193,44 @@ public class SubscriptionHistoryCollection extends GenericCollection{
 		this.countryCode = countryCode;
 	}
 
-	@Override
-	public String toString() {
-		return "SubscriptionHistoryCollection [id=" + id + ", doctorId=" + doctorId + ", fromDate=" + fromDate
-				+ ", toDate=" + toDate + ", packageName=" + packageName + ", amount=" + amount + ", amountViaCash="
-				+ amountViaCash + ", amountViaCheque=" + amountViaCheque + ", mode=" + mode + ", bankName=" + bankName
-				+ ", chequeNo=" + chequeNo + ", countryCode=" + countryCode + ", branch=" + branch + ", chequeDate="
-				+ chequeDate + ", isAdvertisement=" + isAdvertisement + ", discarded=" + discarded + "]";
+	public ObjectId getSubscriptionId() {
+		return subscriptionId;
 	}
 
-	
-	
+	public void setSubscriptionId(ObjectId subscriptionId) {
+		this.subscriptionId = subscriptionId;
+	}
+
+	public Boolean getIsDiscarded() {
+		return isDiscarded;
+	}
+
+	public void setIsDiscarded(Boolean isDiscarded) {
+		this.isDiscarded = isDiscarded;
+	}
+
+	public String getTransactionStatus() {
+		return transactionStatus;
+	}
+
+	public void setTransactionStatus(String transactionStatus) {
+		this.transactionStatus = transactionStatus;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getReciept() {
+		return reciept;
+	}
+
+	public void setReciept(String reciept) {
+		this.reciept = reciept;
+	}
 
 }

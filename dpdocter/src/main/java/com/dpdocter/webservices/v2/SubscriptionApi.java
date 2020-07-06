@@ -14,16 +14,15 @@ import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.PackageDetailObject;
 import com.dpdocter.beans.Subscription;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.SubscriptionPaymentSignatureRequest;
+import com.dpdocter.request.SubscriptionRequest;
 import com.dpdocter.services.SubscriptionService;
 import com.dpdocter.webservices.PathProxy;
 
@@ -84,7 +83,7 @@ public class SubscriptionApi {
 	@Path(value = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION)
 	@POST
 	@ApiOperation(value = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION, notes = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION)
-	public Response<Subscription> addEditSubscription(@RequestBody Subscription request) {
+	public Response<Subscription> addEditSubscription(@RequestBody SubscriptionRequest request) {
 
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");			
@@ -93,6 +92,27 @@ public class SubscriptionApi {
 	
 		Response<Subscription> response = new Response<Subscription>();
 		response.setData(subscriptionService.addEditSubscription(request));
+		return response;
+	}
+	
+	
+	
+	@Path(value = PathProxy.SubscriptionUrls.VERIFY_SIGNATURE)
+	@POST
+	@ApiOperation(value = PathProxy.SubscriptionUrls.VERIFY_SIGNATURE, notes = PathProxy.SubscriptionUrls.VERIFY_SIGNATURE)
+	public Response<Boolean> verifySignature(@RequestBody SubscriptionPaymentSignatureRequest request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getSubscriptionId(), request.getDoctorId(), request.getOrderId(),
+				request.getSignature(), request.getPaymentId())) {
+			logger.warn("doctorId,subscriptionId,orderId,signature,paymentId should not be Null or empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"doctorId,subscriptionId,orderId,signature,paymentId should not be Null or empty");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(subscriptionService.verifySignature(request));
 		return response;
 	}
 }
