@@ -72,9 +72,9 @@ public class FreeQuestionAnswerAPI {
 			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("updatedTime") long updatedTime) {
 		Response<FreeQuestionResponse> response = new Response<FreeQuestionResponse>();
-		Integer count = freeQuetionAnswerService.countFreeQuestion(discarded);
+		Integer count = freeQuetionAnswerService.countFreeQuestion(discarded,doctorId);
 		response.setDataList(
-				freeQuetionAnswerService.getFreeQuestionList(size, page, searchTerm, discarded, doctorId, updatedTime));
+				freeQuetionAnswerService.getUnansweredQuestionList(size, page, searchTerm, discarded, doctorId, updatedTime));
 		response.setCount(count);
 		return response;
 	}
@@ -86,7 +86,7 @@ public class FreeQuestionAnswerAPI {
 			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("updatedTime") long updatedTime) {
 		Response<FreeQuestionResponse> response = new Response<FreeQuestionResponse>();
-		Integer count = freeQuetionAnswerService.countFreeQuestion(discarded);
+		Integer count = freeQuetionAnswerService.countFreeQuestion(discarded,doctorId);
 		response.setDataList(freeQuetionAnswerService.getAnsweredQuestionList(size, page, searchTerm, discarded,
 				doctorId, updatedTime));
 		response.setCount(count);

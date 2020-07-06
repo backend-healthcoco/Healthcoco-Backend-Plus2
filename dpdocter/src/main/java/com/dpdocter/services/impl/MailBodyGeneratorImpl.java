@@ -509,5 +509,15 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		return text;
 	}
 
+	@Override
+	public String generateFreeQuestionAnswerEmailBody(String emailAddress, String locationName, String templatePath,
+			String doctorName) {
+		VelocityContext context = new VelocityContext();
+		context.put("locationName" ,locationName);
+		context.put("doctorName", doctorName);
+		 String text = mergeTemplate(context, templatePath);
+			return text;
+	}
+
 
 }

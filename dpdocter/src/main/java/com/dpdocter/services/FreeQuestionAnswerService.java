@@ -10,9 +10,9 @@ public interface FreeQuestionAnswerService {
 
 	FreeAnswerResponse addFreeAnswer(FreeAnswerRequest request);
 
-	Integer countFreeQuestion(Boolean discarded);
+	Integer countFreeQuestion(Boolean discarded, String doctorId);
 
-	List<FreeQuestionResponse> getFreeQuestionList(int size, int page, String searchTerm, boolean discarded, String doctorId,
+	List<FreeQuestionResponse> getUnansweredQuestionList(int size, int page, String searchTerm, boolean discarded, String doctorId,
 			long updatedTime);
 
 	List<FreeQuestionResponse> getAnsweredQuestionList(int size, int page, String searchTerm, boolean discarded, String doctorId,
