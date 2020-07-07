@@ -11,15 +11,15 @@ public class BulkSmsCredits extends GenericCollection {
 
 	private String id;
 
-	private long creditBalance;
+	private Long creditBalance;
 	
-	private long creditSpent;
+	private Long creditSpent;
 	
 	private String doctorId;
 	
 	private String locationId;
 	
-	private String packageName;
+	private BulkSmsPackage smsPackage;
 	
 	private Date dateOfTransaction=new Date();
 	
@@ -33,22 +33,20 @@ public class BulkSmsCredits extends GenericCollection {
 	public void setId(String id) {
 		this.id = id;
 	}
-
 	
-
-	public long getCreditBalance() {
+	public Long getCreditBalance() {
 		return creditBalance;
 	}
 
-	public void setCreditBalance(long creditBalance) {
+	public void setCreditBalance(Long creditBalance) {
 		this.creditBalance = creditBalance;
 	}
 
-	public long getCreditSpent() {
+	public Long getCreditSpent() {
 		return creditSpent;
 	}
 
-	public void setCreditSpent(long creditSpent) {
+	public void setCreditSpent(Long creditSpent) {
 		this.creditSpent = creditSpent;
 	}
 
@@ -76,12 +74,14 @@ public class BulkSmsCredits extends GenericCollection {
 		this.dateOfTransaction = dateOfTransaction;
 	}
 
-	public String getPackageName() {
-		return packageName;
+	
+
+	public BulkSmsPackage getSmsPackage() {
+		return smsPackage;
 	}
 
-	public void setPackageName(String packageName) {
-		this.packageName = packageName;
+	public void setSmsPackage(BulkSmsPackage smsPackage) {
+		this.smsPackage = smsPackage;
 	}
 
 	public PaymentMode getPaymentMode() {

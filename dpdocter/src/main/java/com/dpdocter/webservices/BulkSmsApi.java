@@ -102,13 +102,13 @@ public class BulkSmsApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		if (DPDoctorUtils.anyStringEmpty(request.getBulkSmsId(),request.getDoctorId())) {
+		if (DPDoctorUtils.anyStringEmpty(request.getBulkSmsPackageId(),request.getDoctorId())) {
 			logger.warn(" doctorId should not be Null or empty");
 			throw new BusinessException(ServiceError.InvalidInput, "userId,problemDetailId and doctorId should not be Null or empty");
 		}
 
 		Response<BulkSmsPaymentResponse> response = new Response<BulkSmsPaymentResponse>();
-		response.setData(bulkSmsServices.createOrder(request));
+		response.setData(bulkSmsServices.addCredits(request));
 		return response;
 	}
 
@@ -120,7 +120,7 @@ public class BulkSmsApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		if (DPDoctorUtils.anyStringEmpty(request.getBulkSmsPackageId(), request.getUserId(), request.getOrderId(),
+		if (DPDoctorUtils.anyStringEmpty(request.getBulkSmsPackageId(), request.getDoctorId(), request.getOrderId(),
 				request.getSignature(), request.getPaymentId())) {
 			logger.warn("userId,doctorId,orderId,signature,paymentId should not be Null or empty");
 			throw new BusinessException(ServiceError.InvalidInput,

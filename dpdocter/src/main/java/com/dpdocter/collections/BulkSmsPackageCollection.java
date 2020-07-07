@@ -10,51 +10,47 @@ public class BulkSmsPackageCollection extends GenericCollection{
 
 	@Id
 	private ObjectId id;
-	@Field
-	private ObjectId doctorId;
+	
 	@Field
 	private String packageName;
 	@Field
-	private String price;
+	private Long price;
 	@Field
 	private Long smsCredits;
 	@Field
-	private String costPerSms;
+	private int costPerSms;
+	
 	public ObjectId getId() {
 		return id;
 	}
 	public void setId(ObjectId id) {
 		this.id = id;
 	}
-	public ObjectId getDoctorId() {
-		return doctorId;
-	}
-	public void setDoctorId(ObjectId doctorId) {
-		this.doctorId = doctorId;
-	}
+	
 	public String getPackageName() {
 		return packageName;
 	}
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
 	}
-	public String getPrice() {
+	
+	
+	public Long getPrice() {
 		return price;
 	}
-	public void setPrice(String price) {
+	public void setPrice(Long price) {
 		this.price = price;
 	}
-	
 	public Long getSmsCredits() {
 		return smsCredits;
 	}
 	public void setSmsCredits(Long smsCredits) {
 		this.smsCredits = smsCredits;
 	}
-	public String getCostPerSms() {
+	public int getCostPerSms() {
 		return costPerSms;
 	}
-	public void setCostPerSms(String costPerSms) {
+	public void setCostPerSms(int costPerSms) {
 		this.costPerSms = costPerSms;
 	}
 	

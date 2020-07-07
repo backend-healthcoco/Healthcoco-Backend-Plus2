@@ -19,6 +19,10 @@ public class BulkSmsReport extends GenericCollection {
 	private String type;
 
 	private String responseId;
+	
+	private Long delivered;
+	
+	private Long undelivered;
 
 	public String getId() {
 		return id;
@@ -74,6 +78,24 @@ public class BulkSmsReport extends GenericCollection {
 
 	public void setResponseId(String responseId) {
 		this.responseId = responseId;
+	}
+	
+	
+
+	public Long getDelivered() {
+		return delivered;
+	}
+
+	public void setDelivered(Long delivered) {
+		this.delivered = delivered;
+	}
+
+	public Long getUndelivered() {
+		return undelivered;
+	}
+
+	public void setUndelivered(Long undelivered) {
+		this.undelivered = undelivered;
 	}
 
 	@Override

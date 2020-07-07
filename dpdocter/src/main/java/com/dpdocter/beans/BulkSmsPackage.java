@@ -8,11 +8,11 @@ public class BulkSmsPackage extends GenericCollection{
 
 	private String packageName;
 	
-	private String price;
+	private Long price;
 	
-	private String smsCredit;
+	private Long smsCredit;
 	
-	private String costPerSms;
+	private int costPerSms;
 
 	public String getId() {
 		return id;
@@ -30,27 +30,29 @@ public class BulkSmsPackage extends GenericCollection{
 		this.packageName = packageName;
 	}
 
-	public String getPrice() {
+	
+	
+	public Long getPrice() {
 		return price;
 	}
 
-	public void setPrice(String price) {
+	public void setPrice(Long price) {
 		this.price = price;
 	}
 
-	public String getSmsCredit() {
+	public Long getSmsCredit() {
 		return smsCredit;
 	}
 
-	public void setSmsCredit(String smsCredit) {
+	public void setSmsCredit(Long smsCredit) {
 		this.smsCredit = smsCredit;
 	}
 
-	public String getCostPerSms() {
+	public int getCostPerSms() {
 		return costPerSms;
 	}
 
-	public void setCostPerSms(String costPerSms) {
+	public void setCostPerSms(int costPerSms) {
 		this.costPerSms = costPerSms;
 	}
 

@@ -10,6 +10,7 @@ import java.util.TimeZone;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.BulkSmsPackage;
 import com.dpdocter.beans.BulkSmsReport;
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -49,6 +51,7 @@ import com.dpdocter.request.PaymentSignatureRequest;
 import com.dpdocter.response.BulkSmsPaymentResponse;
 import com.dpdocter.services.BulkSmsServices;
 import com.dpdocter.services.SMSServices;
+import com.mongodb.BasicDBObject;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
@@ -235,8 +238,8 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 			}
 			
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-				criteria = criteria.orOperator(new Criteria("packageName").regex("^" + searchTerm, "i"),
-						new Criteria("packageName").regex("^" + searchTerm));
+				criteria = criteria.orOperator(new Criteria("smsPackage.packageName").regex("^" + searchTerm, "i"),
+						new Criteria("smsPackage.packageName").regex("^" + searchTerm));
 			
 			
 			Aggregation aggregation = null;
@@ -255,6 +258,10 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 				}
 				response = mongoTemplate.aggregate(aggregation, BulkSmsHistoryCollection.class, BulkSmsCredits.class).getMappedResults();
 			
+			
+				
+				
+				
 			}catch (BusinessException e) {
 				e.printStackTrace();
 				throw new BusinessException(ServiceError.Unknown,"Error while getting Bulksms package"+ e.getMessage());
@@ -282,8 +289,8 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 			}
 			
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-				criteria = criteria.orOperator(new Criteria("packageName").regex("^" + searchTerm, "i"),
-						new Criteria("packageName").regex("^" + searchTerm));
+				criteria = criteria.orOperator(new Criteria("smsPackage.packageName").regex("^" + searchTerm, "i"),
+						new Criteria("smsPackage.packageName").regex("^" + searchTerm));
 			
 			
 			Aggregation aggregation = null;
@@ -299,8 +306,23 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							Aggregation.match(criteria),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				}
+			
+			
 				response = mongoTemplate.aggregate(aggregation, SMSTrackDetail.class, BulkSmsReport.class).getMappedResults();
 
+				CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
+						new BasicDBObject("_id", "$_id")
+						.append("smsDetails", new BasicDBObject("$addToSet", "$smsDetails"))
+						));
+
+				
+				for(BulkSmsReport credit:response)
+				{
+					int total=credit.getSmsDetails().size();
+					Long count= mongoTemplate.count(new Query(new Criteria("smsDetails.deliveryStatus").is("DELIVERED")),SMSTrackDetail.class);
+					credit.setDelivered(count);
+					credit.setUndelivered(total-count);
+				}
 			
 			
 		}catch (BusinessException e) {
@@ -420,6 +442,10 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							throw new BusinessException(ServiceError.InvalidInput, "Sms Package not found");
 						
 						creditCollection.setDoctorId(doctor.getId());
+						creditCollection.getSmsPackage().setPackageName(packageCollection.getPackageName());
+						creditCollection.getSmsPackage().setSmsCredit(packageCollection.getSmsCredits());
+						creditCollection.getSmsPackage().setPrice(packageCollection.getPrice());
+						creditCollection.getSmsPackage().setId(packageCollection.getId().toString());
 						creditCollection.setCreditBalance(packageCollection.getSmsCredits());
 						creditCollection.setDateOfTransaction(new Date());
 						creditCollection.setPaymentMode(request.getMode());
