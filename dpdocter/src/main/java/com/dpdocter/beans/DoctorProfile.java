@@ -81,7 +81,7 @@ public class DoctorProfile extends GenericCollection {
 
 	private String doctorSlugURL;
 
-	private String packageType = PackageType.PRO.getType();
+	private String packageType = PackageType.BASIC.getType();
 
 	private boolean isPrescriptionSMS = true;
 

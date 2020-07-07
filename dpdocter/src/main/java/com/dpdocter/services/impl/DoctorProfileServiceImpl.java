@@ -674,6 +674,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			 if(subscriptionCollection != null) {
 				BeanUtil.map(subscriptionCollection, subscription);
 				doctorProfile.setSubscriptionDetail(subscription);
+				doctorProfile.setPackageType(subscriptionCollection.getPackageName().toString());
 			 }
 				
 			}
