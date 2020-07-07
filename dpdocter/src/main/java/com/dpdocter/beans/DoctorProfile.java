@@ -99,6 +99,8 @@ public class DoctorProfile extends GenericCollection {
 	
 	private UserState userState = UserState.USERSTATECOMPLETE;
 
+	private Subscription subscriptionDetail;
+
 	
 	//private Map<DoctorConsultation, String> onlineConsultationFees;
 	
@@ -457,6 +459,15 @@ public class DoctorProfile extends GenericCollection {
 
 	public void setUserState(UserState userState) {
 		this.userState = userState;
+	}
+
+	
+	public Subscription getSubscriptionDetail() {
+		return subscriptionDetail;
+	}
+
+	public void setSubscriptionDetail(Subscription subscriptionDetail) {
+		this.subscriptionDetail = subscriptionDetail;
 	}
 
 	@Override
