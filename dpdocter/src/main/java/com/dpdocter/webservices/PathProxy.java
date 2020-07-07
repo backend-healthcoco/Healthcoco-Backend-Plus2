@@ -2416,8 +2416,9 @@ public interface PathProxy {
 	public interface FreeQueAnsUrls {
 
 		public static final String ADD_ANSWER = "/addAns";
-		public static final String GET_ANSWERED_QUESTIONS = "/getAnsweredQue";
-		public static final String GET_UNANSWERED_QUESTIONS = "/getUnansweredQue";
+		public static final String ADD_VIEWS = "/addViews/{questionId}";
+		public static final String GET_ANSWERED_QUESTIONS = "/getAnsweredQue/{doctorId}";
+		public static final String GET_UNANSWERED_QUESTIONS = "/getUnansweredQue/{doctorId}";
 	}
 
 }

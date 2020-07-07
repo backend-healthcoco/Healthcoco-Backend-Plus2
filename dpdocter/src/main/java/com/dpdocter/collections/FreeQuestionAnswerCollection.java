@@ -15,21 +15,15 @@ public class FreeQuestionAnswerCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private String doctorId;
+	private ObjectId doctorId;
 	@Field
-	private String locationId;
+	private ObjectId locationId;
 	@Field
-	private String hospitalId;
+	private ObjectId hospitalId;
 	@Field
-	private String questionId;
+	private ObjectId questionId;
 	@Field
-	private String nextStep;
-	@Field
-	private String answerDesc;
-	@Field
-	private String helpfulTips;
-	@Field
-	private String userId;
+	private ObjectId userId;
 	@Field
 	private ForDetailType forDetailType;
 	@Field
@@ -48,68 +42,46 @@ public class FreeQuestionAnswerCollection extends GenericCollection {
 	private FreeAnswersDetailCollection answersDetails;
 	@Field
 	private Boolean isDiscarded = false;
-
-	public String getDoctorId() {
+	@Field
+	private Integer views;
+	
+	public ObjectId getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(String doctorId) {
+	public void setDoctorId(ObjectId doctorId) {
 		this.doctorId = doctorId;
 	}
 
-	public String getLocationId() {
+	public ObjectId getLocationId() {
 		return locationId;
 	}
 
-	public void setLocationId(String locationId) {
+	public void setLocationId(ObjectId locationId) {
 		this.locationId = locationId;
 	}
 
-	public String getHospitalId() {
+	public ObjectId getHospitalId() {
 		return hospitalId;
 	}
 
-	public void setHospitalId(String hospitalId) {
+	public void setHospitalId(ObjectId hospitalId) {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getQuestionId() {
+	public ObjectId getQuestionId() {
 		return questionId;
 	}
 
-	public void setQuestionId(String questionId) {
+	public void setQuestionId(ObjectId questionId) {
 		this.questionId = questionId;
 	}
 
-	public String getNextStep() {
-		return nextStep;
-	}
-
-	public void setNextStep(String nextStep) {
-		this.nextStep = nextStep;
-	}
-
-	public String getAnswerDesc() {
-		return answerDesc;
-	}
-
-	public void setAnswerDesc(String answerDesc) {
-		this.answerDesc = answerDesc;
-	}
-
-	public String getHelpfulTips() {
-		return helpfulTips;
-	}
-
-	public void setHelpfulTips(String helpfulTips) {
-		this.helpfulTips = helpfulTips;
-	}
-
-	public String getUserId() {
+	public ObjectId getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(ObjectId userId) {
 		this.userId = userId;
 	}
 
@@ -177,14 +149,37 @@ public class FreeQuestionAnswerCollection extends GenericCollection {
 		this.answersDetails = answersDetails;
 	}
 
+	public ObjectId getId() {
+		return id;
+	}
+
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
+
+	public Boolean getIsDiscarded() {
+		return isDiscarded;
+	}
+
+	public void setIsDiscarded(Boolean isDiscarded) {
+		this.isDiscarded = isDiscarded;
+	}
+
+	public Integer getViews() {
+		return views;
+	}
+
+	public void setViews(Integer views) {
+		this.views = views;
+	}
+
 	@Override
 	public String toString() {
 		return "FreeQuestionAnswerCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", questionId=" + questionId + ", nextStep=" + nextStep
-				+ ", answerDesc=" + answerDesc + ", helpfulTips=" + helpfulTips + ", userId=" + userId
+				+ ", hospitalId=" + hospitalId + ", questionId=" + questionId + ", userId=" + userId
 				+ ", forDetailType=" + forDetailType + ", forDetail=" + forDetail + ", problemType=" + problemType
 				+ ", title=" + title + ", desc=" + desc + ", imageUrls=" + imageUrls + ", time=" + time
-				+ ", answersDetails=" + answersDetails + "]";
+				+ ", answersDetails=" + answersDetails + ", isDiscarded=" + isDiscarded + ", views=" + views + "]";
 	}
 
 }

@@ -1,9 +1,12 @@
 package com.dpdocter.response;
 
+import com.dpdocter.beans.FreeAnswersDetail;
 import com.dpdocter.beans.QuetionForDetail;
+import com.dpdocter.collections.FreeAnswersDetailCollection;
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ForDetailType;
 
-public class FreeAnswerResponse {
+public class FreeAnswerResponse extends GenericCollection {
 	private String id;
 	private String userId;
 	private String doctorId;
@@ -15,9 +18,7 @@ public class FreeAnswerResponse {
 	private String title;
 	private String desc;
 	private String questionId;
-	private String nextStep;
-	private String answerDesc;
-	private String helpfulTips;
+	private FreeAnswersDetail answersDetails;
 	private Long time;
 
 	public String getId() {
@@ -84,30 +85,6 @@ public class FreeAnswerResponse {
 		this.questionId = questionId;
 	}
 
-	public String getNextStep() {
-		return nextStep;
-	}
-
-	public void setNextStep(String nextStep) {
-		this.nextStep = nextStep;
-	}
-
-	public String getAnswerDesc() {
-		return answerDesc;
-	}
-
-	public void setAnswerDesc(String answerDesc) {
-		this.answerDesc = answerDesc;
-	}
-
-	public String getHelpfulTips() {
-		return helpfulTips;
-	}
-
-	public void setHelpfulTips(String helpfulTips) {
-		this.helpfulTips = helpfulTips;
-	}
-
 	public Long getTime() {
 		return time;
 	}
@@ -140,13 +117,21 @@ public class FreeAnswerResponse {
 		this.hospitalId = hospitalId;
 	}
 
+	
+	public FreeAnswersDetail getAnswersDetails() {
+		return answersDetails;
+	}
+
+	public void setAnswersDetails(FreeAnswersDetail answersDetails) {
+		this.answersDetails = answersDetails;
+	}
+
 	@Override
 	public String toString() {
 		return "FreeAnswerResponse [id=" + id + ", userId=" + userId + ", doctorId=" + doctorId + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + ", forDetailType=" + forDetailType + ", forDetail="
 				+ forDetail + ", problemType=" + problemType + ", title=" + title + ", desc=" + desc + ", questionId="
-				+ questionId + ", nextStep=" + nextStep + ", answerDesc=" + answerDesc + ", helpfulTips=" + helpfulTips
-				+ ", time=" + time + "]";
+				+ questionId + ", time=" + time + "]";
 	}
 
 }

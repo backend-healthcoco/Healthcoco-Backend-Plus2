@@ -125,7 +125,7 @@ public class SubscriptionApi {
 	@ApiOperation(value = PathProxy.SubscriptionUrls.GET_COUNTRYLIST, notes = PathProxy.SubscriptionUrls.GET_COUNTRYLIST)
 	public Response<Country> getCountryList(@QueryParam("page") int page, @QueryParam("size") int size,			
 			@DefaultValue("false") @QueryParam(value = "isDiscarded") Boolean isDiscarded,
-			@QueryParam(value = "searchTerm") String searchTerm) {
+			@DefaultValue("")@QueryParam(value = "searchTerm") String searchTerm) {
 
 		Integer count = subscriptionService.countCountry(isDiscarded, searchTerm);
 		Response<Country> response = new Response<Country>();
@@ -140,7 +140,7 @@ public class SubscriptionApi {
 	@ApiOperation(value = PathProxy.SubscriptionUrls.GET_PACKAGES, notes = PathProxy.SubscriptionUrls.GET_PACKAGES)
 	public Response<PackageDetailObject> getPackagesList(@QueryParam("page") int page, @QueryParam("size") int size,			
 			@DefaultValue("false") @QueryParam(value = "isDiscarded") Boolean isDiscarded,
-			@QueryParam(value = "searchTerm") String searchTerm) {
+			@DefaultValue("")@QueryParam(value = "searchTerm") String searchTerm) {
 		Integer count = subscriptionService.countPackages(isDiscarded, searchTerm);
 		Response<PackageDetailObject> response = new Response<PackageDetailObject>();
 		if (count > 0)
