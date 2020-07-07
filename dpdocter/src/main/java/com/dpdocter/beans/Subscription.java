@@ -1,47 +1,57 @@
 package com.dpdocter.beans;
 
-
- import java.util.Date;
-
-import org.springframework.data.mongodb.core.mapping.Field;
+import java.util.Date;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.PaymentMode;
- 
+
 public class Subscription extends GenericCollection {
 
 	private String id;
-	
+
 	private String doctorId;
-	
+
 	private Date fromDate;
-	
+
 	private Date toDate;
-	
+
 	private PackageType packageName;
-	
-	private String amount;
-	
-	private String amountViaCash;
-	
-	private String amountViaCheque;
-	
+
+	private Double amount;
+
+	private Double discountAmount = 0.0;
+
+	private String accountNo;
+
 	private PaymentMode mode;
-	
+
 	private String bankName;
-	
+
 	private String countryCode;
-	
+
 	private String chequeNo;
-	
+
 	private String branch;
-	
+
 	private Date chequeDate;
-	
+
 	private Boolean isAdvertisement = Boolean.FALSE;
+
+	private Boolean isDiscarded = Boolean.FALSE;
+
+	private String orderId;
+
+	private String currency = "INR";
+
+	private String reciept;
+
+	private Boolean paymentStatus;
 	
-	private Boolean discarded=Boolean.FALSE;
+	private Boolean paymentCapture = true;
+	
+	private String transactionStatus;
+
 
 	public String getId() {
 		return id;
@@ -83,28 +93,19 @@ public class Subscription extends GenericCollection {
 		this.packageName = packageName;
 	}
 
-	
-	public String getAmount() {
+	public Double getAmount() {
 		return amount;
 	}
 
-	public String getAmountViaCash() {
-		return amountViaCash;
+	public Double getDiscountAmount() {
+		return discountAmount;
 	}
 
-	public void setAmountViaCash(String amountViaCash) {
-		this.amountViaCash = amountViaCash;
+	public void setDiscountAmount(Double discountAmount) {
+		this.discountAmount = discountAmount;
 	}
 
-	public String getAmountViaCheque() {
-		return amountViaCheque;
-	}
-
-	public void setAmountViaCheque(String amountViaCheque) {
-		this.amountViaCheque = amountViaCheque;
-	}
-
-	public void setAmount(String amount) {
+	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
 
@@ -156,14 +157,6 @@ public class Subscription extends GenericCollection {
 		this.isAdvertisement = isAdvertisement;
 	}
 
-	public Boolean getDiscarded() {
-		return discarded;
-	}
-
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
-	}
-
 	public String getCountryCode() {
 		return countryCode;
 	}
@@ -172,16 +165,70 @@ public class Subscription extends GenericCollection {
 		this.countryCode = countryCode;
 	}
 
-	@Override
-	public String toString() {
-		return "Subscription [id=" + id + ", doctorId=" + doctorId + ", fromDate=" + fromDate + ", toDate=" + toDate
-				+ ", packageName=" + packageName + ", amount=" + amount + ", amountViaCash=" + amountViaCash
-				+ ", amountViaCheque=" + amountViaCheque + ", mode=" + mode + ", bankName=" + bankName
-				+ ", countryCode=" + countryCode + ", chequeNo=" + chequeNo + ", branch=" + branch + ", chequeDate="
-				+ chequeDate + ", isAdvertisement=" + isAdvertisement + ", discarded=" + discarded + "]";
+	public Boolean getIsDiscarded() {
+		return isDiscarded;
 	}
 
+	public void setIsDiscarded(Boolean isDiscarded) {
+		this.isDiscarded = isDiscarded;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public String getReciept() {
+		return reciept;
+	}
+
+	public void setReciept(String reciept) {
+		this.reciept = reciept;
+	}
+
+	public Boolean getPaymentStatus() {
+		return paymentStatus;
+	}
+
+	public void setPaymentStatus(Boolean paymentStatus) {
+		this.paymentStatus = paymentStatus;
+	}
+
+	public String getAccountNo() {
+		return accountNo;
+	}
+
+	public void setAccountNo(String accountNo) {
+		this.accountNo = accountNo;
+	}
+
+	public Boolean getPaymentCapture() {
+		return paymentCapture;
+	}
+
+	public void setPaymentCapture(Boolean paymentCapture) {
+		this.paymentCapture = paymentCapture;
+	}
+
+	public String getTransactionStatus() {
+		return transactionStatus;
+	}
+
+	public void setTransactionStatus(String transactionStatus) {
+		this.transactionStatus = transactionStatus;
+	}
 	
-	
+
 	
 }

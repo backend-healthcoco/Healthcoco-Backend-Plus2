@@ -10,11 +10,14 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.PaymentMode;
 
-@Document(collection = "subscription_cl")
-public class SubscriptionCollection extends GenericCollection {
+@Document(collection = "subscription_History_cl")
+public class SubscriptionHistoryCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
+
+	@Field
+	private ObjectId subscriptionId;
 
 	@Field
 	private ObjectId doctorId;
@@ -29,10 +32,7 @@ public class SubscriptionCollection extends GenericCollection {
 	private PackageType packageName;
 
 	@Field
-	private Double amount;
-
-	@Field
-	private String countryCode;
+	private String amount;
 
 	@Field
 	private String amountViaCash;
@@ -50,6 +50,9 @@ public class SubscriptionCollection extends GenericCollection {
 	private String chequeNo;
 
 	@Field
+	private String countryCode;
+
+	@Field
 	private String branch;
 
 	@Field
@@ -59,25 +62,16 @@ public class SubscriptionCollection extends GenericCollection {
 	private Boolean isAdvertisement = Boolean.FALSE;
 
 	@Field
-	private Boolean discarded = Boolean.FALSE;
+	private Boolean isDiscarded = Boolean.FALSE;
 
 	@Field
-	private String mobileNumber;
-
-	@Field
-	private String emailAddress;
+	private String transactionStatus;
 
 	@Field
 	private String orderId;
 
 	@Field
 	private String reciept;
-
-	@Field
-	private Boolean paymentStatus;
-
-	@Field
-	private String transactionStatus;
 
 	public ObjectId getId() {
 		return id;
@@ -119,20 +113,8 @@ public class SubscriptionCollection extends GenericCollection {
 		this.packageName = packageName;
 	}
 
-	public Boolean getIsAdvertisement() {
-		return isAdvertisement;
-	}
-
-	public void setIsAdvertisement(Boolean isAdvertisement) {
-		this.isAdvertisement = isAdvertisement;
-	}
-
-	public Boolean getDiscarded() {
-		return discarded;
-	}
-
-	public void setDiscarded(Boolean discarded) {
-		this.discarded = discarded;
+	public String getAmount() {
+		return amount;
 	}
 
 	public String getAmountViaCash() {
@@ -151,11 +133,7 @@ public class SubscriptionCollection extends GenericCollection {
 		this.amountViaCheque = amountViaCheque;
 	}
 
-	public Double getAmount() {
-		return amount;
-	}
-
-	public void setAmount(Double amount) {
+	public void setAmount(String amount) {
 		this.amount = amount;
 	}
 
@@ -199,6 +177,14 @@ public class SubscriptionCollection extends GenericCollection {
 		this.chequeDate = chequeDate;
 	}
 
+	public Boolean getIsAdvertisement() {
+		return isAdvertisement;
+	}
+
+	public void setIsAdvertisement(Boolean isAdvertisement) {
+		this.isAdvertisement = isAdvertisement;
+	}
+
 	public String getCountryCode() {
 		return countryCode;
 	}
@@ -207,20 +193,28 @@ public class SubscriptionCollection extends GenericCollection {
 		this.countryCode = countryCode;
 	}
 
-	public String getMobileNumber() {
-		return mobileNumber;
+	public ObjectId getSubscriptionId() {
+		return subscriptionId;
 	}
 
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
+	public void setSubscriptionId(ObjectId subscriptionId) {
+		this.subscriptionId = subscriptionId;
 	}
 
-	public String getEmailAddress() {
-		return emailAddress;
+	public Boolean getIsDiscarded() {
+		return isDiscarded;
 	}
 
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
+	public void setIsDiscarded(Boolean isDiscarded) {
+		this.isDiscarded = isDiscarded;
+	}
+
+	public String getTransactionStatus() {
+		return transactionStatus;
+	}
+
+	public void setTransactionStatus(String transactionStatus) {
+		this.transactionStatus = transactionStatus;
 	}
 
 	public String getOrderId() {
@@ -237,31 +231,6 @@ public class SubscriptionCollection extends GenericCollection {
 
 	public void setReciept(String reciept) {
 		this.reciept = reciept;
-	}
-
-	public Boolean getPaymentStatus() {
-		return paymentStatus;
-	}
-
-	public void setPaymentStatus(Boolean paymentStatus) {
-		this.paymentStatus = paymentStatus;
-	}
-
-	public String getTransactionStatus() {
-		return transactionStatus;
-	}
-
-	public void setTransactionStatus(String transactionStatus) {
-		this.transactionStatus = transactionStatus;
-	}
-
-	@Override
-	public String toString() {
-		return "SubscriptionCollection [id=" + id + ", doctorId=" + doctorId + ", fromDate=" + fromDate + ", toDate="
-				+ toDate + ", packageName=" + packageName + ", amount=" + amount + ", countryCode=" + countryCode
-				+ ", amountViaCash=" + amountViaCash + ", amountViaCheque=" + amountViaCheque + ", mode=" + mode
-				+ ", bankName=" + bankName + ", chequeNo=" + chequeNo + ", branch=" + branch + ", chequeDate="
-				+ chequeDate + ", isAdvertisement=" + isAdvertisement + ", discarded=" + discarded + "]";
 	}
 
 }

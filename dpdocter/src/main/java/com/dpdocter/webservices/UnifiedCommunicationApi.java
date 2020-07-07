@@ -6,6 +6,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -51,6 +52,32 @@ public class UnifiedCommunicationApi {
 		Response<String> response = new Response<String>();
 		response.setData(unifiedCommunicationServices.createVideoAccessToken(userId, room));
 		return response;
+
+	}
+	
+	@Path(value = PathProxy.ChatUrls.CREATE_PUSH_NOTIFICATION)
+	@GET
+	@ApiOperation(value = PathProxy.ChatUrls.CREATE_PUSH_NOTIFICATION, notes = PathProxy.ChatUrls.CREATE_PUSH_NOTIFICATION)
+	public Response<Boolean> createPushNotifition(@QueryParam(value = "userId")String userId,@QueryParam(value = "room")String room,@QueryParam(value = "title")String title)
+	throws MessagingException {
+	   
+	Response<Boolean> response = new Response<Boolean>();
+	Boolean push=unifiedCommunicationServices.createpushNotification(userId, room, title);
+	response.setData(push);
+	return response;
+
+	}
+	
+	@Path(value = PathProxy.ChatUrls.CREATE_TWILIO_NOTIFICATION)
+	@GET
+	@ApiOperation(value = PathProxy.ChatUrls.CREATE_TWILIO_NOTIFICATION, notes = PathProxy.ChatUrls.CREATE_TWILIO_NOTIFICATION)
+	public Response<Boolean> createTwilioPushNotifition()
+	throws MessagingException {
+	   
+	Response<Boolean> response = new Response<Boolean>();
+	Boolean push=unifiedCommunicationServices.twilioPushNotification();
+	response.setData(push);
+	return response;
 
 	}
 }

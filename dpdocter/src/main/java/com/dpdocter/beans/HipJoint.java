@@ -1,7 +1,7 @@
 package com.dpdocter.beans;
 
 public class HipJoint {
-	
+
 private String hexion;
 private String extension;
 private String abduction;
