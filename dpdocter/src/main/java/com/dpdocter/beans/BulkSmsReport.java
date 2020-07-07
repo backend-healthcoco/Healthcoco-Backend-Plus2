@@ -11,7 +11,6 @@ public class BulkSmsReport extends GenericCollection {
 	private String doctorId;
 
 	private String locationId;
-
 	private String hospitalId;
 
 	private List<SMSDetail> smsDetails;
@@ -23,6 +22,8 @@ public class BulkSmsReport extends GenericCollection {
 	private Long delivered;
 	
 	private Long undelivered;
+	
+	private Long totalCreditsSpent;
 
 	public String getId() {
 		return id;
@@ -96,6 +97,16 @@ public class BulkSmsReport extends GenericCollection {
 
 	public void setUndelivered(Long undelivered) {
 		this.undelivered = undelivered;
+	}
+	
+	
+
+	public Long getTotalCreditsSpent() {
+		return totalCreditsSpent;
+	}
+
+	public void setTotalCreditsSpent(Long totalCreditsSpent) {
+		this.totalCreditsSpent = totalCreditsSpent;
 	}
 
 	@Override

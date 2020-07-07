@@ -288,9 +288,9 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 				criteria.and("locationId").is(locationObjectId);
 			}
 			
-			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-				criteria = criteria.orOperator(new Criteria("smsPackage.packageName").regex("^" + searchTerm, "i"),
-						new Criteria("smsPackage.packageName").regex("^" + searchTerm));
+//			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+//				criteria = criteria.orOperator(new Criteria("smsPackage.packageName").regex("^" + searchTerm, "i"),
+//						new Criteria("smsPackage.packageName").regex("^" + searchTerm));
 			
 			
 			Aggregation aggregation = null;
@@ -318,10 +318,11 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 				
 				for(BulkSmsReport credit:response)
 				{
-					int total=credit.getSmsDetails().size();
+					Long total=(long) credit.getSmsDetails().size();
 					Long count= mongoTemplate.count(new Query(new Criteria("smsDetails.deliveryStatus").is("DELIVERED")),SMSTrackDetail.class);
 					credit.setDelivered(count);
 					credit.setUndelivered(total-count);
+					credit.setTotalCreditsSpent(total);
 				}
 			
 			
