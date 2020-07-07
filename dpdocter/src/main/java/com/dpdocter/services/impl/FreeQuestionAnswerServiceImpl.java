@@ -92,7 +92,7 @@ public class FreeQuestionAnswerServiceImpl implements FreeQuestionAnswerService 
 			if (!DPDoctorUtils.anyStringEmpty(request.getQuestionId())) {
 				questionAnswerCollection = freeQuetionAnswerRepository.findById(new ObjectId(request.getQuestionId()))
 						.orElse(null);
-			} 
+			}
 			if (questionAnswerCollection == null) {
 				questionAnswerCollection = new FreeQuestionAnswerCollection();
 			}
@@ -143,9 +143,10 @@ public class FreeQuestionAnswerServiceImpl implements FreeQuestionAnswerService 
 				pushNotificationServices.notifyUser(questionAnswerCollection.getUserId().toString(),
 						"Your Question has been answered by " + doctorName, ComponentType.FREE_QUE_ANS.getType(), null,
 						null);
-//				String body = mailBodyGenerator.generateFreeQuestionAnswerEmailBody(userCollection.getEmailAddress(),locationCollection.getCity(),
-//						"confirmAppointmentToPatient.vm", doctorName);
-//				mailService.sendEmail(userCollection.getEmailAddress(), "Your Question has been answered", body, null);
+				String body = mailBodyGenerator.generateFreeQuestionAnswerEmailBody(userCollection.getEmailAddress(),
+						questionAnswerCollection.getForDetail().getName(), locationCollection.getCity(),
+						"Q&ATemplate.vm", doctorName);
+				mailService.sendEmail(userCollection.getEmailAddress(), "Your Question has been answered", body, null);
 
 				questionAnswerCollection = freeQuetionAnswerRepository.save(questionAnswerCollection);
 				response = new FreeAnswerResponse();

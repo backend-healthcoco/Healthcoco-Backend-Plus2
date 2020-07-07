@@ -75,6 +75,6 @@ public interface MailBodyGenerator {
 	
 	public String verifyEmailBody(String firstName,String tokenId, String templatePath) throws Exception;
 	
-	public String generateFreeQuestionAnswerEmailBody(String emailAddress,String locationName,String templatePath,
+	public String generateFreeQuestionAnswerEmailBody(String emailAddress, String name,String locationName,String templatePath,
 			String doctorName);
 }
