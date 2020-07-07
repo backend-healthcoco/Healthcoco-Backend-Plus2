@@ -9,6 +9,6 @@ import com.dpdocter.collections.BulkSmsPackageCollection;
 
 public interface BulkSmsPackageRepository extends MongoRepository<BulkSmsPackageCollection,ObjectId> {
 
-	BulkSmsPackageCollection findByDoctorId(ObjectId doctorId);
+
 
 }

@@ -138,30 +138,7 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 
 	}
 	
-	@Override
-	public Boolean twilioPushNotification() {
-	Boolean response=false;
-	try{
-	Twilio.init(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-	       Service service = Service.updater(SERVICE_SID)
-	           .setNotificationsAddedToChannelEnabled(
-	               true)
-	           .setNotificationsAddedToChannelSound(
-	               "default")
-	           .setNotificationsAddedToChannelTemplate(
-	               "A New message in ${CHANNEL} from ${USER}: ${MESSAGE}")
-	           .update();
-
-	       System.out.println(service.getFriendlyName());
-	response=true;
-	}catch (Exception e) {
-	logger.error("Error : " + e.getMessage());
-	throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
-	}
-	return response;
-	}
-
-
+	
 	@Override
 	public Boolean twilioPushNotification() {
 		Boolean response=false;

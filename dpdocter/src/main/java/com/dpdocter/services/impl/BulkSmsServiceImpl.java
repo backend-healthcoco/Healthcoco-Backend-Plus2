@@ -179,33 +179,33 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 	}
 
 
+//	@Override
+//	public BulkSmsPackage getBulkSmsPackageByDoctorId(String doctorId,String locationId) {
+//		BulkSmsPackage response=null;
+//		try {
+//			BulkSmsPackageCollection bulkSms=null;
+//			if(!DPDoctorUtils.anyStringEmpty(doctorId)) {
+//				bulkSms=bulkSmsRepository.findById(new ObjectId(doctorId)).orElse(null);
+//				if(bulkSms==null) {
+//					throw new BusinessException(ServiceError.Unknown,"Id not found");
+//				}
+//				response=new BulkSmsPackage();
+//				BeanUtil.map(bulkSms, response);
+//			}
+//	}
+//		catch (BusinessException e) {
+//		e.printStackTrace();
+//		throw new BusinessException(ServiceError.Unknown,"Error while getting Bulksms package"+ e.getMessage());
+//		}
+//	return response;
+//	}
+//	
 	@Override
-	public BulkSmsPackage getBulkSmsPackageByDoctorId(String doctorId,String locationId) {
-		BulkSmsPackage response=null;
-		try {
-			BulkSmsPackageCollection bulkSms=null;
-			if(!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				bulkSms=bulkSmsRepository.findByDoctorId(new ObjectId(doctorId));
-				if(bulkSms==null) {
-					throw new BusinessException(ServiceError.Unknown,"Id not found");
-				}
-				response=new BulkSmsPackage();
-				BeanUtil.map(bulkSms, response);
-			}
-	}
-		catch (BusinessException e) {
-		e.printStackTrace();
-		throw new BusinessException(ServiceError.Unknown,"Error while getting Bulksms package"+ e.getMessage());
-		}
-	return response;
-	}
-	
-	@Override
-	public BulkSmsCredits getCreditsByDoctorId(String doctorId) {
+	public BulkSmsCredits getCreditsByDoctorIdAndLocationId(String doctorId,String locationId) {
 		BulkSmsCredits response=null;
 		try {
 			BulkSmsCreditsCollection bulk=new BulkSmsCreditsCollection();
-			bulk=bulkSmsCreditRepository.findByDoctorId(new ObjectId(doctorId));
+			bulk=bulkSmsCreditRepository.findByDoctorIdAndLocationId(new ObjectId(doctorId),new ObjectId(locationId));
 			
 			if(bulk==null)
 			{
