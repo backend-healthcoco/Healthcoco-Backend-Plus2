@@ -30,4 +30,8 @@ public interface SubscriptionService {
 
 	public Integer countPackages(Boolean isDiscarded, String searchTerm);
 	
+	public List<Subscription> getSubscriptionHistory(String doctorId,int size,int page,Boolean isDiscarded,String searchTerm);
+	
+	public Integer countSubscriptionHistory(String doctorId,Boolean isDiscarded,String searchTerm);
+	
 }

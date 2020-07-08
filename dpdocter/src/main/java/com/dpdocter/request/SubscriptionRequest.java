@@ -18,9 +18,9 @@ public class SubscriptionRequest extends GenericCollection {
 
 	private PackageType packageName;
 
-	private Double amount;
+	private int amount = 0;
 
-	private Double discountAmount = 0.0;
+	private int discountAmount = 0;
 
 	private PaymentMode mode = PaymentMode.ONLINE;
 
@@ -30,7 +30,7 @@ public class SubscriptionRequest extends GenericCollection {
 
 	private Boolean isDiscarded = Boolean.FALSE;
 
-	private Boolean paymentStatus;
+	private Boolean paymentStatus = Boolean.FALSE;
 
 	public String getId() {
 		return id;
@@ -72,19 +72,19 @@ public class SubscriptionRequest extends GenericCollection {
 		this.packageName = packageName;
 	}
 
-	public Double getAmount() {
+	public int getAmount() {
 		return amount;
 	}
 
-	public void setAmount(Double amount) {
+	public void setAmount(int amount) {
 		this.amount = amount;
 	}
 
-	public Double getDiscountAmount() {
+	public int getDiscountAmount() {
 		return discountAmount;
 	}
 
-	public void setDiscountAmount(Double discountAmount) {
+	public void setDiscountAmount(int discountAmount) {
 		this.discountAmount = discountAmount;
 	}
 
@@ -136,7 +136,4 @@ public class SubscriptionRequest extends GenericCollection {
 				+ ", isDiscarded=" + isDiscarded + ", paymentStatus=" + paymentStatus + "]";
 	}
 
-	
-	
-	
 }

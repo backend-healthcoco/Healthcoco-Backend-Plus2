@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.dpdocter.beans.Country;
 import com.dpdocter.beans.PackageDetailObject;
 import com.dpdocter.beans.Subscription;
+import com.dpdocter.collections.SubscriptionCollection;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -66,8 +67,7 @@ public class SubscriptionApi {
 		return response;
 
 	}
-	
-	
+		
 
 	@Path(value = PathProxy.SubscriptionUrls.GET_PACKAGES_BY_NAME)
 	@GET
@@ -148,4 +148,25 @@ public class SubscriptionApi {
 		response.setCount(count);
 		return response;
 	}	
+	
+	@Path(value = PathProxy.SubscriptionUrls.GET_SUBSCRIPTIONHISTORY_BY_DOCTORID)
+	@GET
+	@ApiOperation(value = PathProxy.SubscriptionUrls.GET_SUBSCRIPTIONHISTORY_BY_DOCTORID, notes = PathProxy.SubscriptionUrls.GET_SUBSCRIPTIONHISTORY_BY_DOCTORID)
+	public Response<Subscription> getSubscriptionHistoryByDoctorId(@PathParam("doctorId") String doctorId,
+			@QueryParam("page") int page, @QueryParam("size") int size,			
+			@DefaultValue("false") @QueryParam(value = "isDiscarded") Boolean isDiscarded,
+			@DefaultValue("")@QueryParam(value = "searchTerm") String searchTerm) {
+		if (doctorId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Integer count = subscriptionService.countSubscriptionHistory(doctorId,isDiscarded, searchTerm);
+		Response<Subscription> response = new Response<Subscription>();
+		if (count > 0)
+			response.setDataList(subscriptionService.getSubscriptionHistory(doctorId,size, page, isDiscarded, searchTerm));
+		response.setCount(count);
+		return response;
+
+	}
 }

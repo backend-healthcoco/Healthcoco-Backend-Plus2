@@ -17,10 +17,10 @@ public class PackageDetailObjectCollection extends GenericCollection {
 	private PackageType packageName;
 
 	@Field
-	private Discount discount;
+	private int discount = 0;
 
 	@Field
-	private Double amount = 0.0;
+	private int amount = 0;
 
 	@Field
 	private String duration;
@@ -50,19 +50,19 @@ public class PackageDetailObjectCollection extends GenericCollection {
 		this.packageName = packageName;
 	}
 
-	public Discount getDiscount() {
+	public int getDiscount() {
 		return discount;
 	}
 
-	public void setDiscount(Discount discount) {
+	public void setDiscount(int discount) {
 		this.discount = discount;
 	}
 
-	public Double getAmount() {
+	public int getAmount() {
 		return amount;
 	}
 
-	public void setAmount(Double amount) {
+	public void setAmount(int amount) {
 		this.amount = amount;
 	}
 
@@ -104,5 +104,5 @@ public class PackageDetailObjectCollection extends GenericCollection {
 				+ ", amount=" + amount + ", duration=" + duration + ", advantages=" + advantages + ", noOfSms="
 				+ noOfSms + ", isDiscarded=" + isDiscarded + "]";
 	}
-	
+
 }

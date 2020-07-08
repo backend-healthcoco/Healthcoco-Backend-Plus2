@@ -2391,6 +2391,8 @@ public interface PathProxy {
 
 		public static final String GET_SUBSCRIPTION_BY_DOCTORID = "/doctor/{doctorId}/get";
 		
+		public static final String GET_SUBSCRIPTIONHISTORY_BY_DOCTORID = "/doctor/history/{doctorId}/get";
+
 		public static final String GET_PACKAGES_BY_NAME = "/package/get";
 
 		public static final String CREATE_PAYMENT = "/payment/create";
