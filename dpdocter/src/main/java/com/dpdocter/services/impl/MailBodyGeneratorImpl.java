@@ -60,8 +60,9 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
 	@Override
 	@Transactional
-	public String generateActivationEmailBody(String fName, String tokenId, String templatePath, String doctorName, String clinicName, String addedBy) throws Exception {
-		VelocityContext context = new VelocityContext();		
+	public String generateActivationEmailBody(String fName, String tokenId, String templatePath, String doctorName,
+			String clinicName, String addedBy) throws Exception {
+		VelocityContext context = new VelocityContext();
 		context.put("fName", fName);
 		context.put("doctorName", doctorName);
 		context.put("clinicName", clinicName);
@@ -75,7 +76,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
 		context.put("setPasswordLink", setPasswordLink + "?uid=" + tokenId);
-		
+
 		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
@@ -120,7 +121,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("twitterLink", twitterLink);
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
-		
+
 		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
@@ -137,7 +138,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("twitterLink", twitterLink);
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
-	  
+
 		String text = mergeTemplate(context, "forgotPasswordTemplate.vm");
 		return text;
 	}
@@ -152,9 +153,10 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("type", type);
 		context.put("mobileNumber", mobileNumber);
 		context.put("emailAddress", emailAddress);
-	    
+
 		String text = mergeTemplate(context, "contactmail.vm");
-		return text;	}
+		return text;
+	}
 
 	@Override
 	@Transactional
@@ -167,14 +169,15 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("emailAddress", contactUs.getEmailAddress());
 		context.put("deviceType", contactUs.getDeviceType());
 		context.put("specialities", contactUs.getSpecialities());
-	    
+
 		String text = mergeTemplate(context, "contactmail.vm");
 		return text;
 	}
 
 	@Override
 	@Transactional
-	public String generateDoctorReferenceEmailBody(String fName, String mobileNumber, String locationName,String labName) {
+	public String generateDoctorReferenceEmailBody(String fName, String mobileNumber, String locationName,
+			String labName) {
 		VelocityContext context = new VelocityContext();
 		context.put("fName", "Dr." + " " + fName);
 		context.put("locationName", locationName);
@@ -188,12 +191,12 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Override
 	@Transactional
 	public String generatePrescriptionListMail(String collectionBody, String requestBody) {
-		
+
 		VelocityContext context = new VelocityContext();
 		context.put("collectionBody", collectionBody);
 		context.put("requestBody", requestBody);
-		
-	    String text = mergeTemplate(context, "prescriptionListMail.vm");
+
+		String text = mergeTemplate(context, "prescriptionListMail.vm");
 		return text;
 	}
 
@@ -211,7 +214,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Override
 	@Transactional
 	public String generateIssueTrackEmailBody(String userName, String firstName, String middleName, String lastName) {
-		
+
 		VelocityContext context = new VelocityContext();
 		context.put("fName", firstName);
 		context.put("link", RESET_PASSWORD_WEB_LINK);
@@ -221,7 +224,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("twitterLink", twitterLink);
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
-		
+
 		String text = mergeTemplate(context, "addIssueTemplate.vm");
 		return text;
 	}
@@ -229,7 +232,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Override
 	@Transactional
 	public String generateResetPasswordSuccessEmailBody(String firstName) {
-		
+
 		VelocityContext context = new VelocityContext();
 		context.put("fName", firstName);
 		context.put("link", RESET_PASSWORD_WEB_LINK);
@@ -239,8 +242,8 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("twitterLink", twitterLink);
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
-		
-	    String text = mergeTemplate(context, "resetPasswordSuccess.vm");
+
+		String text = mergeTemplate(context, "resetPasswordSuccess.vm");
 		return text;
 	}
 
@@ -248,7 +251,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Transactional
 	public String generateRecordsShareOtpBeforeVerificationEmailBody(String emailAddress, String firstName,
 			String doctorName) {
-		
+
 		VelocityContext context = new VelocityContext();
 		context.put("fName", firstName);
 		context.put("doctorName", doctorName);
@@ -258,7 +261,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("twitterLink", twitterLink);
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
-		
+
 		String text = mergeTemplate(context, "recordShareOtpBeforeVerificationTemplate.vm");
 		return text;
 	}
@@ -276,7 +279,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("twitterLink", twitterLink);
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
-		
+
 		String text = mergeTemplate(context, "recordShareOtpAfterVerificationTemplate.vm");
 		return text;
 	}
@@ -296,7 +299,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("twitterLink", twitterLink);
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
-		
+
 		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
@@ -314,7 +317,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("twitterLink", twitterLink);
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
-		
+
 		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
@@ -322,7 +325,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Override
 	public String generateEMREmailBody(String patientName, String doctorName, String clinicName, String clinicAddress,
 			String mailRecordCreatedDate, String medicalRecordType, String templatePath) {
-		
+
 		VelocityContext context = new VelocityContext();
 		context.put("fName", patientName);
 		context.put("doctorName", doctorName);
@@ -336,7 +339,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("twitterLink", twitterLink);
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
-		
+
 		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
@@ -362,7 +365,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Override
 	public String generateFeedbackEmailBody(String patientName, String doctorName, String clinicName,
 			String uniqueFeedbackId, String templatePath) {
-		
+
 		VelocityContext context = new VelocityContext();
 		context.put("fName", patientName);
 		context.put("doctorName", doctorName);
@@ -374,14 +377,14 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("twitterLink", twitterLink);
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
-		
+
 		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
 
 	@Override
 	public String generateAppLinkEmailBody(String appType, String bitLink, String appDeviceType, String templatePath) {
-		
+
 		VelocityContext context = new VelocityContext();
 		context.put("appDeviceType", appDeviceType);
 		context.put("appType", appType);
@@ -392,7 +395,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("twitterLink", twitterLink);
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
-		
+
 		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
@@ -400,7 +403,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Override
 	public String generateRecordEmailBody(String doctorName, String clinicName, String patientName, String recordName,
 			String uniqueRecordId, String templatePath) {
-		
+
 		VelocityContext context = new VelocityContext();
 		context.put("doctorName", doctorName);
 		context.put("clinicName", clinicName);
@@ -413,7 +416,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("twitterLink", twitterLink);
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
-		
+
 		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
@@ -431,42 +434,44 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
 	private String mergeTemplate(VelocityContext context, String templatePath) {
 		VelocityEngine velocityEngine = new VelocityEngine();
-	    velocityEngine.setProperty("input.encoding", "UTF-8");
-	    velocityEngine.setProperty("output.encoding", "UTF-8");
-	    velocityEngine.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,"org.apache.velocity.runtime.log.Log4JLogChute" );
-	    velocityEngine.setProperty("runtime.log", "/var/log/dpdocter/velocity.log");
-	    velocityEngine.setProperty("resource.loader", "class, file");
-	    velocityEngine.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-	    velocityEngine.setProperty("file.resource.loader.class","org.apache.velocity.runtime.resource.loader.FileResourceLoader");
-	    velocityEngine.setProperty("file.resource.loader.path","/opt/tomcat/latest/webapps/dpdocter/WEB-INF/classes");
-	    velocityEngine.setProperty("class.resource.loader.cache", "false");
-	    velocityEngine.setProperty("file.resource.loader.cache", "true");
-	    velocityEngine.init();
-	    
-	    
-	    Template template = velocityEngine.getTemplate(templatePath);
+		velocityEngine.setProperty("input.encoding", "UTF-8");
+		velocityEngine.setProperty("output.encoding", "UTF-8");
+		velocityEngine.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
+				"org.apache.velocity.runtime.log.Log4JLogChute");
+		velocityEngine.setProperty("runtime.log", "/var/log/dpdocter/velocity.log");
+		velocityEngine.setProperty("resource.loader", "class, file");
+		velocityEngine.setProperty("class.resource.loader.class",
+				"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+		velocityEngine.setProperty("file.resource.loader.class",
+				"org.apache.velocity.runtime.resource.loader.FileResourceLoader");
+		velocityEngine.setProperty("file.resource.loader.path", "/opt/tomcat/latest/webapps/dpdocter/WEB-INF/classes");
+		velocityEngine.setProperty("class.resource.loader.cache", "false");
+		velocityEngine.setProperty("file.resource.loader.cache", "true");
+		velocityEngine.init();
 
-	    StringWriter stringWriter = new StringWriter();
-	
-	    template.setEncoding("UTF-8");
-	    template.merge(context, stringWriter);
+		Template template = velocityEngine.getTemplate(templatePath);
+
+		StringWriter stringWriter = new StringWriter();
+
+		template.setEncoding("UTF-8");
+		template.merge(context, stringWriter);
 		String text = stringWriter.toString();
-	    
+
 		return text;
 	}
 
 	@Override
 	public String generateDentalImagingInvoiceEmailBody(String doctorName, String dentalImagingLab, String patientName,
 			List<MailAttachment> reports, String templatePath) {
-		
-			VelocityContext context = new VelocityContext();
-			context.put("doctorName", doctorName);
-			context.put("dentalImagingLab", dentalImagingLab);
-			context.put("patientName", patientName);
-			context.put("reports", reports);
-			
-			String text = mergeTemplate(context, templatePath);
-			return text;
+
+		VelocityContext context = new VelocityContext();
+		context.put("doctorName", doctorName);
+		context.put("dentalImagingLab", dentalImagingLab);
+		context.put("patientName", patientName);
+		context.put("reports", reports);
+
+		String text = mergeTemplate(context, templatePath);
+		return text;
 	}
 
 	@Override
@@ -486,28 +491,38 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("pinCode", pinCode);
 		context.put("planName", planName);
 		context.put("subplan", subplan);
-		
+
 		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
-	
+
 	@Override
 	@Transactional
-	public String verifyEmailBody(String firstName,String tokenId, String templatePath)throws Exception {
-		
+	public String verifyEmailBody(String firstName, String tokenId, String templatePath) throws Exception {
+
 		VelocityContext context = new VelocityContext();
 		context.put("fName", firstName);
-		context.put("link",link+"?uid=" + tokenId);
+		context.put("link", link + "?uid=" + tokenId);
 		context.put("imageURL", imagePath + "templatesImage");
 		context.put("fbLink", fbLink);
 		context.put("contactUsEmail", contactUsEmail);
 		context.put("twitterLink", twitterLink);
 		context.put("linkedInLink", linkedInLink);
 		context.put("googlePlusLink", googlePlusLink);
-		
-	    String text = mergeTemplate(context, templatePath);
+
+		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
 
+	@Override
+	public String generateFreeQuestionAnswerEmailBody(String emailAddress, String name,  String locationName, String templatePath,
+			String doctorName) {
+		VelocityContext context = new VelocityContext();
+		context.put("name", name);
+		context.put("locationName", locationName);
+		context.put("doctorName", doctorName);
+		String text = mergeTemplate(context, templatePath);
+		return text;
+	}
 
 }

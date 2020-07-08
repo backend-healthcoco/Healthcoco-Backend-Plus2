@@ -40,18 +40,21 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 	@Value(value = "${service.sid}")
 	private String SERVICE_SID;
 
+	
+	@Value(value = "${twilio.auth.token}")
+	private String TWILIO_AUTH_TOKEN;
+	
+
 	@Value(value = "${twilio.chat.ttl}")
 	private int TWILIO_CHAT_TTL;
 
 	@Value(value = "${twilio.video.ttl}")
 	private int TWILIO_VIDEO_TTL;
 	
-	@Value(value = "${twilio.auth.token}")
-	private String TWILIO_AUTH_TOKEN;
 	
 	@Autowired
-	private PushNotificationServices pushNotificationServices;
-
+	PushNotificationServices pushNotificationServices;
+	
 	@Autowired
 	private UnifiedCommunicationDetailsRepository unifiedCommunicationDetailsRepository;
 
@@ -135,28 +138,30 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 
 	}
 	
+	
 	@Override
 	public Boolean twilioPushNotification() {
-	Boolean response=false;
-	try{
-	Twilio.init(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-	       Service service = Service.updater(SERVICE_SID)
-	           .setNotificationsAddedToChannelEnabled(
-	               true)
-	           .setNotificationsAddedToChannelSound(
-	               "default")
-	           .setNotificationsAddedToChannelTemplate(
-	               "A New message in ${CHANNEL} from ${USER}: ${MESSAGE}")
-	           .update();
+		Boolean response=false;
+		try{
+			Twilio.init(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+	        Service service = Service.updater(SERVICE_SID)
+	            .setNotificationsAddedToChannelEnabled(
+	                true)
+	            .setNotificationsAddedToChannelSound(
+	                "default")
+	            .setNotificationsAddedToChannelTemplate(
+	                "A New message in ${CHANNEL} from ${USER}: ${MESSAGE}")
+	            .update();
 
-	       System.out.println(service.getFriendlyName());
-	response=true;
-	}catch (Exception e) {
-	logger.error("Error : " + e.getMessage());
-	throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+	        System.out.println(service.getFriendlyName());
+			response=true;
+		}catch (Exception e) {
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
 	}
-	return response;
-	}
-
+	
+	
 
 }

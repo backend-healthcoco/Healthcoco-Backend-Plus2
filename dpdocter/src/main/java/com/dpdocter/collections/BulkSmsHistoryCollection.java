@@ -7,18 +7,19 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.BulkSmsPackage;
 import com.dpdocter.enums.PaymentMode;
 
 @Document(collection = "bulk_sms_history_cl")
-public class BulkSmsHistoryCollection {
+public class BulkSmsHistoryCollection extends GenericCollection{
 
 	@Id
 	private ObjectId id;
 
 	@Field
-	private long creditBalance;
+	private Long creditBalance;
 	@Field
-	private long creditSpent;
+	private Long creditSpent;
 	@Field
 	private ObjectId doctorId;
 	@Field
@@ -26,7 +27,7 @@ public class BulkSmsHistoryCollection {
 	@Field
 	private Date dateOfTransaction=new Date();
 	@Field
-	private String packageName;
+	private BulkSmsPackage smsPackage;
 	@Field
 	private PaymentMode paymentMode;
 	
@@ -66,11 +67,18 @@ public class BulkSmsHistoryCollection {
 	public void setDateOfTransaction(Date dateOfTransaction) {
 		this.dateOfTransaction = dateOfTransaction;
 	}
-	public String getPackageName() {
-		return packageName;
+	
+	public BulkSmsPackage getSmsPackage() {
+		return smsPackage;
 	}
-	public void setPackageName(String packageName) {
-		this.packageName = packageName;
+	public void setSmsPackage(BulkSmsPackage smsPackage) {
+		this.smsPackage = smsPackage;
+	}
+	public void setCreditBalance(Long creditBalance) {
+		this.creditBalance = creditBalance;
+	}
+	public void setCreditSpent(Long creditSpent) {
+		this.creditSpent = creditSpent;
 	}
 	public PaymentMode getPaymentMode() {
 		return paymentMode;

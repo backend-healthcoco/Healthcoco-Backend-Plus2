@@ -5,6 +5,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.AppointmentSlot;
+import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DoctorConsultation;
 import com.dpdocter.beans.WorkingSchedule;
@@ -93,6 +94,8 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	private List<DoctorConsultation>  consultationType;
 	
 	private String clinicOwnershipImageUrl;
+	
+	private BulkSmsCredits bulkSmsCredit;
 	
 	//private List<ConsultationType> onlineConsultationType;
 
@@ -405,6 +408,14 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	
 
 	
+
+	public BulkSmsCredits getBulkSmsCredit() {
+		return bulkSmsCredit;
+	}
+
+	public void setBulkSmsCredit(BulkSmsCredits bulkSmsCredit) {
+		this.bulkSmsCredit = bulkSmsCredit;
+	}
 
 	public String getClinicOwnershipImageUrl() {
 		return clinicOwnershipImageUrl;

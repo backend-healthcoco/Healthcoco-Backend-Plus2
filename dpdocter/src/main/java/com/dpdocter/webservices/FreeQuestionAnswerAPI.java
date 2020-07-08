@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -24,6 +25,7 @@ import com.dpdocter.services.FreeQuestionAnswerService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
 @Component
@@ -50,6 +52,19 @@ public class FreeQuestionAnswerAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.FreeQueAnsUrls.ADD_VIEWS)
+	@POST
+	@ApiOperation(value = PathProxy.FreeQueAnsUrls.ADD_VIEWS, notes = PathProxy.FreeQueAnsUrls.ADD_VIEWS)
+	public Response<Boolean> addQueView(@PathVariable("questionId") String questionId) {
+		if (!DPDoctorUtils.anyStringEmpty(questionId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(freeQuetionAnswerService.addQueView(questionId));
+		return response;
+	}
+
 	@Path(value = PathProxy.FreeQueAnsUrls.GET_UNANSWERED_QUESTIONS)
 	@GET
 	@ApiOperation(value = PathProxy.FreeQueAnsUrls.GET_UNANSWERED_QUESTIONS, notes = PathProxy.FreeQueAnsUrls.GET_UNANSWERED_QUESTIONS)
@@ -57,9 +72,9 @@ public class FreeQuestionAnswerAPI {
 			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("updatedTime") long updatedTime) {
 		Response<FreeQuestionResponse> response = new Response<FreeQuestionResponse>();
-		Integer count = freeQuetionAnswerService.countFreeQuestion(discarded);
+		Integer count = freeQuetionAnswerService.countFreeQuestion(discarded,doctorId);
 		response.setDataList(
-				freeQuetionAnswerService.getFreeQuestionList(size, page, searchTerm, discarded, doctorId, updatedTime));
+				freeQuetionAnswerService.getUnansweredQuestionList(size, page, searchTerm, discarded, doctorId, updatedTime));
 		response.setCount(count);
 		return response;
 	}
@@ -71,7 +86,7 @@ public class FreeQuestionAnswerAPI {
 			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
 			@QueryParam("searchTerm") String searchTerm, @QueryParam("updatedTime") long updatedTime) {
 		Response<FreeQuestionResponse> response = new Response<FreeQuestionResponse>();
-		Integer count = freeQuetionAnswerService.countFreeQuestion(discarded);
+		Integer count = freeQuetionAnswerService.countFreeQuestion(discarded,doctorId);
 		response.setDataList(freeQuetionAnswerService.getAnsweredQuestionList(size, page, searchTerm, discarded,
 				doctorId, updatedTime));
 		response.setCount(count);

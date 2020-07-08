@@ -1593,9 +1593,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 					if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
 						for (PrescriptionItemDetail prescriptionItemDetail : prescription.getItems()) {
-							InventoryItem inventoryItem = inventoryService.getInventoryItemByResourceId(
+							InventoryItem inventoryItem = inventoryService.getInventoryItemByDrugName(
 									prescription.getLocationId(), prescription.getHospitalId(),
-									prescriptionItemDetail.getDrug().getDrugCode());
+									prescriptionItemDetail.getDrug().getDrugName());
 							if (inventoryItem != null) {
 								InventoryItemLookupResposne inventoryItemLookupResposne = inventoryService
 										.getInventoryItem(inventoryItem.getId());

@@ -166,6 +166,24 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	@Field(type = FieldType.Nested)
 	private List<WorkingSchedule> onlineWorkingSchedules;
 	
+	@Field(type = FieldType.Text)
+	private String RegistrationImageUrl;
+	@Field(type = FieldType.Text)
+	private String RegistrationThumbnailUrl;
+	
+	@Field(type = FieldType.Text)
+	private String photoIdImageUrl;
+	
+	@Field(type = FieldType.Boolean)
+	private Boolean isRegistrationDetailsVerified =false;
+	
+	@Field(type = FieldType.Boolean)
+	private Boolean isPhotoIdVerified =false;
+	
+	@Field(type = FieldType.Text)
+	private String professionalStatement;
+
+	
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;
 	}
@@ -566,6 +584,58 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 
 	public void setOnlineWorkingSchedules(List<WorkingSchedule> onlineWorkingSchedules) {
 		this.onlineWorkingSchedules = onlineWorkingSchedules;
+	}
+	
+	
+
+	public String getRegistrationImageUrl() {
+		return RegistrationImageUrl;
+	}
+
+	public void setRegistrationImageUrl(String registrationImageUrl) {
+		RegistrationImageUrl = registrationImageUrl;
+	}
+
+	public String getRegistrationThumbnailUrl() {
+		return RegistrationThumbnailUrl;
+	}
+
+	public void setRegistrationThumbnailUrl(String registrationThumbnailUrl) {
+		RegistrationThumbnailUrl = registrationThumbnailUrl;
+	}
+
+	public String getPhotoIdImageUrl() {
+		return photoIdImageUrl;
+	}
+
+	public void setPhotoIdImageUrl(String photoIdImageUrl) {
+		this.photoIdImageUrl = photoIdImageUrl;
+	}
+
+	public Boolean getIsRegistrationDetailsVerified() {
+		return isRegistrationDetailsVerified;
+	}
+
+	public void setIsRegistrationDetailsVerified(Boolean isRegistrationDetailsVerified) {
+		this.isRegistrationDetailsVerified = isRegistrationDetailsVerified;
+	}
+
+	public Boolean getIsPhotoIdVerified() {
+		return isPhotoIdVerified;
+	}
+
+	public void setIsPhotoIdVerified(Boolean isPhotoIdVerified) {
+		this.isPhotoIdVerified = isPhotoIdVerified;
+	}
+	
+	
+
+	public String getProfessionalStatement() {
+		return professionalStatement;
+	}
+
+	public void setProfessionalStatement(String professionalStatement) {
+		this.professionalStatement = professionalStatement;
 	}
 
 	@Override

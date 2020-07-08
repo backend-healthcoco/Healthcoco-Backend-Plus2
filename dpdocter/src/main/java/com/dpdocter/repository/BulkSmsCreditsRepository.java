@@ -9,6 +9,8 @@ public interface BulkSmsCreditsRepository extends MongoRepository<BulkSmsCredits
 
 	BulkSmsCreditsCollection findByDoctorId(ObjectId doctorId);
 
+	BulkSmsCreditsCollection findByDoctorIdAndLocationId(ObjectId doctorId, ObjectId locationId);
+
 	
 
 	

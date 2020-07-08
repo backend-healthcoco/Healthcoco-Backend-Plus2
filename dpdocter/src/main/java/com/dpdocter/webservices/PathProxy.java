@@ -2368,6 +2368,11 @@ public interface PathProxy {
 		public static final String GET_BULK_SMS_CREDITS = "/credits/get";
 		public static final String GET_SMS_HISTORY = "/history/get";
 		
+		public static final String GENERATE_ID = "/payment/generateId";
+		public static final String CREATE_PAYMENT = "/payment/create";
+		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
+		
+		
 	}
 
 
@@ -2399,9 +2404,11 @@ public interface PathProxy {
 		
 		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
 		
+
 		public static final String GET_COUNTRYLIST = "/country/get";
 		
 		public static final String GET_PACKAGES = "/package/getList";
+
 
 	}
 
@@ -2411,8 +2418,9 @@ public interface PathProxy {
 	public interface FreeQueAnsUrls {
 
 		public static final String ADD_ANSWER = "/addAns";
-		public static final String GET_ANSWERED_QUESTIONS = "/getAnsweredQue";
-		public static final String GET_UNANSWERED_QUESTIONS = "/getUnansweredQue";
+		public static final String ADD_VIEWS = "/addViews/{questionId}";
+		public static final String GET_ANSWERED_QUESTIONS = "/getAnsweredQue/{doctorId}";
+		public static final String GET_UNANSWERED_QUESTIONS = "/getUnansweredQue/{doctorId}";
 	}
 
 }

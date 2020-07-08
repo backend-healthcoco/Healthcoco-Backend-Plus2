@@ -155,6 +155,8 @@ public class DoctorClinicProfile {
 	private Boolean isOnlineConsultationAvailable = false;
 	
 	private String clinicOwnershipImageUrl;
+	
+	private BulkSmsCredits bulkSmsCredit;
 //=======
 //	private Map<DoctorConsultation, String> onlineConsultationFees;
 
@@ -735,9 +737,19 @@ public class DoctorClinicProfile {
 //	public void setOnlineConsultationType(List<ConsultationType> onlineConsultationType) {
 //		this.onlineConsultationType = onlineConsultationType;
 //	}
+	
+	
 
 	public String getClinicOwnershipImageUrl() {
 		return clinicOwnershipImageUrl;
+	}
+
+	public BulkSmsCredits getBulkSmsCredit() {
+		return bulkSmsCredit;
+	}
+
+	public void setBulkSmsCredit(BulkSmsCredits bulkSmsCredit) {
+		this.bulkSmsCredit = bulkSmsCredit;
 	}
 
 	public void setClinicOwnershipImageUrl(String clinicOwnershipImageUrl) {

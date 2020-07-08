@@ -7,49 +7,67 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.PaymentMode;
 
-public class BulkSmsCredits extends GenericCollection {
+public class BulkSmsCredits {
 
-	private String id;
 
-	private long creditBalance;
+	private Long creditBalance;
 	
-	private long creditSpent;
+	private Long creditSpent;
 	
 	private String doctorId;
 	
 	private String locationId;
 	
-	private String packageName;
+	private BulkSmsPackage smsPackage;
 	
 	private Date dateOfTransaction=new Date();
 	
 	private PaymentMode paymentMode;
 
 
-	public String getId() {
-		return id;
+	
+	
+	public Long getCreditBalance() {
+		return creditBalance;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setCreditBalance(Long creditBalance) {
+		this.creditBalance = creditBalance;
+	}
+
+	public Long getCreditSpent() {
+		return creditSpent;
+	}
+
+	public void setCreditSpent(Long creditSpent) {
+		this.creditSpent = creditSpent;
+	}
+
+	
+	public Date getDateOfTransaction() {
+		return dateOfTransaction;
+	}
+
+	public void setDateOfTransaction(Date dateOfTransaction) {
+		this.dateOfTransaction = dateOfTransaction;
 	}
 
 	
 
-	public long getCreditBalance() {
-		return creditBalance;
+	public BulkSmsPackage getSmsPackage() {
+		return smsPackage;
 	}
 
-	public void setCreditBalance(long creditBalance) {
-		this.creditBalance = creditBalance;
+	public void setSmsPackage(BulkSmsPackage smsPackage) {
+		this.smsPackage = smsPackage;
 	}
 
-	public long getCreditSpent() {
-		return creditSpent;
+	public PaymentMode getPaymentMode() {
+		return paymentMode;
 	}
 
-	public void setCreditSpent(long creditSpent) {
-		this.creditSpent = creditSpent;
+	public void setPaymentMode(PaymentMode paymentMode) {
+		this.paymentMode = paymentMode;
 	}
 
 	public String getDoctorId() {
@@ -66,30 +84,6 @@ public class BulkSmsCredits extends GenericCollection {
 
 	public void setLocationId(String locationId) {
 		this.locationId = locationId;
-	}
-
-	public Date getDateOfTransaction() {
-		return dateOfTransaction;
-	}
-
-	public void setDateOfTransaction(Date dateOfTransaction) {
-		this.dateOfTransaction = dateOfTransaction;
-	}
-
-	public String getPackageName() {
-		return packageName;
-	}
-
-	public void setPackageName(String packageName) {
-		this.packageName = packageName;
-	}
-
-	public PaymentMode getPaymentMode() {
-		return paymentMode;
-	}
-
-	public void setPaymentMode(PaymentMode paymentMode) {
-		this.paymentMode = paymentMode;
 	}
 	
 	
