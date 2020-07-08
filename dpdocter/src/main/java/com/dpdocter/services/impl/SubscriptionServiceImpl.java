@@ -936,7 +936,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			String searchTerm) {
 		List<Subscription> response = null;
 		try {
-			Criteria criteria = new Criteria("isDiscarded").is(isDiscarded).and("doctorId").is(doctorId);
+			Criteria criteria = new Criteria("isDiscarded").is(isDiscarded).and("doctorId").is(new ObjectId(doctorId));
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				criteria = criteria.orOperator(new Criteria("packageName").regex("^" + searchTerm, "i"),
 						new Criteria("packageName").regex("^" + searchTerm));
@@ -966,7 +966,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	public Integer countSubscriptionHistory(String doctorId, Boolean isDiscarded, String searchTerm) {
 		Integer response = null;
 		try {
-			Criteria criteria = new Criteria("isDiscarded").is(isDiscarded).and("doctorId").is(doctorId);
+			Criteria criteria = new Criteria("isDiscarded").is(isDiscarded).and("doctorId").is(new ObjectId(doctorId));
 			criteria = criteria.orOperator(new Criteria("packageName").regex("^" + searchTerm, "i"),
 					new Criteria("packageName").regex("^" + searchTerm));
 
