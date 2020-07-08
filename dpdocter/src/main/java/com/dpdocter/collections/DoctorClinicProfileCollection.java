@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.AppointmentSlot;
-import com.dpdocter.beans.BulkSmsCredit;
 import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DoctorConsultation;
