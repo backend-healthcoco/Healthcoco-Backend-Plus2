@@ -2341,7 +2341,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		parameters.put("printSettingsId",
 				(printSettings != null && printSettings.getId() != null) ? printSettings.getId().toString() : "");
 		String headerLeftText = "", headerRightText = "", footerBottomText = "", logoURL = "", footerSignature = "",
-				poweredBy = "", bottomSignText = "", footerImageUrl = "", headerImageUrl = "";
+				poweredBy = "", bottomSignText = "", footerImageUrl = "", signImageUrl = "", headerImageUrl = "";
 		int headerLeftTextLength = 0, headerRightTextLength = 0, footerHeight = 0, headerHeight = 0;
 		Integer contentFontSize = 10;
 		if (printSettings != null) {
@@ -2456,6 +2456,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						&& printSettings.getFooterSetup().getShowImageFooter()) {
 					footerImageUrl = getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl());
 				}
+				if (printSettings.getFooterSetup().getShowSignatureBox()) {
+					signImageUrl = getFinalImageURL(printSettings.getFooterSetup().getSignatureUrl());
+				}
 				if (printSettings.getFooterSetup().getShowImageFooter()
 						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getFooterImageUrl())) {
 					footerImageUrl = getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl());
@@ -2465,6 +2468,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		}
 		parameters.put("footerImage", footerImageUrl);
+		parameters.put("signatureImage", signImageUrl);
 		parameters.put("headerImage", headerImageUrl);
 		parameters.put("footerHeight", footerHeight);
 		parameters.put("headerHeight", headerHeight);
