@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.AppointmentSlot;
+import com.dpdocter.beans.BulkSmsCredit;
+import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DoctorConsultation;
 import com.dpdocter.beans.WorkingSchedule;
@@ -164,6 +166,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private Boolean isOnlineConsultationAvailable = false;
+	
+	@Field
+	private BulkSmsCredits bulkSmsCredit;
 	
 	public ObjectId getId() {
 		return id;
@@ -536,6 +541,13 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	}
 	
 	
+	public BulkSmsCredits getBulkSmsCredit() {
+		return bulkSmsCredit;
+	}
+
+	public void setBulkSmsCredit(BulkSmsCredits bulkSmsCredit) {
+		this.bulkSmsCredit = bulkSmsCredit;
+	}
 
 	public String getClinicOwnershipImageUrl() {
 		return clinicOwnershipImageUrl;

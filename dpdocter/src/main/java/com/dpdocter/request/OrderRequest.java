@@ -13,6 +13,8 @@ public class OrderRequest {
 	private String bulkSmsPackageId;
 	
 	private String doctorId;
+	
+	private String locationId;
 
 	private Discount discount;
 
@@ -84,6 +86,14 @@ public class OrderRequest {
 
 	public void setBulkSmsPackageId(String bulkSmsPackageId) {
 		this.bulkSmsPackageId = bulkSmsPackageId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
 	}
 
 	

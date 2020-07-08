@@ -8,6 +8,7 @@ public class PaymentSignatureRequest {
 	public String paymentId;
 	public String signature;
 	private String doctorId;
+	private String locationId;
 	private String bulkSmsPackageId;
 	private PaymentMode mode;
 	public String getOrderId() {
@@ -44,6 +45,13 @@ public class PaymentSignatureRequest {
 	
 	
 	
+	
+	public String getLocationId() {
+		return locationId;
+	}
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 	public PaymentMode getMode() {
 		return mode;
 	}

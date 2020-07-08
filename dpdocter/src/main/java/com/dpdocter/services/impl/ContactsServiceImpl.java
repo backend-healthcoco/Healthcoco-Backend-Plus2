@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Branch;
 import com.dpdocter.beans.BulKMessage;
+import com.dpdocter.beans.BulkSmsCredit;
+import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
@@ -43,6 +45,7 @@ import com.dpdocter.collections.BranchCollection;
 import com.dpdocter.collections.BulKMessageCollection;
 import com.dpdocter.collections.BulkSmsCreditsCollection;
 import com.dpdocter.collections.BulkSmsHistoryCollection;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
@@ -63,6 +66,7 @@ import com.dpdocter.repository.BulkMessageRepository;
 import com.dpdocter.repository.BulkSmsCreditsRepository;
 import com.dpdocter.repository.BulkSmsHistoryRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.ImportContactsRequestRepository;
@@ -162,6 +166,10 @@ public class ContactsServiceImpl implements ContactsService {
 	
 	@Autowired
 	private BulkSmsHistoryRepository bulkSmsHistoryRepository;
+	
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
+
 
 
 	/**
@@ -1033,28 +1041,31 @@ public class ContactsServiceImpl implements ContactsService {
 //				
 //				
 //				smsTrackDetail.setSmsDetails(smsDetails);
-
-			Integer totalLength=160;
-			Integer messageLength=message.length();
-			long credits=(messageLength/totalLength);
-			long  subCredits=credits*(mobileNumbers.size());
-			BulkSmsHistoryCollection bulkHistoryCollection=new BulkSmsHistoryCollection();
+//------------------------------------------------------------------------
 			
-			BulkSmsCreditsCollection bulk=bulkSmsCreditsRepository.findByDoctorId(new ObjectId(request.getDoctorId()));
-			if(bulk!=null) {
-				if(bulk.getCreditBalance() > subCredits || bulk.getCreditBalance() == subCredits) {
-				bulk.setCreditBalance(bulk.getCreditBalance()-subCredits);
-				bulk.setCreditSpent(bulk.getCreditSpent()+subCredits);
-				bulk.setUpdatedTime(new Date());
-				}
-				else {
-					throw new BusinessException(ServiceError.Unknown, "You have Unsufficient Balance");
-				}
-				BeanUtil.map(bulk, bulkHistoryCollection);
-				bulkSmsHistoryRepository.save(bulkHistoryCollection);
-			}
-			bulkSmsCreditsRepository.save(bulk);
-			
+			  Integer totalLength=160; 
+			  Integer messageLength=message.length();
+			  long credits=(messageLength/totalLength);
+			  long subCredits=credits*(mobileNumbers.size());
+			  BulkSmsHistoryCollection bulkHistoryCollection=new BulkSmsHistoryCollection();
+				DoctorClinicProfileCollection doctorClinicProfileCollections = null;
+			  doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
+						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
+				BulkSmsCredits bulk=doctorClinicProfileCollections.getBulkSmsCredit();
+			  if(doctorClinicProfileCollections!=null) { 
+				  if(bulk.getCreditBalance() > subCredits || bulk.getCreditBalance() == subCredits) {
+			  bulk.setCreditBalance(bulk.getCreditBalance()-subCredits);
+			  bulk.setCreditSpent(bulk.getCreditSpent()+subCredits);
+			   } 
+				  else { 
+					  throw new BusinessException(ServiceError.Unknown, "You have Unsufficient Balance"); 
+			  }
+			  BeanUtil.map(bulk, bulkHistoryCollection);
+			  bulkSmsHistoryRepository.save(bulkHistoryCollection);
+			  }
+			  doctorClinicProfileCollections.setBulkSmsCredit(bulk);
+			  doctorClinicProfileRepository.save(doctorClinicProfileCollections);
+			 
 			
 				if (!smsServices.getBulkSMSResponse(mobileNumbers, message).equalsIgnoreCase("FAILED")) {
 						status = true;

@@ -33,4 +33,6 @@ public interface BulkSmsServices {
 
 	BulkSmsCredits getCreditsByDoctorIdAndLocationId(String doctorId, String locationId);
 
+	Boolean bulkSmsCreditCheck();
+
 }

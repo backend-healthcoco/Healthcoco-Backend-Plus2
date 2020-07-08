@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.BulkSmsCredits;
@@ -29,10 +30,13 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.SMSReport;
 import com.dpdocter.collections.BulkSmsCreditsCollection;
 import com.dpdocter.collections.BulkSmsHistoryCollection;
 import com.dpdocter.collections.BulkSmsPackageCollection;
 import com.dpdocter.collections.BulkSmsPaymentCollection;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
@@ -45,6 +49,9 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BulkSmsCreditsRepository;
 import com.dpdocter.repository.BulkSmsPackageRepository;
 import com.dpdocter.repository.BulkSmsPaymentRepository;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.SMSTrackRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.OrderRequest;
 import com.dpdocter.request.PaymentSignatureRequest;
@@ -87,6 +94,12 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 	
 	@Autowired
 	private BulkSmsPaymentRepository bulkSmsPaymentRepository;
+	
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
+	
+	@Autowired
+	private SMSTrackRepository smsTrackRepository;
 
 
 	
@@ -350,6 +363,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 			}
 			
 			
+			
 			UserCollection user = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (user == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "user not found");
@@ -439,19 +453,42 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 						BulkSmsCreditsCollection creditCollection=new BulkSmsCreditsCollection();
 						BulkSmsPackageCollection packageCollection=bulkSmsRepository.findById(new ObjectId(request.getBulkSmsPackageId())).orElse(null);
 					
+						BulkSmsPackage bulkPackage=new BulkSmsPackage();
+						BeanUtil.map(packageCollection,bulkPackage );
+						
 						if(packageCollection==null)
 							throw new BusinessException(ServiceError.InvalidInput, "Sms Package not found");
 						
-						creditCollection.setDoctorId(doctor.getId());
-						creditCollection.getSmsPackage().setPackageName(packageCollection.getPackageName());
-						creditCollection.getSmsPackage().setSmsCredit(packageCollection.getSmsCredits());
-						creditCollection.getSmsPackage().setPrice(packageCollection.getPrice());
-						creditCollection.getSmsPackage().setId(packageCollection.getId().toString());
-						creditCollection.setCreditBalance(packageCollection.getSmsCredits());
-						creditCollection.setDateOfTransaction(new Date());
-						creditCollection.setPaymentMode(request.getMode());
-						creditCollection.setCreatedTime(new Date());
-						bulkSmsCreditRepository.save(creditCollection);
+						
+						DoctorClinicProfileCollection doctorClinicProfileCollections = null;
+						doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
+								new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
+						
+						if (doctorClinicProfileCollections != null)
+						{
+							doctorClinicProfileCollections.getBulkSmsCredit().setDoctorId(request.getDoctorId());
+							doctorClinicProfileCollections.getBulkSmsCredit().setLocationId(request.getLocationId());
+							doctorClinicProfileCollections.getBulkSmsCredit().setCreditBalance(packageCollection.getSmsCredits());
+							doctorClinicProfileCollections.getBulkSmsCredit().setDateOfTransaction(new Date());
+							doctorClinicProfileCollections.getBulkSmsCredit().setPaymentMode(request.getMode());
+							doctorClinicProfileCollections.getBulkSmsCredit().setSmsPackage(bulkPackage);
+							doctorClinicProfileCollections.setUpdatedTime(new Date());
+							doctorClinicProfileRepository.save(doctorClinicProfileCollections);
+							
+						
+						}
+						
+						
+//						creditCollection.setDoctorId(doctor.getId());
+//						creditCollection.getSmsPackage().setPackageName(packageCollection.getPackageName());
+//						creditCollection.getSmsPackage().setSmsCredit(packageCollection.getSmsCredits());
+//						creditCollection.getSmsPackage().setPrice(packageCollection.getPrice());
+//						creditCollection.getSmsPackage().setId(packageCollection.getId().toString());
+//						creditCollection.setCreditBalance(packageCollection.getSmsCredits());
+//						creditCollection.setDateOfTransaction(new Date());
+//						creditCollection.setPaymentMode(request.getMode());
+//						creditCollection.setCreatedTime(new Date());
+//						bulkSmsCreditRepository.save(creditCollection);
 						
 						
 						
@@ -507,6 +544,69 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 			e.printStackTrace();
 		}
 		return response;
+	}
+
+	
+	@Scheduled(cron = "0 0 20 * * ?", zone = "IST")
+	@Override
+	public
+	Boolean bulkSmsCreditCheck()
+	{
+		DoctorClinicProfileCollection doctorCollection = null;
+		Boolean response = false;
+
+		try {
+
+			List<DoctorClinicProfileCollection> doctorExperiences = doctorClinicProfileRepository.findAll();
+
+			for (DoctorClinicProfileCollection doctorEperience : doctorExperiences) {
+					
+				doctorCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(doctorEperience.getDoctorId(), doctorEperience.getLocationId());
+				 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				 Date date=new Date();
+				 Integer totalLength=160; 
+				 Integer messageLength=null;
+				if (doctorCollection != null) 
+					if(doctorCollection.getBulkSmsCredit()!=null) {
+						
+						smsTrackDetail=smsTrackRepository.findByDoctorIdAndLocationIdAndCreatedTime(doctorEperience.getDoctorId(), doctorEperience.getLocationId(),date);
+						
+					if(smsTrackDetail !=null)
+					{
+						if(smsTrackDetail.getType()=="BULK_SMS")
+						{
+						
+								for (SMSDetail smsDetail : smsTrackDetail.getSmsDetails()) {
+					
+										if (smsDetail.getSms() != null && smsDetail.getDeliveryStatus() != null
+												&& smsDetail.getSms().getSmsAddress().getRecipient() != null) {
+											if (smsDetail.getDeliveryStatus().equals(SMSStatus.REJECTED) || smsDetail.getDeliveryStatus().equals(SMSStatus.FAILED) ) {
+												
+												messageLength =smsDetail.getSms().getSmsText().length();
+												  long credits=(messageLength/totalLength);
+												  long subCredits=credits*(smsTrackDetail.getSmsDetails().size());
+												  doctorCollection.getBulkSmsCredit().setCreditBalance(subCredits);
+												  doctorClinicProfileRepository.save(doctorCollection);
+											}
+										}
+									}
+								}
+								smsTrackRepository.save(smsTrackDetail);
+								response = true;
+							}							
+				}
+
+			}
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Editing Doctor Profile");
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
+		}
+		return response;
+
 	}
 
 	

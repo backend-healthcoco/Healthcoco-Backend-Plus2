@@ -11,7 +11,7 @@ import com.dpdocter.beans.BulkSmsPackage;
 import com.dpdocter.enums.PaymentMode;
 
 @Document(collection = "bulk_sms_history_cl")
-public class BulkSmsHistoryCollection {
+public class BulkSmsHistoryCollection extends GenericCollection{
 
 	@Id
 	private ObjectId id;

@@ -7,9 +7,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.PaymentMode;
 
-public class BulkSmsCredits extends GenericCollection {
+public class BulkSmsCredits {
 
-	private String id;
 
 	private Long creditBalance;
 	
@@ -26,13 +25,7 @@ public class BulkSmsCredits extends GenericCollection {
 	private PaymentMode paymentMode;
 
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
+	
 	
 	public Long getCreditBalance() {
 		return creditBalance;
@@ -50,22 +43,7 @@ public class BulkSmsCredits extends GenericCollection {
 		this.creditSpent = creditSpent;
 	}
 
-	public String getDoctorId() {
-		return doctorId;
-	}
-
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
-
-	public String getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
-
+	
 	public Date getDateOfTransaction() {
 		return dateOfTransaction;
 	}
@@ -90,6 +68,22 @@ public class BulkSmsCredits extends GenericCollection {
 
 	public void setPaymentMode(PaymentMode paymentMode) {
 		this.paymentMode = paymentMode;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
 	}
 	
 	
