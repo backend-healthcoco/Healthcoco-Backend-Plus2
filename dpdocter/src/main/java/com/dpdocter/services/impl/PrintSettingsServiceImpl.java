@@ -119,6 +119,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 						.anyStringEmpty(printSettingsCollection.getFooterSetup().getFooterImageUrl())) {
 					printSettingsCollection.getFooterSetup().setFooterImageUrl(
 							printSettingsCollection.getFooterSetup().getFooterImageUrl().replaceAll(imagePath, ""));
+					printSettingsCollection.getFooterSetup()
+					.setSignatureUrl(getFinalImageURL(response.getFooterSetup().getSignatureUrl()));
 				}
 			}
 
@@ -147,6 +149,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 				if (response.getFooterSetup() != null) {
 					response.getFooterSetup()
 							.setFooterImageUrl(getFinalImageURL(response.getFooterSetup().getFooterImageUrl()));
+					response.getFooterSetup()
+					.setSignatureUrl(getFinalImageURL(response.getFooterSetup().getSignatureUrl()));
 				}
 			}
 
@@ -231,6 +235,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 						if (printSettings.getFooterSetup() != null) {
 							printSettings.getFooterSetup().setFooterImageUrl(
 									getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl()));
+							printSettings.getFooterSetup()
+							.setSignatureUrl(getFinalImageURL(printSettings.getFooterSetup().getSignatureUrl()));
 						}
 					}
 					response.add(printSettings);
@@ -318,6 +324,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 						if (response.getFooterSetup() != null) {
 							response.getFooterSetup()
 									.setFooterImageUrl(getFinalImageURL(response.getFooterSetup().getFooterImageUrl()));
+							response.getFooterSetup()
+							.setSignatureUrl(getFinalImageURL(response.getFooterSetup().getSignatureUrl()));
 						}
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -364,6 +372,23 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			e.printStackTrace();
 			logger.error(e + " Error occured while uploading Image");
 			throw new BusinessException(ServiceError.Unknown, " Error occured while uploading Image");
+		}
+		return getFinalImageURL(response.getImageUrl().replaceAll(imagePath, ""));
+	}
+
+	@Override
+	public String uploadSignature(FileDetails fileDetails) {
+		ImageURLResponse response = null;
+		String path = "";
+		try {
+			fileDetails.setFileName(fileDetails.getFileName() + new Date());
+			path = "print/setup" + File.separator + "signature";
+			response = fileManager.saveImageAndReturnImageUrl(fileDetails, path, false);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while uploading Signature");
+			throw new BusinessException(ServiceError.Unknown, " Error occured while Signature Image");
 		}
 		return getFinalImageURL(response.getImageUrl().replaceAll(imagePath, ""));
 	}
