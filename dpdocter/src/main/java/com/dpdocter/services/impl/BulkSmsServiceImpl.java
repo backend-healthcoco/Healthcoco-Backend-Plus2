@@ -464,14 +464,17 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 						doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
 								new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 						
+						BulkSmsCredits credit=new BulkSmsCredits();
 						if (doctorClinicProfileCollections != null)
 						{
-							doctorClinicProfileCollections.getBulkSmsCredit().setDoctorId(request.getDoctorId());
-							doctorClinicProfileCollections.getBulkSmsCredit().setLocationId(request.getLocationId());
-							doctorClinicProfileCollections.getBulkSmsCredit().setCreditBalance(packageCollection.getSmsCredits());
-							doctorClinicProfileCollections.getBulkSmsCredit().setDateOfTransaction(new Date());
-							doctorClinicProfileCollections.getBulkSmsCredit().setPaymentMode(request.getMode());
-							doctorClinicProfileCollections.getBulkSmsCredit().setSmsPackage(bulkPackage);
+							BeanUtil.map(request,credit);
+							doctorClinicProfileCollections.setBulkSmsCredit(credit);
+//							doctorClinicProfileCollections.getBulkSmsCredit().setDoctorId(request.getDoctorId());
+//							doctorClinicProfileCollections.getBulkSmsCredit().setLocationId(request.getLocationId());
+//							doctorClinicProfileCollections.getBulkSmsCredit().setCreditBalance(packageCollection.getSmsCredits());
+//							doctorClinicProfileCollections.getBulkSmsCredit().setDateOfTransaction(new Date());
+//							doctorClinicProfileCollections.getBulkSmsCredit().setPaymentMode(request.getMode());
+//							doctorClinicProfileCollections.getBulkSmsCredit().setSmsPackage(bulkPackage);
 							doctorClinicProfileCollections.setUpdatedTime(new Date());
 							doctorClinicProfileRepository.save(doctorClinicProfileCollections);
 							
