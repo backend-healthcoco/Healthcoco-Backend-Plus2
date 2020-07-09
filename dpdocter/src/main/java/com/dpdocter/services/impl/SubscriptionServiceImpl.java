@@ -27,6 +27,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Country;
 import com.dpdocter.beans.PackageDetailObject;
@@ -95,16 +96,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	private SubscriptionDetailRepository subscriptionDetailRepository;
 
 	@Autowired
-	SubscriptionRepository subscriptionRepository;
+	private SubscriptionRepository subscriptionRepository;
 
 	@Autowired
-	SubscriptionHistoryRepository subscriptionHistoryRepository;
+	private SubscriptionHistoryRepository subscriptionHistoryRepository;
 
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
 
 	@Autowired
-	PackageDetailObjectRepository packageDetailObjectRepository;
+	private PackageDetailObjectRepository packageDetailObjectRepository;
 
 	@Autowired
 	private SMSServices smsServices;
@@ -116,7 +117,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	private MailBodyGenerator mailBodyGenerator;
 
 	@Autowired
-	PushNotificationServices pushNotificationServices;
+	private PushNotificationServices pushNotificationServices;
 
 	@Autowired
 	private SMSFormatRepository sMSFormatRepository;
@@ -133,6 +134,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	@Value(value = "${rayzorpay.api.key}")
 	private String keyId;
 
+	@Override
 	public List<SubscriptionDetail> addsubscriptionData() {
 		List<SubscriptionDetail> response = null;
 		try {
@@ -196,7 +198,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-
 		}
 		return response;
 	}
@@ -213,6 +214,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 	// new one subscription
 	@Override
+	@Transactional
 	public Subscription addEditSubscription(SubscriptionRequest request) {
 		Subscription response = null;
 		Order order = null;
@@ -220,24 +222,27 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		try {
 			SubscriptionCollection subscriptionCollection = null;
 			subscriptionCollection = new SubscriptionCollection();
-
+			System.out.println("step 1");
 			RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
 			JSONObject orderRequest = new JSONObject();
+			System.out.println("step 2");
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				subscriptionCollection = subscriptionRepository.findById(new ObjectId(request.getId())).orElse(null);
 				if (subscriptionCollection == null) {
+					logger.warn("subscription not found");
 					throw new BusinessException(ServiceError.NotFound, "Subscription Not found with Id");
 				}
 				// get doctor from doctor id;
 				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
 						.orElse(null);
 				if (userCollection == null) {
+					logger.warn("doctor id not found");
 					throw new BusinessException(ServiceError.NotFound, "Doctor Not present with this id");
 				}
 				// add payment in collection
 				if (request.getPaymentStatus() == true) {
-					int amount = (request.getAmount() * 100);
+					double amount = (request.getAmount() * 100);
 					// amount in paise
 					orderRequest.put("amount", (int) amount);
 					orderRequest.put("currency", "INR");
@@ -247,6 +252,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					orderRequest.put("payment_capture", true);
 
 					order = rayzorpayClient.Orders.create(orderRequest);
+					System.out.println("order" + order);
 
 					if (userCollection != null) {
 						DoctorSubscriptionPaymentCollection payment = new DoctorSubscriptionPaymentCollection();
@@ -307,15 +313,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					Boolean ck = mailService.sendEmail(userCollection.getEmailAddress(), "Update Packege Detail", body,
 							null);
 					System.out.println("main send" + ck);
-				} catch (MessagingException e) {
-					System.out.println("main send err");
+				} catch (Exception e) {
 					e.printStackTrace();
+					logger.error(e);
 				}
 
 			} else {
 				SubscriptionCollection subscriptionCkD = subscriptionRepository
 						.findByDoctorId(new ObjectId(request.getDoctorId()));
 				if (subscriptionCkD != null) {
+					logger.warn("doctor already present");
 					throw new BusinessException(ServiceError.NotFound,
 							"Subscription already present for this doctor with this id " + subscriptionCkD.getId());
 				}
@@ -323,11 +330,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
 						.orElse(null);
 				if (userCollection == null) {
+					logger.warn("doctor not found");
 					throw new BusinessException(ServiceError.NotFound, "Doctor Not present with this id");
 				}
 
 				if (request.getPaymentStatus() == true) {
-					int amount = (request.getAmount() * 100);
+					double amount = (request.getAmount() * 100);
 					// amount in paise
 					orderRequest.put("amount", (int) amount);
 					orderRequest.put("currency", "INR");
@@ -337,6 +345,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					orderRequest.put("payment_capture", true);
 
 					order = rayzorpayClient.Orders.create(orderRequest);
+
+					System.out.println("order" + order);
 
 					if (order != null) {
 						BeanUtil.map(request, subscriptionCollection);
@@ -427,11 +437,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			// Handle Exception
 			logger.error(e.getMessage());
 			e.printStackTrace();
-		} catch (BusinessException e) {
-			logger.error("Error while add/edit Subscription  " + e.getMessage());
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while add/edit Subscription " + e.getMessage());
-
+			logger.error(e);
 		}
 		return response;
 	}
@@ -467,7 +475,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error While Sending SMS");
-			throw new BusinessException(ServiceError.Unknown, "Error While Sending SMS " + e.getMessage());
 		}
 		return response;
 	}
@@ -708,9 +715,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			response = new Subscription();
 			BeanUtil.map(subscriptionCollection, response);
 
-		} catch (BusinessException e) {
-			logger.error("Error while searching the id " + e.getMessage());
-			throw new BusinessException(ServiceError.Unknown, "Error while searching the id");
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
 		}
 
 		return response;
@@ -730,9 +737,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 			BeanUtil.map(packageDetailObjectCollection, response);
 
-		} catch (BusinessException e) {
-			logger.error("Error while searching the id " + e.getMessage());
-			throw new BusinessException(ServiceError.Unknown, "Error while searching the id");
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
 		}
 
 		return response;
@@ -740,6 +747,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	}
 
 	@Override
+	@Transactional
 	public Boolean verifySignature(SubscriptionPaymentSignatureRequest request) {
 		Boolean response = false;
 		SubscriptionHistoryCollection subscriptionHistoryCollection = null;
@@ -748,11 +756,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			SubscriptionCollection subscriptionCollection = subscriptionRepository
 					.findById(new ObjectId(request.getSubscriptionId())).orElse(null);
 			if (subscriptionCollection == null) {
+				logger.warn("subscription id not found");
 				throw new BusinessException(ServiceError.NotFound, "Subscription Not found with Id");
 			}
 			// get doctor from doctor id;
 			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (userCollection == null) {
+				logger.warn("doctor id not found");
 				throw new BusinessException(ServiceError.NotFound, "Doctor Not present with this id");
 			}
 			JSONObject options = new JSONObject();
@@ -760,6 +770,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			options.put("razorpay_payment_id", request.getPaymentId());
 			options.put("razorpay_signature", request.getSignature());
 			response = Utils.verifyPaymentSignature(options, secret);
+			System.out.println("paymn" + response);
 			if (response) {
 
 				Criteria criteria = new Criteria("orderId").is(request.getOrderId()).and("doctorId")
@@ -767,6 +778,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						.is(new ObjectId(request.getSubscriptionId())).and("transactionStatus").is("PENDING");
 				DoctorSubscriptionPaymentCollection doctorSubscriptionPaymentCollection = mongoTemplate
 						.findOne(new Query(criteria), DoctorSubscriptionPaymentCollection.class);
+				System.out.println("doctorSubscriptionPaymentCollection" + doctorSubscriptionPaymentCollection);
 				doctorSubscriptionPaymentCollection.setTransactionId(request.getPaymentId());
 				doctorSubscriptionPaymentCollection.setTransactionStatus("SUCCESS");
 				doctorSubscriptionPaymentCollection.setCreatedTime(new Date());
@@ -827,8 +839,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (Exception e) {
-			logger.error(e.getMessage());
 			e.printStackTrace();
+			logger.error(e);
 		}
 		return response;
 	}
@@ -856,8 +868,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		} catch (BusinessException e) {
 			logger.error("Error while getting Country " + e.getMessage());
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while getting Country " + e.getMessage());
-
 		}
 		return response;
 
@@ -872,11 +882,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					new Criteria("countryName").regex("^" + searchTerm));
 
 			response = (int) mongoTemplate.count(new Query(criteria), CountryCollection.class);
-		} catch (BusinessException e) {
-			logger.error("Error while counting Country " + e.getMessage());
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while Country " + e.getMessage());
-
+			logger.error(e);
 		}
 		return response;
 	}
@@ -903,11 +911,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					.aggregate(aggregation, PackageDetailObjectCollection.class, PackageDetailObject.class)
 					.getMappedResults();
 
-		} catch (BusinessException e) {
-			logger.error("Error while getting Package detail " + e.getMessage());
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while getting Package detail " + e.getMessage());
-
+			logger.error(e);
 		}
 		return response;
 	}
@@ -921,11 +927,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					new Criteria("packageName").regex("^" + searchTerm));
 
 			response = (int) mongoTemplate.count(new Query(criteria), PackageDetailObjectCollection.class);
-		} catch (BusinessException e) {
-			logger.error("Error while counting Package detail " + e.getMessage());
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while Package detail " + e.getMessage());
-
+			logger.error(e);
 		}
 		return response;
 
@@ -953,11 +957,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			response = mongoTemplate.aggregate(aggregation, SubscriptionHistoryCollection.class, Subscription.class)
 					.getMappedResults();
 
-		} catch (BusinessException e) {
-			logger.error("Error while getting history " + e.getMessage());
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while getting history " + e.getMessage());
-
+			logger.error(e);
 		}
 		return response;
 	}
@@ -971,11 +973,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					new Criteria("packageName").regex("^" + searchTerm));
 
 			response = (int) mongoTemplate.count(new Query(criteria), SubscriptionHistoryCollection.class);
-		} catch (BusinessException e) {
-			logger.error("Error while counting history detail " + e.getMessage());
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while history detail " + e.getMessage());
-
+			logger.error(e);
 		}
 		return response;
 	}
