@@ -145,7 +145,7 @@ public class FreeQuestionAnswerServiceImpl implements FreeQuestionAnswerService 
 						null);
 				String body = mailBodyGenerator.generateFreeQuestionAnswerEmailBody(userCollection.getEmailAddress(),
 						questionAnswerCollection.getForDetail().getName(), locationCollection.getCity(),
-						"Q&ATemplate.vm", doctorName);
+						"QandATemplate.vm", doctorName);
 				mailService.sendEmail(userCollection.getEmailAddress(), "Your Question has been answered", body, null);
 
 				questionAnswerCollection = freeQuetionAnswerRepository.save(questionAnswerCollection);
