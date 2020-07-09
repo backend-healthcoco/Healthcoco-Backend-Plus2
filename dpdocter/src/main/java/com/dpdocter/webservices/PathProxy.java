@@ -2362,4 +2362,13 @@ public interface PathProxy {
 		public static final String CREATE_VIDEO_ACCESS_TOKEN = "/video/accessToken/create/{userId}/{room}";
 		
 	}
+	
+	public static final String ONLINE_CONSULTATION_ANALYTICS_BASE_URL = BASE_URL + "/onlineConsultation";
+	public interface OnlineConsultationAnalyticsUrls{
+		
+
+		public static final String ONLINE_CONSULTATION_ANALYTICS = "/analytics/get";
+		
+				
+	}
 }
