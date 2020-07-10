@@ -857,6 +857,16 @@ public class SignUpServiceImpl implements SignUpService {
 				logger.warn("Email Address cannot be null");
 				throw new BusinessException(ServiceError.InvalidInput, "Email Address cannot be null");
 			}
+			
+			List<UserCollection>userCollections=userRepository.findByEmailAddressIgnoreCase(request.getEmailAddress());
+			
+			if(userCollections!=null && !userCollections.isEmpty())
+				if(userCollections.get(0).getEmailAddress() !=null && userCollections.get(0).getPassword()!=null)
+				{
+					throw new BusinessException(ServiceError.Unknown,
+							"Account with this emailId "+ userCollections.get(0).getEmailAddress()+" already exists,Please login or use forgot password.");
+			
+				}
 
 			List<RoleCollection> roleCollections = roleRepository
 					.findByRoleInAndLocationIdAndHospitalId(Arrays.asList(RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
@@ -1163,8 +1173,8 @@ public class SignUpServiceImpl implements SignUpService {
 			throw be;
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error occured while creating doctor");
-			throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
+			logger.error(e + " Error occured while creating doctor"+request.getEmailAddress());
+			throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor "+request.getEmailAddress());
 		}
 		return response;
 	}
