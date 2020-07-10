@@ -817,5 +817,7 @@ public class AnalyticsAPI {
 		Response<OnlineConsultationAnalytics> response =new Response<OnlineConsultationAnalytics>();
 		response.setData(appointmentAnalyticsService.getConsultationAnalytics(fromDate, toDate, doctorId, locationId, type));
 		return response;
+		
+		
 	}
 }
