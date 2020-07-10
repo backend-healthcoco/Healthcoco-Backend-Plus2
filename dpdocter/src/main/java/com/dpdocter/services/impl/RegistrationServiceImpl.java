@@ -2461,10 +2461,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 			UserCollection userCollection = userRepository.findByUserNameAndEmailAddress(request.getEmailAddress(),
 					request.getEmailAddress());
 
-			UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdAndLocationIdAndHospitalId(
+			List<UserRoleCollection> userRoleCollectionss = userRoleRepository.findByUserIdAndLocationIdAndHospitalId(
 					userCollection.getId(), new ObjectId(request.getLocationId()),
 					new ObjectId(request.getHospitalId()));
 
+			UserRoleCollection userRoleCollection=userRoleCollectionss.get(0);
+			
 			if (userRoleCollection != null) {
 				if (userRoleCollection.getRoleId().toString().equals(request.getRoleId())) {
 					logger.error("User has  already assigned " + doctorRole.getRole() + "in clinic");
@@ -2599,9 +2601,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			if (doctorRole != null) {
 
-				UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdAndLocationIdAndHospitalId(
+				List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserIdAndLocationIdAndHospitalId(
 						userCollection.getId(), new ObjectId(request.getLocationId()),
 						new ObjectId(request.getHospitalId()));
+			UserRoleCollection userRoleCollection=userRoleCollections.get(0);
 				if (userRoleCollection == null) {
 					userRoleCollection = new UserRoleCollection(userCollection.getId(),
 							new ObjectId(request.getRoleId()), new ObjectId(request.getLocationId()),
@@ -2729,9 +2732,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			if (staffRole != null) {
 
-				UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdAndLocationIdAndHospitalId(
+				List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserIdAndLocationIdAndHospitalId(
 						userCollection.getId(), new ObjectId(request.getLocationId()),
 						new ObjectId(request.getHospitalId()));
+				
+				UserRoleCollection userRoleCollection=userRoleCollections.get(0);
 				if (userRoleCollection == null) {
 					userRoleCollection = new UserRoleCollection(userCollection.getId(),
 							new ObjectId(request.getRoleId()), new ObjectId(request.getLocationId()),

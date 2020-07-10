@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Branch;
 import com.dpdocter.beans.BulKMessage;
-import com.dpdocter.beans.BulkSmsCredit;
 import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorContactsResponse;
