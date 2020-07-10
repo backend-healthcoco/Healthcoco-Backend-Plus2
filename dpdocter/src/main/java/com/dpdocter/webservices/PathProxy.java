@@ -2369,7 +2369,7 @@ public interface PathProxy {
 		public static final String GET_SMS_PACKAGE = "/package/get";
 		public static final String GET_BULK_SMS_CREDITS = "/credits/get";
 		public static final String GET_SMS_HISTORY = "/history/get";
-		
+		public static final String GET_SMS_REPORT = "/report/get";
 		public static final String GENERATE_ID = "/payment/generateId";
 		public static final String CREATE_PAYMENT = "/payment/create";
 		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
@@ -2391,6 +2391,7 @@ public interface PathProxy {
 		public static final String CREATE_TWILIO_NOTIFICATION = "/twilio/pushNotify";
 	}
 	
+
 	public static final String SUBSCRIPTION_BASE_URL = BASE_URL + "/subscription";
 	public interface SubscriptionUrls {
 
@@ -2423,6 +2424,15 @@ public interface PathProxy {
 		public static final String ADD_VIEWS = "/addViews/{questionId}";
 		public static final String GET_ANSWERED_QUESTIONS = "/getAnsweredQue/{doctorId}";
 		public static final String GET_UNANSWERED_QUESTIONS = "/getUnansweredQue/{doctorId}";
+	}
+
+	public static final String ONLINE_CONSULTATION_ANALYTICS_BASE_URL = BASE_URL + "/onlineConsultation";
+	public interface OnlineConsultationAnalyticsUrls{
+		
+
+		public static final String ONLINE_CONSULTATION_ANALYTICS = "/analytics/get";
+		
+				
 	}
 
 }

@@ -284,7 +284,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 		}
 	
 	@Override
-	public List<BulkSmsReport> getSmsReport(int page, int size, String searchTerm, String doctorId, String locationId) {
+	public List<BulkSmsReport> getSmsReport(int page, int size, String doctorId, String locationId) {
 		List<BulkSmsReport> response=null;
 		try {
 	Criteria criteria = new Criteria();

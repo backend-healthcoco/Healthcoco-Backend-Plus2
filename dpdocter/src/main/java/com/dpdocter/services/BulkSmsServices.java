@@ -23,7 +23,6 @@ public interface BulkSmsServices {
 	
 	List<BulkSmsCredits> getBulkSmsHistory(int page,int size,String searchTerm,String doctorId,String locationId);
 	
-	List<BulkSmsReport> getSmsReport(int page,int size,String searchTerm,String doctorId,String locationId);
 	
 //	public BulkSmsPaymentResponse createOrder(OrderRequest request);
 	
@@ -34,5 +33,7 @@ public interface BulkSmsServices {
 	BulkSmsCredits getCreditsByDoctorIdAndLocationId(String doctorId, String locationId);
 
 	Boolean bulkSmsCreditCheck();
+
+	List<BulkSmsReport> getSmsReport(int page, int size, String doctorId, String locationId);
 
 }
