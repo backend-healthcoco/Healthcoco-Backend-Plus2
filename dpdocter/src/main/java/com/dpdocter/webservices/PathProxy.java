@@ -1707,6 +1707,8 @@ public interface PathProxy {
 		public static final String GET_BOOKED_AND_CANCELLED_APPOINTMENT_ANALYTIC = "appointment/booked/cancel/{locationId}/{hospitalId}";
 		public static final String GET_BOOKED_BY_APPOINTMENT_ANALYTIC = "appointment/bookedby/{locationId}/{hospitalId}";
 
+		public static final String ONLINE_CONSULTATION_ANALYTICS = "/onlineConsultation/analytics/get";
+	
 	}
 
 	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";
@@ -2431,6 +2433,8 @@ public interface PathProxy {
 		
 
 		public static final String ONLINE_CONSULTATION_ANALYTICS = "/analytics/get";
+		
+		
 		
 				
 	}

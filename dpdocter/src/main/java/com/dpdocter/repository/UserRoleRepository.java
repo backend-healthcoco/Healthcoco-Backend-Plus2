@@ -12,7 +12,7 @@ public interface UserRoleRepository extends MongoRepository<UserRoleCollection, 
 	public List<UserRoleCollection> findByRoleIdAndLocationIdAndHospitalId(ObjectId roleId, ObjectId locationId,
 			ObjectId hospitalId);
 
-	public UserRoleCollection findByUserIdAndLocationIdAndHospitalId(ObjectId userId, ObjectId locationId,
+	public List<UserRoleCollection> findByUserIdAndLocationIdAndHospitalId(ObjectId userId, ObjectId locationId,
 			ObjectId hospitalId);
 
 	public List<UserRoleCollection> findByRoleId(ObjectId roleId);

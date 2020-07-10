@@ -3,6 +3,7 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.AppointmentAnalyticData;
+import com.dpdocter.beans.OnlineConsultationAnalytics;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
@@ -51,4 +52,7 @@ public interface AppointmentAnalyticsService {
 
 	public BookedAndCancelAppointmentCount getBookedAndCancelledCount(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate);
+	
+	OnlineConsultationAnalytics getConsultationAnalytics(String fromDate,String toDate,String doctorId,String locationId,String type);
+
 }

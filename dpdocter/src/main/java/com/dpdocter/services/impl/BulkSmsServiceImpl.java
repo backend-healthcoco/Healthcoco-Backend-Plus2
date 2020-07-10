@@ -47,6 +47,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BulkSmsCreditsRepository;
+import com.dpdocter.repository.BulkSmsHistoryRepository;
 import com.dpdocter.repository.BulkSmsPackageRepository;
 import com.dpdocter.repository.BulkSmsPaymentRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
@@ -100,6 +101,10 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 	
 	@Autowired
 	private SMSTrackRepository smsTrackRepository;
+	
+	@Autowired
+	private BulkSmsHistoryRepository bulkSmsHistoryRepository;
+
 
 
 	
@@ -450,7 +455,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 				if (onlinePaymentCollection.getTransactionStatus().equalsIgnoreCase("SUCCESS")) {
 					if (doctor != null) {
 						
-						BulkSmsCreditsCollection creditCollection=new BulkSmsCreditsCollection();
+						BulkSmsHistoryCollection history=new BulkSmsHistoryCollection();
 						BulkSmsPackageCollection packageCollection=bulkSmsRepository.findById(new ObjectId(request.getBulkSmsPackageId())).orElse(null);
 					
 						BulkSmsPackage bulkPackage=new BulkSmsPackage();
@@ -469,6 +474,10 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 						{
 							BeanUtil.map(request,credit);
 							doctorClinicProfileCollections.setBulkSmsCredit(credit);
+							
+							
+							BeanUtil.map(credit, history);
+							bulkSmsHistoryRepository.save(history);
 //							doctorClinicProfileCollections.getBulkSmsCredit().setDoctorId(request.getDoctorId());
 //							doctorClinicProfileCollections.getBulkSmsCredit().setLocationId(request.getLocationId());
 //							doctorClinicProfileCollections.getBulkSmsCredit().setCreditBalance(packageCollection.getSmsCredits());
