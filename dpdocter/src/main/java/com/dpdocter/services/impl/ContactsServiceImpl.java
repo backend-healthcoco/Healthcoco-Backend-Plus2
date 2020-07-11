@@ -979,13 +979,14 @@ public class ContactsServiceImpl implements ContactsService {
 				Criteria criteria = new Criteria().and("id").in(patientIds);
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-				AggregationResults<User> aggregationResults = mongoTemplate.aggregate(aggregation, UserCollection.class,
-						User.class);
-				user = aggregationResults.getUniqueMappedResult();
-				if (user != null) {
+			//	AggregationResults<User> aggregationResults = mongoTemplate.aggregate(aggregation, UserCollection.class,
+			//			User.class);
+				List<User>users=mongoTemplate.aggregate(aggregation, UserCollection.class,User.class).getMappedResults();
+				 
+				if (users != null) {
 					if(mobileNumbers == null)mobileNumbers = new ArrayList<>();
-
-					mobileNumbers.add(user.getMobileNumber());
+					for(User userr:users)
+					mobileNumbers.add(userr.getMobileNumber());
 
 				}
 			}else if (request.getPatientId() != null) {
@@ -1045,6 +1046,9 @@ public class ContactsServiceImpl implements ContactsService {
 			  Integer totalLength=160; 
 			  Integer messageLength=message.length();
 			  long credits=(messageLength/totalLength);
+			  if(credits==0)
+			  credits=credits+1;
+			  
 			  long subCredits=credits*(mobileNumbers.size());
 			  BulkSmsHistoryCollection bulkHistoryCollection=new BulkSmsHistoryCollection();
 				DoctorClinicProfileCollection doctorClinicProfileCollections = null;

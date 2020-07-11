@@ -63,15 +63,18 @@ public class BulkSmsApi {
 	@Path(value = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS, notes = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS)
 	@GET	
-	public Response<BulkSmsCredits> getBulkSmsCredits(@QueryParam(value ="doctorId") String doctorId,
-			@QueryParam(value ="locationId") String locationId) {
+	public Response<BulkSmsCredits> getBulkSmsCredits(@DefaultValue("0")@QueryParam(value ="size") int size, 
+			@DefaultValue("0")	@QueryParam(value ="page") int page,
+			@QueryParam(value ="doctorId") String doctorId,
+			@QueryParam(value ="locationIdId") String locationId,
+			@QueryParam(value ="searchTerm") String searchTerm) {
 
 		Response<BulkSmsCredits> response = new Response<BulkSmsCredits>();
 		if (doctorId == null && locationId==null) {
 			logger.warn("doctorId or locationid  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId send  is NULL");
 		}
-			response.setData(bulkSmsServices.getCreditsByDoctorIdAndLocationId(doctorId, locationId));
+			response.setDataList(bulkSmsServices.getCreditsByDoctorIdAndLocationId(size, page, searchTerm, doctorId, locationId));
 	
 		return response;
 	}

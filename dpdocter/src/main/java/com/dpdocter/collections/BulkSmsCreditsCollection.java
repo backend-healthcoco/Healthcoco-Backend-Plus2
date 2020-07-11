@@ -16,9 +16,9 @@ public class BulkSmsCreditsCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private Long creditBalance;
+	private Long creditBalance=0l;
 	@Field
-	private Long creditSpent;
+	private Long creditSpent=0L;
 	@Field
 	private ObjectId doctorId;
 	@Field

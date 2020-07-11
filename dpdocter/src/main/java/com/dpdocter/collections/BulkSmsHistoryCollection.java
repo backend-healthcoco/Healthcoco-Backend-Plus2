@@ -17,9 +17,9 @@ public class BulkSmsHistoryCollection extends GenericCollection{
 	private ObjectId id;
 
 	@Field
-	private Long creditBalance;
+	private Long creditBalance=0L;
 	@Field
-	private Long creditSpent;
+	private Long creditSpent=0L;
 	@Field
 	private ObjectId doctorId;
 	@Field
