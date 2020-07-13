@@ -1,5 +1,10 @@
 package com.dpdocter.services.impl;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -445,7 +450,33 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 					+ generateId());
 			orderRequest.put("payment_capture", request.getPaymentCapture());
 
-			order = rayzorpayClient.Orders.create(orderRequest);
+			String url="https://api.razorpay.com/v1/orders";
+			
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			
+			con.setDoOutput(true);
+			
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("User-Agent",
+					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+			con.setRequestProperty("Accept-Charset", "UTF-8");
+			
+			 DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			
+			  wr.flush();
+	             wr.close();
+	             con.disconnect();
+
+
+
+				
+
+		//	order = rayzorpayClient.Orders.create(orderRequest);
 
 			if (user != null) {
 				BulkSmsPaymentCollection collection = new BulkSmsPaymentCollection();
