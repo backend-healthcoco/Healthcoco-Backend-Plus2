@@ -2426,15 +2426,17 @@ public interface PathProxy {
 		public static final String GET_UNANSWERED_QUESTIONS = "/getUnansweredQue/{doctorId}";
 	}
 
+
 	public static final String ONLINE_CONSULTATION_ANALYTICS_BASE_URL = BASE_URL + "/onlineConsultation";
 	public interface OnlineConsultationAnalyticsUrls{
 		
 
 		public static final String ONLINE_CONSULTATION_ANALYTICS = "/analytics/get";
 		
-		
+	
 		
 				
 	}
+
 
 }

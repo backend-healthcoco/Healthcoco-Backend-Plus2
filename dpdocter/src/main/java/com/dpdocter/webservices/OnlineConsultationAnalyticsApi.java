@@ -40,9 +40,6 @@ public class OnlineConsultationAnalyticsApi {
 		response.setData(onlineConsultationService.getConsultationAnalytics(fromDate, toDate, doctorId, locationId, type));
 		return response;
 	}
-	
-	
-
 
 	
 }
