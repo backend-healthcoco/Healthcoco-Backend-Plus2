@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.AppointmentAnalyticData;
+import com.dpdocter.beans.OnlineConsultationAnalytics;
 import com.dpdocter.beans.PatientAnalyticData;
 import com.dpdocter.beans.PrescriptionAnalyticDetail;
 import com.dpdocter.beans.TreatmentAnalyticDetail;
@@ -804,4 +805,23 @@ public class AnalyticsAPI {
 		response.setData(data);
 		return response;
 	}
+	
+	
+	@Path(value = PathProxy.AnalyticsUrls.ONLINE_CONSULTATION_ANALYTICS)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.ONLINE_CONSULTATION_ANALYTICS, notes = PathProxy.AnalyticsUrls.ONLINE_CONSULTATION_ANALYTICS)
+	public Response<OnlineConsultationAnalytics> getPatientAppointments(@QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "type") String type,
+			@QueryParam(value = "fromDate") String fromDate, @QueryParam(value = "toDate") String toDate) {
+
+		Response<OnlineConsultationAnalytics> response =new Response<OnlineConsultationAnalytics>();
+		response.setData(appointmentAnalyticsService.getConsultationAnalytics(fromDate, toDate, doctorId, locationId, type));
+		return response;
+		
+		
+	}
+	
+	
+	
+	
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.BulkSmsPackage;
+import com.dpdocter.beans.BulkSmsReport;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.OrderRequest;
@@ -62,15 +63,18 @@ public class BulkSmsApi {
 	@Path(value = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS, notes = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS)
 	@GET	
-	public Response<BulkSmsCredits> getBulkSmsCredits(@QueryParam(value ="doctorId") String doctorId,
-			@QueryParam(value ="locationId") String locationId) {
+	public Response<BulkSmsCredits> getBulkSmsCredits(@DefaultValue("0")@QueryParam(value ="size") int size, 
+			@DefaultValue("0")	@QueryParam(value ="page") int page,
+			@QueryParam(value ="doctorId") String doctorId,
+			@QueryParam(value ="locationIdId") String locationId,
+			@QueryParam(value ="searchTerm") String searchTerm) {
 
 		Response<BulkSmsCredits> response = new Response<BulkSmsCredits>();
-		if (doctorId == null) {
-			logger.warn("doctorId send  is NULL");
+		if (doctorId == null && locationId==null) {
+			logger.warn("doctorId or locationid  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId send  is NULL");
 		}
-			response.setData(bulkSmsServices.getCreditsByDoctorIdAndLocationId(doctorId, locationId));
+			response.setDataList(bulkSmsServices.getCreditsByDoctorIdAndLocationId(size, page, searchTerm, doctorId, locationId));
 	
 		return response;
 	}
@@ -85,11 +89,29 @@ public class BulkSmsApi {
 			@QueryParam(value ="searchTerm") String searchTerm) {
 
 		Response<BulkSmsCredits> response = new Response<BulkSmsCredits>();
-		if (doctorId == null) {
-			logger.warn("doctorId send  is NULL");
+		if (doctorId == null && locationId==null) {
+			logger.warn("doctorId or locationid  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId send  is NULL");
 		}
 			response.setDataList(bulkSmsServices.getBulkSmsHistory(page, size, searchTerm, doctorId,locationId));
+	
+		return response;
+	}
+	
+	@Path(value = PathProxy.BulkSmsPackageUrls.GET_SMS_REPORT)
+	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_SMS_REPORT, notes = PathProxy.BulkSmsPackageUrls.GET_SMS_REPORT)
+	@GET
+	public Response<BulkSmsReport> getBulkSmsReport(@DefaultValue("0")@QueryParam(value ="size") int size, 
+			@DefaultValue("0")	@QueryParam(value ="page") int page,
+			@QueryParam(value ="doctorId") String doctorId,
+			@QueryParam(value ="locationIdId") String locationId) {
+
+		Response<BulkSmsReport> response = new Response<BulkSmsReport>();
+		if (doctorId == null && locationId==null) {
+			logger.warn("doctorId or locationid  is NULL");
+			throw new BusinessException(ServiceError.InvalidInput, "doctorId send  is NULL");
+		}
+			response.setDataList(bulkSmsServices.getSmsReport(page, size, doctorId, locationId));
 	
 		return response;
 	}

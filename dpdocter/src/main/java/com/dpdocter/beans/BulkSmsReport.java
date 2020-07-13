@@ -11,9 +11,8 @@ public class BulkSmsReport extends GenericCollection {
 	private String doctorId;
 
 	private String locationId;
-	private String hospitalId;
 
-	private List<SMSDetail> smsDetails;
+	private List<SMSDetail>smsDetails;
 
 	private String type;
 
@@ -49,13 +48,9 @@ public class BulkSmsReport extends GenericCollection {
 		this.locationId = locationId;
 	}
 
-	public String getHospitalId() {
-		return hospitalId;
-	}
 
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
-	}
+
+	
 
 	public List<SMSDetail> getSmsDetails() {
 		return smsDetails;
@@ -112,7 +107,7 @@ public class BulkSmsReport extends GenericCollection {
 	@Override
 	public String toString() {
 		return "BulkSmsReport [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", smsDetails=" + smsDetails + ", type=" + type + ", responseId=" + responseId + "]";
+				 + ", smsDetails=" + smsDetails + ", type=" + type + ", responseId=" + responseId + "]";
 	}
 
 }

@@ -24,13 +24,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AppointmentAnalyticData;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.OnlineConsultationAnalytics;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.PaymentSummary;
 import com.dpdocter.collections.AppointmentCollection;
+import com.dpdocter.collections.OnlineConsultionPaymentCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
+import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
@@ -1395,5 +1399,162 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		}
 		return response;
 	}
+	
+	
+	@Override
+	public OnlineConsultationAnalytics getConsultationAnalytics(String fromDate, String toDate, String doctorId,
+			String locationId, String type) {
+		OnlineConsultationAnalytics response=new OnlineConsultationAnalytics();
+		try {
+			
+			Criteria criteria = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			
 
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
+
+			criteria.and("fromDate").gte(fromTime).lte(toTime)
+					.and("type").is(type);
+
+			
+			
+			criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
+					new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
+					new Criteria("state").is(AppointmentState.NEW.toString()));
+
+			Criteria criteria2=criteria;
+			
+			response.setTotalOnlineConsultation(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+			criteria.and("consultationType").is(ConsultationType.VIDEO.toString());
+			response.setTotalVideoConsultation(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+			criteria2.and("consultationType").is(ConsultationType.CHAT.toString());
+			response.setTotalChatConsultation(mongoTemplate.count(new Query(criteria2),AppointmentCollection.class));
+			
+		}catch (BusinessException e) {
+			logger.error("Error while getting online Consultation Analytics " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting online Consultation Analytics " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	public List<PaymentSummary> getPaymentSummary(String fromDate, String toDate, String doctorId,int page,int size) {
+		List<PaymentSummary> response=null;
+		try {
+			
+			Criteria criteria = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			
+
+		
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
+
+			criteria.and("fromDate").gte(fromTime).lte(toTime);
+
+			Aggregation aggregation = null;
+			
+			CustomAggregationOperation group= null;
+			
+			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
+					new BasicDBObject("doctorId", "$doctorId")
+										
+					.append("totalAmountReceived", "$doctorData.")
+					.append("consultationType.consultationType", "$doctorData.consultationType.consultationType")					
+					.append("consultationType.cost", "$doctorData.consultationType.cost")
+					.append("consultationType.healthcocoCharges", "$doctorData.consultationType.healthcocoCharges")
+					.append("createdTime", "$createdTime")					
+					.append("updatedTime", "$updatedTime")));
+			
+			
+			group = new CustomAggregationOperation(new Document("$group",
+					new BasicDBObject("doctorId",
+							new BasicDBObject("doctorId", "$doctorId")
+									.append("totalAmountReceived", new BasicDBObject("$sum", "$totalAmountReceived"))
+									
+									.append("consultationType", new BasicDBObject("$first", "$consultationType"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime")))));
+									
+
+			
+			if(size>0) {
+			aggregation = Aggregation.newAggregation(
+					
+					Aggregation.match(criteria),project,group,
+					Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorData"), Aggregation.unwind("doctor"),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+					Aggregation.skip((page) * size), Aggregation.limit(size));
+			
+			} else {
+				aggregation = Aggregation.newAggregation( 
+						Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			}
+			
+			response=mongoTemplate.aggregate(aggregation,OnlineConsultionPaymentCollection.class,PaymentSummary.class).getMappedResults();
+			
+		}
+		catch (BusinessException e) {
+			logger.error("Error while getting online Consultation Analytics " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting online Consultation Analytics " + e.getMessage());
+
+		}
+		return response;
+
+	}
 }
