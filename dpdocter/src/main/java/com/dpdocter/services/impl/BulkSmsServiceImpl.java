@@ -64,6 +64,7 @@ import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.razorpay.Utils;
+import com.squareup.okhttp.Credentials;
 
 import common.util.web.DPDoctorUtils;
 
@@ -420,8 +421,8 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 		BulkSmsPaymentResponse response = null;
 		try {
 			RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
+		
 			JSONObject orderRequest = new JSONObject();
-			
 			BulkSmsPackageCollection bulkPackage=bulkSmsRepository.findById(new ObjectId(request.getBulkSmsPackageId())).orElse(null);
 			
 			if(bulkPackage==null)
