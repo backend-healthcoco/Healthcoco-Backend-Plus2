@@ -49,7 +49,7 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 		Boolean response=false;
 		
 		try {
-			BankDetailsCollection bankDetailsCollection=new BankDetailsCollection();
+			BankDetailsCollection bankDetailsCollection=null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				bankDetailsCollection = bankDetailsRepository.findById(new ObjectId(request.getId())).orElse(null);
 				if (bankDetailsCollection == null) {
@@ -60,9 +60,10 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 		}
 		else{
 			bankDetailsCollection=new BankDetailsCollection();
-			request.setCreatedTime(new Date());
-			request.setUpdatedTime(new Date());
+			
 			BeanUtil.map(request, bankDetailsCollection);
+			bankDetailsCollection.setCreatedTime(new Date());
+			bankDetailsCollection.setUpdatedTime(new Date());
 			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			mailService.sendEmail(mailRequest," New Request for Online Consultation","Doctor Name: "+userCollection.getFirstName()+" "+"EmailAddress: "+userCollection.getEmailAddress()+" "+"DoctorId:"+userCollection.getId(), null);
 		}

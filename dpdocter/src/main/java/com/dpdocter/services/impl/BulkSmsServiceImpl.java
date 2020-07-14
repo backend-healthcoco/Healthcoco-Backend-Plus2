@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.type.TypeFactory;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +35,10 @@ import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.BulkSmsPackage;
 import com.dpdocter.beans.BulkSmsReport;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.OrderReponse;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDeliveryReports;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.SMSReport;
 import com.dpdocter.collections.BulkSmsCreditsCollection;
@@ -354,20 +359,20 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 										
 					.append("doctorId", "$doctorId")
 					.append("locationId", "$locationId")					
-					.append("smsDetails.sms.smsText", "$smsDetails.sms.smsText")
-					.append("smsDetails.deliveryStatus", "$smsDetails.deliveryStatus")
-					.append("smsDetails.sentTime", "$smsDetails.sentTime")
+					.append("smsDetails.sms.smsText", "$smsDetail.sms.smsText")
+					.append("smsDetails.deliveryStatus", "$smsDetail.deliveryStatus")
+					.append("smsDetails.sentTime", "$smsDetail.sentTime")
 					.append("type", "$type")					
 					.append("responseId", "$responseId")
 					.append("delivered", "$delivered")
 					.append("undelivered", "$undelivered")	
 					.append("totalCreditsSpent", "$totalCreditSpent")));
-			
+//			
 			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id")
 					.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 					.append("locationId", new BasicDBObject("$first", "$locationId"))
-					.append("smsDetails", new BasicDBObject("$addToSet", "$smsDetails"))
+					.append("smsDetails", new BasicDBObject("$first", "$smsDetails"))
 						.append("type", new BasicDBObject("$first", "$type"))
 						.append("responseId", new BasicDBObject("$first", "$responseId"))
 						.append("delivered", new BasicDBObject("$first", "$delivered"))
@@ -383,13 +388,13 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 						
-						Aggregation.match(criteria),project,group,
+						Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 				
 				} else {
 					aggregation = Aggregation.newAggregation( 
-							Aggregation.match(criteria),project,group,
+							Aggregation.match(criteria),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				}
 			
@@ -410,7 +415,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 					credit.setUndelivered(total-count);
 					credit.setTotalCreditsSpent(total);
 				}
-			
+//			
 			
 		}catch (BusinessException e) {
 			e.printStackTrace();
@@ -425,7 +430,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 		Order order = null;
 		BulkSmsPaymentResponse response = null;
 		try {
-			RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
+	//		RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
 		
 			JSONObject orderRequest = new JSONObject();
 			BulkSmsPackageCollection bulkPackage=bulkSmsRepository.findById(new ObjectId(request.getBulkSmsPackageId())).orElse(null);
@@ -451,51 +456,68 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 			orderRequest.put("payment_capture", request.getPaymentCapture());
 
 			String url="https://api.razorpay.com/v1/orders";
-			
+			 String authStr=keyId+":"+secret;
+			 String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
 			
 			con.setDoOutput(true);
 			
+
 			con.setDoInput(true);
 			// optional default is POST
 			con.setRequestMethod("POST");
 			con.setRequestProperty("User-Agent",
 					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 			con.setRequestProperty("Accept-Charset", "UTF-8");
-			
-			 DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			con.setRequestProperty("Content-Type","application/json");
+			con.setRequestProperty("Authorization", "Basic " +  authStringEnc);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(orderRequest.toString());
 			
 			  wr.flush();
 	             wr.close();
 	             con.disconnect();
+	             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	 			String inputLine;
+	 			
+	 			/* response = new StringBuffer(); */
+	 			StringBuffer output = new StringBuffer();
+	 			while ((inputLine = in.readLine()) != null) {
 
+	 				output.append(inputLine);
+	 				System.out.println("response:"+output.toString());
+	 			}
+	 			
+	 			  ObjectMapper mapper = new ObjectMapper();
+	 			  
+	 			 OrderReponse list = mapper.readValue(output.toString(),OrderReponse.class);
+	 			//OrderReponse res=list.get(0); 
+ 			
 
-
-				
-
-		//	order = rayzorpayClient.Orders.create(orderRequest);
+	//		order = rayzorpayClient.Orders.create(orderRequest);
 
 			if (user != null) {
 				BulkSmsPaymentCollection collection = new BulkSmsPaymentCollection();
 				BeanUtil.map(request, collection);
 				collection.setCreatedTime(new Date());
 				collection.setCreatedBy(user.getTitle() + " " + user.getFirstName());
-				collection.setOrderId(order.get("id").toString());
-				collection.setReciept(order.get("receipt").toString());
+				collection.setOrderId(list.getId().toString());
+				collection.setReciept(list.getReceipt().toString());
 				collection.setTransactionStatus("PENDING");
 				collection = bulkSmsPaymentRepository.save(collection);
 				response = new BulkSmsPaymentResponse();
 				BeanUtil.map(collection, response);
 			}
-		} catch (RazorpayException e) {
-			// Handle Exception
-			
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (Exception e) {
+		}
+		//	catch (RazorpayException e) {
+//			// Handle Exception
+//			
+//			logger.error(e.getMessage());
+//			e.printStackTrace();
+//		}
+			catch (Exception e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
