@@ -1070,7 +1070,7 @@ public class ContactsServiceImpl implements ContactsService {
 			  doctorClinicProfileRepository.save(doctorClinicProfileCollections);
 			 
 			
-				if (!smsServices.getBulkSMSResponse(mobileNumbers, message).equalsIgnoreCase("FAILED")) {
+				if (!smsServices.getBulkSMSResponse(mobileNumbers, message,request.getDoctorId(),request.getLocationId()).equalsIgnoreCase("FAILED")) {
 						status = true;
 					}
 			

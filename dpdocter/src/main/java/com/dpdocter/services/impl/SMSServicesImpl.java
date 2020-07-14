@@ -477,7 +477,7 @@ public class SMSServicesImpl implements SMSServices {
 						for (SMSReport report : smsDeliveryReport.getReport()) {
 							if (smsDetail.getSms() != null && smsDetail.getSms().getSmsAddress() != null
 									&& smsDetail.getSms().getSmsAddress().getRecipient() != null) {
-								if (smsDetail.getSms().getSmsAddress().getRecipient().equals(report.getNumber())) {
+								if (smsDetail.getSms().getSmsAddress().getRecipient().equals(report.getNumber().replaceFirst("91", ""))) {
 									smsDetail.setDeliveredTime(report.getDate());
 									smsDetail.setDeliveryStatus(SMSStatus.valueOf(report.getDesc()));
 								}
@@ -901,7 +901,7 @@ public class SMSServicesImpl implements SMSServices {
 	
 	
 	@Override
-	public String getBulkSMSResponse(List<String> mobileNumbers, String message) {
+	public String getBulkSMSResponse(List<String> mobileNumbers, String message,String doctorId,String locationId) {
 		StringBuffer response = new StringBuffer();
 		try {
 			Set<String> numbers = new HashSet<>(mobileNumbers);
@@ -911,7 +911,9 @@ public class SMSServicesImpl implements SMSServices {
 			
 			 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				
-				smsTrackDetail.setType(ComponentType.BULK_SMS.getType());
+				smsTrackDetail.setType("BULK_SMS");
+				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
+				smsTrackDetail.setLocationId(new ObjectId(locationId));
 				SMSDetail smsDetail = new SMSDetail();
 				SMS sms = new SMS();
 				SMSAddress smsAddress = new SMSAddress();
