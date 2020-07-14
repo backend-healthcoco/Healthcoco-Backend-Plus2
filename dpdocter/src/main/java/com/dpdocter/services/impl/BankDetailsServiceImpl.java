@@ -60,8 +60,8 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 		}
 		else{
 			bankDetailsCollection=new BankDetailsCollection();
-			request.setCreatedTime(new Date());
-			request.setUpdatedTime(new Date());
+			bankDetailsCollection.setCreatedTime(new Date());
+			bankDetailsCollection.setUpdatedTime(new Date());
 			BeanUtil.map(request, bankDetailsCollection);
 			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			mailService.sendEmail(mailRequest," New Request for Online Consultation","Doctor Name: "+userCollection.getFirstName()+" "+"EmailAddress: "+userCollection.getEmailAddress()+" "+"DoctorId:"+userCollection.getId(), null);

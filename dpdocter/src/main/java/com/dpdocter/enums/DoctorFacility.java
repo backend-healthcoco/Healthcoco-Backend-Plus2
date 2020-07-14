@@ -2,7 +2,7 @@ package com.dpdocter.enums;
 
 public enum DoctorFacility {
 
-    IBS("IBS"), CALL("CALL"), BOOK("BOOK");
+    IBS("IBS"), CALL("CALL"), BOOK("BOOK"),VIEW("VIEW");
 
     private String type;
 
