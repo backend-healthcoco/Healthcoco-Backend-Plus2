@@ -10,9 +10,9 @@ import com.dpdocter.enums.PaymentMode;
 public class BulkSmsCredits {
 
 
-	private Long creditBalance;
+	private Long creditBalance=0L;
 	
-	private Long creditSpent;
+	private Long creditSpent=0L;
 	
 	private String doctorId;
 	

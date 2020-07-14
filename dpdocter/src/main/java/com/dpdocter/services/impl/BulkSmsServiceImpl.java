@@ -1,5 +1,10 @@
 package com.dpdocter.services.impl;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,6 +69,7 @@ import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.razorpay.Utils;
+import com.squareup.okhttp.Credentials;
 
 import common.util.web.DPDoctorUtils;
 
@@ -219,18 +225,48 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 //	}
 //	
 	@Override
-	public BulkSmsCredits getCreditsByDoctorIdAndLocationId(String doctorId,String locationId) {
-		BulkSmsCredits response=null;
+	public List<BulkSmsCredits> getCreditsByDoctorIdAndLocationId(int size,int page,String searchTerm,String doctorId,String locationId) {
+		List<BulkSmsCredits> response=null;
 		try {
-			BulkSmsCreditsCollection bulk=new BulkSmsCreditsCollection();
-			bulk=bulkSmsCreditRepository.findByDoctorIdAndLocationId(new ObjectId(doctorId),new ObjectId(locationId));
+			Criteria criteria = new Criteria();
 			
-			if(bulk==null)
+			if(!DPDoctorUtils.anyStringEmpty(doctorId))
 			{
-				throw new BusinessException(ServiceError.Unknown,"DoctorId not found for bulk sms");
+				ObjectId doctorObjectId=new ObjectId(doctorId);
+				criteria.and("doctorId").is(doctorObjectId);
 			}
-			response=new BulkSmsCredits();
-			BeanUtil.map(bulk,response);
+			
+			if(!DPDoctorUtils.anyStringEmpty(locationId))
+			{
+				ObjectId locationObjectId=new ObjectId(locationId);
+				criteria.and("locationId").is(locationObjectId);
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("smsPackage.packageName").regex("^" + searchTerm, "i"),
+						new Criteria("smsPackage.packageName").regex("^" + searchTerm));
+			
+			
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(
+						
+						Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
+				
+				} else {
+					aggregation = Aggregation.newAggregation( 
+							Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+				}
+			
+			System.out.println("aggregation:"+aggregation);
+				response = mongoTemplate.aggregate(aggregation, BulkSmsCreditsCollection.class, BulkSmsCredits.class).getMappedResults();
+			
+			
+
 			
 			
 			
@@ -306,6 +342,38 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 				criteria.and("locationId").is(locationObjectId);
 			}
 			
+			
+				criteria.and("type").is("BULK_SMS");
+			
+			
+			
+	
+			
+			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
+					new BasicDBObject("_id", "$_id")
+										
+					.append("doctorId", "$doctorId")
+					.append("locationId", "$locationId")					
+					.append("smsDetails.sms.smsText", "$smsDetails.sms.smsText")
+					.append("smsDetails.deliveryStatus", "$smsDetails.deliveryStatus")
+					.append("smsDetails.sentTime", "$smsDetails.sentTime")
+					.append("type", "$type")					
+					.append("responseId", "$responseId")
+					.append("delivered", "$delivered")
+					.append("undelivered", "$undelivered")	
+					.append("totalCreditsSpent", "$totalCreditSpent")));
+			
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
+					new BasicDBObject("_id", "$_id")
+					.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+					.append("locationId", new BasicDBObject("$first", "$locationId"))
+					.append("smsDetails", new BasicDBObject("$addToSet", "$smsDetails"))
+						.append("type", new BasicDBObject("$first", "$type"))
+						.append("responseId", new BasicDBObject("$first", "$responseId"))
+						.append("delivered", new BasicDBObject("$first", "$delivered"))
+						.append("undelivered", new BasicDBObject("$first", "$undelivered"))
+						.append("totalCreditsSpent", new BasicDBObject("$first", "$totalCreditsSpent"))));
+
 //			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 //				criteria = criteria.orOperator(new Criteria("smsPackage.packageName").regex("^" + searchTerm, "i"),
 //						new Criteria("smsPackage.packageName").regex("^" + searchTerm));
@@ -315,29 +383,29 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 						
-						Aggregation.match(criteria),
+						Aggregation.match(criteria),project,group,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 				
 				} else {
 					aggregation = Aggregation.newAggregation( 
-							Aggregation.match(criteria),
+							Aggregation.match(criteria),project,group,
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				}
 			
-			
+				System.out.println("Aggregation:"+aggregation);
 				response = mongoTemplate.aggregate(aggregation, SMSTrackDetail.class, BulkSmsReport.class).getMappedResults();
 
-				CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
-						new BasicDBObject("_id", "$_id")
-						.append("smsDetails", new BasicDBObject("$addToSet", "$smsDetails"))
-						));
+//				CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
+//						new BasicDBObject("_id", "$_id")
+//						.append("smsDetails", new BasicDBObject("$addToSet", "$smsDetails"))
+//						));
 
 				
 				for(BulkSmsReport credit:response)
 				{
 					Long total=(long) credit.getSmsDetails().size();
-					Long count= mongoTemplate.count(new Query(new Criteria("smsDetails.deliveryStatus").is("DELIVERED")),SMSTrackDetail.class);
+					Long count= mongoTemplate.count(new Query(new Criteria("smsDetails.deliveryStatus").is("DELIVERED").andOperator(criteria)),SMSTrackDetail.class);
 					credit.setDelivered(count);
 					credit.setUndelivered(total-count);
 					credit.setTotalCreditsSpent(total);
@@ -358,8 +426,8 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 		BulkSmsPaymentResponse response = null;
 		try {
 			RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
+		
 			JSONObject orderRequest = new JSONObject();
-			
 			BulkSmsPackageCollection bulkPackage=bulkSmsRepository.findById(new ObjectId(request.getBulkSmsPackageId())).orElse(null);
 			
 			if(bulkPackage==null)
@@ -382,7 +450,33 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 					+ generateId());
 			orderRequest.put("payment_capture", request.getPaymentCapture());
 
-			order = rayzorpayClient.Orders.create(orderRequest);
+			String url="https://api.razorpay.com/v1/orders";
+			
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			
+			con.setDoOutput(true);
+			
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("User-Agent",
+					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+			con.setRequestProperty("Accept-Charset", "UTF-8");
+			
+			 DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			
+			  wr.flush();
+	             wr.close();
+	             con.disconnect();
+
+
+
+				
+
+		//	order = rayzorpayClient.Orders.create(orderRequest);
 
 			if (user != null) {
 				BulkSmsPaymentCollection collection = new BulkSmsPaymentCollection();
@@ -473,9 +567,10 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 						if (doctorClinicProfileCollections != null)
 						{
 							BeanUtil.map(request,credit);
+							Long creditBalance=doctorClinicProfileCollections.getBulkSmsCredit().getCreditBalance();
 							doctorClinicProfileCollections.setBulkSmsCredit(credit);
-							
-							
+							creditBalance=creditBalance+packageCollection.getSmsCredits();
+							doctorClinicProfileCollections.getBulkSmsCredit().setCreditBalance(creditBalance);
 							BeanUtil.map(credit, history);
 							bulkSmsHistoryRepository.save(history);
 //							doctorClinicProfileCollections.getBulkSmsCredit().setDoctorId(request.getDoctorId());
