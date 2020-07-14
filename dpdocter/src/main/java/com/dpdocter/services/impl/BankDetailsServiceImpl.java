@@ -55,14 +55,15 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 				if (bankDetailsCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "bankDetails Id Not found");
 				}
-			request.setUpdatedTime(new Date());
-			BeanUtil.map(request, bankDetailsCollection);		
+			BeanUtil.map(request, bankDetailsCollection);	
+			bankDetailsCollection.setUpdatedTime(new Date());
 		}
 		else{
 			bankDetailsCollection=new BankDetailsCollection();
+			
+			BeanUtil.map(request, bankDetailsCollection);
 			bankDetailsCollection.setCreatedTime(new Date());
 			bankDetailsCollection.setUpdatedTime(new Date());
-			BeanUtil.map(request, bankDetailsCollection);
 			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			mailService.sendEmail(mailRequest," New Request for Online Consultation","Doctor Name: "+userCollection.getFirstName()+" "+"EmailAddress: "+userCollection.getEmailAddress()+" "+"DoctorId:"+userCollection.getId(), null);
 		}
