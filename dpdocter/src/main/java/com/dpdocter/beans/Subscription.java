@@ -42,13 +42,9 @@ public class Subscription extends GenericCollection {
 
 	private String orderId;
 
-	private String currency = "INR";
-
 	private String reciept;
 
 	private Boolean paymentStatus = Boolean.FALSE;
-
-	private Boolean paymentCapture = true;
 
 	private String transactionStatus;
 
@@ -180,14 +176,6 @@ public class Subscription extends GenericCollection {
 		this.orderId = orderId;
 	}
 
-	public String getCurrency() {
-		return currency;
-	}
-
-	public void setCurrency(String currency) {
-		this.currency = currency;
-	}
-
 	public String getReciept() {
 		return reciept;
 	}
@@ -212,14 +200,7 @@ public class Subscription extends GenericCollection {
 		this.accountNo = accountNo;
 	}
 
-	public Boolean getPaymentCapture() {
-		return paymentCapture;
-	}
-
-	public void setPaymentCapture(Boolean paymentCapture) {
-		this.paymentCapture = paymentCapture;
-	}
-
+	
 	public String getTransactionStatus() {
 		return transactionStatus;
 	}

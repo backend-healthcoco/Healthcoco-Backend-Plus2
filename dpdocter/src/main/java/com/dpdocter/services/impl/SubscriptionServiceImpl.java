@@ -1,9 +1,15 @@
 package com.dpdocter.services.impl;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -16,6 +22,7 @@ import javax.mail.MessagingException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Country;
+import com.dpdocter.beans.OrderReponse;
 import com.dpdocter.beans.PackageDetailObject;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -213,6 +221,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	}
 
 	// new one subscription
+	@SuppressWarnings("unused")
 	@Override
 	@Transactional
 	public Subscription addEditSubscription(SubscriptionRequest request) {
@@ -222,8 +231,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		try {
 			SubscriptionCollection subscriptionCollection = null;
 			subscriptionCollection = new SubscriptionCollection();
-			System.out.println("step 1");
-			RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
+//			RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
 			JSONObject orderRequest = new JSONObject();
 			System.out.println("step 2");
 
@@ -245,13 +253,51 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					double amount = (request.getAmount() * 100);
 					// amount in paise
 					orderRequest.put("amount", (int) amount);
-					orderRequest.put("currency", "INR");
+					orderRequest.put("currency", request.getCurrency());
 					orderRequest.put("receipt", userCollection.getTitle().substring(0, 2).toUpperCase() + "-RCPT-"
 							+ doctorSubscriptionPaymentRepository.countByDoctorId(new ObjectId(request.getDoctorId()))
 							+ generateId());
-					orderRequest.put("payment_capture", true);
+					orderRequest.put("payment_capture", request.getPaymentCapture());
 
-					order = rayzorpayClient.Orders.create(orderRequest);
+					String url = "https://api.razorpay.com/v1/orders";
+					String authStr = keyId + ":" + secret;
+					String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
+					URL obj = new URL(url);
+					HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+					con.setDoOutput(true);
+
+					con.setDoInput(true);
+					// optional default is POST
+					con.setRequestMethod("POST");
+					con.setRequestProperty("User-Agent",
+							"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+					con.setRequestProperty("Accept-Charset", "UTF-8");
+					con.setRequestProperty("Content-Type", "application/json");
+					con.setRequestProperty("Authorization", "Basic " + authStringEnc);
+					DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+					wr.writeBytes(orderRequest.toString());
+
+					wr.flush();
+					wr.close();
+					con.disconnect();
+					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+					String inputLine;
+
+					/* response = new StringBuffer(); */
+					StringBuffer output = new StringBuffer();
+					while ((inputLine = in.readLine()) != null) {
+
+						output.append(inputLine);
+						System.out.println("response:" + output.toString());
+					}
+
+					ObjectMapper mapper = new ObjectMapper();
+
+					OrderReponse list = mapper.readValue(output.toString(), OrderReponse.class);
+					// OrderReponse res=list.get(0);
+
+//					order = rayzorpayClient.Orders.create(orderRequest);
 					System.out.println("order" + order);
 
 					if (userCollection != null) {
@@ -263,37 +309,37 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						payment.setDiscountAmount(request.getDiscountAmount());
 						payment.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 						payment.setCreatedTime(new Date());
-						payment.setOrderId(order.get("id").toString());
-						payment.setReciept(order.get("receipt").toString());
+
+						payment.setOrderId(list.getId().toString());
+						payment.setReciept(list.getReceipt().toString());
 						payment.setTransactionStatus("PENDING");
 						payment.setPackageName(subscriptionCollection.getPackageName());
 						doctorSubscriptionPaymentRepository.save(payment);
 					}
 
-				}
+					if (order != null) {
 
-				if (order != null) {
+						BeanUtil.map(request, subscriptionCollection);
+						request.setUpdatedTime(new Date());
+						request.setCreatedBy(subscriptionCollection.getCreatedBy());
+						subscriptionCollection.setOrderId(list.getId().toString());
+						subscriptionCollection.setReciept(list.getReceipt().toString());
+						subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
+						subscriptionCollection.setEmailAddress(userCollection.getEmailAddress());
+						subscriptionCollection.setTransactionStatus("PENDING");
+						subscriptionCollection = subscriptionRepository.save(subscriptionCollection);
 
-					BeanUtil.map(request, subscriptionCollection);
-					request.setUpdatedTime(new Date());
-					request.setCreatedBy(subscriptionCollection.getCreatedBy());
-					subscriptionCollection.setOrderId(order.get("id").toString());
-					subscriptionCollection.setReciept(order.get("receipt").toString());
-					subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
-					subscriptionCollection.setEmailAddress(userCollection.getEmailAddress());
-					subscriptionCollection.setTransactionStatus("PENDING");
-					subscriptionCollection = subscriptionRepository.save(subscriptionCollection);
+						// clinic package change
+						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+								.findByDoctorId(new ObjectId(request.getDoctorId()));
 
-					// clinic package change
-					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
-							.findByDoctorId(new ObjectId(request.getDoctorId()));
-
-					if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
-						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-							doctorClinicProfileCollection.setUpdatedTime(new Date());
-							doctorClinicProfileCollection
-									.setPackageType(subscriptionCollection.getPackageName().toString());
-							doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+						if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
+							for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+								doctorClinicProfileCollection.setUpdatedTime(new Date());
+								doctorClinicProfileCollection
+										.setPackageType(subscriptionCollection.getPackageName().toString());
+								doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+							}
 						}
 					}
 				}
@@ -338,20 +384,57 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					double amount = (request.getAmount() * 100);
 					// amount in paise
 					orderRequest.put("amount", (int) amount);
-					orderRequest.put("currency", "INR");
+					orderRequest.put("currency", request.getCurrency());
 					orderRequest.put("receipt", userCollection.getTitle().substring(0, 2).toUpperCase() + "-RCPT-"
 							+ doctorSubscriptionPaymentRepository.countByDoctorId(new ObjectId(request.getDoctorId()))
 							+ generateId());
-					orderRequest.put("payment_capture", true);
+					orderRequest.put("payment_capture", request.getPaymentCapture());
 
-					order = rayzorpayClient.Orders.create(orderRequest);
+					String url = "https://api.razorpay.com/v1/orders";
+					String authStr = keyId + ":" + secret;
+					String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
+					URL obj = new URL(url);
+					HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+					con.setDoOutput(true);
+
+					con.setDoInput(true);
+					// optional default is POST
+					con.setRequestMethod("POST");
+					con.setRequestProperty("User-Agent",
+							"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+					con.setRequestProperty("Accept-Charset", "UTF-8");
+					con.setRequestProperty("Content-Type", "application/json");
+					con.setRequestProperty("Authorization", "Basic " + authStringEnc);
+					DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+					wr.writeBytes(orderRequest.toString());
+
+					wr.flush();
+					wr.close();
+					con.disconnect();
+					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+					String inputLine;
+
+					/* response = new StringBuffer(); */
+					StringBuffer output = new StringBuffer();
+					while ((inputLine = in.readLine()) != null) {
+
+						output.append(inputLine);
+						System.out.println("response:" + output.toString());
+					}
+
+					ObjectMapper mapper = new ObjectMapper();
+
+					OrderReponse list = mapper.readValue(output.toString(), OrderReponse.class);
+					// OrderReponse res=list.get(0);
+//					order = rayzorpayClient.Orders.create(orderRequest);
 
 					System.out.println("order" + order);
 
 					if (order != null) {
 						BeanUtil.map(request, subscriptionCollection);
-						subscriptionCollection.setOrderId(order.get("id").toString());
-						subscriptionCollection.setReciept(order.get("receipt").toString());
+						subscriptionCollection.setOrderId(list.getId().toString());
+						subscriptionCollection.setReciept(list.getReceipt().toString());
 						subscriptionCollection.setTransactionStatus("PENDING");
 						subscriptionCollection
 								.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
@@ -371,8 +454,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						payment.setDiscountAmount(request.getDiscountAmount());
 						payment.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 						payment.setCreatedTime(new Date());
-						payment.setOrderId(order.get("id").toString());
-						payment.setReciept(order.get("receipt").toString());
+
+						payment.setOrderId(list.getId().toString());
+						payment.setReciept(list.getReceipt().toString());
 						payment.setTransactionStatus("PENDING");
 						payment.setPackageName(subscriptionCollection.getPackageName());
 						doctorSubscriptionPaymentRepository.save(payment);
@@ -433,11 +517,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			response = new Subscription();
 			BeanUtil.map(subscriptionCollection, response);
 
-		} catch (RazorpayException e) {
-			// Handle Exception
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (Exception e) {
+		}
+//		catch (RazorpayException e) {
+//			// Handle Exception
+//			logger.error(e.getMessage());
+//			e.printStackTrace();
+//		} 
+		catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 		}

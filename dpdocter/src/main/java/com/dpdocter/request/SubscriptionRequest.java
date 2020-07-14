@@ -31,6 +31,10 @@ public class SubscriptionRequest extends GenericCollection {
 	private Boolean isDiscarded = Boolean.FALSE;
 
 	private Boolean paymentStatus = Boolean.FALSE;
+	
+	private String currency = "INR";
+
+	private Boolean paymentCapture = true;
 
 	public String getId() {
 		return id;
@@ -126,6 +130,23 @@ public class SubscriptionRequest extends GenericCollection {
 
 	public void setPaymentStatus(Boolean paymentStatus) {
 		this.paymentStatus = paymentStatus;
+	}
+
+	
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public Boolean getPaymentCapture() {
+		return paymentCapture;
+	}
+
+	public void setPaymentCapture(Boolean paymentCapture) {
+		this.paymentCapture = paymentCapture;
 	}
 
 	@Override
