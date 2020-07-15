@@ -14,9 +14,9 @@ public class BulkSmsPackageCollection extends GenericCollection{
 	@Field
 	private String packageName;
 	@Field
-	private Long price;
+	private Long price=0L;
 	@Field
-	private Long smsCredits;
+	private Long smsCredit=0L;
 	@Field
 	private int costPerSms;
 	
@@ -41,17 +41,18 @@ public class BulkSmsPackageCollection extends GenericCollection{
 	public void setPrice(Long price) {
 		this.price = price;
 	}
-	public Long getSmsCredits() {
-		return smsCredits;
-	}
-	public void setSmsCredits(Long smsCredits) {
-		this.smsCredits = smsCredits;
-	}
+	
 	public int getCostPerSms() {
 		return costPerSms;
 	}
 	public void setCostPerSms(int costPerSms) {
 		this.costPerSms = costPerSms;
+	}
+	public Long getSmsCredit() {
+		return smsCredit;
+	}
+	public void setSmsCredit(Long smsCredit) {
+		this.smsCredit = smsCredit;
 	}
 	
 	

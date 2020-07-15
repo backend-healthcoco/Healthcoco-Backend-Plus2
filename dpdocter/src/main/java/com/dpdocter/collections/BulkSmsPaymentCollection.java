@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -23,7 +24,10 @@ public class BulkSmsPaymentCollection extends GenericCollection{
 	private String transactionStatus;
 
 	@Field
-	private String doctorId;	
+	private ObjectId doctorId;	
+	
+	@Field
+	private ObjectId locationId;	
 	
 //	private String razorPayAccountId;
 
@@ -69,14 +73,7 @@ public class BulkSmsPaymentCollection extends GenericCollection{
 		this.transactionId = transactionId;
 	}
 
-	public String getDoctorId() {
-		return doctorId;
-	}
-
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
-
+	
 	public Discount getDiscount() {
 		return discount;
 	}
@@ -147,6 +144,22 @@ public class BulkSmsPaymentCollection extends GenericCollection{
 
 	public void setChequeNo(String chequeNo) {
 		this.chequeNo = chequeNo;
+	}
+
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public ObjectId getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
 	}
 	
 	

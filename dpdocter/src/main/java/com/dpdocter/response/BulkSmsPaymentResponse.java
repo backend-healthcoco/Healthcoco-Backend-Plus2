@@ -13,7 +13,9 @@ public class BulkSmsPaymentResponse {
 
 	private String transactionStatus;
 
-	private String doctorId;	
+	private String doctorId;
+	
+	private String locationId;
 	
 //	private String razorPayAccountId;
 
@@ -131,6 +133,15 @@ public class BulkSmsPaymentResponse {
 	public void setTransactionStatus(String transactionStatus) {
 		this.transactionStatus = transactionStatus;
 	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+	
 	
 	
 }
