@@ -74,6 +74,8 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.SubscriptionPaymentSignatureRequest;
 import com.dpdocter.request.SubscriptionRequest;
+import com.dpdocter.response.BulkSmsPaymentResponse;
+import com.dpdocter.response.SubscriptionResponse;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PushNotificationServices;
@@ -221,314 +223,314 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	}
 
 	// new one subscription
-	@SuppressWarnings("unused")
-	@Override
-	@Transactional
-	public Subscription addEditSubscription(SubscriptionRequest request) {
-		Subscription response = null;
-		Order order = null;
-
-		try {
-			SubscriptionCollection subscriptionCollection = null;
-			subscriptionCollection = new SubscriptionCollection();
-//			RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
-			JSONObject orderRequest = new JSONObject();
-			System.out.println("step 2");
-
-			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				subscriptionCollection = subscriptionRepository.findById(new ObjectId(request.getId())).orElse(null);
-				if (subscriptionCollection == null) {
-					logger.warn("subscription not found");
-					throw new BusinessException(ServiceError.NotFound, "Subscription Not found with Id");
-				}
-				// get doctor from doctor id;
-				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
-						.orElse(null);
-				if (userCollection == null) {
-					logger.warn("doctor id not found");
-					throw new BusinessException(ServiceError.NotFound, "Doctor Not present with this id");
-				}
-				// add payment in collection
-				if (request.getPaymentStatus() == true) {
-					double amount = (request.getAmount() * 100);
-					// amount in paise
-					orderRequest.put("amount", (int) amount);
-					orderRequest.put("currency", request.getCurrency());
-					orderRequest.put("receipt", userCollection.getTitle().substring(0, 2).toUpperCase() + "-RCPT-"
-							+ doctorSubscriptionPaymentRepository.countByDoctorId(new ObjectId(request.getDoctorId()))
-							+ generateId());
-					orderRequest.put("payment_capture", request.getPaymentCapture());
-
-					String url = "https://api.razorpay.com/v1/orders";
-					String authStr = keyId + ":" + secret;
-					String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
-					URL obj = new URL(url);
-					HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-					con.setDoOutput(true);
-
-					con.setDoInput(true);
-					// optional default is POST
-					con.setRequestMethod("POST");
-					con.setRequestProperty("User-Agent",
-							"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
-					con.setRequestProperty("Accept-Charset", "UTF-8");
-					con.setRequestProperty("Content-Type", "application/json");
-					con.setRequestProperty("Authorization", "Basic " + authStringEnc);
-					DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-					wr.writeBytes(orderRequest.toString());
-
-					wr.flush();
-					wr.close();
-					con.disconnect();
-					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-					String inputLine;
-
-					/* response = new StringBuffer(); */
-					StringBuffer output = new StringBuffer();
-					while ((inputLine = in.readLine()) != null) {
-
-						output.append(inputLine);
-						System.out.println("response:" + output.toString());
-					}
-
-					ObjectMapper mapper = new ObjectMapper();
-
-					OrderReponse list = mapper.readValue(output.toString(), OrderReponse.class);
-					// OrderReponse res=list.get(0);
-
-//					order = rayzorpayClient.Orders.create(orderRequest);
-					System.out.println("order" + order);
-
-					if (userCollection != null) {
-						DoctorSubscriptionPaymentCollection payment = new DoctorSubscriptionPaymentCollection();
-						payment.setSubscriptionId(subscriptionCollection.getId());
-						payment.setDoctorId(subscriptionCollection.getDoctorId());
-						payment.setAmount(request.getAmount());
-						payment.setMode(request.getMode());
-						payment.setDiscountAmount(request.getDiscountAmount());
-						payment.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
-						payment.setCreatedTime(new Date());
-
-						payment.setOrderId(list.getId().toString());
-						payment.setReciept(list.getReceipt().toString());
-						payment.setTransactionStatus("PENDING");
-						payment.setPackageName(subscriptionCollection.getPackageName());
-						doctorSubscriptionPaymentRepository.save(payment);
-					}
-
-					if (order != null) {
-
-						BeanUtil.map(request, subscriptionCollection);
-						request.setUpdatedTime(new Date());
-						request.setCreatedBy(subscriptionCollection.getCreatedBy());
-						subscriptionCollection.setOrderId(list.getId().toString());
-						subscriptionCollection.setReciept(list.getReceipt().toString());
-						subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
-						subscriptionCollection.setEmailAddress(userCollection.getEmailAddress());
-						subscriptionCollection.setTransactionStatus("PENDING");
-						subscriptionCollection = subscriptionRepository.save(subscriptionCollection);
-
-						// clinic package change
-						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
-								.findByDoctorId(new ObjectId(request.getDoctorId()));
-
-						if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
-							for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-								doctorClinicProfileCollection.setUpdatedTime(new Date());
-								doctorClinicProfileCollection
-										.setPackageType(subscriptionCollection.getPackageName().toString());
-								doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-							}
-						}
-					}
-				}
-
-				// call sms function
-				PackageType oldPackageName = subscriptionCollection.getPackageName();
-				PackageType newPackageName = request.getPackageName();
-				String doctorName = userCollection.getTitle() + userCollection.getFirstName();
-				sendSMS(doctorName, userCollection.getMobileNumber(), userCollection.getCountryCode(), oldPackageName,
-						newPackageName);
-
-				pushNotificationServices.notifyUser(userCollection.getId().toString(), "Package updated.",
-						ComponentType.PACKAGE_DETAIL.getType(), null, null);
-
-				String body = " Your Subscription Plan Changed " + oldPackageName + "to" + newPackageName;
-				try {
-					Boolean ck = mailService.sendEmail(userCollection.getEmailAddress(), "Update Packege Detail", body,
-							null);
-					System.out.println("main send" + ck);
-				} catch (Exception e) {
-					e.printStackTrace();
-					logger.error(e);
-				}
-
-			} else {
-				SubscriptionCollection subscriptionCkD = subscriptionRepository
-						.findByDoctorId(new ObjectId(request.getDoctorId()));
-				if (subscriptionCkD != null) {
-					logger.warn("doctor already present");
-					throw new BusinessException(ServiceError.NotFound,
-							"Subscription already present for this doctor with this id " + subscriptionCkD.getId());
-				}
-				// get doctor from doctor id;
-				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
-						.orElse(null);
-				if (userCollection == null) {
-					logger.warn("doctor not found");
-					throw new BusinessException(ServiceError.NotFound, "Doctor Not present with this id");
-				}
-
-				if (request.getPaymentStatus() == true) {
-					double amount = (request.getAmount() * 100);
-					// amount in paise
-					orderRequest.put("amount", (int) amount);
-					orderRequest.put("currency", request.getCurrency());
-					orderRequest.put("receipt", userCollection.getTitle().substring(0, 2).toUpperCase() + "-RCPT-"
-							+ doctorSubscriptionPaymentRepository.countByDoctorId(new ObjectId(request.getDoctorId()))
-							+ generateId());
-					orderRequest.put("payment_capture", request.getPaymentCapture());
-
-					String url = "https://api.razorpay.com/v1/orders";
-					String authStr = keyId + ":" + secret;
-					String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
-					URL obj = new URL(url);
-					HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-					con.setDoOutput(true);
-
-					con.setDoInput(true);
-					// optional default is POST
-					con.setRequestMethod("POST");
-					con.setRequestProperty("User-Agent",
-							"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
-					con.setRequestProperty("Accept-Charset", "UTF-8");
-					con.setRequestProperty("Content-Type", "application/json");
-					con.setRequestProperty("Authorization", "Basic " + authStringEnc);
-					DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-					wr.writeBytes(orderRequest.toString());
-
-					wr.flush();
-					wr.close();
-					con.disconnect();
-					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-					String inputLine;
-
-					/* response = new StringBuffer(); */
-					StringBuffer output = new StringBuffer();
-					while ((inputLine = in.readLine()) != null) {
-
-						output.append(inputLine);
-						System.out.println("response:" + output.toString());
-					}
-
-					ObjectMapper mapper = new ObjectMapper();
-
-					OrderReponse list = mapper.readValue(output.toString(), OrderReponse.class);
-					// OrderReponse res=list.get(0);
-//					order = rayzorpayClient.Orders.create(orderRequest);
-
-					System.out.println("order" + order);
-
-					if (order != null) {
-						BeanUtil.map(request, subscriptionCollection);
-						subscriptionCollection.setOrderId(list.getId().toString());
-						subscriptionCollection.setReciept(list.getReceipt().toString());
-						subscriptionCollection.setTransactionStatus("PENDING");
-						subscriptionCollection
-								.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
-						subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
-						subscriptionCollection.setEmailAddress(userCollection.getEmailAddress());
-						subscriptionCollection.setUpdatedTime(new Date());
-						subscriptionCollection.setCreatedTime(new Date());
-						subscriptionCollection = subscriptionRepository.save(subscriptionCollection);
-					}
-
-					if (userCollection != null) {
-						DoctorSubscriptionPaymentCollection payment = new DoctorSubscriptionPaymentCollection();
-						payment.setSubscriptionId(subscriptionCollection.getId());
-						payment.setDoctorId(subscriptionCollection.getDoctorId());
-						payment.setAmount(request.getAmount());
-						payment.setMode(request.getMode());
-						payment.setDiscountAmount(request.getDiscountAmount());
-						payment.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
-						payment.setCreatedTime(new Date());
-
-						payment.setOrderId(list.getId().toString());
-						payment.setReciept(list.getReceipt().toString());
-						payment.setTransactionStatus("PENDING");
-						payment.setPackageName(subscriptionCollection.getPackageName());
-						doctorSubscriptionPaymentRepository.save(payment);
-					}
-				}
-
-				// clinic package change
-				List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
-						.findByDoctorId(new ObjectId(request.getDoctorId()));
-
-				if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
-					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-						doctorClinicProfileCollection.setUpdatedTime(new Date());
-						doctorClinicProfileCollection
-								.setPackageType(subscriptionCollection.getPackageName().toString());
-
-						doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-					}
-				}
-
-				// call sms function
-				String doctorName = userCollection.getTitle() + userCollection.getFirstName();
-				PackageType newPackageName = request.getPackageName();
-
-				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-
-				smsTrackDetail.setType(ComponentType.PACKAGE_DETAIL.getType());
-				SMSDetail smsDetail = new SMSDetail();
-
-				smsDetail.setUserName(doctorName);
-				SMS sms = new SMS();
-
-				sms.setSmsText(doctorName + " Your Subscription Plan Started with to " + newPackageName
-						+ " For 1 year. Stay Healthy and Happy!");
-
-				SMSAddress smsAddress = new SMSAddress();
-				smsAddress.setRecipient(userCollection.getMobileNumber());
-				sms.setSmsAddress(smsAddress);
-				smsDetail.setSms(sms);
-				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-				smsDetails.add(smsDetail);
-				smsTrackDetail.setSmsDetails(smsDetails);
-				Boolean ck = smsServices.sendSMS(smsTrackDetail, false);
-				System.out.println("sms send" + smsDetails);
-
-				String body = doctorName + " Your Subscription Plan Started with to " + newPackageName
-						+ " For 1 year. Stay Healthy and Happy!";
-				try {
-					Boolean ckM = mailService.sendEmail(userCollection.getEmailAddress(), "Update Packege Detail", body,
-							null);
-					System.out.println("main send" + ckM);
-				} catch (MessagingException e) {
-					System.out.println("main send err");
-					e.printStackTrace();
-				}
-			}
-			response = new Subscription();
-			BeanUtil.map(subscriptionCollection, response);
-
-		}
-//		catch (RazorpayException e) {
-//			// Handle Exception
-//			logger.error(e.getMessage());
+//	@SuppressWarnings("unused")
+//	@Override
+//	@Transactional
+//	public Subscription addEditSubscription(SubscriptionRequest request) {
+//		Subscription response = null;
+//		Order order = null;
+//
+//		try {
+//			SubscriptionCollection subscriptionCollection = null;
+//			subscriptionCollection = new SubscriptionCollection();
+////			RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
+//			JSONObject orderRequest = new JSONObject();
+//			System.out.println("step 2");
+//
+//			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+//				subscriptionCollection = subscriptionRepository.findById(new ObjectId(request.getId())).orElse(null);
+//				if (subscriptionCollection == null) {
+//					logger.warn("subscription not found");
+//					throw new BusinessException(ServiceError.NotFound, "Subscription Not found with Id");
+//				}
+//				// get doctor from doctor id;
+//				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
+//						.orElse(null);
+//				if (userCollection == null) {
+//					logger.warn("doctor id not found");
+//					throw new BusinessException(ServiceError.NotFound, "Doctor Not present with this id");
+//				}
+//				// add payment in collection
+//				if (request.getPaymentStatus() == true) {
+//					double amount = (request.getAmount() * 100);
+//					// amount in paise
+//					orderRequest.put("amount", (int) amount);
+//					orderRequest.put("currency", request.getCurrency());
+//					orderRequest.put("receipt", userCollection.getTitle().substring(0, 2).toUpperCase() + "-RCPT-"
+//							+ doctorSubscriptionPaymentRepository.countByDoctorId(new ObjectId(request.getDoctorId()))
+//							+ generateId());
+//					orderRequest.put("payment_capture", request.getPaymentCapture());
+//
+//					String url = "https://api.razorpay.com/v1/orders";
+//					String authStr = keyId + ":" + secret;
+//					String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
+//					URL obj = new URL(url);
+//					HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+//
+//					con.setDoOutput(true);
+//
+//					con.setDoInput(true);
+//					// optional default is POST
+//					con.setRequestMethod("POST");
+//					con.setRequestProperty("User-Agent",
+//							"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+//					con.setRequestProperty("Accept-Charset", "UTF-8");
+//					con.setRequestProperty("Content-Type", "application/json");
+//					con.setRequestProperty("Authorization", "Basic " + authStringEnc);
+//					DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+//					wr.writeBytes(orderRequest.toString());
+//
+//					wr.flush();
+//					wr.close();
+//					con.disconnect();
+//					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+//					String inputLine;
+//
+//					/* response = new StringBuffer(); */
+//					StringBuffer output = new StringBuffer();
+//					while ((inputLine = in.readLine()) != null) {
+//
+//						output.append(inputLine);
+//						System.out.println("response:" + output.toString());
+//					}
+//
+//					ObjectMapper mapper = new ObjectMapper();
+//
+//					OrderReponse list = mapper.readValue(output.toString(), OrderReponse.class);
+//					// OrderReponse res=list.get(0);
+//
+////					order = rayzorpayClient.Orders.create(orderRequest);
+//					System.out.println("order" + order);
+//
+//					if (userCollection != null) {
+//						DoctorSubscriptionPaymentCollection payment = new DoctorSubscriptionPaymentCollection();
+//						payment.setSubscriptionId(subscriptionCollection.getId());
+//						payment.setDoctorId(subscriptionCollection.getDoctorId());
+//						payment.setAmount(request.getAmount());
+//						payment.setMode(request.getMode());
+//						payment.setDiscountAmount(request.getDiscountAmount());
+//						payment.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
+//						payment.setCreatedTime(new Date());
+//
+//						payment.setOrderId(list.getId().toString());
+//						payment.setReciept(list.getReceipt().toString());
+//						payment.setTransactionStatus("PENDING");
+//						payment.setPackageName(subscriptionCollection.getPackageName());
+//						doctorSubscriptionPaymentRepository.save(payment);
+//					}
+//
+//					if (order != null) {
+//
+//						BeanUtil.map(request, subscriptionCollection);
+//						request.setUpdatedTime(new Date());
+//						request.setCreatedBy(subscriptionCollection.getCreatedBy());
+//						subscriptionCollection.setOrderId(list.getId().toString());
+//						subscriptionCollection.setReciept(list.getReceipt().toString());
+//						subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
+//						subscriptionCollection.setEmailAddress(userCollection.getEmailAddress());
+//						subscriptionCollection.setTransactionStatus("PENDING");
+//						subscriptionCollection = subscriptionRepository.save(subscriptionCollection);
+//
+//						// clinic package change
+//						List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+//								.findByDoctorId(new ObjectId(request.getDoctorId()));
+//
+//						if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
+//							for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+//								doctorClinicProfileCollection.setUpdatedTime(new Date());
+//								doctorClinicProfileCollection
+//										.setPackageType(subscriptionCollection.getPackageName().toString());
+//								doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+//							}
+//						}
+//					}
+//				}
+//
+//				// call sms function
+//				PackageType oldPackageName = subscriptionCollection.getPackageName();
+//				PackageType newPackageName = request.getPackageName();
+//				String doctorName = userCollection.getTitle() + userCollection.getFirstName();
+//				sendSMS(doctorName, userCollection.getMobileNumber(), userCollection.getCountryCode(), oldPackageName,
+//						newPackageName);
+//
+//				pushNotificationServices.notifyUser(userCollection.getId().toString(), "Package updated.",
+//						ComponentType.PACKAGE_DETAIL.getType(), null, null);
+//
+//				String body = " Your Subscription Plan Changed " + oldPackageName + "to" + newPackageName;
+//				try {
+//					Boolean ck = mailService.sendEmail(userCollection.getEmailAddress(), "Update Packege Detail", body,
+//							null);
+//					System.out.println("main send" + ck);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					logger.error(e);
+//				}
+//
+//			} else {
+//				SubscriptionCollection subscriptionCkD = subscriptionRepository
+//						.findByDoctorId(new ObjectId(request.getDoctorId()));
+//				if (subscriptionCkD != null) {
+//					logger.warn("doctor already present");
+//					throw new BusinessException(ServiceError.NotFound,
+//							"Subscription already present for this doctor with this id " + subscriptionCkD.getId());
+//				}
+//				// get doctor from doctor id;
+//				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
+//						.orElse(null);
+//				if (userCollection == null) {
+//					logger.warn("doctor not found");
+//					throw new BusinessException(ServiceError.NotFound, "Doctor Not present with this id");
+//				}
+//
+//				if (request.getPaymentStatus() == true) {
+//					double amount = (request.getAmount() * 100);
+//					// amount in paise
+//					orderRequest.put("amount", (int) amount);
+//					orderRequest.put("currency", request.getCurrency());
+//					orderRequest.put("receipt", userCollection.getTitle().substring(0, 2).toUpperCase() + "-RCPT-"
+//							+ doctorSubscriptionPaymentRepository.countByDoctorId(new ObjectId(request.getDoctorId()))
+//							+ generateId());
+//					orderRequest.put("payment_capture", request.getPaymentCapture());
+//
+//					String url = "https://api.razorpay.com/v1/orders";
+//					String authStr = keyId + ":" + secret;
+//					String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
+//					URL obj = new URL(url);
+//					HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+//
+//					con.setDoOutput(true);
+//
+//					con.setDoInput(true);
+//					// optional default is POST
+//					con.setRequestMethod("POST");
+//					con.setRequestProperty("User-Agent",
+//							"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+//					con.setRequestProperty("Accept-Charset", "UTF-8");
+//					con.setRequestProperty("Content-Type", "application/json");
+//					con.setRequestProperty("Authorization", "Basic " + authStringEnc);
+//					DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+//					wr.writeBytes(orderRequest.toString());
+//
+//					wr.flush();
+//					wr.close();
+//					con.disconnect();
+//					BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+//					String inputLine;
+//
+//					/* response = new StringBuffer(); */
+//					StringBuffer output = new StringBuffer();
+//					while ((inputLine = in.readLine()) != null) {
+//
+//						output.append(inputLine);
+//						System.out.println("response:" + output.toString());
+//					}
+//
+//					ObjectMapper mapper = new ObjectMapper();
+//
+//					OrderReponse list = mapper.readValue(output.toString(), OrderReponse.class);
+//					// OrderReponse res=list.get(0);
+////					order = rayzorpayClient.Orders.create(orderRequest);
+//
+//					System.out.println("order" + order);
+//
+//					if (order != null) {
+//						BeanUtil.map(request, subscriptionCollection);
+//						subscriptionCollection.setOrderId(list.getId().toString());
+//						subscriptionCollection.setReciept(list.getReceipt().toString());
+//						subscriptionCollection.setTransactionStatus("PENDING");
+//						subscriptionCollection
+//								.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
+//						subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
+//						subscriptionCollection.setEmailAddress(userCollection.getEmailAddress());
+//						subscriptionCollection.setUpdatedTime(new Date());
+//						subscriptionCollection.setCreatedTime(new Date());
+//						subscriptionCollection = subscriptionRepository.save(subscriptionCollection);
+//					}
+//
+//					if (userCollection != null) {
+//						DoctorSubscriptionPaymentCollection payment = new DoctorSubscriptionPaymentCollection();
+//						payment.setSubscriptionId(subscriptionCollection.getId());
+//						payment.setDoctorId(subscriptionCollection.getDoctorId());
+//						payment.setAmount(request.getAmount());
+//						payment.setMode(request.getMode());
+//						payment.setDiscountAmount(request.getDiscountAmount());
+//						payment.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
+//						payment.setCreatedTime(new Date());
+//
+//						payment.setOrderId(list.getId().toString());
+//						payment.setReciept(list.getReceipt().toString());
+//						payment.setTransactionStatus("PENDING");
+//						payment.setPackageName(subscriptionCollection.getPackageName());
+//						doctorSubscriptionPaymentRepository.save(payment);
+//					}
+//				}
+//
+//				// clinic package change
+//				List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+//						.findByDoctorId(new ObjectId(request.getDoctorId()));
+//
+//				if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
+//					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+//						doctorClinicProfileCollection.setUpdatedTime(new Date());
+//						doctorClinicProfileCollection
+//								.setPackageType(subscriptionCollection.getPackageName().toString());
+//
+//						doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+//					}
+//				}
+//
+//				// call sms function
+//				String doctorName = userCollection.getTitle() + userCollection.getFirstName();
+//				PackageType newPackageName = request.getPackageName();
+//
+//				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+//
+//				smsTrackDetail.setType(ComponentType.PACKAGE_DETAIL.getType());
+//				SMSDetail smsDetail = new SMSDetail();
+//
+//				smsDetail.setUserName(doctorName);
+//				SMS sms = new SMS();
+//
+//				sms.setSmsText(doctorName + " Your Subscription Plan Started with to " + newPackageName
+//						+ " For 1 year. Stay Healthy and Happy!");
+//
+//				SMSAddress smsAddress = new SMSAddress();
+//				smsAddress.setRecipient(userCollection.getMobileNumber());
+//				sms.setSmsAddress(smsAddress);
+//				smsDetail.setSms(sms);
+//				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+//				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+//				smsDetails.add(smsDetail);
+//				smsTrackDetail.setSmsDetails(smsDetails);
+//				Boolean ck = smsServices.sendSMS(smsTrackDetail, false);
+//				System.out.println("sms send" + smsDetails);
+//
+//				String body = doctorName + " Your Subscription Plan Started with to " + newPackageName
+//						+ " For 1 year. Stay Healthy and Happy!";
+//				try {
+//					Boolean ckM = mailService.sendEmail(userCollection.getEmailAddress(), "Update Packege Detail", body,
+//							null);
+//					System.out.println("main send" + ckM);
+//				} catch (MessagingException e) {
+//					System.out.println("main send err");
+//					e.printStackTrace();
+//				}
+//			}
+//			response = new Subscription();
+//			BeanUtil.map(subscriptionCollection, response);
+//
+//		}
+////		catch (RazorpayException e) {
+////			// Handle Exception
+////			logger.error(e.getMessage());
+////			e.printStackTrace();
+////		} 
+//		catch (Exception e) {
 //			e.printStackTrace();
-//		} 
-		catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-		}
-		return response;
-	}
+//			logger.error(e);
+//		}
+//		return response;
+//	}
 
 	public Boolean sendSMS(String doctorName, String mobileNumber, String countryCode, PackageType oldPackageName,
 			PackageType newPackageName) {
@@ -833,105 +835,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	}
 
 	@Override
-	@Transactional
-	public Boolean verifySignature(SubscriptionPaymentSignatureRequest request) {
-		Boolean response = false;
-		SubscriptionHistoryCollection subscriptionHistoryCollection = null;
-		subscriptionHistoryCollection = new SubscriptionHistoryCollection();
-		try {
-			SubscriptionCollection subscriptionCollection = subscriptionRepository
-					.findById(new ObjectId(request.getSubscriptionId())).orElse(null);
-			if (subscriptionCollection == null) {
-				logger.warn("subscription id not found");
-				throw new BusinessException(ServiceError.NotFound, "Subscription Not found with Id");
-			}
-			// get doctor from doctor id;
-			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
-			if (userCollection == null) {
-				logger.warn("doctor id not found");
-				throw new BusinessException(ServiceError.NotFound, "Doctor Not present with this id");
-			}
-			JSONObject options = new JSONObject();
-			options.put("razorpay_order_id", request.getOrderId());
-			options.put("razorpay_payment_id", request.getPaymentId());
-			options.put("razorpay_signature", request.getSignature());
-			response = Utils.verifyPaymentSignature(options, secret);
-			System.out.println("paymn" + response);
-			if (response) {
-
-				Criteria criteria = new Criteria("orderId").is(request.getOrderId()).and("doctorId")
-						.is(new ObjectId(request.getDoctorId())).and("subscriptionId")
-						.is(new ObjectId(request.getSubscriptionId())).and("transactionStatus").is("PENDING");
-				DoctorSubscriptionPaymentCollection doctorSubscriptionPaymentCollection = mongoTemplate
-						.findOne(new Query(criteria), DoctorSubscriptionPaymentCollection.class);
-				System.out.println("doctorSubscriptionPaymentCollection" + doctorSubscriptionPaymentCollection);
-				doctorSubscriptionPaymentCollection.setTransactionId(request.getPaymentId());
-				doctorSubscriptionPaymentCollection.setTransactionStatus("SUCCESS");
-				doctorSubscriptionPaymentCollection.setCreatedTime(new Date());
-				doctorSubscriptionPaymentCollection.setUpdatedTime(new Date());
-				doctorSubscriptionPaymentRepository.save(doctorSubscriptionPaymentCollection);
-
-				subscriptionCollection.setTransactionStatus(doctorSubscriptionPaymentCollection.getTransactionStatus());
-				subscriptionCollection = subscriptionRepository.save(subscriptionCollection);
-
-				// save to History
-				BeanUtil.map(subscriptionCollection, subscriptionHistoryCollection);
-				subscriptionHistoryCollection = subscriptionHistoryRepository.save(subscriptionHistoryCollection);
-
-				if (doctorSubscriptionPaymentCollection.getTransactionStatus().equalsIgnoreCase("SUCCESS")) {
-					if (userCollection != null) {
-						String message = "";
-						message = StringEscapeUtils.unescapeJava(message);
-						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-
-						smsTrackDetail.setType("Subscription online Payment");
-						smsTrackDetail.setDoctorId(userCollection.getId());
-						SMSDetail smsDetail = new SMSDetail();
-						smsDetail.setUserId(userCollection.getId());
-						SMS sms = new SMS();
-						smsDetail.setUserName(userCollection.getFirstName());
-
-						sms.setSmsText(userCollection.getTitle() + " " + userCollection.getFirstName()
-								+ " Your Payment done For your Subscription");
-
-						SMSAddress smsAddress = new SMSAddress();
-						smsAddress.setRecipient(userCollection.getMobileNumber());
-						sms.setSmsAddress(smsAddress);
-						smsDetail.setSms(sms);
-						smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-						smsDetails.add(smsDetail);
-						smsTrackDetail.setSmsDetails(smsDetails);
-						smsServices.sendSMS(smsTrackDetail, false);
-						System.out.println("sms sent");
-
-						String body = userCollection.getTitle() + " " + userCollection.getFirstName()
-								+ "Payment Done for Subscription";
-						try {
-							Boolean ckM = mailService.sendEmail(userCollection.getEmailAddress(), "About payment", body,
-									null);
-							System.out.println("main send" + ckM);
-						} catch (MessagingException e) {
-							System.out.println("main send err");
-							e.printStackTrace();
-						}
-
-					}
-				}
-			}
-
-		} catch (RazorpayException e) {
-			// Handle Exception
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-		}
-		return response;
-	}
-
-	@Override
 	public List<Country> getCountry(int size, int page, Boolean isDiscarded, String searchTerm) {
 		List<Country> response = null;
 		try {
@@ -1059,6 +962,245 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					new Criteria("packageName").regex("^" + searchTerm));
 
 			response = (int) mongoTemplate.count(new Query(criteria), SubscriptionHistoryCollection.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+		return response;
+	}
+
+	@Override
+	public SubscriptionResponse addEditSubscription(SubscriptionRequest request) {
+		SubscriptionResponse response = null;
+		try {
+			JSONObject orderRequest = new JSONObject();
+			// get doctor from doctor id;
+			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+			if (userCollection == null) {
+				logger.warn("doctor not found");
+				throw new BusinessException(ServiceError.NotFound, "Doctor Not present with this id");
+			}
+
+			if (request.getPaymentStatus() == true) {
+				double amount = (request.getAmount() * 100);
+				// amount in paise
+				orderRequest.put("amount", (int) amount);
+				orderRequest.put("currency", request.getCurrency());
+				orderRequest.put("receipt", userCollection.getTitle().substring(0, 2).toUpperCase() + "-RCPT-"
+						+ doctorSubscriptionPaymentRepository.countByDoctorId(new ObjectId(request.getDoctorId()))
+						+ generateId());
+				orderRequest.put("payment_capture", request.getPaymentCapture());
+
+				String url = "https://api.razorpay.com/v1/orders";
+				String authStr = keyId + ":" + secret;
+				String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
+				URL obj = new URL(url);
+				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+				con.setDoOutput(true);
+
+				con.setDoInput(true);
+				// optional default is POST
+				con.setRequestMethod("POST");
+				con.setRequestProperty("User-Agent",
+						"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+				con.setRequestProperty("Accept-Charset", "UTF-8");
+				con.setRequestProperty("Content-Type", "application/json");
+				con.setRequestProperty("Authorization", "Basic " + authStringEnc);
+				DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+				wr.writeBytes(orderRequest.toString());
+
+				wr.flush();
+				wr.close();
+				con.disconnect();
+				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				String inputLine;
+
+				/* response = new StringBuffer(); */
+				StringBuffer output = new StringBuffer();
+				while ((inputLine = in.readLine()) != null) {
+
+					output.append(inputLine);
+					System.out.println("response:" + output.toString());
+				}
+
+				ObjectMapper mapper = new ObjectMapper();
+
+				OrderReponse list = mapper.readValue(output.toString(), OrderReponse.class);
+
+				if (userCollection != null) {
+					DoctorSubscriptionPaymentCollection payment = new DoctorSubscriptionPaymentCollection();
+					BeanUtil.map(request, payment);
+					payment.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
+					payment.setCreatedTime(new Date());
+					payment.setOrderId(list.getId().toString());
+					payment.setReciept(list.getReceipt().toString());
+					payment.setTransactionStatus("PENDING");
+					doctorSubscriptionPaymentRepository.save(payment);
+					response = new SubscriptionResponse();
+					BeanUtil.map(payment, response);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public Boolean verifySignature(SubscriptionPaymentSignatureRequest request) {
+		Boolean response = false;
+		SubscriptionHistoryCollection subscriptionHistoryCollection = null;
+		subscriptionHistoryCollection = new SubscriptionHistoryCollection();
+
+		// for set two days
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, +2); // get date after i days from today
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		Date dateAfter2Days = cal.getTime();
+
+		try {
+
+			// get doctor from doctor id;
+			UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+			if (userCollection == null) {
+				logger.warn("doctor id not found");
+				throw new BusinessException(ServiceError.NotFound, "Doctor Not present with this id");
+			}
+			JSONObject options = new JSONObject();
+			options.put("razorpay_order_id", request.getOrderId());
+			options.put("razorpay_payment_id", request.getPaymentId());
+			options.put("razorpay_signature", request.getSignature());
+			response = Utils.verifyPaymentSignature(options, secret);
+			System.out.println("paymn" + response);
+			if (response) {
+				Criteria criteria = new Criteria("orderId").is(request.getOrderId()).and("doctorId")
+						.is(new ObjectId(request.getDoctorId())).and("transactionStatus").is("PENDING");
+				DoctorSubscriptionPaymentCollection doctorSubscriptionPaymentCollection = mongoTemplate
+						.findOne(new Query(criteria), DoctorSubscriptionPaymentCollection.class);
+				System.out.println("doctorSubscriptionPaymentCollection" + doctorSubscriptionPaymentCollection);
+				doctorSubscriptionPaymentCollection.setTransactionId(request.getPaymentId());
+				doctorSubscriptionPaymentCollection.setTransactionStatus("SUCCESS");
+				doctorSubscriptionPaymentCollection.setCreatedTime(new Date());
+				doctorSubscriptionPaymentCollection.setUpdatedTime(new Date());
+				doctorSubscriptionPaymentRepository.save(doctorSubscriptionPaymentCollection);
+
+				if (!DPDoctorUtils.anyStringEmpty(request.getSubscriptionId())) {
+					SubscriptionCollection subscriptionCollection = subscriptionRepository
+							.findById(new ObjectId(request.getSubscriptionId())).orElse(null);
+					if (subscriptionCollection == null) {
+						logger.warn("subscription id not found");
+						throw new BusinessException(ServiceError.NotFound, "Subscription Not found with Id");
+					}
+//					BeanUtil.map(doctorSubscriptionPaymentCollection, subscriptionCollection);
+					subscriptionCollection.setUpdatedTime(new Date());
+					subscriptionCollection.setCreatedBy(subscriptionCollection.getCreatedBy());
+					subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
+					subscriptionCollection.setEmailAddress(userCollection.getEmailAddress());
+					subscriptionCollection.setPackageName(doctorSubscriptionPaymentCollection.getPackageName());
+					subscriptionCollection.setAmount(doctorSubscriptionPaymentCollection.getAmount());
+					subscriptionCollection.setCountryCode(userCollection.getCountryCode());
+					subscriptionCollection.setPaymentStatus(true);
+					subscriptionCollection.setMode(doctorSubscriptionPaymentCollection.getMode());
+					subscriptionCollection
+							.setTransactionStatus(doctorSubscriptionPaymentCollection.getTransactionStatus());
+					subscriptionCollection.setFromDate(new Date());
+					subscriptionCollection.setToDate(dateAfter2Days);
+//					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12));
+					subscriptionCollection = subscriptionRepository.save(subscriptionCollection);
+					// save to History
+					BeanUtil.map(subscriptionCollection, subscriptionHistoryCollection);
+					subscriptionHistoryCollection.setSubscriptionId(subscriptionCollection.getId());
+					subscriptionHistoryCollection.setDoctorId(subscriptionCollection.getDoctorId());
+					subscriptionHistoryCollection = subscriptionHistoryRepository.save(subscriptionHistoryCollection);
+				} else {
+					SubscriptionCollection subscriptionCollection = new SubscriptionCollection();
+
+					SubscriptionCollection subscriptionCkD = subscriptionRepository
+							.findByDoctorId(new ObjectId(request.getDoctorId()));
+					if (subscriptionCkD != null) {
+						BeanUtil.map(subscriptionCkD, subscriptionCollection);
+					}
+					subscriptionCollection.setCreatedTime(new Date());
+					subscriptionCollection.setUpdatedTime(new Date());
+					subscriptionCollection.setCreatedBy(subscriptionCollection.getCreatedBy());
+					subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
+					subscriptionCollection.setEmailAddress(userCollection.getEmailAddress());
+					subscriptionCollection.setPackageName(doctorSubscriptionPaymentCollection.getPackageName());
+					subscriptionCollection.setAmount(doctorSubscriptionPaymentCollection.getAmount());
+					subscriptionCollection.setCountryCode(userCollection.getCountryCode());
+					subscriptionCollection.setPaymentStatus(true);
+					subscriptionCollection.setMode(doctorSubscriptionPaymentCollection.getMode());
+					subscriptionCollection
+							.setTransactionStatus(doctorSubscriptionPaymentCollection.getTransactionStatus());
+					subscriptionCollection.setFromDate(new Date());
+					subscriptionCollection.setToDate(dateAfter2Days);
+//					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12));
+
+					subscriptionCollection = subscriptionRepository.save(subscriptionCollection);
+					// save to History
+					BeanUtil.map(subscriptionCollection, subscriptionHistoryCollection);
+					subscriptionHistoryCollection.setSubscriptionId(subscriptionCollection.getId());
+					subscriptionHistoryCollection.setDoctorId(subscriptionCollection.getDoctorId());
+					subscriptionHistoryCollection = subscriptionHistoryRepository.save(subscriptionHistoryCollection);
+				}
+
+				if (doctorSubscriptionPaymentCollection.getTransactionStatus().equalsIgnoreCase("SUCCESS")) {
+					if (userCollection != null) {
+						String message = "";
+						message = StringEscapeUtils.unescapeJava(message);
+						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+
+						smsTrackDetail.setType("Subscription online Payment");
+						smsTrackDetail.setDoctorId(userCollection.getId());
+						SMSDetail smsDetail = new SMSDetail();
+						smsDetail.setUserId(userCollection.getId());
+						SMS sms = new SMS();
+						smsDetail.setUserName(userCollection.getFirstName());
+						String pattern = "dd/MM/yyyy";
+						SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+						sms.setSmsText("Hi " + userCollection.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(doctorSubscriptionPaymentCollection.getCreatedTime())
+						+ " by "+doctorSubscriptionPaymentCollection.getMode()+" and your transactionId is"+doctorSubscriptionPaymentCollection.getTransactionId()+" for the receipt "+doctorSubscriptionPaymentCollection.getReciept()
+						+" and the total cost is "+ doctorSubscriptionPaymentCollection.getAmount() + "for package you"+  doctorSubscriptionPaymentCollection.getPackageName()+ ".");
+
+						SMSAddress smsAddress = new SMSAddress();
+						smsAddress.setRecipient(userCollection.getMobileNumber());
+						sms.setSmsAddress(smsAddress);
+						smsDetail.setSms(sms);
+						smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+						smsDetails.add(smsDetail);
+						smsTrackDetail.setSmsDetails(smsDetails);
+						smsServices.sendSMS(smsTrackDetail, false);
+						System.out.println("sms sent");
+
+						String body = "Hi " + userCollection.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(doctorSubscriptionPaymentCollection.getCreatedTime())
+						+ " by "+doctorSubscriptionPaymentCollection.getMode()+" and your transactionId is"+doctorSubscriptionPaymentCollection.getTransactionId()+" for the receipt "+doctorSubscriptionPaymentCollection.getReciept()
+						+" and the total cost is "+ doctorSubscriptionPaymentCollection.getAmount() + "for package you"+  doctorSubscriptionPaymentCollection.getPackageName()+ ".";
+						try {
+							Boolean ckM = mailService.sendEmail(userCollection.getEmailAddress(), "About payment", body,
+									null);
+							System.out.println("main send" + ckM);
+						} catch (MessagingException e) {
+							System.out.println("main send err");
+							e.printStackTrace();
+						}
+
+					}
+				}
+			}
+
+		} catch (RazorpayException e) {
+			// Handle Exception
+			logger.error(e.getMessage());
+			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

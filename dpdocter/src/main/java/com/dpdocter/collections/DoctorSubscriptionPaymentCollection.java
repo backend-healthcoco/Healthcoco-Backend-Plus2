@@ -44,21 +44,6 @@ public class DoctorSubscriptionPaymentCollection extends GenericCollection {
 	private PaymentMode mode = PaymentMode.ONLINE;
 
 	@Field
-	private String chequeNo;
-
-	@Field
-	private String accountNo;
-
-	@Field
-	private String bankName;
-
-	@Field
-	private String branch;
-
-	@Field
-	private Date chequeDate;
-
-	@Field
 	private PackageType packageName;
 
 	@Field
@@ -144,46 +129,6 @@ public class DoctorSubscriptionPaymentCollection extends GenericCollection {
 
 	public void setMode(PaymentMode mode) {
 		this.mode = mode;
-	}
-
-	public String getChequeNo() {
-		return chequeNo;
-	}
-
-	public void setChequeNo(String chequeNo) {
-		this.chequeNo = chequeNo;
-	}
-
-	public String getAccountNo() {
-		return accountNo;
-	}
-
-	public void setAccountNo(String accountNo) {
-		this.accountNo = accountNo;
-	}
-
-	public String getBankName() {
-		return bankName;
-	}
-
-	public void setBankName(String bankName) {
-		this.bankName = bankName;
-	}
-
-	public String getBranch() {
-		return branch;
-	}
-
-	public void setBranch(String branch) {
-		this.branch = branch;
-	}
-
-	public Date getChequeDate() {
-		return chequeDate;
-	}
-
-	public void setChequeDate(Date chequeDate) {
-		this.chequeDate = chequeDate;
 	}
 
 	public PackageType getPackageName() {

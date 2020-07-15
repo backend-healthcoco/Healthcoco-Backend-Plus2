@@ -65,12 +65,6 @@ public class SubscriptionCollection extends GenericCollection {
 	private String emailAddress;
 
 	@Field
-	private String orderId;
-
-	@Field
-	private String reciept;
-
-	@Field
 	private Boolean paymentStatus = Boolean.FALSE;
 
 	@Field
@@ -212,22 +206,6 @@ public class SubscriptionCollection extends GenericCollection {
 		this.emailAddress = emailAddress;
 	}
 
-	public String getOrderId() {
-		return orderId;
-	}
-
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
-	}
-
-	public String getReciept() {
-		return reciept;
-	}
-
-	public void setReciept(String reciept) {
-		this.reciept = reciept;
-	}
-
 	public Boolean getPaymentStatus() {
 		return paymentStatus;
 	}
@@ -251,8 +229,7 @@ public class SubscriptionCollection extends GenericCollection {
 				+ ", countryCode=" + countryCode + ", mode=" + mode + ", bankName=" + bankName + ", chequeNo="
 				+ chequeNo + ", branch=" + branch + ", chequeDate=" + chequeDate + ", isAdvertisement="
 				+ isAdvertisement + ", discarded=" + discarded + ", mobileNumber=" + mobileNumber + ", emailAddress="
-				+ emailAddress + ", orderId=" + orderId + ", reciept=" + reciept + ", paymentStatus=" + paymentStatus
-				+ ", transactionStatus=" + transactionStatus + "]";
+				+ emailAddress + ", paymentStatus=" + paymentStatus + ", transactionStatus=" + transactionStatus + "]";
 	}
 
 }

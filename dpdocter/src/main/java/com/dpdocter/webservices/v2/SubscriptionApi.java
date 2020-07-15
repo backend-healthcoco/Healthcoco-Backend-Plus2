@@ -28,6 +28,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.SubscriptionPaymentSignatureRequest;
 import com.dpdocter.request.SubscriptionRequest;
+import com.dpdocter.response.SubscriptionResponse;
 import com.dpdocter.services.SubscriptionService;
 import com.dpdocter.webservices.PathProxy;
 
@@ -87,14 +88,14 @@ public class SubscriptionApi {
 	@Path(value = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION)
 	@POST
 	@ApiOperation(value = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION, notes = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION)
-	public Response<Subscription> addEditSubscription(@RequestBody SubscriptionRequest request) {
+	public Response<SubscriptionResponse> addEditSubscription(@RequestBody SubscriptionRequest request) {
 
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");			
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 	
-		Response<Subscription> response = new Response<Subscription>();
+		Response<SubscriptionResponse> response = new Response<SubscriptionResponse>();
 		response.setData(subscriptionService.addEditSubscription(request));
 		return response;
 	}
@@ -109,11 +110,11 @@ public class SubscriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		if (DPDoctorUtils.anyStringEmpty(request.getSubscriptionId(), request.getDoctorId(), request.getOrderId(),
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getOrderId(),
 				request.getSignature(), request.getPaymentId())) {
-			logger.warn("doctorId,subscriptionId,orderId,signature,paymentId should not be Null or empty");
+			logger.warn("doctorId,orderId,signature,paymentId should not be Null or empty");
 			throw new BusinessException(ServiceError.InvalidInput,
-					"doctorId,subscriptionId,orderId,signature,paymentId should not be Null or empty");
+					"doctorId,orderId,signature,paymentId should not be Null or empty");
 		}
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(subscriptionService.verifySignature(request));

@@ -12,9 +12,7 @@ public class SubscriptionRequest extends GenericCollection {
 
 	private String doctorId;
 
-	private Date fromDate;
-
-	private Date toDate;
+	private String subscriptionId;
 
 	private PackageType packageName;
 
@@ -24,14 +22,8 @@ public class SubscriptionRequest extends GenericCollection {
 
 	private PaymentMode mode = PaymentMode.ONLINE;
 
-	private String countryCode;
-
-	private Boolean isAdvertisement = Boolean.FALSE;
-
-	private Boolean isDiscarded = Boolean.FALSE;
-
 	private Boolean paymentStatus = Boolean.FALSE;
-	
+
 	private String currency = "INR";
 
 	private Boolean paymentCapture = true;
@@ -52,20 +44,12 @@ public class SubscriptionRequest extends GenericCollection {
 		this.doctorId = doctorId;
 	}
 
-	public Date getFromDate() {
-		return fromDate;
+	public String getSubscriptionId() {
+		return subscriptionId;
 	}
 
-	public void setFromDate(Date fromDate) {
-		this.fromDate = fromDate;
-	}
-
-	public Date getToDate() {
-		return toDate;
-	}
-
-	public void setToDate(Date toDate) {
-		this.toDate = toDate;
+	public void setSubscriptionId(String subscriptionId) {
+		this.subscriptionId = subscriptionId;
 	}
 
 	public PackageType getPackageName() {
@@ -100,30 +84,6 @@ public class SubscriptionRequest extends GenericCollection {
 		this.mode = mode;
 	}
 
-	public String getCountryCode() {
-		return countryCode;
-	}
-
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
-	}
-
-	public Boolean getIsAdvertisement() {
-		return isAdvertisement;
-	}
-
-	public void setIsAdvertisement(Boolean isAdvertisement) {
-		this.isAdvertisement = isAdvertisement;
-	}
-
-	public Boolean getIsDiscarded() {
-		return isDiscarded;
-	}
-
-	public void setIsDiscarded(Boolean isDiscarded) {
-		this.isDiscarded = isDiscarded;
-	}
-
 	public Boolean getPaymentStatus() {
 		return paymentStatus;
 	}
@@ -132,7 +92,6 @@ public class SubscriptionRequest extends GenericCollection {
 		this.paymentStatus = paymentStatus;
 	}
 
-	
 	public String getCurrency() {
 		return currency;
 	}
@@ -151,10 +110,9 @@ public class SubscriptionRequest extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "SubscriptionRequest [id=" + id + ", doctorId=" + doctorId + ", fromDate=" + fromDate + ", toDate="
-				+ toDate + ", packageName=" + packageName + ", amount=" + amount + ", discountAmount=" + discountAmount
-				+ ", mode=" + mode + ", countryCode=" + countryCode + ", isAdvertisement=" + isAdvertisement
-				+ ", isDiscarded=" + isDiscarded + ", paymentStatus=" + paymentStatus + "]";
+		return "SubscriptionRequest [id=" + id + ", doctorId=" + doctorId + ", packageName=" + packageName + ", amount="
+				+ amount + ", discountAmount=" + discountAmount + ", mode=" + mode + ", paymentStatus=" + paymentStatus
+				+ ", currency=" + currency + ", paymentCapture=" + paymentCapture + "]";
 	}
 
 }
