@@ -19,4 +19,6 @@ public interface PrintSettingsService {
 
 	public String uploadFile(FileDetails fileDetails, String type);
 
+	String uploadSignature(FileDetails fileDetails);
+
 }
