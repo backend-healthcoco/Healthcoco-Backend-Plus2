@@ -8,9 +8,9 @@ public class BulkSmsPackage extends GenericCollection{
 
 	private String packageName;
 	
-	private Long price;
+	private Long price=0L;
 	
-	private Long smsCredit;
+	private Long smsCredit=0L;
 	
 	private int costPerSms;
 

@@ -567,7 +567,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 		//		user.setPaymentStatus(true);
 		//		String regNo = user.getRegNo().replace("TEM", "");
 	//			user.setRegNo(conferenceCollection.getTitle().substring(0, 2).toUpperCase() + regNo);
-				doctor = userRepository.save(doctor);
+			//	doctor = userRepository.save(doctor);
 				if (onlinePaymentCollection.getTransactionStatus().equalsIgnoreCase("SUCCESS")) {
 					if (doctor != null) {
 						
@@ -581,6 +581,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							throw new BusinessException(ServiceError.InvalidInput, "Sms Package not found");
 						
 						
+						System.out.println("credits:"+packageCollection.getSmsCredit());
 						DoctorClinicProfileCollection doctorClinicProfileCollections = null;
 						doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
 								new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
@@ -588,10 +589,16 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 						BulkSmsCredits credit=new BulkSmsCredits();
 						if (doctorClinicProfileCollections != null)
 						{
-							BeanUtil.map(request,credit);
+							credit.setSmsPackage(bulkPackage);
+							credit.setDateOfTransaction(new Date());
+							credit.setPaymentMode(request.getMode());
+							credit.setDoctorId(request.getDoctorId());
+							credit.setLocationId(request.getLocationId());
+							//BeanUtil.map(request,credit);
 							Long creditBalance=doctorClinicProfileCollections.getBulkSmsCredit().getCreditBalance();
 							doctorClinicProfileCollections.setBulkSmsCredit(credit);
-							creditBalance=creditBalance+packageCollection.getSmsCredits();
+							creditBalance=creditBalance+packageCollection.getSmsCredit();
+							credit.setCreditBalance(creditBalance);
 							doctorClinicProfileCollections.getBulkSmsCredit().setCreditBalance(creditBalance);
 							BeanUtil.map(credit, history);
 							bulkSmsHistoryRepository.save(history);
