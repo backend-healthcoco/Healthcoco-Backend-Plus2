@@ -1120,6 +1120,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					subscriptionHistoryCollection.setSubscriptionId(subscriptionCollection.getId());
 					subscriptionHistoryCollection.setDoctorId(subscriptionCollection.getDoctorId());
 					subscriptionHistoryCollection = subscriptionHistoryRepository.save(subscriptionHistoryCollection);
+					
+					// clinic package change
+					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+							.findByDoctorId(new ObjectId(request.getDoctorId()));
+	
+					if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
+						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+							doctorClinicProfileCollection.setUpdatedTime(new Date());
+							doctorClinicProfileCollection
+									.setPackageType(subscriptionCollection.getPackageName().toString());
+	
+							doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+						}
+					}
 				} else {
 					SubscriptionCollection subscriptionCollection = new SubscriptionCollection();
 
@@ -1150,6 +1164,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					subscriptionHistoryCollection.setSubscriptionId(subscriptionCollection.getId());
 					subscriptionHistoryCollection.setDoctorId(subscriptionCollection.getDoctorId());
 					subscriptionHistoryCollection = subscriptionHistoryRepository.save(subscriptionHistoryCollection);
+					
+					// clinic package change
+					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
+							.findByDoctorId(new ObjectId(request.getDoctorId()));
+	
+					if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
+						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+							doctorClinicProfileCollection.setUpdatedTime(new Date());
+							doctorClinicProfileCollection
+									.setPackageType(subscriptionCollection.getPackageName().toString());
+	
+							doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+						}
+					}
 				}
 
 				if (doctorSubscriptionPaymentCollection.getTransactionStatus().equalsIgnoreCase("SUCCESS")) {
