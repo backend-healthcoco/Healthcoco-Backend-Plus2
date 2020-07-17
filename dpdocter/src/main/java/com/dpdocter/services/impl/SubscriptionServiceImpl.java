@@ -1119,6 +1119,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					BeanUtil.map(subscriptionCollection, subscriptionHistoryCollection);
 					subscriptionHistoryCollection.setSubscriptionId(subscriptionCollection.getId());
 					subscriptionHistoryCollection.setDoctorId(subscriptionCollection.getDoctorId());
+					subscriptionHistoryCollection.setCreatedTime(new Date());
 					subscriptionHistoryCollection = subscriptionHistoryRepository.save(subscriptionHistoryCollection);
 					
 					// clinic package change
@@ -1163,6 +1164,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					BeanUtil.map(subscriptionCollection, subscriptionHistoryCollection);
 					subscriptionHistoryCollection.setSubscriptionId(subscriptionCollection.getId());
 					subscriptionHistoryCollection.setDoctorId(subscriptionCollection.getDoctorId());
+					subscriptionHistoryCollection.setCreatedTime(new Date());
 					subscriptionHistoryCollection = subscriptionHistoryRepository.save(subscriptionHistoryCollection);
 					
 					// clinic package change
