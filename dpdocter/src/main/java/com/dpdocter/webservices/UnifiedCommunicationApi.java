@@ -59,11 +59,11 @@ public class UnifiedCommunicationApi {
 	@Path(value = PathProxy.ChatUrls.CREATE_TWILIO_NOTIFICATION)
 	@GET
 	@ApiOperation(value = PathProxy.ChatUrls.CREATE_TWILIO_NOTIFICATION, notes = PathProxy.ChatUrls.CREATE_TWILIO_NOTIFICATION)
-	public Response<Boolean> createTwilioPushNotifition()
+	public Response<Boolean> createTwilioPushNotifition(@QueryParam(value = "serviceSID")String serviceSID)
 			throws MessagingException {
 	    
 		Response<Boolean> response = new Response<Boolean>();
-		Boolean push=unifiedCommunicationServices.twilioPushNotification();
+		Boolean push=unifiedCommunicationServices.twilioPushNotification(serviceSID);
 		response.setData(push);
 		return response;
 
