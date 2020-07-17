@@ -22,11 +22,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.dpdocter.beans.Country;
 import com.dpdocter.beans.PackageDetailObject;
 import com.dpdocter.beans.Subscription;
+import com.dpdocter.collections.SubscriptionCollection;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.SubscriptionPaymentSignatureRequest;
 import com.dpdocter.request.SubscriptionRequest;
+import com.dpdocter.response.SubscriptionResponse;
 import com.dpdocter.services.SubscriptionService;
 import com.dpdocter.webservices.PathProxy;
 
@@ -66,8 +68,7 @@ public class SubscriptionApi {
 		return response;
 
 	}
-	
-	
+		
 
 	@Path(value = PathProxy.SubscriptionUrls.GET_PACKAGES_BY_NAME)
 	@GET
@@ -87,14 +88,14 @@ public class SubscriptionApi {
 	@Path(value = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION)
 	@POST
 	@ApiOperation(value = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION, notes = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION)
-	public Response<Subscription> addEditSubscription(@RequestBody SubscriptionRequest request) {
+	public Response<SubscriptionResponse> addEditSubscription(@RequestBody SubscriptionRequest request) {
 
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");			
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 	
-		Response<Subscription> response = new Response<Subscription>();
+		Response<SubscriptionResponse> response = new Response<SubscriptionResponse>();
 		response.setData(subscriptionService.addEditSubscription(request));
 		return response;
 	}
@@ -109,11 +110,11 @@ public class SubscriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		if (DPDoctorUtils.anyStringEmpty(request.getSubscriptionId(), request.getDoctorId(), request.getOrderId(),
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getOrderId(),
 				request.getSignature(), request.getPaymentId())) {
-			logger.warn("doctorId,subscriptionId,orderId,signature,paymentId should not be Null or empty");
+			logger.warn("doctorId,orderId,signature,paymentId should not be Null or empty");
 			throw new BusinessException(ServiceError.InvalidInput,
-					"doctorId,subscriptionId,orderId,signature,paymentId should not be Null or empty");
+					"doctorId,orderId,signature,paymentId should not be Null or empty");
 		}
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(subscriptionService.verifySignature(request));
@@ -148,4 +149,25 @@ public class SubscriptionApi {
 		response.setCount(count);
 		return response;
 	}	
+	
+	@Path(value = PathProxy.SubscriptionUrls.GET_SUBSCRIPTIONHISTORY_BY_DOCTORID)
+	@GET
+	@ApiOperation(value = PathProxy.SubscriptionUrls.GET_SUBSCRIPTIONHISTORY_BY_DOCTORID, notes = PathProxy.SubscriptionUrls.GET_SUBSCRIPTIONHISTORY_BY_DOCTORID)
+	public Response<Subscription> getSubscriptionHistoryByDoctorId(@PathParam("doctorId") String doctorId,
+			@QueryParam("page") int page, @QueryParam("size") int size,			
+			@DefaultValue("false") @QueryParam(value = "isDiscarded") Boolean isDiscarded,
+			@DefaultValue("")@QueryParam(value = "searchTerm") String searchTerm) {
+		if (doctorId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Integer count = subscriptionService.countSubscriptionHistory(doctorId,isDiscarded, searchTerm);
+		Response<Subscription> response = new Response<Subscription>();
+		if (count > 0)
+			response.setDataList(subscriptionService.getSubscriptionHistory(doctorId,size, page, isDiscarded, searchTerm));
+		response.setCount(count);
+		return response;
+
+	}
 }

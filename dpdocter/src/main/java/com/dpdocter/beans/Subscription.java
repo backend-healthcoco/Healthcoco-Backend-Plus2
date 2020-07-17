@@ -18,9 +18,9 @@ public class Subscription extends GenericCollection {
 
 	private PackageType packageName;
 
-	private Double amount;
+	private int amount = 0;
 
-	private Double discountAmount = 0.0;
+	private int discountAmount = 0;
 
 	private String accountNo;
 
@@ -42,16 +42,11 @@ public class Subscription extends GenericCollection {
 
 	private String orderId;
 
-	private String currency = "INR";
-
 	private String reciept;
 
-	private Boolean paymentStatus;
-	
-	private Boolean paymentCapture = true;
-	
-	private String transactionStatus;
+	private Boolean paymentStatus = Boolean.FALSE;
 
+	private String transactionStatus;
 
 	public String getId() {
 		return id;
@@ -93,20 +88,20 @@ public class Subscription extends GenericCollection {
 		this.packageName = packageName;
 	}
 
-	public Double getAmount() {
+	public int getAmount() {
 		return amount;
 	}
 
-	public Double getDiscountAmount() {
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
+
+	public int getDiscountAmount() {
 		return discountAmount;
 	}
 
-	public void setDiscountAmount(Double discountAmount) {
+	public void setDiscountAmount(int discountAmount) {
 		this.discountAmount = discountAmount;
-	}
-
-	public void setAmount(Double amount) {
-		this.amount = amount;
 	}
 
 	public PaymentMode getMode() {
@@ -181,14 +176,6 @@ public class Subscription extends GenericCollection {
 		this.orderId = orderId;
 	}
 
-	public String getCurrency() {
-		return currency;
-	}
-
-	public void setCurrency(String currency) {
-		this.currency = currency;
-	}
-
 	public String getReciept() {
 		return reciept;
 	}
@@ -213,14 +200,7 @@ public class Subscription extends GenericCollection {
 		this.accountNo = accountNo;
 	}
 
-	public Boolean getPaymentCapture() {
-		return paymentCapture;
-	}
-
-	public void setPaymentCapture(Boolean paymentCapture) {
-		this.paymentCapture = paymentCapture;
-	}
-
+	
 	public String getTransactionStatus() {
 		return transactionStatus;
 	}
@@ -228,7 +208,5 @@ public class Subscription extends GenericCollection {
 	public void setTransactionStatus(String transactionStatus) {
 		this.transactionStatus = transactionStatus;
 	}
-	
 
-	
 }

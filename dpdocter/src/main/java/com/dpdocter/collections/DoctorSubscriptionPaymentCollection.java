@@ -11,8 +11,8 @@ import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.PaymentMode;
 
 @Document(collection = "subscription_payment_cl")
-public class DoctorSubscriptionPaymentCollection extends GenericCollection{
-	
+public class DoctorSubscriptionPaymentCollection extends GenericCollection {
+
 	@Field
 	private ObjectId id;
 
@@ -32,10 +32,10 @@ public class DoctorSubscriptionPaymentCollection extends GenericCollection{
 	private Discount discount;
 
 	@Field
-	private Double amount = 0.0;
+	private int amount = 0;
 
 	@Field
-	private Double discountAmount = 0.0;
+	private int discountAmount = 0;
 
 	@Field
 	private Double transferAmount = 0.0;
@@ -44,23 +44,8 @@ public class DoctorSubscriptionPaymentCollection extends GenericCollection{
 	private PaymentMode mode = PaymentMode.ONLINE;
 
 	@Field
-	private String chequeNo;
-
-	@Field
-	private String accountNo;
-
-	@Field
-	private String bankName;
-
-	@Field
-	private String branch;
-
-	@Field
-	private Date chequeDate;
-
-	@Field
 	private PackageType packageName;
-	
+
 	@Field
 	private String orderId;
 	@Field
@@ -114,19 +99,19 @@ public class DoctorSubscriptionPaymentCollection extends GenericCollection{
 		this.discount = discount;
 	}
 
-	public Double getAmount() {
+	public int getAmount() {
 		return amount;
 	}
 
-	public void setAmount(Double amount) {
+	public void setAmount(int amount) {
 		this.amount = amount;
 	}
 
-	public Double getDiscountAmount() {
+	public int getDiscountAmount() {
 		return discountAmount;
 	}
 
-	public void setDiscountAmount(Double discountAmount) {
+	public void setDiscountAmount(int discountAmount) {
 		this.discountAmount = discountAmount;
 	}
 
@@ -144,46 +129,6 @@ public class DoctorSubscriptionPaymentCollection extends GenericCollection{
 
 	public void setMode(PaymentMode mode) {
 		this.mode = mode;
-	}
-
-	public String getChequeNo() {
-		return chequeNo;
-	}
-
-	public void setChequeNo(String chequeNo) {
-		this.chequeNo = chequeNo;
-	}
-
-	public String getAccountNo() {
-		return accountNo;
-	}
-
-	public void setAccountNo(String accountNo) {
-		this.accountNo = accountNo;
-	}
-
-	public String getBankName() {
-		return bankName;
-	}
-
-	public void setBankName(String bankName) {
-		this.bankName = bankName;
-	}
-
-	public String getBranch() {
-		return branch;
-	}
-
-	public void setBranch(String branch) {
-		this.branch = branch;
-	}
-
-	public Date getChequeDate() {
-		return chequeDate;
-	}
-
-	public void setChequeDate(Date chequeDate) {
-		this.chequeDate = chequeDate;
 	}
 
 	public PackageType getPackageName() {
@@ -209,7 +154,5 @@ public class DoctorSubscriptionPaymentCollection extends GenericCollection{
 	public void setReciept(String reciept) {
 		this.reciept = reciept;
 	}
-	
-	
 
 }

@@ -12,25 +12,21 @@ public class SubscriptionRequest extends GenericCollection {
 
 	private String doctorId;
 
-	private Date fromDate;
-
-	private Date toDate;
+	private String subscriptionId;
 
 	private PackageType packageName;
 
-	private Double amount;
+	private int amount = 0;
 
-	private Double discountAmount = 0.0;
+	private int discountAmount = 0;
 
 	private PaymentMode mode = PaymentMode.ONLINE;
 
-	private String countryCode;
+	private Boolean paymentStatus = Boolean.FALSE;
 
-	private Boolean isAdvertisement = Boolean.FALSE;
+	private String currency = "INR";
 
-	private Boolean isDiscarded = Boolean.FALSE;
-
-	private Boolean paymentStatus;
+	private Boolean paymentCapture = true;
 
 	public String getId() {
 		return id;
@@ -48,20 +44,12 @@ public class SubscriptionRequest extends GenericCollection {
 		this.doctorId = doctorId;
 	}
 
-	public Date getFromDate() {
-		return fromDate;
+	public String getSubscriptionId() {
+		return subscriptionId;
 	}
 
-	public void setFromDate(Date fromDate) {
-		this.fromDate = fromDate;
-	}
-
-	public Date getToDate() {
-		return toDate;
-	}
-
-	public void setToDate(Date toDate) {
-		this.toDate = toDate;
+	public void setSubscriptionId(String subscriptionId) {
+		this.subscriptionId = subscriptionId;
 	}
 
 	public PackageType getPackageName() {
@@ -72,19 +60,19 @@ public class SubscriptionRequest extends GenericCollection {
 		this.packageName = packageName;
 	}
 
-	public Double getAmount() {
+	public int getAmount() {
 		return amount;
 	}
 
-	public void setAmount(Double amount) {
+	public void setAmount(int amount) {
 		this.amount = amount;
 	}
 
-	public Double getDiscountAmount() {
+	public int getDiscountAmount() {
 		return discountAmount;
 	}
 
-	public void setDiscountAmount(Double discountAmount) {
+	public void setDiscountAmount(int discountAmount) {
 		this.discountAmount = discountAmount;
 	}
 
@@ -96,30 +84,6 @@ public class SubscriptionRequest extends GenericCollection {
 		this.mode = mode;
 	}
 
-	public String getCountryCode() {
-		return countryCode;
-	}
-
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
-	}
-
-	public Boolean getIsAdvertisement() {
-		return isAdvertisement;
-	}
-
-	public void setIsAdvertisement(Boolean isAdvertisement) {
-		this.isAdvertisement = isAdvertisement;
-	}
-
-	public Boolean getIsDiscarded() {
-		return isDiscarded;
-	}
-
-	public void setIsDiscarded(Boolean isDiscarded) {
-		this.isDiscarded = isDiscarded;
-	}
-
 	public Boolean getPaymentStatus() {
 		return paymentStatus;
 	}
@@ -128,15 +92,27 @@ public class SubscriptionRequest extends GenericCollection {
 		this.paymentStatus = paymentStatus;
 	}
 
-	@Override
-	public String toString() {
-		return "SubscriptionRequest [id=" + id + ", doctorId=" + doctorId + ", fromDate=" + fromDate + ", toDate="
-				+ toDate + ", packageName=" + packageName + ", amount=" + amount + ", discountAmount=" + discountAmount
-				+ ", mode=" + mode + ", countryCode=" + countryCode + ", isAdvertisement=" + isAdvertisement
-				+ ", isDiscarded=" + isDiscarded + ", paymentStatus=" + paymentStatus + "]";
+	public String getCurrency() {
+		return currency;
 	}
 
-	
-	
-	
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public Boolean getPaymentCapture() {
+		return paymentCapture;
+	}
+
+	public void setPaymentCapture(Boolean paymentCapture) {
+		this.paymentCapture = paymentCapture;
+	}
+
+	@Override
+	public String toString() {
+		return "SubscriptionRequest [id=" + id + ", doctorId=" + doctorId + ", packageName=" + packageName + ", amount="
+				+ amount + ", discountAmount=" + discountAmount + ", mode=" + mode + ", paymentStatus=" + paymentStatus
+				+ ", currency=" + currency + ", paymentCapture=" + paymentCapture + "]";
+	}
+
 }

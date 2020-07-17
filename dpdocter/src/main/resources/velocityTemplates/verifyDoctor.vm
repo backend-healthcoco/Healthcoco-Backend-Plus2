@@ -38,11 +38,11 @@
         <div>
             <div style="padding: 22px">
                 <p style="font-size:20px;">
-                    Greetings Dr. ${fName}
+                    Greetings ${fName}
                 </p>
  			Welcome to Healthcoco!<br><br>
          We have received a request to authorize this email address for use with Healthcoco+.
-          If you requested this verification, please click Verify Email or go to the following URL to confirm that you are authorized to use this email address..<br><br>
+          If you requested this verification, please click Verify Email to confirm that you are authorized to use this email address..<br><br>
          Kindly verify your email ID by clicking on the link below:<br>
          
           <br><br>Stay Healthy and Happy,<br>Team Healthcoco.

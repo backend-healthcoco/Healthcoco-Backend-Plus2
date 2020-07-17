@@ -29,16 +29,13 @@ public class SubscriptionCollection extends GenericCollection {
 	private PackageType packageName;
 
 	@Field
-	private Double amount;
+	private int amount = 0;
+
+	@Field
+	private int discountAmount = 0;
 
 	@Field
 	private String countryCode;
-
-	@Field
-	private String amountViaCash;
-
-	@Field
-	private String amountViaCheque;
 
 	@Field
 	private PaymentMode mode;
@@ -68,13 +65,7 @@ public class SubscriptionCollection extends GenericCollection {
 	private String emailAddress;
 
 	@Field
-	private String orderId;
-
-	@Field
-	private String reciept;
-
-	@Field
-	private Boolean paymentStatus;
+	private Boolean paymentStatus = Boolean.FALSE;
 
 	@Field
 	private String transactionStatus;
@@ -135,28 +126,20 @@ public class SubscriptionCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public String getAmountViaCash() {
-		return amountViaCash;
-	}
-
-	public void setAmountViaCash(String amountViaCash) {
-		this.amountViaCash = amountViaCash;
-	}
-
-	public String getAmountViaCheque() {
-		return amountViaCheque;
-	}
-
-	public void setAmountViaCheque(String amountViaCheque) {
-		this.amountViaCheque = amountViaCheque;
-	}
-
-	public Double getAmount() {
+	public int getAmount() {
 		return amount;
 	}
 
-	public void setAmount(Double amount) {
+	public void setAmount(int amount) {
 		this.amount = amount;
+	}
+
+	public int getDiscountAmount() {
+		return discountAmount;
+	}
+
+	public void setDiscountAmount(int discountAmount) {
+		this.discountAmount = discountAmount;
 	}
 
 	public PaymentMode getMode() {
@@ -223,22 +206,6 @@ public class SubscriptionCollection extends GenericCollection {
 		this.emailAddress = emailAddress;
 	}
 
-	public String getOrderId() {
-		return orderId;
-	}
-
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
-	}
-
-	public String getReciept() {
-		return reciept;
-	}
-
-	public void setReciept(String reciept) {
-		this.reciept = reciept;
-	}
-
 	public Boolean getPaymentStatus() {
 		return paymentStatus;
 	}
@@ -258,10 +225,11 @@ public class SubscriptionCollection extends GenericCollection {
 	@Override
 	public String toString() {
 		return "SubscriptionCollection [id=" + id + ", doctorId=" + doctorId + ", fromDate=" + fromDate + ", toDate="
-				+ toDate + ", packageName=" + packageName + ", amount=" + amount + ", countryCode=" + countryCode
-				+ ", amountViaCash=" + amountViaCash + ", amountViaCheque=" + amountViaCheque + ", mode=" + mode
-				+ ", bankName=" + bankName + ", chequeNo=" + chequeNo + ", branch=" + branch + ", chequeDate="
-				+ chequeDate + ", isAdvertisement=" + isAdvertisement + ", discarded=" + discarded + "]";
+				+ toDate + ", packageName=" + packageName + ", amount=" + amount + ", discountAmount=" + discountAmount
+				+ ", countryCode=" + countryCode + ", mode=" + mode + ", bankName=" + bankName + ", chequeNo="
+				+ chequeNo + ", branch=" + branch + ", chequeDate=" + chequeDate + ", isAdvertisement="
+				+ isAdvertisement + ", discarded=" + discarded + ", mobileNumber=" + mobileNumber + ", emailAddress="
+				+ emailAddress + ", paymentStatus=" + paymentStatus + ", transactionStatus=" + transactionStatus + "]";
 	}
 
 }

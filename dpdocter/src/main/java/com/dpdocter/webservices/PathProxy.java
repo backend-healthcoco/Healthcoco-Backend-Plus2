@@ -923,6 +923,8 @@ public interface PathProxy {
 		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String UPLOAD_FILE = "/upload/file/";
+		
+		public static final String UPLOAD_SIGNATURE = "/upload/signature/";
 
 	}
 
@@ -2401,6 +2403,8 @@ public interface PathProxy {
 
 		public static final String GET_SUBSCRIPTION_BY_DOCTORID = "/doctor/{doctorId}/get";
 		
+		public static final String GET_SUBSCRIPTIONHISTORY_BY_DOCTORID = "/doctor/history/{doctorId}/get";
+
 		public static final String GET_PACKAGES_BY_NAME = "/package/get";
 
 		public static final String CREATE_PAYMENT = "/payment/create";
@@ -2426,15 +2430,17 @@ public interface PathProxy {
 		public static final String GET_UNANSWERED_QUESTIONS = "/getUnansweredQue/{doctorId}";
 	}
 
+
 	public static final String ONLINE_CONSULTATION_ANALYTICS_BASE_URL = BASE_URL + "/onlineConsultation";
 	public interface OnlineConsultationAnalyticsUrls{
 		
 
 		public static final String ONLINE_CONSULTATION_ANALYTICS = "/analytics/get";
 		
-		
+	
 		
 				
 	}
+
 
 }

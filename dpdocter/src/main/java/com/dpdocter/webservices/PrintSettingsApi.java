@@ -191,4 +191,19 @@ public class PrintSettingsApi {
 		response.setData(file);
 		return response;
 	}
+	
+	@Path(value = PathProxy.PrintSettingsUrls.UPLOAD_SIGNATURE)
+	@POST
+	@ApiOperation(value = PathProxy.PrintSettingsUrls.UPLOAD_SIGNATURE, notes = PathProxy.PrintSettingsUrls.UPLOAD_SIGNATURE)
+	public Response<String> upladSignature(FileDetails fileDetails) {
+		if (DPDoctorUtils.anyStringEmpty(fileDetails.getFileEncoded())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<String> response = new Response<String>();
+		String file = printSettingsService.uploadSignature(fileDetails);
+		response.setData(file);
+		return response;
+	}
 }
