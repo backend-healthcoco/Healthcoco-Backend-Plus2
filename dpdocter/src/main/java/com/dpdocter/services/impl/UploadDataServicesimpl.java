@@ -49,6 +49,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.dpdocter.beans.Address;
+import com.dpdocter.beans.Age;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Discount;
@@ -697,7 +698,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								case "REFERREDBY": referredByIndex = i;break;
 								case "GROUPS": groupsIndex = i;break;
 								case "PATIENTNOTES": patientNotesIndex = i;break;
-								case "REGISTRATIONDATE": patientRegistrationDateIndex = i;break;
+						//		case "REGISTRATIONDATE": patientRegistrationDateIndex = i;break;
 								
 								
 								default:
@@ -776,7 +777,9 @@ public class UploadDataServicesimpl implements UploadDateService {
 										currentMonth=12+currentMonth;
 									}
 									
-									request.setDob(new DOB(currentDay, currentMonth, currentYear));
+								//	request.setDob(new DOB(currentDay, currentMonth, currentYear));
+									request.setAge(Integer.parseInt(line.get(ageIndex).replaceAll("'", "").replaceAll("\"", "")));
+
 							}
 								
 							if (emailAddressIndex != null && checkIfNotNullOrNone(line.get(emailAddressIndex).replaceAll("'", "").replaceAll("\"", "")))
@@ -855,12 +858,12 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 							//05-12-2019 14:51s
 							SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/y HH:mm");
-							String dateSTri = line.get(patientRegistrationDateIndex).replace("\"", "");
+						//	String dateSTri = line.get(patientRegistrationDateIndex).replace("\"", "");
 							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-							Date date = dateFormat.parse(dateSTri);
+					//		Date date = dateFormat.parse(dateSTri);
 							
 							
-							request.setRegistrationDate(date.getTime());
+					//		request.setRegistrationDate(date.getTime());
 							if (pNUMIndex != null && checkIfNotNullOrNone(line.get(pNUMIndex).replaceAll("'", "").replaceAll("\"", ""))) {
 								request.setPNUM(line.get(pNUMIndex).replaceAll("'", ""));
 							}
@@ -1417,7 +1420,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								locationObjectId, hospitalObjectId, line.get(pNUMIndex).replace("'", ""));
 						if (patientCollection != null) {
 
-							SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/y HH:mm");
+							SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY/MM/DD HH:mm");
 							String dateSTri = line.get(fromDateIndex).replace("'", "");
 							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 							Date fromDate = dateFormat.parse(dateSTri);
