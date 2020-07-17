@@ -1,14 +1,24 @@
 package com.dpdocter.services.impl;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.type.TypeFactory;
 import org.joda.time.DateTime;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -25,12 +35,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.AppointmentAnalyticData;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.OnlineConsultationAnalytics;
+import com.dpdocter.beans.OrderReponse;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.PaymentSettlements;
 import com.dpdocter.beans.PaymentSummary;
+import com.dpdocter.beans.SMSDeliveryReports;
 import com.dpdocter.collections.AppointmentCollection;
+import com.dpdocter.collections.BulkSmsPackageCollection;
+import com.dpdocter.collections.BulkSmsPaymentCollection;
 import com.dpdocter.collections.OnlineConsultionPaymentCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
@@ -39,6 +55,8 @@ import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.request.OrderRequest;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
@@ -46,11 +64,14 @@ import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
 import com.dpdocter.response.AppointmentBookedByCountResponse;
 import com.dpdocter.response.AppointmentDetailAnalyticResponse;
 import com.dpdocter.response.BookedAndCancelAppointmentCount;
+import com.dpdocter.response.BulkSmsPaymentResponse;
 import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.response.ScheduleAndCheckoutCount;
 import com.dpdocter.services.AppointmentAnalyticsService;
+import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
+import com.razorpay.Order;
 
 import common.util.web.DPDoctorUtils;
 
@@ -61,6 +82,15 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
+	@Value(value = "${rayzorpay.api.secret}")
+	private String secret;
+
+	@Autowired
+	private SMSServices sMSServices;
+
+	@Value(value = "${rayzorpay.api.key}")
+	private String keyId;
+	
 	Logger logger = Logger.getLogger(AppointmentAnalyticServiceImpl.class);
 
 	private Criteria getCriteria(String doctorId, String locationId, String hospitalId) {
@@ -1512,7 +1542,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("doctorId", "$doctorId")
 										
-					.append("totalAmountReceived", "$doctorData.")
+					.append("totalAmountReceived", "$totalAmountReceived")
 					.append("consultationType.consultationType", "$doctorData.consultationType.consultationType")					
 					.append("consultationType.cost", "$doctorData.consultationType.cost")
 					.append("consultationType.healthcocoCharges", "$doctorData.consultationType.healthcocoCharges")
@@ -1523,7 +1553,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			group = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("doctorId",
 							new BasicDBObject("doctorId", "$doctorId")
-									.append("totalAmountReceived", new BasicDBObject("$sum", "$totalAmountReceived"))
+									.append("totalAmountReceived", new BasicDBObject("$sum", "$transferAmount"))
 									
 									.append("consultationType", new BasicDBObject("$first", "$consultationType"))
 									.append("createdTime", new BasicDBObject("$first", "$createdTime")))));
@@ -1540,11 +1570,11 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			
 			} else {
 				aggregation = Aggregation.newAggregation( 
-						Aggregation.match(criteria),
+						Aggregation.match(criteria),project,group,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			}
-			
+			System.out.println("aggregation:"+aggregation);
 			response=mongoTemplate.aggregate(aggregation,OnlineConsultionPaymentCollection.class,PaymentSummary.class).getMappedResults();
 			
 		}
@@ -1557,4 +1587,98 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		return response;
 
 	}
+	
+	
+	@SuppressWarnings("deprecation")
+	public List<PaymentSettlements> fetchSettlement(String from,String to,int count) {
+		Order order = null;
+		List<PaymentSettlements> response = null;
+		try {
+	//		RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
+		
+			JSONObject orderRequest = new JSONObject();
+			
+			
+			
+			
+			
+//			double amount = (request.getDiscountAmount() * 100);
+//			// amount in paise
+//			orderRequest.put("amount", (int) amount);
+//			orderRequest.put("currency", request.getCurrency());
+//			orderRequest.put("receipt",  "-RCPT-"
+//					+ bulkSmsPaymentRepository.countByDoctorId(new ObjectId(request.getDoctorId()))
+//					+ generateId());
+//			orderRequest.put("payment_capture", request.getPaymentCapture());
+
+			String url="https://api.razorpay.com/v1/settlements/?count="+count+"&from="+from+"&to="+to;
+			 String authStr=keyId+":"+secret;
+			 String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			
+			con.setDoOutput(true);
+			
+
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("GET");
+			con.setRequestProperty("User-Agent",
+					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+			con.setRequestProperty("Accept-Charset", "UTF-8");
+			con.setRequestProperty("Content-Type","application/json");
+			con.setRequestProperty("Authorization", "Basic " +  authStringEnc);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			
+			  wr.flush();
+	             wr.close();
+	             con.disconnect();
+	             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	 			String inputLine;
+	 			
+	 			/* response = new StringBuffer(); */
+	 			StringBuffer output = new StringBuffer();
+	 			while ((inputLine = in.readLine()) != null) {
+
+	 				output.append(inputLine);
+	 				System.out.println("response:"+output.toString());
+	 			}
+	 			
+	 			  ObjectMapper mapper = new ObjectMapper();
+	 			  response = mapper.readValue(output.toString(), TypeFactory.collectionType(List.class, PaymentSettlements.class));
+
+	 		//	 OrderReponse list = mapper.readValue(output.toString(),OrderReponse.class);
+	 			//OrderReponse res=list.get(0); 
+ 			
+
+	//		order = rayzorpayClient.Orders.create(orderRequest);
+
+//			if (user != null) {
+//				BulkSmsPaymentCollection collection = new BulkSmsPaymentCollection();
+//				BeanUtil.map(request, collection);
+//				collection.setCreatedTime(new Date());
+//				collection.setCreatedBy(user.getTitle() + " " + user.getFirstName());
+//				collection.setOrderId(list.getId().toString());
+//				collection.setReciept(list.getReceipt().toString());
+//				collection.setTransactionStatus("PENDING");
+//				collection = bulkSmsPaymentRepository.save(collection);
+//				response = new BulkSmsPaymentResponse();
+//				BeanUtil.map(collection, response);
+//			}
+		}
+		//	catch (RazorpayException e) {
+//			// Handle Exception
+//			
+//			logger.error(e.getMessage());
+//			e.printStackTrace();
+//		}
+			catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return response;
+	}
+
 }

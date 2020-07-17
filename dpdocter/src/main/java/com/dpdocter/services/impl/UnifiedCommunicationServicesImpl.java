@@ -140,11 +140,11 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 	
 	
 	@Override
-	public Boolean twilioPushNotification() {
+	public Boolean twilioPushNotification(String serviceSID) {
 		Boolean response=false;
 		try{
 			Twilio.init(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-	        Service service = Service.updater(SERVICE_SID)
+	        Service service = Service.updater(serviceSID)
 	            .setNotificationsAddedToChannelEnabled(
 	                true)
 	            .setNotificationsAddedToChannelSound(

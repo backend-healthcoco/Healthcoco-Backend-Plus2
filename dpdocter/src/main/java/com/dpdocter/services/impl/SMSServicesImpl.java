@@ -328,6 +328,7 @@ public class SMSServicesImpl implements SMSServices {
 	private String createXMLData(Message message) {
 		String xmlData = null;
 		try {
+			System.out.println("message"+message);
 			JAXBContext jaxbContext = JAXBContext.newInstance(Message.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
