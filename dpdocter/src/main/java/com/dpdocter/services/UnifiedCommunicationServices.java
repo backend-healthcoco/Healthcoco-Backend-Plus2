@@ -12,6 +12,8 @@ public interface UnifiedCommunicationServices {
 	Boolean createpushNotification(String userId, String room, String title);
 
 	Boolean twilioPushNotification(String serviceSID);
+
+	String createChatAccessTokenTest(String userId, String pushCredentialSID, String serviceSID);
 	
 	
 

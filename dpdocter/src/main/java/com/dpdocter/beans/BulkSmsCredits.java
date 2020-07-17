@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.PaymentMode;
 
-public class BulkSmsCredits {
+public class BulkSmsCredits extends GenericCollection{
 
 
 	private Long creditBalance=0L;
