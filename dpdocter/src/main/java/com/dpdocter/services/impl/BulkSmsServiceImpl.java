@@ -586,6 +586,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 						doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
 								new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 						
+						Long creditBalance=0L;
 						BulkSmsCredits credit=new BulkSmsCredits();
 						if (doctorClinicProfileCollections != null)
 						{
@@ -595,7 +596,9 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							credit.setDoctorId(request.getDoctorId());
 							credit.setLocationId(request.getLocationId());
 							//BeanUtil.map(request,credit);
-							Long creditBalance=doctorClinicProfileCollections.getBulkSmsCredit().getCreditBalance();
+							if(doctorClinicProfileCollections.getBulkSmsCredit()!=null)
+							 creditBalance=doctorClinicProfileCollections.getBulkSmsCredit().getCreditBalance();
+							
 							doctorClinicProfileCollections.setBulkSmsCredit(credit);
 							creditBalance=creditBalance+packageCollection.getSmsCredit();
 							credit.setCreditBalance(creditBalance);
