@@ -1099,7 +1099,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						logger.warn("subscription id not found");
 						throw new BusinessException(ServiceError.NotFound, "Subscription Not found with Id");
 					}
-//					BeanUtil.map(doctorSubscriptionPaymentCollection, subscriptionCollection);
+					BeanUtil.map(request, subscriptionCollection);
 					subscriptionCollection.setUpdatedTime(new Date());
 					subscriptionCollection.setCreatedBy(subscriptionCollection.getCreatedBy());
 					subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
@@ -1114,14 +1114,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					subscriptionCollection.setFromDate(new Date());
 					subscriptionCollection.setToDate(dateAfter2Days);
 //					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12));
-					subscriptionCollection = subscriptionRepository.save(subscriptionCollection);
+					subscriptionRepository.save(subscriptionCollection);
 					// save to History
 					BeanUtil.map(subscriptionCollection, subscriptionHistoryCollection);
 					subscriptionHistoryCollection.setSubscriptionId(subscriptionCollection.getId());
 					subscriptionHistoryCollection.setDoctorId(subscriptionCollection.getDoctorId());
 					subscriptionHistoryCollection.setCreatedTime(new Date());
-					subscriptionHistoryCollection = subscriptionHistoryRepository.save(subscriptionHistoryCollection);
-					
+					subscriptionHistoryRepository.save(subscriptionHistoryCollection);
+					System.out.println(subscriptionHistoryCollection);
 					// clinic package change
 					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 							.findByDoctorId(new ObjectId(request.getDoctorId()));
@@ -1143,9 +1143,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					if (subscriptionCkD != null) {
 						BeanUtil.map(subscriptionCkD, subscriptionCollection);
 					}
+					BeanUtil.map(request, subscriptionCollection);
 					subscriptionCollection.setCreatedTime(new Date());
 					subscriptionCollection.setUpdatedTime(new Date());
-					subscriptionCollection.setCreatedBy(subscriptionCollection.getCreatedBy());
+					subscriptionCollection.setCreatedBy(userCollection.getTitle() +""+userCollection.getFirstName());
 					subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
 					subscriptionCollection.setEmailAddress(userCollection.getEmailAddress());
 					subscriptionCollection.setPackageName(doctorSubscriptionPaymentCollection.getPackageName());
@@ -1159,13 +1160,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					subscriptionCollection.setToDate(dateAfter2Days);
 //					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12));
 
-					subscriptionCollection = subscriptionRepository.save(subscriptionCollection);
+					subscriptionRepository.save(subscriptionCollection);
+					System.out.println(subscriptionCollection);
 					// save to History
 					BeanUtil.map(subscriptionCollection, subscriptionHistoryCollection);
 					subscriptionHistoryCollection.setSubscriptionId(subscriptionCollection.getId());
 					subscriptionHistoryCollection.setDoctorId(subscriptionCollection.getDoctorId());
 					subscriptionHistoryCollection.setCreatedTime(new Date());
-					subscriptionHistoryCollection = subscriptionHistoryRepository.save(subscriptionHistoryCollection);
+					subscriptionHistoryRepository.save(subscriptionHistoryCollection);
 					
 					// clinic package change
 					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
