@@ -535,7 +535,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("fName", firstName);
 		context.put("createdDate", createdDate);
 		context.put("receipt", receipt);
-		context.put("paymentMode", paymentMode);
+		context.put("totalCost", totalCost);
 		context.put("transactionId", transactionId);
 		context.put("packageName", packageName);
 		context.put("paymentMode", paymentMode);
