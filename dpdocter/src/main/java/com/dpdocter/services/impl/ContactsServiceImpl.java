@@ -1050,12 +1050,13 @@ public class ContactsServiceImpl implements ContactsService {
 			  credits=credits+1;
 			  
 			  long subCredits=credits*(mobileNumbers.size());
-			  BulkSmsHistoryCollection bulkHistoryCollection=new BulkSmsHistoryCollection();
+			//  BulkSmsHistoryCollection bulkHistoryCollection=new BulkSmsHistoryCollection();
 				DoctorClinicProfileCollection doctorClinicProfileCollections = null;
 			  doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
 						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 				BulkSmsCredits bulk=doctorClinicProfileCollections.getBulkSmsCredit();
-			  if(doctorClinicProfileCollections!=null) { 
+			  if(doctorClinicProfileCollections!=null && bulk!=null) { 
+				  
 				  if(bulk.getCreditBalance() > subCredits || bulk.getCreditBalance() == subCredits) {
 			  bulk.setCreditBalance(bulk.getCreditBalance()-subCredits);
 			  bulk.setCreditSpent(bulk.getCreditSpent()+subCredits);
@@ -1063,8 +1064,8 @@ public class ContactsServiceImpl implements ContactsService {
 				  else { 
 					  throw new BusinessException(ServiceError.Unknown, "You have Unsufficient Balance"); 
 			  }
-			  BeanUtil.map(bulk, bulkHistoryCollection);
-			  bulkSmsHistoryRepository.save(bulkHistoryCollection);
+			//  BeanUtil.map(bulk, bulkHistoryCollection);
+			//  bulkSmsHistoryRepository.save(bulkHistoryCollection);
 			  }
 			  doctorClinicProfileCollections.setBulkSmsCredit(bulk);
 			  doctorClinicProfileRepository.save(doctorClinicProfileCollections);

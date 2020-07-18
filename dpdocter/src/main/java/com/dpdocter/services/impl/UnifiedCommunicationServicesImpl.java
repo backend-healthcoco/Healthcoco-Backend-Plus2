@@ -97,6 +97,50 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 		return response;
 	}
 
+	
+	@Override
+	public String createChatAccessTokenTest(String userId,String pushCredentialSID,String serviceSID) {
+		String response = null;
+		UnifiedCommunicationDetailsCollection unifiedCommunicationDetailsCollection = null;
+		try {
+//			List<UnifiedCommunicationDetailsCollection> unifiedCommunicationDetailsCollections = unifiedCommunicationDetailsRepository.findByUserIdAndTypeAndIsExpired(
+//					new ObjectId(userId), ConsultationType.CHAT.getType(), false);
+//			if(unifiedCommunicationDetailsCollections != null && !unifiedCommunicationDetailsCollections.isEmpty()) {
+//				for(UnifiedCommunicationDetailsCollection coll : unifiedCommunicationDetailsCollections) {
+//					if(isExpired(coll.getCreatedTime(), TWILIO_CHAT_TTL)) {
+//						coll.setIsExpired(true);
+//						coll.setUpdatedTime(new Date());
+//						unifiedCommunicationDetailsRepository.save(coll);
+//					}else {
+//						unifiedCommunicationDetailsCollection = coll;
+//					}
+//				}
+//			}
+//		    if(unifiedCommunicationDetailsCollection == null) {
+			ChatGrant grant = new ChatGrant();
+			grant.setServiceSid(serviceSID);
+			grant.setPushCredentialSid(pushCredentialSID);
+
+			AccessToken token = new AccessToken.Builder(TWILIO_ACCOUNT_SID, TWILIO_API_KEY, TWILIO_API_SECRET)
+					.identity(userId).grant(grant).ttl(TWILIO_CHAT_TTL).build();
+
+			unifiedCommunicationDetailsCollection = new UnifiedCommunicationDetailsCollection(ConsultationType.CHAT,
+					new ObjectId(userId), TWILIO_CHAT_TTL, false, token.toJwt());
+
+			unifiedCommunicationDetailsCollection = unifiedCommunicationDetailsRepository
+					.save(unifiedCommunicationDetailsCollection);
+			response = unifiedCommunicationDetailsCollection.getToken();
+//		    }
+		} catch (Exception e) {
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	
+	
+	
 	@Override
 	public String createVideoAccessToken(String userId, String room) {
 		String response = null;

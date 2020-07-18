@@ -84,7 +84,18 @@ public class UnifiedCommunicationApi {
 
 	}
 	
-	
+	@Path(value = PathProxy.ChatUrls.CREATE_CHAT_ACCESS_TOKEN_TEST)
+	@GET
+	@ApiOperation(value = PathProxy.ChatUrls.CREATE_CHAT_ACCESS_TOKEN_TEST, notes = PathProxy.ChatUrls.CREATE_CHAT_ACCESS_TOKEN_TEST)
+	public Response<String> createChatAccessToken(@PathParam("userId") String userId,@QueryParam(value = "pushCredentialSID")String pushCredentialSID,
+			@QueryParam(value = "serviceSID")String serviceSID)
+			throws MessagingException {
+	    
+		Response<String> response = new Response<String>();
+		response.setData(unifiedCommunicationServices.createChatAccessTokenTest(userId, pushCredentialSID, serviceSID));
+		return response;
+
+	}
 	
 
 	

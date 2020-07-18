@@ -1708,6 +1708,10 @@ public interface PathProxy {
 		public static final String GET_BOOKED_BY_APPOINTMENT_ANALYTIC = "appointment/bookedby/{locationId}/{hospitalId}";
 
 		public static final String ONLINE_CONSULTATION_ANALYTICS = "/onlineConsultation/analytics/get";
+		
+		public static final String PAYMENT_SUMMARY = "/paymentSummary/get";
+		
+		public static final String FETCH_SETTLEMENT = "/settlement/get";
 	
 	}
 
@@ -2385,6 +2389,8 @@ public interface PathProxy {
 	public interface ChatUrls {
 
 		public static final String CREATE_CHAT_ACCESS_TOKEN = "/chat/accessToken/create/{userId}";
+		
+		public static final String CREATE_CHAT_ACCESS_TOKEN_TEST = "/chat/accessTokenTest/create/{userId}";
 
 		public static final String CREATE_VIDEO_ACCESS_TOKEN = "/video/accessToken/create/{userId}/{room}";
 

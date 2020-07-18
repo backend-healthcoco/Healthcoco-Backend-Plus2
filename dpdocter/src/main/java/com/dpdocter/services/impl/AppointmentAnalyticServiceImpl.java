@@ -1590,6 +1590,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	
 	
 	@SuppressWarnings("deprecation")
+	@Override
 	public List<PaymentSettlements> fetchSettlement(String from,String to,int count) {
 		Order order = null;
 		List<PaymentSettlements> response = null;

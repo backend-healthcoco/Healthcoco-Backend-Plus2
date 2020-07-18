@@ -601,6 +601,8 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							credit.setCreditBalance(creditBalance);
 							doctorClinicProfileCollections.getBulkSmsCredit().setCreditBalance(creditBalance);
 							BeanUtil.map(credit, history);
+							history.setCreatedTime(new Date());
+							history.setUpdatedTime(new Date());
 							bulkSmsHistoryRepository.save(history);
 //							doctorClinicProfileCollections.getBulkSmsCredit().setDoctorId(request.getDoctorId());
 //							doctorClinicProfileCollections.getBulkSmsCredit().setLocationId(request.getLocationId());
@@ -642,7 +644,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		
 							sms.setSmsText("Hi " + doctor.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(onlinePaymentCollection.getCreatedTime())
-							+ " by "+onlinePaymentCollection.getMode()+" and your transactionId is"+onlinePaymentCollection.getTransactionId()+" for the receipt "+onlinePaymentCollection.getReciept()
+							+ " by "+onlinePaymentCollection.getMode()+" and your transactionId is"+onlinePaymentCollection.getTransactionId()+" for the bulk sms package "+bulkPackage.getPackageName()
 							+" and the total cost is "+ onlinePaymentCollection.getDiscountAmount() + ".");
 	
 								SMSAddress smsAddress = new SMSAddress();
