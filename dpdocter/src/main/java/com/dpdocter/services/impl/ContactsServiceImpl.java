@@ -1055,7 +1055,8 @@ public class ContactsServiceImpl implements ContactsService {
 			  doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
 						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 				BulkSmsCredits bulk=doctorClinicProfileCollections.getBulkSmsCredit();
-			  if(doctorClinicProfileCollections!=null) { 
+			  if(doctorClinicProfileCollections!=null && bulk!=null) { 
+				  
 				  if(bulk.getCreditBalance() > subCredits || bulk.getCreditBalance() == subCredits) {
 			  bulk.setCreditBalance(bulk.getCreditBalance()-subCredits);
 			  bulk.setCreditSpent(bulk.getCreditSpent()+subCredits);

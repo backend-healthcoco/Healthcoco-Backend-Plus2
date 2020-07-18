@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.AppointmentAnalyticData;
 import com.dpdocter.beans.OnlineConsultationAnalytics;
+import com.dpdocter.beans.PaymentSettlements;
 import com.dpdocter.beans.PaymentSummary;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
@@ -58,4 +59,6 @@ public interface AppointmentAnalyticsService {
 
 	
 	List<PaymentSummary> getPaymentSummary(String fromDate,String toDate,String doctorId,int page,int size );
+
+	List<PaymentSettlements> fetchSettlement(String from, String to, int count);
 }

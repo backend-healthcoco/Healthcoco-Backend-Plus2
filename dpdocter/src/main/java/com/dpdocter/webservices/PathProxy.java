@@ -1708,6 +1708,10 @@ public interface PathProxy {
 		public static final String GET_BOOKED_BY_APPOINTMENT_ANALYTIC = "appointment/bookedby/{locationId}/{hospitalId}";
 
 		public static final String ONLINE_CONSULTATION_ANALYTICS = "/onlineConsultation/analytics/get";
+		
+		public static final String PAYMENT_SUMMARY = "/paymentSummary/get";
+		
+		public static final String FETCH_SETTLEMENT = "/settlement/get";
 	
 	}
 

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dpdocter.beans.AppointmentAnalyticData;
 import com.dpdocter.beans.OnlineConsultationAnalytics;
 import com.dpdocter.beans.PatientAnalyticData;
+import com.dpdocter.beans.PaymentSettlements;
+import com.dpdocter.beans.PaymentSummary;
 import com.dpdocter.beans.PrescriptionAnalyticDetail;
 import com.dpdocter.beans.TreatmentAnalyticDetail;
 import com.dpdocter.beans.TreatmentService;
@@ -816,6 +818,35 @@ public class AnalyticsAPI {
 
 		Response<OnlineConsultationAnalytics> response =new Response<OnlineConsultationAnalytics>();
 		response.setData(appointmentAnalyticsService.getConsultationAnalytics(fromDate, toDate, doctorId, locationId, type));
+		return response;
+		
+		
+	}
+	
+	@Path(value = PathProxy.AnalyticsUrls.PAYMENT_SUMMARY)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.PAYMENT_SUMMARY, notes = PathProxy.AnalyticsUrls.PAYMENT_SUMMARY)
+	public Response<PaymentSummary> getPaymentSummary(@QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "type") String type,
+			@QueryParam(value = "fromDate") String fromDate, @QueryParam(value = "toDate") String toDate,
+			 @QueryParam(value = "size") int size,@QueryParam(value = "page") int page ) {
+
+		Response<PaymentSummary> response =new Response<PaymentSummary>();
+		response.setDataList(appointmentAnalyticsService.getPaymentSummary(fromDate, toDate, doctorId, page,size));
+		return response;
+		
+		
+	}
+	
+	@Path(value = PathProxy.AnalyticsUrls.FETCH_SETTLEMENT)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.FETCH_SETTLEMENT, notes = PathProxy.AnalyticsUrls.FETCH_SETTLEMENT)
+	public Response<PaymentSettlements> getSettlements(
+			@QueryParam(value = "fromDate") String fromDate, @QueryParam(value = "toDate") String toDate,
+			 @QueryParam(value = "count") int count) {
+
+		Response<PaymentSettlements> response =new Response<PaymentSettlements>();
+		response.setDataList(appointmentAnalyticsService.fetchSettlement(fromDate, toDate, count));
 		return response;
 		
 		
