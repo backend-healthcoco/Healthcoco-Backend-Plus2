@@ -915,9 +915,7 @@ public class SMSServicesImpl implements SMSServices {
 				smsTrackDetail.setType("BULK_SMS");
 				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
 				smsTrackDetail.setLocationId(new ObjectId(locationId));
-				SMSDetail smsDetail = new SMSDetail();
-				SMS sms = new SMS();
-				SMSAddress smsAddress = new SMSAddress();
+				
 				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 
 			
@@ -928,7 +926,7 @@ public class SMSServicesImpl implements SMSServices {
 		    message = StringEscapeUtils.unescapeJava(message);
 			//String	messages=UriUtils.encode(message, "UTF-8");
 		    List<XMLMobile> numberlists=new ArrayList<XMLMobile>();
-		    XMLMobile mobile1=null;
+		   
 //		    XMLMobile mobile2=new XMLMobile();
 //		    
 //		    
@@ -936,29 +934,33 @@ public class SMSServicesImpl implements SMSServices {
 //		    mobile2.setMobileNumber("7219653706");
 //		    numberlists.add(mobile1);
 //		    numberlists.add(mobile2);
+		    
+		   
+		    
 		    for(String mobiles:mobileNumbers) {
 		    	
-		    	sms.setSmsText(message);
-				
-				smsAddress.setRecipient(mobiles);
-				
-				sms.setSmsAddress(smsAddress);
-				smsDetail.setSms(sms);
-				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-				smsDetails.add(smsDetail);
-		    	
+		    	// sms.setSmsText(message);
+					
+					//smsAddress.setRecipient(mobiles);
+					
+				    
+				//	sms.setSmsAddress(new SMSAddress(mobiles));
+					
+					smsDetails.add(new SMSDetail(new SMS(message, new SMSAddress(mobiles)), SMSStatus.IN_PROGRESS));
 		     //mobile1.setMobileNumber(mobiles);
 		     numberlists.add(new XMLMobile(mobiles));
-		    
+		     
 		    }
 		   
-		    smsTrackDetail.setSmsDetails(smsDetails);
-		   
+		   // smsDetail.setSms(sms);
+			//smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+		
+		smsTrackDetail.setSmsDetails(smsDetails);
 		    MessageXmlbean xmlBean=new MessageXmlbean(AUTH_KEY,new XmlMessage(message,(numberlists)),SENDER_ID,PROMOTIONAL_ROUTE,COUNTRY_CODE,UNICODE);
 		   // marshallerObj.marshal(xmlBean, os);
 
 			
-			String url = null;
+			
 			String strUrl = "http://dndsms.resellergrow.com/api/postsms.php";
 			
 			
@@ -1012,6 +1014,8 @@ public class SMSServicesImpl implements SMSServices {
 				System.out.println("response:"+response.toString());
 			}
 			smsTrackDetail.setResponseId(response.toString());
+			smsTrackDetail.setCreatedTime(new Date());
+			smsTrackDetail.setUpdatedTime(new Date());
 			smsTrackRepository.save(smsTrackDetail);
 			in.close();
 		} catch (Exception e) {

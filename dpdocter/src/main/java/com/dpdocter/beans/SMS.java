@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -13,8 +15,22 @@ public class SMS {
     private String smsText;
 
     private SMSAddress smsAddress;
+    
+    
+    
+    
 
-    @JsonProperty("smsText")
+    public SMS() {
+		super();
+	}
+
+	public SMS(String smsText, SMSAddress smsAddress) {
+		super();
+		this.smsText = smsText;
+		this.smsAddress = smsAddress;
+	}
+
+	@JsonProperty("smsText")
     public String getSmsText() {
 	return smsText;
     }
@@ -35,8 +51,10 @@ public class SMS {
     public void setSmsAddress(SMSAddress smsAddress) {
 	this.smsAddress = smsAddress;
     }
+    
+   
 
-    @Override
+	@Override
     public String toString() {
 	return "SMS [smsText=" + smsText + ", smsAddress=" + smsAddress + "]";
     }
