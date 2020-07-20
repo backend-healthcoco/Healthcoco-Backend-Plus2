@@ -77,4 +77,8 @@ public interface MailBodyGenerator {
 	
 	public String generateFreeQuestionAnswerEmailBody(String emailAddress, String name,String locationName,String templatePath,
 			String doctorName);
+
+	String subscriptionPaymentEmailBody(String firstName, String createdDate, String transactionId, String receipt,
+			String totalCost, String packageName, String paymentMode, String duration, String templatePath)
+			throws Exception;
 }

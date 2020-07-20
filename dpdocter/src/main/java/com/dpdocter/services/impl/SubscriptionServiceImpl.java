@@ -1213,9 +1213,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						smsServices.sendSMS(smsTrackDetail, false);
 						System.out.println("sms sent");
 
-						String body = "Hi " + userCollection.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(doctorSubscriptionPaymentCollection.getCreatedTime())
-						+ " by "+doctorSubscriptionPaymentCollection.getMode()+" and your transactionId is"+doctorSubscriptionPaymentCollection.getTransactionId()+" for the receipt "+doctorSubscriptionPaymentCollection.getReciept()
-						+" and the total cost is "+ doctorSubscriptionPaymentCollection.getAmount() + "for package you"+  doctorSubscriptionPaymentCollection.getPackageName()+ ".";
+						String body = mailBodyGenerator.subscriptionPaymentEmailBody(userCollection.getFirstName(),doctorSubscriptionPaymentCollection.getCreatedTime().toString(),
+								doctorSubscriptionPaymentCollection.getTransactionId(),doctorSubscriptionPaymentCollection.getReciept(),Integer.toString(doctorSubscriptionPaymentCollection.getAmount()),
+								doctorSubscriptionPaymentCollection.getPackageName().toString(),doctorSubscriptionPaymentCollection.getMode().toString(),"1 Year","subscriptionPayment.vm");
+				Boolean mail=	mailService.sendEmail(userCollection.getEmailAddress(),"Healthcoco+ Subscription Payment Received", body, null);
+
 						try {
 							Boolean ckM = mailService.sendEmail(userCollection.getEmailAddress(), "About payment", body,
 									null);
