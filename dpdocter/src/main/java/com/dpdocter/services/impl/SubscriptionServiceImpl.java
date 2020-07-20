@@ -1059,11 +1059,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 		// for set two days
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, +2); // get date after i days from today
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
-		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
+//		cal.add(Calendar.DATE, +2); // get date after i days from today
+//		cal.set(Calendar.HOUR_OF_DAY, 0);
+//		cal.set(Calendar.MINUTE, 0);
+//		cal.set(Calendar.SECOND, 0);
+//		cal.set(Calendar.MILLISECOND, 0);
 		Date dateAfter2Days = cal.getTime();
 
 		try {
