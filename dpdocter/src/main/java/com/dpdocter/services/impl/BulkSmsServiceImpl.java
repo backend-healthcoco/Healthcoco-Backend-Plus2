@@ -700,7 +700,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 		try {
 
 			List<DoctorCollection> doctorExperiences = doctorRepository.findAll();
-
+			BulkSmsHistoryCollection history=new BulkSmsHistoryCollection();
 			for (DoctorCollection doctorEperience : doctorExperiences) {
 					
 				doctorCollection = doctorRepository.findByUserId(doctorEperience.getUserId());
@@ -726,9 +726,18 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 												
 												messageLength =smsDetail.getSms().getSmsText().length();
 												  long credits=(messageLength/totalLength);
+												  long temp=messageLength%totalLength;
+												  if(credits==0 || temp!=0) 
+												  credits=credits+1;
+												  
 												  long subCredits=credits*(smsTrackDetail.getSmsDetails().size());
 												  doctorCollection.getBulkSmsCredit().setCreditBalance(subCredits);
+												  BeanUtil.map(doctorCollection.getBulkSmsCredit(),history);
+												  history.setCreatedTime(new Date());
+												  history.setUpdatedTime(new Date());
+												  history.setNote("credit refunded");
 												  doctorRepository.save(doctorCollection);
+												  bulkSmsHistoryRepository.save(history);
 											}
 										}
 									}
