@@ -60,5 +60,6 @@ public interface AppointmentAnalyticsService {
 	
 	List<PaymentSummary> getPaymentSummary(String fromDate,String toDate,String doctorId,int page,int size );
 
-	List<PaymentSettlements> fetchSettlement(String from, String to, int count);
+
+	List<PaymentSettlements> fetchSettlement(String from, int count);
 }

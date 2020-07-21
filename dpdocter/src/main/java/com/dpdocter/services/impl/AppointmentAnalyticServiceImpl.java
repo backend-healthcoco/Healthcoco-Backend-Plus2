@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -1480,13 +1481,14 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
 					new Criteria("state").is(AppointmentState.NEW.toString()));
 
-			Criteria criteria2=criteria;
+		//	Criteria criteria2=new Criteria();
+			
 			
 			response.setTotalOnlineConsultation(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 			criteria.and("consultationType").is(ConsultationType.VIDEO.toString());
 			response.setTotalVideoConsultation(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
-			criteria2.and("consultationType").is(ConsultationType.CHAT.toString());
-			response.setTotalChatConsultation(mongoTemplate.count(new Query(criteria2),AppointmentCollection.class));
+			//criteria2.and("consultationType").is(ConsultationType.CHAT.toString());
+			//response.setTotalChatConsultation(mongoTemplate.count(new Query(criteria2),AppointmentCollection.class));
 			
 		}catch (BusinessException e) {
 			logger.error("Error while getting online Consultation Analytics " + e.getMessage());
@@ -1589,18 +1591,18 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	}
 	
 	
-	@SuppressWarnings("deprecation")
+	
 	@Override
-	public List<PaymentSettlements> fetchSettlement(String from,String to,int count) {
-		Order order = null;
+	public List<PaymentSettlements> fetchSettlement(String from,int count) {
+		
 		List<PaymentSettlements> response = null;
 		try {
 	//		RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
 		
 			JSONObject orderRequest = new JSONObject();
 			
-			
-			
+			System.out.println("from"+from);
+		//	Integer fromTime = Integer.parseInt(from);
 			
 			
 //			double amount = (request.getDiscountAmount() * 100);
@@ -1612,7 +1614,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 //					+ generateId());
 //			orderRequest.put("payment_capture", request.getPaymentCapture());
 
-			String url="https://api.razorpay.com/v1/settlements/?count="+count+"&from="+from+"&to="+to;
+			String url="https://api.razorpay.com/v1/settlements/?count="+count+"&from="+from;
 			 String authStr=keyId+":"+secret;
 			 String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
 			URL obj = new URL(url);
@@ -1625,9 +1627,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			con.setDoInput(true);
 			// optional default is POST
 			con.setRequestMethod("GET");
-			con.setRequestProperty("User-Agent",
-					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
-			con.setRequestProperty("Accept-Charset", "UTF-8");
+//			con.setRequestProperty("User-Agent",
+//					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+//			con.setRequestProperty("Accept-Charset", "UTF-8");
 			con.setRequestProperty("Content-Type","application/json");
 			con.setRequestProperty("Authorization", "Basic " +  authStringEnc);
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
@@ -1636,19 +1638,20 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			  wr.flush();
 	             wr.close();
 	             con.disconnect();
-	             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-	 			String inputLine;
-	 			
-	 			/* response = new StringBuffer(); */
-	 			StringBuffer output = new StringBuffer();
-	 			while ((inputLine = in.readLine()) != null) {
+	           //  BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	             InputStream in=con.getInputStream();
+	             StringBuffer output = new StringBuffer();
+	 			int c = 0;
+	 			while ((c=in.read()) !=-1) {
 
-	 				output.append(inputLine);
-	 				System.out.println("response:"+output.toString());
+	 				output.append((char) c);
+	 				
 	 			}
+	 			System.out.println("response:"+output.toString());
 	 			
 	 			  ObjectMapper mapper = new ObjectMapper();
-	 			  response = mapper.readValue(output.toString(), TypeFactory.collectionType(List.class, PaymentSettlements.class));
+	 			 PaymentSettlements payment=null;
+	 			  payment = mapper.readValue(output.toString(), PaymentSettlements.class);
 
 	 		//	 OrderReponse list = mapper.readValue(output.toString(),OrderReponse.class);
 	 			//OrderReponse res=list.get(0); 
