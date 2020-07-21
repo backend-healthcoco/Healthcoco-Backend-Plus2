@@ -108,7 +108,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 	private BulkSmsPaymentRepository bulkSmsPaymentRepository;
 	
 	@Autowired
-	private DoctorClinicProfileRepository doctorClinicProfileRepository;
+	private DoctorRepository doctorRepository;
 	
 	@Autowired
 	private SMSTrackRepository smsTrackRepository;
@@ -582,9 +582,9 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 						
 						
 						System.out.println("credits:"+packageCollection.getSmsCredit());
-						DoctorClinicProfileCollection doctorClinicProfileCollections = null;
-						doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
-								new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
+						DoctorCollection doctorClinicProfileCollections = null;
+						doctorClinicProfileCollections = doctorRepository.findByUserId(
+								new ObjectId(request.getDoctorId()));
 						
 						Long creditBalance=0L;
 						BulkSmsCredits credit=new BulkSmsCredits();
@@ -614,7 +614,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 //							doctorClinicProfileCollections.getBulkSmsCredit().setPaymentMode(request.getMode());
 //							doctorClinicProfileCollections.getBulkSmsCredit().setSmsPackage(bulkPackage);
 							doctorClinicProfileCollections.setUpdatedTime(new Date());
-							doctorClinicProfileRepository.save(doctorClinicProfileCollections);
+							doctorRepository.save(doctorClinicProfileCollections);
 							
 						
 						}
@@ -638,6 +638,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 						 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 							
 							smsTrackDetail.setType(ComponentType.ONLINE_PAYMENT.getType());
+							smsTrackDetail.setDoctorId(doctor.getId());
 							SMSDetail smsDetail = new SMSDetail();
 							
 						
@@ -658,9 +659,9 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 							smsDetails.add(smsDetail);
 							smsTrackDetail.setSmsDetails(smsDetails);
-							sMSServices.sendSMS(smsTrackDetail, false);
+					Boolean res=sMSServices.sendSMS(smsTrackDetail, true);
 							
-						System.out.println("sms sent");
+						System.out.println("sms sent"+res);
 						
 						
 						
@@ -693,16 +694,16 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 	public
 	Boolean bulkSmsCreditCheck()
 	{
-		DoctorClinicProfileCollection doctorCollection = null;
+		DoctorCollection doctorCollection = null;
 		Boolean response = false;
 
 		try {
 
-			List<DoctorClinicProfileCollection> doctorExperiences = doctorClinicProfileRepository.findAll();
+			List<DoctorCollection> doctorExperiences = doctorRepository.findAll();
 
-			for (DoctorClinicProfileCollection doctorEperience : doctorExperiences) {
+			for (DoctorCollection doctorEperience : doctorExperiences) {
 					
-				doctorCollection = doctorClinicProfileRepository.findByDoctorIdAndLocationId(doctorEperience.getDoctorId(), doctorEperience.getLocationId());
+				doctorCollection = doctorRepository.findByUserId(doctorEperience.getUserId());
 				 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				 Date date=new Date();
 				 Integer totalLength=160; 
@@ -710,7 +711,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 				if (doctorCollection != null) 
 					if(doctorCollection.getBulkSmsCredit()!=null) {
 						
-						smsTrackDetail=smsTrackRepository.findByDoctorIdAndLocationIdAndCreatedTime(doctorEperience.getDoctorId(), doctorEperience.getLocationId(),date);
+						smsTrackDetail=smsTrackRepository.findByDoctorIdAndCreatedTime(doctorEperience.getUserId(),date);
 						
 					if(smsTrackDetail !=null)
 					{
@@ -727,7 +728,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 												  long credits=(messageLength/totalLength);
 												  long subCredits=credits*(smsTrackDetail.getSmsDetails().size());
 												  doctorCollection.getBulkSmsCredit().setCreditBalance(subCredits);
-												  doctorClinicProfileRepository.save(doctorCollection);
+												  doctorRepository.save(doctorCollection);
 											}
 										}
 									}

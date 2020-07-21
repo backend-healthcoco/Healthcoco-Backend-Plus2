@@ -36,6 +36,8 @@ public interface SMSTrackRepository extends MongoRepository<SMSTrackDetail, Obje
 
 	SMSTrackDetail findByResponseId(String responseId);
 
-	SMSTrackDetail findByDoctorIdAndLocationIdAndCreatedTime(ObjectId doctorId, ObjectId locationId,Date date);
+	//SMSTrackDetail findByDoctorIdAndLocationIdAndCreatedTime(ObjectId doctorId, ObjectId locationId,Date date);
+
+	SMSTrackDetail findByDoctorIdAndCreatedTime(ObjectId userId, Date date);
 
 }

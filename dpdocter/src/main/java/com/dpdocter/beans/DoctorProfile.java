@@ -101,7 +101,7 @@ public class DoctorProfile extends GenericCollection {
 
 	private Subscription subscriptionDetail;
 
-	
+	private BulkSmsCredits bulkSmsCredit;
 	//private Map<DoctorConsultation, String> onlineConsultationFees;
 	
 //	private List<DoctorConsultation> consultationType;
@@ -468,6 +468,14 @@ public class DoctorProfile extends GenericCollection {
 
 	public void setSubscriptionDetail(Subscription subscriptionDetail) {
 		this.subscriptionDetail = subscriptionDetail;
+	}
+	
+	public BulkSmsCredits getBulkSmsCredit() {
+		return bulkSmsCredit;
+	}
+
+	public void setBulkSmsCredit(BulkSmsCredits bulkSmsCredit) {
+		this.bulkSmsCredit = bulkSmsCredit;
 	}
 
 	@Override
