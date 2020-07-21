@@ -1045,9 +1045,16 @@ public class ContactsServiceImpl implements ContactsService {
 			
 			  Integer totalLength=160; 
 			  Integer messageLength=message.length();
+			  System.out.println("messageLength:"+messageLength);
 			  long credits=(messageLength/totalLength);
-			  if(credits==0)
+			  
+			  long temp=messageLength%totalLength;
+			  if(credits==0 || temp!=0) 
 			  credits=credits+1;
+			  
+			 System.out.println("credits:"+credits);
+			 
+			  
 			  
 			  long subCredits=credits*(mobileNumbers.size());
 			//  BulkSmsHistoryCollection bulkHistoryCollection=new BulkSmsHistoryCollection();
