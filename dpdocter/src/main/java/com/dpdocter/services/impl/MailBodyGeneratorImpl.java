@@ -529,7 +529,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	@Transactional
 	public String subscriptionPaymentEmailBody(String firstName, 
 			String createdDate,String transactionId,String receipt,String totalCost,
-			String packageName,String paymentMode,String duration,String templatePath) {
+			String packageName,String paymentMode,int duration,String templatePath) {
 
 		VelocityContext context = new VelocityContext();
 		context.put("fName", firstName);

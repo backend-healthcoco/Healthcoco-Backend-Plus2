@@ -79,6 +79,6 @@ public interface MailBodyGenerator {
 			String doctorName);
 
 	String subscriptionPaymentEmailBody(String firstName, String createdDate, String transactionId, String receipt,
-			String totalCost, String packageName, String paymentMode, String duration, String templatePath)
+			String totalCost, String packageName, String paymentMode, int duration, String templatePath)
 			throws Exception;
 }

@@ -1113,7 +1113,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 							.setTransactionStatus(doctorSubscriptionPaymentCollection.getTransactionStatus());
 					subscriptionCollection.setFromDate(new Date());
 					subscriptionCollection.setToDate(dateAfter2Days);
-//					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12));
+//					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12*request.getDuration()));
 					subscriptionRepository.save(subscriptionCollection);
 							 
 					// save to History
@@ -1159,7 +1159,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 							.setTransactionStatus(doctorSubscriptionPaymentCollection.getTransactionStatus());
 					subscriptionCollection.setFromDate(new Date());
 					subscriptionCollection.setToDate(dateAfter2Days);
-//					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12));
+//					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12*request.getDuration()));
 
 					subscriptionRepository.save(subscriptionCollection);
 					System.out.println(subscriptionCollection);
