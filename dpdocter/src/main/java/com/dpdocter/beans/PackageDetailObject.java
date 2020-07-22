@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import com.dpdocter.enums.PackageType;
 
 public class PackageDetailObject {
@@ -8,17 +10,13 @@ public class PackageDetailObject {
 
 	private PackageType packageName;
 
-	private Discount discount;
+	private List<PackageAmountObject> packageAmount;
 
-	private Double amount = 0.0;
-	
-	private String duration;
-	
 	private String advantages;
-	
+
 	private String noOfSms;
 
-	private Boolean isDiscarded=Boolean.FALSE;
+	private Boolean isDiscarded = Boolean.FALSE;
 
 	public String getId() {
 		return id;
@@ -36,28 +34,13 @@ public class PackageDetailObject {
 		this.packageName = packageName;
 	}
 
-	public Discount getDiscount() {
-		return discount;
+	
+	public List<PackageAmountObject> getPackageAmount() {
+		return packageAmount;
 	}
 
-	public void setDiscount(Discount discount) {
-		this.discount = discount;
-	}
-
-	public Double getAmount() {
-		return amount;
-	}
-
-	public void setAmount(Double amount) {
-		this.amount = amount;
-	}
-
-	public String getDuration() {
-		return duration;
-	}
-
-	public void setDuration(String duration) {
-		this.duration = duration;
+	public void setPackageAmount(List<PackageAmountObject> packageAmount) {
+		this.packageAmount = packageAmount;
 	}
 
 	public String getAdvantages() {
@@ -84,11 +67,6 @@ public class PackageDetailObject {
 		this.isDiscarded = isDiscarded;
 	}
 
-	@Override
-	public String toString() {
-		return "PackageDetailObject [id=" + id + ", packageName=" + packageName + ", discount=" + discount + ", amount="
-				+ amount + ", duration=" + duration + ", advantages=" + advantages + ", noOfSms=" + noOfSms
-				+ ", isDiscarded=" + isDiscarded + "]";
-	}
+	
 
 }

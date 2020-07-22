@@ -1,10 +1,13 @@
 package com.dpdocter.collections;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.PackageAmountObject;
 import com.dpdocter.enums.PackageType;
 
 @Document(collection = "package_detail_cl")
@@ -17,13 +20,10 @@ public class PackageDetailObjectCollection extends GenericCollection {
 	private PackageType packageName;
 
 	@Field
-	private int discount = 0;
+	private List<PackageAmountObject> packageAmount;
 
 	@Field
-	private int amount = 0;
-
-	@Field
-	private String duration;
+	private int amount ;
 
 	@Field
 	private String advantages;
@@ -50,28 +50,12 @@ public class PackageDetailObjectCollection extends GenericCollection {
 		this.packageName = packageName;
 	}
 
-	public int getDiscount() {
-		return discount;
-	}
-
-	public void setDiscount(int discount) {
-		this.discount = discount;
-	}
-
 	public int getAmount() {
 		return amount;
 	}
 
 	public void setAmount(int amount) {
 		this.amount = amount;
-	}
-
-	public String getDuration() {
-		return duration;
-	}
-
-	public void setDuration(String duration) {
-		this.duration = duration;
 	}
 
 	public String getAdvantages() {
@@ -98,11 +82,14 @@ public class PackageDetailObjectCollection extends GenericCollection {
 		this.isDiscarded = isDiscarded;
 	}
 
-	@Override
-	public String toString() {
-		return "PackageDetailObjectCollection [id=" + id + ", packageName=" + packageName + ", discount=" + discount
-				+ ", amount=" + amount + ", duration=" + duration + ", advantages=" + advantages + ", noOfSms="
-				+ noOfSms + ", isDiscarded=" + isDiscarded + "]";
+	public List<PackageAmountObject> getPackageAmount() {
+		return packageAmount;
 	}
+
+	public void setPackageAmount(List<PackageAmountObject> packageAmount) {
+		this.packageAmount = packageAmount;
+	}
+
+	
 
 }

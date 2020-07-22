@@ -1101,7 +1101,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					}
 					BeanUtil.map(request, subscriptionCollection);
 					subscriptionCollection.setUpdatedTime(new Date());
-					subscriptionCollection.setCreatedBy(subscriptionCollection.getCreatedBy());
+					subscriptionCollection.setCreatedBy(userCollection.getTitle() +""+userCollection.getFirstName());
 					subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
 					subscriptionCollection.setEmailAddress(userCollection.getEmailAddress());
 					subscriptionCollection.setPackageName(doctorSubscriptionPaymentCollection.getPackageName());
@@ -1217,15 +1217,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 								doctorSubscriptionPaymentCollection.getTransactionId(),doctorSubscriptionPaymentCollection.getReciept(),Integer.toString(doctorSubscriptionPaymentCollection.getAmount()),
 								doctorSubscriptionPaymentCollection.getPackageName().toString(),doctorSubscriptionPaymentCollection.getMode().toString(),"1 Year","subscriptionPayment.vm");
 				Boolean mail=	mailService.sendEmail(userCollection.getEmailAddress(),"Healthcoco+ Subscription Payment Received", body, null);
-
-						try {
-							Boolean ckM = mailService.sendEmail(userCollection.getEmailAddress(), "About payment", body,
-									null);
-							System.out.println("main send" + ckM);
-						} catch (MessagingException e) {
-							System.out.println("main send err");
-							e.printStackTrace();
-						}
+//
+//						try {
+//							Boolean ckM = mailService.sendEmail(userCollection.getEmailAddress(), "About payment", body,
+//									null);
+							System.out.println("main send" + mail);
+//						} catch (MessagingException e) {
+//							System.out.println("main send err");
+//							e.printStackTrace();
+//						}
 
 					}
 				}
