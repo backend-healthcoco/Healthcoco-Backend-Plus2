@@ -25,7 +25,7 @@ public class FooterSetup {
 
 	private String signatureUrl = "";
 
-	private Boolean showSignatureBox = true;
+	private Boolean showSignatureBox = false;
 
 	public Boolean getShowBottomSignText() {
 		return showBottomSignText;

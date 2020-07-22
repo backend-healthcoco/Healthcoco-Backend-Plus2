@@ -14,8 +14,20 @@ public class SMSAddress {
 
     private String recipient;
     
+    
+ 
+  
 
-    @JsonProperty("recipient")
+	public SMSAddress() {
+		super();
+	}
+
+	public SMSAddress(String recipient) {
+		super();
+		this.recipient = recipient;
+	}
+
+	@JsonProperty("recipient")
     public String getRecipient() {
 	return recipient;
     }

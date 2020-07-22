@@ -2390,7 +2390,7 @@ public interface PathProxy {
 
 		public static final String CREATE_CHAT_ACCESS_TOKEN = "/chat/accessToken/create/{userId}";
 		
-		public static final String CREATE_CHAT_ACCESS_TOKEN_TEST = "/chat/accessTokenTest/create/{userId}";
+		public static final String CREATE_CHAT_ACCESS_TOKEN_ANDROID = "/chat/accessTokenAndroid/create/{userId}";
 
 		public static final String CREATE_VIDEO_ACCESS_TOKEN = "/video/accessToken/create/{userId}/{room}";
 

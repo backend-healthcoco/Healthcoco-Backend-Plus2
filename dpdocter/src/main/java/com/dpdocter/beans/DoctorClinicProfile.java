@@ -156,7 +156,7 @@ public class DoctorClinicProfile {
 	
 	private String clinicOwnershipImageUrl;
 	
-	private BulkSmsCredits bulkSmsCredit;
+//	private BulkSmsCredits bulkSmsCredit;
 //=======
 //	private Map<DoctorConsultation, String> onlineConsultationFees;
 
@@ -744,13 +744,7 @@ public class DoctorClinicProfile {
 		return clinicOwnershipImageUrl;
 	}
 
-	public BulkSmsCredits getBulkSmsCredit() {
-		return bulkSmsCredit;
-	}
-
-	public void setBulkSmsCredit(BulkSmsCredits bulkSmsCredit) {
-		this.bulkSmsCredit = bulkSmsCredit;
-	}
+	
 
 	public void setClinicOwnershipImageUrl(String clinicOwnershipImageUrl) {
 		this.clinicOwnershipImageUrl = clinicOwnershipImageUrl;

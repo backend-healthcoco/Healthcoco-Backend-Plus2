@@ -2,83 +2,32 @@ package com.dpdocter.beans;
 
 public class PaymentSettlementsItems {
 
-	private String entity_id;
+	private String id;
 	
-	private String type;
+	private String entity;
 	
-	private Integer debit;
 	
-	private Integer credit;
 	
 	private Integer amount;
 	
-	private String currency;
+	private String status;
 	
-	private Integer fee;
+	private Integer fees;
 	
 	private Integer tax;
 	
-	private Boolean on_hold;
 	
-	private Boolean settled;
 	
 	private Integer created_at;
 	
-	private Integer settled_at;
 	
-	private String settlement_id;
 	
-	private String description;
+	private String utr;
 	
-	private String payment_id;
 	
-	private String settlement_utr;
 	
-	private String order_id;
 	
-	private String order_receipt;
 	
-	private String method;
-	
-	private String card_network;
-	
-	private String card_issuer;
-	
-	private String card_type;
-	
-	private String dispute_id;
-
-	public String getEntity_id() {
-		return entity_id;
-	}
-
-	public void setEntity_id(String entity_id) {
-		this.entity_id = entity_id;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public Integer getDebit() {
-		return debit;
-	}
-
-	public void setDebit(Integer debit) {
-		this.debit = debit;
-	}
-
-	public Integer getCredit() {
-		return credit;
-	}
-
-	public void setCredit(Integer credit) {
-		this.credit = credit;
-	}
 
 	public Integer getAmount() {
 		return amount;
@@ -88,21 +37,9 @@ public class PaymentSettlementsItems {
 		this.amount = amount;
 	}
 
-	public String getCurrency() {
-		return currency;
-	}
+	
 
-	public void setCurrency(String currency) {
-		this.currency = currency;
-	}
-
-	public Integer getFee() {
-		return fee;
-	}
-
-	public void setFee(Integer fee) {
-		this.fee = fee;
-	}
+	
 
 	public Integer getTax() {
 		return tax;
@@ -112,20 +49,36 @@ public class PaymentSettlementsItems {
 		this.tax = tax;
 	}
 
-	public Boolean getOn_hold() {
-		return on_hold;
+	public String getId() {
+		return id;
 	}
 
-	public void setOn_hold(Boolean on_hold) {
-		this.on_hold = on_hold;
+	public void setId(String id) {
+		this.id = id;
 	}
 
-	public Boolean getSettled() {
-		return settled;
+	public String getEntity() {
+		return entity;
 	}
 
-	public void setSettled(Boolean settled) {
-		this.settled = settled;
+	public void setEntity(String entity) {
+		this.entity = entity;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public Integer getFees() {
+		return fees;
+	}
+
+	public void setFees(Integer fees) {
+		this.fees = fees;
 	}
 
 	public Integer getCreated_at() {
@@ -136,104 +89,15 @@ public class PaymentSettlementsItems {
 		this.created_at = created_at;
 	}
 
-	public Integer getSettled_at() {
-		return settled_at;
+	public String getUtr() {
+		return utr;
 	}
 
-	public void setSettled_at(Integer settled_at) {
-		this.settled_at = settled_at;
+	public void setUtr(String utr) {
+		this.utr = utr;
 	}
 
-	public String getSettlement_id() {
-		return settlement_id;
-	}
-
-	public void setSettlement_id(String settlement_id) {
-		this.settlement_id = settlement_id;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getPayment_id() {
-		return payment_id;
-	}
-
-	public void setPayment_id(String payment_id) {
-		this.payment_id = payment_id;
-	}
-
-	public String getSettlement_utr() {
-		return settlement_utr;
-	}
-
-	public void setSettlement_utr(String settlement_utr) {
-		this.settlement_utr = settlement_utr;
-	}
-
-	public String getOrder_id() {
-		return order_id;
-	}
-
-	public void setOrder_id(String order_id) {
-		this.order_id = order_id;
-	}
-
-	public String getOrder_receipt() {
-		return order_receipt;
-	}
-
-	public void setOrder_receipt(String order_receipt) {
-		this.order_receipt = order_receipt;
-	}
-
-	public String getMethod() {
-		return method;
-	}
-
-	public void setMethod(String method) {
-		this.method = method;
-	}
-
-	public String getCard_network() {
-		return card_network;
-	}
-
-	public void setCard_network(String card_network) {
-		this.card_network = card_network;
-	}
-
-	public String getCard_issuer() {
-		return card_issuer;
-	}
-
-	public void setCard_issuer(String card_issuer) {
-		this.card_issuer = card_issuer;
-	}
-
-	public String getCard_type() {
-		return card_type;
-	}
-
-	public void setCard_type(String card_type) {
-		this.card_type = card_type;
-	}
-
-	public String getDispute_id() {
-		return dispute_id;
-	}
-
-	public void setDispute_id(String dispute_id) {
-		this.dispute_id = dispute_id;
-	}
-	
-	
-	
+		
 	
 	
 

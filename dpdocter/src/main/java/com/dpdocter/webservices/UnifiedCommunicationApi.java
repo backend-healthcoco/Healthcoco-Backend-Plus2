@@ -84,15 +84,14 @@ public class UnifiedCommunicationApi {
 
 	}
 	
-	@Path(value = PathProxy.ChatUrls.CREATE_CHAT_ACCESS_TOKEN_TEST)
+	@Path(value = PathProxy.ChatUrls.CREATE_CHAT_ACCESS_TOKEN_ANDROID)
 	@GET
-	@ApiOperation(value = PathProxy.ChatUrls.CREATE_CHAT_ACCESS_TOKEN_TEST, notes = PathProxy.ChatUrls.CREATE_CHAT_ACCESS_TOKEN_TEST)
-	public Response<String> createChatAccessToken(@PathParam("userId") String userId,@QueryParam(value = "pushCredentialSID")String pushCredentialSID,
-			@QueryParam(value = "serviceSID")String serviceSID)
+	@ApiOperation(value = PathProxy.ChatUrls.CREATE_CHAT_ACCESS_TOKEN_ANDROID, notes = PathProxy.ChatUrls.CREATE_CHAT_ACCESS_TOKEN_ANDROID)
+	public Response<String> createChatAccessToken(@PathParam("userId") String userId,@QueryParam(value = "pushCredentialSID")String pushCredentialSID)
 			throws MessagingException {
 	    
 		Response<String> response = new Response<String>();
-		response.setData(unifiedCommunicationServices.createChatAccessTokenTest(userId, pushCredentialSID, serviceSID));
+		response.setData(unifiedCommunicationServices.createChatAccessTokenAndroid(userId, pushCredentialSID));
 		return response;
 
 	}

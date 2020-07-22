@@ -19,8 +19,26 @@ public class SMSDetail {
     private Date sentTime = new Date();
 
     private String deliveredTime;
+    
+    public SMSDetail() {
+		super();
+	}
 
-    public ObjectId getUserId() {
+
+    public SMSDetail(SMS sms, SMSStatus deliveryStatus) {
+		super();
+		
+		this.sms = sms;
+		this.deliveryStatus = deliveryStatus;
+		
+	}
+    
+    
+
+	
+
+
+	public ObjectId getUserId() {
 	return userId;
     }
 

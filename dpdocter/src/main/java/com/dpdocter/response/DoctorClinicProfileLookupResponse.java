@@ -95,7 +95,7 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	
 	private String clinicOwnershipImageUrl;
 	
-	private BulkSmsCredits bulkSmsCredit;
+	//private BulkSmsCredits bulkSmsCredit;
 	
 	//private List<ConsultationType> onlineConsultationType;
 
@@ -409,13 +409,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 
 	
 
-	public BulkSmsCredits getBulkSmsCredit() {
-		return bulkSmsCredit;
-	}
-
-	public void setBulkSmsCredit(BulkSmsCredits bulkSmsCredit) {
-		this.bulkSmsCredit = bulkSmsCredit;
-	}
 
 	public String getClinicOwnershipImageUrl() {
 		return clinicOwnershipImageUrl;

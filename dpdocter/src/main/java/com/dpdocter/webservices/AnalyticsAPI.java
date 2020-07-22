@@ -842,11 +842,11 @@ public class AnalyticsAPI {
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.FETCH_SETTLEMENT, notes = PathProxy.AnalyticsUrls.FETCH_SETTLEMENT)
 	public Response<PaymentSettlements> getSettlements(
-			@QueryParam(value = "fromDate") String fromDate, @QueryParam(value = "toDate") String toDate,
+			@QueryParam(value = "from") String from, 
 			 @QueryParam(value = "count") int count) {
 
 		Response<PaymentSettlements> response =new Response<PaymentSettlements>();
-		response.setDataList(appointmentAnalyticsService.fetchSettlement(fromDate, toDate, count));
+		response.setDataList(appointmentAnalyticsService.fetchSettlement(from, count));
 		return response;
 		
 		

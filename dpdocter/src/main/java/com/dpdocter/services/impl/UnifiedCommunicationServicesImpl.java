@@ -99,7 +99,7 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 
 	
 	@Override
-	public String createChatAccessTokenTest(String userId,String pushCredentialSID,String serviceSID) {
+	public String createChatAccessTokenAndroid(String userId,String pushCredentialSID) {
 		String response = null;
 		UnifiedCommunicationDetailsCollection unifiedCommunicationDetailsCollection = null;
 		try {
@@ -118,7 +118,7 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 //			}
 //		    if(unifiedCommunicationDetailsCollection == null) {
 			ChatGrant grant = new ChatGrant();
-			grant.setServiceSid(serviceSID);
+			grant.setServiceSid(SERVICE_SID);
 			grant.setPushCredentialSid(pushCredentialSID);
 
 			AccessToken token = new AccessToken.Builder(TWILIO_ACCOUNT_SID, TWILIO_API_KEY, TWILIO_API_SECRET)
