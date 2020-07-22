@@ -7,6 +7,7 @@ public class SubscriptionPaymentSignatureRequest {
 	public String signature;
 	private String subscriptionId;
 	private String doctorId;
+	private String duration;
 	public String getOrderId() {
 		return orderId;
 	}
@@ -36,6 +37,12 @@ public class SubscriptionPaymentSignatureRequest {
 	}
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
+	}
+	public String getDuration() {
+		return duration;
+	}
+	public void setDuration(String duration) {
+		this.duration = duration;
 	}
 	
 	

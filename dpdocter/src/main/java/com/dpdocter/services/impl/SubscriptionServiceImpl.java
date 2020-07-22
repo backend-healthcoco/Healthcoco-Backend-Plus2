@@ -1115,6 +1115,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					subscriptionCollection.setToDate(dateAfter2Days);
 //					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12));
 					subscriptionRepository.save(subscriptionCollection);
+							 
 					// save to History
 					BeanUtil.map(subscriptionCollection, subscriptionHistoryCollection);
 					subscriptionHistoryCollection.setSubscriptionId(subscriptionCollection.getId());
@@ -1189,7 +1190,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						String message = "";
 						message = StringEscapeUtils.unescapeJava(message);
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-
+		        
 						smsTrackDetail.setType("Subscription online Payment");
 						smsTrackDetail.setDoctorId(userCollection.getId());
 						SMSDetail smsDetail = new SMSDetail();
@@ -1200,7 +1201,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 						sms.setSmsText("Hi " + userCollection.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(doctorSubscriptionPaymentCollection.getCreatedTime())
 						+ " by "+doctorSubscriptionPaymentCollection.getMode()+" and your transactionId is"+doctorSubscriptionPaymentCollection.getTransactionId()+" for the receipt "+doctorSubscriptionPaymentCollection.getReciept()
-						+" and the total cost is "+ doctorSubscriptionPaymentCollection.getAmount() + "for package you"+  doctorSubscriptionPaymentCollection.getPackageName()+ ".");
+						+" and the total cost is "+ doctorSubscriptionPaymentCollection.getAmount() + "for package you"+  doctorSubscriptionPaymentCollection.getPackageName()+ "for "+request.getDuration()+" year.");
 
 						SMSAddress smsAddress = new SMSAddress();
 						smsAddress.setRecipient(userCollection.getMobileNumber());
@@ -1215,7 +1216,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 						String body = mailBodyGenerator.subscriptionPaymentEmailBody(userCollection.getFirstName(),doctorSubscriptionPaymentCollection.getCreatedTime().toString(),
 								doctorSubscriptionPaymentCollection.getTransactionId(),doctorSubscriptionPaymentCollection.getReciept(),Integer.toString(doctorSubscriptionPaymentCollection.getAmount()),
-								doctorSubscriptionPaymentCollection.getPackageName().toString(),doctorSubscriptionPaymentCollection.getMode().toString(),"1 Year","subscriptionPayment.vm");
+								doctorSubscriptionPaymentCollection.getPackageName().toString(),doctorSubscriptionPaymentCollection.getMode().toString(),request.getDuration(),"subscriptionPayment.vm");
 				Boolean mail=	mailService.sendEmail(userCollection.getEmailAddress(),"Healthcoco+ Subscription Payment Received", body, null);
 //
 //						try {

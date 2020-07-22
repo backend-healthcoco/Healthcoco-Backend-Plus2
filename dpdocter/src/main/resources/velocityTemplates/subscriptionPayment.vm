@@ -24,11 +24,14 @@
                 Welcome to Healthcoco!
                 <br>
                 <hr>
-                <br>
-
-                Your Payment has been done successfully  by ${paymentMode}  Razorpay and your transactionId is 
-                ${transactionId} for the receipt ${receipt} and the total cost is RS ${totalCost} for ${packageName} Package for ${duration}.
-                                
+                <br>               
+                               
+                Your Payment has been done successfully.  <br>
+                Mode of Payment: ${paymentMode}<br>
+                ReceiptId: ${receipt} <br>
+                Total cost: ${totalCost} <br>
+                Plan: ${packageName} <br>
+                Duration: ${duration} Year. 
               </p>
             
               <br>
