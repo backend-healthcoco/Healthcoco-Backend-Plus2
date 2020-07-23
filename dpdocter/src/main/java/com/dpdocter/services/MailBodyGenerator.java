@@ -81,4 +81,7 @@ public interface MailBodyGenerator {
 	String subscriptionPaymentEmailBody(String firstName, String createdDate, String transactionId, String receipt,
 			String totalCost, String packageName, String paymentMode, int duration, String templatePath)
 			throws Exception;
+
+	String generateBulkSmsPayment(String firstName, String packageName, String transanctionId, Double amount,
+			String templatePath) throws Exception;
 }

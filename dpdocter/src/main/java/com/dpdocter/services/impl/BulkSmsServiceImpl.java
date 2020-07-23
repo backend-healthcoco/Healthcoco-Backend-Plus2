@@ -68,6 +68,8 @@ import com.dpdocter.request.OrderRequest;
 import com.dpdocter.request.PaymentSignatureRequest;
 import com.dpdocter.response.BulkSmsPaymentResponse;
 import com.dpdocter.services.BulkSmsServices;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
 import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 import com.razorpay.Order;
@@ -115,6 +117,14 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 	
 	@Autowired
 	private BulkSmsHistoryRepository bulkSmsHistoryRepository;
+	
+	
+	@Autowired
+	private MailService mailService;
+
+	@Autowired
+	private MailBodyGenerator mailBodyGenerator;
+
 
 
 
@@ -663,6 +673,15 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							
 						System.out.println("sms sent"+res);
 						
+						
+						String body ="Hi " + doctor.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(onlinePaymentCollection.getCreatedTime())
+						+ " by "+onlinePaymentCollection.getMode()+" and your transactionId is"+onlinePaymentCollection.getTransactionId()+" for the bulk sms package "+bulkPackage.getPackageName()
+						+" and the total cost is "+ onlinePaymentCollection.getDiscountAmount() + ".";
+							//	mailBodyGenerator.verifyEmailBody(
+//								(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName(),
+//								tokenCollection.getId(), "verifyDoctor.vm");
+				Boolean mail=	mailService.sendEmail(doctor.getEmailAddress(),"BulkSms Payment Receipt", body, null);
+						System.out.println(mail);
 						
 						
 //							pushNotificationServices.notifyUser(doctor.getId().toString(),

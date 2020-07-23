@@ -1542,8 +1542,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			CustomAggregationOperation group= null;
 			
 			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
-					new BasicDBObject("doctorId", "$doctorId")
-										
+					new BasicDBObject("_id", "$_id")
+					.append("doctorId", "$doctorId")
 					.append("totalAmountReceived", "$totalAmountReceived")
 					.append("consultationType.consultationType", "$doctorData.consultationType.consultationType")					
 					.append("consultationType.cost", "$doctorData.consultationType.cost")
@@ -1553,12 +1553,13 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			
 			
 			group = new CustomAggregationOperation(new Document("$group",
-					new BasicDBObject("doctorId",
-							new BasicDBObject("doctorId", "$doctorId")
+					
+							new BasicDBObject("_id", "$_id")
+							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 									.append("totalAmountReceived", new BasicDBObject("$sum", "$transferAmount"))
 									
 									.append("consultationType", new BasicDBObject("$first", "$consultationType"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime")))));
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))));
 									
 
 			
@@ -1592,6 +1593,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	
 	
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public List<PaymentSettlements> fetchSettlement(String from,int count) {
 		
@@ -1614,7 +1616,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 //					+ generateId());
 //			orderRequest.put("payment_capture", request.getPaymentCapture());
 
-			String url="https://api.razorpay.com/v1/settlements/?count="+count+"&from="+from;
+			String url="https://api.razorpay.com/v1/settlements/?count="+count+"&from="+new Integer(from);
 			 String authStr=keyId+":"+secret;
 			 String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
 			URL obj = new URL(url);
