@@ -26,7 +26,7 @@
                 <hr>
                 <br>               
                                
-                Your Payment has been done successfully.  <br>
+                Your Payment has been done successfully on ${createdDate}.  <br>
                 Mode of Payment: ${paymentMode}<br>
                 ReceiptId: ${receipt} <br>
                 Total cost: ${totalCost} <br>

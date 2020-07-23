@@ -533,7 +533,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
 		VelocityContext context = new VelocityContext();
 		context.put("fName", firstName);
-//		context.put("createdDate", createdDate);
+		context.put("createdDate", createdDate);
 		context.put("receipt", receipt);
 		context.put("totalCost", totalCost);
 		context.put("transactionId", transactionId);
