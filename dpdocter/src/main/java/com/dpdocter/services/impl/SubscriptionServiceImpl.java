@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Country;
 import com.dpdocter.beans.OrderReponse;
+import com.dpdocter.beans.PackageAmountObject;
 import com.dpdocter.beans.PackageDetailObject;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -568,7 +569,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	}
 
 	@Override
-	public Subscription getSubscriptionByDoctorId(String doctorId, PackageType packageName) {
+	public Subscription getSubscriptionByDoctorId(String doctorId, PackageType packageName,int duration,int newAmount) {
 		Subscription response = null;
 		try {
 			SubscriptionCollection subscriptionCollection = subscriptionRepository
@@ -576,6 +577,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			if (subscriptionCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "Error no such id");
 			}
+			System.out.println("Sub" + subscriptionCollection);
 
 			if (packageName != null) {
 				PackageDetailObjectCollection packageBasic = packageDetailObjectRepository
@@ -587,13 +589,29 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				PackageDetailObjectCollection packageAdvance = packageDetailObjectRepository
 						.findByPackageName(PackageType.ADVANCE);
 				// package price
-				int BASIC = packageBasic.getAmount();
-				int PRO = packagePro.getAmount();
-				int ADVANCE = packageAdvance.getAmount();
+				List<PackageAmountObject> BASIC = packageBasic.getPackageAmount();
+				List<PackageAmountObject> PRO = packagePro.getPackageAmount();
+				List<PackageAmountObject> ADVANCE = packageAdvance.getPackageAmount();
 				if (subscriptionCollection.getAmount() != 0) {
+					// from date toDate difference
+					Calendar fromDateConvert = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+					fromDateConvert.setTime(subscriptionCollection.getFromDate());
+					int fromDateConvertDay = fromDateConvert.get(Calendar.DATE);
+					int fromDateConvertMonth = fromDateConvert.get(Calendar.MONTH) + 1;
+					int fromDateConvertYear = fromDateConvert.get(Calendar.YEAR);
+					System.out.println("frm days" + fromDateConvertDay + fromDateConvertMonth + fromDateConvertYear);
+					// to date
+					Calendar toDateConvert = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+					toDateConvert.setTime(subscriptionCollection.getToDate());
+					int toDateConvertDay = toDateConvert.get(Calendar.DATE);
+					int toDateConvertMonth = toDateConvert.get(Calendar.MONTH) + 1;
+					int toDateConvertYear = toDateConvert.get(Calendar.YEAR);
+					LocalDate fromDate = LocalDate.of(fromDateConvertYear, fromDateConvertMonth, fromDateConvertDay);
+					LocalDate toDate = LocalDate.of(toDateConvertYear, toDateConvertMonth, toDateConvertDay);
+
+					Period diiff = Period.between(fromDate, toDate);// get difference bet today & fromdate
 
 					// for 10th point
-
 					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 					LocalDate currentDate = LocalDate.now();
 					localCalendar.setTime(subscriptionCollection.getFromDate());
@@ -602,214 +620,58 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					int currentYear = localCalendar.get(Calendar.YEAR);
 
 					LocalDate newDate = LocalDate.of(currentYear, currentMonth, currentDay);
+					System.out.println(newDate);
 					Period period = Period.between(currentDate, newDate);// get difference bet today & fromdate
 					System.out.println(period + "mon" + period.getMonths());
+					int usedMonths = -(period.getMonths());
+					System.out.println(usedMonths);
 					// pro to adv
-					if (subscriptionCollection.getPackageName() == PackageType.PRO
-							&& packageName == PackageType.ADVANCE) {
-						if (period.getMonths() == 0) {// afetr 1 month
-							int k = ADVANCE - (int) (PRO * (90.0f / 100.0f));
-							System.out.println(period.getMonths() + k);
-							subscriptionCollection.setAmount(k);
-						} else if (period.getMonths() == -1) {// after 2 month
-							int k = ADVANCE - (int) (PRO * (80.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-						} else if (period.getMonths() == -2) {// after 3 month
-							int k = ADVANCE - (int) (PRO * (70.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
+//					Cost = new amount - old amount + (per month cost of old amount * months used)
+					// find per month cost of packages
+					int getMonthsFromYear = diiff.getYears() * 12;// calculate number of months from old duration
+					int amountPerMonth = subscriptionCollection.getAmount() / getMonthsFromYear;// to get per month cost
+																								// of old package
+					System.out.println("amountPerMonth" + amountPerMonth);
+					int discountedAmount = newAmount - subscriptionCollection.getAmount() + amountPerMonth * usedMonths;
+					System.out.println(discountedAmount);
 
-						} else if (period.getMonths() == -3) {// after 4 month
-							// 60 % of 10000 is 2000
-							int k = ADVANCE - (int) (PRO * (60.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
+					subscriptionCollection.setAmount(discountedAmount);
 
-						} else if (period.getMonths() == -4) {// after 5 month
-							int k = ADVANCE - (int) (PRO * (50.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -5) {// after 6 month
-							int k = ADVANCE - (int) (PRO * (40.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -6) {// after 7 month
-							int k = ADVANCE - (int) (PRO * (30.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -7) {// after 8 month
-							int k = ADVANCE - (int) (PRO * (20.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -8) {// after 9 month
-							// 10 % of 10000 is 2000
-							int k = ADVANCE - (int) (PRO * (80.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -9) {// after 9 month
-							// 10 % of 10000 is 2000
-							int k = ADVANCE - (int) (PRO * (80.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else {// after 10 month
-							int k = ADVANCE;
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						}
-
-					} // basic to adv
-					else if (subscriptionCollection.getPackageName() == PackageType.BASIC
-							&& packageName == PackageType.ADVANCE) {
-						if (period.getMonths() == 0) {// afetr 1 month
-							int k = ADVANCE - (int) (BASIC * (90.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-						} else if (period.getMonths() == -1) {// after 2 month
-							int k = ADVANCE - (int) (BASIC * (80.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -2) {// after 3 month
-							int k = ADVANCE - (int) (BASIC * (70.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -3) {// after 4 month
-							// 60 % of 10000 is 2000
-							int k = ADVANCE - (int) (BASIC * (60.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -4) {// after 5 month
-							int k = ADVANCE - (int) (BASIC * (50.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -5) {// after 6 month
-							int k = ADVANCE - (int) (BASIC * (40.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -6) {// after 7 month
-							int k = ADVANCE - (int) (BASIC * (30.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -7) {// after 8 month
-							int k = ADVANCE - (int) (BASIC * (20.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -8) {// after 9 month
-							// 10 % of 10000 is 2000
-							int k = ADVANCE - (int) (BASIC * (80.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -9) {// after 9 month
-							// 10 % of 10000 is 2000
-							int k = ADVANCE - (int) (BASIC * (80.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else {// after 10 month
-							int k = ADVANCE;
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-							;
-						}
-					}
-					// basic to pro
-					else if (subscriptionCollection.getPackageName() == PackageType.BASIC
-							&& packageName == PackageType.PRO) {
-						if (period.getMonths() == 0) {// afetr 1 month
-							int k = PRO - (int) (BASIC * (90.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-						} else if (period.getMonths() == -1) {// after 2 month
-							int k = PRO - (int) (BASIC * (80.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -2) {// after 3 month
-							int k = PRO - (int) (BASIC * (70.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -3) {// after 4 month
-							// 60 % of 10000 is 2000
-							int k = PRO - (int) (BASIC * (60.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -4) {// after 5 month
-							int k = PRO - (int) (BASIC * (50.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -5) {// after 6 month
-							int k = PRO - (int) (BASIC * (40.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -6) {// after 7 month
-							int k = PRO - (int) (BASIC * (30.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -7) {// after 8 month
-							int k = PRO - (int) (BASIC * (20.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -8) {// after 9 month
-							// 10 % of 10000 is 2000
-							int k = PRO - (int) (BASIC * (80.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else if (period.getMonths() == -9) {// after 9 month
-							// 10 % of 10000 is 2000
-							int k = PRO - (int) (BASIC * (80.0f / 100.0f));
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						} else {// after 10 month
-							int k = PRO;
-							System.out.println(k);
-							subscriptionCollection.setAmount(k);
-
-						}
-					}
-				} else {
+				} // if close of amt
+				else {
+					// pro to adv
 					if (packageName == PackageType.ADVANCE) {
-						subscriptionCollection.setAmount(ADVANCE);
-					} else if (packageName == PackageType.BASIC) {
-						subscriptionCollection.setAmount(BASIC);
-					} else if (packageName == PackageType.PRO) {
-						subscriptionCollection.setAmount(PRO);
+						ADVANCE.forEach(x -> {
+							if (duration == x.getDuration()) {
+								subscriptionCollection.setAmount(x.getAmount());
+							}
+						});
+					} // basic to adv
+					else if (packageName == PackageType.BASIC) {
+						BASIC.forEach(x -> {
+							if (duration == x.getDuration()) {
+								subscriptionCollection.setAmount(x.getAmount());
+							}
+						});
+					} // basic to pro
+					if (packageName == PackageType.PRO) {
+						PRO.forEach(x -> {
+							if (duration == x.getDuration()) {
+								subscriptionCollection.setAmount(x.getAmount());
+							}
+						});
 					}
 				}
-
-			} // if close
+			} // if close of package name
 			response = new Subscription();
 			BeanUtil.map(subscriptionCollection, response);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
+		} catch (BusinessException e) {
+			logger.error("Error while searching the id " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while searching the id");
 		}
 
 		return response;
-
 	}
 
 	@Override
