@@ -55,8 +55,10 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 				if (bankDetailsCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "bankDetails Id Not found");
 				}
-			request.setUpdatedTime(new Date());
-			BeanUtil.map(request, bankDetailsCollection);		
+			
+			BeanUtil.map(request, bankDetailsCollection);
+			bankDetailsCollection.setUpdatedTime(new Date());
+			bankDetailsCollection.setCreatedTime(request.getCreatedTime());
 		}
 		else{
 			bankDetailsCollection=new BankDetailsCollection();
