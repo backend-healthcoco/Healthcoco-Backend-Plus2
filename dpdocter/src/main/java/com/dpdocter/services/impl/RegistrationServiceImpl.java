@@ -184,6 +184,7 @@ import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.GynacPermissionsEnum;
 import com.dpdocter.enums.OpthoPermissionEnums;
+import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.ReminderType;
 import com.dpdocter.enums.Resource;
@@ -2465,8 +2466,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 					userCollection.getId(), new ObjectId(request.getLocationId()),
 					new ObjectId(request.getHospitalId()));
 
-			UserRoleCollection userRoleCollection=userRoleCollectionss.get(0);
-			
+			UserRoleCollection userRoleCollection = userRoleCollectionss.get(0);
+
 			if (userRoleCollection != null) {
 				if (userRoleCollection.getRoleId().toString().equals(request.getRoleId())) {
 					logger.error("User has  already assigned " + doctorRole.getRole() + "in clinic");
@@ -2601,10 +2602,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			if (doctorRole != null) {
 
-				List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserIdAndLocationIdAndHospitalId(
-						userCollection.getId(), new ObjectId(request.getLocationId()),
-						new ObjectId(request.getHospitalId()));
-			UserRoleCollection userRoleCollection=userRoleCollections.get(0);
+				List<UserRoleCollection> userRoleCollections = userRoleRepository
+						.findByUserIdAndLocationIdAndHospitalId(userCollection.getId(),
+								new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+				UserRoleCollection userRoleCollection = userRoleCollections.get(0);
 				if (userRoleCollection == null) {
 					userRoleCollection = new UserRoleCollection(userCollection.getId(),
 							new ObjectId(request.getRoleId()), new ObjectId(request.getLocationId()),
@@ -2732,11 +2733,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			if (staffRole != null) {
 
-				List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserIdAndLocationIdAndHospitalId(
-						userCollection.getId(), new ObjectId(request.getLocationId()),
-						new ObjectId(request.getHospitalId()));
-				
-				UserRoleCollection userRoleCollection=userRoleCollections.get(0);
+				List<UserRoleCollection> userRoleCollections = userRoleRepository
+						.findByUserIdAndLocationIdAndHospitalId(userCollection.getId(),
+								new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+
+				UserRoleCollection userRoleCollection = userRoleCollections.get(0);
 				if (userRoleCollection == null) {
 					userRoleCollection = new UserRoleCollection(userCollection.getId(),
 							new ObjectId(request.getRoleId()), new ObjectId(request.getLocationId()),
@@ -3856,7 +3857,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 					.orElse(null);
 			if (consentFormCollection != null) {
 				UserCollection user = userRepository.findById(consentFormCollection.getPatientId()).orElse(null);
-				JasperReportResponse jasperReportResponse = createJasper(consentFormCollection, user);
+				JasperReportResponse jasperReportResponse = createJasper(consentFormCollection, user,
+						PrintSettingType.IPD.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -3875,12 +3877,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return response;
 	}
 
-	private JasperReportResponse createJasper(ConsentFormCollection consentFormCollection, UserCollection user)
-			throws IOException {
+	private JasperReportResponse createJasper(ConsentFormCollection consentFormCollection, UserCollection user,
+			String printSettString) throws IOException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
 		ConsentFormItemJasperdetails consentFormItemJasperdetails = new ConsentFormItemJasperdetails();
 		Boolean show = false;
 		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getLocalPatientName())) {
@@ -3996,11 +3999,17 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		parameters.put("item", consentFormItemJasperdetails);
 
-		PrintSettingsCollection printSettings = printSettingsRepository
-				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(consentFormCollection.getDoctorId(),
-						consentFormCollection.getLocationId(), consentFormCollection.getHospitalId(),
-						ComponentType.ALL.getType());
-
+		PrintSettingsCollection printSettings = null;
+		printSettings = printSettingsRepository
+				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+						consentFormCollection.getDoctorId(), consentFormCollection.getLocationId(),
+						consentFormCollection.getHospitalId(), ComponentType.ALL.getType(), printSettString);
+		if (printSettings == null)
+			printSettings = printSettingsRepository
+					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+							consentFormCollection.getDoctorId(), consentFormCollection.getLocationId(),
+							consentFormCollection.getHospitalId(), ComponentType.ALL.getType(),
+							PrintSettingType.DEFAULT.getType());
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -4078,7 +4087,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 							emailTrackCollection.setPatientId(user.getId());
 						}
 
-						JasperReportResponse jasperReportResponse = createJasper(consentFormCollection, user);
+						JasperReportResponse jasperReportResponse = createJasper(consentFormCollection, user,
+								PrintSettingType.EMAIL.getType());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
