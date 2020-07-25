@@ -33,6 +33,7 @@ import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LineSpace;
+import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -116,11 +117,9 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			}
 			/*
 			 * PatientCollection patientCollection =
-			 * patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-			 * new ObjectId(request.getPatientId()), new
-			 * ObjectId(request.getDoctorId()), new
-			 * ObjectId(request.getLocationId()), new
-			 * ObjectId(request.getHospitalId()));
+			 * patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId( new
+			 * ObjectId(request.getPatientId()), new ObjectId(request.getDoctorId()), new
+			 * ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 			 */
 
 			PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
@@ -149,7 +148,8 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				dischargeSummaryRequest.setGeneralExam(request.getExamination());
 				dischargeSummaryService.addEditDischargeSummary(dischargeSummaryRequest);
 			} else {
-				AdmitCardCollection oldAdmitCardCollection = admitCardRepository.findById(admitCardCollection.getId()).orElse(null);
+				AdmitCardCollection oldAdmitCardCollection = admitCardRepository.findById(admitCardCollection.getId())
+						.orElse(null);
 				admitCardCollection.setAdminCreatedTime(oldAdmitCardCollection.getAdminCreatedTime());
 				if (request.getCreatedTime() == null) {
 					admitCardCollection.setCreatedTime(oldAdmitCardCollection.getCreatedTime());
@@ -181,9 +181,9 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid Id");
 			}
 			PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(
-					admitCardCollection.getPatientId(), 
-					admitCardCollection.getLocationId(), admitCardCollection.getHospitalId());
-			
+					admitCardCollection.getPatientId(), admitCardCollection.getLocationId(),
+					admitCardCollection.getHospitalId());
+
 			response = new AdmitCardResponse();
 			BeanUtil.map(admitCardCollection, response);
 			Patient patient = new Patient();
@@ -340,14 +340,16 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		String response = null;
 
 		try {
-			AdmitCardCollection admitCardCollection = admitCardRepository.findById(new ObjectId(admitCardId)).orElse(null);
+			AdmitCardCollection admitCardCollection = admitCardRepository.findById(new ObjectId(admitCardId))
+					.orElse(null);
 			if (admitCardCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						admitCardCollection.getPatientId(), admitCardCollection.getLocationId(),
 						admitCardCollection.getHospitalId());
 
 				UserCollection user = userRepository.findById(admitCardCollection.getPatientId()).orElse(null);
-				JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user);
+				JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user,
+						PrintSettingType.IPD.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -366,17 +368,23 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 	}
 
 	private JasperReportResponse createJasper(AdmitCardCollection admitCardCollection, PatientCollection patient,
-			UserCollection user) throws NumberFormatException, IOException, ParseException {
+			UserCollection user, String printSettingType) throws NumberFormatException, IOException, ParseException {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		Boolean show = false;
-
-		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(admitCardCollection.getDoctorId(),
-				admitCardCollection.getLocationId(), admitCardCollection.getHospitalId(), ComponentType.ALL.getType());
-
+		PrintSettingsCollection printSettings = null;
+		printSettings = printSettingsRepository
+				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+						admitCardCollection.getDoctorId(), admitCardCollection.getLocationId(),
+						admitCardCollection.getHospitalId(), ComponentType.ALL.getType(), printSettingType);
+		if (printSettings == null)
+			printSettings = printSettingsRepository
+					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+							admitCardCollection.getDoctorId(), admitCardCollection.getLocationId(),
+							admitCardCollection.getHospitalId(), ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType());
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -418,10 +426,10 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
 			Date dt = sdfForMins.parse(admitCardCollection.getTimeOfOperation());
 			sdfForMins = new SimpleDateFormat("hh:mm a");
-			
+
 			parameters.put("tOO", sdfForMins.format(dt));
 		}
-		
+
 		parameters.put("showTOO", show);
 		show = false;
 		if (admitCardCollection.getOperationDate() != null) {
@@ -500,7 +508,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		}
 		parameters.put("showEx", show);
 		show = false;
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getIp())) {
 			show = true;
 			parameters.put("ip", admitCardCollection.getIp());
@@ -517,10 +525,12 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
-						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
+						? printSettings.getContentLineSpace()
+						: LineSpace.SMALL.name());
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails() : null),
+						? printSettings.getHeaderSetup().getPatientDetails()
+						: null),
 				patient,
 				"<b>ADMIT-CARD-ID: </b>"
 						+ (admitCardCollection.getUniqueEmrId() != null ? admitCardCollection.getUniqueEmrId() : "--"),
@@ -535,18 +545,23 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
 		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
 		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
 		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
 		Integer leftMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
-						? printSettings.getPageSetup().getLeftMargin() : 20)
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
 				: 20;
 		Integer rightMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin() : 20)
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
 				: 20;
 		response = jasperReportService.createPDF(ComponentType.ADMIT_CARD, parameters, admitCardReportA4FileName,
 				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
@@ -596,30 +611,38 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 							emailTrackCollection.setPatientId(user.getId());
 						}
 
-						JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user);
+						JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user,PrintSettingType.EMAIL.getType());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
 						UserCollection doctorUser = userRepository.findById(new ObjectId(doctorId)).orElse(null);
-						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
+						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
+								.orElse(null);
 
 						mailResponse = new MailResponse();
 						mailResponse.setMailAttachment(mailAttachment);
 						mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
 						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-								? locationCollection.getStreetAddress() + ", " : "")
+								? locationCollection.getStreetAddress() + ", "
+								: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-										? locationCollection.getLandmarkDetails() + ", " : "")
+										? locationCollection.getLandmarkDetails() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-										? locationCollection.getLocality() + ", " : "")
+										? locationCollection.getLocality() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-										? locationCollection.getCity() + ", " : "")
+										? locationCollection.getCity() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-										? locationCollection.getState() + ", " : "")
+										? locationCollection.getState() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-										? locationCollection.getCountry() + ", " : "")
+										? locationCollection.getCountry() + ", "
+										: "")
 								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-										? locationCollection.getPostalCode() : "");
+										? locationCollection.getPostalCode()
+										: "");
 
 						if (address.charAt(address.length() - 2) == ',') {
 							address = address.substring(0, address.length() - 2);
@@ -648,8 +671,8 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Admit Card", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Admit Card", body,
-					mailResponse.getMailAttachment());
+			Boolean response = mailService.sendEmail(emailAddress,
+					mailResponse.getDoctorName() + " sent you Admit Card", body, mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -688,30 +711,38 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 					emailTrackCollection.setPatientId(user.getId());
 				}
 
-				JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user);
+				JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user,PrintSettingType.EMAIL.getType());
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
 				UserCollection doctorUser = userRepository.findById(admitCardCollection.getDoctorId()).orElse(null);
-				LocationCollection locationCollection = locationRepository.findById(admitCardCollection.getLocationId()).orElse(null);
+				LocationCollection locationCollection = locationRepository.findById(admitCardCollection.getLocationId())
+						.orElse(null);
 
 				mailResponse = new MailResponse();
 				mailResponse.setMailAttachment(mailAttachment);
 				mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
 				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
-						? locationCollection.getStreetAddress() + ", " : "")
+						? locationCollection.getStreetAddress() + ", "
+						: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
-								? locationCollection.getLandmarkDetails() + ", " : "")
+								? locationCollection.getLandmarkDetails() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
-								? locationCollection.getLocality() + ", " : "")
+								? locationCollection.getLocality() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
-								? locationCollection.getCity() + ", " : "")
+								? locationCollection.getCity() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
-								? locationCollection.getState() + ", " : "")
+								? locationCollection.getState() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
-								? locationCollection.getCountry() + ", " : "")
+								? locationCollection.getCountry() + ", "
+								: "")
 						+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
-								? locationCollection.getPostalCode() : "");
+								? locationCollection.getPostalCode()
+								: "");
 
 				if (address.charAt(address.length() - 2) == ',') {
 					address = address.substring(0, address.length() - 2);
@@ -733,8 +764,8 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Admit Card", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Admit Card", body,
-					mailResponse.getMailAttachment());
+			Boolean response = mailService.sendEmail(emailAddress,
+					mailResponse.getDoctorName() + " sent you Admit Card", body, mailResponse.getMailAttachment());
 			if (response != null && mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())

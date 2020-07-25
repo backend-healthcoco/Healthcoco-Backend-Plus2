@@ -65,6 +65,7 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FieldAlign;
 import com.dpdocter.enums.LineSpace;
+import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -244,7 +245,8 @@ public class ReportsServiceImpl implements ReportsService {
 					opdReportsCollection = opdReportsRepository.save(opdReportsCollectionOld);
 				} else {
 					opdReportsCollection = new OPDReportsCollection();
-					UserCollection userCollection = userRepository.findById(new ObjectId(opdReports.getDoctorId())).orElse(null);
+					UserCollection userCollection = userRepository.findById(new ObjectId(opdReports.getDoctorId()))
+							.orElse(null);
 					BeanUtil.map(opdReports, opdReportsCollection);
 					opdReportsCollection.setCreatedBy(
 							(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle()
@@ -313,7 +315,8 @@ public class ReportsServiceImpl implements ReportsService {
 	public DeliveryReports submitDeliveryReport(DeliveryReports deliveryReports) {
 		DeliveryReports response = null;
 		DeliveryReportsCollection deliveryReportsCollection = new DeliveryReportsCollection();
-		UserCollection userCollection = userRepository.findById(new ObjectId(deliveryReports.getDoctorId())).orElse(null);
+		UserCollection userCollection = userRepository.findById(new ObjectId(deliveryReports.getDoctorId()))
+				.orElse(null);
 		if (deliveryReports != null) {
 			BeanUtil.map(deliveryReports, deliveryReportsCollection);
 			try {
@@ -569,7 +572,8 @@ public class ReportsServiceImpl implements ReportsService {
 							for (PrescriptionItem prescriptionItem : items) {
 								OPDPrescriptionItemResponse prescriptionItemDetail = new OPDPrescriptionItemResponse();
 								BeanUtil.map(prescriptionItem, prescriptionItemDetail);
-								DrugCollection drugCollection = drugRepository.findById(prescriptionItem.getDrugId()).orElse(null);
+								DrugCollection drugCollection = drugRepository.findById(prescriptionItem.getDrugId())
+										.orElse(null);
 								if (drugCollection != null) {
 									Drug drug = new Drug();
 									BeanUtil.map(drugCollection, drug);
@@ -955,7 +959,8 @@ public class ReportsServiceImpl implements ReportsService {
 		try {
 			ClinicalIndicatorCollection clinicalIndicatorCollection = null;
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
+						.orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
 				}
@@ -989,7 +994,8 @@ public class ReportsServiceImpl implements ReportsService {
 		ClinicalIndicator response = null;
 		try {
 			ClinicalIndicatorCollection clinicalIndicatorCollection = clinicalIndicatorRepository
-					.findById(new ObjectId(indicatorId)).orElse(null);;
+					.findById(new ObjectId(indicatorId)).orElse(null);
+			;
 			response = new ClinicalIndicator();
 			BeanUtil.map(clinicalIndicatorCollection, response);
 		} catch (Exception e) {
@@ -1015,7 +1021,7 @@ public class ReportsServiceImpl implements ReportsService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1063,7 +1069,8 @@ public class ReportsServiceImpl implements ReportsService {
 		try {
 			EquipmentLogAMCAndServicingRegisterCollection equipmentLogAMCAndServicingRegisterCollection = null;
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
+						.orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
 				}
@@ -1121,7 +1128,7 @@ public class ReportsServiceImpl implements ReportsService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1169,7 +1176,8 @@ public class ReportsServiceImpl implements ReportsService {
 		try {
 			RepairRecordsOrComplianceBookCollection bookCollection = null;
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
+						.orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
 				}
@@ -1227,7 +1235,7 @@ public class ReportsServiceImpl implements ReportsService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1276,7 +1284,8 @@ public class ReportsServiceImpl implements ReportsService {
 		try {
 			BroakenAppointmentCollection appointmentCollection = null;
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
+						.orElse(null);
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
 				}
@@ -1333,7 +1342,7 @@ public class ReportsServiceImpl implements ReportsService {
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long)page * size),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")), Aggregation.skip((long) page * size),
 						Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1432,11 +1441,20 @@ public class ReportsServiceImpl implements ReportsService {
 		String nameAndCost = "";
 
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
-		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
-				new ObjectId(otReportsLookupResponse.getDoctorId()),
-				new ObjectId(otReportsLookupResponse.getLocationId()),
-				new ObjectId(otReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType());
-
+		PrintSettingsCollection printSettings = null;
+		printSettings = printSettingsRepository
+				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+						new ObjectId(otReportsLookupResponse.getDoctorId()),
+						new ObjectId(otReportsLookupResponse.getLocationId()),
+						new ObjectId(otReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType(),
+						PrintSettingType.EMR.getType());
+		if (printSettings == null)
+			printSettings = printSettingsRepository
+					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+							new ObjectId(otReportsLookupResponse.getDoctorId()),
+							new ObjectId(otReportsLookupResponse.getLocationId()),
+							new ObjectId(otReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType(),
+							PrintSettingType.DEFAULT.getType());
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -1500,7 +1518,7 @@ public class ReportsServiceImpl implements ReportsService {
 		if (otReportsLookupResponse.getOperatingSurgeonAndCost() != null) {
 			nameAndCost = !DPDoctorUtils
 					.anyStringEmpty(otReportsLookupResponse.getOperatingSurgeonAndCost().getDoctor())
-							? otReportsLookupResponse.getOperatingSurgeonAndCost().getDoctor() 
+							? otReportsLookupResponse.getOperatingSurgeonAndCost().getDoctor()
 							: null;
 			if (otReportsLookupResponse.getOperatingSurgeonAndCost().getCost() > 0)
 				nameAndCost = nameAndCost + "(Rs. "
@@ -1512,7 +1530,7 @@ public class ReportsServiceImpl implements ReportsService {
 		if (otReportsLookupResponse.getAnaesthetistAndCost() != null) {
 
 			nameAndCost = !DPDoctorUtils.anyStringEmpty(otReportsLookupResponse.getAnaesthetistAndCost().getDoctor())
-					? otReportsLookupResponse.getAnaesthetistAndCost().getDoctor() 
+					? otReportsLookupResponse.getAnaesthetistAndCost().getDoctor()
 					: null;
 			if (otReportsLookupResponse.getAnaesthetistAndCost().getCost() > 0)
 				nameAndCost = nameAndCost + "(Rs. "
@@ -1524,8 +1542,7 @@ public class ReportsServiceImpl implements ReportsService {
 		if (otReportsLookupResponse.getAssitingDoctorsAndCost() != null) {
 			for (DoctorAndCost doctorAndCost : otReportsLookupResponse.getAssitingDoctorsAndCost()) {
 				if (DPDoctorUtils.anyStringEmpty(nameAndCost)) {
-					nameAndCost = !DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor())
-							? doctorAndCost.getDoctor() 
+					nameAndCost = !DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor()) ? doctorAndCost.getDoctor()
 							: null;
 					if (doctorAndCost.getCost() > 0)
 						nameAndCost = nameAndCost + "(Rs. " + doctorAndCost.getCost().intValue() + ")";
@@ -1533,7 +1550,7 @@ public class ReportsServiceImpl implements ReportsService {
 				} else {
 
 					nameAndCost = nameAndCost + (!DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor())
-							? " , " + doctorAndCost.getDoctor() 
+							? " , " + doctorAndCost.getDoctor()
 							: null);
 					if (doctorAndCost.getCost() > 0)
 						nameAndCost = nameAndCost + "(Rs. " + doctorAndCost.getCost().intValue() + ")";
@@ -1548,8 +1565,7 @@ public class ReportsServiceImpl implements ReportsService {
 		if (otReportsLookupResponse.getAssitingNursesAndCost() != null) {
 			for (DoctorAndCost doctorAndCost : otReportsLookupResponse.getAssitingNursesAndCost()) {
 				if (DPDoctorUtils.anyStringEmpty(nameAndCost)) {
-					nameAndCost = !DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor())
-							? doctorAndCost.getDoctor()
+					nameAndCost = !DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor()) ? doctorAndCost.getDoctor()
 							: null;
 					if (doctorAndCost.getCost() > 0)
 						nameAndCost = nameAndCost + "(Rs. " + doctorAndCost.getCost().intValue() + ")";
@@ -1557,7 +1573,7 @@ public class ReportsServiceImpl implements ReportsService {
 				} else {
 
 					nameAndCost = nameAndCost + (!DPDoctorUtils.anyStringEmpty(doctorAndCost.getDoctor())
-							? " , " + doctorAndCost.getDoctor() 
+							? " , " + doctorAndCost.getDoctor()
 							: null);
 					if (doctorAndCost.getCost() > 0)
 						nameAndCost = nameAndCost + "(Rs. " + doctorAndCost.getCost() + ")";
@@ -1568,11 +1584,13 @@ public class ReportsServiceImpl implements ReportsService {
 
 		int no = 0;
 		Boolean showIntructions = false, showDirection = false, showDrugQty = false;
-		
-		if (otReportsLookupResponse.getPostOperativeOrder() != null && !otReportsLookupResponse.getPostOperativeOrder().isEmpty())
+
+		if (otReportsLookupResponse.getPostOperativeOrder() != null
+				&& !otReportsLookupResponse.getPostOperativeOrder().isEmpty())
 			for (PrescriptionItemDetail prescriptionItem : otReportsLookupResponse.getPostOperativeOrder()) {
 				if (prescriptionItem != null && prescriptionItem.getDrug() != null) {
-					DrugCollection drug = drugRepository.findById(new ObjectId(prescriptionItem.getDrug().getId())).orElse(null);
+					DrugCollection drug = drugRepository.findById(new ObjectId(prescriptionItem.getDrug().getId()))
+							.orElse(null);
 					if (drug != null) {
 						String drugType = drug.getDrugType() != null
 								? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " " : "")
@@ -1591,11 +1609,9 @@ public class ReportsServiceImpl implements ReportsService {
 						}
 						if (drug.getDrugTypePlacement() != null) {
 							if (drug.getDrugTypePlacement().equalsIgnoreCase("PREFIX")) {
-								drugName = (drugType + drugName) == "" ? "--"
-										: drugType + " " + drugName + genericName;
+								drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName + genericName;
 							} else if (drug.getDrugTypePlacement().equalsIgnoreCase("SUFFIX")) {
-								drugName = (drugType + drugName) == "" ? "--"
-										: drugName + " " + drugType + genericName;
+								drugName = (drugType + drugName) == "" ? "--" : drugName + " " + drugType + genericName;
 							}
 						} else {
 							drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName + genericName;
@@ -1621,8 +1637,7 @@ public class ReportsServiceImpl implements ReportsService {
 							showDirection = true;
 							if (prescriptionItem.getDirection().get(0).getDirection() != null) {
 								if (directions == "")
-									directions = directions
-											+ (prescriptionItem.getDirection().get(0).getDirection());
+									directions = directions + (prescriptionItem.getDirection().get(0).getDirection());
 								else
 									directions = directions + ","
 											+ (prescriptionItem.getDirection().get(0).getDirection());
@@ -1697,8 +1712,7 @@ public class ReportsServiceImpl implements ReportsService {
 							prescriptionJasperDetails.setDrugQuantity("0");
 						} else {
 							showDrugQty = true;
-							prescriptionJasperDetails
-									.setDrugQuantity(prescriptionItem.getDrugQuantity().toString());
+							prescriptionJasperDetails.setDrugQuantity(prescriptionItem.getDrugQuantity().toString());
 						}
 						prescriptionItems.add(prescriptionJasperDetails);
 					}
@@ -1826,12 +1840,20 @@ public class ReportsServiceImpl implements ReportsService {
 			throws NumberFormatException, IOException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
-
-		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
-				new ObjectId(deliveryReportsLookupResponse.getDoctorId()),
-				new ObjectId(deliveryReportsLookupResponse.getLocationId()),
-				new ObjectId(deliveryReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType());
-
+		PrintSettingsCollection printSettings = null;
+		printSettings = printSettingsRepository
+				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+						new ObjectId(deliveryReportsLookupResponse.getDoctorId()),
+						new ObjectId(deliveryReportsLookupResponse.getLocationId()),
+						new ObjectId(deliveryReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType(),
+						PrintSettingType.EMR.getType());
+		if (printSettings == null)
+			printSettings = printSettingsRepository
+					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+							new ObjectId(deliveryReportsLookupResponse.getDoctorId()),
+							new ObjectId(deliveryReportsLookupResponse.getLocationId()),
+							new ObjectId(deliveryReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType(),
+							PrintSettingType.DEFAULT.getType());
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -1963,12 +1985,13 @@ public class ReportsServiceImpl implements ReportsService {
 	public IPDReports getIPDReportById(String reportId) {
 		IPDReports response = null;
 		try {
-			IPDReportsCollection ipdReportsCollection = ipdReportsRepository.findById(new ObjectId(reportId)).orElse(null);
-			if(ipdReportsCollection!= null) {
+			IPDReportsCollection ipdReportsCollection = ipdReportsRepository.findById(new ObjectId(reportId))
+					.orElse(null);
+			if (ipdReportsCollection != null) {
 				response = new IPDReports();
 				BeanUtil.map(ipdReportsCollection, response);
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -1980,11 +2003,12 @@ public class ReportsServiceImpl implements ReportsService {
 	public OPDReportCustomResponse getOPDReportById(String reportId) {
 		OPDReportCustomResponse response = null;
 		try {
-			OPDReportsCollection opdReportsCollection = opdReportsRepository.findById(new ObjectId(reportId)).orElse(null);
-			if(opdReportsCollection!= null) {
+			OPDReportsCollection opdReportsCollection = opdReportsRepository.findById(new ObjectId(reportId))
+					.orElse(null);
+			if (opdReportsCollection != null) {
 				response = new OPDReportCustomResponse();
 				BeanUtil.map(opdReportsCollection, response);
-			}		
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -1997,10 +2021,10 @@ public class ReportsServiceImpl implements ReportsService {
 		OTReports response = null;
 		try {
 			OTReportsCollection otReportsCollection = otReportsRepository.findById(new ObjectId(reportId)).orElse(null);
-			if(otReportsCollection!= null) {
+			if (otReportsCollection != null) {
 				response = new OTReports();
 				BeanUtil.map(otReportsCollection, response);
-			}		
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -2012,11 +2036,12 @@ public class ReportsServiceImpl implements ReportsService {
 	public DeliveryReports getDeliveryReportById(String reportId) {
 		DeliveryReports response = null;
 		try {
-			DeliveryReportsCollection deliveryReportsCollection = deliveryReportsRepository.findById(new ObjectId(reportId)).orElse(null);
-			if(deliveryReportsCollection!= null) {
+			DeliveryReportsCollection deliveryReportsCollection = deliveryReportsRepository
+					.findById(new ObjectId(reportId)).orElse(null);
+			if (deliveryReportsCollection != null) {
 				response = new DeliveryReports();
 				BeanUtil.map(deliveryReportsCollection, response);
-			}			
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());

@@ -27,12 +27,17 @@ public interface PrintSettingsRepository extends MongoRepository<PrintSettingsCo
 	List<PrintSettingsCollection> findByLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(ObjectId locationId, ObjectId hospitalId, Date date, List<Boolean> discards,
 			Sort sort);
 
-	PrintSettingsCollection findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String type);
+	PrintSettingsCollection findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String type, String printSettingType);
 
 	PrintSettingsCollection findByDoctorIdAndLocationIdAndHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
 
 	PrintSettingsCollection findByLocationIdAndHospitalId(ObjectId locationId, ObjectId hospitalId);
+	
+	PrintSettingsCollection findByDoctorIdAndLocationIdAndHospitalIdAndPrintSettingType(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,String printSettingType);
 
 	List<PrintSettingsCollection> findByLocationId(ObjectId locationId);
+
+	PrintSettingsCollection findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimeAndDiscardedAndPrintSettingTypeIn(
+			ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, Boolean discarded, String printSettingType);
 
 }

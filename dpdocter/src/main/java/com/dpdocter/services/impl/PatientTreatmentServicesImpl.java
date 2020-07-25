@@ -53,6 +53,7 @@ import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.PatientTreatmentService;
+import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -173,7 +174,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				treatmentServicesCollection.setTreatmentCode("TR" + DPDoctorUtils.generateRandomId());
 
 				if (!DPDoctorUtils.anyStringEmpty(treatmentServicesCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(treatmentServicesCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(treatmentServicesCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						treatmentServicesCollection.setRankingCount(1);
 
@@ -346,9 +348,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				}
 				patientTreatmentCollection.setCreatedBy(createdBy);
 			} else {
-				PatientTreatmentCollection oldPatientTreatmentCollection = patientTreamentRepository.findByIdAndDoctorIdAndLocationIdAndHospitalId(
-						new ObjectId(request.getId()), new ObjectId(request.getDoctorId()),
-						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+				PatientTreatmentCollection oldPatientTreatmentCollection = patientTreamentRepository
+						.findByIdAndDoctorIdAndLocationIdAndHospitalId(new ObjectId(request.getId()),
+								new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+								new ObjectId(request.getHospitalId()));
 
 				if (oldPatientTreatmentCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "No treatment found for the given ids");
@@ -408,10 +411,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			BeanUtil.map(patientTreatmentCollection, response);
 			response.setTreatments(treatmentResponses);
 
-			pushNotificationServices.notifyUser(patientTreatmentCollection.getDoctorId().toString(),
-					"Treament Added",
-					ComponentType.TREATMENTS_REFRESH.getType(), patientTreatmentCollection.getPatientId().toString(), null);
-			
+			pushNotificationServices.notifyUser(patientTreatmentCollection.getDoctorId().toString(), "Treament Added",
+					ComponentType.TREATMENTS_REFRESH.getType(), patientTreatmentCollection.getPatientId().toString(),
+					null);
+
 		} catch (Exception e) {
 			logger.error("Error occurred while adding or editing treatment for patients", e);
 			e.printStackTrace();
@@ -426,9 +429,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			String hospitalId, Treatment treatment) {
 		PatientTreatmentResponse response = null;
 		try {
-			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findByIdAndDoctorIdAndLocationIdAndHospitalId(
-					new ObjectId(treatmentId), new ObjectId(doctorId), new ObjectId(locationId),
-					new ObjectId(hospitalId));
+			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository
+					.findByIdAndDoctorIdAndLocationIdAndHospitalId(new ObjectId(treatmentId), new ObjectId(doctorId),
+							new ObjectId(locationId), new ObjectId(hospitalId));
 			if (patientTreatmentCollection == null) {
 				logger.warn("No treatment found for the given treatmentId");
 				throw new BusinessException(ServiceError.NotFound, "No treatment found for the given treatmentId");
@@ -478,9 +481,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			String hospitalId, Boolean discarded) {
 		PatientTreatmentResponse response = null;
 		try {
-			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findByIdAndDoctorIdAndLocationIdAndHospitalId(
-					new ObjectId(treatmentId), new ObjectId(doctorId), new ObjectId(locationId),
-					new ObjectId(hospitalId));
+			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository
+					.findByIdAndDoctorIdAndLocationIdAndHospitalId(new ObjectId(treatmentId), new ObjectId(doctorId),
+							new ObjectId(locationId), new ObjectId(hospitalId));
 
 			if (patientTreatmentCollection != null) {
 				patientTreatmentCollection.setDiscarded(discarded);
@@ -568,32 +571,28 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							.append("treatments.quantity", "$treatments.quantity")
 							.append("treatments.treatmentFields", "$treatments.treatmentFields")
 							.append("appointmentRequest", "$appointmentRequest")));
-			Aggregation aggregation = Aggregation
-					.newAggregation(
-							Aggregation.match(new Criteria("_id").is(new ObjectId(treatmentId))
-									.and("isPatientDiscarded").ne(true)),
-							new CustomAggregationOperation(new Document("$unwind",
-									new BasicDBObject("path", "$treatments").append("includeArrayIndex",
-											"arrayIndex"))),
-							Aggregation.lookup(
-									"treatment_services_cl", "treatments.treatmentServiceId", "_id",
-									"treatmentService"),
-							Aggregation
-									.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-							Aggregation.unwind("treatmentService"),
-							new CustomAggregationOperation(new Document("$unwind",
-									new BasicDBObject("path", "$appointmentRequest")
-											.append("preserveNullAndEmptyArrays", true))),
-							Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
-							Aggregation.unwind("patientVisit"),
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.match(
+							new Criteria("_id").is(new ObjectId(treatmentId)).and("isPatientDiscarded").ne(true)),
+					new CustomAggregationOperation(new Document("$unwind",
+							new BasicDBObject("path", "$treatments").append("includeArrayIndex", "arrayIndex"))),
+					Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+							"treatmentService"),
+					Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+					Aggregation.unwind("treatmentService"),
+					new CustomAggregationOperation(new Document("$unwind",
+							new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
+									true))),
+					Aggregation.lookup("patient_visit_cl", "_id", "treatmentId", "patientVisit"),
+					Aggregation.unwind("patientVisit"),
 
-							Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
-							new CustomAggregationOperation(new Document("$unwind",
-									new BasicDBObject("path", "$treatmentDoctor").append("preserveNullAndEmptyArrays",
-											true))),
-							projectList,
+					Aggregation.lookup("user_cl", "treatments.doctorId", "_id", "treatmentDoctor"),
+					new CustomAggregationOperation(new Document("$unwind",
+							new BasicDBObject("path", "$treatmentDoctor").append("preserveNullAndEmptyArrays", true))),
+					projectList,
 
-							new CustomAggregationOperation(new Document("$group", new BasicDBObject("id", "$_id")
+					new CustomAggregationOperation(new Document("$group",
+							new BasicDBObject("id", "$_id")
 									.append("patientId", new BasicDBObject("$first", "$patientId"))
 									.append("locationId", new BasicDBObject("$first", "$locationId"))
 									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
@@ -1317,12 +1316,15 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				UserCollection user = userRepository.findById(patientTreatmentCollection.getPatientId()).orElse(null);
 
 				if (showPH || showPLH || showFH || showDA) {
-					List<HistoryCollection> historyCollections = historyRepository.findByLocationIdAndHospitalIdAndPatientId(patientTreatmentCollection.getLocationId(),
-							patientTreatmentCollection.getHospitalId(), patientTreatmentCollection.getPatientId());
-					if(historyCollections!=null)historyCollection=historyCollections.get(0);
+					List<HistoryCollection> historyCollections = historyRepository
+							.findByLocationIdAndHospitalIdAndPatientId(patientTreatmentCollection.getLocationId(),
+									patientTreatmentCollection.getHospitalId(),
+									patientTreatmentCollection.getPatientId());
+					if (historyCollections != null)
+						historyCollection = historyCollections.get(0);
 				}
 				JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user,
-						historyCollection, showPH, showPLH, showFH, showDA);
+						historyCollection, showPH, showPLH, showFH, showDA,PrintSettingType.EMR.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -1373,12 +1375,13 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						}
 
 						JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient,
-								user, null, false, false, false, false);
+								user, null, false, false, false, false,PrintSettingType.EMAIL.getType());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
 						UserCollection doctorUser = userRepository.findById(new ObjectId(doctorId)).orElse(null);
-						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
+						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
+								.orElse(null);
 
 						response = new MailResponse();
 						response.setMailAttachment(mailAttachment);
@@ -1438,7 +1441,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	private JasperReportResponse createJasper(PatientTreatmentCollection patientTreatmentCollection,
 			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
-			Boolean showPLH, Boolean showFH, Boolean showDA) throws IOException, ParseException {
+			Boolean showPLH, Boolean showFH, Boolean showDA, String printSettingType) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
@@ -1539,9 +1542,18 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						+ sdf.format(patientTreatmentCollection.getFromDate());
 				parameters.put("followUpAppointment", "Next Review on " + dateTime);
 			}
-			PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
-					patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
-					patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType());
+			PrintSettingsCollection printSettings = null;
+			printSettings = printSettingsRepository
+					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+							patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
+							patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType(),
+							printSettingType);
+			if (printSettings == null)
+				printSettings = printSettingsRepository
+						.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+								patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
+								patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType(),
+								PrintSettingType.DEFAULT.getType());
 
 			if (printSettings == null) {
 				printSettings = new PrintSettingsCollection();
@@ -1665,7 +1677,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				treatmentServicesCollection.setTreatmentCode("TR" + DPDoctorUtils.generateRandomId());
 				if (DPDoctorUtils.anyStringEmpty(createdBy)
 						&& !DPDoctorUtils.anyStringEmpty(treatmentServicesCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(treatmentServicesCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(treatmentServicesCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null)
 						createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 								+ userCollection.getFirstName();
@@ -1734,7 +1747,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		try {
 			ObjectId serviceObjectId = new ObjectId(serviceId), doctorObjectId = new ObjectId(doctorId),
 					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
-			TreatmentServicesCollection originalService = treatmentServicesRepository.findById(serviceObjectId).orElse(null);
+			TreatmentServicesCollection originalService = treatmentServicesRepository.findById(serviceObjectId)
+					.orElse(null);
 			if (originalService == null) {
 				logger.error("Invalid Service Id");
 				throw new BusinessException(ServiceError.Unknown, "Invalid Service Id");
@@ -1810,11 +1824,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				}
 
 				JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user,
-						null, false, false, false, false);
+						null, false, false, false, false,PrintSettingType.EMAIL.getType());
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-				UserCollection doctorUser = userRepository.findById(patientTreatmentCollection.getDoctorId()).orElse(null);
+				UserCollection doctorUser = userRepository.findById(patientTreatmentCollection.getDoctorId())
+						.orElse(null);
 				LocationCollection locationCollection = locationRepository
 						.findById(patientTreatmentCollection.getLocationId()).orElse(null);
 
@@ -1890,5 +1905,4 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		return response;
 	}
 
-	
 }
