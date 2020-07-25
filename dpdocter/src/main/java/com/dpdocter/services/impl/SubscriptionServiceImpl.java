@@ -984,6 +984,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					// save to History
 					BeanUtil.map(subscriptionCollection, subscriptionHistoryCollection);
 					subscriptionHistoryCollection.setSubscriptionId(subscriptionCollection.getId());
+					subscriptionHistoryCollection.setCreatedBy(userCollection.getTitle() +""+userCollection.getFirstName());
 					subscriptionHistoryCollection.setDoctorId(subscriptionCollection.getDoctorId());
 					subscriptionHistoryCollection.setCreatedTime(new Date());
 					subscriptionHistoryRepository.save(subscriptionHistoryCollection);
