@@ -533,7 +533,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
 		VelocityContext context = new VelocityContext();
 		context.put("fName", firstName);
-//		context.put("createdDate", createdDate);
+		context.put("createdDate", createdDate);
 		context.put("receipt", receipt);
 		context.put("totalCost", totalCost);
 		context.put("transactionId", transactionId);
@@ -547,14 +547,16 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	
 	@Override
 	@Transactional
-	public String generateBulkSmsPayment(String firstName,String packageName,String transactionId,Double amount, String templatePath) throws Exception {
+	public String generateBulkSmsPayment(String firstName, String type, String reciept, Double discountAmount,
+			String packageName, String paymentDate, String templatePath) throws Exception {
 
 		VelocityContext context = new VelocityContext();
 		context.put("fName", firstName);
+		context.put("mode", type);
 		context.put("packageName",packageName);
-		context.put("transactionId",transactionId);
-		context.put("amount",amount);
-		context.put("transactionId", imagePath + "templatesImage");
+		context.put("receiptId",reciept);
+		context.put("amount",discountAmount);
+		context.put("paymentDate",paymentDate);
 		context.put("fbLink", fbLink);
 		context.put("contactUsEmail", contactUsEmail);
 		context.put("twitterLink", twitterLink);

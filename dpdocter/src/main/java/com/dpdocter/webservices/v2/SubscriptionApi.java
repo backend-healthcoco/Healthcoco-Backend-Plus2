@@ -57,14 +57,15 @@ public class SubscriptionApi {
 	@GET
 	@ApiOperation(value = PathProxy.SubscriptionUrls.GET_SUBSCRIPTION_BY_DOCTORID, notes = PathProxy.SubscriptionUrls.GET_SUBSCRIPTION_BY_DOCTORID)
 	public Response<Subscription> getSubscriptionByDoctorId(@PathParam("doctorId") String doctorId,
-			@QueryParam(value = "packageName") PackageType packageName) {
+			@QueryParam(value = "packageName") PackageType packageName,@QueryParam(value = "duration") int duration,
+			@QueryParam(value = "newAmount") int newAmount ) {
 		if (doctorId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
 		Response<Subscription> response = new Response<Subscription>();
-		response.setData(subscriptionService.getSubscriptionByDoctorId(doctorId,packageName));
+		response.setData(subscriptionService.getSubscriptionByDoctorId(doctorId,packageName,duration,newAmount));
 		return response;
 
 	}

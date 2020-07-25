@@ -17,7 +17,7 @@ public interface SubscriptionService {
 	// new subscription
 	public SubscriptionResponse addEditSubscription(SubscriptionRequest request);
 
-	public Subscription getSubscriptionByDoctorId(String doctorId,PackageType packageName);
+	public Subscription getSubscriptionByDoctorId(String doctorId,PackageType packageName,int duration,int newAmount);
 
 	public PackageDetailObject getPackageDetailByPackageName(PackageType packageName);
 	
