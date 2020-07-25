@@ -57,7 +57,7 @@ public class BankDetailsServiceImpl implements BankDetailsService {
 				}
 			
 			BeanUtil.map(request, bankDetailsCollection);
-			bankDetailsCollection.setCreatedTime(request.getCreatedTime());
+			bankDetailsCollection.setCreatedTime(bankDetailsCollection.getCreatedTime());
 			bankDetailsCollection.setUpdatedTime(new Date());
 		}
 		else{
