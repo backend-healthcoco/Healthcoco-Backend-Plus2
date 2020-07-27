@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -32,10 +33,20 @@ public class TransactionSmsServicesImpl implements TransactionSmsServices {
 	private MongoTemplate mongoTemplate;
 	
 	@Override
-	public List<TransactionalSmsReport> getSmsReport(int page, int size, String doctorId, String locationId) {
+	public List<TransactionalSmsReport> getSmsReport(int page, int size, String doctorId, String locationId,String fromDate, String toDate) {
 		List<TransactionalSmsReport> response = null;
 		try {
+			
+			Date from = null;
+			Date to = null;
 			Criteria criteria = new Criteria();
+
+			long date = 0l;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+				criteria.and("sentTime").gte(from).lte(to);
+			} 
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				ObjectId doctorObjectId = new ObjectId(doctorId);
