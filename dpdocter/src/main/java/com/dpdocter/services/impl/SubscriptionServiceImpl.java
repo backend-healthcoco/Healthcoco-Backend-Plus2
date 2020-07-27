@@ -1008,7 +1008,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					SubscriptionCollection subscriptionCkD = subscriptionRepository
 							.findByDoctorId(new ObjectId(request.getDoctorId()));
 					if (subscriptionCkD != null) {
-						BeanUtil.map(subscriptionCkD, subscriptionCollection);
+						subscriptionCollection.setId(subscriptionCkD.getId());
 					}
 					BeanUtil.map(request, subscriptionCollection);
 					subscriptionCollection.setCreatedTime(new Date());
