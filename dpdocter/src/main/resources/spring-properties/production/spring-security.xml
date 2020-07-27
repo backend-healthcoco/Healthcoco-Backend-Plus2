@@ -11,6 +11,7 @@
 
 <security:http auto-config="true" use-expressions="true">
     <security:intercept-url pattern="/api/v1/**" access="hasRole('ROLE_USER')" />
+    <security:intercept-url pattern="/api/v2/**" access="hasRole('ROLE_USER')" />
     <security:intercept-url pattern="/api/websearch/**" access="hasRole('FOR_SEARCH')" />
     <security:intercept-url pattern="/api/v1/records/download/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
     <security:http-basic />
