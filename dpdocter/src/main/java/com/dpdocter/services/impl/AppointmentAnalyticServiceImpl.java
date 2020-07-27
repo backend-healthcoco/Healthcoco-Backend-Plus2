@@ -1545,7 +1545,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					new BasicDBObject("_id", "$_id")
 					.append("doctorId", "$doctorId")
 					.append("totalAmountReceived", "$totalAmountReceived")
-					.append("consultationType.consultationType", "$doctorData.consultationType.consultationType")					
+				//	.append("consultationType.consultationType", "$doctorData.consultationType.consultationType")					
 					.append("consultationType.cost", "$doctorData.consultationType.cost")
 					.append("consultationType.healthcocoCharges", "$doctorData.consultationType.healthcocoCharges")
 					.append("createdTime", "$createdTime")					

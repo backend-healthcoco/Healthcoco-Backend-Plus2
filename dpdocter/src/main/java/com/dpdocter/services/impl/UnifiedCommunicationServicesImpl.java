@@ -165,14 +165,18 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 	}
 
 	@Override
-	public Boolean createpushNotification(String userId, String room, String title) {
+	public Boolean createpushNotification(String userId, String room, String title,String callType) {
 		Boolean response = false;
 		try {
 
-			String message = room + " " + title;
-			pushNotificationServices.notifyUser(userId, message, ComponentType.CONSULTATION_VIDEO_CALL.getType(), null,
-					null);
-			response = true;
+//			String message = room + " " + title;
+//			pushNotificationServices.notifyUser(userId, message, ComponentType.CONSULTATION_VIDEO_CALL.getType(), null,
+//					null);
+//			response = true;
+			String message="is calling";
+			pushNotificationServices.notifyUserTwilio(userId,
+					message, ComponentType.CONSULTATION_VIDEO_CALL.getType(), null,room,title, null,callType);
+			response=true;
 
 		} catch (Exception e) {
 			logger.error("Error : " + e.getMessage());

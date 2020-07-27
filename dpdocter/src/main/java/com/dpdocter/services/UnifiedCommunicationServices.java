@@ -9,7 +9,7 @@ public interface UnifiedCommunicationServices {
 
 //	Boolean twilioPushNotification();
 
-	Boolean createpushNotification(String userId, String room, String title);
+	Boolean createpushNotification(String userId, String room, String title,String callType);
 
 	Boolean twilioPushNotification(String serviceSID);
 

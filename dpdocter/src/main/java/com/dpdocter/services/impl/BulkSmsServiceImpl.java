@@ -420,10 +420,22 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 				for(BulkSmsReport credit:response)
 				{
 					Long total=(long) credit.getSmsDetails().size();
+					Integer totalLength=160; 
+					String message=credit.getSmsDetails().get(0).getSms().getSmsText();
+					  Integer messageLength=message.length();
+					  System.out.println("messageLength:"+messageLength);
+					  long credits=(messageLength/totalLength);
+					  
+					  long temp=messageLength%totalLength;
+					  if(credits==0 || temp!=0) 
+					  credits=credits+1;
+					
+					  long subCredits=credits*(total);
+					
 					Long count= mongoTemplate.count(new Query(new Criteria("smsDetails.deliveryStatus").is("DELIVERED").andOperator(criteria)),SMSTrackDetail.class);
 					credit.setDelivered(count);
 					credit.setUndelivered(total-count);
-					credit.setTotalCreditsSpent(total);
+					credit.setTotalCreditsSpent(subCredits);
 				}
 //			
 			
@@ -657,9 +669,8 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							String pattern = "dd/MM/yyyy";
 							SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		
-							sms.setSmsText("Hi " + doctor.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(onlinePaymentCollection.getCreatedTime())
-							+ " by "+onlinePaymentCollection.getMode()+" and your transactionId is"+onlinePaymentCollection.getTransactionId()+" for the bulk sms package "+bulkPackage.getPackageName()
-							+" and the total cost is "+ onlinePaymentCollection.getDiscountAmount() + ".");
+							sms.setSmsText("Hello " + doctor.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(onlinePaymentCollection.getCreatedTime())
+							+ ", Mode of Payment: "+onlinePaymentCollection.getMode()+" and your ReceiptId is"+onlinePaymentCollection.getReciept()+" Total Cost :"+ onlinePaymentCollection.getDiscountAmount()+", Plan: "+bulkPackage.getPackageName()+ ".");
 	
 								SMSAddress smsAddress = new SMSAddress();
 							smsAddress.setRecipient(doctor.getMobileNumber());
@@ -673,13 +684,14 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							
 						System.out.println("sms sent"+res);
 						
-						
-						String body ="Hi " + doctor.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(onlinePaymentCollection.getCreatedTime())
-						+ " by "+onlinePaymentCollection.getMode()+" and your transactionId is"+onlinePaymentCollection.getTransactionId()+" for the bulk sms package "+bulkPackage.getPackageName()
-						+" and the total cost is "+ onlinePaymentCollection.getDiscountAmount() + ".";
-							//	mailBodyGenerator.verifyEmailBody(
-//								(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName(),
-//								tokenCollection.getId(), "verifyDoctor.vm");
+						String paymentDate =simpleDateFormat.format(onlinePaymentCollection.getCreatedTime());
+//						String body ="Hi " + doctor.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(onlinePaymentCollection.getCreatedTime())
+//						+ " by "+onlinePaymentCollection.getMode()+" and your transactionId is"+onlinePaymentCollection.getTransactionId()+" for the bulk sms package "+bulkPackage.getPackageName()
+//						+" and the total cost is "+ onlinePaymentCollection.getDiscountAmount() + ".";
+						String body	= mailBodyGenerator.generateBulkSmsPayment(
+								 doctor.getFirstName(),onlinePaymentCollection.getMode().getType(),onlinePaymentCollection.getReciept(),onlinePaymentCollection.getDiscountAmount(),
+								 bulkPackage.getPackageName(),paymentDate
+								, "bulkSmsTemplate.vm");
 				Boolean mail=	mailService.sendEmail(doctor.getEmailAddress(),"BulkSms Payment Receipt", body, null);
 						System.out.println(mail);
 						
