@@ -4,11 +4,11 @@ package com.dpdocter.webservices;
  * @author veeraj
  */
 public interface PathProxy {
-	
-	public static final String BULK_SMS_BASE_URL =  "/bulk";
+
+	public static final String BULK_SMS_BASE_URL = "/bulk";
 
 	public interface BulkSMSUrls {
-	public static final String UPDATE_DELIVERY_REPORTS = "/sms/updateDeliveryReports";
+		public static final String UPDATE_DELIVERY_REPORTS = "/sms/updateDeliveryReports";
 	}
 
 	public static final String HOME_URL = "/";
@@ -923,7 +923,7 @@ public interface PathProxy {
 		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String UPLOAD_FILE = "/upload/file/";
-		
+
 		public static final String UPLOAD_SIGNATURE = "/upload/signature/";
 
 	}
@@ -1178,7 +1178,7 @@ public interface PathProxy {
 		public static final String SEND_BULK_SMS = "bulk/{message}";
 
 	}
-	
+
 	public static final String EMAIL_TRACK_BASE_URL = BASE_URL + "/email";
 
 	public interface EmailTrackUrls {
@@ -1708,11 +1708,11 @@ public interface PathProxy {
 		public static final String GET_BOOKED_BY_APPOINTMENT_ANALYTIC = "appointment/bookedby/{locationId}/{hospitalId}";
 
 		public static final String ONLINE_CONSULTATION_ANALYTICS = "/onlineConsultation/analytics/get";
-		
+
 		public static final String PAYMENT_SUMMARY = "/paymentSummary/get";
-		
+
 		public static final String FETCH_SETTLEMENT = "/settlement/get";
-	
+
 	}
 
 	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";
@@ -2366,7 +2366,7 @@ public interface PathProxy {
 		public static final String DOWNLOAD_FITNESS_ASSESSMENT = "/download/{id}";
 
 	}
-	
+
 	public static final String BULK_SMS_PACKAGE_BASE_URL = BASE_URL + "/bulkSms";
 
 	public interface BulkSmsPackageUrls {
@@ -2379,47 +2379,43 @@ public interface PathProxy {
 		public static final String GENERATE_ID = "/payment/generateId";
 		public static final String CREATE_PAYMENT = "/payment/create";
 		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
-		
-		
-	}
 
+	}
 
 	public static final String UNIFIED_COMMUNICATION_BASE_URL = BASE_URL + "/communication";
 
 	public interface ChatUrls {
 
 		public static final String CREATE_CHAT_ACCESS_TOKEN = "/chat/accessToken/create/{userId}";
-		
+
 		public static final String CREATE_CHAT_ACCESS_TOKEN_ANDROID = "/chat/accessTokenAndroid/create/{userId}";
 
 		public static final String CREATE_VIDEO_ACCESS_TOKEN = "/video/accessToken/create/{userId}/{room}";
 
 		public static final String CREATE_PUSH_NOTIFICATION = "/pushNotify";
-		
+
 		public static final String CREATE_TWILIO_NOTIFICATION = "/twilio/pushNotify";
 	}
-	
 
 	public static final String SUBSCRIPTION_BASE_URL = BASE_URL + "/subscription";
+
 	public interface SubscriptionUrls {
 
 		public static final String ADD_EDIT_SUBSCRIPTION = "/addEdit";
 
 		public static final String GET_SUBSCRIPTION_BY_DOCTORID = "/doctor/{doctorId}/get";
-		
+
 		public static final String GET_SUBSCRIPTIONHISTORY_BY_DOCTORID = "/doctor/history/{doctorId}/get";
 
 		public static final String GET_PACKAGES_BY_NAME = "/package/get";
 
 		public static final String CREATE_PAYMENT = "/payment/create";
-		
+
 		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
-		
 
 		public static final String GET_COUNTRYLIST = "/country/get";
-		
-		public static final String GET_PACKAGES = "/package/getList";
 
+		public static final String GET_PACKAGES = "/package/getList";
 
 	}
 
@@ -2434,17 +2430,20 @@ public interface PathProxy {
 		public static final String GET_UNANSWERED_QUESTIONS = "/getUnansweredQue/{doctorId}";
 	}
 
-
 	public static final String ONLINE_CONSULTATION_ANALYTICS_BASE_URL = BASE_URL + "/onlineConsultation";
-	public interface OnlineConsultationAnalyticsUrls{
-		
+
+	public interface OnlineConsultationAnalyticsUrls {
 
 		public static final String ONLINE_CONSULTATION_ANALYTICS = "/analytics/get";
-		
-	
-		
-				
+
 	}
 
+	public static final String TRANSACTION_SMS_BASE_URL = BASE_URL + "/transaction";
+
+	public interface TransactionSmsUrls {
+
+		public static final String GET_TRANSACTION_SMS_REPORT = "/transaction/report/get";
+
+	}
 
 }

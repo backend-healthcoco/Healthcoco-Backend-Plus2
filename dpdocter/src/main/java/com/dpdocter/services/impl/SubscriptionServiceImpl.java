@@ -929,7 +929,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 //		cal.set(Calendar.MINUTE, 0);
 //		cal.set(Calendar.SECOND, 0);
 //		cal.set(Calendar.MILLISECOND, 0);
-		Date dateAfter2Days = cal.getTime();
+//		Date dateAfter2Days = cal.getTime();
 
 		try {
 
@@ -977,8 +977,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					subscriptionCollection
 							.setTransactionStatus(doctorSubscriptionPaymentCollection.getTransactionStatus());
 					subscriptionCollection.setFromDate(new Date());
-					subscriptionCollection.setToDate(dateAfter2Days);
-//					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12*request.getDuration()));
+//					subscriptionCollection.setToDate(dateAfter2Days);
+					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12*request.getDuration()));
 					subscriptionRepository.save(subscriptionCollection);
 							 
 					// save to History
@@ -1024,8 +1024,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					subscriptionCollection
 							.setTransactionStatus(doctorSubscriptionPaymentCollection.getTransactionStatus());
 					subscriptionCollection.setFromDate(new Date());
-					subscriptionCollection.setToDate(dateAfter2Days);
-//					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12*request.getDuration()));
+//					subscriptionCollection.setToDate(dateAfter2Days);
+					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12*request.getDuration()));
 
 					subscriptionRepository.save(subscriptionCollection);
 					System.out.println(subscriptionCollection);
@@ -1068,10 +1068,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						sms.setSmsText("Hello " + userCollection.getFirstName() + ", your Payment has been done successfully on Date: "
 						+simpleDateFormat.format(doctorSubscriptionPaymentCollection.getCreatedTime())
 						+ ", Mode of Payment:  "+doctorSubscriptionPaymentCollection.getMode()
-						+ ", ReceiptId "+doctorSubscriptionPaymentCollection.getReciept()
-						+ ", Total cost Rs. "+ doctorSubscriptionPaymentCollection.getAmount() 
-						+ ", Plan"+  doctorSubscriptionPaymentCollection.getPackageName()
-						+ ", Duration "+request.getDuration()+" year.");
+						+ ", ReceiptId: "+doctorSubscriptionPaymentCollection.getReciept()
+						+ ", Total cost Rs.: "+ doctorSubscriptionPaymentCollection.getAmount() 
+						+ ", Plan: "+  doctorSubscriptionPaymentCollection.getPackageName()
+						+ ", Duration: "+request.getDuration()+" year.");
 
 						SMSAddress smsAddress = new SMSAddress();
 						smsAddress.setRecipient(userCollection.getMobileNumber());
