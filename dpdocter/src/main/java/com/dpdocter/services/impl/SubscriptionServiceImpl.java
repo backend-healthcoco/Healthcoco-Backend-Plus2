@@ -592,7 +592,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				List<PackageAmountObject> BASIC = packageBasic.getPackageAmount();
 				List<PackageAmountObject> PRO = packagePro.getPackageAmount();
 				List<PackageAmountObject> ADVANCE = packageAdvance.getPackageAmount();
-				if (subscriptionCollection.getAmount() != 0) {
+				if (subscriptionCollection.getPackageName() != PackageType.FREE) {
 					// from date toDate difference
 					Calendar fromDateConvert = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 					fromDateConvert.setTime(subscriptionCollection.getFromDate());
@@ -639,28 +639,31 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 				} // if close of amt
 				else {
+					//send request amount directly 
+					subscriptionCollection.setAmount(newAmount);
+
 					// pro to adv
-					if (packageName == PackageType.ADVANCE) {
-						ADVANCE.forEach(x -> {
-							if (duration == x.getDuration()) {
-								subscriptionCollection.setAmount(x.getAmount());
-							}
-						});
-					} // basic to adv
-					else if (packageName == PackageType.BASIC) {
-						BASIC.forEach(x -> {
-							if (duration == x.getDuration()) {
-								subscriptionCollection.setAmount(x.getAmount());
-							}
-						});
-					} // basic to pro
-					if (packageName == PackageType.PRO) {
-						PRO.forEach(x -> {
-							if (duration == x.getDuration()) {
-								subscriptionCollection.setAmount(x.getAmount());
-							}
-						});
-					}
+//					if (packageName == PackageType.ADVANCE) {
+//						ADVANCE.forEach(x -> {
+//							if (duration == x.getDuration()) {
+//								subscriptionCollection.setAmount(x.getAmount());
+//							}
+//						});
+//					} // basic to adv
+//					else if (packageName == PackageType.BASIC) {
+//						BASIC.forEach(x -> {
+//							if (duration == x.getDuration()) {
+//								subscriptionCollection.setAmount(x.getAmount());
+//							}
+//						});
+//					} // basic to pro
+//					if (packageName == PackageType.PRO) {
+//						PRO.forEach(x -> {
+//							if (duration == x.getDuration()) {
+//								subscriptionCollection.setAmount(x.getAmount());
+//							}
+//						});
+//					}
 				}
 			} // if close of package name
 			response = new Subscription();
@@ -981,6 +984,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					// save to History
 					BeanUtil.map(subscriptionCollection, subscriptionHistoryCollection);
 					subscriptionHistoryCollection.setSubscriptionId(subscriptionCollection.getId());
+					subscriptionHistoryCollection.setCreatedBy(userCollection.getTitle() +""+userCollection.getFirstName());
 					subscriptionHistoryCollection.setDoctorId(subscriptionCollection.getDoctorId());
 					subscriptionHistoryCollection.setCreatedTime(new Date());
 					subscriptionHistoryRepository.save(subscriptionHistoryCollection);
