@@ -30,6 +30,6 @@ public interface PushNotificationServices {
 			ComponentType componentType);
 
 	void notifyUserTwilio(String userId, String message, String componentType, String componentTypeId, String room,
-			String title, List<UserDeviceCollection> userDevices);
+			String title, List<UserDeviceCollection> userDevices,String callType);
 
 }

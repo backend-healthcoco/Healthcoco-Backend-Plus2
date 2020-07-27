@@ -1142,7 +1142,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 	@Transactional
 	@Async
 	public void notifyUserTwilio(String userId, String message, String componentType, String componentTypeId,
-			String room,String title,List<UserDeviceCollection> userDevices) {
+			String room,String title,List<UserDeviceCollection> userDevices,String callType) {
 		List<UserDeviceCollection> userDeviceCollections = null;
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(userId)) {
@@ -1161,7 +1161,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							pushNotificationOnAndroidDevicesTwilio(userDeviceCollection.getDeviceId(),
 									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
 									userDeviceCollection.getRole().getRole(), userId,
-									userDeviceCollection.getDeviceType().getType(),room,title);
+									userDeviceCollection.getDeviceType().getType(),room,title,callType);
 						else if (userDeviceCollection.getDeviceType().getType()
 								.equalsIgnoreCase(DeviceType.IOS.getType())
 								|| userDeviceCollection.getDeviceType().getType()
@@ -1169,7 +1169,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							pushNotificationOnIosDevicesTwilio(userDeviceCollection.getDeviceId(),
 									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
 									userDeviceCollection.getDeviceType().getType(),
-									userDeviceCollection.getRole().getRole(), userId,room,title);
+									userDeviceCollection.getRole().getRole(), userId,room,title,callType);
 							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
 							userDeviceRepository.save(userDeviceCollection);
 						}
@@ -1187,7 +1187,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 	
 	
 	public void pushNotificationOnIosDevicesTwilio(String deviceId, String pushToken, String message, String componentType,
-			String componentTypeId, String deviceType, String role, String userId,String room,String title) {
+			String componentTypeId, String deviceType, String role, String userId,String room,String title,String callType) {
 		try {
 			ApnsService service = null;
 			if (isEnvProduction) {
@@ -1217,12 +1217,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
 						service = APNS.newService()
 								.withCert(iosCertificateFileNameDoctorApp, iosCertificatePasswordDoctorApp)
-								.withCert(iosCertificatePushNotifyFileNamePatientApp, iosCertificatePushNotifyPasswordPatientApp)
+								
 								.withSandboxDestination().build();
 					} else {
 						service = APNS.newService()
 								.withCert(iosCertificateFileNamePatientApp, iosCertificatePasswordPatientApp)
-								.withCert(iosCertificatePushNotifyFileNamePatientApp, iosCertificatePushNotifyPasswordPatientApp)
+								
 								.withSandboxDestination().build();
 					}
 				} else {
@@ -1238,6 +1238,8 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				}
 			}
 
+			message=null;
+			message=title +"is calling";
 			Boolean isSilent = false;
 			Map<String, Object> customValues = new HashMap<String, Object>();
 			if (!DPDoctorUtils.anyStringEmpty(componentType)) {
@@ -1386,10 +1388,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("T", "VN");
 				}
 				else if (componentType.equalsIgnoreCase(ComponentType.CONSULTATION_VIDEO_CALL.getType())) {
-					customValues.put("CI", componentTypeId);
+					customValues.put("CI", room);
 					customValues.put("T", "VC");
-					customValues.put("room", room);
-					customValues.put("title",title);
+					customValues.put("PI", userId);
+					customValues.put("CT", callType);
 				}
 //				else if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTION_REFRESH.getType())) {
 //					customValues.put("PI",componentTypeId);
@@ -1437,7 +1439,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 	
 	
 	public void pushNotificationOnAndroidDevicesTwilio(String deviceId, String pushToken, String message,
-			String componentType, String componentTypeId, String role, String userId, String deviceType,String room,String title) {
+			String componentType, String componentTypeId, String role, String userId, String deviceType,String room,String title,String callType) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			Sender sender = null;
@@ -1457,7 +1459,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			Notification notification = new Notification();
 			// notification.setTitle("Healthcoco");
 			message=null;
-			message=room+" "+title;
+			message=title;
 			notification.setText(message);
 			if (!DPDoctorUtils.anyStringEmpty(componentType)) {
 				if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType())) {
@@ -1578,8 +1580,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				}
 				else if (componentType.equalsIgnoreCase(ComponentType.CONSULTATION_VIDEO_CALL.getType())) {
 					notification.setPi(userId);
-					notification.setAi(componentTypeId);
+					notification.setXi(room);
 					notification.setNotificationType(componentType);
+					notification.setRi(callType);
 				}
 				else{
 					notification.setNotificationType(componentType);

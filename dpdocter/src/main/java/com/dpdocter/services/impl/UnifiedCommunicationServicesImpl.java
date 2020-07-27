@@ -165,7 +165,7 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 	}
 
 	@Override
-	public Boolean createpushNotification(String userId, String room, String title) {
+	public Boolean createpushNotification(String userId, String room, String title,String callType) {
 		Boolean response = false;
 		try {
 
@@ -175,7 +175,7 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 //			response = true;
 			String message="is calling";
 			pushNotificationServices.notifyUserTwilio(userId,
-					message, ComponentType.CONSULTATION_VIDEO_CALL.getType(), null,room,title, null);
+					message, ComponentType.CONSULTATION_VIDEO_CALL.getType(), null,room,title, null,callType);
 			response=true;
 
 		} catch (Exception e) {

@@ -10,6 +10,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.MultiField;
 
+import com.dpdocter.beans.Achievement;
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DOB;
@@ -182,6 +183,13 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	
 	@Field(type = FieldType.Text)
 	private String professionalStatement;
+	
+	
+	
+	@Field(type = FieldType.Nested)
+	private List<Achievement> achievements;
+
+	
 
 	
 	public String getDoctorSlugURL() {
@@ -629,6 +637,16 @@ public class ESDoctorDocument extends DoctorLocation implements Comparable<ESDoc
 	}
 	
 	
+	
+	
+
+	public List<Achievement> getAchievements() {
+		return achievements;
+	}
+
+	public void setAchievements(List<Achievement> achievements) {
+		this.achievements = achievements;
+	}
 
 	public String getProfessionalStatement() {
 		return professionalStatement;

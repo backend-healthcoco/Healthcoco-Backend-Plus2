@@ -73,12 +73,13 @@ public class UnifiedCommunicationApi {
 	@Path(value = PathProxy.ChatUrls.CREATE_PUSH_NOTIFICATION)
 	@GET
 	@ApiOperation(value = PathProxy.ChatUrls.CREATE_PUSH_NOTIFICATION, notes = PathProxy.ChatUrls.CREATE_PUSH_NOTIFICATION)
-	public Response<Boolean> createPushNotifition(@QueryParam(value = "userId")String userId,@QueryParam(value = "room")String room,@QueryParam(value = "title")String title)
+	public Response<Boolean> createPushNotifition(@QueryParam(value = "userId")String userId,@QueryParam(value = "room")String room,
+			@QueryParam(value = "title")String title,@QueryParam(value = "callType")String callType)
 
 			throws MessagingException {
 	    
 		Response<Boolean> response = new Response<Boolean>();
-		Boolean push=unifiedCommunicationServices.createpushNotification(userId, room, title);
+		Boolean push=unifiedCommunicationServices.createpushNotification(userId, room, title,callType);
 		response.setData(push);
 		return response;
 
