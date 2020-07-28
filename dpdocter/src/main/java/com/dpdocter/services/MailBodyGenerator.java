@@ -74,4 +74,7 @@ public interface MailBodyGenerator {
 			String clinicName, String addedBy) throws Exception;
 	
 	public String verifyEmailBody(String firstName,String tokenId, String templatePath) throws Exception;
+
+	public String generateBulkSmsPayment(String firstName, String type, String reciept, Double discountAmount,
+			String packageName, String paymentDate, String string) throws Exception;
 }
