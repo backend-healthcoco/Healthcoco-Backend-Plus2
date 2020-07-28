@@ -1,66 +1,91 @@
-package com.dpdocter.beans;
+package com.dpdocter.collections;
 
 import java.util.Date;
 
-import com.dpdocter.collections.GenericCollection;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.PaymentMode;
 
-public class Subscription extends GenericCollection {
+@Document(collection = "subscription_History_cl")
+public class SubscriptionHistoryCollection extends GenericCollection {
 
-	private String id;
+	@Id
+	private ObjectId id;
 
-	private String doctorId;
+	@Field
+	private ObjectId subscriptionId;
 
+	@Field
+	private ObjectId doctorId;
+
+	@Field
 	private Date fromDate;
 
+	@Field
 	private Date toDate;
 
+	@Field
 	private PackageType packageName;
 
-	private int amount = 0;
+	@Field
+	private String amount;
 
-	private int discountAmount = 0;
+	@Field
+	private String amountViaCash;
 
-	private String accountNo;
+	@Field
+	private String amountViaCheque;
 
+	@Field
 	private PaymentMode mode;
 
+	@Field
 	private String bankName;
 
-	private String countryCode;
-
+	@Field
 	private String chequeNo;
 
+	@Field
+	private String countryCode;
+
+	@Field
 	private String branch;
 
+	@Field
 	private Date chequeDate;
 
+	@Field
 	private Boolean isAdvertisement = Boolean.FALSE;
 
+	@Field
 	private Boolean isDiscarded = Boolean.FALSE;
 
-	private String orderId;
-
-	private String reciept;
-
-	private Boolean paymentStatus = Boolean.FALSE;
-
+	@Field
 	private String transactionStatus;
 
-	public String getId() {
+	@Field
+	private String orderId;
+
+	@Field
+	private String reciept;
+
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 
-	public String getDoctorId() {
+	public ObjectId getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(String doctorId) {
+	public void setDoctorId(ObjectId doctorId) {
 		this.doctorId = doctorId;
 	}
 
@@ -88,20 +113,28 @@ public class Subscription extends GenericCollection {
 		this.packageName = packageName;
 	}
 
-	public int getAmount() {
+	public String getAmount() {
 		return amount;
 	}
 
-	public void setAmount(int amount) {
+	public String getAmountViaCash() {
+		return amountViaCash;
+	}
+
+	public void setAmountViaCash(String amountViaCash) {
+		this.amountViaCash = amountViaCash;
+	}
+
+	public String getAmountViaCheque() {
+		return amountViaCheque;
+	}
+
+	public void setAmountViaCheque(String amountViaCheque) {
+		this.amountViaCheque = amountViaCheque;
+	}
+
+	public void setAmount(String amount) {
 		this.amount = amount;
-	}
-
-	public int getDiscountAmount() {
-		return discountAmount;
-	}
-
-	public void setDiscountAmount(int discountAmount) {
-		this.discountAmount = discountAmount;
 	}
 
 	public PaymentMode getMode() {
@@ -160,12 +193,28 @@ public class Subscription extends GenericCollection {
 		this.countryCode = countryCode;
 	}
 
+	public ObjectId getSubscriptionId() {
+		return subscriptionId;
+	}
+
+	public void setSubscriptionId(ObjectId subscriptionId) {
+		this.subscriptionId = subscriptionId;
+	}
+
 	public Boolean getIsDiscarded() {
 		return isDiscarded;
 	}
 
 	public void setIsDiscarded(Boolean isDiscarded) {
 		this.isDiscarded = isDiscarded;
+	}
+
+	public String getTransactionStatus() {
+		return transactionStatus;
+	}
+
+	public void setTransactionStatus(String transactionStatus) {
+		this.transactionStatus = transactionStatus;
 	}
 
 	public String getOrderId() {
@@ -182,31 +231,6 @@ public class Subscription extends GenericCollection {
 
 	public void setReciept(String reciept) {
 		this.reciept = reciept;
-	}
-
-	public Boolean getPaymentStatus() {
-		return paymentStatus;
-	}
-
-	public void setPaymentStatus(Boolean paymentStatus) {
-		this.paymentStatus = paymentStatus;
-	}
-
-	public String getAccountNo() {
-		return accountNo;
-	}
-
-	public void setAccountNo(String accountNo) {
-		this.accountNo = accountNo;
-	}
-
-	
-	public String getTransactionStatus() {
-		return transactionStatus;
-	}
-
-	public void setTransactionStatus(String transactionStatus) {
-		this.transactionStatus = transactionStatus;
 	}
 
 }

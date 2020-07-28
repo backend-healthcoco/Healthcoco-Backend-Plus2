@@ -104,7 +104,7 @@ public interface PathProxy {
 		public static final String DELETE_BRANCH = "/branch/{branchId}/delete";
 
 		public static final String GET_BRANCHES = "/branch/search";
-		
+
 		public static final String GENERATE_DELIVERY_REPORT = "/generate/deliveryReport";
 
 		public static final String GET_DELIVERY_REPORT = "/get/deliveryReport";
@@ -167,9 +167,9 @@ public interface PathProxy {
 		public static final String GET_PROFESSION = "/settings/profession";
 
 		public static final String ADD_EDIT_ROLE = "/role/addEdit";
-		
+
 		public static final String UPDATE_STAFF_ROLE = "/role/update";
-		
+
 		public static final String GET_ROLE = "/role/{range}/{locationId}/{hospitalId}";
 
 		public static final String DELETE_ROLE = "/role/{roleId}/delete";
@@ -2352,7 +2352,7 @@ public interface PathProxy {
 		public static final String DOWNLOAD_FITNESS_ASSESSMENT = "/download/{id}";
 
 	};
-	
+
 	public static final String UNIFIED_COMMUNICATION_BASE_URL = BASE_URL + "/communication";
 
 	public interface ChatUrls {
@@ -2368,8 +2368,7 @@ public interface PathProxy {
 		public static final String CREATE_TWILIO_NOTIFICATION = "/twilio/pushNotify";
 	}
 
-
-public static final String BULK_SMS_PACKAGE_BASE_URL = BASE_URL + "/bulkSms";
+	public static final String BULK_SMS_PACKAGE_BASE_URL = BASE_URL + "/bulkSms";
 
 	public interface BulkSmsPackageUrls {
 
@@ -2381,6 +2380,28 @@ public static final String BULK_SMS_PACKAGE_BASE_URL = BASE_URL + "/bulkSms";
 		public static final String GENERATE_ID = "/payment/generateId";
 		public static final String CREATE_PAYMENT = "/payment/create";
 		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
+
+	}
+
+	public static final String SUBSCRIPTION_BASE_URL = BASE_URL + "/subscription";
+
+	public interface SubscriptionUrls {
+
+		public static final String ADD_EDIT_SUBSCRIPTION = "/addEdit";
+
+		public static final String GET_SUBSCRIPTION_BY_DOCTORID = "/doctor/{doctorId}/get";
+
+		public static final String GET_SUBSCRIPTIONHISTORY_BY_DOCTORID = "/doctor/history/{doctorId}/get";
+
+		public static final String GET_PACKAGES_BY_NAME = "/package/get";
+
+		public static final String CREATE_PAYMENT = "/payment/create";
+
+		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
+
+		public static final String GET_COUNTRYLIST = "/country/get";
+
+		public static final String GET_PACKAGES = "/package/getList";
 
 	}
 }
