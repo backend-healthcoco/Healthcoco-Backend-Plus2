@@ -688,13 +688,22 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 //						String body ="Hi " + doctor.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(onlinePaymentCollection.getCreatedTime())
 //						+ " by "+onlinePaymentCollection.getMode()+" and your transactionId is"+onlinePaymentCollection.getTransactionId()+" for the bulk sms package "+bulkPackage.getPackageName()
 //						+" and the total cost is "+ onlinePaymentCollection.getDiscountAmount() + ".";
+					
+						System.out.println("name"+ doctor.getFirstName());
+						System.out.println("mode"+onlinePaymentCollection.getMode().getType());
+						System.out.println("receipt"+ onlinePaymentCollection.getReciept());
+						System.out.println("discount Amount"+ onlinePaymentCollection.getDiscountAmount());
+						System.out.println("Package Name"+  bulkPackage.getPackageName());
+						System.out.println("Payment Date"+ paymentDate);
+						
 						String body	= mailBodyGenerator.generateBulkSmsPayment(
 								 doctor.getFirstName(),onlinePaymentCollection.getMode().getType(),onlinePaymentCollection.getReciept(),onlinePaymentCollection.getDiscountAmount(),
 								 bulkPackage.getPackageName(),paymentDate
 								, "bulkSmsTemplate.vm");
-				Boolean mail=	mailService.sendEmail(doctor.getEmailAddress(),"BulkSms Payment Receipt", body, null);
+				Boolean mail=	mailService.sendEmail(doctor.getEmailAddress(),"Buy Bulk SMS Plan on Healthcoco+", body, null);
 						System.out.println(mail);
 						
+						System.out.println("mail Status:"+mail); 
 						
 //							pushNotificationServices.notifyUser(doctor.getId().toString(),
 //									"You have received a payment from an", ComponentType.APPOINTMENT_REFRESH.getType(), null, null);

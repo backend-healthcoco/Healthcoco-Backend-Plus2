@@ -20,14 +20,14 @@
             </div>
 
               <p>
-                Hi Dr. {{fName}},<br>
+                Hi Dr. ${fName},<br>
                 <hr>
 
-                Your Payment has been done successfully on {paymentDate}.  <br>
-                Mode of Payment: {{mode}}<br>
-                ReceiptId: {receiptId} <br>
-                Total cost: {amount} <br>
-                Plan: {packageName}
+                Your Payment has been done successfully on ${paymentDate}.  <br>
+                Mode of Payment: ${mode}<br>
+                ReceiptId: ${receiptId} <br>
+                Total cost: ${amount} <br>
+                Plan: ${packageName}
                                 
               </p>
           

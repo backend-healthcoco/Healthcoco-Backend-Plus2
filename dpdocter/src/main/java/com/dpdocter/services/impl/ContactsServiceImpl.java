@@ -45,6 +45,7 @@ import com.dpdocter.collections.BulKMessageCollection;
 import com.dpdocter.collections.BulkSmsCreditsCollection;
 import com.dpdocter.collections.BulkSmsHistoryCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
@@ -66,6 +67,7 @@ import com.dpdocter.repository.BulkSmsCreditsRepository;
 import com.dpdocter.repository.BulkSmsHistoryRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.ImportContactsRequestRepository;
@@ -168,6 +170,10 @@ public class ContactsServiceImpl implements ContactsService {
 	
 	@Autowired
 	private DoctorClinicProfileRepository doctorClinicProfileRepository;
+	
+	@Autowired
+	private DoctorRepository doctorRepository;
+	
 
 
 
@@ -952,7 +958,7 @@ public class ContactsServiceImpl implements ContactsService {
 		Aggregation aggregation = null;
 		List<String> mobileNumbers = null;
 		try {
-			String message = request.getMessage() + "-Powered%20by%20Healthcoco";
+			String message = request.getMessage() + "-Powered by Healthcoco";
 
 			if (request.getGroupId() != null) {
 				Criteria criteria = new Criteria().and("groupId").is(new ObjectId(request.getGroupId()));
@@ -1054,19 +1060,25 @@ public class ContactsServiceImpl implements ContactsService {
 			  
 			 System.out.println("credits:"+credits);
 			 
+			 System.out.println("temp:"+temp);
+			 
 			  
 			  
 			  long subCredits=credits*(mobileNumbers.size());
+			  
+			  System.out.println("Subcredits:"+subCredits);
 			//  BulkSmsHistoryCollection bulkHistoryCollection=new BulkSmsHistoryCollection();
-				DoctorClinicProfileCollection doctorClinicProfileCollections = null;
-			  doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorIdAndLocationId(
-						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
-				BulkSmsCredits bulk=doctorClinicProfileCollections.getBulkSmsCredit();
-			  if(doctorClinicProfileCollections!=null && bulk!=null) { 
+				DoctorCollection doctorCollections = null;
+				doctorCollections = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
+				BulkSmsCredits bulk=doctorCollections.getBulkSmsCredit();
+			  if(doctorCollections!=null && bulk!=null) { 
 				  
 				  if(bulk.getCreditBalance() > subCredits || bulk.getCreditBalance() == subCredits) {
 			  bulk.setCreditBalance(bulk.getCreditBalance()-subCredits);
 			  bulk.setCreditSpent(bulk.getCreditSpent()+subCredits);
+			  doctorCollections.setBulkSmsCredit(bulk);
+			  System.out.println("Credit Balance"+bulk.getCreditBalance());
+			  System.out.println("Credit Spent"+bulk.getCreditSpent());
 			   } 
 				  else { 
 					  throw new BusinessException(ServiceError.Unknown, "You have Unsufficient Balance"); 
@@ -1074,8 +1086,8 @@ public class ContactsServiceImpl implements ContactsService {
 			//  BeanUtil.map(bulk, bulkHistoryCollection);
 			//  bulkSmsHistoryRepository.save(bulkHistoryCollection);
 			  }
-			  doctorClinicProfileCollections.setBulkSmsCredit(bulk);
-			  doctorClinicProfileRepository.save(doctorClinicProfileCollections);
+			 
+			  doctorRepository.save(doctorCollections);
 			 
 			
 				if (!smsServices.getBulkSMSResponse(mobileNumbers, message,request.getDoctorId(),request.getLocationId()).equalsIgnoreCase("FAILED")) {
