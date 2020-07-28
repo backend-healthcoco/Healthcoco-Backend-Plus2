@@ -2354,17 +2354,33 @@ public interface PathProxy {
 	};
 	
 	public static final String UNIFIED_COMMUNICATION_BASE_URL = BASE_URL + "/communication";
-	public interface ChatUrls{
-		
+
+	public interface ChatUrls {
 
 		public static final String CREATE_CHAT_ACCESS_TOKEN = "/chat/accessToken/create/{userId}";
-		
-		public static final String CREATE_VIDEO_ACCESS_TOKEN = "/video/accessToken/create/{userId}/{room}";
-		
-		public static final String CREATE_PUSH_NOTIFICATION = "/pushNotify";
-		
-		public static final String CREATE_TWILIO_NOTIFICATION = "/twilio/pushNotify";
 
-		
+		public static final String CREATE_CHAT_ACCESS_TOKEN_ANDROID = "/chat/accessTokenAndroid/create/{userId}";
+
+		public static final String CREATE_VIDEO_ACCESS_TOKEN = "/video/accessToken/create/{userId}/{room}";
+
+		public static final String CREATE_PUSH_NOTIFICATION = "/pushNotify";
+
+		public static final String CREATE_TWILIO_NOTIFICATION = "/twilio/pushNotify";
+	}
+
+
+public static final String BULK_SMS_PACKAGE_BASE_URL = BASE_URL + "/bulkSms";
+
+	public interface BulkSmsPackageUrls {
+
+		public static final String ADD_EDIT_PACKAGE = "/addEdit";
+		public static final String GET_SMS_PACKAGE = "/package/get";
+		public static final String GET_BULK_SMS_CREDITS = "/credits/get";
+		public static final String GET_SMS_HISTORY = "/history/get";
+		public static final String GET_SMS_REPORT = "/report/get";
+		public static final String GENERATE_ID = "/payment/generateId";
+		public static final String CREATE_PAYMENT = "/payment/create";
+		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
+
 	}
 }
