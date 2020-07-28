@@ -42,6 +42,8 @@ public class TransactionalSmsApi {
 	@GET
 	public Response<TransactionalSmsReport> getBulkSmsReport(@DefaultValue("0")@QueryParam(value ="size") int size, 
 			@DefaultValue("0")	@QueryParam(value ="page") int page,
+
+			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@QueryParam(value ="doctorId") String doctorId,
 			@QueryParam(value ="locationIdId") String locationId) {
 
@@ -50,7 +52,8 @@ public class TransactionalSmsApi {
 			logger.warn("doctorId or locationid  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId send  is NULL");
 		}
-			response.setDataList(transactionSmsServices.getSmsReport(page, size, doctorId, locationId));
+			
+			response.setDataList(transactionSmsServices.getSmsReport(page, size, doctorId, locationId,fromDate,toDate));
 	
 		return response;
 	}
