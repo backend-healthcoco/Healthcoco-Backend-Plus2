@@ -30,6 +30,9 @@ public class BulkSmsHistoryCollection extends GenericCollection{
 	private BulkSmsPackage smsPackage;
 	@Field
 	private PaymentMode paymentMode;
+	
+	@Field
+	private String note;
 
 	
 	public ObjectId getId() {
@@ -90,6 +93,14 @@ public class BulkSmsHistoryCollection extends GenericCollection{
 	public void setLocationId(ObjectId locationId) {
 		this.locationId = locationId;
 	}
+	public String getNote() {
+		return note;
+	}
+	public void setNote(String note) {
+		this.note = note;
+	}
+	
+	
 	
 	
 }

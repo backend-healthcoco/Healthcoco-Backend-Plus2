@@ -35,7 +35,7 @@ import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.BulkSmsPackage;
 import com.dpdocter.beans.BulkSmsReport;
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.OrderReponse;
+import com.dpdocter.response.OrderReponse;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDeliveryReports;

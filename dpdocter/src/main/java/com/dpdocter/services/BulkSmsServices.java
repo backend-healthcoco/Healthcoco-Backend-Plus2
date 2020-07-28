@@ -7,6 +7,7 @@ import com.dpdocter.beans.BulkSmsPackage;
 import com.dpdocter.beans.BulkSmsReport;
 import com.dpdocter.request.OrderRequest;
 import com.dpdocter.request.PaymentSignatureRequest;
+import com.dpdocter.response.BulkSmsPaymentResponse;
 
 public interface BulkSmsServices {
 
