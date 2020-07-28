@@ -1002,44 +1002,88 @@ public class ContactsServiceImpl implements ContactsService {
 
 				}
 			}
-			 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-				
-				smsTrackDetail.setType(ComponentType.BULK_SMS.getType());
-				SMSDetail smsDetail = new SMSDetail();
-				SMS sms = new SMS();
-				sms.setSmsText(message);
-				
-				SMSAddress smsAddress = new SMSAddress();
-				
-				smsAddress.setRecipients(mobileNumbers);
-				
-				sms.setSmsAddress(smsAddress);
-				smsDetail.setSms(sms);
-				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-				smsDetails.add(smsDetail);
-				smsTrackDetail.setSmsDetails(smsDetails);
-
+//			 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+//				
+//				smsTrackDetail.setType(ComponentType.BULK_SMS.getType());
+//				SMSDetail smsDetail = new SMSDetail();
+//				SMS sms = new SMS();
+//				sms.setSmsText(message);
+//				
+//				SMSAddress smsAddress = new SMSAddress();
+//				
+//				smsAddress.setRecipients(mobileNumbers);
+//				
+//				sms.setSmsAddress(smsAddress);
+//				smsDetail.setSms(sms);
+//				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+//				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+//				smsDetails.add(smsDetail);
+//				smsTrackDetail.setSmsDetails(smsDetails);
+			  Integer totalLength=160; 
+			  Integer messageLength=message.length();
+			  System.out.println("messageLength:"+messageLength);
+			  long credits=(messageLength/totalLength);
+			  
+			  long temp=messageLength%totalLength;
+			  if(credits==0 || temp!=0) 
+			  credits=credits+1;
+			  
+			 System.out.println("credits:"+credits);
+			 
+			 System.out.println("temp:"+temp);
+			 
+			  
+			  
+			  long subCredits=credits*(mobileNumbers.size());
+			  
+			  System.out.println("Subcredits:"+subCredits);
+			//  BulkSmsHistoryCollection bulkHistoryCollection=new BulkSmsHistoryCollection();
+				DoctorCollection doctorCollections = null;
+				doctorCollections = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
+				BulkSmsCredits bulk=doctorCollections.getBulkSmsCredit();
+			  if(doctorCollections!=null && bulk!=null) { 
+				  
+				  if(bulk.getCreditBalance() > subCredits || bulk.getCreditBalance() == subCredits) {
+			  bulk.setCreditBalance(bulk.getCreditBalance()-subCredits);
+			  bulk.setCreditSpent(bulk.getCreditSpent()+subCredits);
+			  doctorCollections.setBulkSmsCredit(bulk);
+			  System.out.println("Credit Balance"+bulk.getCreditBalance());
+			  System.out.println("Credit Spent"+bulk.getCreditSpent());
+			   } 
+				  else { 
+					  throw new BusinessException(ServiceError.Unknown, "You have Unsufficient Balance"); 
+			  }
+			//  BeanUtil.map(bulk, bulkHistoryCollection);
+			//  bulkSmsHistoryRepository.save(bulkHistoryCollection);
+			  }
+			 
+			  doctorRepository.save(doctorCollections);
+			 
+			
+				if (!smsServices.getBulkSMSResponse(mobileNumbers, message,request.getDoctorId(),request.getLocationId()).equalsIgnoreCase("FAILED")) {
+						status = true;
+					}
+			
 
 			
-			Integer size=100;
-			String responseId=null;
-			List<String>messageResponse=new ArrayList<String>();
-			for(int start=0;start<mobileNumbers.size();start+=size)
-			{
-				int end=Math.min(start+size,mobileNumbers.size());
-				List<String> sublist=mobileNumbers.subList(start, end);
-				
-				if (!(responseId=smsServices.getBulkSMSResponse(sublist, message)).equalsIgnoreCase("FAILED")) {
-					
-							status = true;
-							messageResponse.add(responseId);
-					}
-				
-				System.out.println(sublist);
-			}
-			smsTrackDetail.setResponseIds(messageResponse);
-			smsTrackRepository.save(smsTrackDetail);
+//			Integer size=100;
+//			String responseId=null;
+//			List<String>messageResponse=new ArrayList<String>();
+//			for(int start=0;start<mobileNumbers.size();start+=size)
+//			{
+//				int end=Math.min(start+size,mobileNumbers.size());
+//				List<String> sublist=mobileNumbers.subList(start, end);
+//				
+//				if (!(responseId=smsServices.getBulkSMSResponse(sublist, message)).equalsIgnoreCase("FAILED")) {
+//					
+//							status = true;
+//							messageResponse.add(responseId);
+//					}
+//				
+//				System.out.println(sublist);
+//			}
+//			smsTrackDetail.setResponseIds(messageResponse);
+//			smsTrackRepository.save(smsTrackDetail);
 //			 List<String> numbers =new ArrayList<String>(mobileNumbers); 
 //			 List<>result=new ArrayList<>();
 //			final int chunkSize = 100; 

@@ -641,6 +641,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 							new BeanToPropertyValueTransformer("service"));
 				}
 				doctorProfile.setServices(services);
+				doctorProfile.setBulkSmsCredit(doctorCollection.getBulkSmsCredit());
 
 				// set medical councils using medical councils ids
 				registrationDetails = new ArrayList<DoctorRegistrationDetail>();

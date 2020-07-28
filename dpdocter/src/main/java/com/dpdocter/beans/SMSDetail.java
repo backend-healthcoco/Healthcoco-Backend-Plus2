@@ -20,7 +20,14 @@ public class SMSDetail {
 
     private String deliveredTime;
 
-    public ObjectId getUserId() {
+    public SMSDetail() {
+		// TODO Auto-generated constructor stub
+	}
+    public SMSDetail(SMS sms2, SMSStatus inProgress) {
+		// TODO Auto-generated constructor stub
+	}
+
+	public ObjectId getUserId() {
 	return userId;
     }
 

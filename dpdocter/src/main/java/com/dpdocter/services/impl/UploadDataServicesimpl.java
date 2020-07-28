@@ -1653,7 +1653,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 						if (patientCollection != null) {
 
 							SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
-							String dateSTri = line.get(dateIndex).replace("'", "");
+							String dateSTri = line.get(dateIndex).replaceAll("^\"|\"$", "");
 							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 							Date fromDate = dateFormat.parse(dateSTri);
 

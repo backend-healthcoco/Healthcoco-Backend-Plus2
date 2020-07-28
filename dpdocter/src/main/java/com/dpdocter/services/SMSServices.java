@@ -40,4 +40,6 @@ public interface SMSServices {
 
 	Boolean sendPatientOTP(String mobileNumber, String otp);
 
+	String getBulkSMSResponse(List<String> mobileNumbers, String message, String doctorId, String locationId);
+
 }
