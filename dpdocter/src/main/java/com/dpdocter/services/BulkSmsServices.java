@@ -1,5 +1,13 @@
 package com.dpdocter.services;
 
+import java.util.List;
+
+import com.dpdocter.beans.BulkSmsCredits;
+import com.dpdocter.beans.BulkSmsPackage;
+import com.dpdocter.beans.BulkSmsReport;
+import com.dpdocter.request.OrderRequest;
+import com.dpdocter.request.PaymentSignatureRequest;
+
 public interface BulkSmsServices {
 
 	 BulkSmsPackage addEditBulkSmsPackage(BulkSmsPackage request);
