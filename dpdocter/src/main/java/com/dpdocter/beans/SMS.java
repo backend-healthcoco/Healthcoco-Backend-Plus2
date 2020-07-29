@@ -19,9 +19,15 @@ public class SMS {
 		// TODO Auto-generated constructor stub
 	}
     
-    public SMS(String message, SMSAddress smsAddress2) {
-		// TODO Auto-generated constructor stub
+   
+
+	public SMS(String smsText, SMSAddress smsAddress) {
+		super();
+		this.smsText = smsText;
+		this.smsAddress = smsAddress;
 	}
+
+
 
 	@JsonProperty("smsText")
     public String getSmsText() {
