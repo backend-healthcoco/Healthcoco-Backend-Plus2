@@ -592,7 +592,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				List<PackageAmountObject> BASIC = packageBasic.getPackageAmount();
 				List<PackageAmountObject> PRO = packagePro.getPackageAmount();
 				List<PackageAmountObject> ADVANCE = packageAdvance.getPackageAmount();
+				
 				if (subscriptionCollection.getPackageName() != PackageType.FREE) {
+					
+					// for trial period condition
+					if (subscriptionCollection.getPackageName() == PackageType.BASIC && subscriptionCollection.getAmount() == 0) {
+						subscriptionCollection.setAmount(newAmount);
+					} else {
 					// from date toDate difference
 					Calendar fromDateConvert = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 					fromDateConvert.setTime(subscriptionCollection.getFromDate());
@@ -636,6 +642,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					System.out.println(discountedAmount);
 
 					subscriptionCollection.setAmount(discountedAmount);
+					}
 
 				} // if close of amt
 				else {
