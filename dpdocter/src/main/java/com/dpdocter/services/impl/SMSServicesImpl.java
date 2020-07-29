@@ -452,14 +452,19 @@ public class SMSServicesImpl implements SMSServices {
 	@Transactional
 	public void updateDeliveryReports(List<SMSDeliveryReports> request) {
 		try {
+			SMSDeliveryReportsCollection smsDeliveryReportsCollection=new SMSDeliveryReportsCollection();
 			for (SMSDeliveryReports smsDeliveryReport : request) {
+		//for checking if request is coming from 3rd party		
+				BeanUtil.map(smsDeliveryReport, smsDeliveryReportsCollection);
+				smsDeliveryReportsRepository.save(smsDeliveryReportsCollection);
+				//
 				SMSTrackDetail smsTrackDetail = smsTrackRepository.findByResponseId(smsDeliveryReport.getRequestId());
 				if (smsTrackDetail != null) {
 					for (SMSDetail smsDetail : smsTrackDetail.getSmsDetails()) {
 						for (SMSReport report : smsDeliveryReport.getReport()) {
 							if (smsDetail.getSms() != null && smsDetail.getSms().getSmsAddress() != null
 									&& smsDetail.getSms().getSmsAddress().getRecipient() != null) {
-								if (smsDetail.getSms().getSmsAddress().getRecipient().equals(report.getNumber())) {
+								if (smsDetail.getSms().getSmsAddress().getRecipient().equals(report.getNumber().replaceFirst("91", ""))) {
 									smsDetail.setDeliveredTime(report.getDate());
 									smsDetail.setDeliveryStatus(SMSStatus.valueOf(report.getDesc()));
 								}
@@ -475,7 +480,6 @@ public class SMSServicesImpl implements SMSServices {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 	}
-
 	@Override
 	@Transactional
 	public void addNumber(String mobileNumber) {
