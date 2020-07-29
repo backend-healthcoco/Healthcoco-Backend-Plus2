@@ -39,7 +39,7 @@ public class SMSTrackDetail extends GenericCollection {
     private String responseId;
     
     @Field
-    private List<String> responseIds; 
+    private Long totalCreditsSpent=0L; 
 
     public ObjectId getId() {
 	return id;
@@ -98,12 +98,18 @@ public class SMSTrackDetail extends GenericCollection {
     }
     
     
-    public List<String> getResponseIds() {
-		return responseIds;
+   
+
+	
+
+	
+
+	public Long getTotalCreditsSpent() {
+		return totalCreditsSpent;
 	}
 
-	public void setResponseIds(List<String> responseIds) {
-		this.responseIds = responseIds;
+	public void setTotalCreditsSpent(Long totalCreditsSpent) {
+		this.totalCreditsSpent = totalCreditsSpent;
 	}
 
 	@Override

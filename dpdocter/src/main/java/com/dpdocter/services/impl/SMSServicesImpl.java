@@ -883,7 +883,7 @@ public class SMSServicesImpl implements SMSServices {
 	
 	
 	@Override
-	public String getBulkSMSResponse(List<String> mobileNumbers, String message,String doctorId,String locationId) {
+	public String getBulkSMSResponse(List<String> mobileNumbers, String message,String doctorId,String locationId,long subCredits) {
 		StringBuffer response = new StringBuffer();
 		try {
 			Set<String> numbers = new HashSet<>(mobileNumbers);
@@ -896,7 +896,7 @@ public class SMSServicesImpl implements SMSServices {
 				smsTrackDetail.setType("BULK_SMS");
 				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
 				smsTrackDetail.setLocationId(new ObjectId(locationId));
-				
+				smsTrackDetail.setTotalCreditsSpent(subCredits);
 				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 
 			
