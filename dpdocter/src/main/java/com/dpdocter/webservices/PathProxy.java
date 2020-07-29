@@ -2412,4 +2412,12 @@ public interface PathProxy {
 		public static final String GET_PACKAGES = "/package/getList";
 
 	}
+	
+	public static final String TRANSACTION_SMS_BASE_URL = BASE_URL + "/transaction";
+
+	public interface TransactionSmsUrls {
+
+		public static final String GET_TRANSACTION_SMS_REPORT = "/transaction/report/get";
+
+	}
 }
