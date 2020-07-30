@@ -32,7 +32,7 @@ public interface SMSServices {
 	
 	Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail,String otp , Boolean save);
 
-	String getBulkSMSResponse(List<String> mobileNumbers, String message);
+	//String getBulkSMSResponse(List<String> mobileNumbers, String message);
 
 	Boolean getOTPSMSResponse(String mobileNumber, String message, String otp);
 
@@ -40,6 +40,6 @@ public interface SMSServices {
 
 	Boolean sendPatientOTP(String mobileNumber, String otp);
 
-	String getBulkSMSResponse(List<String> mobileNumbers, String message, String doctorId, String locationId);
+	String getBulkSMSResponse(List<String> mobileNumbers, String message, String doctorId, String locationId, long subCredits);
 
 }

@@ -195,7 +195,7 @@ public class SMSServicesAPI {
     @ApiOperation(value = PathProxy.SMSUrls.SEND_BULK_SMS, notes = PathProxy.SMSUrls.SEND_BULK_SMS)
     public Response<String> sendBulkSMS(@MatrixParam("mobileNumbers") List<String> mobileNumbers, @PathParam(value = "message") String message) {
     	
-	String send = smsServices.getBulkSMSResponse(mobileNumbers, message);
+	String send = smsServices.getBulkSMSResponse(mobileNumbers, message, null,null,0L);
 	Response<String> response = new Response<String>();
 	response.setData(send);
 	return response;

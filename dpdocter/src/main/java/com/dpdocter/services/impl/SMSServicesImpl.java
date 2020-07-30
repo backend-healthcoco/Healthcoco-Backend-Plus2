@@ -58,6 +58,7 @@ import com.dpdocter.beans.UserMobileNumbers;
 import com.dpdocter.beans.XMLMobile;
 import com.dpdocter.beans.XmlMessage;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.SMSDeliveryReportsCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.SubscriptionDetailCollection;
@@ -69,6 +70,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.SMSTrackRepository;
+import com.dpdocter.repository.SmsDeliveryReportsRepository;
 import com.dpdocter.repository.SubscriptionDetailRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DoctorSMSResponse;
@@ -143,6 +145,9 @@ public class SMSServicesImpl implements SMSServices {
 	
 	@Autowired
 	private LocationRepository locationRepository;
+	
+	@Autowired
+	private SmsDeliveryReportsRepository smsDeliveryReportsRepository;
 
 	
 	@Override
@@ -452,14 +457,19 @@ public class SMSServicesImpl implements SMSServices {
 	@Transactional
 	public void updateDeliveryReports(List<SMSDeliveryReports> request) {
 		try {
+			SMSDeliveryReportsCollection smsDeliveryReportsCollection=new SMSDeliveryReportsCollection();
 			for (SMSDeliveryReports smsDeliveryReport : request) {
+		//for checking if request is coming from 3rd party		
+				BeanUtil.map(smsDeliveryReport, smsDeliveryReportsCollection);
+				smsDeliveryReportsRepository.save(smsDeliveryReportsCollection);
+				//
 				SMSTrackDetail smsTrackDetail = smsTrackRepository.findByResponseId(smsDeliveryReport.getRequestId());
 				if (smsTrackDetail != null) {
 					for (SMSDetail smsDetail : smsTrackDetail.getSmsDetails()) {
 						for (SMSReport report : smsDeliveryReport.getReport()) {
 							if (smsDetail.getSms() != null && smsDetail.getSms().getSmsAddress() != null
 									&& smsDetail.getSms().getSmsAddress().getRecipient() != null) {
-								if (smsDetail.getSms().getSmsAddress().getRecipient().equals(report.getNumber())) {
+								if (smsDetail.getSms().getSmsAddress().getRecipient().equals(report.getNumber().replaceFirst("91", ""))) {
 									smsDetail.setDeliveredTime(report.getDate());
 									smsDetail.setDeliveryStatus(SMSStatus.valueOf(report.getDesc()));
 								}
@@ -475,7 +485,6 @@ public class SMSServicesImpl implements SMSServices {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 	}
-
 	@Override
 	@Transactional
 	public void addNumber(String mobileNumber) {
@@ -883,7 +892,7 @@ public class SMSServicesImpl implements SMSServices {
 	
 	
 	@Override
-	public String getBulkSMSResponse(List<String> mobileNumbers, String message,String doctorId,String locationId) {
+	public String getBulkSMSResponse(List<String> mobileNumbers, String message,String doctorId,String locationId,long subCredits) {
 		StringBuffer response = new StringBuffer();
 		try {
 			Set<String> numbers = new HashSet<>(mobileNumbers);
@@ -896,7 +905,7 @@ public class SMSServicesImpl implements SMSServices {
 				smsTrackDetail.setType("BULK_SMS");
 				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
 				smsTrackDetail.setLocationId(new ObjectId(locationId));
-				
+				smsTrackDetail.setTotalCreditsSpent(subCredits);
 				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 
 			

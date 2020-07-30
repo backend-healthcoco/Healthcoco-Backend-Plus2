@@ -21,9 +21,14 @@ public class SMSAddress {
 		// TODO Auto-generated constructor stub
 	}
     
-    public SMSAddress(String mobiles) {
-		// TODO Auto-generated constructor stub
+   
+
+	public SMSAddress(String recipient) {
+		super();
+		this.recipient = recipient;
 	}
+
+
 
 	@JsonProperty("recipient")
     public String getRecipient() {

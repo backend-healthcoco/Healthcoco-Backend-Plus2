@@ -80,8 +80,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			PrintSettingsCollection oldPrintSettingsCollection = null;
 			if (request.getId() == null) {
 				if (!request.getIsLab()) {
-					oldPrintSettingsCollection = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalId(doctorObjectId, locationObjectId,
-							hospitalObjectId);
+					oldPrintSettingsCollection = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalId(
+							doctorObjectId, locationObjectId, hospitalObjectId);
 				} else {
 					oldPrintSettingsCollection = printSettingsRepository.findByLocationIdAndHospitalId(locationObjectId,
 							hospitalObjectId);
@@ -93,7 +93,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			if (request.getId() == null) {
 				printSettingsCollection.setCreatedTime(new Date());
 			} else if (oldPrintSettingsCollection == null) {
-				oldPrintSettingsCollection = printSettingsRepository.findById(new ObjectId(request.getId())).orElse(null);
+				oldPrintSettingsCollection = printSettingsRepository.findById(new ObjectId(request.getId()))
+						.orElse(null);
 			}
 
 			if (oldPrintSettingsCollection != null) {
@@ -115,10 +116,13 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 				}
 				if (request.getFooterSetup() == null) {
 					printSettingsCollection.setFooterSetup(oldPrintSettingsCollection.getFooterSetup());
-				} else if (!DPDoctorUtils
-						.anyStringEmpty(printSettingsCollection.getFooterSetup().getFooterImageUrl())) {
-					printSettingsCollection.getFooterSetup().setFooterImageUrl(
-							printSettingsCollection.getFooterSetup().getFooterImageUrl().replaceAll(imagePath, ""));
+				} else {
+					if (!DPDoctorUtils.anyStringEmpty(printSettingsCollection.getFooterSetup().getFooterImageUrl()))
+						printSettingsCollection.getFooterSetup().setFooterImageUrl(
+								printSettingsCollection.getFooterSetup().getFooterImageUrl().replaceAll(imagePath, ""));
+					if (!DPDoctorUtils.anyStringEmpty(printSettingsCollection.getFooterSetup().getSignatureUrl()))
+						printSettingsCollection.getFooterSetup().setSignatureUrl(
+								printSettingsCollection.getFooterSetup().getSignatureUrl().replaceAll(imagePath, ""));
 				}
 			}
 
@@ -130,7 +134,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 				}
 			}
 
-			LocationCollection locationCollection = locationRepository.findById(new ObjectId(request.getLocationId())).orElse(null);
+			LocationCollection locationCollection = locationRepository.findById(new ObjectId(request.getLocationId()))
+					.orElse(null);
 			if (locationCollection != null) {
 				printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
 				printSettingsCollection.setIsPidHasDate(locationCollection.getIsPidHasDate());
@@ -147,6 +152,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 				if (response.getFooterSetup() != null) {
 					response.getFooterSetup()
 							.setFooterImageUrl(getFinalImageURL(response.getFooterSetup().getFooterImageUrl()));
+					response.getFooterSetup()
+							.setSignatureUrl(getFinalImageURL(response.getFooterSetup().getSignatureUrl()));
 				}
 			}
 
@@ -181,27 +188,34 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			if (doctorObjectId == null) {
 
-				printSettingsCollections = printSettingsRepository.findByLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(locationObjectId, hospitalObjectId,
-						new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+				printSettingsCollections = printSettingsRepository
+						.findByLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(locationObjectId,
+								hospitalObjectId, new Date(createdTimeStamp), discards,
+								new Sort(Sort.Direction.DESC, "createdTime"));
 
 			} else {
 				if (locationObjectId == null && hospitalObjectId == null) {
 					if (size > 0)
-						printSettingsCollections = printSettingsRepository.findByDoctorIdAndUpdatedTimeGreaterThanAndDiscardedIn(doctorObjectId,
-								new Date(createdTimeStamp), discards,
-								PageRequest.of(page, size, Direction.DESC, "createdTime"));
+						printSettingsCollections = printSettingsRepository
+								.findByDoctorIdAndUpdatedTimeGreaterThanAndDiscardedIn(doctorObjectId,
+										new Date(createdTimeStamp), discards,
+										PageRequest.of(page, size, Direction.DESC, "createdTime"));
 					else
-						printSettingsCollections = printSettingsRepository.findByDoctorIdAndUpdatedTimeGreaterThanAndDiscardedIn(doctorObjectId,
-								new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+						printSettingsCollections = printSettingsRepository
+								.findByDoctorIdAndUpdatedTimeGreaterThanAndDiscardedIn(doctorObjectId,
+										new Date(createdTimeStamp), discards,
+										new Sort(Sort.Direction.DESC, "createdTime"));
 				} else {
 					if (size > 0)
-						printSettingsCollections = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(doctorObjectId, locationObjectId,
-								hospitalObjectId, new Date(createdTimeStamp), discards,
-								PageRequest.of(page, size, Direction.DESC, "createdTime"));
+						printSettingsCollections = printSettingsRepository
+								.findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(
+										doctorObjectId, locationObjectId, hospitalObjectId, new Date(createdTimeStamp),
+										discards, PageRequest.of(page, size, Direction.DESC, "createdTime"));
 					else
-						printSettingsCollections = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(doctorObjectId, locationObjectId,
-								hospitalObjectId, new Date(createdTimeStamp), discards,
-								new Sort(Sort.Direction.DESC, "createdTime"));
+						printSettingsCollections = printSettingsRepository
+								.findByDoctorIdAndLocationIdAndHospitalIdAndUpdatedTimeGreaterThanAndDiscardedIn(
+										doctorObjectId, locationObjectId, hospitalObjectId, new Date(createdTimeStamp),
+										discards, new Sort(Sort.Direction.DESC, "createdTime"));
 				}
 			}
 			if (printSettingsCollections != null) {
@@ -231,6 +245,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 						if (printSettings.getFooterSetup() != null) {
 							printSettings.getFooterSetup().setFooterImageUrl(
 									getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl()));
+							printSettings.getFooterSetup().setSignatureUrl(
+									getFinalImageURL(printSettings.getFooterSetup().getSignatureUrl()));
 						}
 					}
 					response.add(printSettings);
@@ -298,7 +314,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			Boolean discarded) {
 		PrintSettings response = null;
 		try {
-			PrintSettingsCollection printSettingsCollection = printSettingsRepository.findById(new ObjectId(id)).orElse(null);
+			PrintSettingsCollection printSettingsCollection = printSettingsRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (printSettingsCollection != null) {
 				if (printSettingsCollection.getDoctorId() != null && printSettingsCollection.getHospitalId() != null
 						&& printSettingsCollection.getLocationId() != null) {
@@ -318,6 +335,8 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 						if (response.getFooterSetup() != null) {
 							response.getFooterSetup()
 									.setFooterImageUrl(getFinalImageURL(response.getFooterSetup().getFooterImageUrl()));
+							response.getFooterSetup()
+									.setSignatureUrl(getFinalImageURL(response.getFooterSetup().getSignatureUrl()));
 						}
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -364,6 +383,23 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			e.printStackTrace();
 			logger.error(e + " Error occured while uploading Image");
 			throw new BusinessException(ServiceError.Unknown, " Error occured while uploading Image");
+		}
+		return getFinalImageURL(response.getImageUrl().replaceAll(imagePath, ""));
+	}
+
+	@Override
+	public String uploadSignature(FileDetails fileDetails) {
+		ImageURLResponse response = null;
+		String path = "";
+		try {
+			fileDetails.setFileName(fileDetails.getFileName() + new Date());
+			path = "print/setup" + File.separator + "signature";
+			response = fileManager.saveImageAndReturnImageUrl(fileDetails, path, false);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while uploading Signature");
+			throw new BusinessException(ServiceError.Unknown, " Error occured while Signature Image");
 		}
 		return getFinalImageURL(response.getImageUrl().replaceAll(imagePath, ""));
 	}

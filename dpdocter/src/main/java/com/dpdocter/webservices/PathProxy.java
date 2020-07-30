@@ -4,7 +4,13 @@ package com.dpdocter.webservices;
  * @author veeraj
  */
 public interface PathProxy {
+	
+	public static final String BULK_SMS_BASE_URL = "/bulk";
 
+	public interface BulkSMSUrls {
+		public static final String UPDATE_DELIVERY_REPORTS = "/sms/updateDeliveryReports";
+	}
+	
 	public static final String HOME_URL = "/";
 
 	public static final String BASE_URL = "/v1";
@@ -917,6 +923,8 @@ public interface PathProxy {
 		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String UPLOAD_FILE = "/upload/file/";
+		
+		public static final String UPLOAD_SIGNATURE = "/upload/signature/";
 
 	}
 

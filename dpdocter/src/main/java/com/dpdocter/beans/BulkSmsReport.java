@@ -18,11 +18,11 @@ public class BulkSmsReport extends GenericCollection {
 
 	private String responseId;
 	
-	private Long delivered;
+	private Long delivered=0L;
 	
-	private Long undelivered;
+	private Long undelivered=0L;
 	
-	private Long totalCreditsSpent;
+	private Long totalCreditsSpent=0L;
 
 	public String getId() {
 		return id;

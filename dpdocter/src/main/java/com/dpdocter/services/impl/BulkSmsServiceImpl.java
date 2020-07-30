@@ -411,6 +411,8 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 				System.out.println("Aggregation:"+aggregation);
 				response = mongoTemplate.aggregate(aggregation, SMSTrackDetail.class, BulkSmsReport.class).getMappedResults();
 
+				
+		
 //				CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
 //						new BasicDBObject("_id", "$_id")
 //						.append("smsDetails", new BasicDBObject("$addToSet", "$smsDetails"))
@@ -420,22 +422,28 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 				for(BulkSmsReport credit:response)
 				{
 					Long total=(long) credit.getSmsDetails().size();
-					Integer totalLength=160; 
-					String message=credit.getSmsDetails().get(0).getSms().getSmsText();
-					  Integer messageLength=message.length();
-					  System.out.println("messageLength:"+messageLength);
-					  long credits=(messageLength/totalLength);
-					  
-					  long temp=messageLength%totalLength;
-					  if(credits==0 || temp!=0) 
-					  credits=credits+1;
-					
-					  long subCredits=credits*(total);
+//					Integer totalLength=160; 
+//					String message=null;
+//					  Integer messageLength=null;
+//					if(credit.getSmsDetails().equals(null))
+//						messageLength=0;
+//					else {
+//					 message=credit.getSmsDetails().get(1).getSms().getSmsText();
+//					messageLength=message.length();
+//					}
+//					  System.out.println("messageLength:"+messageLength);
+//					  long credits=(messageLength/totalLength);
+//					  
+//					  long temp=messageLength%totalLength;
+//					  if(credits==0 || temp!=0) 
+//					  credits=credits+1;
+//					
+//					  long subCredits=credits*(total);
 					
 					Long count= mongoTemplate.count(new Query(new Criteria("smsDetails.deliveryStatus").is("DELIVERED").andOperator(criteria)),SMSTrackDetail.class);
 					credit.setDelivered(count);
 					credit.setUndelivered(total-count);
-					credit.setTotalCreditsSpent(subCredits);
+					
 				}
 //			
 			
