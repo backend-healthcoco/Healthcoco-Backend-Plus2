@@ -171,7 +171,8 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 				criteria = criteria.orOperator(new Criteria("packageName").regex("^" + searchTerm, "i"),
 						new Criteria("packageName").regex("^" + searchTerm));
 			
-			
+			if(discarded !=null)
+			criteria.and("discarded").is(discarded);
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
