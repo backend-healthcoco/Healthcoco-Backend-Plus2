@@ -2189,6 +2189,21 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("signatureImage").toString())) {
+			JRDesignImage jrDesignImage = new JRDesignImage(null);
+			jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
+			jrDesignImage.setPrintWhenExpression(
+					new JRDesignExpression("!$P{signatureImage}.equals(null) && !$P{signatureImage}.isEmpty()"));
+			jrDesignImage.setExpression(new JRDesignExpression("$P{signatureImage}"));		
+			jrDesignImage.setX(0);
+			jrDesignImage.setY((Startwith));
+			jrDesignImage.setHeight(30);
+			jrDesignImage.setWidth(columnWidth);
+			jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
+			jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.RIGHT);
+			band.addElement(jrDesignImage);
+		}
+		Startwith = Startwith + 30;
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerSignature}"));
