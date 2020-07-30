@@ -8,12 +8,12 @@ public class BulkSmsPackage extends GenericCollection {
 
 	private String packageName;
 	
-	private Long price;
+	private Long price=0L;
 	
-	private Long smsCredit;
+	private Long smsCredit=0L;
 	
 
-	private int costPerSms;
+	private Double costPerSms=0.0;
 
 	
 	private Boolean discarded=false;
@@ -53,17 +53,18 @@ public class BulkSmsPackage extends GenericCollection {
 		this.smsCredit = smsCredit;
 	}
 
-	public int getCostPerSms() {
+	
+	
+
+	
+
+	public Double getCostPerSms() {
 		return costPerSms;
 	}
 
-	public void setCostPerSms(int costPerSms) {
+	public void setCostPerSms(Double costPerSms) {
 		this.costPerSms = costPerSms;
 	}
-	
-	
-
-	
 
 	public Boolean getDiscarded() {
 		return discarded;
