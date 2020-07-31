@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.GSM0338Charset;
+import com.dpdocter.beans.SmsParts;
 import com.dpdocter.enums.Encoding;
 import com.dpdocter.services.SmsSpitterServices;
 

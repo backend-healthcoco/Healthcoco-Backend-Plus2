@@ -1,10 +1,21 @@
-package com.dpdocter.beans;
+package com.dpdocter.services.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dpdocter.enums.Encoding;
+import com.dpdocter.services.SmsSpitterServices;
+import com.dpdocter.services.SmsUtilService;
+import com.dpdocter.services.impl.SmsSplitterServiceImpl;
+import com.dpdocter.beans.SmsParts;
+import com.dpdocter.beans.GSM0338Charset;
+import com.dpdocter.beans.Parts;
 
-public class SmsUtils {
+public class SmsUtilsServiceImpl implements SmsUtilService {
+	
+	@Autowired
+	private SmsSpitterServices smsSplitterServices;
 
-	 public static Encoding getGsmEncoding(String message) {
+	 public  Encoding getGsmEncoding(String message) {
 	        if(! GSM0338Charset.containsOnlyCharsetCharacters(message, true)) {
 	            return Encoding.GSM_UNICODE;
 	        }
@@ -19,7 +30,7 @@ public class SmsUtils {
 	     * @param content message
 	     * @return Parts holding the number of parts and the encoding
 	     */
-	    public static Parts getNumberOfParts(String content) {
+	    public  Parts getNumberOfParts(String content) {
 	        Encoding encoding = getGsmEncoding(content);
 
 	        if (encoding == Encoding.GSM_7BIT) {
@@ -34,7 +45,7 @@ public class SmsUtils {
 	        }
 	    }
 
-	    private static int getNumberOfPartsFor7BitEncoding(String content) {
+	    public int getNumberOfPartsFor7BitEncoding(String content) {
 	        String content7bit = escapeAny7BitExtendedCharsetInContent(content);
 
 	        int messageLength = content7bit.length();
@@ -62,7 +73,7 @@ public class SmsUtils {
 	        }
 
 	        // Otherwise "manually" split the message
-	        return SmsSplitter.splitGsm7BitEncodedMessage(content7bit).length;
+	        return smsSplitterServices.splitGsm7BitEncodedMessage(content7bit).length;
 	    }
 
 	    /**
@@ -72,7 +83,7 @@ public class SmsUtils {
 	     * @return new String with escaped characters
 	     * @throws IllegalArgumentException when the message contains characters outside the GSM0338Charset
 	     */
-	    public static String escapeAny7BitExtendedCharsetInContent(String message) {
+	    public String escapeAny7BitExtendedCharsetInContent(String message) {
 	        StringBuilder content7bit = new StringBuilder();
 
 	        for (char ch : message.toCharArray()) {
@@ -98,8 +109,8 @@ public class SmsUtils {
 	     * @param message message
 	     * @return Pair&lt;Encoding, List &lt;String&gt;&gt; the encoding and the list of parts the sms has been split into
 	     */
-	    public static SmsParts splitSms(String message) {
-	        return SmsSplitter.splitSms(message);
+	    public  SmsParts splitSms(String message) {
+	        return smsSplitterServices.splitSms(message);
 	    }
 
 	

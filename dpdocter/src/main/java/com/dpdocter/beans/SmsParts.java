@@ -4,16 +4,35 @@ import com.dpdocter.enums.Encoding;
 
 public class SmsParts {
 
-	 private final Encoding encoding;
+	 private  Encoding encoding;
 
-	    private final String[] parts;
+	 private  String[] parts;
 
-	    public SmsParts(Encoding encoding, String[] parts) {
-	        this.encoding = encoding;
+	    
+	    
+	   
+
+		public SmsParts() {
+		super();
+	}
+
+		public SmsParts(Encoding encoding, String[] parts) {
+	        
+			this.encoding = encoding;
 	        this.parts = parts;
 	    }
+		
+		
 
-	    public Encoding getEncoding() {
+	    public void setEncoding(Encoding encoding) {
+			this.encoding = encoding;
+		}
+
+		public void setParts(String[] parts) {
+			this.parts = parts;
+		}
+
+		public Encoding getEncoding() {
 	        return encoding;
 	    }
 
