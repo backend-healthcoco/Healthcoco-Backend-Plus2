@@ -39,6 +39,7 @@ import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.SmsParts;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.BranchCollection;
 import com.dpdocter.collections.BulKMessageCollection;
@@ -83,6 +84,7 @@ import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.SMSServices;
+import com.dpdocter.services.SmsSpitterServices;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -158,6 +160,10 @@ public class ContactsServiceImpl implements ContactsService {
 	
 	@Autowired
 	private DoctorRepository doctorRepository;
+	
+	
+	@Autowired
+	private SmsSpitterServices smsSpitterServices;
 
 
 	/**
@@ -1037,7 +1043,13 @@ public class ContactsServiceImpl implements ContactsService {
 //				smsTrackDetail.setSmsDetails(smsDetails);
 //------------------------------------------------------------------------
 			
-			  Integer totalLength=160; 
+			//  Integer totalLength=160;
+			SmsParts sms=smsSpitterServices.splitSms(message);
+			
+			 System.out.println("Sms Parts:"+sms);
+			Integer totalLength=sms.getEncoding().getMaxLengthSinglePart();
+			
+			  System.out.println("TotalLength:"+totalLength);
 			  Integer messageLength=message.length();
 			  System.out.println("messageLength:"+messageLength);
 			  long credits=(messageLength/totalLength);

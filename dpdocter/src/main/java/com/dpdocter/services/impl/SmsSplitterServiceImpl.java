@@ -1,16 +1,19 @@
-package com.dpdocter.beans;
+package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.dpdocter.enums.Encoding;
+import com.dpdocter.services.SmsSpitterServices;
 
-
-public class SmsSplitter {
+@Service
+public class SmsSplitterServiceImpl implements SmsSpitterServices {
 
 	
-	
-	 static SmsParts splitSms(String content) {
+	@Override
+	  public SmsParts splitSms(String content) {
 	        Encoding encoding = getGsmEncoding(content);
 
 	        if (encoding == Encoding.GSM_7BIT) {
@@ -29,7 +32,8 @@ public class SmsSplitter {
 	        }
 	    }
 
-	    static String[] splitGsm7BitEncodedMessage(String content) {
+	@Override
+	     public String[] splitGsm7BitEncodedMessage(String content) {
 	        List<String> parts = new ArrayList<String>();
 	        StringBuilder contentString = new StringBuilder(content);
 
@@ -52,7 +56,8 @@ public class SmsSplitter {
 	        return parts.toArray(new String[parts.size()]);
 	    }
 
-	    private static String[] splitUnicodeEncodedMessage(String content) {
+	@Override
+	    public String[] splitUnicodeEncodedMessage(String content) {
 	        List<String> parts = new ArrayList<String>();
 
 	        StringBuilder contentString = new StringBuilder(content);
@@ -73,11 +78,12 @@ public class SmsSplitter {
 	        return parts.toArray(new String[parts.size()]);
 	    }
 
-	    private static boolean isMultipartSmsLastCharGsm7BitEscapeChar(String content) {
+	    public Boolean isMultipartSmsLastCharGsm7BitEscapeChar(String content) {
 	        return content.charAt(Encoding.GSM_7BIT.getMaxLengthMultiPart() - 1) == GSM0338Charset.ESCAPE_CHAR;
 	    }
 	    
-	    public static Encoding getGsmEncoding(String message) {
+	    @Override
+	public Encoding getGsmEncoding(String message) {
 	        if(! GSM0338Charset.containsOnlyCharsetCharacters(message, true)) {
 	            return Encoding.GSM_UNICODE;
 	        }
@@ -85,8 +91,8 @@ public class SmsSplitter {
 	        return Encoding.GSM_7BIT;
 	    }
 	    
-	    
-	    public static String escapeAny7BitExtendedCharsetInContent(String message) {
+	    @Override
+	    public  String escapeAny7BitExtendedCharsetInContent(String message) {
 	        StringBuilder content7bit = new StringBuilder();
 
 	        for (char ch : message.toCharArray()) {
