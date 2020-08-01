@@ -988,6 +988,13 @@
 		  <artifactId>twilio</artifactId>
 		  <version>7.52.0</version>
 		</dependency>
+		
+		<dependency>
+ 			 <groupId>ro.fortsoft.sms-util</groupId>
+  				<artifactId>sms-util</artifactId>
+  				<version>1.0</version>
+		</dependency>
+		
 		<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-fonts -->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
