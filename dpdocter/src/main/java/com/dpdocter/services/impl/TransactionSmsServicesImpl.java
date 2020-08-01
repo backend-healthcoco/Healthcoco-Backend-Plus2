@@ -87,12 +87,12 @@ public class TransactionSmsServicesImpl implements TransactionSmsServices {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 
-						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			}
 
 			System.out.println("Aggregation:" + aggregation);
