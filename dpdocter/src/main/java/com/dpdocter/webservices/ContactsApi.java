@@ -296,14 +296,14 @@ public class ContactsApi {
 	@Path(value = PathProxy.ContactsUrls.SEND_SMS_TO_GROUP)
 	@POST
 	@ApiOperation(value = PathProxy.ContactsUrls.SEND_SMS_TO_GROUP, notes = PathProxy.ContactsUrls.SEND_SMS_TO_GROUP)
-	public Response<Boolean> sendSMSToGroup(BulkSMSRequest request) {
-		Boolean status = null;
+	public Response<String> sendSMSToGroup(BulkSMSRequest request) {
+		String status = null;
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		status = contactsService.sendSMSToGroup(request);
-		Response<Boolean> response = new Response<Boolean>();
+		Response<String> response = new Response<String>();
 		response.setData(status);
 		return response;
 	}

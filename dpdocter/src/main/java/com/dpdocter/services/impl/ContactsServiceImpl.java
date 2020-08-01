@@ -939,11 +939,11 @@ public class ContactsServiceImpl implements ContactsService {
 
 	@Override
 	@Transactional
-	public Boolean sendSMSToGroup(BulkSMSRequest request) {
+	public String sendSMSToGroup(BulkSMSRequest request) {
 		List<PatientGroupLookupResponse> patientGroupLookupResponses = null;
 		List<PatientCard> patientCards = null;
 		User user = null;
-		Boolean status = false;
+		String status = null;
 		Aggregation aggregation = null;
 		List<String> mobileNumbers = null;
 		try {
@@ -1081,7 +1081,7 @@ public class ContactsServiceImpl implements ContactsService {
 			  System.out.println("Credit Spent"+bulk.getCreditSpent());
 			   } 
 				  else { 
-					  throw new BusinessException(ServiceError.Unknown, "You have Unsufficient Balance"); 
+					  return "You have Unsufficient Balance"; 
 			  }
 			//  BeanUtil.map(bulk, bulkHistoryCollection);
 			//  bulkSmsHistoryRepository.save(bulkHistoryCollection);
@@ -1091,7 +1091,7 @@ public class ContactsServiceImpl implements ContactsService {
 			 
 			
 				if (!smsServices.getBulkSMSResponse(mobileNumbers, message,request.getDoctorId(),request.getLocationId(),subCredits).equalsIgnoreCase("FAILED")) {
-						status = true;
+						status = "bulk sms sent successfully";
 					}
 			
 //			Integer size=100;
