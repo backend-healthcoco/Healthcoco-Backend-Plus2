@@ -1044,13 +1044,13 @@ public class ContactsServiceImpl implements ContactsService {
 //------------------------------------------------------------------------
 			
 			//  Integer totalLength=160;
-			SmsParts sms=smsSpitterServices.splitSms(message);
+			SmsParts sms=smsSpitterServices.splitSms(request.getMessage());
 			
 			 System.out.println("Sms Parts:"+sms);
 			Integer totalLength=sms.getEncoding().getMaxLengthSinglePart();
 			
 			  System.out.println("TotalLength:"+totalLength);
-			  Integer messageLength=message.length();
+			  Integer messageLength=request.getMessage().length();
 			  System.out.println("messageLength:"+messageLength);
 			  long credits=(messageLength/totalLength);
 			  

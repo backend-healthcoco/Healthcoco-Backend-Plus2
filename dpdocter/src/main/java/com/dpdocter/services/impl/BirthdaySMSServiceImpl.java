@@ -60,7 +60,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 	@Value(value = "${sms.birthday.wish.to.patient}")
 	private String birthdayWishSMStoPatient;
 
-	//@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
+	@Scheduled(cron = "0 0 15 * * ?", zone = "IST")
 	@Override
 	public void sendBirthdaySMSToPatients() {
 		try {
