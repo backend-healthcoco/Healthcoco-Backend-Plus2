@@ -290,6 +290,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("locationId", "$locationId")
 						    .append("isActive", "$user.isActive")
 						    .append("packageType", "$packageType")
+						    .append("isOnlineConsultationAvailable", "$isOnlineConsultationAvailable")
 						    .append("resourceName", "$user.firstName")
 						    .append("rxCount", new BasicDBObject(
 							        "$cond", new BasicDBObject(
@@ -305,6 +306,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
 						    .append("isActive", new BasicDBObject("$first","$isActive"))
 						    .append("packageType", new BasicDBObject("$first","$packageType"))
+						    .append("isOnlineConsultationAvailable", new BasicDBObject("$first","$isOnlineConsultationAvailable"))
 						    .append("rxCount", new BasicDBObject("$sum","$rxCount")))),
 					
 					Aggregation.lookup("patient_cl", "doctorId", "doctorId", "patient"),
@@ -338,6 +340,11 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 									          "if", new BasicDBObject("$eq", Arrays.asList("$isActive", true)))
 									        .append("then", 10)
 									        .append("else", 0)))
+						    .append("pointIfOnlineConsultation", new BasicDBObject(
+							        "$cond", new BasicDBObject(
+									          "if", new BasicDBObject("$eq", Arrays.asList("$isOnlineConsultationAvailable", true)))
+									        .append("then", 20)
+									        .append("else", 0)))
 						    .append("rxCount", "$rxCount")
 						    .append("patientCount", new BasicDBObject(
 							        "$cond", new BasicDBObject(
@@ -353,6 +360,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
 						    .append("pointIfActive", new BasicDBObject("$first","$pointIfActive"))
 						    .append("pointIfAdvance", new BasicDBObject("$first","$pointIfAdvance"))
+						    .append("pointIfOnlineConsultation", new BasicDBObject("$first","$pointIfOnlineConsultation"))
 						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
 						    .append("patientCount", new BasicDBObject("$sum","$patientCount")))),
 					
@@ -366,6 +374,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("resourceName", "$resourceName")
 						    .append("pointIfActive", "$pointIfActive")
 						    .append("pointIfAdvance", "$pointIfAdvance")
+						    .append("pointIfOnlineConsultation", "$pointIfOnlineConsultation")
 						    .append("rxCount", "$rxCount")
 						    .append("patientCount", "$patientCount")
 						    .append("patientCountAdditionalIncrement", new BasicDBObject(
@@ -387,6 +396,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
 						    .append("pointIfActive", new BasicDBObject("$first","$pointIfActive"))
 						    .append("pointIfAdvance", new BasicDBObject("$first","$pointIfAdvance"))
+						    .append("pointIfOnlineConsultation", new BasicDBObject("$first","$pointIfOnlineConsultation"))
 						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
 						    .append("patientCount", new BasicDBObject("$first","$patientCount"))
 						    .append("patientCountAdditionalIncrement", new BasicDBObject("$first","$patientCountAdditionalIncrement"))
@@ -399,6 +409,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("resourceName", "$resourceName")
 						    .append("pointIfActive", "$pointIfActive")
 						    .append("pointIfAdvance", "$pointIfAdvance")
+						    .append("pointIfOnlineConsultation", "$pointIfOnlineConsultation")
 						    .append("rxCount", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$rxCount", rxCount)), noOfRxByDoctorWeightageInPercentage)))
 						    .append("patientCount", new BasicDBObject("$add", Arrays.asList("$patientCountAdditionalIncrement", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$patientCount", patientCount)), noOfPatientsOfDoctorWeightageInPercentage)))))
 						    .append("noOfLikes", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$noOfLikes", likesCount)), noOfLikesToDoctorWeightageInPercentage))))),
@@ -411,6 +422,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
 						    .append("pointIfActive", new BasicDBObject("$first","$pointIfActive"))
 						    .append("pointIfAdvance", new BasicDBObject("$first","$pointIfAdvance"))
+						    .append("pointIfOnlineConsultation", new BasicDBObject("$first","$pointIfOnlineConsultation"))
 						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
 						    .append("patientCount", new BasicDBObject("$first","$patientCount"))
 						    .append("noOfLikes", new BasicDBObject("$first","$noOfLikes")))),
@@ -422,10 +434,11 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("resourceName", "$resourceName")
 						    .append("pointIfActive", "$pointIfActive")
 						    .append("pointIfAdvance", "$pointIfAdvance")
+						    .append("pointIfOnlineConsultation", "$pointIfOnlineConsultation")
 						    .append("rxCount", "$rxCount")
 						    .append("patientCount", "$patientCount")
 						    .append("noOfLikes", "$noOfLikes")
-						    .append("totalCount", new BasicDBObject("$add", Arrays.asList("$experienceInYear", "$rxCount", "$patientCount", "$noOfLikes", "$pointIfActive", "$pointIfAdvance"))))),
+						    .append("totalCount", new BasicDBObject("$add", Arrays.asList("$experienceInYear", "$rxCount", "$patientCount", "$noOfLikes", "$pointIfActive", "$pointIfAdvance", "$pointIfOnlineConsultation"))))),
 					
 					new CustomAggregationOperation(new Document("$group",
 							new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
@@ -436,6 +449,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 						    .append("rankingCountResponse", new BasicDBObject("$first","$rankingCountResponse"))
 						    .append("pointIfActive", new BasicDBObject("$first","$pointIfActive"))
 						    .append("pointIfAdvance", new BasicDBObject("$first","$pointIfAdvance"))
+						    .append("pointIfOnlineConsultation", new BasicDBObject("$first","$pointIfOnlineConsultation"))
 						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
 						    .append("patientCount", new BasicDBObject("$first","$patientCount"))
 						    .append("noOfLikes", new BasicDBObject("$first","$noOfLikes"))
@@ -470,6 +484,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_RX, detailResponse.getRxCount()));
 					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.POINT_FOR_PAYMENT_TYPE, detailResponse.getPointIfAdvance()));
 					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.POINT_IF_ACTIVE, detailResponse.getPointIfActive()));
+					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.POINT_IF_ONLINE_CONSULTATION, detailResponse.getPointIfOnlineConsultation()));
 					parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.RECOMMENDATIONS, 0));
 					rankingCountCollection.setParameters(parameters);
 					
