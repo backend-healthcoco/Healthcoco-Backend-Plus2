@@ -1,6 +1,5 @@
 package com.dpdocter.services.impl;
 
-
 import java.util.Date;
 import java.util.List;
 
@@ -32,12 +31,13 @@ public class TransactionSmsServicesImpl implements TransactionSmsServices {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
-	
+
 	@Override
-	public List<TransactionalSmsReport> getSmsReport(int page, int size, String doctorId, String locationId,String fromDate, String toDate) {
+	public List<TransactionalSmsReport> getSmsReport(int page, int size, String doctorId, String locationId,
+			String fromDate, String toDate) {
 		List<TransactionalSmsReport> response = null;
 		try {
-			
+
 			Date from = null;
 			Date to = null;
 			Criteria criteria = new Criteria();
@@ -47,7 +47,7 @@ public class TransactionSmsServicesImpl implements TransactionSmsServices {
 				from = new Date(Long.parseLong(fromDate));
 				to = new Date(Long.parseLong(toDate));
 				criteria.and("smsDetails.sentTime").gte(from).lte(to);
-			} 
+			}
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				ObjectId doctorObjectId = new ObjectId(doctorId);
@@ -87,18 +87,18 @@ public class TransactionSmsServicesImpl implements TransactionSmsServices {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 
-						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			}
 
 			System.out.println("Aggregation:" + aggregation);
 			response = mongoTemplate.aggregate(aggregation, SMSTrackDetail.class, TransactionalSmsReport.class)
 					.getMappedResults();
-
 
 		} catch (BusinessException e) {
 			e.printStackTrace();

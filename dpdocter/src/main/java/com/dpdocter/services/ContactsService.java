@@ -52,7 +52,7 @@ public interface ContactsService {
 			String hospitalId, long page, int size, String updatedTime, Boolean discarded, Boolean sortByFirstName,
 			String role) throws Exception;
 
-	Boolean sendSMSToGroup(BulkSMSRequest request);
+	String sendSMSToGroup(BulkSMSRequest request);
 
 	List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId,
 			String updatedTime, boolean discarded, String role, int page, int size, String searchTerm, String userId);
