@@ -1458,14 +1458,19 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
 					new Criteria("state").is(AppointmentState.NEW.toString()));
 
-		//	Criteria criteria2=new Criteria();
-			
+			Criteria criteria2=new Criteria();
+			criteria2.and("doctorId").is(new ObjectId(doctorId));
+			criteria2.and("locationId").is(new ObjectId(locationId));
+			criteria2.and("fromDate").gte(fromTime).lte(toTime)
+			.and("type").is(type);
+
+	
 			
 			response.setTotalOnlineConsultation(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 			criteria.and("consultationType").is(ConsultationType.VIDEO.toString());
 			response.setTotalVideoConsultation(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 			//criteria2.and("consultationType").is(ConsultationType.CHAT.toString());
-			//response.setTotalChatConsultation(mongoTemplate.count(new Query(criteria2),AppointmentCollection.class));
+			response.setTotalChatConsultation(mongoTemplate.count(new Query(criteria2),AppointmentCollection.class));
 			
 		}catch (BusinessException e) {
 			logger.error("Error while getting online Consultation Analytics " + e.getMessage());
