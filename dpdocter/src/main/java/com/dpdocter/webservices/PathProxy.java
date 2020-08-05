@@ -11,6 +11,12 @@ public interface PathProxy {
 		public static final String UPDATE_DELIVERY_REPORTS = "/sms/updateDeliveryReports";
 	}
 	
+	public static final String RAZORPAY_BASE_URL = "/razorpay";
+
+	public interface RazorPayUrls {
+		public static final String GET_SETTLEMENT = "/payment/settlements";
+	}
+	
 	public static final String HOME_URL = "/";
 
 	public static final String BASE_URL = "/v1";

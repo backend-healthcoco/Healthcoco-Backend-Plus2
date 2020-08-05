@@ -1,10 +1,13 @@
 package com.dpdocter.services.impl;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +17,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -56,6 +60,7 @@ import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.response.ScheduleAndCheckoutCount;
 import com.dpdocter.services.AppointmentAnalyticsService;
+import com.dpdocter.services.SMSServices;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 
@@ -67,6 +72,14 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+	
+	@Value(value = "${rayzorpay.api.secret}")
+	private String secret;
+
+	
+	@Value(value = "${rayzorpay.api.key}")
+	private String keyId;
+	
 
 	Logger logger = Logger.getLogger(AppointmentAnalyticServiceImpl.class);
 
@@ -1599,8 +1612,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 //			orderRequest.put("payment_capture", request.getPaymentCapture());
 
 			String url="https://api.razorpay.com/v1/settlements/?count="+count+"&from="+new Integer(from);
-			// String authStr=keyId+":"+secret;
-		//	 String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
+			 String authStr=keyId+":"+secret;
+			 String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -1613,17 +1626,17 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			con.setRequestMethod("GET");
 //			con.setRequestProperty("User-Agent",
 //					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
-//			con.setRequestProperty("Accept-Charset", "UTF-8");
+			con.setRequestProperty("Accept-Charset", "UTF-8");
 			con.setRequestProperty("Content-Type","application/json");
-//			con.setRequestProperty("Authorization", "Basic " +  authStringEnc);
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(orderRequest.toString());
-			
-			  wr.flush();
-	             wr.close();
+			con.setRequestProperty("Authorization", "Basic " +  authStringEnc);
+//			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+//			wr.writeBytes(orderRequest.toString());
+//			
+//			  wr.flush();
+//	             wr.close();
 	             con.disconnect();
-	           //  BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-	             InputStream in=con.getInputStream();
+	             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	           //  InputStream in=con.getInputStream();
 	             StringBuffer output = new StringBuffer();
 	 			int c = 0;
 	 			while ((c=in.read()) !=-1) {
@@ -1637,6 +1650,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	 			 PaymentSettlements payment=null;
 	 			  payment = mapper.readValue(output.toString(), PaymentSettlements.class);
 
+	 			  
+	 			  
+	 			 
 	 		//	 OrderReponse list = mapper.readValue(output.toString(),OrderReponse.class);
 	 			//OrderReponse res=list.get(0); 
  			
