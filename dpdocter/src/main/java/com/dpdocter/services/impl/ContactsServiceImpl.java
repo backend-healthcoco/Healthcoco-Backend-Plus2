@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Branch;
 import com.dpdocter.beans.BulKMessage;
+import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
@@ -38,9 +39,11 @@ import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.SmsParts;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.BranchCollection;
 import com.dpdocter.collections.BulKMessageCollection;
+import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
@@ -59,6 +62,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BranchRepository;
 import com.dpdocter.repository.BulkMessageRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
+import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.ImportContactsRequestRepository;
@@ -80,6 +84,7 @@ import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.SMSServices;
+import com.dpdocter.services.SmsSpitterServices;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -152,6 +157,13 @@ public class ContactsServiceImpl implements ContactsService {
 	
 	@Autowired
 	private BulkMessageRepository bulkMessageRepository;
+	
+	@Autowired
+	private DoctorRepository doctorRepository;
+	
+	
+	@Autowired
+	private SmsSpitterServices smsSpitterServices;
 
 
 	/**
@@ -927,15 +939,15 @@ public class ContactsServiceImpl implements ContactsService {
 
 	@Override
 	@Transactional
-	public Boolean sendSMSToGroup(BulkSMSRequest request) {
+	public String sendSMSToGroup(BulkSMSRequest request) {
 		List<PatientGroupLookupResponse> patientGroupLookupResponses = null;
 		List<PatientCard> patientCards = null;
 		User user = null;
-		Boolean status = false;
+		String status = null;
 		Aggregation aggregation = null;
 		List<String> mobileNumbers = null;
 		try {
-			String message = request.getMessage() + "-Powered%20by%20Healthcoco";
+			String message = request.getMessage() + "-Powered by Healthcoco";
 
 			if (request.getGroupId() != null) {
 				Criteria criteria = new Criteria().and("groupId").is(new ObjectId(request.getGroupId()));
@@ -954,35 +966,41 @@ public class ContactsServiceImpl implements ContactsService {
 					}
 
 				}
-
+				System.out.println("GroupId User Mobile Number"+mobileNumbers);
 			} else if(request.getPatientIds()!=null && !request.getPatientIds().isEmpty()){
 				List<ObjectId> patientIds = new ArrayList<ObjectId>();
 				for(String id : request.getPatientIds())patientIds.add(new ObjectId(id));
 				
-				Criteria criteria = new Criteria().and("id").in(patientIds);
+				Criteria criteria = new Criteria().and("_id").in(patientIds);
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					//	Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+				//		Aggregation.unwind("user"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-				AggregationResults<User> aggregationResults = mongoTemplate.aggregate(aggregation, UserCollection.class,
-						User.class);
-				user = aggregationResults.getUniqueMappedResult();
-				if (user != null) {
+			//	AggregationResults<User> aggregationResults = mongoTemplate.aggregate(aggregation, UserCollection.class,
+			//			User.class);
+				List<User>users=mongoTemplate.aggregate(aggregation, UserCollection.class, User.class).getMappedResults();
+				 System.out.println("Aggregation"+aggregation);
+				if (users != null) {
 					if(mobileNumbers == null)mobileNumbers = new ArrayList<>();
-
-					mobileNumbers.add(user.getMobileNumber());
-
+					for(User userr:users)
+					mobileNumbers.add(userr.getMobileNumber());
+					
 				}
+				System.out.println("PatientIds User Mobile Number"+mobileNumbers);
 			}else if (request.getPatientId() != null) {
-				Criteria criteria = new Criteria().and("id").is(new ObjectId(request.getPatientId()));
+				Criteria criteria = new Criteria().and("_id").is(new ObjectId(request.getPatientId()));
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					//	Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+					//	Aggregation.unwind("user"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-				AggregationResults<User> aggregationResults = mongoTemplate.aggregate(aggregation, UserCollection.class,
-						User.class);
-				user = aggregationResults.getUniqueMappedResult();
-				if (user != null) {
+				User users = mongoTemplate.aggregate(aggregation,UserCollection.class, User.class).getUniqueMappedResult();
+				System.out.println("Aggregation"+aggregation);
+				
+				if (users != null) {
 					mobileNumbers = new ArrayList<>();
 
-					mobileNumbers.add(user.getMobileNumber());
-
+					mobileNumbers.add(users.getMobileNumber());
+					System.out.println("PatientId User Mobile Number"+mobileNumbers);
 				}
 			} else {
 				Criteria criteria = new Criteria().and("doctorId").is(new ObjectId(request.getDoctorId()));
@@ -1002,44 +1020,105 @@ public class ContactsServiceImpl implements ContactsService {
 
 				}
 			}
-			 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-				
-				smsTrackDetail.setType(ComponentType.BULK_SMS.getType());
-				SMSDetail smsDetail = new SMSDetail();
-				SMS sms = new SMS();
-				sms.setSmsText(message);
-				
-				SMSAddress smsAddress = new SMSAddress();
-				
-				smsAddress.setRecipients(mobileNumbers);
-				
-				sms.setSmsAddress(smsAddress);
-				smsDetail.setSms(sms);
-				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-				smsDetails.add(smsDetail);
-				smsTrackDetail.setSmsDetails(smsDetails);
-
-
+//			 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+//				
+//				smsTrackDetail.setType(ComponentType.BULK_SMS.getType());
+//				SMSDetail smsDetail = new SMSDetail();
+//				SMS sms = new SMS();
+//				SMSAddress smsAddress = new SMSAddress();
+//				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+//				for (String mobileNumber : mobileNumbers) {
+//						
+//				sms.setSmsText(message);
+//				
+//				smsAddress.setRecipient(mobileNumber);
+//				
+//				sms.setSmsAddress(smsAddress);
+//				smsDetail.setSms(sms);
+//				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+//				smsDetails.add(smsDetail);
+//				}
+//				
+//				
+//				smsTrackDetail.setSmsDetails(smsDetails);
+//------------------------------------------------------------------------
 			
-			Integer size=100;
-			String responseId=null;
-			List<String>messageResponse=new ArrayList<String>();
-			for(int start=0;start<mobileNumbers.size();start+=size)
-			{
-				int end=Math.min(start+size,mobileNumbers.size());
-				List<String> sublist=mobileNumbers.subList(start, end);
-				
-				if (!(responseId=smsServices.getBulkSMSResponse(sublist, message)).equalsIgnoreCase("FAILED")) {
-					
-							status = true;
-							messageResponse.add(responseId);
-					}
-				
-				System.out.println(sublist);
-			}
-			smsTrackDetail.setResponseIds(messageResponse);
-			smsTrackRepository.save(smsTrackDetail);
+			//  Integer totalLength=160;
+			
+			SmsParts sms=smsSpitterServices.splitSms(request.getMessage());
+			
+			 System.out.println("Sms Parts:"+sms);
+			Integer totalLength=sms.getEncoding().getMaxLengthSinglePart();
+			
+			  System.out.println("TotalLength:"+totalLength);
+			  Integer messageLength=request.getMessage().length();
+			  System.out.println("messageLength:"+messageLength);
+			  long credits=(messageLength/totalLength);
+			  
+			  long temp=messageLength%totalLength;
+			  if(credits==0 || temp!=0) 
+			  credits=credits+1;
+			  
+			 System.out.println("credits:"+credits);
+			 
+			 System.out.println("temp:"+temp);
+			 
+			  
+			  
+			  long subCredits=credits*(mobileNumbers.size());
+			  
+			  System.out.println("Subcredits:"+subCredits);
+			//  BulkSmsHistoryCollection bulkHistoryCollection=new BulkSmsHistoryCollection();
+				DoctorCollection doctorCollections = null;
+				doctorCollections = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
+				BulkSmsCredits bulk=doctorCollections.getBulkSmsCredit();
+			  if(doctorCollections!=null && bulk!=null) { 
+				  
+				  if(bulk.getCreditBalance() > subCredits || bulk.getCreditBalance() == subCredits) {
+			  bulk.setCreditBalance(bulk.getCreditBalance()-subCredits);
+			  bulk.setCreditSpent(bulk.getCreditSpent()+subCredits);
+			  doctorCollections.setBulkSmsCredit(bulk);
+			  
+			  doctorRepository.save(doctorCollections);
+			  
+			  System.out.println("Credit Balance"+bulk.getCreditBalance());
+			  System.out.println("Credit Spent"+bulk.getCreditSpent());
+			  
+				if (!smsServices.getBulkSMSResponse(mobileNumbers, message,request.getDoctorId(),request.getLocationId(),subCredits).equalsIgnoreCase("FAILED")) {
+					status = "bulk sms sent successfully";
+				}
+			  
+			   } 
+				  else { 
+					  return "You have Unsufficient Balance"; 
+			  }
+			//  BeanUtil.map(bulk, bulkHistoryCollection);
+			//  bulkSmsHistoryRepository.save(bulkHistoryCollection);
+			  }
+			 
+			  
+			 
+			
+			
+			
+//			Integer size=100;
+//			String responseId=null;
+//			List<String>messageResponse=new ArrayList<String>();
+//			for(int start=0;start<mobileNumbers.size();start+=size)
+//			{
+//				int end=Math.min(start+size,mobileNumbers.size());
+//				List<String> sublist=mobileNumbers.subList(start, end);
+//				
+//				if (!(responseId=smsServices.getBulkSMSResponse(sublist, message)).equalsIgnoreCase("FAILED")) {
+//					
+//							status = true;
+//							messageResponse.add(responseId);
+//					}
+//				
+////				System.out.println(sublist);
+//		}
+//			smsTrackDetail.setResponseIds(messageResponse);
+//			smsTrackRepository.save(smsTrackDetail);
 //			 List<String> numbers =new ArrayList<String>(mobileNumbers); 
 //			 List<>result=new ArrayList<>();
 //			final int chunkSize = 100; 
@@ -1056,9 +1135,7 @@ public class ContactsServiceImpl implements ContactsService {
 			
 			
 
-			//if (!smsServices.getBulkSMSResponse(mobileNumbers, message).equalsIgnoreCase("FAILED")) {
-		//		status = true;
-		//	}
+		
 
 		} catch (Exception e) {
 			e.printStackTrace();

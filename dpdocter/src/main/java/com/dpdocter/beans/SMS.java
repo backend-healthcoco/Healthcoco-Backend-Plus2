@@ -14,7 +14,22 @@ public class SMS {
 
     private SMSAddress smsAddress;
 
-    @JsonProperty("smsText")
+    
+    public SMS() {
+		// TODO Auto-generated constructor stub
+	}
+    
+   
+
+	public SMS(String smsText, SMSAddress smsAddress) {
+		super();
+		this.smsText = smsText;
+		this.smsAddress = smsAddress;
+	}
+
+
+
+	@JsonProperty("smsText")
     public String getSmsText() {
 	return smsText;
     }

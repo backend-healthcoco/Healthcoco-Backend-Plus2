@@ -23,6 +23,10 @@ public class FooterSetup {
 
 	private Integer footerHeight = 0;
 
+	private String signatureUrl = "";
+
+	private Boolean showSignatureBox = false;
+
 	public Boolean getShowBottomSignText() {
 		return showBottomSignText;
 	}
@@ -97,9 +101,29 @@ public class FooterSetup {
 		this.footerHeight = footerHeight;
 	}
 
+	public String getSignatureUrl() {
+		return signatureUrl;
+	}
+
+	public void setSignatureUrl(String signatureUrl) {
+		this.signatureUrl = signatureUrl;
+	}
+
+	public Boolean getShowSignatureBox() {
+		return showSignatureBox;
+	}
+
+	public void setShowSignatureBox(Boolean showSignatureBox) {
+		this.showSignatureBox = showSignatureBox;
+	}
+
 	@Override
 	public String toString() {
-		return "FooterSetup [customFooter=" + customFooter + ", showSignature=" + showSignature + ", bottomText="
-				+ bottomText + "]";
+		return "FooterSetup [customFooter=" + customFooter + ", showSignature=" + showSignature + ", showPoweredBy="
+				+ showPoweredBy + ", showBottomSignText=" + showBottomSignText + ", bottomSignText=" + bottomSignText
+				+ ", showImageFooter=" + showImageFooter + ", footerImageUrl=" + footerImageUrl + ", footerHeight="
+				+ footerHeight + ", signatureUrl=" + signatureUrl + ", showSignatureBox=" + showSignatureBox
+				+ ", bottomText=" + bottomText + "]";
 	}
+
 }

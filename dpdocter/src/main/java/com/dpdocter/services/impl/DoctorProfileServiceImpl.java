@@ -43,6 +43,7 @@ import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.Services;
 import com.dpdocter.beans.Speciality;
+import com.dpdocter.beans.Subscription;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.UserSymptom;
@@ -62,6 +63,7 @@ import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.ServicesCollection;
 import com.dpdocter.collections.SpecialityCollection;
+import com.dpdocter.collections.SubscriptionCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
@@ -86,6 +88,7 @@ import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.ServicesRepository;
 import com.dpdocter.repository.SpecialityRepository;
+import com.dpdocter.repository.SubscriptionRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserResourceFavouriteRepository;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
@@ -178,7 +181,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	@Autowired
 	ESDoctorRepository esdoctorRepository;
 
-
+	@Autowired
+	SubscriptionRepository subscriptionRepository;
+	
 	@Override
 	@Transactional
 	public DoctorNameAddEditRequest addEditName(DoctorNameAddEditRequest request) {
@@ -570,6 +575,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		List<String> professionalMemberships = null;
 		List<DoctorClinicProfile> clinicProfile = new ArrayList<DoctorClinicProfile>();
 		List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = null;
+		Subscription subscription = new Subscription();
+
 		try {
 			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId));
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
@@ -634,6 +641,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 							new BeanToPropertyValueTransformer("service"));
 				}
 				doctorProfile.setServices(services);
+				doctorProfile.setBulkSmsCredit(doctorCollection.getBulkSmsCredit());
 
 				// set medical councils using medical councils ids
 				registrationDetails = new ArrayList<DoctorRegistrationDetail>();
@@ -663,6 +671,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			//	doctorProfile.setOnlineWorkingSchedules(clinicProfile.get(0).getOnlineWorkingSchedules());
 			//	doctorProfile.setOnlineConsultationType(clinicProfile.get(0).getOnlineConsultationType());
 
+				//set subscription Detail
+				SubscriptionCollection subscriptionCollection  = subscriptionRepository.findByDoctorId(new ObjectId(doctorId));	
+			 if(subscriptionCollection != null) {
+				BeanUtil.map(subscriptionCollection, subscription);
+				doctorProfile.setSubscriptionDetail(subscription);
+				doctorProfile.setPackageType(subscriptionCollection.getPackageName().toString());
+			 }
 			}
 		} catch (BusinessException be) {
 			logger.error(be);

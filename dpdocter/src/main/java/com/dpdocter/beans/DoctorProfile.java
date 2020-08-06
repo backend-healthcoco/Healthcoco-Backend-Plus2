@@ -81,7 +81,7 @@ public class DoctorProfile extends GenericCollection {
 
 	private String doctorSlugURL;
 
-	private String packageType = PackageType.PRO.getType();
+	private String packageType = PackageType.BASIC.getType();
 
 	private boolean isPrescriptionSMS = true;
 
@@ -99,6 +99,9 @@ public class DoctorProfile extends GenericCollection {
 	
 	private UserState userState = UserState.USERSTATECOMPLETE;
 
+	private Subscription subscriptionDetail;
+
+	private BulkSmsCredits bulkSmsCredit;
 	
 	//private Map<DoctorConsultation, String> onlineConsultationFees;
 	
@@ -457,6 +460,24 @@ public class DoctorProfile extends GenericCollection {
 
 	public void setUserState(UserState userState) {
 		this.userState = userState;
+	}
+
+	
+	
+	public BulkSmsCredits getBulkSmsCredit() {
+		return bulkSmsCredit;
+	}
+
+	public void setBulkSmsCredit(BulkSmsCredits bulkSmsCredit) {
+		this.bulkSmsCredit = bulkSmsCredit;
+	}
+
+	public Subscription getSubscriptionDetail() {
+		return subscriptionDetail;
+	}
+
+	public void setSubscriptionDetail(Subscription subscriptionDetail) {
+		this.subscriptionDetail = subscriptionDetail;
 	}
 
 	@Override

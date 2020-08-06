@@ -49,6 +49,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.dpdocter.beans.Address;
+import com.dpdocter.beans.Age;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Discount;
@@ -697,7 +698,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								case "REFERREDBY": referredByIndex = i;break;
 								case "GROUPS": groupsIndex = i;break;
 								case "PATIENTNOTES": patientNotesIndex = i;break;
-								case "REGISTRATIONDATE": patientRegistrationDateIndex = i;break;
+						//		case "REGISTRATIONDATE": patientRegistrationDateIndex = i;break;
 								
 								
 								default:
@@ -759,6 +760,35 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 							if(ageIndex != null && checkIfNotNullOrNone(line.get(ageIndex).replaceAll("'", "").replaceAll("\"", ""))) {
 								String ageValue = line.get(ageIndex).replaceAll("'", "").replaceAll("\"", "");
+								String regex = "^\\d*\\.\\d+|\\d+\\.\\d*$";
+								// check string contain decimal point or not
+								if(ageValue.matches(regex)) {
+									System.out.println(true);
+								    int indexOfDecimal = ageValue.indexOf(".");
+								    String ageStr = ageValue.substring(0, indexOfDecimal) +"Y "+ageValue.substring(indexOfDecimal).replace(".", "")+"M";
+								    System.out.print(ageStr);
+								    String[] age = ageStr.split(" ");
+									int year=0, month = 0, day = 0;
+									for(String str : age) {
+										if(str.contains("Y"))year = Integer.parseInt(str.replace("Y", ""));
+										else if(str.contains("M"))month = Integer.parseInt(str.replace("M", ""));
+									//else if(str.contains("D"))day = Integer.parseInt(str.replace("D", ""));
+									}
+									
+									Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+									int currentDay = localCalendar.get(Calendar.DATE)- day;
+									int currentMonth = localCalendar.get(Calendar.MONTH) + 1-month; 
+									int currentYear = localCalendar.get(Calendar.YEAR) - year;
+									if(currentMonth < 0) {
+										currentYear = currentYear-1;
+										currentMonth=12+currentMonth;
+									}
+								    
+										request.setDob(new DOB(currentDay, currentMonth, currentYear));
+
+								}else {			
+									System.out.println(false);
+
 								String[] age = ageValue.split(" ");
 									int year=0, month = 0, day = 0;
 									for(String str : age) {
@@ -776,7 +806,9 @@ public class UploadDataServicesimpl implements UploadDateService {
 										currentMonth=12+currentMonth;
 									}
 									
-									request.setDob(new DOB(currentDay, currentMonth, currentYear));
+								//	request.setDob(new DOB(currentDay, currentMonth, currentYear));
+									request.setAge(Integer.parseInt(line.get(ageIndex).replaceAll("'", "").replaceAll("\"", "")));
+								}
 							}
 								
 							if (emailAddressIndex != null && checkIfNotNullOrNone(line.get(emailAddressIndex).replaceAll("'", "").replaceAll("\"", "")))
@@ -855,12 +887,12 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 							//05-12-2019 14:51s
 							SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/y HH:mm");
-							String dateSTri = line.get(patientRegistrationDateIndex).replace("\"", "");
+						//	String dateSTri = line.get(patientRegistrationDateIndex).replace("\"", "");
 							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-							Date date = dateFormat.parse(dateSTri);
+					//		Date date = dateFormat.parse(dateSTri);
 							
 							
-							request.setRegistrationDate(date.getTime());
+					//		request.setRegistrationDate(date.getTime());
 							if (pNUMIndex != null && checkIfNotNullOrNone(line.get(pNUMIndex).replaceAll("'", "").replaceAll("\"", ""))) {
 								request.setPNUM(line.get(pNUMIndex).replaceAll("'", ""));
 							}
@@ -1417,7 +1449,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 								locationObjectId, hospitalObjectId, line.get(pNUMIndex).replace("'", ""));
 						if (patientCollection != null) {
 
-							SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/y HH:mm");
+							SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY/MM/DD HH:mm");
 							String dateSTri = line.get(fromDateIndex).replace("'", "");
 							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 							Date fromDate = dateFormat.parse(dateSTri);
@@ -1650,7 +1682,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 						if (patientCollection != null) {
 
 							SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d HH:mm:ss");
-							String dateSTri = line.get(dateIndex).replace("'", "");
+							String dateSTri = line.get(dateIndex).replaceAll("^\"|\"$", "");
 							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 							Date fromDate = dateFormat.parse(dateSTri);
 

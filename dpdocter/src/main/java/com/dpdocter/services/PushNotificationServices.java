@@ -29,4 +29,7 @@ public interface PushNotificationServices {
 	public Boolean notifyRefreshAll(RoleEnum role, List<ObjectId> LocaleIds, String message,
 			ComponentType componentType);
 
+	void notifyUserTwilio(String userId, String message, String componentType, String componentTypeId, String room,
+			String title, List<UserDeviceCollection> userDevices, String callType);
+
 }

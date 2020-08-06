@@ -918,7 +918,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 				// for Online consultation
 				if (request.getType() != null
-						&& request.getType().equals(AppointmentType.ONLINE_CONSULTATION.getType())) {
+						&& request.getType().equals(AppointmentType.ONLINE_CONSULTATION)) {
 					List<DoctorClinicProfileCollection> doctorClinicProfileCollectionn = doctorClinicProfileRepository
 							.findByDoctorId(new ObjectId(request.getDoctorId()));
 					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollectionn)
@@ -1197,7 +1197,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					// for online consultation
 
 					if (request.getType() != null
-							&& request.getType().equals(AppointmentType.ONLINE_CONSULTATION.getType())) {
+							&& request.getType().equals(AppointmentType.ONLINE_CONSULTATION)) {
 						List<DoctorClinicProfileCollection> doctorClinicProfileCollectionn = doctorClinicProfileRepository
 								.findByDoctorId(doctorId);
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollectionn)

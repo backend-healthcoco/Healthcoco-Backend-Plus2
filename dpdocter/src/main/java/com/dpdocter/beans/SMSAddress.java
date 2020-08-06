@@ -16,7 +16,21 @@ public class SMSAddress {
     
     private List<String> recipients;
 
-    @JsonProperty("recipient")
+    
+    public SMSAddress() {
+		// TODO Auto-generated constructor stub
+	}
+    
+   
+
+	public SMSAddress(String recipient) {
+		super();
+		this.recipient = recipient;
+	}
+
+
+
+	@JsonProperty("recipient")
     public String getRecipient() {
 	return recipient;
     }

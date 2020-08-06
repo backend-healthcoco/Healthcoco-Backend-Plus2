@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Achievement;
+import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorExperienceDetail;
@@ -109,6 +110,9 @@ public class DoctorCollection extends GenericCollection {
 	
 	@Field
 	private String photoIdImageUrl;
+	
+	@Field
+	private BulkSmsCredits bulkSmsCredit;
 
 	public Boolean getIsPrescriptionSMS() {
 		return isPrescriptionSMS;
@@ -361,6 +365,16 @@ public class DoctorCollection extends GenericCollection {
 
 	public void setPhotoIdImageUrl(String photoIdImageUrl) {
 		this.photoIdImageUrl = photoIdImageUrl;
+	}
+
+	
+	
+	public BulkSmsCredits getBulkSmsCredit() {
+		return bulkSmsCredit;
+	}
+
+	public void setBulkSmsCredit(BulkSmsCredits bulkSmsCredit) {
+		this.bulkSmsCredit = bulkSmsCredit;
 	}
 
 	@Override

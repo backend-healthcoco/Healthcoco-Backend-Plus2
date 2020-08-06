@@ -20,7 +20,17 @@ public class SMSDetail {
 
     private String deliveredTime;
 
-    public ObjectId getUserId() {
+    public SMSDetail() {
+		// TODO Auto-generated constructor stub
+	}
+    
+
+	public SMSDetail(SMS sms, SMSStatus deliveryStatus) {
+		super();
+		this.sms = sms;
+		this.deliveryStatus = deliveryStatus;
+	}
+	public ObjectId getUserId() {
 	return userId;
     }
 
@@ -67,6 +77,8 @@ public class SMSDetail {
     public void setDeliveredTime(String deliveredTime) {
 	this.deliveredTime = deliveredTime;
     }
+    
+    
 
     @Override
     public String toString() {

@@ -508,6 +508,48 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	    String text = mergeTemplate(context, templatePath);
 		return text;
 	}
+	
+	@Override
+	@Transactional
+	public String generateBulkSmsPayment(String firstName, String type, String reciept, Double discountAmount,
+			String packageName, String paymentDate, String templatePath) throws Exception {
+
+		VelocityContext context = new VelocityContext();
+		context.put("fName", firstName);
+		context.put("mode", type);
+		context.put("packageName",packageName);
+		context.put("receiptId",reciept);
+		context.put("amount",discountAmount);
+		context.put("paymentDate",paymentDate);
+		context.put("fbLink", fbLink);
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+
+		String text = mergeTemplate(context, templatePath);
+		return text;
+	}
+
+	@Override
+	public String subscriptionPaymentEmailBody(String firstName, 
+			String createdDate,String transactionId,String receipt,String totalCost,
+			String packageName,String paymentMode,int duration,String templatePath) {
+
+		VelocityContext context = new VelocityContext();
+		context.put("fName", firstName);
+		context.put("createdDate", createdDate);
+		context.put("receipt", receipt);
+		context.put("totalCost", totalCost);
+		context.put("transactionId", transactionId);
+		context.put("packageName", packageName);
+		context.put("paymentMode", paymentMode);
+		context.put("duration", duration);
+
+		String text = mergeTemplate(context, templatePath);
+		return text;
+	}
+
 
 
 }
