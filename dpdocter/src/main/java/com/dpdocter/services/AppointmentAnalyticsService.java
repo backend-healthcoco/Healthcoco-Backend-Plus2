@@ -58,9 +58,9 @@ public interface AppointmentAnalyticsService {
 OnlineConsultationAnalytics getConsultationAnalytics(String fromDate,String toDate,String doctorId,String locationId,String type);
 
 	
-	List<PaymentSummary> getPaymentSummary(String fromDate,String toDate,String doctorId,int page,int size );
+	PaymentSummary getPaymentSummary(String fromDate,String toDate,String doctorId,int page,int size );
 
 
-	List<PaymentSettlements> fetchSettlement(String from, int count);
+	PaymentSettlements fetchSettlement(Integer day,Integer month, Integer year);
 
 }
