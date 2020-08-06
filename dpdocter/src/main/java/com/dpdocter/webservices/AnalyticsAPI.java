@@ -831,7 +831,7 @@ public class AnalyticsAPI {
 			 @QueryParam(value = "size") int size,@QueryParam(value = "page") int page ) {
 
 		Response<PaymentSummary> response =new Response<PaymentSummary>();
-		response.setDataList(appointmentAnalyticsService.getPaymentSummary(fromDate, toDate, doctorId, page,size));
+		response.setData(appointmentAnalyticsService.getPaymentSummary(fromDate, toDate, doctorId, page,size));
 		return response;
 		
 		
@@ -841,11 +841,12 @@ public class AnalyticsAPI {
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.FETCH_SETTLEMENT, notes = PathProxy.AnalyticsUrls.FETCH_SETTLEMENT)
 	public Response<PaymentSettlements> getSettlements(
-			@QueryParam(value = "from") String from, 
-			 @QueryParam(value = "count") int count) {
+			@QueryParam(value = "day") int  day, 
+			 @QueryParam(value = "month") int month,
+			 @QueryParam(value = "year") int year) {
 
 		Response<PaymentSettlements> response =new Response<PaymentSettlements>();
-		response.setDataList(appointmentAnalyticsService.fetchSettlement(from, count));
+		response.setData(appointmentAnalyticsService.fetchSettlement(day, month, year));
 		return response;
 		
 		

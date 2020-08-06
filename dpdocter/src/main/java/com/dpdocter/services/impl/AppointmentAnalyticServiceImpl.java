@@ -41,6 +41,7 @@ import com.dpdocter.beans.PaymentSummary;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.PaymentSettlementCollection;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
@@ -49,6 +50,9 @@ import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.OnlineConsultationPaymentRepository;
+import com.dpdocter.repository.PaymentSettlementRepository;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
@@ -79,6 +83,12 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	
 	@Value(value = "${rayzorpay.api.key}")
 	private String keyId;
+	
+	@Autowired
+	private PaymentSettlementRepository paymentSettlementRepository;
+	
+	@Autowired
+	private OnlineConsultationPaymentRepository onlineConsultationPaymentRepository;
 	
 
 	Logger logger = Logger.getLogger(AppointmentAnalyticServiceImpl.class);
@@ -1436,47 +1446,47 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			long date = 0;
 			
 
-			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria.and("locationId").is(new ObjectId(locationId));
-			}
+//			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+//				criteria.and("locationId").is(new ObjectId(locationId));
+//			}
 			
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date();
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(date);
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date(date);
-				to = new Date();
-			}
-
-			fromTime = new DateTime(from);
-			toTime = new DateTime(to);
-
-			criteria.and("fromDate").gte(fromTime).lte(toTime)
-					.and("type").is(type);
+//			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+//				from = new Date(Long.parseLong(fromDate));
+//				to = new Date(Long.parseLong(toDate));
+//
+//			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+//				from = new Date(Long.parseLong(fromDate));
+//				to = new Date();
+//			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+//				from = new Date(date);
+//				to = new Date(Long.parseLong(toDate));
+//			} else {
+//				from = new Date(date);
+//				to = new Date();
+//			}
+//
+//			fromTime = new DateTime(from);
+//			toTime = new DateTime(to);
+//
+//			criteria.and("fromDate").gte(fromTime).lte(toTime)
+					criteria.and("type").is(type);
 
 			
 			
-			criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
-					new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
-					new Criteria("state").is(AppointmentState.NEW.toString()));
+//			criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
+//					new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
+//					new Criteria("state").is(AppointmentState.NEW.toString()));
 
 			Criteria criteria2=new Criteria();
 			criteria2.and("doctorId").is(new ObjectId(doctorId));
-			criteria2.and("locationId").is(new ObjectId(locationId));
-			criteria2.and("fromDate").gte(fromTime).lte(toTime)
-			.and("type").is(type);
-
+		//	criteria2.and("locationId").is(new ObjectId(locationId));
+		//	criteria2.and("fromDate").gte(fromTime).lte(toTime)
+			criteria2.and("type").is(type);
+			criteria2.and("consultationType").is(ConsultationType.CHAT.toString());
 	
 			
 			response.setTotalOnlineConsultation(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
@@ -1495,8 +1505,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	}
 
 	@Override
-	public List<PaymentSummary> getPaymentSummary(String fromDate, String toDate, String doctorId,int page,int size) {
-		List<PaymentSummary> response=null;
+	public PaymentSummary getPaymentSummary(String fromDate, String toDate, String doctorId,int page,int size) {
+		PaymentSummary response=null;
 		try {
 			
 			Criteria criteria = new Criteria();
@@ -1512,25 +1522,25 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			
-			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date(Long.parseLong(toDate));
-
-			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				from = new Date(Long.parseLong(fromDate));
-				to = new Date();
-			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				from = new Date(date);
-				to = new Date(Long.parseLong(toDate));
-			} else {
-				from = new Date(date);
-				to = new Date();
-			}
-
-			fromTime = new DateTime(from);
-			toTime = new DateTime(to);
-
-			criteria.and("fromDate").gte(fromTime).lte(toTime);
+//			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+//				from = new Date(Long.parseLong(fromDate));
+//				to = new Date(Long.parseLong(toDate));
+//
+//			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+//				from = new Date(Long.parseLong(fromDate));
+//				to = new Date();
+//			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+//				from = new Date(date);
+//				to = new Date(Long.parseLong(toDate));
+//			} else {
+//				from = new Date(date);
+//				to = new Date();
+//			}
+//
+//			fromTime = new DateTime(from);
+//			toTime = new DateTime(to);
+//
+//			criteria.and("fromDate").gte(fromTime).lte(toTime);
 
 			Aggregation aggregation = null;
 			
@@ -1540,40 +1550,46 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 					new BasicDBObject("_id", "$_id")
 					.append("doctorId", "$doctorId")
 					.append("totalAmountReceived", "$totalAmountReceived")
-				//	.append("consultationType.consultationType", "$doctorData.consultationType.consultationType")					
-					.append("consultationType.cost", "$doctorData.consultationType.cost")
-					.append("consultationType.healthcocoCharges", "$doctorData.consultationType.healthcocoCharges")
+					.append("consultationType.consultationType", "$consultationType.consultationType")					
+					.append("consultationType.cost", "$consultationType.cost")
+					.append("consultationType.healthcocoCharges", "$consultationType.healthcocoCharges")
 					.append("createdTime", "$createdTime")					
 					.append("updatedTime", "$updatedTime")));
 			
 			
 			group = new CustomAggregationOperation(new Document("$group",
 					
-							new BasicDBObject("_id", "$_id")
+							new BasicDBObject("_id", "_id")
 							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("totalAmountReceived", new BasicDBObject("$sum", "$transferAmount"))
+									.append("totalAmountReceived", new BasicDBObject("$sum", "$amount"))
 									
 									.append("consultationType", new BasicDBObject("$first", "$consultationType"))
 									.append("createdTime", new BasicDBObject("$first", "$createdTime"))));
 									
 
 			
-			if(size>0) {
-			aggregation = Aggregation.newAggregation(
-					
-					Aggregation.match(criteria),project,group,
-					Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorData"), Aggregation.unwind("doctor"),
-					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-					Aggregation.skip((page) * size), Aggregation.limit(size));
-			
-			} else {
+//			if(size>0) {
+//			aggregation = Aggregation.newAggregation(
+//					
+//					Aggregation.match(criteria),
+//				
+//					//Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorData"),
+//					group,project,
+//					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+//					Aggregation.skip((page) * size), Aggregation.limit(size));
+//			
+//			} else {
 				aggregation = Aggregation.newAggregation( 
-						Aggregation.match(criteria),project,group,
+						Aggregation.match(criteria),
+					
+						
+						group,
+						project,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
-			}
+		//	}
 			System.out.println("aggregation:"+aggregation);
-			response=mongoTemplate.aggregate(aggregation,OnlineConsultionPaymentCollection.class,PaymentSummary.class).getMappedResults();
+			response=mongoTemplate.aggregate(aggregation,OnlineConsultionPaymentCollection.class,PaymentSummary.class).getUniqueMappedResult();
 			
 		}
 		catch (BusinessException e) {
@@ -1590,15 +1606,15 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public List<PaymentSettlements> fetchSettlement(String from,int count) {
+	public PaymentSettlements fetchSettlement(Integer day,Integer month, Integer year) {
 		
-		List<PaymentSettlements> response = null;
+		PaymentSettlements response = null;
 		try {
 	//		RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
 		
 			JSONObject orderRequest = new JSONObject();
 			
-			System.out.println("from"+from);
+		//	System.out.println("from"+from);
 		//	Integer fromTime = Integer.parseInt(from);
 			
 			
@@ -1611,7 +1627,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 //					+ generateId());
 //			orderRequest.put("payment_capture", request.getPaymentCapture());
 
-			String url="https://api.razorpay.com/v1/settlements/?count="+count+"&from="+new Integer(from);
+			String url="https://api.razorpay.com/v1/settlements/recon/combined?year="+year+"&month="+month+"&day="+day;
 			 String authStr=keyId+":"+secret;
 			 String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
 			URL obj = new URL(url);
@@ -1650,9 +1666,21 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	 			 PaymentSettlements payment=null;
 	 			  payment = mapper.readValue(output.toString(), PaymentSettlements.class);
 
+	 		//	  OnlineConsultionPaymentCollection onlinePayment=new OnlineConsultionPaymentCollection();
 	 			  
+	 	//		 onlineConsultationPaymentRepository.findByOrderId(payment.get);
 	 			  
+	 			  PaymentSettlementCollection paymentSettlements=new PaymentSettlementCollection();
 	 			 
+	 			  BeanUtil.map(payment, paymentSettlements);
+	 			  
+	 			  paymentSettlements.setCreatedTime(new Date());
+	 			  paymentSettlements.setUpdatedTime(new Date());
+	 			 paymentSettlementRepository.save(paymentSettlements);
+	 			 
+	 			 
+	 			 response=new PaymentSettlements();
+	 			BeanUtil.map(paymentSettlements,response);
 	 		//	 OrderReponse list = mapper.readValue(output.toString(),OrderReponse.class);
 	 			//OrderReponse res=list.get(0); 
  			

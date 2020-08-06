@@ -3,23 +3,28 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.response.PayLoad;
 
+@Document(collection = "settlement_cl")
 public class SettlementCollection extends GenericCollection {
 
+	@Id
 	private ObjectId id;
-	
+	@Field
 	private String entity;
-	
+	@Field
 	private String account_id;
-	
+	@Field
 	private String event;
-	
+	@Field
 	private List<String> contains;
-	
+	@Field
 	private PayLoad payload;
-	
+	@Field
 	private Long created_at;
 
 	public ObjectId getId() {
