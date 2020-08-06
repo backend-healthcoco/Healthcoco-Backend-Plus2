@@ -25,6 +25,7 @@ import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.enums.PrintFilter;
+import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -66,7 +67,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	@Override
 	@Transactional
-	public PrintSettings saveSettings(PrintSettings request) {
+	public PrintSettings saveSettings(PrintSettings request, String printSettingType) {
 		PrintSettings response = new PrintSettings();
 		PrintSettingsCollection printSettingsCollection = new PrintSettingsCollection();
 		try {
@@ -80,8 +81,13 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			PrintSettingsCollection oldPrintSettingsCollection = null;
 			if (request.getId() == null) {
 				if (!request.getIsLab()) {
-					oldPrintSettingsCollection = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalId(
-							doctorObjectId, locationObjectId, hospitalObjectId);
+					if (!DPDoctorUtils.anyStringEmpty(printSettingType))
+						oldPrintSettingsCollection = printSettingsRepository
+								.findByDoctorIdAndLocationIdAndHospitalIdAndPrintSettingType(doctorObjectId,
+										locationObjectId, hospitalObjectId, printSettingType);
+					else
+						oldPrintSettingsCollection = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalId(
+								doctorObjectId, locationObjectId, hospitalObjectId);
 				} else {
 					oldPrintSettingsCollection = printSettingsRepository.findByLocationIdAndHospitalId(locationObjectId,
 							hospitalObjectId);
@@ -140,7 +146,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 				printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
 				printSettingsCollection.setIsPidHasDate(locationCollection.getIsPidHasDate());
 			}
-
+			printSettingsCollection.setPrintSettingType(printSettingType);
 			printSettingsCollection = printSettingsRepository.save(printSettingsCollection);
 			BeanUtil.map(printSettingsCollection, response);
 			if (response != null) {
@@ -402,6 +408,98 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			throw new BusinessException(ServiceError.Unknown, " Error occured while Signature Image");
 		}
 		return getFinalImageURL(response.getImageUrl().replaceAll(imagePath, ""));
+	}
+
+	@Override
+	public PrintSettings getSettingByType(String printFilter, String doctorId, String locationId, String hospitalId,
+			Boolean discarded, String printSettingType) {
+		PrintSettings response = null;
+		Aggregation aggregation = null;
+
+		try {
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorObjectId = new ObjectId(doctorId);
+				criteria.and("doctorId").is(doctorObjectId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				locationObjectId = new ObjectId(locationId);
+				criteria.and("locationId").is(locationObjectId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				hospitalObjectId = new ObjectId(hospitalId);
+				criteria.and("hospitalId").is(hospitalObjectId);
+			}
+//			criteria.and("updatedTime").is(new Date(createdTimeStamp));
+
+			criteria.and("printSettingType").is(printSettingType);
+
+			criteria.and("discarded").is(discarded);
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
+
+			AggregationResults<PrintSettingsCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PrintSettingsCollection.class, PrintSettingsCollection.class);
+
+			PrintSettingsCollection printSettingsCollection = aggregationResults.getUniqueMappedResult();
+
+			if (printSettingsCollection != null) {
+				if (PrintFilter.PAGESETUP.getFilter().equalsIgnoreCase(printFilter)) {
+					printSettingsCollection.setFooterSetup(null);
+					printSettingsCollection.setHeaderSetup(null);
+				}
+				if (PrintFilter.HEADERSETUP.getFilter().equalsIgnoreCase(printFilter)) {
+					printSettingsCollection.setFooterSetup(null);
+					printSettingsCollection.setPageSetup(null);
+				}
+				if (PrintFilter.FOOTERSETUP.getFilter().equalsIgnoreCase(printFilter)) {
+					printSettingsCollection.setPageSetup(null);
+					printSettingsCollection.setHeaderSetup(null);
+				}
+				if (printSettingsCollection.getHeaderSetup() != null) {
+					printSettingsCollection.getHeaderSetup().setHeaderImageUrl(
+							getFinalImageURL(printSettingsCollection.getHeaderSetup().getHeaderImageUrl()));
+
+				}
+				if (printSettingsCollection.getFooterSetup() != null) {
+					printSettingsCollection.getFooterSetup().setFooterImageUrl(
+							getFinalImageURL(printSettingsCollection.getFooterSetup().getFooterImageUrl()));
+					printSettingsCollection.getFooterSetup().setSignatureUrl(
+							getFinalImageURL(printSettingsCollection.getFooterSetup().getSignatureUrl()));
+				}
+				response = new PrintSettings();
+				BeanUtil.map(printSettingsCollection, response);
+			}
+		} catch (BusinessException e) {
+			logger.error(" Error Occurred While Getting Print Setting " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, " Error Occurred While Getting Print Setting");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean putSettingByType() {
+		Boolean response = true;
+		List<PrintSettingsCollection> printSettingsCollections = null;
+		try {
+			printSettingsCollections = printSettingsRepository.findAll();
+			
+			if (printSettingsCollections != null) {
+				for (PrintSettingsCollection printSettingsCollection : printSettingsCollections) {
+					printSettingsCollection.setPrintSettingType(PrintSettingType.DEFAULT.getType());
+					printSettingsRepository.save(printSettingsCollection);
+				}
+				response = true;
+			} else {
+				logger.warn(" Print Setting not found!");
+				throw new BusinessException(ServiceError.NoRecord, " Print Settingt not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
 	}
 
 }

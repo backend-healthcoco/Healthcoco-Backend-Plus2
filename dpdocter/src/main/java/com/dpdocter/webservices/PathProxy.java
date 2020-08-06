@@ -923,12 +923,16 @@ public interface PathProxy {
 		public static final String DELETE_PRINT_SETTINGS = "/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
+		
+		public static final String GET_PRINT_SETTING_BY_TYPE = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}/{printSettingType}";
 
 		public static final String GET_LAB_PRINT_SETTING = "/{printFilter}/{locationId}/{hospitalId}";
 
 		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String UPLOAD_FILE = "/upload/file/";
+		
+		public static final String GET_PRINT_SETTING_TYPE = "/updateCollection";
 		
 		public static final String UPLOAD_SIGNATURE = "/upload/signature/";
 

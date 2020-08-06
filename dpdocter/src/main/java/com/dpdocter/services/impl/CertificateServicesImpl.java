@@ -38,6 +38,7 @@ import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
+import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -429,11 +430,14 @@ public class CertificateServicesImpl implements CertificatesServices {
 			if (consentFormCollection != null) {
 				PatientCollection patient = consentFormCollection.getPatientCollection();
 //				UserCollection user = consentFormCollection.getPatientUser();
-
-				PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
+				PrintSettingsCollection printSettings = null;
+				 printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 						new ObjectId(consentFormCollection.getDoctorId()), new ObjectId(consentFormCollection.getLocationId()),
-								new ObjectId(consentFormCollection.getHospitalId()), ComponentType.ALL.getType());
-
+								new ObjectId(consentFormCollection.getHospitalId()), ComponentType.ALL.getType(),PrintSettingType.EMR.getType());
+					if (printSettings == null) 
+						 printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+									new ObjectId(consentFormCollection.getDoctorId()), new ObjectId(consentFormCollection.getLocationId()),
+											new ObjectId(consentFormCollection.getHospitalId()), ComponentType.ALL.getType(),PrintSettingType.DEFAULT.getType());
 				if (printSettings == null) {
 					printSettings = new PrintSettingsCollection();
 					DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
