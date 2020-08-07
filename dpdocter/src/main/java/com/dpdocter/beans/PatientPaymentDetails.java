@@ -9,6 +9,8 @@ public class PatientPaymentDetails extends GenericCollection {
 
 	private String userId;
 	
+	private String doctorId;
+	
 	private String localPatientName;
 	
 	private String appointmentId;
@@ -21,7 +23,7 @@ public class PatientPaymentDetails extends GenericCollection {
 	
 	private Boolean isSettled;
 	
-	private Date settledDate;
+	private Date settlementDate;
 	
 	private String orderId;
 	
@@ -85,12 +87,14 @@ public class PatientPaymentDetails extends GenericCollection {
 		this.isSettled = isSettled;
 	}
 
-	public Date getSettledDate() {
-		return settledDate;
+	
+
+	public Date getSettlementDate() {
+		return settlementDate;
 	}
 
-	public void setSettledDate(Date settledDate) {
-		this.settledDate = settledDate;
+	public void setSettlementDate(Date settlementDate) {
+		this.settlementDate = settlementDate;
 	}
 
 	public String getOrderId() {
@@ -107,6 +111,14 @@ public class PatientPaymentDetails extends GenericCollection {
 
 	public void setPaymentId(String paymentId) {
 		this.paymentId = paymentId;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
 	}
 	
 	

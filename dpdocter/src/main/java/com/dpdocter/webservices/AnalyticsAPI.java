@@ -19,6 +19,7 @@ import com.dpdocter.beans.AppointmentAnalyticData;
 import com.dpdocter.beans.OnlineConsultationAnalytics;
 import com.dpdocter.beans.OnlineConsultationSettlement;
 import com.dpdocter.beans.PatientAnalyticData;
+import com.dpdocter.beans.PatientPaymentDetails;
 import com.dpdocter.beans.PaymentSettlements;
 import com.dpdocter.beans.PaymentSummary;
 import com.dpdocter.beans.PrescriptionAnalyticDetail;
@@ -865,6 +866,22 @@ public class AnalyticsAPI {
 
 		Response<OnlineConsultationSettlement> response =new Response<OnlineConsultationSettlement>();
 		response.setDataList(appointmentAnalyticsService.getSettlements(fromDate, toDate, doctorId, page, size));
+		return response;
+		
+		
+	}
+	
+	
+	@Path(value = PathProxy.AnalyticsUrls.GET_PATIENT_PAYMENT_SETTLEMENTS)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PATIENT_PAYMENT_SETTLEMENTS, notes = PathProxy.AnalyticsUrls.GET_PATIENT_PAYMENT_SETTLEMENTS)
+	public Response<PatientPaymentDetails> getPatientSettlement(
+			 @QueryParam(value = "doctorId") String doctorId,
+			@DefaultValue("0") @QueryParam(value = "page") int page,
+			@DefaultValue("0") @QueryParam(value = "size") int size) {
+
+		Response<PatientPaymentDetails> response =new Response<PatientPaymentDetails>();
+		response.setDataList(appointmentAnalyticsService.getPatientPaymentDetails(doctorId, page, size));
 		return response;
 		
 		

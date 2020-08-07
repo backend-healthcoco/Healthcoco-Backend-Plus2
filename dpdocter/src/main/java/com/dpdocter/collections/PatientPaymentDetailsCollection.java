@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.DoctorConsultation;
+
 @Document(collection = "patient_payment_details_cl")
 public class PatientPaymentDetailsCollection extends GenericCollection{
 	@Id
@@ -21,6 +23,12 @@ public class PatientPaymentDetailsCollection extends GenericCollection{
 	private String orderId;
 	@Field
 	private String paymentId;
+	@Field
+	private ObjectId doctorId;
+	
+	@Field
+	private DoctorConsultation consultationType;
+
 
 	public ObjectId getId() {
 		return id;
@@ -68,6 +76,22 @@ public class PatientPaymentDetailsCollection extends GenericCollection{
 
 	public void setPaymentId(String paymentId) {
 		this.paymentId = paymentId;
+	}
+
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public DoctorConsultation getConsultationType() {
+		return consultationType;
+	}
+
+	public void setConsultationType(DoctorConsultation consultationType) {
+		this.consultationType = consultationType;
 	}
 	
 	

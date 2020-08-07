@@ -5,6 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.AppointmentAnalyticData;
 import com.dpdocter.beans.OnlineConsultationAnalytics;
 import com.dpdocter.beans.OnlineConsultationSettlement;
+import com.dpdocter.beans.PatientPaymentDetails;
 import com.dpdocter.beans.PaymentSettlements;
 import com.dpdocter.beans.PaymentSummary;
 import com.dpdocter.response.AnalyticResponse;
@@ -68,4 +69,6 @@ OnlineConsultationAnalytics getConsultationAnalytics(String fromDate,String toDa
 
 	List<OnlineConsultationSettlement> getSettlements(String fromDate, String toDate, String doctorId, int page, int size);
 
+	
+	List<PatientPaymentDetails> getPatientPaymentDetails(String doctorId,int page,int size);
 }

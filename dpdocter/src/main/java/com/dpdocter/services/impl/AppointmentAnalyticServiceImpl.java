@@ -1697,6 +1697,8 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	 				patientCollection.setIsSettled(item.getSettled());
 	 				patientCollection.setOrderId(item.getOrder_id());
 	 				patientCollection.setPaymentId(item.getPayment_id());
+	 				patientCollection.setDoctorId(onlinePayment.getDoctorId() );
+	 				patientCollection.setConsultationType(onlinePayment.getConsultationType());
 	 				}
 	 				patientPaymentSettlementRepository.save(patientCollection);
 	 			  }
@@ -1816,6 +1818,97 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		}
 		return response;
 
+	}
+
+	@Override
+	public List<PatientPaymentDetails> getPatientPaymentDetails(String doctorId,int page, int size) {
+		List<PatientPaymentDetails> response=null;
+		try {
+			Criteria criteria = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			
+
+		
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			
+//			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+//				from = new Date(Long.parseLong(fromDate));
+//				to = new Date(Long.parseLong(toDate));
+//
+//			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+//				from = new Date(Long.parseLong(fromDate));
+//				to = new Date();
+//			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+//				from = new Date(date);
+//				to = new Date(Long.parseLong(toDate));
+//			} else {
+//				from = new Date(date);
+//				to = new Date();
+//			}
+			
+			criteria.and("type").is("ONLINE_CONSULTATION");
+
+			
+			
+
+			Aggregation aggregation = null;
+			
+			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
+					new BasicDBObject("_id", "$_id")
+					.append("userId", "$userId")
+					.append("doctorId", "$doctorId")
+					.append("localPatientName", "$patient.localPatientName")
+					.append("consultationType.consultationType", "$consultationType.consultationType")					
+					.append("consultationType.cost", "$consultationType.cost")
+					.append("consultationType.healthcocoCharges", "$consultationType.healthcocoCharges")
+					.append("appointmentId", "$appointment._id")					
+					.append("appointmentDate", "$appointment.appointmentDate")
+					.append("status", "$appointment.status")					
+					.append("isSettled", "$isSettled")
+					.append("settlementDate", "$settlementDate")					
+					.append("paymentId", "$paymentId")));
+
+			if(size>0) {
+			aggregation = Aggregation.newAggregation(
+					
+					Aggregation.match(criteria),
+					Aggregation.lookup("appointment_cl", "userId", "_id", "appointment"),
+					Aggregation.unwind("appointment"),
+					Aggregation.lookup("patient_cl", "userId", "_id", "patient"),
+					Aggregation.unwind("patient"),
+					project,
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+					Aggregation.skip((page) * size), Aggregation.limit(size));
+			
+			} else {
+				aggregation = Aggregation.newAggregation( 
+						Aggregation.match(criteria),
+						Aggregation.lookup("appointment_cl", "userId", "_id", "appointment"),
+						Aggregation.unwind("appointment"),
+						Aggregation.lookup("patient_cl", "userId", "_id", "patient"),
+						Aggregation.unwind("patient"),
+						project,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			}
+			System.out.println("aggregation:"+aggregation);
+			response=mongoTemplate.aggregate(aggregation,PatientPaymentDetailsCollection.class,PatientPaymentDetails.class).getMappedResults();
+
+
+		
+		}catch (BusinessException e) {
+			logger.error("Error while getting doctor Settlements " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting doctor Settlements" + e.getMessage());
+
+		}
+		return response;
 	}
 
 
