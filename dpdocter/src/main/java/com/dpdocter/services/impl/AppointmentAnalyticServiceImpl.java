@@ -36,12 +36,16 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.OnlineConsultationAnalytics;
 import com.dpdocter.beans.OnlineConsultionPaymentCollection;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.PatientPaymentDetails;
+import com.dpdocter.beans.PaymentSettlementItems;
 import com.dpdocter.beans.PaymentSettlements;
 import com.dpdocter.beans.PaymentSummary;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.PatientPaymentDetailsCollection;
 import com.dpdocter.collections.PaymentSettlementCollection;
+import com.dpdocter.collections.SettlementCollection;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
@@ -52,6 +56,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.OnlineConsultationPaymentRepository;
+import com.dpdocter.repository.PatientPaymentSettlementRepository;
 import com.dpdocter.repository.PaymentSettlementRepository;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
@@ -64,6 +69,7 @@ import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.response.ScheduleAndCheckoutCount;
 import com.dpdocter.services.AppointmentAnalyticsService;
+import com.dpdocter.beans.OnlineConsultationSettlement;
 import com.dpdocter.services.SMSServices;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
@@ -89,6 +95,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	
 	@Autowired
 	private OnlineConsultationPaymentRepository onlineConsultationPaymentRepository;
+	
+	@Autowired
+	private PatientPaymentSettlementRepository patientPaymentSettlementRepository;
 	
 
 	Logger logger = Logger.getLogger(AppointmentAnalyticServiceImpl.class);
@@ -1665,10 +1674,35 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	 			  ObjectMapper mapper = new ObjectMapper();
 	 			 PaymentSettlements payment=null;
 	 			  payment = mapper.readValue(output.toString(), PaymentSettlements.class);
-
-	 		//	  OnlineConsultionPaymentCollection onlinePayment=new OnlineConsultionPaymentCollection();
+	 			  PatientPaymentDetails patient=new PatientPaymentDetails();
+	 			
+	 			  PatientPaymentDetailsCollection patientCollection=null;
 	 			  
-	 	//		 onlineConsultationPaymentRepository.findByOrderId(payment.get);
+	 			  OnlineConsultionPaymentCollection onlinePayment=new OnlineConsultionPaymentCollection();
+	 			  for(PaymentSettlementItems item:payment.getItems())
+	 			  {
+	 				 onlinePayment = onlineConsultationPaymentRepository.findByOrderId(item.getOrder_id());
+	 				 
+	 				 
+	 				patientCollection=patientPaymentSettlementRepository.findByOrderId(item.getOrder_id());
+	 				if(patientCollection !=null) {
+	 					patientCollection.setIsSettled(item.getSettled());
+	 					patientCollection.setSettlementDate(new Date(item.getSettled_at()));
+	 				}
+	 				
+	 				else {
+	 					patientCollection=new PatientPaymentDetailsCollection();
+	 				patientCollection.setUserId(onlinePayment.getUserId());
+	 				patientCollection.setSettlementDate(new Date(item.getSettled_at()));
+	 				patientCollection.setIsSettled(item.getSettled());
+	 				patientCollection.setOrderId(item.getOrder_id());
+	 				patientCollection.setPaymentId(item.getPayment_id());
+	 				}
+	 				patientPaymentSettlementRepository.save(patientCollection);
+	 			  }
+	 			
+	 			  
+	 			  
 	 			  
 	 			  PaymentSettlementCollection paymentSettlements=new PaymentSettlementCollection();
 	 			 
@@ -1711,6 +1745,77 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			e.printStackTrace();
 		}
 		return response;
+	}
+
+	@Override
+	public List<OnlineConsultationSettlement> getSettlements(String fromDate, String toDate, String doctorId, int page,
+			int size) {
+		List<OnlineConsultationSettlement> response=null;
+		try {
+			Criteria criteria = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			
+
+		
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date(Long.parseLong(toDate));
+
+			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				from = new Date(Long.parseLong(fromDate));
+				to = new Date();
+			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				from = new Date(date);
+				to = new Date(Long.parseLong(toDate));
+			} else {
+				from = new Date(date);
+				to = new Date();
+			}
+
+			fromTime = new DateTime(from);
+			toTime = new DateTime(to);
+
+			criteria.and("date").gte(fromTime).lte(toTime);
+
+			Aggregation aggregation = null;
+
+			if(size>0) {
+			aggregation = Aggregation.newAggregation(
+					
+					Aggregation.match(criteria),
+				
+					//Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorData"),
+					
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+					Aggregation.skip((page) * size), Aggregation.limit(size));
+			
+			} else {
+				aggregation = Aggregation.newAggregation( 
+						Aggregation.match(criteria),
+					
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			}
+			System.out.println("aggregation:"+aggregation);
+			response=mongoTemplate.aggregate(aggregation,SettlementCollection.class,OnlineConsultationSettlement.class).getMappedResults();
+
+			
+		}catch (BusinessException e) {
+			logger.error("Error while getting doctor Settlements " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting doctor Settlements" + e.getMessage());
+
+		}
+		return response;
+
 	}
 
 

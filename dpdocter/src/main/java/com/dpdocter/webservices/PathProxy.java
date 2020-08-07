@@ -1720,6 +1720,7 @@ public interface PathProxy {
 		public static final String GET_ONLINE_CONSULTATION_ANALYTICS="onlineConsultation/analytics";
 		public static final String GET_PAYMENT_SUMMARY="onlineConsultation/paymentSummary";
 		public static final String FETCH_SETTLEMENT="onlineConsultation/settlements";
+		public static final String GET_PAYMENT_SETTLEMENT="payment/settlements";
 	}
 
 	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";

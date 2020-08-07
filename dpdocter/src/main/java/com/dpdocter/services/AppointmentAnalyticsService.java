@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.AppointmentAnalyticData;
 import com.dpdocter.beans.OnlineConsultationAnalytics;
+import com.dpdocter.beans.OnlineConsultationSettlement;
 import com.dpdocter.beans.PaymentSettlements;
 import com.dpdocter.beans.PaymentSummary;
 import com.dpdocter.response.AnalyticResponse;
@@ -15,6 +16,8 @@ import com.dpdocter.response.BookedAndCancelAppointmentCount;
 import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.response.ScheduleAndCheckoutCount;
+import com.dpdocter.response.Settlement;
+import com.dpdocter.response.SettlementResponse;
 
 public interface AppointmentAnalyticsService {
 	public AppointmentAnalyticResponse getAppointmentAnalyticsData(String doctorId, String locationId,
@@ -62,5 +65,7 @@ OnlineConsultationAnalytics getConsultationAnalytics(String fromDate,String toDa
 
 
 	PaymentSettlements fetchSettlement(Integer day,Integer month, Integer year);
+
+	List<OnlineConsultationSettlement> getSettlements(String fromDate, String toDate, String doctorId, int page, int size);
 
 }

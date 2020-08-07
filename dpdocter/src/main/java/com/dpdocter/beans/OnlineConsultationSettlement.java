@@ -1,43 +1,39 @@
-package com.dpdocter.collections;
+package com.dpdocter.beans;
 
 import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.PayLoad;
 
-@Document(collection = "settlement_cl")
-public class SettlementCollection extends GenericCollection {
+public class OnlineConsultationSettlement extends GenericCollection {
 
-	@Id
-	private ObjectId id;
-	@Field
-	private String entity;
-	@Field
-	private String account_id;
-	@Field
-	private String event;
-	@Field
-	private List<String> contains;
-	@Field
-	private PayLoad payload;
-	@Field
-	private Long created_at;
-	@Field
-	private Date date;
+	private String id;
 	
-	@Field
-	private ObjectId doctorId;
+	private String entity;
+	
+	private String account_id;
+	
+	private String event;
 
-	public ObjectId getId() {
+	private List<String> contains;
+
+	private PayLoad payload;
+	
+	private Long created_at;
+	
+	private String doctorId;
+	
+	private Date date;
+
+	public String getId() {
 		return id;
 	}
 
-	public void setId(ObjectId id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -89,11 +85,11 @@ public class SettlementCollection extends GenericCollection {
 		this.created_at = created_at;
 	}
 
-	public ObjectId getDoctorId() {
+	public String getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(ObjectId doctorId) {
+	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
 
@@ -106,5 +102,4 @@ public class SettlementCollection extends GenericCollection {
 	}
 	
 	
-
 }

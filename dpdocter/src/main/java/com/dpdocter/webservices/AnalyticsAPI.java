@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.AppointmentAnalyticData;
 import com.dpdocter.beans.OnlineConsultationAnalytics;
+import com.dpdocter.beans.OnlineConsultationSettlement;
 import com.dpdocter.beans.PatientAnalyticData;
 import com.dpdocter.beans.PaymentSettlements;
 import com.dpdocter.beans.PaymentSummary;
@@ -847,6 +848,23 @@ public class AnalyticsAPI {
 
 		Response<PaymentSettlements> response =new Response<PaymentSettlements>();
 		response.setData(appointmentAnalyticsService.fetchSettlement(day, month, year));
+		return response;
+		
+		
+	}
+	
+	@Path(value = PathProxy.AnalyticsUrls.GET_PAYMENT_SETTLEMENT)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PAYMENT_SETTLEMENT, notes = PathProxy.AnalyticsUrls.GET_PAYMENT_SETTLEMENT)
+	public Response<OnlineConsultationSettlement> getConsultationSettlement(
+			@QueryParam(value = "fromDate") String  fromDate, 
+			 @QueryParam(value = "toDate") String toDate,
+			 @QueryParam(value = "doctorId") String doctorId,
+			@DefaultValue("0") @QueryParam(value = "page") int page,
+			@DefaultValue("0") @QueryParam(value = "size") int size) {
+
+		Response<OnlineConsultationSettlement> response =new Response<OnlineConsultationSettlement>();
+		response.setDataList(appointmentAnalyticsService.getSettlements(fromDate, toDate, doctorId, page, size));
 		return response;
 		
 		
