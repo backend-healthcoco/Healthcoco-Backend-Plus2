@@ -360,6 +360,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 			doctorClinicProfileCollection.setDoctorId(userCollection.getId());
 			doctorClinicProfileCollection.setLocationId(locationCollection.getId());
 			doctorClinicProfileCollection.setMrCode(request.getMrCode());
+			doctorClinicProfileCollection.setIsActivate(true);
 			doctorClinicProfileCollection.setCreatedTime(new Date());
 			if(request.getMrCode() != null){
 				pcUserCollection = pcUserRepository.findByMrCode(request.getMrCode());

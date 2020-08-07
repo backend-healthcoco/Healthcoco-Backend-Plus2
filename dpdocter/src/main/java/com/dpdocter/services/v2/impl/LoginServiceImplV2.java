@@ -190,10 +190,10 @@ public class LoginServiceImplV2 implements LoginService {
 //--comment for new signup
 					userCollection.setLastSession(new Date());
 					userCollection = userRepository.save(userCollection);
-					criteria = new Criteria("doctorId").is(userCollection.getId());
+					criteria = new Criteria("doctorId").is(userCollection.getId())
 				
-//					.and("isActivate").is(true)
-//							.and("hasLoginAccess").ne(false);
+					.and("isActivate").is(true)
+							.and("hasLoginAccess").ne(false);
 //---
 					//criteria.and("isNutritionist").is(isNutritionist);
 					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate
