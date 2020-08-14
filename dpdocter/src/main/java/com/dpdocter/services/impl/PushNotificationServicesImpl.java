@@ -1,7 +1,16 @@
 package com.dpdocter.services.impl;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +21,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -47,6 +57,17 @@ import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.MulticastResult;
 import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.core.Context;
+import com.google.firebase.messaging.ApnsConfig;
+import com.google.firebase.messaging.Aps;
+import com.google.firebase.messaging.ApsAlert;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+//import com.google.firebase.messaging.Message;
 import com.notnoop.apns.APNS;
 import com.notnoop.apns.ApnsService;
 import com.notnoop.apns.ApnsServiceBuilder;
@@ -104,6 +125,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 
 	@Value("${patient.ios.google.services.api.key}")
 	private String PATIENT_IOS_SERVICES_API_KEY;
+	
+	@Value("${ios.firebase.filepath}")
+	private String DOCTOR_FIREBASE_JSON;
 
 	@Value("${is.env.production}")
 	private Boolean isEnvProduction;
@@ -674,162 +698,319 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 //	}
 	
 	public void pushNotificationOnIosDevices(String deviceId, String pushToken, String message, String componentType,
-			String componentTypeId, String deviceType, String role, String userId) {
+			String componentTypeId, String deviceType, String role, String userId)  {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			Sender sender = null;
 
-			if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
-				// sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
-				if (deviceType.equalsIgnoreCase(DeviceType.IOS.getType())) {
-					sender = new FCMSender(DOCTOR_IOS_SERVICES_API_KEY);
-				}
-				//	else {
-//					sender = new FCMSender(DOCTOR_PAD_GEOCODING_SERVICES_API_KEY);
+//			if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
+//				// sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
+//				if (deviceType.equalsIgnoreCase(DeviceType.IOS.getType())) {
+//					sender = new FCMSender(DOCTOR_IOS_SERVICES_API_KEY);
 //				}
+//				//	else {
+////					sender = new FCMSender(DOCTOR_PAD_GEOCODING_SERVICES_API_KEY);
+////				}
+//
+//			} else {
+//				// sender = new Sender(PATIENT_GEOCODING_SERVICES_API_KEY);
+//				sender = new FCMSender(PATIENT_IOS_SERVICES_API_KEY);
+//			}
+//			
+//			JSONObject notification = new JSONObject();
+//			JSONObject send = new JSONObject();
+//	//		Notification notification = new Notification();
+//			// notification.setTitle("Healthcoco");
+//	//		notification.setText(message);
+//			Boolean isSilent = false;
+//			Map<String, Object> customValues = new HashMap<String, Object>();
+//			if (!DPDoctorUtils.anyStringEmpty(componentType)) {
+//				if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType())) {
+//					customValues.put("XI", componentTypeId);
+//					customValues.put("T", "X");
+//					customValues.put("PI", userId);
+//				} else if (componentType.equalsIgnoreCase(ComponentType.REPORTS.getType())) {
+//					customValues.put("RI", componentTypeId);
+//					customValues.put("T", "R");
+//					customValues.put("PI", userId);
+//				} else if (componentType.equalsIgnoreCase(ComponentType.PATIENT.getType())) {
+//					customValues.put("PI", componentTypeId);
+//					customValues.put("T", "P");
+//				} else if (componentType.equalsIgnoreCase(ComponentType.DOCTOR.getType())) {
+//					customValues.put("DI", componentTypeId);
+//					customValues.put("T", "D");
+////					notification.put("title",componentType);
+////					notification.put("text",message);
+////					notification.put("sound","default");
+////					
+////					
+////					send.put("to",pushToken);
+////					send.put("notification",notification);
+////					send.put("priority","high");
+//				} else if (componentType.equalsIgnoreCase(ComponentType.APPOINTMENT.getType())) {
+//					customValues.put("AI", componentTypeId);
+//					customValues.put("T", "A");
+//				} else if (componentType.equalsIgnoreCase(ComponentType.CALENDAR_REMINDER.getType())) {
+//					customValues.put("T", "C");
+//				} else if (componentType.equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
+//					customValues.put("RI", componentTypeId);
+//					customValues.put("T", "DLR");
+//				} else if (componentType.equalsIgnoreCase(ComponentType.USER_RECORD.getType())) {
+//					customValues.put("RI", componentTypeId);
+//					customValues.put("T", "UR");
+//				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DOCTOR_LAB_REPORTS.getType())) {
+//					customValues.put("RI", componentTypeId);
+//					customValues.put("T", "SI");
+//					isSilent = true;
+//				} else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
+//
+//					customValues.put("RI", componentTypeId);
+//					customValues.put("T", "DW");
+//				}
+//				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
+//					customValues.put("RI", componentTypeId);
+//					customValues.put("T", "DI");
+//				}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
+//					customValues.put("EI", componentTypeId);
+//					customValues.put("T", "E");
+//				}
+//				else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
+//					customValues.put("RI", "SILENT");
+//					customValues.put("T", "PR");
+//					isSilent = true;
+//				}else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
+//					customValues.put("RI", "SILENT");
+//					customValues.put("T", "RDI");
+//					isSilent = true;
+//				}else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
+//					customValues.put("RI", "SILENT");
+//					customValues.put("T", "DWR");
+//					isSilent = true;
+//				}else if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTION_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RX");
+//					isSilent = true;
+//				}else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_VISIT_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RPV");
+//					isSilent = true;
+//				}else if (componentType.equalsIgnoreCase(ComponentType.CLINICAL_NOTES_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RCN");
+//					isSilent = true;
+//				}else if (componentType.equalsIgnoreCase(ComponentType.TREATMENTS_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RT");
+//					isSilent = true;
+//				}else if (componentType.equalsIgnoreCase(ComponentType.RECORDS_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RR");
+//					isSilent = true;
+//				}else if (componentType.equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RDS");
+//					isSilent = true;
+//				}else if (componentType.equalsIgnoreCase(ComponentType.INVOICE_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RBI");
+//					isSilent = true;
+//				}else if (componentType.equalsIgnoreCase(ComponentType.RECEIPT_REFRESH.getType())) {
+//					customValues.put("PI",componentTypeId);
+//					customValues.put("T", "RBR");
+//					isSilent = true;
+//				}else if (componentType.equalsIgnoreCase(ComponentType.APPOINTMENT_REFRESH.getType())) {
+//					customValues.put("AI",componentTypeId);
+//					customValues.put("T", "AR");
+////					notification.put("title",componentType);
+////					notification.put("text",message);
+////					notification.put("sound","default");
+////					
+////					
+////					send.put("to",pushToken);
+////					send.put("notification",notification);
+////					send.put("priority","high");
+//					isSilent = true;
+//				}else if (componentType.equalsIgnoreCase(ComponentType.APPOINTMENT_STATUS_CHANGE.getType())) {
+//					customValues.put("AI",componentTypeId);
+//					customValues.put("T", "ASC");
+//					isSilent = true;
+//				}
+//				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
+//					customValues.put("RI", componentTypeId);
+//					customValues.put("T", "DI");
+//				}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
+//					customValues.put("EI", componentTypeId);
+//					customValues.put("T", "E");
+//				}
+//				else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
+//					customValues.put("RI", "SILENT");
+//					customValues.put("T", "PR");
+//				}
+//				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
+//					customValues.put("RI", "SILENT");
+//					customValues.put("T", "DI");
+//				}
+//				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
+//					customValues.put("RI", "SILENT");
+//					customValues.put("T", "DW");
+//				}
+//				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
+//					customValues.put("RI", componentTypeId);
+//					customValues.put("T", "DI");
+//				}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
+//					customValues.put("EI", componentTypeId);
+//					customValues.put("T", "E");
+//				}
+//				else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
+//					customValues.put("RI", "SILENT");
+//					customValues.put("T", "PR");
+//				}
+//				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
+//					customValues.put("RI", "SILENT");
+//					customValues.put("T", "DI");
+//				}
+//				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
+//					customValues.put("RI", "SILENT");
+//					customValues.put("T", "DW");
+//				}
+//				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_BABY_ACHIEVEMENTS.getType())) {
+//					customValues.put("RI", "SILENT");
+//					customValues.put("T", "BA");
+//				}
+//				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_GROWTH_CHART.getType())) {
+//					customValues.put("RI", "SILENT");
+//					customValues.put("T", "GC");
+//				}
+//				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_VACCINATION.getType())) {
+//					customValues.put("RI", "SILENT");
+//					customValues.put("T", "VN");
+//				}
+//			}
+		//	String jsonOutput = mapper.writeValueAsString(notification);
+	//1st
+//			com.google.firebase.messaging.Message messageObj=com.google.firebase.messaging.Message.builder().putData("Message",customValues.toString()).setToken(pushToken).build();
+//			System.out.println("messageObj"+messageObj);
+//			System.out.println("pushToken"+pushToken);
+//	
+//			
+//			System.out.println("send"+send);
+			
+		//	account = rayzorpayClient.VirtualAccounts.create(orderRequest);
+			
+			String url="https://fcm.googleapis.com/fcm/send";
+//			 
+//			// String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
+			URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+//
+//			
+			con.setDoOutput(true);
+//			
+//			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+//			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Content-Type","application/json");
+			con.setRequestProperty("Authorization","key="+DOCTOR_IOS_SERVICES_API_KEY  );
 
-			} else {
-				// sender = new Sender(PATIENT_GEOCODING_SERVICES_API_KEY);
-				sender = new FCMSender(PATIENT_IOS_SERVICES_API_KEY);
-			}
-			Notification notification = new Notification();
-			// notification.setTitle("Healthcoco");
-			notification.setText(message);
-			if (!DPDoctorUtils.anyStringEmpty(componentType)) {
-				if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType())) {
-					notification.setXi(componentTypeId);
-					notification.setNotificationType(componentType);
-					notification.setPi(userId);
-				} else if (componentType.equalsIgnoreCase(ComponentType.REPORTS.getType())) {
-					notification.setRi(componentTypeId);
-					notification.setNotificationType(componentType);
-					notification.setPi(userId);
-				} else if (componentType.equalsIgnoreCase(ComponentType.PATIENT.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				} else if (componentType.equalsIgnoreCase(ComponentType.DOCTOR.getType())) {
-					notification.setDi(componentTypeId);
-					notification.setNotificationType(componentType);
-				} else if (componentType.equalsIgnoreCase(ComponentType.APPOINTMENT.getType())) {
-					notification.setAi(componentTypeId);
-					notification.setNotificationType(componentType);
-				} else if (componentType.equalsIgnoreCase(ComponentType.CALENDAR_REMINDER.getType())) {
-					notification.setCi(componentTypeId);
-					notification.setNotificationType(componentType);
-				} else if (componentType.equalsIgnoreCase(ComponentType.USER_RECORD.getType())) {
-					notification.setRi(componentTypeId);
-					notification.setNotificationType(componentType);
-				} else if (componentType.equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
-					notification.setRi(componentTypeId);
-					notification.setNotificationType(componentType);
-				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH.getType())) {
-					notification.setCi(componentTypeId);
-					notification.setNotificationType(componentType);
-				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DOCTOR_LAB_REPORTS.getType())) {
-					notification.setRi(componentTypeId);
-					notification.setNotificationType(componentType);
-				} else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
-					notification.setCi(componentTypeId);
-					notification.setNotificationType(componentType);
-				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH.getType())) {
-					notification.setCi(componentTypeId);
-					notification.setNotificationType(componentType);
-				} else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS_CANCELLATION.getType())) {
-					notification.setCi(componentTypeId);
-					notification.setNotificationType(componentType);
-				} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DOCTOR_LAB_REPORTS.getType())) {
-					notification.setRi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}
-				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
-					notification.setRi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
-					notification.setEi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTION_REFRESH.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_VISIT_REFRESH.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.CLINICAL_NOTES_REFRESH.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.TREATMENTS_REFRESH.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.RECORDS_REFRESH.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY_REFRESH.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.INVOICE_REFRESH.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.RECEIPT_REFRESH.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_BABY_ACHIEVEMENTS.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_GROWTH_CHART.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_VACCINATION.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}
-				else if (componentType.equalsIgnoreCase(ComponentType.ORDER_CONFIRMED.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}
-				else if (componentType.equalsIgnoreCase(ComponentType.ORDER_DELIVERED.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}
-				else if (componentType.equalsIgnoreCase(ComponentType.ORDER_DISPATCHED.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.ORDER_OUT_FOR_DELIVERY.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.ORDER_PACKED.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.ORDER_PICKED_UP.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}else if (componentType.equalsIgnoreCase(ComponentType.ORDER_PLACED.getType())) {
-					notification.setPi(componentTypeId);
-					notification.setNotificationType(componentType);
-				}
-				else{
-					notification.setNotificationType(componentType);
-				}
-			}
-			String jsonOutput = mapper.writeValueAsString(notification);
-			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
-			System.out.println("messageObj"+messageObj);
-			System.out.println("pushToken"+pushToken);
-		//	EnhancedApnsNotification service=new ApnsServiceBuilder().build().push(pushToken, jsonOutput, null);
-		//	messageObj.toString().replaceFirst("data=", "");
-			Result result = sender.send(messageObj, pushToken, 1);
+			String key="d486pxyUVUbxizOkUSPOqc:APA91bEJ8U8DlLsBZass7rQBNcY7M1HjOZWY77g9JmgAiBkK-wwO6lVSNTtTKm7IiExX0jxc6YefDFhcB_3eE2T3zAE2U7SpXk7o8YsHsk433FacK7v78Bda817Y3FcPqeo2GOUrwxKL";
+            JSONObject data = new JSONObject();
+            data.put("to",key.trim());
+            JSONObject info = new JSONObject();
+            info.put("title",componentType ); // Notification title
+            info.put("body", message); // Notification body
+            data.put("notification", info);
+            System.out.println(data.toString());
+            OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
+            wr.write(data.toString());
+            wr.flush();
+            wr.close();
+
+            int responseCode = con.getResponseCode();
+            System.out.println("Response Code : " + responseCode);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+			
+            System.out.println("Resonse: " + response);
+			
+			//2nd
+//			  ApsAlert alert =
+//	                    ApsAlert.builder()
+//	                        .setTitle("title")
+//	                        .setBody(message)
+//	                        .build();
+//			  System.out.println("alert"+alert);
+//	                 Aps aps =
+//	                    Aps.builder()
+//	                        .setAlert(alert)
+//	                        .setContentAvailable(false)
+//	                        .setMutableContent(true)
+//	                        .setSound("default")
+//	                        .build();
+//	                 
+//	                 System.out.println("Aps"+aps);
+//	                 ApnsConfig apnsConfig =
+//	                    ApnsConfig.builder()
+//	                        .setAps(aps).putAllCustomData(customValues)
+//	                        
+//	                        .build();
+//	                 System.out.println("apnsConfig"+apnsConfig);
+//	   com.google.firebase.messaging.Message         messageObj =
+//	                    com.google.firebase.messaging.Message.builder()
+//	                        .setToken(pushToken)
+//	                        .setApnsConfig(apnsConfig)
+//	                        .build();
+//	
+//		//	sender.send(messageObj,pushToken, 1);
+//	   System.out.println("pushToken"+pushToken);
+//	   
+//	           //     System.out.println("messageObj"+messageObj);
+//	   FileInputStream serviceAccount =
+//               new FileInputStream(DOCTOR_FIREBASE_JSON);
+//	   FirebaseOptions options = new FirebaseOptions.Builder().setCredentials(GoogleCredentials.fromStream(serviceAccount))
+//	              
+//               .setDatabaseUrl("https://healthcocoplus-1383.firebaseio.com")
+//     
+//               .build();
+//	   
+//	 
+//	  // FirebaseApp fire=FirebaseApp.initializeApp(options);
+//	   
+//	   FirebaseApp fire = null;
+//	    List<FirebaseApp> firebaseApps = FirebaseApp.getApps();
+//	    if(firebaseApps!=null && !firebaseApps.isEmpty()){
+//	        for(FirebaseApp app : firebaseApps){
+//	            if(app.getName().equals(FirebaseApp.DEFAULT_APP_NAME))
+//	                fire = app;
+//	        }
+//	    }
+//	    else
+//	        fire = FirebaseApp.initializeApp(options); 
+//	   
+//	   System.out.println(""+pushToken);
+//	   String response=FirebaseMessaging.getInstance(fire).send(messageObj);
 			List<String> deviceIds = new ArrayList<String>();
 			deviceIds.add(deviceId);
 			PushNotificationCollection pushNotificationCollection = new PushNotificationCollection(null, deviceIds,
 					message, DeviceType.IOS, null, PushNotificationType.INDIVIDUAL);
 			pushNotificationRepository.save(pushNotificationCollection);
-			logger.info("Message Result: " + result.toString());
-		} catch (JsonProcessingException jpe) {
-			jpe.printStackTrace();
-		} catch (IOException e) {
+			logger.info("Message Result: " + response.toString());
+		} 
+//		catch (FirebaseMessagingException jpe) {
+//			jpe.printStackTrace();
+//		} 
+		catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
 	}
-
-
+	
 	public void broadcastPushNotificationOnIosDevices(List<String> deviceIds, List<String> pushToken, String message,
 			String imageURL, String deviceType, String role) {
 		try {

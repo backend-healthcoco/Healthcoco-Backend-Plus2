@@ -932,7 +932,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.findByLocationId(new ObjectId(request.getLocationId()));
 					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 						pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
-								"Appointment updated.", ComponentType.APPOINTMENT_REFRESH.getType(), null, null);
+								"Appointment updated.", ComponentType.APPOINTMENT_REFRESH.getType(),response.getId(), null);
 					}
 				}
 			} else {
@@ -1210,7 +1210,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
 									// "New appointment created.", ComponentType.APPOINTMENT_REFRESH.getType(),
 									// null, null);
-									"New appointment created.", ComponentType.APPOINTMENT_REFRESH.getType(), null,
+									"New appointment created.", ComponentType.APPOINTMENT_REFRESH.getType(),response.getId(),
 									null);
 						}
 					}
