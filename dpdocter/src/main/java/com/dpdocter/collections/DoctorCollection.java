@@ -113,6 +113,11 @@ public class DoctorCollection extends GenericCollection {
 	
 	@Field
 	private BulkSmsCredits bulkSmsCredit;
+	
+	@Field
+    private Boolean isRegistrationDetailsVerified =false;
+	@Field
+	private Boolean isPhotoIdVerified =false;
 
 	public Boolean getIsPrescriptionSMS() {
 		return isPrescriptionSMS;
@@ -375,6 +380,24 @@ public class DoctorCollection extends GenericCollection {
 
 	public void setBulkSmsCredit(BulkSmsCredits bulkSmsCredit) {
 		this.bulkSmsCredit = bulkSmsCredit;
+	}
+	
+	
+
+	public Boolean getIsRegistrationDetailsVerified() {
+		return isRegistrationDetailsVerified;
+	}
+
+	public void setIsRegistrationDetailsVerified(Boolean isRegistrationDetailsVerified) {
+		this.isRegistrationDetailsVerified = isRegistrationDetailsVerified;
+	}
+
+	public Boolean getIsPhotoIdVerified() {
+		return isPhotoIdVerified;
+	}
+
+	public void setIsPhotoIdVerified(Boolean isPhotoIdVerified) {
+		this.isPhotoIdVerified = isPhotoIdVerified;
 	}
 
 	@Override
