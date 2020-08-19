@@ -8,13 +8,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -1463,6 +1466,37 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
 			
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			DateTime fromDateTime=null,toDateTime=null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+			//	DateTime
+				fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+				criteria.and("fromDate").gte(fromDateTime);
+				System.out.println(fromDateTime);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(toDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+			//	DateTime 
+				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				
+				System.out.println(toDateTime);
+
+				criteria.and("toDate").lte(toDateTime);
+			}
+			
 //			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 //				from = new Date(Long.parseLong(fromDate));
 //				to = new Date(Long.parseLong(toDate));
@@ -1551,6 +1585,36 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 //
 //			criteria.and("fromDate").gte(fromTime).lte(toTime);
 
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			DateTime fromDateTime = null, toDateTime = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(toDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			}
+			if (fromDateTime != null && toDateTime != null) {
+				criteria.and("createdTime").gte(fromDateTime).lte(toDateTime);
+			} else if (fromDateTime != null) {
+				criteria.and("createdTime").gte(fromDateTime);
+			} else if (toDateTime != null) {
+				criteria.and("createdTime").lte(toDateTime);
+			}
+
+			
 			Aggregation aggregation = null;
 			
 			CustomAggregationOperation group= null;

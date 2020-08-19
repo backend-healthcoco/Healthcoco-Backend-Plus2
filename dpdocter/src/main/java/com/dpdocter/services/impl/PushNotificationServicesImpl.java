@@ -811,8 +811,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					isSilent = true;
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
+					info.put("T", "SI");
+					info.put( "content_available", true);
+		     //       info.put("title",componentType ); // Notification title
+		     //       info.put("body", message);
 		            info.put("RI",componentTypeId);
 		        //    info.put("PI",userId);// Notification body
 		            data.put("notification", info);
@@ -859,9 +861,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					
 					 
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
-		            info.put( "content-available", 1);
+					info.put("T", "PR");
+		       //     info.put("title",componentType ); // Notification title
+		      //      info.put("body", message);
+		            info.put( "content_available", true);
 		         //   info.put("RI",componentTypeId);
 		         //   info.put("PI",userId);// Notification body
 		            data.put("notification", info);
@@ -871,9 +874,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					isSilent = true;
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
-		            info.put( "content-available", 1);
+					info.put("T", "RDI");
+		     //       info.put("title",componentType ); // Notification title
+		    //        info.put("body", message);
+		            info.put( "content_available", true);
 		        //    info.put("RI",componentTypeId);
 		       //     info.put("PI",userId);// Notification body
 		            data.put("notification", info);
@@ -883,9 +887,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 //					isSilent = true;
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
-		            info.put( "content-available", 1);
+					info.put("T", "DWR");
+		       //     info.put("title",componentType ); // Notification title
+		       //     info.put("body", message);
+		            info.put( "content_available", true);
 		           // info.put("RI",componentTypeId);
 		          //  info.put("PI",userId);// Notification body
 		            data.put("notification", info);
@@ -895,10 +900,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 //					isSilent = true;
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
+					info.put("T", "RX");
+		     //       info.put("title",componentType ); // Notification title
+		      //      info.put("body", message);
+		           
+		            info.put( "content_available", true);
 		            info.put("PI",componentTypeId);
-		            info.put( "content-available", 1);
 		        //    info.put("PI",userId);// Notification body
 		            data.put("notification", info);
 				}else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_VISIT_REFRESH.getType())) {
@@ -907,10 +914,13 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			//		isSilent = true;
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
+					info.put("T", "RPV");
+		       //     info.put("title",componentType ); // Notification title
+		        //    info.put("body", message);
+					
+					 info.put( "content_available", true);
 		            info.put("PI",componentTypeId);
-		            info.put( "content-available", 1);
+		          
 		         //   info.put("PI",userId);// Notification body
 		            data.put("notification", info);
 				}else if (componentType.equalsIgnoreCase(ComponentType.CLINICAL_NOTES_REFRESH.getType())) {
@@ -919,10 +929,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					isSilent = true;
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
+					info.put("T", "RCN");
+		        //    info.put("title",componentType ); // Notification title
+		        //    info.put("body", message);
+		           
+		            info.put( "content_available", true);
 		            info.put("PI",componentTypeId);
-		            info.put( "content-available", 1);
 		           // info.put("PI",userId);// Notification body
 		            data.put("notification", info);
 				}else if (componentType.equalsIgnoreCase(ComponentType.TREATMENTS_REFRESH.getType())) {
@@ -931,10 +943,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 //					isSilent = true;
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
+					info.put("T", "RT");
+		       //     info.put("title",componentType ); // Notification title
+		        //    info.put("body", message);
+		           
+		            info.put( "content_available", true);
 		            info.put("PI",componentTypeId);
-		            info.put( "content-available", 1);
 		       //     info.put("PI",userId);// Notification body
 		            data.put("notification", info);
 				}else if (componentType.equalsIgnoreCase(ComponentType.RECORDS_REFRESH.getType())) {
@@ -943,10 +957,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 //					isSilent = true;
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
+					info.put("T", "RR");
+		       //     info.put("title",componentType ); // Notification title
+		        //    info.put("body", message);
+		            
+		            info.put( "content_available", true);
 		            info.put("PI",componentTypeId);
-		            info.put( "content-available", 1);
 		         //   info.put("PI",userId);// Notification body
 		            data.put("notification", info);
 				}else if (componentType.equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY_REFRESH.getType())) {
@@ -955,10 +971,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 //					isSilent = true;
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
+					info.put("T", "RDS");
+		         //   info.put("title",componentType ); // Notification title
+		          //  info.put("body", message);
+					 info.put( "content_available", true);
 		            info.put("PI",componentTypeId);
-		            info.put( "content-available", 1);
+		           
 		       //     info.put("PI",userId);// Notification body
 		            data.put("notification", info);
 				}else if (componentType.equalsIgnoreCase(ComponentType.INVOICE_REFRESH.getType())) {
@@ -967,10 +985,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					isSilent = true;
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
+					info.put("T", "RBI");
+		         //   info.put("title",componentType ); // Notification title
+		          //  info.put("body", message);
+					 info.put( "content_available", true);
 		            info.put("PI",componentTypeId);
-		            info.put( "content-available", 1);
+		           
 		       //     info.put("PI",userId);// Notification body
 		            data.put("notification", info);
 				}else if (componentType.equalsIgnoreCase(ComponentType.RECEIPT_REFRESH.getType())) {
@@ -979,10 +999,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					isSilent = true;
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
+					info.put("T", "RBR");
+//		            info.put("title",componentType ); // Notification title
+//		            info.put("body", message);
+					 info.put( "content_available", true);
 		            info.put("PI",componentTypeId);
-		            info.put( "content-available", 1);
+		           
 		        //    info.put("PI",userId);// Notification body
 		            data.put("notification", info);
 				}else if (componentType.equalsIgnoreCase(ComponentType.APPOINTMENT_REFRESH.getType())) {
@@ -992,9 +1014,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					isSilent = true;
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType); // Notification title
-		            info.put("body", message);
+					info.put("T", "AR");
+		        //    info.put("title",componentType); // Notification title
+		        //    info.put("body", message);
 		            info.put( "content_available", true);
+					
 		            info.put("AI",componentTypeId);
 		           
 		         //   info.put("PI",userId);// Notification body
@@ -1041,9 +1065,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("T", "PR");
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
-		            info.put( "content-available", 1);
+					info.put("T", "PR");
+		   //         info.put("title",componentType ); // Notification title
+		   //         info.put("body", message);
+		            info.put( "content_available", true);
 		        //    info.put("RI",componentTypeId);
 		        //    info.put("PI",userId);// Notification body
 		            data.put("notification", info);
@@ -1053,8 +1078,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("T", "DI");
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
+					info.put("T", "RDI");
+					info.put( "content_available", true);
+		     //       info.put("title",componentType ); // Notification title
+		      //      info.put("body", message);
 		        //    info.put("RI",componentTypeId);
 		        //    info.put("PI",userId);// Notification body
 		            data.put("notification", info);
@@ -1064,9 +1091,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("T", "DW");
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
-		            info.put( "content-available", 1);
+					info.put("T", "RDW");
+		    //        info.put("title",componentType ); // Notification title
+		    //        info.put("body", message);
+		            info.put( "content_available", true);
 		        //    info.put("RI",componentTypeId);
 		         //   info.put("PI",userId);// Notification body
 		            data.put("notification", info);
@@ -1099,11 +1127,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("T", "PR");
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
-		            info.put( "content-available", 1);
-		      //      info.put("RI",componentTypeId);
-		      //      info.put("PI",userId);// Notification body
+					info.put("T", "PR");
+		   //         info.put("title",componentType ); // Notification title
+		   //         info.put("body", message);
+		            info.put( "content_available", true);
+		        //    info.put("RI",componentTypeId);
+		        //    info.put("PI",userId);// Notification body
 		            data.put("notification", info);
 				}
 				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
@@ -1111,20 +1140,23 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("T", "DI");
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
+					info.put("T", "RDI");
+					 info.put( "content_available", true);
+		        //    info.put("title",componentType ); // Notification title
+		        //    info.put("body", message);
 		       //     info.put("RI",componentTypeId);
 		       //     info.put("PI",userId);// Notification body
 		            data.put("notification", info);
 				}
 				else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
 					customValues.put("RI", "SILENT");
-					customValues.put("T", "DW");
+					customValues.put("T", "RDW");
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
-		            info.put( "content-available", 1);
+					info.put("T", "RDW");
+		      //      info.put("title",componentType ); // Notification title
+		      //      info.put("body", message);
+		            info.put( "content_available", true);
 		      //      info.put("RI",componentTypeId);
 		      //      info.put("PI",userId);// Notification body
 		            data.put("notification", info);
@@ -1134,9 +1166,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("T", "BA");
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
-		            info.put( "content-available", 1);
+					info.put("T", "RBA");
+		       //     info.put("title",componentType ); // Notification title
+		       //     info.put("body", message);
+		            info.put( "content_available", true);
 		      //      info.put("RI",componentTypeId);
 		      //      info.put("PI",userId);// Notification body
 		            data.put("notification", info);
@@ -1146,9 +1179,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("T", "GC");
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
-		            info.put( "content-available", 1);
+					info.put("T", "RGC");
+		   //         info.put("title",componentType ); // Notification title
+		    //        info.put("body", message);
+		            info.put( "content_available", true);
 		       //     info.put("RI",componentTypeId);
 		      //      info.put("PI",userId);// Notification body
 		            data.put("notification", info);
@@ -1158,9 +1192,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					customValues.put("T", "VN");
 					
 					data.put("to",pushToken.trim());
-		            info.put("title",componentType ); // Notification title
-		            info.put("body", message);
-		            info.put( "content-available", 1);
+					info.put("T", "RVN");
+		   //         info.put("title",componentType ); // Notification title
+		   //         info.put("body", message);
+		            info.put( "content_available", true);
 		         //   info.put("RI",componentTypeId);
 		        //    info.put("PI",userId);// Notification body
 		            data.put("notification", info);
@@ -2006,7 +2041,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 //					customValues.put("T", "VC");
 
 					data.put("to",pushToken.trim());
-		            info.put("title","VC"); // Notification title
+		            info.put("title","CONSULTATION"); // Notification title
 		            info.put("body", message);
 		            info.put("CI",room);
 		            info.put("sound","default");
@@ -2350,7 +2385,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 //			// optional default is POST
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-Type","application/json");
-			con.setRequestProperty("Authorization","key="+DOCTOR_IOS_SERVICES_API_KEY  );
+		//	con.setRequestProperty("Authorization","key="+DOCTOR_IOS_SERVICES_API_KEY  );
 
 			if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
 				// sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
