@@ -1448,13 +1448,15 @@ public class ReportsServiceImpl implements ReportsService {
 						new ObjectId(otReportsLookupResponse.getLocationId()),
 						new ObjectId(otReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType(),
 						PrintSettingType.EMR.getType());
-		if (printSettings == null)
-			printSettings = printSettingsRepository
-					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+		if (printSettings == null){
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							new ObjectId(otReportsLookupResponse.getDoctorId()),
 							new ObjectId(otReportsLookupResponse.getLocationId()),
 							new ObjectId(otReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType(),
-							PrintSettingType.DEFAULT.getType());
+							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
+			printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -1847,13 +1849,15 @@ public class ReportsServiceImpl implements ReportsService {
 						new ObjectId(deliveryReportsLookupResponse.getLocationId()),
 						new ObjectId(deliveryReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType(),
 						PrintSettingType.EMR.getType());
-		if (printSettings == null)
-			printSettings = printSettingsRepository
-					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+		if (printSettings == null){
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							new ObjectId(deliveryReportsLookupResponse.getDoctorId()),
 							new ObjectId(deliveryReportsLookupResponse.getLocationId()),
 							new ObjectId(deliveryReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType(),
-							PrintSettingType.DEFAULT.getType());
+							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
+			printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();

@@ -1548,13 +1548,14 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
 							patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType(),
 							printSettingType);
-			if (printSettings == null)
-				printSettings = printSettingsRepository
-						.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+			if (printSettings == null){
+				List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+						.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 								patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
-								patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType(),
-								PrintSettingType.DEFAULT.getType());
-
+								patientTreatmentCollection.getHospitalId(),ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
+								new Sort(Sort.Direction.DESC, "updatedTime"));
+				printSettings = printSettingsCollections.get(0);
+			}
 			if (printSettings == null) {
 				printSettings = new PrintSettingsCollection();
 				DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();

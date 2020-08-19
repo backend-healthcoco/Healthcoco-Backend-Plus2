@@ -1613,7 +1613,8 @@ public class BillingServiceImpl implements BillingService {
 						doctorPatientInvoiceCollection.getHospitalId());
 				UserCollection user = userRepository.findById(doctorPatientInvoiceCollection.getPatientId())
 						.orElse(null);
-				JasperReportResponse jasperReportResponse = createJasper(doctorPatientInvoiceCollection, patient, user,PrintSettingType.BILLING.getType());
+				JasperReportResponse jasperReportResponse = createJasper(doctorPatientInvoiceCollection, patient, user,
+						PrintSettingType.BILLING.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -1640,7 +1641,8 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	private JasperReportResponse createJasper(DoctorPatientInvoiceCollection doctorPatientInvoiceCollection,
-			PatientCollection patient, UserCollection user,String printSettingType) throws IOException, ParseException {
+			PatientCollection patient, UserCollection user, String printSettingType)
+			throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		List<InvoiceItemJasperDetails> invoiceItemJasperDetails = null;
@@ -1800,19 +1802,20 @@ public class BillingServiceImpl implements BillingService {
 							doctorPatientInvoiceCollection.getLocationId(),
 							doctorPatientInvoiceCollection.getHospitalId(), ComponentType.ALL.getType(),
 							printSettingType);
-			if (printSettings == null)
-				printSettings = printSettingsRepository
-						.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+			if (printSettings == null) {
+				List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+						.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 								doctorPatientInvoiceCollection.getDoctorId(),
 								doctorPatientInvoiceCollection.getLocationId(),
 								doctorPatientInvoiceCollection.getHospitalId(), ComponentType.ALL.getType(),
-								PrintSettingType.DEFAULT.getType());
+								PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+				printSettings = printSettingsCollections.get(0);
+			}
 			if (printSettings == null) {
 				printSettings = new PrintSettingsCollection();
 				DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 				BeanUtil.map(defaultPrintSettings, printSettings);
 			}
-
 			generatePatientDetails(
 					(printSettings != null && printSettings.getHeaderSetup() != null
 							? printSettings.getHeaderSetup().getPatientDetails()
@@ -2059,7 +2062,7 @@ public class BillingServiceImpl implements BillingService {
 				UserCollection user = userRepository.findById(doctorPatientReceiptCollection.getPatientId())
 						.orElse(null);
 				JasperReportResponse jasperReportResponse = createJasperForReceipt(doctorPatientReceiptCollection,
-						patient, user,PrintSettingType.BILLING.getType());
+						patient, user, PrintSettingType.BILLING.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -2100,19 +2103,19 @@ public class BillingServiceImpl implements BillingService {
 		parameters.put("content", content);
 		parameters.put("paid", "Rs.&nbsp;" + doctorPatientReceiptCollection.getAmountPaid());
 		PrintSettingsCollection printSettings = null;
-		 printSettings = printSettingsRepository
+		printSettings = printSettingsRepository
 				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 						doctorPatientReceiptCollection.getDoctorId(), doctorPatientReceiptCollection.getLocationId(),
-						doctorPatientReceiptCollection.getHospitalId(), ComponentType.ALL.getType(),
-						printSettingType);
-		if (printSettings == null)
-			printSettings = printSettingsRepository
-					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+						doctorPatientReceiptCollection.getHospitalId(), ComponentType.ALL.getType(), printSettingType);
+		if (printSettings == null) {
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							doctorPatientReceiptCollection.getDoctorId(),
 							doctorPatientReceiptCollection.getLocationId(),
 							doctorPatientReceiptCollection.getHospitalId(), ComponentType.ALL.getType(),
-							PrintSettingType.DEFAULT.getType());
-
+							PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+			printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -2200,7 +2203,7 @@ public class BillingServiceImpl implements BillingService {
 						}
 
 						JasperReportResponse jasperReportResponse = createJasper(doctorPatientInvoiceCollection,
-								patient, user,PrintSettingType.EMAIL.getType());
+								patient, user, PrintSettingType.EMAIL.getType());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -2308,7 +2311,7 @@ public class BillingServiceImpl implements BillingService {
 						}
 
 						JasperReportResponse jasperReportResponse = createJasperForReceipt(
-								doctorPatientReceiptCollection, patient, user,PrintSettingType.EMAIL.getType());
+								doctorPatientReceiptCollection, patient, user, PrintSettingType.EMAIL.getType());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -2492,7 +2495,7 @@ public class BillingServiceImpl implements BillingService {
 			if (doctorPatientReceiptLookupResponses != null && !doctorPatientReceiptLookupResponses.isEmpty()) {
 
 				JasperReportResponse jasperReportResponse = createJasperForMultipleReceipt(
-						doctorPatientReceiptLookupResponses,PrintSettingType.BILLING.getType());
+						doctorPatientReceiptLookupResponses, PrintSettingType.BILLING.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -2527,13 +2530,16 @@ public class BillingServiceImpl implements BillingService {
 						new ObjectId(doctorPatientReceiptLookupResponses.get(0).getLocationId()),
 						new ObjectId(doctorPatientReceiptLookupResponses.get(0).getHospitalId()),
 						ComponentType.ALL.getType(), printSettingType);
-		if (printSettings == null)
-			printSettings = printSettingsRepository
-					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+		if (printSettings == null) {
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							new ObjectId(doctorPatientReceiptLookupResponses.get(0).getDoctorId()),
 							new ObjectId(doctorPatientReceiptLookupResponses.get(0).getLocationId()),
 							new ObjectId(doctorPatientReceiptLookupResponses.get(0).getHospitalId()),
-							ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType());
+							ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
+							new Sort(Sort.Direction.DESC, "updatedTime"));
+			printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -2688,7 +2694,7 @@ public class BillingServiceImpl implements BillingService {
 				}
 
 				JasperReportResponse jasperReportResponse = createJasperForMultipleReceipt(
-						doctorPatientReceiptLookupResponses,PrintSettingType.EMAIL.getType());
+						doctorPatientReceiptLookupResponses, PrintSettingType.EMAIL.getType());
 
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));

@@ -434,10 +434,14 @@ public class CertificateServicesImpl implements CertificatesServices {
 				 printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 						new ObjectId(consentFormCollection.getDoctorId()), new ObjectId(consentFormCollection.getLocationId()),
 								new ObjectId(consentFormCollection.getHospitalId()), ComponentType.ALL.getType(),PrintSettingType.EMR.getType());
-					if (printSettings == null) 
-						 printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
-									new ObjectId(consentFormCollection.getDoctorId()), new ObjectId(consentFormCollection.getLocationId()),
-											new ObjectId(consentFormCollection.getHospitalId()), ComponentType.ALL.getType(),PrintSettingType.DEFAULT.getType());
+					if (printSettings == null)  {
+						List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+								.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+										new ObjectId(consentFormCollection.getDoctorId()), new ObjectId(consentFormCollection.getLocationId()),
+										new ObjectId(consentFormCollection.getHospitalId()),ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
+										new Sort(Sort.Direction.DESC, "updatedTime"));
+						printSettings = printSettingsCollections.get(0);
+					}
 				if (printSettings == null) {
 					printSettings = new PrintSettingsCollection();
 					DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
