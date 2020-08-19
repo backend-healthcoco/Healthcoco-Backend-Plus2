@@ -1019,7 +1019,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 		        //    info.put("body", message);
 		            info.put( "content_available", true);
 					
-		            info.put("AI",componentTypeId);
+		            info.put("PI",componentTypeId);
 		           
 		         //   info.put("PI",userId);// Notification body
 		            data.put("notification", info);
