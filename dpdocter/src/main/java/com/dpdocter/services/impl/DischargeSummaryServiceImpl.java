@@ -654,13 +654,14 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType(),
 						printSettingType);
 		String dateTime = "";
-		if (printSettings == null)
-			printSettings = printSettingsRepository
-					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+		if (printSettings == null){
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
-							dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType(),
-							PrintSettingType.DEFAULT.getType());
-
+							dischargeSummaryCollection.getHospitalId(),ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
+							new Sort(Sort.Direction.DESC, "updatedTime"));
+			printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -2907,12 +2908,14 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						flowsheetCollection.getDoctorId(), flowsheetCollection.getLocationId(),
 						flowsheetCollection.getHospitalId(), ComponentType.ALL.getType(),
 						printSettingType);
-		if (printSettings == null)
-			printSettings = printSettingsRepository
-					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+		if (printSettings == null){
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							flowsheetCollection.getDoctorId(), flowsheetCollection.getLocationId(),
-							flowsheetCollection.getHospitalId(), ComponentType.ALL.getType(),
-							PrintSettingType.DEFAULT.getType());
+							flowsheetCollection.getHospitalId(),ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
+							new Sort(Sort.Direction.DESC, "updatedTime"));
+			printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();

@@ -801,13 +801,18 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 				(!DPDoctorUtils.anyStringEmpty(procedureSheetCollection.getHospitalId())
 						? procedureSheetCollection.getHospitalId()
 						: null),PrintSettingType.DEFAULT.getType());
-		if (printSettings == null)
-			printSettings = printSettingsRepository
-					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
-							procedureSheetCollection.getDoctorId(),
-							procedureSheetCollection.getLocationId(),
-							procedureSheetCollection.getHospitalId(), ComponentType.ALL.getType(),
-							PrintSettingType.DEFAULT.getType());
+		if (printSettings == null){
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(procedureSheetCollection.getDoctorId(),
+							(!DPDoctorUtils.anyStringEmpty(procedureSheetCollection.getLocationId())
+									? procedureSheetCollection.getLocationId()
+									: null),
+							(!DPDoctorUtils.anyStringEmpty(procedureSheetCollection.getHospitalId())
+									? procedureSheetCollection.getHospitalId()
+									: null),ComponentType.ALL.getType(),
+							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
+			printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();

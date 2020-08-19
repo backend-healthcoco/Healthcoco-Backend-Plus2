@@ -4056,12 +4056,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
 						clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType(),
 						printSettingType);
-		if (printSettings == null)
-			printSettings = printSettingsRepository
-					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+		if (printSettings == null){
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
-							clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType(),
-							PrintSettingType.DEFAULT.getType());
+							clinicalNotesCollection.getHospitalId(),ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
+							new Sort(Sort.Direction.DESC, "updatedTime"));
+			printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -8471,12 +8473,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						clinicalNotesCollections.get(0).getDoctorId(), clinicalNotesCollections.get(0).getLocationId(),
 						clinicalNotesCollections.get(0).getHospitalId(), ComponentType.ALL.getType(),
 						printSettingType);
-		if (printSettings == null)
-			printSettings = printSettingsRepository
-					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+		if (printSettings == null){
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							clinicalNotesCollections.get(0).getDoctorId(), clinicalNotesCollections.get(0).getLocationId(),
-							clinicalNotesCollections.get(0).getHospitalId(), ComponentType.ALL.getType(),
-							PrintSettingType.DEFAULT.getType());
+							clinicalNotesCollections.get(0).getHospitalId(),ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
+							new Sort(Sort.Direction.DESC, "updatedTime"));
+			printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();

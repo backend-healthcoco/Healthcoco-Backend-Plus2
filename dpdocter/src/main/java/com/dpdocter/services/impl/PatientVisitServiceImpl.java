@@ -1822,7 +1822,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				user.setFirstName(patient.getLocalPatientName());
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,
 						null, false, false, false, false, false, false, false, false, false, false, true, true, true,
-						false,PrintSettingType.EMAIL.getType());
+						false, PrintSettingType.EMAIL.getType());
 				if (jasperReportResponse != null) {
 					if (user != null) {
 						emailTrackCollection.setPatientName(patient.getLocalPatientName());
@@ -1907,7 +1907,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
 			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isLabPrint, Boolean isCustomPDF,
 			Boolean showLMP, Boolean showEDD, Boolean showNoOfChildren, Boolean showPrescription, Boolean showTreatment,
-			Boolean showclinicalNotes, Boolean showVitalSign, String printSettingType) throws IOException, ParseException {
+			Boolean showclinicalNotes, Boolean showVitalSign, String printSettingType)
+			throws IOException, ParseException {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String resourceId = "<b>VID: </b>"
@@ -1917,14 +1918,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		printSettings = printSettingsRepository
 				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 						patientVisitLookupResponse.getDoctorId(), patientVisitLookupResponse.getLocationId(),
-						patientVisitLookupResponse.getHospitalId(), ComponentType.ALL.getType(),
-						printSettingType);
-		if (printSettings == null)
-			printSettings = printSettingsRepository
-					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+						patientVisitLookupResponse.getHospitalId(), ComponentType.ALL.getType(), printSettingType);
+		if (printSettings == null) {
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							patientVisitLookupResponse.getDoctorId(), patientVisitLookupResponse.getLocationId(),
 							patientVisitLookupResponse.getHospitalId(), ComponentType.ALL.getType(),
-							PrintSettingType.DEFAULT.getType());
+							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
+			printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -3548,7 +3550,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,
 						historyCollection, showPH, showPLH, showFH, showDA, showUSG, isLabPrint, isCustomPDF, showLMP,
-						showEDD, showNoOfChildren, showPrescription, showTreatment, showclinicalNotes, showVitalSign,PrintSettingType.EMR.getType());
+						showEDD, showNoOfChildren, showPrescription, showTreatment, showclinicalNotes, showVitalSign,
+						PrintSettingType.EMR.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)

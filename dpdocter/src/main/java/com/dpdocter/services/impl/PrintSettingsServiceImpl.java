@@ -441,7 +441,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 			AggregationResults<PrintSettingsCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PrintSettingsCollection.class, PrintSettingsCollection.class);
 
-			PrintSettingsCollection printSettingsCollection = aggregationResults.getUniqueMappedResult();
+			PrintSettingsCollection printSettingsCollection = aggregationResults.getMappedResults().get(0);
 
 			if (printSettingsCollection != null) {
 				if (PrintFilter.PAGESETUP.getFilter().equalsIgnoreCase(printFilter)) {
