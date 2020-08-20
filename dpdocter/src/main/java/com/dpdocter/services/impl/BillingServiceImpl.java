@@ -1809,7 +1809,8 @@ public class BillingServiceImpl implements BillingService {
 								doctorPatientInvoiceCollection.getLocationId(),
 								doctorPatientInvoiceCollection.getHospitalId(), ComponentType.ALL.getType(),
 								PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
-				printSettings = printSettingsCollections.get(0);
+				if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+					printSettings = printSettingsCollections.get(0);
 			}
 			if (printSettings == null) {
 				printSettings = new PrintSettingsCollection();
@@ -2114,7 +2115,8 @@ public class BillingServiceImpl implements BillingService {
 							doctorPatientReceiptCollection.getLocationId(),
 							doctorPatientReceiptCollection.getHospitalId(), ComponentType.ALL.getType(),
 							PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
-			printSettings = printSettingsCollections.get(0);
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
@@ -2538,7 +2540,8 @@ public class BillingServiceImpl implements BillingService {
 							new ObjectId(doctorPatientReceiptLookupResponses.get(0).getHospitalId()),
 							ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
 							new Sort(Sort.Direction.DESC, "updatedTime"));
-			printSettings = printSettingsCollections.get(0);
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();

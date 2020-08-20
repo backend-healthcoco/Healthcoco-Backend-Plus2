@@ -4605,7 +4605,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 								new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 								new ObjectId(request.getHospitalId()), ComponentType.ALL.getType(),
 								PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
-				printSettings = printSettingsCollections.get(0);
+				if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+					printSettings = printSettingsCollections.get(0);
 			}
 			if (printSettings == null) {
 				printSettings = new PrintSettingsCollection();

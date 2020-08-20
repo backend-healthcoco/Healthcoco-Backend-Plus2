@@ -1455,7 +1455,8 @@ public class ReportsServiceImpl implements ReportsService {
 							new ObjectId(otReportsLookupResponse.getLocationId()),
 							new ObjectId(otReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType(),
 							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
-			printSettings = printSettingsCollections.get(0);
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
@@ -1856,7 +1857,8 @@ public class ReportsServiceImpl implements ReportsService {
 							new ObjectId(deliveryReportsLookupResponse.getLocationId()),
 							new ObjectId(deliveryReportsLookupResponse.getHospitalId()), ComponentType.ALL.getType(),
 							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
-			printSettings = printSettingsCollections.get(0);
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();

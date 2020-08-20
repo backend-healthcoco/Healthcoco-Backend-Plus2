@@ -4062,7 +4062,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 							clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
 							clinicalNotesCollection.getHospitalId(),ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
 							new Sort(Sort.Direction.DESC, "updatedTime"));
-			printSettings = printSettingsCollections.get(0);
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
@@ -8479,7 +8480,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 							clinicalNotesCollections.get(0).getDoctorId(), clinicalNotesCollections.get(0).getLocationId(),
 							clinicalNotesCollections.get(0).getHospitalId(),ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
 							new Sort(Sort.Direction.DESC, "updatedTime"));
-			printSettings = printSettingsCollections.get(0);
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();

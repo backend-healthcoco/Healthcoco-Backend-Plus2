@@ -413,6 +413,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	@Override
 	public PrintSettings getSettingByType(String printFilter, String doctorId, String locationId, String hospitalId,
 			Boolean discarded, String printSettingType) {
+		PrintSettingsCollection printSettingsCollection = null;
 		PrintSettings response = null;
 		Aggregation aggregation = null;
 
@@ -440,9 +441,9 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 			AggregationResults<PrintSettingsCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PrintSettingsCollection.class, PrintSettingsCollection.class);
-
-			PrintSettingsCollection printSettingsCollection = aggregationResults.getMappedResults().get(0);
-
+			if (aggregationResults.getMappedResults() != null && !aggregationResults.getMappedResults().isEmpty())
+				printSettingsCollection = aggregationResults.getMappedResults().get(0);
+ 
 			if (printSettingsCollection != null) {
 				if (PrintFilter.PAGESETUP.getFilter().equalsIgnoreCase(printFilter)) {
 					printSettingsCollection.setFooterSetup(null);
@@ -483,7 +484,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 		List<PrintSettingsCollection> printSettingsCollections = null;
 		try {
 			printSettingsCollections = printSettingsRepository.findAll();
-			
+
 			if (printSettingsCollections != null) {
 				for (PrintSettingsCollection printSettingsCollection : printSettingsCollections) {
 					printSettingsCollection.setPrintSettingType(PrintSettingType.DEFAULT.getType());
