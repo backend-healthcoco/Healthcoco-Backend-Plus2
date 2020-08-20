@@ -4005,7 +4005,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 							consentFormCollection.getDoctorId(), consentFormCollection.getLocationId(),
 							consentFormCollection.getHospitalId(), ComponentType.ALL.getType(),
 							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
-			printSettings = printSettingsCollections.get(0);
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();

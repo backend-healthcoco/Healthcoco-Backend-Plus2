@@ -3939,7 +3939,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 							prescriptionCollection.getHospitalId(), ComponentType.ALL.getType(),
 							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
-			printSettings = printSettingsCollections.get(0);
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
@@ -5752,7 +5753,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 							prescriptionCollection.getHospitalId(), ComponentType.ALL.getType(),
 							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
-			printSettings = printSettingsCollections.get(0);
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
