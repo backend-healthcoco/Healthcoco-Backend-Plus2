@@ -1530,7 +1530,12 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		//	criteria2.and("fromDate").gte(fromTime).lte(toTime)
 			criteria2.and("type").is(type);
 			criteria2.and("consultationType").is(ConsultationType.CHAT.toString());
-	
+			
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) 
+			criteria2.and("fromDate").gte(fromDateTime);
+			
+			if (!DPDoctorUtils.anyStringEmpty(toDate)) 
+			criteria2.and("toDate").lte(toDateTime);
 			
 			response.setTotalOnlineConsultation(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 			criteria.and("consultationType").is(ConsultationType.VIDEO.toString());
@@ -1548,7 +1553,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	}
 
 	@Override
-	public PaymentSummary getPaymentSummary(String fromDate, String toDate, String doctorId,int page,int size) {
+	public PaymentSummary getPaymentSummary(String fromDate, String toDate, String doctorId,String consultationType) {
 		PaymentSummary response=null;
 		try {
 			
@@ -1563,6 +1568,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(consultationType)) {
+				criteria.and("consultationType.consultationType").is(consultationType.trim());
 			}
 			
 //			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
@@ -1756,19 +1765,22 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	 				
 	 				else {
 	 					patientCollection=new PatientPaymentDetailsCollection();
-	 				patientCollection.setUserId(onlinePayment.getUserId());
+	 				//if(onlinePayment.getUserId()!=null)	
+	 			//	patientCollection.setUserId(onlinePayment.getUserId());
 	 				patientCollection.setSettlementDate(new Date(item.getSettled_at()));
 	 				patientCollection.setIsSettled(item.getSettled());
 	 				patientCollection.setOrderId(item.getOrder_id());
 	 				patientCollection.setPaymentId(item.getPayment_id());
-	 				patientCollection.setDoctorId(onlinePayment.getDoctorId() );
-	 				patientCollection.setConsultationType(onlinePayment.getConsultationType());
-	 				}
+	 		//		if(onlinePayment.getDoctorId()!=null)	
+	 			//	patientCollection.setDoctorId(onlinePayment.getDoctorId());
+	 		//		if(onlinePayment.getConsultationType()!=null)	
+	 			//	patientCollection.setConsultationType(onlinePayment.getConsultationType());
+	 				
 	 				patientPaymentSettlementRepository.save(patientCollection);
-	 			  }
-	 			
 	 			  
+	 				}
 	 			  
+	 			  }	  
 	 			  
 	 			  PaymentSettlementCollection paymentSettlements=new PaymentSettlementCollection();
 	 			 

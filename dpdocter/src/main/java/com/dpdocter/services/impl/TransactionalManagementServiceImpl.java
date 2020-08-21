@@ -1533,8 +1533,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		appLinkDetailsRepository.saveAll(appLinkDetailsCollections);
 	}
 
-	@SuppressWarnings("incomplete-switch")
-	@Scheduled(cron = "0 0/30 12 * * SUN", zone = "IST")
+//	@SuppressWarnings("incomplete-switch")
+//	@Scheduled(cron = "0 0/30 12 * * SUN", zone = "IST")
 	@Override
 	@Transactional
 	public void updateActivePrescription() {

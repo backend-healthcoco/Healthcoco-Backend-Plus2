@@ -62,7 +62,7 @@ public interface AppointmentAnalyticsService {
 OnlineConsultationAnalytics getConsultationAnalytics(String fromDate,String toDate,String doctorId,String locationId,String type);
 
 	
-	PaymentSummary getPaymentSummary(String fromDate,String toDate,String doctorId,int page,int size );
+	//PaymentSummary getPaymentSummary(String fromDate,String toDate,String doctorId,int page,int size );
 
 
 	PaymentSettlements fetchSettlement(Integer day,Integer month, Integer year);
@@ -71,4 +71,8 @@ OnlineConsultationAnalytics getConsultationAnalytics(String fromDate,String toDa
 
 	
 	List<PatientPaymentDetails> getPatientPaymentDetails(String doctorId,int page,int size);
+
+	//PaymentSummary getPaymentSummary(String fromDate, String toDate, String doctorId);
+
+	PaymentSummary getPaymentSummary(String fromDate, String toDate, String doctorId, String consultationType);
 }
