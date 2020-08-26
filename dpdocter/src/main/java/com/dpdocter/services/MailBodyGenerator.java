@@ -80,4 +80,7 @@ public interface MailBodyGenerator {
 
 	String subscriptionPaymentEmailBody(String firstName, String createdDate, String transactionId, String receipt,
 			String totalCost, String packageName, String paymentMode, int duration, String templatePath);
+
+	String generateOnlineAppointmentEmailBody(String doctorName, String patientName, String dateTime, String clinicName,
+			String templatePath, String branch, String consultationType);
 }
