@@ -5,60 +5,98 @@
   </head>
 
   <body cz-shortcut-listen="true" style="font-family: 'Roboto Condensed', sans-serif; background-color:#edecec">
-    <div style="background-color:#edecec;line-height:25px;margin-bottom:30px;font-family:'Open Sans',sans-serif;margin:0px auto;min-width:200px;max-width:600px">
+    <div class="container" style="background-color:white;line-height:25px;margin-bottom:30px;font-family:'Open Sans',sans-serif;margin:0px auto;min-width:200px;max-width:600px; padding: 10px;">
 
-      <div align="center">
-        <img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/hc_logo_blue.png" style="width:280px; display:block; ">
-      </div>
-
-      <div style="background-color: #ffffff; padding:20px; margin-top: 15px">
-
-      <h1 style="color:#2c3335;font-size:27px;text-align: center;">Order Confirmed!<br></h1>
-
-      <p style="color:#2c3335;font-size:20px;text-align: center;">Order ID: ${orderId}</p>
-
-        <div align="center" style="">
-          <img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/img1.png" style=" width: 200px">
-        </div>
-
+      <header style="background-color: #1e2d75; padding:25px 20px;">
         <div>
-         <p style="color:#2c3335;font-size:15px;padding-left: 15px">Hi, ${patientName}<br>Your payment of ${planName} for Rs. ${amount} is received.<br>
+          <img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/logo blue1598350629379.png" alt="healthcoco_logo" width="280px" style="display:block;" id="insert_logo" />
+        </div>
+      </header>
 
-         <h1 style="color: #123493;padding-left: 15px;font-size: 17px">Order Summary:<br></h1><p style="color: #2c3335; text-align: center; border: 2px dotted #ff6000;
-    outline: 1px;    
-    padding: 10px;
-    ">Plan Name: ${planName}</p>
-
-         <h1 style="color: #123493;padding-left: 15px;font-size: 17px; ">Additional Information:<br></h1><p style="color: #2c3335;margin-left:200px ">Cost: Rs. ${amount} <br><br> Time: ${time}<br><br> Plan: ${planName} <br><br> Total: Rs. ${amount}</p>
-          <p style="color: #2c3335;text-align: center;font-weight: bold">Download The Healthcoco App Now!</p>        
-          <div align="center" style="">
-             <a style="color: #0077b5;text-decoration:none; "href="" target="_blank"><img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/immy.png" style="width: 112px"></a>
-              <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/imy.png" style="width: 112px;margin-left: 25px"></a>
-         </div>
-
-      
-        <p style="color:#2c3335;font-size:15px;">For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at  <a style="color: #123493;text-decoration:none;"href="https://www.healthcoco.com/" target="_blank">www.healthcoco.com</a><br><br>Stay Healthy and Happy,<br>Team Healthcoco.</p><br>
-
-      
-          
-          </div>
+      <div style="padding: 0px 20px;">
+        <h3>
+          Plan Order Confirmed
+        </h3>
       </div>
-         
-        <div style="padding:20px;">
-          <p style="font-size:14px; display:inline;">
-             <span>This message was sent to you by Healthcoco.</span>
-          </p>
-          <p style="display:inline;float: right; margin-top: -5px;">
-             <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/fb.png" style="width: 30px"></a>
-              <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/insata.png" style="width: 30px"></a>
-             <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/twitter.png" style="width: 30px"></a>
-              <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/google+pluss.png" style="width: 30px"></a>
-             <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/linkdn.png" style="width: 30px"></a> 
 
+      <div style="padding: 22px; background-color: #e6e6e3;">
+        <div align="center">
+          <img src="https://s3.ap-south-1.amazonaws.com/healthcocos3bucket/MailTemplate/img1.png" style="width:350px;">
+        </div>
+      </div>
+
+      <div style="padding: 22px">
+        <p>Hi ${patientName}</p>
+        <p style="margin: 0;">Your payment having order id: ${orderId} of ${planName} for Rs. ${amount} is received.
+          
+        <h1 style="color: #123493;padding-left: 15px;font-size: 17px">Order Summary:</h1>
+          <p style="color: #2c3335; text-align: center; border: 2px dotted #ff6000;outline: 1px;padding: 10px;">
+            Plan Name: ${planName}
           </p>
-        </div>  
-                
-    </div>  
+
+          <h1 style="color: #123493;padding-left: 15px;font-size: 17px; ">Additional Information:</h1>
+          <p style="color: #2c3335;margin-left:200px ">Cost: Rs. ${amount} <br><br> Time: ${time}<br><br> Plan: ${planName} <br><br> Total: Rs. ${amount}
+          </p>
+      </div>
+
+      <!-- <div style="background-color: #e6e6e3;">
+        <div style="overflow: hidden;">
+          <img src="emailtem/HC+Mobile.png" align="center" style="width:230px;float: left;">
+          <div style="float: left;margin-top: 60px;">
+            <small style="margin-left: 25px;"><b>Get the Healthcoco+ app</b></small>
+            <ul>
+                <li><small><b>Intelligent Prescription and Medical Records</b></small></li>
+                <li><small><b>Manage your profile digitally</b></small></li>
+                <li><small><b>Schedule appointment on the go</b></small></li>
+                <li><small><b>Maintain Invoices and Receipts</b></small></li>
+            </ul>
+
+            <p align="center">
+              <a style="text-decoration:none;" href="https://play.google.com/store/apps/details?id=com.healthcoco.healthcocoplus" target="_blank"><img alt="Healthcoco" 
+                  src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/Google_play_1x.png"
+              style="width: 117px;"></a>
+
+              <a style="text-decoration:none;" href="https://itunes.apple.com/bs/app/healthcoco+/id1013626399?mt=8"
+              target="_blank"><img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/app-store-badge.png"
+                  style="width: 117px;margin-left: 22px"></a>
+            </p>
+          </div>
+        </div>
+      </div> -->
+
+      <footer style="background-color: #f5f5fa;padding: 25px 20px;overflow: hidden;">
+          <div style="float: left;width: 350px;">
+              <small>Powered By</small>
+              <strong>HEALTHCOCO</strong>
+
+              <p style="margin-bottom: 0;"><small style="font-size: 11px;"><b>Call: +91 8459802223 &nbsp;&nbsp;Email: support@healthcoco.com</b></small></p>
+          </div>
+          <div style="float: left;">
+              <h4 style="color: #5c5b5b;margin:0;">
+                  Follow us at
+              </h4>
+              <div style="margin-top: 10px;">
+                  <a href="https://www.facebook.com/healthcoco/" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/facebook-21598343509134.png" alt="insert logo here" width="25">
+                  </a>&nbsp;&nbsp;
+                  <a href="https://www.linkedin.com/company/healthcoco/" target="_blank"><img
+                      src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/in1598343918208.png" alt="insert logo here" width="25">
+                  </a>&nbsp;&nbsp;
+                  <a href="https://www.instagram.com/healthcoco/" target="_blank"><img
+                      src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/instagram-sketched1598343944136.png" alt="insert logo here" width="25">
+                  </a>&nbsp;&nbsp;
+                  <a href="https://twitter.com/healthcococom" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/twitter1598343981972.png" alt="insert logo here" width="25"></a>&nbsp;&nbsp;
+                  <a href="https://www.youtube.com/channel/UCAvIuW5nt0qBXvAfVeynQOg" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/youtube1598343999812.png" alt="insert logo here" width="25"></a>
+              </div>
+          </div>
+      </footer>
+      <small>
+          <a href="https://www.healthcoco.com/company/privacy-policy" target="_blank" style="color: #2d2c2c;">Privacy Policy</a>
+      </small>
+      <small style="float: right;">
+          &copy; 2015-2020, All Rights Reserved.
+      </small>
+
+    </div> 
           
    </body>
 </html>

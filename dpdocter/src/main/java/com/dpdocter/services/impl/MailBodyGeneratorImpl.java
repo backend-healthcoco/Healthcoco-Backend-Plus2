@@ -300,6 +300,27 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		String text = mergeTemplate(context, templatePath);
 		return text;
 	}
+	
+	@Override
+	@Transactional
+	public String generateOnlineAppointmentEmailBody(String doctorName, String patientName, String dateTime,
+			String clinicName, String templatePath, String branch,String consultationType) {
+		VelocityContext context = new VelocityContext();
+		context.put("doctorName", doctorName);
+		context.put("patientName", patientName);
+		context.put("dateTime", dateTime);
+		context.put("clinicName", clinicName);
+		context.put("consultationType", consultationType);
+		context.put("imageURL", imagePath + "templatesImage");
+		context.put("contactUsEmail", contactUsEmail);
+		context.put("fbLink", fbLink);
+		context.put("twitterLink", twitterLink);
+		context.put("linkedInLink", linkedInLink);
+		context.put("googlePlusLink", googlePlusLink);
+		
+		String text = mergeTemplate(context, templatePath);
+		return text;
+	}
 
 	@Override
 	@Transactional
