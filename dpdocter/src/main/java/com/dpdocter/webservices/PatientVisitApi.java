@@ -265,7 +265,12 @@ public class PatientVisitApi {
 		PatientVisitResponse patientVisit = patientVisitService.getPatientLastVisit(doctorId, locationId, hospitalId,
 				patientId);
 		Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
+		if(patientVisit != null) {
 		response.setData(patientVisit);
+		response.setCount(1);
+		}else {
+			response.setCount(0);
+		}
 		return response;
 	}
 

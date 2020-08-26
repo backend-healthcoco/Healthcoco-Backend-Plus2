@@ -129,22 +129,22 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 								userCollection.getMobileNumber(), userCollection.getEmailAddress(), RoleEnum.DOCTOR);
 						
 					} else {
-						logger.warn("Email address is empty.");
-						throw new BusinessException(ServiceError.InvalidInput, "Email address is empty.");
+						logger.warn("Email address is empty."+ request.getEmailAddress());
+						throw new BusinessException(ServiceError.InvalidInput, "Email address is empty."+ request.getEmailAddress());
 					}
 				} else {
-					logger.warn("User is not activated");
-					throw new BusinessException(ServiceError.Unknown, "User is not activated");
+					logger.warn("User is not activated"+ request.getEmailAddress());
+					throw new BusinessException(ServiceError.Unknown, "User is not activated"+ request.getEmailAddress());
 				}
 			} else {
-				logger.warn("No account present with email address, please sign up");
+				logger.warn("No account present with email address, please sign up" + request.getEmailAddress());
 				throw new BusinessException(ServiceError.Unknown,
-						"No account present with email address, please sign up");
+						"No account present with email address, please sign up"+ request.getEmailAddress());
 			}
 			return response;
 		} catch (BusinessException be) {
-			logger.error(be + "No account present with email address, please sign up");
-			throw new BusinessException(ServiceError.Unknown, "No account present with email address, please sign up");
+			logger.error(be + "No account present with email address, please sign up"+ request.getEmailAddress());
+			throw new BusinessException(ServiceError.Unknown, "No account present with email address, please sign up"+ request.getEmailAddress());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

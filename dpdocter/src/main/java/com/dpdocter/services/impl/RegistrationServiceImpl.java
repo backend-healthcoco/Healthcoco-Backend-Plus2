@@ -47,6 +47,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.amazonaws.Request;
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.BloodGroup;
@@ -4966,7 +4967,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, "Error while updating patient number");
+			throw new BusinessException(ServiceError.Unknown, "Error while updating patient number"
+			+mobileNumber+ "doctorId,patientId "+doctorId + patientId);
 		}
 		return response;
 	}

@@ -767,7 +767,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				} else {
 					patientVisitCollection.setCreatedTime(patientVisitCollection.getCreatedTime());
 				}
-
+				
+				System.out.println("patientVisitCollection"+patientVisitCollection);
 				if (request.getPrescription() != null && request.getPrescription().getId() == null
 						&& patientVisitCollection.getPrescriptionId() != null
 						&& patientVisitCollection.getPrescriptionId().size() > 0) {
@@ -3697,8 +3698,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					break;
 				}
 			} else {
-				throw new BusinessException(ServiceError.NotFound,
-						"Error while geting patient last Visit : Last Visit not found");
+//				throw new BusinessException(ServiceError.NotFound,
+//						"Error while getting patient last Visit : Last Visit not found");
+				response = null; // when no visit found (this added to remove exception from mail)
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
