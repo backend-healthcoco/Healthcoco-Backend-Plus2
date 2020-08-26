@@ -113,6 +113,7 @@ import com.dpdocter.collections.XRayDetailsCollection;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LineStyle;
+import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.VitalSignsUnit;
@@ -375,7 +376,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 			BeanUtil.map(request, clinicalNotesCollection);
 			if (DPDoctorUtils.anyStringEmpty(createdBy)) {
-				UserCollection userCollection = userRepository.findById(clinicalNotesCollection.getDoctorId()).orElse(null);
+				UserCollection userCollection = userRepository.findById(clinicalNotesCollection.getDoctorId())
+						.orElse(null);
 				if (userCollection != null) {
 					createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 							+ userCollection.getFirstName();
@@ -1432,7 +1434,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	public ClinicalNotes getNotesById(String id, ObjectId visitId) {
 		ClinicalNotes clinicalNote = null;
 		try {
-			ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findById(new ObjectId(id)).orElse(null);
+			ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (clinicalNotesCollection != null) {
 				clinicalNote = new ClinicalNotes();
 				BeanUtil.map(clinicalNotesCollection, clinicalNote);
@@ -1769,7 +1772,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(complaintCollection.getId())) {
 				complaintCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(complaintCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(complaintCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(complaintCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						complaintCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -1779,7 +1783,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					complaintCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				ComplaintCollection oldComplaintCollection = complaintRepository.findById(complaintCollection.getId()).orElse(null);
+				ComplaintCollection oldComplaintCollection = complaintRepository.findById(complaintCollection.getId())
+						.orElse(null);
 				complaintCollection.setCreatedBy(oldComplaintCollection.getCreatedBy());
 				complaintCollection.setCreatedTime(oldComplaintCollection.getCreatedTime());
 				complaintCollection.setDiscarded(oldComplaintCollection.getDiscarded());
@@ -1810,7 +1815,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(observationCollection.getId())) {
 				observationCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(observationCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(observationCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(observationCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						observationCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -1895,7 +1901,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(generalExamCollection.getId())) {
 				generalExamCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(generalExamCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(generalExamCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(generalExamCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						generalExamCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -1937,7 +1944,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(systemExamCollection.getId())) {
 				systemExamCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(systemExamCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(systemExamCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(systemExamCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						systemExamCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -1979,7 +1987,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(menstrualHistoryCollection.getId())) {
 				menstrualHistoryCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(menstrualHistoryCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(menstrualHistoryCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(menstrualHistoryCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						menstrualHistoryCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2021,7 +2030,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(presentComplaintCollection.getId())) {
 				presentComplaintCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(presentComplaintCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(presentComplaintCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(presentComplaintCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						presentComplaintCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2107,7 +2117,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(obstetricHistoryCollection.getId())) {
 				obstetricHistoryCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(obstetricHistoryCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(obstetricHistoryCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(obstetricHistoryCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						obstetricHistoryCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2149,7 +2160,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(investigationCollection.getId())) {
 				investigationCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(investigationCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(investigationCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(investigationCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						investigationCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2192,7 +2204,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(diagnosisCollection.getId())) {
 				diagnosisCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(diagnosisCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(diagnosisCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(diagnosisCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						diagnosisCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2202,7 +2215,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					diagnosisCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				DiagnosisCollection oldDiagnosisCollection = diagnosisRepository.findById(diagnosisCollection.getId()).orElse(null);
+				DiagnosisCollection oldDiagnosisCollection = diagnosisRepository.findById(diagnosisCollection.getId())
+						.orElse(null);
 				diagnosisCollection.setCreatedBy(oldDiagnosisCollection.getCreatedBy());
 				diagnosisCollection.setCreatedTime(oldDiagnosisCollection.getCreatedTime());
 				diagnosisCollection.setDiscarded(oldDiagnosisCollection.getDiscarded());
@@ -2289,7 +2303,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(diagramsCollection.getId())) {
 				diagramsCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(diagramsCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(diagramsCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(diagramsCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						diagramsCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2299,7 +2314,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					diagramsCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				DiagramsCollection oldDiagramsCollection = diagramsRepository.findById(diagramsCollection.getId()).orElse(null);
+				DiagramsCollection oldDiagramsCollection = diagramsRepository.findById(diagramsCollection.getId())
+						.orElse(null);
 				diagramsCollection.setCreatedBy(oldDiagramsCollection.getCreatedBy());
 				diagramsCollection.setCreatedTime(oldDiagramsCollection.getCreatedTime());
 				diagramsCollection.setDiscarded(oldDiagramsCollection.getDiscarded());
@@ -2428,7 +2444,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean discarded) {
 		Investigation response = null;
 		try {
-			InvestigationCollection investigationCollection = investigationRepository.findById(new ObjectId(id)).orElse(null);
+			InvestigationCollection investigationCollection = investigationRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (investigationCollection != null) {
 				if (investigationCollection.getDoctorId() != null && investigationCollection.getHospitalId() != null
 						&& investigationCollection.getLocationId() != null) {
@@ -3834,12 +3851,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 							emailTrackCollection.setPatientId(user.getId());
 						}
 						JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
-								null, false, false, false, false, false, false, false, false, false);
+								null, false, false, false, false, false, false, false, false, false,PrintSettingType.EMAIL.getType());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
 						UserCollection doctorUser = userRepository.findById(new ObjectId(doctorId)).orElse(null);
-						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
+						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
+								.orElse(null);
 
 						response = new MailResponse();
 						response.setMailAttachment(mailAttachment);
@@ -3997,13 +4015,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						clinicalNotesCollection.getHospitalId());
 				UserCollection user = userRepository.findById(clinicalNotesCollection.getPatientId()).orElse(null);
 				if (showPH || showPLH || showFH || showDA) {
-					List<HistoryCollection> historyCollections = historyRepository.findByLocationIdAndHospitalIdAndPatientId(clinicalNotesCollection.getLocationId(),
-							clinicalNotesCollection.getHospitalId(), clinicalNotesCollection.getPatientId());
-					if(historyCollections!=null)historyCollection=historyCollections.get(0);
+					List<HistoryCollection> historyCollections = historyRepository
+							.findByLocationIdAndHospitalIdAndPatientId(clinicalNotesCollection.getLocationId(),
+									clinicalNotesCollection.getHospitalId(), clinicalNotesCollection.getPatientId());
+					if (historyCollections != null)
+						historyCollection = historyCollections.get(0);
 				}
 				JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
 						historyCollection, showPH, showPLH, showFH, showDA, showUSG, isCustomPDF, showLMP, showEDD,
-						showNoOfChildren);
+						showNoOfChildren,PrintSettingType.EMR.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -4024,16 +4044,27 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	private JasperReportResponse createJasper(ClinicalNotesCollection clinicalNotesCollection,
 			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
 			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP,
-			Boolean showEDD, Boolean showNoOfChildren) throws IOException, ParseException {
+			Boolean showEDD, Boolean showNoOfChildren,String printSettingType) throws IOException, ParseException {
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 
 		Boolean showTitle = false;
-		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
-				clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
-				clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
-
+		PrintSettingsCollection printSettings = null;
+		printSettings = printSettingsRepository
+				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+						clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
+						clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType(),
+						printSettingType);
+		if (printSettings == null){
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+							clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
+							clinicalNotesCollection.getHospitalId(),ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
+							new Sort(Sort.Direction.DESC, "updatedTime"));
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -4046,8 +4077,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 		parameters.put("diagnosis", clinicalNotesCollection.getDiagnosis());
 
-		//parameters.put("eyeObservation",clinicalNotesCollection.getEyeObservation());
-		
+		// parameters.put("eyeObservation",clinicalNotesCollection.getEyeObservation());
+
 		parameters.put("complaints", clinicalNotesCollection.getComplaint());
 		parameters.put("presentComplaint", clinicalNotesCollection.getPresentComplaint());
 		parameters.put("presentComplaintHistory", clinicalNotesCollection.getPresentComplaintHistory());
@@ -5313,7 +5344,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(indicationOfUSGCollection.getId())) {
 				indicationOfUSGCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(indicationOfUSGCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(indicationOfUSGCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(indicationOfUSGCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						indicationOfUSGCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -5345,7 +5377,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean discarded) {
 		IndicationOfUSG response = null;
 		try {
-			IndicationOfUSGCollection indicationOfUSGCollection = indicationOfUSGRepository.findById(new ObjectId(id)).orElse(null);
+			IndicationOfUSGCollection indicationOfUSGCollection = indicationOfUSGRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (indicationOfUSGCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(indicationOfUSGCollection.getDoctorId(),
 						indicationOfUSGCollection.getHospitalId(), indicationOfUSGCollection.getLocationId())) {
@@ -5383,8 +5416,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<IndicationOfUSG> getCustomGlobalIndicationOfUSG(long page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded) {
+	private List<IndicationOfUSG> getCustomGlobalIndicationOfUSG(long page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<IndicationOfUSG> response = new ArrayList<IndicationOfUSG>();
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -5743,7 +5776,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(ecgDetailsCollection.getId())) {
 				ecgDetailsCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(ecgDetailsCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(ecgDetailsCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(ecgDetailsCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						ecgDetailsCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -5779,7 +5813,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(xRayDetailsCollection.getId())) {
 				xRayDetailsCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(xRayDetailsCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(xRayDetailsCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(xRayDetailsCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						xRayDetailsCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -5850,7 +5885,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(holterCollection.getId())) {
 				holterCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(holterCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(holterCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(holterCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						holterCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -5885,7 +5921,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(procedureNoteCollection.getId())) {
 				procedureNoteCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(procedureNoteCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(procedureNoteCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(procedureNoteCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						procedureNoteCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -5960,7 +5997,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(earsExaminationCollection.getId())) {
 				earsExaminationCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(earsExaminationCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(earsExaminationCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(earsExaminationCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						earsExaminationCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -5996,7 +6034,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(neckExaminationCollection.getId())) {
 				neckExaminationCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(neckExaminationCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(neckExaminationCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(neckExaminationCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						neckExaminationCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -6032,7 +6071,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(noseExaminationCollection.getId())) {
 				noseExaminationCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(noseExaminationCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(noseExaminationCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(noseExaminationCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						noseExaminationCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -6644,7 +6684,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean discarded) {
 		ProcedureNote response = null;
 		try {
-			ProcedureNoteCollection procedureNoteCollection = procedureNoteRepository.findById(new ObjectId(id)).orElse(null);
+			ProcedureNoteCollection procedureNoteCollection = procedureNoteRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (procedureNoteCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(procedureNoteCollection.getDoctorId(),
 						procedureNoteCollection.getHospitalId(), procedureNoteCollection.getLocationId())) {
@@ -6867,7 +6908,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean discarded) {
 		NeckExamination response = null;
 		try {
-			NeckExaminationCollection neckExaminationCollection = neckExaminationRepository.findById(new ObjectId(id)).orElse(null);
+			NeckExaminationCollection neckExaminationCollection = neckExaminationRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (neckExaminationCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(neckExaminationCollection.getDoctorId(),
 						neckExaminationCollection.getHospitalId(), neckExaminationCollection.getLocationId())) {
@@ -6910,7 +6952,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean discarded) {
 		NoseExamination response = null;
 		try {
-			NoseExaminationCollection noseExaminationCollection = noseExaminationRepository.findById(new ObjectId(id)).orElse(null);
+			NoseExaminationCollection noseExaminationCollection = noseExaminationRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (noseExaminationCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(noseExaminationCollection.getDoctorId(),
 						noseExaminationCollection.getHospitalId(), noseExaminationCollection.getLocationId())) {
@@ -6998,7 +7041,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean discarded) {
 		EarsExamination response = null;
 		try {
-			EarsExaminationCollection earsExaminationCollection = earsExaminationRepository.findById(new ObjectId(id)).orElse(null);
+			EarsExaminationCollection earsExaminationCollection = earsExaminationRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (earsExaminationCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(earsExaminationCollection.getDoctorId(),
 						earsExaminationCollection.getHospitalId(), earsExaminationCollection.getLocationId())) {
@@ -8298,8 +8342,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNotesCollection = clinicalNotesRepository.findById(new ObjectId(clinicalNotesId)).orElse(null);
 			if (clinicalNotesCollection != null) {
 				user = userRepository.findById(clinicalNotesCollection.getPatientId()).orElse(null);
-				patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(clinicalNotesCollection.getPatientId(),
-						clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId());
+				patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
+						clinicalNotesCollection.getPatientId(), clinicalNotesCollection.getLocationId(),
+						clinicalNotesCollection.getHospitalId());
 
 				emailTrackCollection.setDoctorId(clinicalNotesCollection.getDoctorId());
 				emailTrackCollection.setHospitalId(clinicalNotesCollection.getHospitalId());
@@ -8311,7 +8356,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					emailTrackCollection.setPatientId(user.getId());
 				}
 				JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user, null,
-						false, false, false, false, false, false, false, false, false);
+						false, false, false, false, false, false, false, false, false,PrintSettingType.EMAIL.getType());
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -8384,17 +8429,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository
-					.findByIdIn(objectIds);
+			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository.findByIdIn(objectIds);
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				PatientCollection patient = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
 						clinicalNotesCollections.get(0).getPatientId(), clinicalNotesCollections.get(0).getDoctorId(),
 						clinicalNotesCollections.get(0).getLocationId(),
 						clinicalNotesCollections.get(0).getHospitalId());
-				UserCollection user = userRepository.findById(clinicalNotesCollections.get(0).getPatientId()).orElse(null);
+				UserCollection user = userRepository.findById(clinicalNotesCollections.get(0).getPatientId())
+						.orElse(null);
 
 				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(
-						clinicalNotesCollections, patient, user);
+						clinicalNotesCollections, patient, user,PrintSettingType.EMR.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -8413,7 +8458,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	private JasperReportResponse createJasperForMultipleClinicalNotes(
-			List<ClinicalNotesCollection> clinicalNotesCollections, PatientCollection patient, UserCollection user)
+			List<ClinicalNotesCollection> clinicalNotesCollections, PatientCollection patient, 
+			UserCollection user,String printSettingType)
 			throws NumberFormatException, IOException {
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
@@ -8422,11 +8468,21 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-
-		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
-				clinicalNotesCollections.get(0).getDoctorId(), clinicalNotesCollections.get(0).getLocationId(),
-				clinicalNotesCollections.get(0).getHospitalId(), ComponentType.ALL.getType());
-
+		PrintSettingsCollection printSettings = null;
+		 printSettings = printSettingsRepository
+				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+						clinicalNotesCollections.get(0).getDoctorId(), clinicalNotesCollections.get(0).getLocationId(),
+						clinicalNotesCollections.get(0).getHospitalId(), ComponentType.ALL.getType(),
+						printSettingType);
+		if (printSettings == null){
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+							clinicalNotesCollections.get(0).getDoctorId(), clinicalNotesCollections.get(0).getLocationId(),
+							clinicalNotesCollections.get(0).getHospitalId(),ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
+							new Sort(Sort.Direction.DESC, "updatedTime"));
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -8504,14 +8560,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository
-					.findByIdIn(objectIds);
+			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository.findByIdIn(objectIds);
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				PatientCollection patient = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
 						clinicalNotesCollections.get(0).getPatientId(), clinicalNotesCollections.get(0).getDoctorId(),
 						clinicalNotesCollections.get(0).getLocationId(),
 						clinicalNotesCollections.get(0).getHospitalId());
-				UserCollection user = userRepository.findById(clinicalNotesCollections.get(0).getPatientId()).orElse(null);
+				UserCollection user = userRepository.findById(clinicalNotesCollections.get(0).getPatientId())
+						.orElse(null);
 				emailTrackCollection.setDoctorId(clinicalNotesCollections.get(0).getDoctorId());
 				emailTrackCollection.setHospitalId(clinicalNotesCollections.get(0).getHospitalId());
 				emailTrackCollection.setLocationId(clinicalNotesCollections.get(0).getLocationId());
@@ -8522,12 +8578,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					emailTrackCollection.setPatientId(user.getId());
 				}
 				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(
-						clinicalNotesCollections, patient, user);
+						clinicalNotesCollections, patient, user,PrintSettingType.EMAIL.getType());
 
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-				UserCollection doctorUser = userRepository.findById(clinicalNotesCollections.get(0).getDoctorId()).orElse(null);
+				UserCollection doctorUser = userRepository.findById(clinicalNotesCollections.get(0).getDoctorId())
+						.orElse(null);
 				LocationCollection locationCollection = locationRepository
 						.findById(clinicalNotesCollections.get(0).getLocationId()).orElse(null);
 

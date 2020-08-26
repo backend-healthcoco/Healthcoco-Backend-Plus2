@@ -8,6 +8,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.PrintSettings;
+import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.PrintSettingsService;
@@ -48,14 +50,17 @@ public class PrintSettingsApi {
 	@Path(value = PathProxy.PrintSettingsUrls.SAVE_PRINT_SETTINGS)
 	@POST
 	@ApiOperation(value = "SAVE_PRINT_SETTINGS", notes = "SAVE_PRINT_SETTINGS")
-	public Response<PrintSettings> saveSettings(PrintSettings request) {
+	public Response<PrintSettings> saveSettings(PrintSettings request,
+			@QueryParam("printSettingType") String printSettingType) {
 
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		PrintSettings printSettings = printSettingsService.saveSettings(request);
+		if (printSettingType == null)
+			printSettingType = PrintSettingType.DEFAULT.getType();
+		PrintSettings printSettings = printSettingsService.saveSettings(request, printSettingType);
 		if (printSettings != null)
 			printSettings.setClinicLogoUrl(getFinalImageURL(printSettings.getClinicLogoUrl()));
 		Response<PrintSettings> response = new Response<PrintSettings>();
@@ -99,6 +104,40 @@ public class PrintSettingsApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.PrintSettingsUrls.GET_PRINT_SETTING_BY_TYPE)
+	@GET
+	@ApiOperation(value = "GET_PRINT_SETTING_BY_TYPE", notes = "GET_PRINT_SETTING_BY_TYPE")
+	public Response<PrintSettings> getSettingByType(@PathParam(value = "printFilter") String printFilter,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@PathParam("printSettingType") String printSettingType,
+			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded) {
+
+		if (DPDoctorUtils.anyStringEmpty(printFilter, locationId, hospitalId)) {
+			logger.warn("PrintFilter, DoctorId or locationId or hospitalId cannot be null");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"PrintFilter, DoctorId or locationId or hospitalId cannot be null");
+		}
+
+		PrintSettings printSetting = printSettingsService.getSettingByType(printFilter, doctorId, locationId, hospitalId, discarded, printSettingType);
+		if (printSetting != null) {
+			printSetting.setClinicLogoUrl(getFinalImageURL(printSetting.getClinicLogoUrl()));
+		}
+		Response<PrintSettings> response = new Response<PrintSettings>();
+		response.setData(printSetting);
+		return response;
+	}
+
+	@Path(value = PathProxy.PrintSettingsUrls.GET_PRINT_SETTING_TYPE)
+	@GET
+	@ApiOperation(value = "GET_PRINT_SETTING_TYPE", notes = "GET_PRINT_SETTING_TYPE")
+	public Response<Boolean> putSettingByType() {
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(printSettingsService.putSettingByType());
+		return response;
+	}
+	
 	@Path(value = PathProxy.PrintSettingsUrls.GET_LAB_PRINT_SETTING)
 	@GET
 	@ApiOperation(value = "GET_LAB_PRINT_SETTING", notes = "GET_LAB_PRINT_SETTING")
@@ -191,7 +230,7 @@ public class PrintSettingsApi {
 		response.setData(file);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrintSettingsUrls.UPLOAD_SIGNATURE)
 	@POST
 	@ApiOperation(value = PathProxy.PrintSettingsUrls.UPLOAD_SIGNATURE, notes = PathProxy.PrintSettingsUrls.UPLOAD_SIGNATURE)

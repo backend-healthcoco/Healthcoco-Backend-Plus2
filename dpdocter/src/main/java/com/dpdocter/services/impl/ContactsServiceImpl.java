@@ -1044,6 +1044,7 @@ public class ContactsServiceImpl implements ContactsService {
 //------------------------------------------------------------------------
 			
 			//  Integer totalLength=160;
+			
 			SmsParts sms=smsSpitterServices.splitSms(request.getMessage());
 			
 			 System.out.println("Sms Parts:"+sms);
@@ -1077,8 +1078,16 @@ public class ContactsServiceImpl implements ContactsService {
 			  bulk.setCreditBalance(bulk.getCreditBalance()-subCredits);
 			  bulk.setCreditSpent(bulk.getCreditSpent()+subCredits);
 			  doctorCollections.setBulkSmsCredit(bulk);
+			  
+			  doctorRepository.save(doctorCollections);
+			  
 			  System.out.println("Credit Balance"+bulk.getCreditBalance());
 			  System.out.println("Credit Spent"+bulk.getCreditSpent());
+			  
+				if (!smsServices.getBulkSMSResponse(mobileNumbers, message,request.getDoctorId(),request.getLocationId(),subCredits).equalsIgnoreCase("FAILED")) {
+					status = "bulk sms sent successfully";
+				}
+			  
 			   } 
 				  else { 
 					  return "You have Unsufficient Balance"; 
@@ -1087,12 +1096,10 @@ public class ContactsServiceImpl implements ContactsService {
 			//  bulkSmsHistoryRepository.save(bulkHistoryCollection);
 			  }
 			 
-			  doctorRepository.save(doctorCollections);
+			  
 			 
 			
-				if (!smsServices.getBulkSMSResponse(mobileNumbers, message,request.getDoctorId(),request.getLocationId(),subCredits).equalsIgnoreCase("FAILED")) {
-						status = "bulk sms sent successfully";
-					}
+			
 			
 //			Integer size=100;
 //			String responseId=null;

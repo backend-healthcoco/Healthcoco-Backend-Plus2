@@ -104,6 +104,7 @@ import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.LineSpace;
+import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
@@ -917,8 +918,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					response.setLongitude(appointmentLookupResponse.getLocation().getLongitude());
 				}
 				// for Online consultation
-				if (request.getType() != null
-						&& request.getType().equals(AppointmentType.ONLINE_CONSULTATION)) {
+				if (request.getType() != null && request.getType().equals(AppointmentType.ONLINE_CONSULTATION)) {
 					List<DoctorClinicProfileCollection> doctorClinicProfileCollectionn = doctorClinicProfileRepository
 							.findByDoctorId(new ObjectId(request.getDoctorId()));
 					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollectionn)
@@ -932,7 +932,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.findByLocationId(new ObjectId(request.getLocationId()));
 					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 						pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
-								"Appointment updated.", ComponentType.APPOINTMENT_REFRESH.getType(), null, null);
+								"Appointment updated.", ComponentType.APPOINTMENT_REFRESH.getType(),response.getPatientId(), null);
 					}
 				}
 			} else {
@@ -1196,8 +1196,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					// for online consultation
 
-					if (request.getType() != null
-							&& request.getType().equals(AppointmentType.ONLINE_CONSULTATION)) {
+					if (request.getType() != null && request.getType().equals(AppointmentType.ONLINE_CONSULTATION)) {
 						List<DoctorClinicProfileCollection> doctorClinicProfileCollectionn = doctorClinicProfileRepository
 								.findByDoctorId(doctorId);
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollectionn)
@@ -1211,7 +1210,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
 									// "New appointment created.", ComponentType.APPOINTMENT_REFRESH.getType(),
 									// null, null);
-									"New appointment created.", ComponentType.APPOINTMENT_REFRESH.getType(), null,
+									"New appointment created.", ComponentType.APPOINTMENT_REFRESH.getType(),response.getPatientId(),
 									null);
 						}
 					}
@@ -1226,8 +1225,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public PatientTreatmentResponse addPatientTreatmentsThroughAppointments(AppointmentCollection request, PatientTreatmentAddEditRequest patientAddEditRequest)
-	
+	public PatientTreatmentResponse addPatientTreatmentsThroughAppointments(AppointmentCollection request,
+			PatientTreatmentAddEditRequest patientAddEditRequest)
+
 	{
 		PatientTreatmentResponse addEditPatientTreatmentResponse = null;
 		if (patientAddEditRequest != null && patientAddEditRequest.getTreatments() != null) {
@@ -4593,11 +4593,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 		String age = null;
 
 		try {
-
-			PrintSettingsCollection printSettings = printSettingsRepository
-					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(new ObjectId(request.getDoctorId()),
-							new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()),
-							ComponentType.ALL.getType());
+			PrintSettingsCollection printSettings = null;
+			printSettings = printSettingsRepository
+					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+							new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+							new ObjectId(request.getHospitalId()), ComponentType.ALL.getType(),
+							PrintSettingType.EMR.getType());
+			if (printSettings == null) {
+				List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+						.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+								new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+								new ObjectId(request.getHospitalId()), ComponentType.ALL.getType(),
+								PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
+				if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+					printSettings = printSettingsCollections.get(0);
+			}
 			if (printSettings == null) {
 				printSettings = new PrintSettingsCollection();
 				DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();

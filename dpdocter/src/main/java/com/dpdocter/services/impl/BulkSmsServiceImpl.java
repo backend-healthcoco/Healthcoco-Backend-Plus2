@@ -771,7 +771,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 					
 										if (smsDetail.getSms() != null && smsDetail.getDeliveryStatus() != null
 												&& smsDetail.getSms().getSmsAddress().getRecipient() != null) {
-											if (smsDetail.getDeliveryStatus().equals(SMSStatus.REJECTED) || smsDetail.getDeliveryStatus().equals(SMSStatus.FAILED) ) {
+											if (!smsDetail.getDeliveryStatus().equals(SMSStatus.DELIVERED) && !smsDetail.getDeliveryStatus().equals(SMSStatus.IN_PROGRESS) ) {
 												
 												messageLength =smsDetail.getSms().getSmsText().length();
 												  long credits=(messageLength/totalLength);

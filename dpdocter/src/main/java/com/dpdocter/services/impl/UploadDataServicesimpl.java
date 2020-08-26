@@ -760,6 +760,35 @@ public class UploadDataServicesimpl implements UploadDateService {
 
 							if(ageIndex != null && checkIfNotNullOrNone(line.get(ageIndex).replaceAll("'", "").replaceAll("\"", ""))) {
 								String ageValue = line.get(ageIndex).replaceAll("'", "").replaceAll("\"", "");
+								String regex = "^\\d*\\.\\d+|\\d+\\.\\d*$";
+								// check string contain decimal point or not
+								if(ageValue.matches(regex)) {
+									System.out.println(true);
+								    int indexOfDecimal = ageValue.indexOf(".");
+								    String ageStr = ageValue.substring(0, indexOfDecimal) +"Y "+ageValue.substring(indexOfDecimal).replace(".", "")+"M";
+								    System.out.print(ageStr);
+								    String[] age = ageStr.split(" ");
+									int year=0, month = 0, day = 0;
+									for(String str : age) {
+										if(str.contains("Y"))year = Integer.parseInt(str.replace("Y", ""));
+										else if(str.contains("M"))month = Integer.parseInt(str.replace("M", ""));
+									//else if(str.contains("D"))day = Integer.parseInt(str.replace("D", ""));
+									}
+									
+									Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+									int currentDay = localCalendar.get(Calendar.DATE)- day;
+									int currentMonth = localCalendar.get(Calendar.MONTH) + 1-month; 
+									int currentYear = localCalendar.get(Calendar.YEAR) - year;
+									if(currentMonth < 0) {
+										currentYear = currentYear-1;
+										currentMonth=12+currentMonth;
+									}
+								    
+										request.setDob(new DOB(currentDay, currentMonth, currentYear));
+
+								}else {			
+									System.out.println(false);
+
 								String[] age = ageValue.split(" ");
 									int year=0, month = 0, day = 0;
 									for(String str : age) {
@@ -779,7 +808,7 @@ public class UploadDataServicesimpl implements UploadDateService {
 									
 								//	request.setDob(new DOB(currentDay, currentMonth, currentYear));
 									request.setAge(Integer.parseInt(line.get(ageIndex).replaceAll("'", "").replaceAll("\"", "")));
-
+								}
 							}
 								
 							if (emailAddressIndex != null && checkIfNotNullOrNone(line.get(emailAddressIndex).replaceAll("'", "").replaceAll("\"", "")))

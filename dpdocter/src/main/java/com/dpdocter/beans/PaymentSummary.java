@@ -4,17 +4,21 @@ import java.util.List;
 
 public class PaymentSummary {
 
- private List<DoctorConsultation> consultationType;
+ private DoctorConsultation consultationType;
 	 
 	 private String doctorId;
 	 
 	 private Double totalAmountReceived=0.0;
 
-	public List<DoctorConsultation> getConsultationType() {
+	
+	 
+	 
+	 
+	public DoctorConsultation getConsultationType() {
 		return consultationType;
 	}
 
-	public void setConsultationType(List<DoctorConsultation> consultationType) {
+	public void setConsultationType(DoctorConsultation consultationType) {
 		this.consultationType = consultationType;
 	}
 

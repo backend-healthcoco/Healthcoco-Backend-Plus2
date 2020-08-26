@@ -15,6 +15,7 @@ import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.LineStyle;
+import com.dpdocter.enums.PrintSettingType;
 
 @Document(collection = "print_settings_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
@@ -35,6 +36,9 @@ public class PrintSettingsCollection extends GenericCollection {
 	@Field
 	private String componentType = ComponentType.ALL.getType();
 
+	@Field
+    private String printSettingType = PrintSettingType.DEFAULT.getType();
+	
 	@Field
 	private PageSetup pageSetup;
 
@@ -227,6 +231,14 @@ public class PrintSettingsCollection extends GenericCollection {
 
 	public void setIsLab(Boolean isLab) {
 		this.isLab = isLab;
+	}
+
+	public String getPrintSettingType() {
+		return printSettingType;
+	}
+
+	public void setPrintSettingType(String printSettingType) {
+		this.printSettingType = printSettingType;
 	}
 
 	@Override

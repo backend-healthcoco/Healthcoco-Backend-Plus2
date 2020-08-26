@@ -36,6 +36,7 @@ import com.dpdocter.collections.ProcedureSheetCollection;
 import com.dpdocter.collections.ProcedureSheetStructureCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -793,14 +794,26 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 		String pdfName = "PROCEDURE-SHEET-" + procedureSheetCollection.getId().toString() + new Date().getTime();
 
-		printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalId(procedureSheetCollection.getDoctorId(),
+		printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndPrintSettingType(procedureSheetCollection.getDoctorId(),
 				(!DPDoctorUtils.anyStringEmpty(procedureSheetCollection.getLocationId())
 						? procedureSheetCollection.getLocationId()
 						: null),
 				(!DPDoctorUtils.anyStringEmpty(procedureSheetCollection.getHospitalId())
 						? procedureSheetCollection.getHospitalId()
-						: null));
-
+						: null),PrintSettingType.DEFAULT.getType());
+		if (printSettings == null){
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(procedureSheetCollection.getDoctorId(),
+							(!DPDoctorUtils.anyStringEmpty(procedureSheetCollection.getLocationId())
+									? procedureSheetCollection.getLocationId()
+									: null),
+							(!DPDoctorUtils.anyStringEmpty(procedureSheetCollection.getHospitalId())
+									? procedureSheetCollection.getHospitalId()
+									: null),ComponentType.ALL.getType(),
+							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();

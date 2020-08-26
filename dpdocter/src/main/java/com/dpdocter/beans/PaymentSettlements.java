@@ -2,7 +2,9 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-public class PaymentSettlements {
+import com.dpdocter.collections.GenericCollection;
+
+public class PaymentSettlements extends GenericCollection {
 
 private String entity;
 	

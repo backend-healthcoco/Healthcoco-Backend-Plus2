@@ -4,6 +4,7 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.LineStyle;
+import com.dpdocter.enums.PrintSettingType;
 
 public class PrintSettings extends GenericCollection {
 
@@ -16,6 +17,8 @@ public class PrintSettings extends GenericCollection {
 	private String hospitalId;
 
 	private String componentType = ComponentType.ALL.getType();
+	
+    private String printSettingType = PrintSettingType.DEFAULT.getType();
 
 	private PageSetup pageSetup;
 
@@ -169,6 +172,18 @@ public class PrintSettings extends GenericCollection {
 
 	public void setGeneralNotes(String generalNotes) {
 		this.generalNotes = generalNotes;
+	}
+
+	public String getPrintSettingType() {
+		return printSettingType;
+	}
+
+	public void setPrintSettingType(String printSettingType) {
+		this.printSettingType = printSettingType;
+	}
+
+	public void setLab(boolean isLab) {
+		this.isLab = isLab;
 	}
 
 	@Override

@@ -11,4 +11,6 @@ public interface BankDetailsRepository extends MongoRepository<BankDetailsCollec
 
 	Optional<BankDetailsCollection> findByDoctorId(ObjectId objectId);
 
+	BankDetailsCollection findByRazorPayAccountId(String account_id);
+
 }
