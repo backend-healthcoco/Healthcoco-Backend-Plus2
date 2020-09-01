@@ -7,11 +7,9 @@
   <body cz-shortcut-listen="true" style="font-family: 'Roboto Condensed', sans-serif; background-color:#edecec">
     <div class="container" style="background-color:white;line-height:25px;margin-bottom:30px;font-family:'Open Sans',sans-serif;margin:0px auto;min-width:200px;max-width:600px; padding: 10px;">
 
-      <header style="background-color: #1e2d75; padding:25px 20px;">
-        <div>
-          <img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/logo blue1598350629379.png" alt="healthcoco_logo" width="280px" style="display:block;" id="insert_logo" />
-        </div>
-      </header>
+      <div style="background-color: #1e2d75 !important; padding:25px 20px;">
+        <a href="https://www.healthcoco.com" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/logo%20blue1598350629379.png" alt="healthcoco_logo" width="280px" style="display:block;" /></a>
+      </div>
 
       <div style="padding: 0px 20px;">
         <h3>
@@ -39,32 +37,34 @@
           </p>
       </div>
 
-      <!-- <div style="background-color: #e6e6e3;">
+      <div style="background-color: #e6e6e3;">
         <div style="overflow: hidden;">
-          <img src="emailtem/HC+Mobile.png" align="center" style="width:230px;float: left;">
-          <div style="float: left;margin-top: 60px;">
-            <small style="margin-left: 25px;"><b>Get the Healthcoco+ app</b></small>
+          <img src="https://www.healthcoco.com/assets/images/home/homemobile.png" alt="healthcoco_pus_app" align="center" style="width:230px;float: left;">
+          <div style="float: left;margin-top: 30px;">
+            <small style="margin-left: 25px;"><b>Get the Healthcoco app</b></small>
             <ul>
-                <li><small><b>Intelligent Prescription and Medical Records</b></small></li>
-                <li><small><b>Manage your profile digitally</b></small></li>
-                <li><small><b>Schedule appointment on the go</b></small></li>
-                <li><small><b>Maintain Invoices and Receipts</b></small></li>
+              <li><small><b>Video/Chat consultation with top doctors</b></small></li>
+              <li><small><b>Find/Book appointments with doctors in clinic</b></small></li>
+              <li><small><b>Upload health records</b></small></li>
+              <li><small><b>Habit reminders</b></small></li>
+              <li><small><b>Personalized diet plans</b></small></li>
+              <li><small><b>Health tips & articles</b></small></li>
             </ul>
 
             <p align="center">
-              <a style="text-decoration:none;" href="https://play.google.com/store/apps/details?id=com.healthcoco.healthcocoplus" target="_blank"><img alt="Healthcoco" 
+              <a style="text-decoration:none;" href="https://play.google.com/store/apps/details?id=com.healthcoco.android" target="_blank"><img alt="Healthcoco" 
                   src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/Google_play_1x.png"
               style="width: 117px;"></a>
 
-              <a style="text-decoration:none;" href="https://itunes.apple.com/bs/app/healthcoco+/id1013626399?mt=8"
+              <a style="text-decoration:none;" href="https://itunes.apple.com/in/app/healthcoco/id1013626209"
               target="_blank"><img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/app-store-badge.png"
                   style="width: 117px;margin-left: 22px"></a>
             </p>
           </div>
         </div>
-      </div> -->
+      </div>
 
-      <footer style="background-color: #f5f5fa;padding: 25px 20px;overflow: hidden;">
+      <div style="background-color: #f5f5fa;padding: 25px 20px;overflow: hidden;">
           <div style="float: left;width: 350px;">
               <small>Powered By</small>
               <strong>HEALTHCOCO</strong>
@@ -88,7 +88,8 @@
                   <a href="https://www.youtube.com/channel/UCAvIuW5nt0qBXvAfVeynQOg" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/youtube1598343999812.png" alt="insert logo here" width="25"></a>
               </div>
           </div>
-      </footer>
+      </div>
+      
       <small>
           <a href="https://www.healthcoco.com/company/privacy-policy" target="_blank" style="color: #2d2c2c;">Privacy Policy</a>
       </small>

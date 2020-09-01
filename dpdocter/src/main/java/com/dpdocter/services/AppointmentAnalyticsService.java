@@ -74,5 +74,6 @@ OnlineConsultationAnalytics getConsultationAnalytics(String fromDate,String toDa
 
 	//PaymentSummary getPaymentSummary(String fromDate, String toDate, String doctorId);
 
-	PaymentSummary getPaymentSummary(String fromDate, String toDate, String doctorId, String consultationType);
+
+	PaymentSummary getPaymentSummary(String fromDate, String toDate, String doctorId);
 }

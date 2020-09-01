@@ -4,21 +4,22 @@ import java.util.List;
 
 public class PaymentSummary {
 
- private DoctorConsultation consultationType;
+	private List<DoctorConsultation> consultationType;
 	 
 	 private String doctorId;
 	 
-	 private Double totalAmountReceived=0.0;
+	 private Double totalAmountReceivedByChat=0.0;
 
+	 private Double totalAmountReceivedByVideo=0.0;
+	 
+	 private Double totalAmountReceivedByOnlineConsultation=0.0;
 	
 	 
-	 
-	 
-	public DoctorConsultation getConsultationType() {
+	public List<DoctorConsultation> getConsultationType() {
 		return consultationType;
 	}
 
-	public void setConsultationType(DoctorConsultation consultationType) {
+	public void setConsultationType(List<DoctorConsultation> consultationType) {
 		this.consultationType = consultationType;
 	}
 
@@ -30,13 +31,33 @@ public class PaymentSummary {
 		this.doctorId = doctorId;
 	}
 
-	public Double getTotalAmountReceived() {
-		return totalAmountReceived;
+	public Double getTotalAmountReceivedByChat() {
+		return totalAmountReceivedByChat;
 	}
 
-	public void setTotalAmountReceived(Double totalAmountReceived) {
-		this.totalAmountReceived = totalAmountReceived;
+	public void setTotalAmountReceivedByChat(Double totalAmountReceivedByChat) {
+		this.totalAmountReceivedByChat = totalAmountReceivedByChat;
 	}
+
+	public Double getTotalAmountReceivedByVideo() {
+		return totalAmountReceivedByVideo;
+	}
+
+	public void setTotalAmountReceivedByVideo(Double totalAmountReceivedByVideo) {
+		this.totalAmountReceivedByVideo = totalAmountReceivedByVideo;
+	}
+
+	public Double getTotalAmountReceivedByOnlineConsultation() {
+		return totalAmountReceivedByOnlineConsultation;
+	}
+
+	public void setTotalAmountReceivedByOnlineConsultation(Double totalAmountReceivedByOnlineConsultation) {
+		this.totalAmountReceivedByOnlineConsultation = totalAmountReceivedByOnlineConsultation;
+	}
+
+	
+	
+	
 	
 	
 }

@@ -165,6 +165,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private Boolean isOnlineConsultationAvailable = false;
 	
+	@Field
+	private AppointmentSlot onlineConsultationSlot;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -536,6 +539,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	}
 	
 	
+
+	public AppointmentSlot getOnlineConsultationSlot() {
+		return onlineConsultationSlot;
+	}
+
+	public void setOnlineConsultationSlot(AppointmentSlot onlineConsultationSlot) {
+		this.onlineConsultationSlot = onlineConsultationSlot;
+	}
 
 	public String getClinicOwnershipImageUrl() {
 		return clinicOwnershipImageUrl;

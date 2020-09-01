@@ -828,11 +828,11 @@ public class AnalyticsAPI {
 	@GET
 	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_PAYMENT_SUMMARY, notes = PathProxy.AnalyticsUrls.GET_PAYMENT_SUMMARY)
 	public Response<PaymentSummary> getPaymentSummary(@QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "doctorId") String doctorId,@QueryParam(value = "consultationType") String consultationType,
+			@QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "fromDate") String fromDate, @QueryParam(value = "toDate") String toDate) {
 
 		Response<PaymentSummary> response =new Response<PaymentSummary>();
-		response.setData(appointmentAnalyticsService.getPaymentSummary(fromDate, toDate, doctorId,consultationType));
+		response.setData(appointmentAnalyticsService.getPaymentSummary(fromDate, toDate, doctorId));
 		return response;
 		
 		

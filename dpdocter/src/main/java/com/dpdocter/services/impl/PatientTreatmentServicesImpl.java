@@ -330,6 +330,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				} else {
 					patientTreatmentCollection.setCreatedTime(new Date());
 				}
+				
+				
 				patientTreatmentCollection.setAdminCreatedTime(new Date());
 				patientTreatmentCollection
 						.setUniqueEmrId(UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
@@ -361,10 +363,17 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 					BeanUtil.map(request, patientTreatmentCollection);
 					if (request.getCreatedTime() != null) {
-						patientTreatmentCollection.setCreatedTime(new Date());
+						patientTreatmentCollection.setCreatedTime(request.getCreatedTime());
 					} else {
 						patientTreatmentCollection.setCreatedTime(oldPatientTreatmentCollection.getCreatedTime());
 					}
+					
+					if (request.getFromDate() != null) {
+						patientTreatmentCollection.setFromDate(request.getFromDate());
+					} else {
+						patientTreatmentCollection.setFromDate(oldPatientTreatmentCollection.getFromDate());
+					}
+					
 					patientTreatmentCollection.setAdminCreatedTime(oldPatientTreatmentCollection.getAdminCreatedTime());
 					patientTreatmentCollection.setUpdatedTime(new Date());
 					patientTreatmentCollection.setCreatedBy(createdBy);

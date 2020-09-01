@@ -12,42 +12,31 @@
 </head>
 
 <body style="font-family: 'Roboto Condensed', sans-serif; background-color: #f2f2f2">
-    <div class="container" style="background-color:white;line-height:25px;margin-bottom:30px;font-family:'Open Sans',sans-serif;margin:0px auto;min-width:200px;max-width:600px; padding: 10px;">
+    <div class="container" style="background-color:white;line-height:25px;margin-bottom:30px;font-family:'Open Sans',sans-serif;margin:0px auto;min-width:200px;max-width:600px; padding-bottom: 20px;">
 
-        <header style="background-color: #1e2d75; padding:25px 20px;">
-            <div>
-                <img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/logo1598344039505.png" alt="healthcoco_logo" width="280px" style="display:block;"
-                    id="insert_logo" />
-            </div>
-        </header>
+        <div style="background-color: #1e2d75 !important; padding:25px 20px;">
+            <a href="https://plus.healthcoco.com" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/logo1598344039505.png" alt="healthcoco_logo" width="280px" style="display:block;" /></a>
+        </div>
 
         <div style="padding: 0px 20px;">
-            <h3>
-                Your Practice is about to simplified
-            </h3>
+            <h3>${parentLab} lab uploaded report for ${patientName}.</h3>
         </div>
 
         <div style="padding: 22px; background-color: #e6e6e3;">
             <div align="center">
-                <img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/Old_Welcome_1.png" style="width:350px;">
+              <img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/image121598531002468.png" style="width:350px;">
             </div>
         </div>
 
         <div style="padding: 22px">
-            <p>Greetings Dr. ${fName}</p>
-
-            <p style="margin: 0;">Thank you for joining the Healthcoco community. Your medical practice is about to become smooth
-                    and hassle-free with our top-notch management software and services.</p>
-
+            <p>Hello ${doctorName},</p>
+            <p style="margin: 0;">Thank you for joining the Healthcoco community. Your medical practice is about to become smooth and hassle-free with our top-notch management software and services.</p>
             <p style="margin: 10px 0 0 0;">You can now focus more on your patients' health, while we take the responsibility of managing your appointments, health records and much more.</p>
-
-
             <p style="margin: 10px 0 0 0;">Kindly set the new password by clicking on the button below, and login to enjoy our services.</p>
             <p style="margin: 20px 0 0 0;">Warm regards,</p>
             <p style="margin: 0;">Team Healthcoco</p>
 
             <div style="text-align: center;padding: 20px 0px 0px;">
-
                 <a style="background-color: #ff8400; border: none;color: white;padding: 18px 60px;
                 border-radius: 28px;text-align: center;text-decoration:none;"
                     href="${link}" target="_blank">Set Password</a>
@@ -55,63 +44,63 @@
         </div>
 
         <div style="background-color: #e6e6e3;">
-            <div style="overflow: hidden;">
-                <img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/HC_Mobile1598344617885.png" alt="healthcoco_pus_app" align="center" style="width:230px;float: left;">
-                <div style="float: left;margin-top: 60px;">
-                    <small style="margin-left: 25px;"><b>Get the Healthcoco+ app</small></b>
-                    <ul>
-                        <li><small><b>Intelligent Prescription and Medical Records</b></small></li>
-                        <li><small><b>Manage your profile digitally</b></small></li>
-                        <li><small><b>Schedule appointment on the go</b></small></li>
-                        <li><small><b>Maintain Invoices and Receipts</b></small></li>
-                    </ul>
+          <div style="overflow: hidden;">
+              <img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/HC_Mobile1598344617885.png" alt="healthcoco_pus_app" align="center" style="width:230px;float: left;">
+              <div style="float: left;margin-top: 60px;">
+                  <small style="margin-left: 25px;"><b>Get the Healthcoco+ app</b></small>
+                  <ul>
+                      <li><small><b>Intelligent Prescription and Medical Records</b></small></li>
+                      <li><small><b>Manage your profile digitally</b></small></li>
+                      <li><small><b>Schedule appointment on the go</b></small></li>
+                      <li><small><b>Maintain Invoices and Receipts</b></small></li>
+                  </ul>
 
-                    <p align="center">
-                        <a style="text-decoration:none;" href="https://play.google.com/store/apps/details?id=com.healthcoco.healthcocoplus" target="_blank"><img alt="Healthcoco" 
-                            src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/Google_play_1x.png"
-                        style="width: 117px;"></a>
+                  <p align="center">
+                      <a style="text-decoration:none;" href="https://play.google.com/store/apps/details?id=com.healthcoco.healthcocoplus" target="_blank"><img alt="Healthcoco" 
+                          src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/Google_play_1x.png"
+                      style="width: 117px;"></a>
 
-                        <a style="text-decoration:none;" href="https://itunes.apple.com/bs/app/healthcoco+/id1013626399?mt=8"
-                        target="_blank"><img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/app-store-badge.png"
-                            style="width: 117px;margin-left: 22px"></a>
-                    </p>
-                </div>
-            </div>
+                      <a style="text-decoration:none;" href="https://itunes.apple.com/bs/app/healthcoco+/id1013626399?mt=8"
+                      target="_blank"><img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/app-store-badge.png"
+                          style="width: 117px;margin-left: 22px"></a>
+                  </p>
+              </div>
+          </div>
         </div>
-
-        <footer style="background-color: #f5f5fa;padding: 25px 20px;overflow: hidden;">
+        <div style="background-color: #f5f5fa !important;padding: 25px 20px;overflow: hidden;">
             <div style="float: left;width: 350px;">
-                <small>Powered By</small>
-                <strong>HEALTHCOCO</strong>
+              <small>Powered By</small>
+              <strong>HEALTHCOCO</strong>
 
-                <p style="margin-bottom: 0;"><small style="font-size: 11px;"><b>Call: +91 8459802223 &nbsp;&nbsp;Email: support@healthcoco.com</b></small></p>
+              <p style="margin-bottom: 0;"><small style="font-size: 11px;"><b>Call: +91 8459802223 &nbsp;&nbsp;Email: support@healthcoco.com</b></small></p>
             </div>
             <div style="float: left;">
                 <h4 style="color: #5c5b5b;margin:0;">
-                    Follow us at
+                      Follow us at
                 </h4>
                 <div style="margin-top: 10px;">
-                    <a href="https://www.facebook.com/healthcoco/" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/facebook-21598343509134.png" alt="insert logo here" width="25">
-                    </a>&nbsp;&nbsp;
-                    <a href="https://www.linkedin.com/company/healthcoco/" target="_blank"><img
-                        src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/in1598343918208.png" alt="insert logo here" width="25">
-                    </a>&nbsp;&nbsp;
-                    <a href="https://www.instagram.com/healthcoco/" target="_blank"><img
-                        src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/instagram-sketched1598343944136.png" alt="insert logo here" width="25">
-                    </a>&nbsp;&nbsp;
-                    <a href="https://twitter.com/healthcococom" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/twitter1598343981972.png" alt="insert logo here" width="25"></a>&nbsp;&nbsp;
-                    <a href="https://www.youtube.com/channel/UCAvIuW5nt0qBXvAfVeynQOg" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/youtube1598343999812.png" alt="insert logo here" width="25"></a>
-                </div>
-            </div>
-        </footer>
+                      <a href="https://www.facebook.com/healthcoco/" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/facebook-21598343509134.png" alt="insert logo here" width="25">
+                      </a>&nbsp;&nbsp;
+                      <a href="https://www.linkedin.com/company/healthcoco/" target="_blank"><img
+                          src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/in1598343918208.png" alt="insert logo here" width="25">
+                      </a>&nbsp;&nbsp;
+                      <a href="https://www.instagram.com/healthcoco/" target="_blank"><img
+                          src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/instagram-sketched1598343944136.png" alt="insert logo here" width="25">
+                      </a>&nbsp;&nbsp;
+                      <a href="https://twitter.com/healthcococom" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/twitter1598343981972.png" alt="insert logo here" width="25"></a>&nbsp;&nbsp;
+                      <a href="https://www.youtube.com/channel/UCAvIuW5nt0qBXvAfVeynQOg" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/youtube1598343999812.png" alt="insert logo here" width="25"></a>
+                  </div>
+              </div>
+        </div>
         <small>
-            <a href="https://www.healthcoco.com/company/privacy-policy" target="_blank" style="color: #2d2c2c;">Privacy Policy</a>
+          <a href="https://www.healthcoco.com/company/privacy-policy" target="_blank" style="color: #2d2c2c;">Privacy Policy</a>
         </small>
         <small style="float: right;">
-            &copy; 2015-2020, All Rights Reserved.
+          &copy; 2015-2020, All Rights Reserved.
         </small>
-        
+
     </div>
+
 </body>
 
 </html>

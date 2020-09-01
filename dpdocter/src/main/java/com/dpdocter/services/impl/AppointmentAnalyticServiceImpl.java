@@ -44,20 +44,26 @@ import com.dpdocter.beans.PaymentSettlementItems;
 import com.dpdocter.beans.PaymentSettlements;
 import com.dpdocter.beans.PaymentSummary;
 import com.dpdocter.collections.AppointmentCollection;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.PatientPaymentDetailsCollection;
 import com.dpdocter.collections.PaymentSettlementCollection;
+import com.dpdocter.collections.PaymentTransferCollection;
 import com.dpdocter.collections.SettlementCollection;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ConsultationType;
+import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.OnlineConsultationPaymentRepository;
 import com.dpdocter.repository.PatientPaymentSettlementRepository;
 import com.dpdocter.repository.PaymentSettlementRepository;
@@ -101,6 +107,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	
 	@Autowired
 	private PatientPaymentSettlementRepository patientPaymentSettlementRepository;
+	
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicRepository;
 	
 
 	Logger logger = Logger.getLogger(AppointmentAnalyticServiceImpl.class);
@@ -1537,11 +1546,14 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			if (!DPDoctorUtils.anyStringEmpty(toDate)) 
 			criteria2.and("toDate").lte(toDateTime);
 			
-			response.setTotalOnlineConsultation(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
-			criteria.and("consultationType").is(ConsultationType.VIDEO.toString());
+		//	response.setTotalOnlineConsultation(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+				criteria.and("consultationType").is(ConsultationType.VIDEO.toString());
 			response.setTotalVideoConsultation(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
 			//criteria2.and("consultationType").is(ConsultationType.CHAT.toString());
 			response.setTotalChatConsultation(mongoTemplate.count(new Query(criteria2),AppointmentCollection.class));
+			
+			response.setTotalOnlineConsultation(response.getTotalChatConsultation()+response.getTotalVideoConsultation());
+
 			
 		}catch (BusinessException e) {
 			logger.error("Error while getting online Consultation Analytics " + e.getMessage());
@@ -1553,11 +1565,11 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	}
 
 	@Override
-	public PaymentSummary getPaymentSummary(String fromDate, String toDate, String doctorId,String consultationType) {
+	public PaymentSummary getPaymentSummary(String fromDate, String toDate, String doctorId) {
 		PaymentSummary response=null;
 		try {
 			
-			Criteria criteria = new Criteria();
+			Criteria criteria1 = new Criteria();
 			DateTime fromTime = null;
 			DateTime toTime = null;
 			Date from = null;
@@ -1567,12 +1579,10 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 
 		
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").is(new ObjectId(doctorId));
+				criteria1.and("doctorId").is(new ObjectId(doctorId));
 			}
 			
-			if (!DPDoctorUtils.anyStringEmpty(consultationType)) {
-				criteria.and("consultationType.consultationType").is(consultationType.trim());
-			}
+			
 			
 //			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
 //				from = new Date(Long.parseLong(fromDate));
@@ -1593,7 +1603,9 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 //			toTime = new DateTime(to);
 //
 //			criteria.and("fromDate").gte(fromTime).lte(toTime);
-
+			
+			
+			
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 			DateTime fromDateTime = null, toDateTime = null;
@@ -1616,63 +1628,90 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			}
 			if (fromDateTime != null && toDateTime != null) {
-				criteria.and("createdTime").gte(fromDateTime).lte(toDateTime);
+				criteria1.and("createdTime").gte(fromDateTime).lte(toDateTime);
+				
 			} else if (fromDateTime != null) {
-				criteria.and("createdTime").gte(fromDateTime);
+				criteria1.and("createdTime").gte(fromDateTime);
+				
 			} else if (toDateTime != null) {
-				criteria.and("createdTime").lte(toDateTime);
+				criteria1.and("createdTime").lte(toDateTime);
+				
 			}
 
 			
 			Aggregation aggregation = null;
 			
-			CustomAggregationOperation group= null;
+			
 			
 			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("_id", "$_id")
 					.append("doctorId", "$doctorId")
-					.append("totalAmountReceived", "$totalAmountReceived")
-					.append("consultationType.consultationType", "$consultationType.consultationType")					
-					.append("consultationType.cost", "$consultationType.cost")
-					.append("consultationType.healthcocoCharges", "$consultationType.healthcocoCharges")
+				//	.append("totalAmountReceivedByChat", "$totalAmountReceivedByChat")
+					 .append("totalAmountReceivedByChat", new BasicDBObject(
+						        "$cond", new BasicDBObject(
+								          "if", new BasicDBObject("$eq", Arrays.asList("$payment.consultationType.consultationType", ConsultationType.CHAT.getType())))
+								        .append("then", "$amount")
+								        .append("else", 0)))
+					 .append("totalAmountReceivedByVideo", new BasicDBObject(
+						        "$cond", new BasicDBObject(
+								          "if", new BasicDBObject("$eq", Arrays.asList("$payment.consultationType.consultationType", ConsultationType.VIDEO.getType())))
+								        .append("then", "$amount")
+								        .append("else", 0)))
+					
+			//		.append("consultationType.consultationType", "$consultationType.consultationType")					
+			//		.append("consultationType.cost", "$consultationType.cost")
+			//		.append("consultationType.healthcocoCharges", "$consultationType.healthcocoCharges")
 					.append("createdTime", "$createdTime")					
 					.append("updatedTime", "$updatedTime")));
 			
 			
-			group = new CustomAggregationOperation(new Document("$group",
+			CustomAggregationOperation project2 = new CustomAggregationOperation(new Document("$project",
+					new BasicDBObject("_id", "$_id")
+					.append("doctorId", "$doctorId")
+				//	.append("totalAmountReceivedByChat", "$totalAmountReceivedByChat")
+					 .append("totalAmountfromChat","$totalAmountfromChat")
+					 .append("totalAmountfromVideo","$totalAmountfromVideo")
+					
+			//		.append("consultationType.consultationType", "$consultationType.consultationType")					
+			//		.append("consultationType.cost", "$consultationType.cost")
+			//		.append("consultationType.healthcocoCharges", "$consultationType.healthcocoCharges")
+					.append("createdTime", "$createdTime")					
+					.append("updatedTime", "$updatedTime")));
+			
+			
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
 					
 							new BasicDBObject("_id", "_id")
 							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("totalAmountReceived", new BasicDBObject("$sum", "$amount"))
-									
-									.append("consultationType", new BasicDBObject("$first", "$consultationType"))
+									.append("totalAmountReceivedByChat", new BasicDBObject("$sum", "$totalAmountReceivedByChat"))
+									.append("totalAmountReceivedByVideo", new BasicDBObject("$sum", "$totalAmountReceivedByVideo"))
+								//	.append("consultationType", new BasicDBObject("$addToSet", "$consultationType"))
 									.append("createdTime", new BasicDBObject("$first", "$createdTime"))));
 									
 
+
 			
-//			if(size>0) {
-//			aggregation = Aggregation.newAggregation(
-//					
-//					Aggregation.match(criteria),
-//				
-//					//Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorData"),
-//					group,project,
-//					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-//					Aggregation.skip((page) * size), Aggregation.limit(size));
-//			
-//			} else {
+
 				aggregation = Aggregation.newAggregation( 
-						Aggregation.match(criteria),
+						Aggregation.match(criteria1),
 					
-						
-						group,
+						Aggregation.lookup("online_consultation_payment_cl", "orderId", "orderId", "payment"), 
+						Aggregation.unwind("payment"),
 						project,
+						group,
+						
+					//	project2,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 		//	}
 			System.out.println("aggregation:"+aggregation);
-			response=mongoTemplate.aggregate(aggregation,OnlineConsultionPaymentCollection.class,PaymentSummary.class).getUniqueMappedResult();
+					
+			response=mongoTemplate.aggregate(aggregation,PaymentTransferCollection.class,PaymentSummary.class).getUniqueMappedResult();
 			
+			List<DoctorClinicProfileCollection> online=	doctorClinicRepository.findByDoctorId(new ObjectId(doctorId));	
+			DoctorClinicProfileCollection doctorClinicProfileCollection=online.get(0);
+			response.setConsultationType(doctorClinicProfileCollection.getConsultationType());
+			response.setTotalAmountReceivedByOnlineConsultation(response.getTotalAmountReceivedByChat()+response.getTotalAmountReceivedByVideo());
 		}
 		catch (BusinessException e) {
 			logger.error("Error while getting online Consultation Analytics " + e.getMessage());

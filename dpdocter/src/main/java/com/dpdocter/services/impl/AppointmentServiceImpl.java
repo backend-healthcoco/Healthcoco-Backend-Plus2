@@ -44,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Age;
 import com.dpdocter.beans.Appointment;
+import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.CalenderJasperBean;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
@@ -111,6 +112,7 @@ import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.SMSContent;
 import com.dpdocter.enums.SMSFormatType;
 import com.dpdocter.enums.SMSStatus;
+import com.dpdocter.enums.TimeUnit;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
@@ -1123,10 +1125,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 					@Override
 					public void run() {
 						try {
+							
 							sendAppointmentEmailSmsNotification(true, request, id, appointmentId, doctorName,
 									patientName, dateTime, clinicName, clinicContactNum, patientEmailAddress,
 									patientMobileNumber, doctorEmailAddress, doctorMobileNumber, facility, branch,
 									clinicGoogleMapShortUrl);
+							
 						} catch (MessagingException e) {
 							e.printStackTrace();
 						}
@@ -1338,6 +1342,38 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		if (isAddAppointment) {
 			if (request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)) {
+				
+				//for online consultation
+				if(request.getType().equals(AppointmentType.ONLINE_CONSULTATION)) {
+					
+					sendEmail(doctorName, patientName, dateTime, clinicName,
+							"CONFIRMED_ONLINE_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch,request.getConsultationType().getType());
+
+					sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_ONLINE_APPOINTMENT_TO_PATIENT",
+							patientEmailAddress, branch,request.getConsultationType().getType());
+					
+					sendPushNotification("CONFIRMED_ONLINE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
+							patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
+							clinicContactNum, branch,request.getConsultationType().getType());
+					
+					sendPushNotification("CONFIRMED_ONLINE_APPOINTMENT_TO_PATIENT", request.getPatientId(),
+							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
+							doctorName, clinicName, clinicContactNum, branch,request.getConsultationType().getType());
+					
+					sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_ONLINE_APPOINTMENT_TO_PATIENT",
+							request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+							request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
+							doctorName, clinicName, clinicContactNum, branch,googleMapShortUrl,AppointmentType.ONLINE_CONSULTATION.getType(),request.getConsultationType().getType());
+
+					sendMsg(null, "CONFIRMED_ONLINE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
+							request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
+							appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch,googleMapShortUrl,
+						AppointmentType.ONLINE_CONSULTATION.getType(),request.getConsultationType().getType());
+					
+				}
+
+			
+			else {
 				if (request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail())
 					sendEmail(doctorName, patientName, dateTime, clinicName,
 							"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch,request.getConsultationType().getType());
@@ -1345,11 +1381,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 					sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
 							request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
 							appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch,
-							googleMapShortUrl);
+							googleMapShortUrl,null,null);
 				}
 				sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
 						patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
-						clinicContactNum, branch);
+						clinicContactNum, branch,null);
 
 				if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 						&& patientEmailAddress != null)
@@ -1360,13 +1396,46 @@ public class AppointmentServiceImpl implements AppointmentService {
 					sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 							request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 							request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
+							doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl,null,null);
 				}
 				if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 					sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
 							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch);
-			} else {
+							doctorName, clinicName, clinicContactNum, branch,null);
+				}
+			}
+			else if(request.getCreatedBy().equals(AppointmentCreatedBy.PATIENT) && request.getType().equals(AppointmentType.ONLINE_CONSULTATION))
+			{
+				sendEmail(doctorName, patientName, dateTime, clinicName,
+						"CONFIRMED_ONLINE_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch,request.getConsultationType().getType());
+
+				sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_ONLINE_APPOINTMENT_TO_PATIENT",
+						patientEmailAddress, branch,request.getConsultationType().getType());
+				
+				sendPushNotification("CONFIRMED_ONLINE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
+						patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
+						clinicContactNum, branch,request.getConsultationType().getType());
+				
+				sendPushNotification("CONFIRMED_ONLINE_APPOINTMENT_TO_PATIENT", request.getPatientId(),
+						patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
+						doctorName, clinicName, clinicContactNum, branch,request.getConsultationType().getType());
+				
+				sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_ONLINE_APPOINTMENT_TO_PATIENT",
+						request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+						request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
+						doctorName, clinicName, clinicContactNum, branch,googleMapShortUrl,AppointmentType.ONLINE_CONSULTATION.getType(),request.getConsultationType().getType());
+
+				sendMsg(null, "CONFIRMED_ONLINE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
+						request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
+						appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch,googleMapShortUrl,
+					AppointmentType.ONLINE_CONSULTATION.getType(),request.getConsultationType().getType());
+				
+
+			}
+			
+
+			
+			else {
 				if (doctorFacility != null
 						&& (doctorFacility.getType().equalsIgnoreCase(DoctorFacility.IBS.getType()))) {
 					sendEmail(doctorName, patientName, dateTime, clinicName,
@@ -1374,38 +1443,38 @@ public class AppointmentServiceImpl implements AppointmentService {
 					sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
 							request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
 							appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch,
-							googleMapShortUrl);
+							googleMapShortUrl,null,null);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
+								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl,null,null);
 					sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
 							patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
-							clinicContactNum, branch);
+							clinicContactNum, branch,null);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
 								patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch,null);
 				} else {
 					sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR",
 							doctorEmailAddress, branch,null);
 					sendMsg(null, "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR", request.getDoctorId(),
 							request.getLocationId(), request.getHospitalId(), request.getDoctorId(), doctorMobileNumber,
 							patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch,
-							googleMapShortUrl);
+							googleMapShortUrl,null,null);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(), "TENTATIVE_APPOINTMENT_TO_PATIENT",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
+								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl,null,null);
 					sendPushNotification("CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR", request.getDoctorId(),
 							doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch);
+							doctorName, clinicName, clinicContactNum, branch,null);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendPushNotification("TENTATIVE_APPOINTMENT_TO_PATIENT", request.getPatientId(),
 								patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch,null);
 				}
 			}
 		} else {
@@ -1419,12 +1488,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 						sendMsg(null, "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", request.getDoctorId(),
 								request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-								clinicContactNum, branch, googleMapShortUrl);
+								clinicContactNum, branch, googleMapShortUrl,null,null);
 					}
 
 					sendPushNotification("CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", request.getDoctorId(),
 							doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch);
+							doctorName, clinicName, clinicContactNum, branch,null);
 
 					if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 							&& patientEmailAddress != null)
@@ -1436,33 +1505,33 @@ public class AppointmentServiceImpl implements AppointmentService {
 						sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(), "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
+								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl,null,null);
 					}
 
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendPushNotification("CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR", request.getPatientId(),
 								patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch,null);
 				} else {
 					if (request.getState().getState().equals(AppointmentState.CANCEL.getState())) {
 						sendMsg(null, "CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT", request.getDoctorId(),
 								request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-								clinicContactNum, branch, googleMapShortUrl);
+								clinicContactNum, branch, googleMapShortUrl,null,null);
 						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(),
 									"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getPatientId(),
 									patientMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-									clinicContactNum, branch, googleMapShortUrl);
+									clinicContactNum, branch, googleMapShortUrl,null,null);
 
 						sendPushNotification("CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT", request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch,null);
 						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendPushNotification("CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", request.getPatientId(),
 									patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-									doctorName, clinicName, clinicContactNum, branch);
+									doctorName, clinicName, clinicContactNum, branch,null);
 						if (!DPDoctorUtils.anyStringEmpty(patientEmailAddress))
 							sendEmail(doctorName, patientName, dateTime, clinicName,
 									"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", patientEmailAddress, branch,null);
@@ -1481,22 +1550,22 @@ public class AppointmentServiceImpl implements AppointmentService {
 							sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
 									doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-									clinicContactNum, branch, googleMapShortUrl);
+									clinicContactNum, branch, googleMapShortUrl,null,null);
 						else
 							sendMsg(null, "RESCHEDULE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
 									doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-									clinicContactNum, branch, googleMapShortUrl);
+									clinicContactNum, branch, googleMapShortUrl,null,null);
 					}
 
 					if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
 						sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch,null);
 					else
 						sendPushNotification("RESCHEDULE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch,null);
 				}
 				if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 						&& !DPDoctorUtils.allStringsEmpty(patientEmailAddress)) {
@@ -1510,23 +1579,23 @@ public class AppointmentServiceImpl implements AppointmentService {
 							sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-									doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
+									doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl,null,null);
 					} else if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(), "RESCHEDULE_APPOINTMENT_TO_PATIENT",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
+								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl,null,null);
 				}
 
 				if (request.getState().getState().equals(AppointmentState.CONFIRM.getState())
 						&& !DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 					sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
 							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch);
+							doctorName, clinicName, clinicContactNum, branch,null);
 				else if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 					sendPushNotification("RESCHEDULE_APPOINTMENT_TO_PATIENT", request.getPatientId(),
 							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch);
+							doctorName, clinicName, clinicContactNum, branch,null);
 			}
 		}
 	}
@@ -1549,34 +1618,67 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		if (isAddAppointment) {
 			if (request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)) {
-				if (request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail())
+//				if (request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail())
+//					sendEmail(doctorName, patientName, dateTime, clinicName,
+//							"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch,null);
+//				if (request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()) {
+//					sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
+//							request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
+//							appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch,
+//							googleMapShortUrl,null,null);
+//				}
+//				sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
+//						patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
+//						clinicContactNum, branch,null);
+	
+				//for online consultation
+				if(request.getType().equals(AppointmentType.ONLINE_CONSULTATION)) {
+					
 					sendEmail(doctorName, patientName, dateTime, clinicName,
-							"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch,null);
-				if (request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()) {
-					sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
-							request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
-							appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch,
-							googleMapShortUrl);
-				}
-				sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
-						patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
-						clinicContactNum, branch);
+							"CONFIRMED_ONLINE_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch,request.getConsultationType().getType());
 
-				if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
-						&& patientEmailAddress != null)
-					sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_TO_PATIENT",
-							patientEmailAddress, branch,null);
-				if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()
-						&& !DPDoctorUtils.anyStringEmpty(patientMobileNumber)) {
-					sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
+					sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_ONLINE_APPOINTMENT_TO_PATIENT",
+							patientEmailAddress, branch,request.getConsultationType().getType());
+					
+					sendPushNotification("CONFIRMED_ONLINE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
+							patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
+							clinicContactNum, branch,request.getConsultationType().getType());
+					
+					sendPushNotification("CONFIRMED_ONLINE_APPOINTMENT_TO_PATIENT", request.getPatientId(),
+							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
+							doctorName, clinicName, clinicContactNum, branch,request.getConsultationType().getType());
+					
+					sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_ONLINE_APPOINTMENT_TO_PATIENT",
 							request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 							request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
+							doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl,AppointmentType.ONLINE_CONSULTATION.getType(),request.getConsultationType().getType());
+
+					sendMsg(null, "CONFIRMED_ONLINE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
+							request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
+							appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch,
+							googleMapShortUrl,AppointmentType.ONLINE_CONSULTATION.getType(),request.getConsultationType().getType());
+					
 				}
-				if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
-					sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
-							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch);
+				
+				
+				
+				
+//
+//				if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
+//						&& patientEmailAddress != null)
+//					sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_TO_PATIENT",
+//							patientEmailAddress, branch,null);
+//				if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()
+//						&& !DPDoctorUtils.anyStringEmpty(patientMobileNumber)) {
+//					sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
+//							request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+//							request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
+//							doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl,null,null);
+//				}
+//				if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
+//					sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
+//							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
+//							doctorName, clinicName, clinicContactNum, branch,null);
 			} else {
 				if (doctorFacility != null
 						&& (doctorFacility.getType().equalsIgnoreCase(DoctorFacility.IBS.getType()))) {
@@ -1585,38 +1687,38 @@ public class AppointmentServiceImpl implements AppointmentService {
 					sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), request.getLocationId(),
 							request.getHospitalId(), request.getDoctorId(), doctorMobileNumber, patientName,
 							appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch,
-							googleMapShortUrl);
+							googleMapShortUrl,null,null);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
+								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl,null,null);
 					sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(), doctorMobileNumber,
 							patientName, appointmentCollectionId, appointmentId, dateTime, doctorName, clinicName,
-							clinicContactNum, branch);
+							clinicContactNum, branch,null);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
 								patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch,null);
 				} else {
 					sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR",
 							doctorEmailAddress, branch,null);
 					sendMsg(null, "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR", request.getDoctorId(),
 							request.getLocationId(), request.getHospitalId(), request.getDoctorId(), doctorMobileNumber,
 							patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum, branch,
-							googleMapShortUrl);
+							googleMapShortUrl,null,null);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(), "TENTATIVE_APPOINTMENT_TO_PATIENT",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
+								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl,null,null);
 					sendPushNotification("CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR", request.getDoctorId(),
 							doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch);
+							doctorName, clinicName, clinicContactNum, branch,null);
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendPushNotification("TENTATIVE_APPOINTMENT_TO_PATIENT", request.getPatientId(),
 								patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch,null);
 				}
 			}
 		} else {
@@ -1630,12 +1732,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 						sendMsg(null, "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", request.getDoctorId(),
 								request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-								clinicContactNum, branch, googleMapShortUrl);
+								clinicContactNum, branch, googleMapShortUrl,null,null);
 					}
 
 					sendPushNotification("CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", request.getDoctorId(),
 							doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch);
+							doctorName, clinicName, clinicContactNum, branch,null);
 
 					if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 							&& patientEmailAddress != null)
@@ -1647,33 +1749,33 @@ public class AppointmentServiceImpl implements AppointmentService {
 						sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(), "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
+								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl,null,null);
 					}
 
 					if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendPushNotification("CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR", request.getPatientId(),
 								patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch,null);
 				} else {
 					if (request.getState().getState().equals(AppointmentState.CANCEL.getState())) {
 						sendMsg(null, "CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT", request.getDoctorId(),
 								request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-								clinicContactNum, branch, googleMapShortUrl);
+								clinicContactNum, branch, googleMapShortUrl,null,null);
 						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(),
 									"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getPatientId(),
 									patientMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-									clinicContactNum, branch, googleMapShortUrl);
+									clinicContactNum, branch, googleMapShortUrl,null,null);
 
 						sendPushNotification("CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT", request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch,null);
 						if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 							sendPushNotification("CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", request.getPatientId(),
 									patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-									doctorName, clinicName, clinicContactNum, branch);
+									doctorName, clinicName, clinicContactNum, branch,null);
 						if (!DPDoctorUtils.anyStringEmpty(patientEmailAddress))
 							sendEmail(doctorName, patientName, dateTime, clinicName,
 									"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", patientEmailAddress, branch,null);
@@ -1692,22 +1794,22 @@ public class AppointmentServiceImpl implements AppointmentService {
 							sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
 									doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-									clinicContactNum, branch, googleMapShortUrl);
+									clinicContactNum, branch, googleMapShortUrl,null,null);
 						else
 							sendMsg(null, "RESCHEDULE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 									request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
 									doctorMobileNumber, patientName, appointmentId, dateTime, doctorName, clinicName,
-									clinicContactNum, branch, googleMapShortUrl);
+									clinicContactNum, branch, googleMapShortUrl,null,null);
 					}
 
 					if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
 						sendPushNotification("CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch,null);
 					else
 						sendPushNotification("RESCHEDULE_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
 								doctorMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch);
+								doctorName, clinicName, clinicContactNum, branch,null);
 				}
 				if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 						&& !DPDoctorUtils.allStringsEmpty(patientEmailAddress)) {
@@ -1721,30 +1823,30 @@ public class AppointmentServiceImpl implements AppointmentService {
 							sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 									request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-									doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
+									doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl,null,null);
 					} else if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 						sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(), "RESCHEDULE_APPOINTMENT_TO_PATIENT",
 								request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 								request.getPatientId(), patientMobileNumber, patientName, appointmentId, dateTime,
-								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl);
+								doctorName, clinicName, clinicContactNum, branch, googleMapShortUrl,null,null);
 				}
 
 				if (request.getState().getState().equals(AppointmentState.CONFIRM.getState())
 						&& !DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 					sendPushNotification("CONFIRMED_APPOINTMENT_TO_PATIENT", request.getPatientId(),
 							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch);
+							doctorName, clinicName, clinicContactNum, branch,null);
 				else if (!DPDoctorUtils.anyStringEmpty(patientMobileNumber))
 					sendPushNotification("RESCHEDULE_APPOINTMENT_TO_PATIENT", request.getPatientId(),
 							patientMobileNumber, patientName, appointmentCollectionId, appointmentId, dateTime,
-							doctorName, clinicName, clinicContactNum, branch);
+							doctorName, clinicName, clinicContactNum, branch,null);
 			}
 		}
 	}
 
 	private void sendPushNotification(String type, String userId, String mobileNumber, String patientName,
 			String appointmentCollectionId, String appointmentId, String dateTime, String doctorName, String clinicName,
-			String clinicContactNum, String branch) {
+			String clinicContactNum, String branch,String consultationType) {
 
 		if (DPDoctorUtils.anyStringEmpty(patientName))
 			patientName = "";
@@ -1853,6 +1955,24 @@ public class AppointmentServiceImpl implements AppointmentService {
 					appointmentCollectionId, null);
 		}
 			break;
+			
+		case "CONFIRMED_ONLINE_APPOINTMENT_TO_PATIENT": {
+			text = "Your online "+consultationType +" consultation with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
+					+ (branch != null ? ", " + branch : "") + (clinicContactNum != "" ? ", " + clinicContactNum : "")
+					+ " has been confirmed @ " + dateTime + ".";
+			pushNotificationServices.notifyUser(userId, text, ComponentType.ONLINE_CONSULTATION.getType(),
+					appointmentCollectionId, null);
+		}
+			break;
+
+		case "CONFIRMED_ONLINE_APPOINTMENT_TO_DOCTOR": {
+			text = "Healthcoco! Your online "+consultationType +" consultation with " + patientName + " has been scheduled @ " + dateTime
+					+ (clinicName != null ? " at " + clinicName : "") + (branch != null ? ", " + branch : "") + ".";
+			pushNotificationServices.notifyUser(userId, text, ComponentType.ONLINE_CONSULTATION.getType(),
+					appointmentCollectionId, null);
+		}
+			break;
+	
 
 		default:
 			break;
@@ -1950,7 +2070,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	private void sendMsg(String formatType, String type, String doctorId, String locationId, String hospitalId,
 			String userId, String mobileNumber, String patientName, String appointmentId, String dateTime,
-			String doctorName, String clinicName, String clinicContactNum, String branch, String googleMapShortUrl) {
+			String doctorName, String clinicName, String clinicContactNum, String branch, String googleMapShortUrl,String appointmentType,String consultationType) {
 		SMSFormatCollection smsFormatCollection = null;
 		if (formatType != null) {
 			smsFormatCollection = sMSFormatRepository.findByDoctorIdAndLocationIdAndHospitalIdAndType(
@@ -1960,7 +2080,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 		smsTrackDetail.setDoctorId(new ObjectId(doctorId));
 		smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
 		smsTrackDetail.setLocationId(new ObjectId(locationId));
+		if(appointmentType !=null)
+		{
+			smsTrackDetail.setType(appointmentType);
+		}
+		else {
 		smsTrackDetail.setType("APPOINTMENT");
+		}
 		SMSDetail smsDetail = new SMSDetail();
 		smsDetail.setUserId(new ObjectId(userId));
 		SMS sms = new SMS();
@@ -2000,7 +2126,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
 			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
-					+ (branch != "" ? ", " + branch : "") + (clinicContactNum != "" ? ", " + clinicContactNum : "")
+					+ (branch != null ? ", " + branch : "") + (clinicContactNum != "" ? ", " + clinicContactNum : "")
 					+ " has been confirmed @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
@@ -2009,7 +2135,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		case "CONFIRMED_APPOINTMENT_TO_DOCTOR": {
 			text = "Healthcoco! Your appointment with " + patientName + " has been scheduled @ " + dateTime
-					+ (clinicName != "" ? " at " + clinicName : "") + (branch != "" ? ", " + branch : "") + ".";
+					+ (clinicName != "" ? " at " + clinicName : "") + (branch != null ? ", " + branch : "") + ".";
 			smsDetail.setUserName(doctorName);
 		}
 			break;
@@ -2084,6 +2210,23 @@ public class AppointmentServiceImpl implements AppointmentService {
 			smsDetail.setUserName(doctorName);
 		}
 			break;
+			
+		
+		case "CONFIRMED_ONLINE_APPOINTMENT_TO_PATIENT": {
+			text = "Your online "+ consultationType +" consultation with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
+					+ (branch != null ? ", " + branch : "") + (clinicContactNum != "" ? ", " + clinicContactNum : "")
+					+ " has been confirmed @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
+					+ ". Download Healthcoco App- " + patientAppBitLink;
+			smsDetail.setUserName(patientName);
+		}
+			break;
+
+		case "CONFIRMED_ONLINE_APPOINTMENT_TO_DOCTOR": {
+			text = "Healthcoco! Your online "+ consultationType +" consultation with " + patientName + " has been scheduled @ " + dateTime
+					+ (clinicName != "" ? " at " + clinicName : "") + (branch != null ? ", " + branch : "") + ".";
+			smsDetail.setUserName(doctorName);
+		}
+			break;	
 
 		default:
 			break;
@@ -3417,7 +3560,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								appointmentLookupResponse.getHospitalId().toString(),
 								appointmentLookupResponse.getPatientId().toString(), patient.getMobileNumber(),
 								patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum,
-								appointmentLookupResponse.getBranch(), clinicGoogleMapShortUrl);
+								appointmentLookupResponse.getBranch(), clinicGoogleMapShortUrl,null,null);
 						response = true;
 					}
 				}
@@ -6048,15 +6191,29 @@ public class AppointmentServiceImpl implements AppointmentService {
 				SimpleDateFormat sdf = new SimpleDateFormat("EEEEE");
 				sdf.setTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
 				String day = sdf.format(date);
-				if (doctorClinicProfileCollection.getOnlineWorkingSchedules() != null
-						&& doctorClinicProfileCollection.getAppointmentSlot() != null) {
-					slotTime = 15;
-					// doctorClinicProfileCollection.getAppointmentSlot().getTime();
+				if (doctorClinicProfileCollection.getOnlineWorkingSchedules() != null) {
+					
+					if(doctorClinicProfileCollection.getOnlineConsultationSlot() != null)
+					slotTime = doctorClinicProfileCollection.getOnlineConsultationSlot().getTime();
+					
+					
 					if (slotTime == 0.0)
 						slotTime = 15;
 
 					response = new SlotDataResponse();
 					response.setAppointmentSlot(doctorClinicProfileCollection.getAppointmentSlot());
+					if(doctorClinicProfileCollection.getOnlineConsultationSlot() != null) {
+					response.setOnlineConsultationSlot(doctorClinicProfileCollection.getOnlineConsultationSlot());
+					}
+					else {
+						AppointmentSlot slot=new AppointmentSlot();
+						doctorClinicProfileCollection.setOnlineConsultationSlot(slot);
+
+						response.setOnlineConsultationSlot(doctorClinicProfileCollection.getOnlineConsultationSlot());
+
+					}
+					
+					
 					slotResponse = new ArrayList<Slot>();
 					List<WorkingHours> workingHours = null;
 					for (WorkingSchedule workingSchedule : doctorClinicProfileCollection.getOnlineWorkingSchedules()) {

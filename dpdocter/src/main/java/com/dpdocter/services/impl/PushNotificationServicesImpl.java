@@ -723,6 +723,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 		            info.put("XI",componentTypeId);
 		            info.put("PI",userId);// Notification body
 		            info.put("sound","default");
+		            info.put("priority","high");
 		            data.put("notification", info);
 					
 				} else if (componentType.equalsIgnoreCase(ComponentType.REPORTS.getType())) {
@@ -771,6 +772,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 		            info.put("body", message);
 		            info.put("AI",componentTypeId);
 		            info.put("sound","default");
+		            info.put("priority","high");
 		            //info.put("PI",userId);// Notification body
 		            data.put("notification", info);
 				} else if (componentType.equalsIgnoreCase(ComponentType.CALENDAR_REMINDER.getType())) {

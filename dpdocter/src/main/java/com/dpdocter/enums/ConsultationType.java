@@ -14,4 +14,6 @@ public enum ConsultationType {
 		return type;
 	}
 	
+	
+	
 }

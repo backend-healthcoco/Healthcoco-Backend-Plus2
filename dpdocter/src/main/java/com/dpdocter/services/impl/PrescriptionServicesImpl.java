@@ -413,7 +413,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 
 			drugCollection.setRankingCount(1);
-
 			drugCollection = drugRepository.save(drugCollection);
 			response = new Drug();
 			BeanUtil.map(drugCollection, response);
@@ -438,6 +437,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			DrugCollection drugCollection = drugRepository.findById(new ObjectId(request.getId())).orElse(null);
 			if (drugCollection.getDoctorId() != null && drugCollection.getLocationId() != null
 					&& drugCollection.getHospitalId() != null) {
+				drugCollection.setDrugName(request.getDrugName());
 				drugCollection.setUpdatedTime(new Date());
 				drugCollection.setDuration(request.getDuration());
 				drugCollection.setDosage(request.getDosage());
@@ -865,6 +865,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			} else {
 				prescriptionCollection.setCreatedTime(createdTime);
 			}
+			
+			if (request.getFromDate() != null) {
+				prescriptionCollection.setFromDate(request.getFromDate());
+			} else {
+				prescriptionCollection.setFromDate(new Date());
+			}
 			prescriptionCollection.setAdminCreatedTime(new Date());
 			prescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
 			prescriptionCollection
@@ -1151,10 +1157,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			PrescriptionCollection oldPrescription = prescriptionRepository.findById(new ObjectId(request.getId()))
 					.orElse(null);
 			prescriptionCollection.setIsPatientDiscarded(oldPrescription.getIsPatientDiscarded());
+			if (request.getFromDate() != null) {
+				prescriptionCollection.setFromDate(request.getFromDate());
+			} else {
+				prescriptionCollection.setFromDate(oldPrescription.getFromDate());
+			}
 			prescriptionCollection.setCreatedBy(oldPrescription.getCreatedBy());
 			prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
 			if (request.getCreatedTime() != null) {
-				prescriptionCollection.setCreatedTime(new Date());
+				prescriptionCollection.setCreatedTime(request.getCreatedTime());
 			} else {
 				prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
 			}

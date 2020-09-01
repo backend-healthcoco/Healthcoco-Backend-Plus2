@@ -8,9 +8,9 @@
 
       <div class="container" style="background-color:white;line-height:25px;margin-bottom:30px;font-family:'Open Sans',sans-serif;margin:0px auto;min-width:200px;max-width:600px; padding: 10px;">
 
-        <header style="background-color: #1e2d75; padding:25px 20px;">
-           <img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/logo1598344039505.png" alt="healthcoco_logo" width="280px" style="display:block;"/>
-        </header>
+        <div style="background-color: #1e2d75 !important; padding:25px 20px;">
+          <img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/logo1598344039505.png" alt="healthcoco_logo" width="280px" style="display:block;"/>
+        </div>
 
         <div style="padding: 0px 20px;">
           <h3>
@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <footer style="background-color: #f5f5fa;padding: 25px 20px;overflow: hidden;">
+        <div style="background-color: #f5f5fa !important;padding: 25px 20px;overflow: hidden;">
             <div style="float: left;width: 350px;">
                 <small>Powered By</small>
                 <strong>HEALTHCOCO</strong>
@@ -86,7 +86,7 @@
                     <a href="https://www.youtube.com/channel/UCAvIuW5nt0qBXvAfVeynQOg" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/youtube1598343999812.png" alt="insert logo here" width="25"></a>
                 </div>
             </div>
-        </footer>
+        </div>
         <small>
             <a href="https://www.healthcoco.com/company/privacy-policy" target="_blank" style="color: #2d2c2c;">Privacy Policy</a>
         </small>

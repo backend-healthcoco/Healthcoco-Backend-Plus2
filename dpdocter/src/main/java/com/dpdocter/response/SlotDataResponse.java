@@ -12,6 +12,8 @@ public class SlotDataResponse {
 	List<Slot> slots;
 	
 	AppointmentSlot appointmentSlot;
+	
+	private AppointmentSlot onlineConsultationSlot;
 
 	String nextAvailableSlotDate;
 	
@@ -45,6 +47,16 @@ public class SlotDataResponse {
 
 	public void setNextAvailableSlotDate(String nextAvailableSlotDate) {
 		this.nextAvailableSlotDate = nextAvailableSlotDate;
+	}
+	
+	
+
+	public AppointmentSlot getOnlineConsultationSlot() {
+		return onlineConsultationSlot;
+	}
+
+	public void setOnlineConsultationSlot(AppointmentSlot onlineConsultationSlot) {
+		this.onlineConsultationSlot = onlineConsultationSlot;
 	}
 
 	@Override

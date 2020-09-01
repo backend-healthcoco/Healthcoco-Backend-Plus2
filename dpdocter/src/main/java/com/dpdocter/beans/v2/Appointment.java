@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
@@ -110,6 +111,10 @@ public class Appointment extends GenericCollection {
 	private ConsultationType consultationType;
 	
 	private Date consultationStartedOn;
+	
+	private AppointmentSlot onlineConsultationSlot;
+	
+	private Long callDurationInMinutes=0L;
 	
 	public PatientTreatmentResponse getPatientTreatmentResponse() {
 		return patientTreatmentResponse;
@@ -478,6 +483,29 @@ public class Appointment extends GenericCollection {
 	public void setConsultationStartedOn(Date consultationStartedOn) {
 		this.consultationStartedOn = consultationStartedOn;
 	}
+	
+	
+	
+
+	
+
+	public Long getCallDurationInMinutes() {
+		return callDurationInMinutes;
+	}
+
+	public void setCallDurationInMinutes(Long callDurationInMinutes) {
+		this.callDurationInMinutes = callDurationInMinutes;
+	}
+
+	public AppointmentSlot getOnlineConsultationSlot() {
+		return onlineConsultationSlot;
+	}
+
+	public void setOnlineConsultationSlot(AppointmentSlot onlineConsultationSlot) {
+		this.onlineConsultationSlot = onlineConsultationSlot;
+	}
+	
+	
 
 	@Override
 	public String toString() {

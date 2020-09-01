@@ -3,6 +3,7 @@ package com.dpdocter.request;
 import java.util.Date;
 import java.util.List;
 
+import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorConsultation;
 import com.dpdocter.beans.Fields;
@@ -95,6 +96,10 @@ public class AppointmentRequest {
 	private ConsultationType consultationType;
 	
 	private String problemDetailsId;
+	
+private AppointmentSlot onlineConsultationSlot;
+	
+private Long callDurationInMinutes=0L;
 
 	public Boolean getIsTreatmentEdited() {
 		return isTreatmentEdited;
@@ -407,6 +412,25 @@ public class AppointmentRequest {
 	
 	
 	
+
+	public AppointmentSlot getOnlineConsultationSlot() {
+		return onlineConsultationSlot;
+	}
+
+	public void setOnlineConsultationSlot(AppointmentSlot onlineConsultationSlot) {
+		this.onlineConsultationSlot = onlineConsultationSlot;
+	}
+
+	
+	
+	
+	public Long getCallDurationInMinutes() {
+		return callDurationInMinutes;
+	}
+
+	public void setCallDurationInMinutes(Long callDurationInMinutes) {
+		this.callDurationInMinutes = callDurationInMinutes;
+	}
 
 	public ConsultationType getConsultationType() {
 		return consultationType;
