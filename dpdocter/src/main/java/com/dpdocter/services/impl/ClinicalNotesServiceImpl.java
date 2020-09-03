@@ -116,6 +116,7 @@ import com.dpdocter.enums.LineStyle;
 import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.UniqueIdInitial;
+import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.enums.VitalSignsUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -164,9 +165,11 @@ import com.dpdocter.repository.XRayDetailsRepository;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
+import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
+import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
@@ -174,6 +177,7 @@ import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
 import com.mongodb.BasicDBObject;
@@ -353,6 +357,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Value(value = "${jasper.print.visit.diagrams.a4.fileName}")
 	private String visitDiagramsA4FileName;
+	
+	
+	@Autowired
+	private PatientTreatmentServices patientTreatmentServices;
+	
+	@Autowired
+	private PatientVisitService patientTrackService;
+
 
 	@Override
 	@Transactional
@@ -1376,9 +1388,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
+			
+			PatientTreatmentResponse treatment=addPatientTreatmentsThroughClinicalNotes(clinicalNotesCollection,
+					request.getPatientTreatmentObservation());
+			
 			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
-
+			clinicalNotes.setPatientTreatmentObservation(treatment);
 			// if(complaintIds != null &&
 			// !complaintIds.isEmpty())clinicalNotes.setComplaints(sortComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new
 			// Criteria("id").in(complaintIds))), ComplaintCollection.class,
@@ -1573,9 +1589,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNotesCollection.setIsPatientDiscarded(oldClinicalNotesCollection.getIsPatientDiscarded());
 			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
+			PatientTreatmentResponse treatment=addPatientTreatmentsThroughClinicalNotes(clinicalNotesCollection,
+					request.getPatientTreatmentObservation());
+			
+			
 			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
-
+			clinicalNotes.setPatientTreatmentObservation(treatment);
 			if (diagramIds != null && !diagramIds.isEmpty())
 				clinicalNotes
 						.setDiagrams(
@@ -8644,4 +8664,38 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			throw new BusinessException(ServiceError.Unknown, "Error while emailing Clinical Notes PDF");
 		}
 	}
+	
+	
+	public PatientTreatmentResponse addPatientTreatmentsThroughClinicalNotes(ClinicalNotesCollection request,
+			PatientTreatmentAddEditRequest patientAddEditRequest)
+
+	{
+		PatientTreatmentResponse addEditPatientTreatmentResponse = null;
+		if (patientAddEditRequest != null && patientAddEditRequest.getTreatments() != null) {
+			// PatientTreatmentAddEditRequest patientAddEditRequest =new
+			// PatientTreatmentAddEditRequest();
+			patientAddEditRequest.setPatientId(request.getPatientId().toString());
+			patientAddEditRequest.setLocationId(request.getLocationId().toString());
+			patientAddEditRequest.setHospitalId(request.getHospitalId().toString());
+			patientAddEditRequest.setDoctorId(request.getDoctorId().toString());
+		//	patientAddEditRequest.setAppointmentId(request.getAppointmentId());
+
+			patientAddEditRequest.setTime(request.getTime());
+			patientAddEditRequest.setFromDate(request.getFromDate());
+		//	patientAddEditRequest.setVisitId(request.getVisitId() != null ? request.getVisitId().toString() : null);
+			addEditPatientTreatmentResponse = patientTreatmentServices.addEditPatientTreatment(patientAddEditRequest,
+					false, null, null);
+
+//			if (addEditPatientTreatmentResponse != null) {
+//				String visitId = patientTrackService.addRecord(addEditPatientTreatmentResponse, VisitedFor.TREATMENT,
+//						addEditPatientTreatmentResponse.getVisitId());
+//				//request.setVisitId(new ObjectId(visitId));
+//				request = clinicalNotesRepository.save(request);
+//
+//			}
+
+		}
+		return addEditPatientTreatmentResponse;
+	}
+
 }

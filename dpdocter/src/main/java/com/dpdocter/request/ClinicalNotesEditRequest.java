@@ -182,6 +182,9 @@ public class ClinicalNotesEditRequest {
 	private EyeSpecialityObservation eyeObservation;
 	
 	private PhysioExamination physioExamination;	
+	
+	private PatientTreatmentAddEditRequest patientTreatmentObservation;
+
 
 
 	public Date getLmp() {
@@ -1175,6 +1178,18 @@ public class ClinicalNotesEditRequest {
 
 	public void setEyeObservation(EyeSpecialityObservation eyeObservation) {
 		this.eyeObservation = eyeObservation;
+	}
+	
+	
+
+	
+
+	public PatientTreatmentAddEditRequest getPatientTreatmentObservation() {
+		return patientTreatmentObservation;
+	}
+
+	public void setPatientTreatmentObservation(PatientTreatmentAddEditRequest patientTreatmentObservation) {
+		this.patientTreatmentObservation = patientTreatmentObservation;
 	}
 
 	@Override
