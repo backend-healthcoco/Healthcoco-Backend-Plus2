@@ -2594,9 +2594,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getColorCode())) {
 				userCollection.setColorCode(request.getColorCode());
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(request.getFirstName())) {
+				userCollection.setFirstName(request.getFirstName());
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
+				userCollection.setMobileNumber(request.getMobileNumber());
+			}
 				userCollection.setUpdatedTime(new Date());
 				userRepository.save(userCollection);
-			}
+			
 
 			if (doctorRole != null) {
 
