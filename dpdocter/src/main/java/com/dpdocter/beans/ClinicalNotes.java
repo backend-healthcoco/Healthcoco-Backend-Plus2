@@ -135,7 +135,7 @@ public class ClinicalNotes extends GenericCollection {
 	
 	private PhysioExamination physioExamination;
 	
-	private PatientTreatmentResponse patientTreatmentObservation;
+	private TreatmentObservation TreatmentObservation;
 
 
 	public Appointment getAppointmentRequest() {
@@ -660,16 +660,16 @@ public class ClinicalNotes extends GenericCollection {
 		this.eyeObservation = eyeObservation;
 	}
 	
-	
+
 
 	
 
-	public PatientTreatmentResponse getPatientTreatmentObservation() {
-		return patientTreatmentObservation;
+	public TreatmentObservation getTreatmentObservation() {
+		return TreatmentObservation;
 	}
 
-	public void setPatientTreatmentObservation(PatientTreatmentResponse patientTreatmentObservation) {
-		this.patientTreatmentObservation = patientTreatmentObservation;
+	public void setTreatmentObservation(TreatmentObservation treatmentObservation) {
+		TreatmentObservation = treatmentObservation;
 	}
 
 	public PhysioExamination getPhysioExamination() {

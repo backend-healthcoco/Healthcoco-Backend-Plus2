@@ -4556,6 +4556,34 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
+	
+	@Override
+	public Boolean transferGenericDrugs()
+	{
+		List<GenericCodesAndReactionsCollection> generics=genericCodesAndReactionsRepository.findAll();
+		
+		for(GenericCodesAndReactionsCollection generic:generics)
+		{
+			ESGenericCodesAndReactions reaction=esGenericCodesAndReactionsRepository.findById(generic.getGenericCode()).orElse(null);
+			if(reaction==null)
+			{
+				reaction=new ESGenericCodesAndReactions();
+				BeanUtil.map(generic, reaction);
+				reaction.setId(generic.getGenericCode());
+				reaction.setUpdatedTime(new Date());
+				esGenericCodesAndReactionsRepository.save(reaction);
+			}
+			else
+			{
+				reaction.setCodes(generic.getCodes());
+				reaction.setUpdatedTime(new Date());
+				esGenericCodesAndReactionsRepository.save(reaction);
+			}
+		}
+		
+		return true;
+		
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -4623,10 +4651,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					}
 			}
 
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While drugInteraction");
-		} catch (Exception e) {
+		} 
+//		catch (ExecutionException e) {
+//			e.printStackTrace();
+//			throw new BusinessException(ServiceError.Unknown, "Error Occurred While drugInteraction");
+//		}
+		catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While drugInteraction");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While drugInteraction");

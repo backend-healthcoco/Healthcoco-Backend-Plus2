@@ -947,8 +947,9 @@ public class ContactsServiceImpl implements ContactsService {
 		Aggregation aggregation = null;
 		List<String> mobileNumbers = null;
 		try {
-			String message = request.getMessage() + "-Powered by Healthcoco";
-
+			//String message = request.getMessage() + "-Powered by Healthcoco";
+			String message = request.getMessage();
+			
 			if (request.getGroupId() != null) {
 				Criteria criteria = new Criteria().and("groupId").is(new ObjectId(request.getGroupId()));
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),

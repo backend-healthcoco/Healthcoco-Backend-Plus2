@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicalnoteLookupBean;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.TreatmentObservation;
 import com.dpdocter.beans.v2.AppointmentDetails;
 import com.dpdocter.beans.v2.ClinicalNotes;
 import com.dpdocter.beans.v2.Diagram;
@@ -159,6 +160,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
+						Aggregation.lookup("patient_treatment_cl", "doctorId","_id", "treatments"),
+						Aggregation.unwind("treatments",true),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
@@ -169,6 +172,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 								new Document("$unwind",
 										new BasicDBObject("path", "$appointmentRequest")
 												.append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("patient_treatment_cl", "doctorId","_id", "treatments"),
+						Aggregation.unwind("treatments",true),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			AggregationResults<ClinicalnoteLookupBean> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -200,6 +205,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	public ClinicalNotes getClinicalNote(ClinicalnoteLookupBean clinicalNotesCollection) {
 		ClinicalNotes clinicalNote = new ClinicalNotes();
 		BeanUtil.map(clinicalNotesCollection, clinicalNote);
+		TreatmentObservation treatmentObservation =new TreatmentObservation();
+		treatmentObservation.setTreatments(clinicalNotesCollection.getTreatments());
+		treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
+		clinicalNote.setTreatmentObservation(treatmentObservation);
+
 		// if(clinicalNotesCollection.getComplaints() != null &&
 		// !clinicalNotesCollection.getComplaints().isEmpty())
 		// clinicalNote.setComplaints(sortComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new

@@ -183,7 +183,7 @@ public class ClinicalNotesEditRequest {
 	
 	private PhysioExamination physioExamination;	
 	
-	private PatientTreatmentAddEditRequest patientTreatmentObservation;
+	private TreatmentObservationRequest treatmentObservation;
 
 
 
@@ -1184,12 +1184,16 @@ public class ClinicalNotesEditRequest {
 
 	
 
-	public PatientTreatmentAddEditRequest getPatientTreatmentObservation() {
-		return patientTreatmentObservation;
+	
+
+	
+
+	public TreatmentObservationRequest getTreatmentObservation() {
+		return treatmentObservation;
 	}
 
-	public void setPatientTreatmentObservation(PatientTreatmentAddEditRequest patientTreatmentObservation) {
-		this.patientTreatmentObservation = patientTreatmentObservation;
+	public void setTreatmentObservation(TreatmentObservationRequest treatmentObservation) {
+		this.treatmentObservation = treatmentObservation;
 	}
 
 	@Override

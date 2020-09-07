@@ -273,7 +273,7 @@ public class ClinicalNotesAddRequest {
 	
 	private PhysioExamination physioExamination;	
 	
-	private PatientTreatmentAddEditRequest patientTreatmentObservation;
+	private TreatmentObservationRequest treatmentObservation;
 
 
 	public Date getCreatedTime() {
@@ -1263,12 +1263,16 @@ public class ClinicalNotesAddRequest {
 
 	
 
-	public PatientTreatmentAddEditRequest getPatientTreatmentObservation() {
-		return patientTreatmentObservation;
+	
+
+	
+
+	public TreatmentObservationRequest getTreatmentObservation() {
+		return treatmentObservation;
 	}
 
-	public void setPatientTreatmentObservation(PatientTreatmentAddEditRequest patientTreatmentObservation) {
-		this.patientTreatmentObservation = patientTreatmentObservation;
+	public void setTreatmentObservation(TreatmentObservationRequest treatmentObservation) {
+		this.treatmentObservation = treatmentObservation;
 	}
 
 	@Override

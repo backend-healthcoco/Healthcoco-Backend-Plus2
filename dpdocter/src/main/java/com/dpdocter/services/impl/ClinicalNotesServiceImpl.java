@@ -68,6 +68,7 @@ import com.dpdocter.beans.PresentingComplaintThroat;
 import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
+import com.dpdocter.beans.TreatmentObservation;
 import com.dpdocter.beans.XRayDetails;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
@@ -403,6 +404,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNotesCollection.setAdminCreatedTime(new Date());
 
 			clinicalNotesCollection.setCreatedBy(createdBy);
+			
+			if (request.getTreatmentObservation() != null) {
+				clinicalNotesCollection.setTreatmentObservation(request.getTreatmentObservation().getObservations());
+			} 
 			/*
 			 * if(request.getPresentComplaint() != null ||
 			 * !request.getPresentComplaint().isEmpty()) { ArrayList<String>
@@ -1390,11 +1395,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			
 			PatientTreatmentResponse treatment=addPatientTreatmentsThroughClinicalNotes(clinicalNotesCollection,
-					request.getPatientTreatmentObservation());
+					request.getTreatmentObservation().getTreatments());
 			
 			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
-			clinicalNotes.setPatientTreatmentObservation(treatment);
+			TreatmentObservation treatmentObservation =new TreatmentObservation();
+			treatmentObservation.setTreatments(treatment.getTreatments());
+			treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
+			clinicalNotes.setTreatmentObservation(treatmentObservation);
 			// if(complaintIds != null &&
 			// !complaintIds.isEmpty())clinicalNotes.setComplaints(sortComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new
 			// Criteria("id").in(complaintIds))), ComplaintCollection.class,
@@ -1580,6 +1588,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			} else {
 				clinicalNotesCollection.setCreatedTime(oldClinicalNotesCollection.getCreatedTime());
 			}
+			
+			if (request.getTreatmentObservation() != null) {
+				clinicalNotesCollection.setTreatmentObservation(request.getTreatmentObservation().getObservations());
+			} else {
+				clinicalNotesCollection.setTreatmentObservation(oldClinicalNotesCollection.getTreatmentObservation());
+
+			}
 			clinicalNotesCollection.setAdminCreatedTime(oldClinicalNotesCollection.getAdminCreatedTime());
 			clinicalNotesCollection.setCreatedBy(oldClinicalNotesCollection.getCreatedBy());
 			clinicalNotesCollection.setDiscarded(oldClinicalNotesCollection.getDiscarded());
@@ -1587,15 +1602,21 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNotesCollection.setUpdatedTime(new Date());
 			clinicalNotesCollection.setUniqueEmrId(oldClinicalNotesCollection.getUniqueEmrId());
 			clinicalNotesCollection.setIsPatientDiscarded(oldClinicalNotesCollection.getIsPatientDiscarded());
+			
+			
 			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
 			PatientTreatmentResponse treatment=addPatientTreatmentsThroughClinicalNotes(clinicalNotesCollection,
-					request.getPatientTreatmentObservation());
+					request.getTreatmentObservation().getTreatments());
 			
 			
 			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
-			clinicalNotes.setPatientTreatmentObservation(treatment);
+			TreatmentObservation treatmentObservation =new TreatmentObservation();
+			treatmentObservation.setTreatments(treatment.getTreatments());
+			treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
+			clinicalNotes.setTreatmentObservation(treatmentObservation);
+
 			if (diagramIds != null && !diagramIds.isEmpty())
 				clinicalNotes
 						.setDiagrams(
