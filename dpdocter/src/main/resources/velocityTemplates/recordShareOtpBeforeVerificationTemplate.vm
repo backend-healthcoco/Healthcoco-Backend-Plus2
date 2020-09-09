@@ -25,7 +25,7 @@
 
       <div style="padding: 22px">
         <p>Hello ${fName},</p>
-        <p style="margin: 0;">${doctorName} has requested you to share your health records with him. Please share One Time Password that was sent on your registered mobile number with ${doctorName} to share your health records.</p>
+        <p style="margin: 0;">${doctorName} has requested you to share your health records with him. Please share One Time Password sent on your registered mobile number with ${doctorName} to share your health records.</p>
         <p style="margin: 20px 0 0 0;">Warm regards,</p>
         <p style="margin: 0;">Team Healthcoco</p>
       </div>

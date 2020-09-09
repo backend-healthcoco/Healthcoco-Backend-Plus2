@@ -19,7 +19,7 @@
 
         <div>
          <p style="color:#2c3335;font-size:15px;">Hello ${doctorName},<br><br>
-         This is to inform you that you have a confirmed online ${consultationType} consultation scheduled with ${patientName} on ${dateTime} at ${clinicName}${branch}.<br><br>
+         This is to inform you that you have a confirmed online ${consultationType} consultation scheduled with ${patientName} on ${dateTime} at ${clinicName} ${branch}.<br><br>
          For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >${contactUsEmail}</a>
             <br><br>Stay Healthy and Happy,<br>Team Healthcoco.
          </p>

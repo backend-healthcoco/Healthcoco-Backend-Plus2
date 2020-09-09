@@ -1541,10 +1541,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 			} else {
 				if (request.getCreatedBy().getType().equals(AppointmentCreatedBy.DOCTOR.getType())) {
-					if (request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail())
+				
+					if (request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail()) {
+						if (request.getState().getState().equals(AppointmentState.RESCHEDULE.getState()))
 						sendEmail(doctorName, patientName, dateTime, clinicName,
-								"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch,null);
-
+								"RESCHEDULE_APPOINTMENT_TO_DOCTOR", doctorEmailAddress, branch,null);
+						else
+							sendEmail(doctorName, patientName, dateTime, clinicName,
+									"CONFIRMED_APPOINTMENT_TO_DOCTOR", doctorEmailAddress, branch,null);
+							
+					}
 					if (request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()) {
 						if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
 							sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
@@ -1987,77 +1993,77 @@ public class AppointmentServiceImpl implements AppointmentService {
 		switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"confirmAppointmentToPatient.vm", branch);
+					"confirmAppointmentToPatient.vm", (branch != null ? ", " + branch : ""));
 			mailService.sendEmail(emailAddress, appointmentConfirmToPatientMailSubject + " " + dateTime, body, null);
 		}
 			break;
 
 		case "CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"confirmAppointmentToDoctorByPatient.vm", branch);
+					"confirmAppointmentToDoctorByPatient.vm", (branch != null ? ", " + branch : ""));
 			mailService.sendEmail(emailAddress, appointmentConfirmToDoctorMailSubject + " " + dateTime, body, null);
 		}
 			break;
 
 		case "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentRequestToDoctorByPatient.vm", branch);
+					"appointmentRequestToDoctorByPatient.vm",(branch != null ? ", " + branch : ""));
 			mailService.sendEmail(emailAddress, appointmentRequestToDoctorMailSubject + " " + dateTime, body, null);
 		}
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentCancelByDoctorToDoctor.vm", branch);
+					"appointmentCancelByDoctorToDoctor.vm", (branch != null ? ", " + branch : ""));
 			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentCancelToPatientByDoctor.vm", branch);
+					"appointmentCancelToPatientByDoctor.vm", (branch != null ? ", " + branch : ""));
 			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentCancelByPatientToDoctor.vm", branch);
+					"appointmentCancelByPatientToDoctor.vm",(branch != null ? ", " + branch : ""));
 			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentCancelToPatientByPatient.vm", branch);
+					"appointmentCancelToPatientByPatient.vm", (branch != null ? ", " + branch : ""));
 			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
 		}
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentCancelToPatientByDoctor.vm", branch);
+					"appointmentCancelToPatientByDoctor.vm",(branch != null ? ", " + branch : ""));
 			mailService.sendEmail(emailAddress, appointmentRescheduleToPatientMailSubject + " " + dateTime, body, null);
 		}
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_DOCTOR": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentRescheduleByDoctorToDoctor.vm", branch);
+					"appointmentRescheduleByDoctorToDoctor.vm",(branch != null ? ", " + branch : ""));
 			mailService.sendEmail(emailAddress, appointmentRescheduleToDoctorMailSubject + " " + dateTime, body, null);
 		}
 			break;
 			
 		case "CONFIRMED_ONLINE_APPOINTMENT_TO_PATIENT": {
 			String body = mailBodyGenerator.generateOnlineAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"confirmOnlineAppointmentToPatient.vm", branch,consultationType);
+					"confirmOnlineAppointmentToPatient.vm",(branch != null ? ", " + branch : ""),consultationType);
 			mailService.sendEmail(emailAddress, appointmentConfirmToPatientMailSubject + " " + dateTime, body, null);
 		}
 			break;
 		
 		case "CONFIRMED_ONLINE_APPOINTMENT_TO_DOCTOR_BY_PATIENT": {
 			String body = mailBodyGenerator.generateOnlineAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"confirmOnlineAppointmentToDoctorByPatient.vm", branch,consultationType);
+					"confirmOnlineAppointmentToDoctorByPatient.vm",(branch != null ? ", " + branch : ""),consultationType);
 			mailService.sendEmail(emailAddress, appointmentConfirmToDoctorMailSubject + " " + dateTime, body, null);
 		}
 			break;	

@@ -31,11 +31,11 @@
         </div>
 
         <div style="padding: 22px">
-          <p>Greetings ${fName}</p>
+          <p>Greetings ${fName},</p>
 
             <p style="margin: 0;">We have received a request to authorize this email address for use with Healthcoco+.</p>
-            <p style="margin: 10px 0 0 0;">If you requested this verification, please click Verify Email to confirm that you are authorized to use this email address.</p>
-            <p style="margin: 10px 0 0 0;">Kindly verify your email ID by clicking on the link below:</p> 
+            <p style="margin: 10px 0 0 0;">If you requested this verification, please click verify email to confirm that you are authorized to use this email address.</p>
+            <p style="margin: 10px 0 0 0;">Kindly verify your email id by clicking on the button below:</p> 
             <p style="margin: 20px 0 0 0;">Warm regards,</p>
             <p style="margin: 0;">Team Healthcoco</p>
 

@@ -27,7 +27,7 @@
           <p>Hello ${doctorName},</p>
 
           <p style="margin: 0;">You have been requested an appointment by ${patientName} on ${dateTime} at ${dateTime}.</p>
-          <p style="margin: 10px 0 0 0;">Kindly accept or decline the request through Healthcoco+.</p>
+          <p style="margin: 10px 0 0 0;">Kindly accept or decline the request through Healthcoco+ app.</p>
           <p style="margin: 20px 0 0 0;">Warm regards,</p>
           <p style="margin: 0;">Team Healthcoco</p>
       </div>

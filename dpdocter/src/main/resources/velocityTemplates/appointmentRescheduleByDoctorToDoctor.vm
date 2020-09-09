@@ -26,7 +26,7 @@
       <div style="padding: 22px">
           <p>Hello ${doctorName},</p>
 
-          <p style="margin: 0;">Your appointment with ${patientName} on ${dateTime} at ${clinicName} has been rescheduled to ${clinicName}${branch}.</p>
+          <p style="margin: 0;">Your appointment with ${patientName} has been rescheduled to ${dateTime} at ${clinicName}, ${branch}.</p>
           <p style="margin: 20px 0 0 0;">Warm regards,</p>
           <p style="margin: 0;">Team Healthcoco</p>
       </div>

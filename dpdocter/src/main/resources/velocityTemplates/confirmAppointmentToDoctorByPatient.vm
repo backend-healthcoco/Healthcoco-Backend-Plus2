@@ -13,7 +13,7 @@
 
       <div style="padding: 0px 20px;">
         <h3>
-          ${clinicName} has uploaded report of ${patientName}.
+          Appointment confirmed with ${patientName} on ${dateTime} at ${clinicName}
         </h3>
       </div>
 
@@ -26,7 +26,7 @@
 
       <div style="padding: 22px">
         <p>Hello ${doctorName},</p>
-        <p style="margin: 0;"> This is to inform you that you have a confirmed appointment scheduled with ${patientName} on ${dateTime} at ${clinicName}${branch}.</p>
+        <p style="margin: 0;"> This is to inform you that your appointment has been confirmed with ${patientName} on ${dateTime} at ${clinicName} ${branch}.</p>
         <p style="margin: 20px 0 0 0;">Warm regards,</p>
         <p style="margin: 0;">Team Healthcoco</p>
       </div>

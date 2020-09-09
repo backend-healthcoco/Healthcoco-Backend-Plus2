@@ -25,7 +25,7 @@
         <p>Hello ${fName},</p>
 
         <p style="margin: 0;">Your feedback with reference to ${doctorName} ${clinicName} has been recorded.</p>
-        <p style="margin: 0;">Thank you for sharing your valuable feedback. We appreciate your opinion and hope that we can help healthcare experts to improve through your feedback.</p>
+        <p style="margin: 0;">Thank you for sharing your valuable feedback. We appreciate your opinion and we will give our best to help healthcare experts to improve through your feedback.</p>
         <p style="margin: 20px 0 0 0;">Warm regards,</p>
         <p style="margin: 0;">Team Healthcoco</p>
       </div>

@@ -24,7 +24,7 @@
       <div style="padding: 22px">
         <p>Hello ${doctorName}</p>
 
-        <p style="margin: 0;">Your appointment with ${patientName} scheduled on ${dateTime} at ${clinicName}${branch} has been cancelled as per your request.</p>
+        <p style="margin: 0;">Your appointment with ${patientName} scheduled on ${dateTime} at ${clinicName}, ${branch} has been cancelled as per your request.</p>
         <p style="margin: 10px 0 0 0;">For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >${contactUsEmail}</a></p>
         
         <p style="margin: 20px 0 0 0;">Warm regards,</p>
