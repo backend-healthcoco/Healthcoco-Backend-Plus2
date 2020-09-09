@@ -2403,6 +2403,8 @@ public interface PathProxy {
 		public static final String GENERATE_ID = "/payment/generateId";
 		public static final String CREATE_PAYMENT = "/payment/create";
 		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
+		
+		public static final String GET_SMS_STATUS = "/status/get";
 
 	}
 

@@ -1710,9 +1710,14 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			
 			List<DoctorClinicProfileCollection> online=	doctorClinicRepository.findByDoctorId(new ObjectId(doctorId));	
 			DoctorClinicProfileCollection doctorClinicProfileCollection=online.get(0);
+			
+			if(response !=null)
+			{
 			response.setConsultationType(doctorClinicProfileCollection.getConsultationType());
 			response.setTotalAmountReceivedByOnlineConsultation(response.getTotalAmountReceivedByChat()+response.getTotalAmountReceivedByVideo());
-		}
+
+			}
+				}
 		catch (BusinessException e) {
 			logger.error("Error while getting online Consultation Analytics " + e.getMessage());
 			e.printStackTrace();

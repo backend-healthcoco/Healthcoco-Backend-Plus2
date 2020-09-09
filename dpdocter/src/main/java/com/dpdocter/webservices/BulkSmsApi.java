@@ -19,11 +19,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.BulkSmsPackage;
 import com.dpdocter.beans.BulkSmsReport;
+import com.dpdocter.beans.MessageStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.OrderRequest;
 import com.dpdocter.request.PaymentSignatureRequest;
 import com.dpdocter.response.BulkSmsPaymentResponse;
+import com.dpdocter.response.MessageResponse;
 import com.dpdocter.services.BulkSmsServices;
 
 import common.util.web.DPDoctorUtils;
@@ -101,12 +103,12 @@ public class BulkSmsApi {
 	@Path(value = PathProxy.BulkSmsPackageUrls.GET_SMS_REPORT)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_SMS_REPORT, notes = PathProxy.BulkSmsPackageUrls.GET_SMS_REPORT)
 	@GET
-	public Response<BulkSmsReport> getBulkSmsReport(@DefaultValue("0")@QueryParam(value ="size") int size, 
+	public Response<MessageResponse> getBulkSmsReport(@DefaultValue("0")@QueryParam(value ="size") int size, 
 			@DefaultValue("0")	@QueryParam(value ="page") int page,
 			@QueryParam(value ="doctorId") String doctorId,
 			@QueryParam(value ="locationIdId") String locationId) {
 
-		Response<BulkSmsReport> response = new Response<BulkSmsReport>();
+		Response<MessageResponse> response = new Response<MessageResponse>();
 		if (doctorId == null && locationId==null) {
 			logger.warn("doctorId or locationid  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId send  is NULL");
@@ -154,6 +156,21 @@ public class BulkSmsApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.BulkSmsPackageUrls.GET_SMS_STATUS)
+	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_SMS_STATUS, notes = PathProxy.BulkSmsPackageUrls.GET_SMS_STATUS)
+	@GET
+	public Response<MessageStatus> getSmsStatus(
+			@QueryParam(value ="messageId") String messageId) {
+
+		Response<MessageStatus> response = new Response<MessageStatus>();
+		if (messageId == null && messageId==null) {
+			logger.warn("messageId  is NULL");
+			throw new BusinessException(ServiceError.InvalidInput, "doctorId send  is NULL");
+		}
+			response.setData(bulkSmsServices.getSmsStatus(messageId));
+	
+		return response;
+	}
 	
 
 }

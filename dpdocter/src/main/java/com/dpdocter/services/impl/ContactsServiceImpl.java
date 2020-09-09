@@ -23,6 +23,7 @@ import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -962,8 +963,17 @@ public class ContactsServiceImpl implements ContactsService {
 					mobileNumbers = new ArrayList<>();
 					for (PatientGroupLookupResponse patientGroupLookupResponse : patientGroupLookupResponses) {
 
-						mobileNumbers.add(patientGroupLookupResponse.getUser().getMobileNumber());
-
+						if (!DPDoctorUtils.anyStringEmpty(patientGroupLookupResponse.getUser().getMobileNumber())) {
+						String mobile=null;
+							if (!DPDoctorUtils.anyStringEmpty(patientGroupLookupResponse.getUser().getCountryCode())) {
+								 mobile =patientGroupLookupResponse.getUser().getCountryCode() +patientGroupLookupResponse.getUser().getMobileNumber();
+							}
+							else {
+						//	System.out.println(userCollection.getMobileNumber());
+							 	mobile ="+91" +patientGroupLookupResponse.getUser().getMobileNumber();
+							}
+						mobileNumbers.add(mobile);
+						}
 					}
 
 				}
@@ -984,8 +994,20 @@ public class ContactsServiceImpl implements ContactsService {
 				if (users != null) {
 					if(mobileNumbers == null)mobileNumbers = new ArrayList<>();
 					for(User userr:users)
-					mobileNumbers.add(userr.getMobileNumber());
+					{
+						if (!DPDoctorUtils.anyStringEmpty(userr.getMobileNumber())) {
+							String mobile=null;
+								if (!DPDoctorUtils.anyStringEmpty(userr.getCountryCode())) {
+									 mobile =userr.getCountryCode() +userr.getMobileNumber();
+								}
+								else {
+							//	System.out.println(userCollection.getMobileNumber());
+								 	mobile ="+91" +userr.getMobileNumber();
+								}
+						mobileNumbers.add(mobile);
+					}
 					
+					}
 				}
 				System.out.println("PatientIds User Mobile Number"+mobileNumbers);
 			}else if (request.getPatientId() != null) {
@@ -1000,7 +1022,18 @@ public class ContactsServiceImpl implements ContactsService {
 				if (users != null) {
 					mobileNumbers = new ArrayList<>();
 
-					mobileNumbers.add(users.getMobileNumber());
+					if (!DPDoctorUtils.anyStringEmpty(users.getMobileNumber())) {
+						String mobile=null;
+							if (!DPDoctorUtils.anyStringEmpty(users.getCountryCode())) {
+								 mobile =users.getCountryCode() +users.getMobileNumber();
+							}
+							else {
+						//	System.out.println(userCollection.getMobileNumber());
+							 	mobile ="+91" +users.getMobileNumber();
+							}
+					
+					mobileNumbers.add(mobile);
+					}
 					System.out.println("PatientId User Mobile Number"+mobileNumbers);
 				}
 			} else {
@@ -1016,9 +1049,18 @@ public class ContactsServiceImpl implements ContactsService {
 				if (patientCards != null) {
 					mobileNumbers = new ArrayList<>();
 					for (PatientCard patientCard : patientCards) {
-						mobileNumbers.add(patientCard.getUser().getMobileNumber());
+						if (!DPDoctorUtils.anyStringEmpty(patientCard.getUser().getMobileNumber())) {
+							String mobile=null;
+								if (!DPDoctorUtils.anyStringEmpty(patientCard.getUser().getCountryCode())) {
+									 mobile =patientCard.getUser().getCountryCode() +patientCard.getUser().getMobileNumber();
+								}
+								else {
+							//	System.out.println(userCollection.getMobileNumber());
+								 	mobile ="+91" +patientCard.getUser().getMobileNumber();
+								}
+							mobileNumbers.add(mobile);
+							}
 					}
-
 				}
 			}
 //			 SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
@@ -1085,11 +1127,25 @@ public class ContactsServiceImpl implements ContactsService {
 			  System.out.println("Credit Balance"+bulk.getCreditBalance());
 			  System.out.println("Credit Spent"+bulk.getCreditSpent());
 			  
-				if (!smsServices.getBulkSMSResponse(mobileNumbers, message,request.getDoctorId(),request.getLocationId(),subCredits).equalsIgnoreCase("FAILED")) {
-					status = "bulk sms sent successfully";
-				}
 			  
-			   } 
+//			  List<String> sublist=null;
+//			  Integer size=100;
+//				for(int start=0;start<mobileNumbers.size();start+=size)
+//					{
+//						int end=Math.min(start+size,mobileNumbers.size());
+//						 sublist=mobileNumbers.subList(start, end);
+//				//		 System.out.println("sublist"+sublist);
+//			
+//				
+//			  
+//				if (!smsServices.getBulkSMSResponse(sublist, message,request.getDoctorId(),request.getLocationId(),subCredits).equalsIgnoreCase("FAILED")) {
+//					status = "bulk sms sent successfully";
+//				}
+//					}
+			Boolean bulkResponse=  bulkSmsAsync(mobileNumbers, message, request.getDoctorId(), request.getLocationId(), subCredits);
+			   if(bulkResponse ==true)
+				   status = "bulk sms sent successfully";
+				  } 
 				  else { 
 					  return "You have Unsufficient Balance"; 
 			  }
@@ -1143,7 +1199,30 @@ public class ContactsServiceImpl implements ContactsService {
 		}
 		return status;
 	}
-
+	
+	@Async
+	Boolean bulkSmsAsync(List<String>mobileNumbers,String message,String doctorId,String locationId,long subCredits)
+	{
+		Boolean response=false;
+		List<String> sublist=null;
+		  Integer size=100;
+			for(int start=0;start<mobileNumbers.size();start+=size)
+				{
+					int end=Math.min(start+size,mobileNumbers.size());
+					 sublist=mobileNumbers.subList(start, end);
+			//		 System.out.println("sublist"+sublist);
+		
+			
+		  
+			if (!smsServices.getBulkSMSResponse(sublist, message,doctorId,locationId,subCredits).equalsIgnoreCase("FAILED")) {
+			response=true;
+			}
+		
+		
+	}
+			return response;
+	
+	}
 	@Override
 	public Branch addEditBranch(Branch branch) {
 		try {

@@ -3106,7 +3106,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 												if (directions != "")
 													directions = "," + directions;
 											}
-											prescriptionDetails = prescriptionDetails + " " + i + ")" + drugType + " "
+											prescriptionDetails = prescriptionDetails +"\n" +" " + i + ")" + drugType + " "
 													+ drugName + dosage + durationValue + directions;
 										}
 									}

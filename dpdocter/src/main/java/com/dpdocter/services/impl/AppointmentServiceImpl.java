@@ -1541,10 +1541,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 			} else {
 				if (request.getCreatedBy().getType().equals(AppointmentCreatedBy.DOCTOR.getType())) {
-					if (request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail())
+					if (request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail()) {
+						if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
 						sendEmail(doctorName, patientName, dateTime, clinicName,
 								"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", doctorEmailAddress, branch,null);
-
+						else
+							sendEmail(doctorName, patientName, dateTime, clinicName,
+									"RESCHEDULE_APPOINTMENT_TO_DOCTOR", doctorEmailAddress, branch,null);
+							
+					}
 					if (request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()) {
 						if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
 							sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
@@ -1987,21 +1992,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 		switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"confirmAppointmentToPatient.vm", branch);
+					"confirmAppointmentToPatient.vm",(!DPDoctorUtils.anyStringEmpty(branch))? branch:"");
 			mailService.sendEmail(emailAddress, appointmentConfirmToPatientMailSubject + " " + dateTime, body, null);
 		}
 			break;
 
 		case "CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"confirmAppointmentToDoctorByPatient.vm", branch);
+					"confirmAppointmentToDoctorByPatient.vm", (!DPDoctorUtils.anyStringEmpty(branch))? branch:"");
 			mailService.sendEmail(emailAddress, appointmentConfirmToDoctorMailSubject + " " + dateTime, body, null);
 		}
 			break;
 
 		case "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
-					"appointmentRequestToDoctorByPatient.vm", branch);
+					"appointmentRequestToDoctorByPatient.vm",(!DPDoctorUtils.anyStringEmpty(branch))? branch:"");
 			mailService.sendEmail(emailAddress, appointmentRequestToDoctorMailSubject + " " + dateTime, body, null);
 		}
 			break;

@@ -5,9 +5,11 @@ import java.util.List;
 import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.BulkSmsPackage;
 import com.dpdocter.beans.BulkSmsReport;
+import com.dpdocter.beans.MessageStatus;
 import com.dpdocter.request.OrderRequest;
 import com.dpdocter.request.PaymentSignatureRequest;
 import com.dpdocter.response.BulkSmsPaymentResponse;
+import com.dpdocter.response.MessageResponse;
 
 public interface BulkSmsServices {
 
@@ -33,10 +35,16 @@ public interface BulkSmsServices {
 
 		Boolean bulkSmsCreditCheck();
 
-		List<BulkSmsReport> getSmsReport(int page, int size, String doctorId, String locationId);
+		List<MessageResponse> getSmsReport(int page, int size, String doctorId, String locationId);
 
 		List<BulkSmsCredits> getCreditsByDoctorIdAndLocationId(int size, int page, String searchTerm, String doctorId,
 				String locationId);
+
+	
+
+		//String getSmsStatus(List<String> messageId);
+
+		MessageStatus getSmsStatus(String messageId);
 
 
 }
