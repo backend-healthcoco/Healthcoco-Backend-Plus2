@@ -19,7 +19,7 @@
         </div>
 
         <div style="padding: 0px 20px;">
-            <h3>${parentLab} lab uploaded report for ${patientName}.</h3>
+            <h3>Set password for Healthcoco+ account.</h3>
         </div>
 
         <div style="padding: 22px; background-color: #e6e6e3;">

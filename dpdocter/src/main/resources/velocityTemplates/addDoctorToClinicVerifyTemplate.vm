@@ -36,7 +36,7 @@
 
             <p style="margin: 0;">Welcome to Healthcoco.</p>
             <p style="margin: 10px 0 0 0;">We have built a health and wellness platform to connect users and improve the access of healthcare for one and all.</p>
-            <p style="margin: 10px 0 0 0;">You have been added by ${doctorName} of ${clinicName} as a doctor. This mail has been sent to the email ID that has been registered with your Healthcoco+ account. Your profile is currently being verified, and you shall be informed after verification is complete.</p>
+            <p style="margin: 10px 0 0 0;">You have been added by ${doctorName} of ${clinicName} as a doctor. This mail has been sent to the email ID that has been registered with your Healthcoco+ account. Your profile is currently being verified, and you will be informed after verification is complete.</p>
             <p style="margin: 10px 0 0 0;">Kindly verify your email ID by clicking on the link below:</p>
             <p style="margin: 20px 0 0 0;">Warm regards,</p>
             <p style="margin: 0;">Team Healthcoco</p>

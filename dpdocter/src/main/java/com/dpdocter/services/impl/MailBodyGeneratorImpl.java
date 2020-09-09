@@ -290,6 +290,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		context.put("patientName", patientName);
 		context.put("dateTime", dateTime);
 		context.put("clinicName", clinicName);
+		context.put("branch", branch);
 		context.put("imageURL", imagePath + "templatesImage");
 		context.put("contactUsEmail", contactUsEmail);
 		context.put("fbLink", fbLink);

@@ -25,7 +25,7 @@
 
       <div style="padding: 22px">
         <p>Hello ${patientName},</p>
-        <p style="margin: 0;">This is to inform you that your appointment with ${doctorName} on ${dateTime} at ${clinicName}${branch}has been confirmed.</p>
+        <p style="margin: 0;">This is to inform you that your appointment with ${doctorName} on ${dateTime} at ${clinicName} ${branch} has been confirmed.</p>
         <p style="margin: 10px 0 0 0;">#* Please find the address as well as map below.<br><br>${Address}<br>${map}<br> *#</p>
         <p style="margin: 20px 0 0 0;">Warm regards,</p>
         <p style="margin: 0;">Team Healthcoco</p>

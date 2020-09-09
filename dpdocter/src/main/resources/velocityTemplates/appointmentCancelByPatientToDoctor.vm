@@ -26,7 +26,7 @@
         <div style="padding: 22px">
             <p>Hello ${doctorName},</p>
 
-            <p style="margin: 0;">Your appointment with ${patientName} scheduled on ${dateTime} at ${clinicName}${branch} has been cancelled by the patient. We regret the inconvenience caused.</p>
+            <p style="margin: 0;">Your appointment with ${patientName} scheduled on ${dateTime} at ${clinicName}, ${branch} has been cancelled by the patient. We regret the inconvenience caused.</p>
             <p style="margin: 20px 0 0 0;">Warm regards,</p>
             <p style="margin: 0;">Team Healthcoco</p>
         </div>

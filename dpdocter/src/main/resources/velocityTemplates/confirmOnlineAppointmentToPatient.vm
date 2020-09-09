@@ -17,8 +17,8 @@
           <img src="${imageURL}/ap_cn2.png" style="margin-top: 5px">
         </div>
 
-        <div>
-         <p style="color:#2c3335;font-size:15px;">Hello ${patientName},<br><br>This is to inform you that your online ${consultationType} consultation with ${doctorName} on ${dateTime} at ${clinicName}${branch}has been confirmed.
+        <div> 
+         <p style="color:#2c3335;font-size:15px;">Hello ${patientName},<br><br>This is to inform you that your online ${consultationType} consultation with ${doctorName} on ${dateTime} at ${clinicName} ${branch} has been confirmed.
       #*   Please find the address as well as map below.<br><br>{Address}<br>{map}<br> *#
          <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"></a><br><br>For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >${contactUsEmail}</a>
         <br><br>Stay Healthy and Happy,<br>Team Healthcoco.

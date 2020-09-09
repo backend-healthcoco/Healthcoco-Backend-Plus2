@@ -28,7 +28,7 @@
         <p style="margin: 0;">
           Name of Doctor: ${doctorName}<br>
           Name and address of clinic: ${clinicName} ${clinicAddress}<br>
-          Date of consultation:${mailRecordCreatedDate}<br><br>
+          Date of consultation: ${mailRecordCreatedDate}<br><br>
         </p>
         <p style="margin: 0;">For any concerns regarding the ${medicalRecordType} kindly contact ${doctorName} or ${clinicName}.</p>
         <p style="margin: 20px 0 0 0;">Warm regards,</p>

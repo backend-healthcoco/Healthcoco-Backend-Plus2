@@ -37,8 +37,8 @@
             <p style="margin: 10px 0 0 0;">Healthcoco is a healthcare and wellness company that provides an array of services to medical
                     practitioners as well as the general public. We offer top-notch software and services
                     for medical practitioners that enhances their professional productivity and efficiency.</p>
-                    button below:
-            <p style="margin: 10px 0 0 0;">You have been added to the community by Dr. {doctorName}.</p>
+                    
+            <p style="margin: 10px 0 0 0;">You have been added to the community by Dr. ${doctorName}.</p>
             <p style="margin: 10px 0 0 0;">To start benefiting from our services, please complete the verification process by clicking on the
                     button below:</p>
             <p style="margin: 20px 0 0 0;">Warm regards,</p>

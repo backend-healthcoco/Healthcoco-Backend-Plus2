@@ -35,7 +35,7 @@
       <div style="padding: 22px">
         <p>Hello Healthcoco Team,</p>
 
-        <p style="margin: 0;">You have got reference for doctor singup from ${labName}. Following are the details :</p>
+        <p style="margin: 0;">You have got reference for doctor signup from ${labName}. Following are the details:</p>
         <p style="margin: 10px 0 0 0;">Name: ${fName}</p>
         <p style="margin: 0;">Mobile number: ${mobileNumber}</p>
         <p style="margin: 0;">Clinic Name: ${locationName}</p>

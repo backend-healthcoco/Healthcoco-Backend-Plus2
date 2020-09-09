@@ -48,7 +48,7 @@
 			<br> Name : ${patientName}
 			<br> Gender : ${gender}
 			<br> Mobile number : ${mobileNumber}
-			<br> Profession :${profession}
+			<br> Profession : ${profession}
 			<br> DOB : ${birthDate}
 			<br> Address : ${address}
 			<br> City : ${city}

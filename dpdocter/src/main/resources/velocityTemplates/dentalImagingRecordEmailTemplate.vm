@@ -25,9 +25,9 @@
             <div style="padding: 22px">
                 <p>Hello ${doctorName},</p>
 
-                <p style="margin: 0;">${dentalImagingLab} has uploaded a report for ${patientName} who was referred by you.</p>
+                <p style="margin: 0;">${dentalImagingLab} has uploaded a report for ${patientName}, referred by you.</p>
                 <p style="margin: 0;">The report(s) are attached in the email to download.</p>
-                <p style="margin: 10px 0 0 0;">Now your imaging reports are available on Healthcoco+ App as well</p>
+                <p style="margin: 10px 0 0 0;">Now your imaging reports are available on Healthcoco+ App as well.</p>
                 <p style="margin: 20px 0 0 0;">Warm regards,</p>
                 <p style="margin: 0;">Team Healthcoco</p>
 

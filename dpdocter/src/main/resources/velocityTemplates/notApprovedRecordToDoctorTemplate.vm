@@ -28,8 +28,8 @@
         <p style="margin: 0;">${clinicName} has uploaded ${recordName} report(RID: ${uniqueRecordId}) of ${patientName}.</p>
         <p style="margin: 10px 0 0 0;">The reports are present under ${patientName} report section in healthcoco+.</p>
         <p style="margin: 10px 0 0 0;">If reports are accurate and don't require a re-test, please APPROVE. 
-On Approval reports will be sent to patient and ${clinicName} will be notified regarding the acceptance of report. </p>
-        <p style="margin: 10px 0 0 0;">If reports require a re-test, please DECLINE. On Decline, ${clinicName} will be notified regarding the decline of report.</p>
+On approval, reports will be sent to patient and ${clinicName} will be notified regarding the acceptance of report. </p>
+        <p style="margin: 10px 0 0 0;">If reports require a re-test, please DECLINE. On decline, ${clinicName} will be notified regarding the decline of report.</p>
         <p style="margin: 10px 0 0 0;">Now you can view all your reports on Healthcoco+ app as well!</p>
         <p style="margin: 20px 0 0 0;">Warm regards,</p>
         <p style="margin: 0;">Team Healthcoco</p>

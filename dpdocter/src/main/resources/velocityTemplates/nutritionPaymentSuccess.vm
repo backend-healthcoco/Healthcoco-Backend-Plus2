@@ -25,7 +25,7 @@
 
       <div style="padding: 22px">
         <p>Hi ${patientName}</p>
-        <p style="margin: 0;">Your payment having order id: ${orderId} of ${planName} for Rs. ${amount} is received.
+        <p style="margin: 0;">Your with having order id: ${orderId} of ${planName} for Rs. ${amount} is received.
           
         <h1 style="color: #123493;padding-left: 15px;font-size: 17px">Order Summary:</h1>
           <p style="color: #2c3335; text-align: center; border: 2px dotted #ff6000;outline: 1px;padding: 10px;">
