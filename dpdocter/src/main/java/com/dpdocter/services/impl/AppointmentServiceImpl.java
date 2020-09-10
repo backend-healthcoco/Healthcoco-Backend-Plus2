@@ -1263,7 +1263,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		if (request.getPatientId() == null || request.getPatientId().isEmpty()) {
 
 			if (DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
-				throw new BusinessException(ServiceError.InvalidInput, "Patient not selected");
+				throw new BusinessException(ServiceError.InvalidInput, "Patient not selected in Doctor App" + request.getPatientId() );
 			}
 			PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
 			patientRegistrationRequest.setFirstName(request.getLocalPatientName());

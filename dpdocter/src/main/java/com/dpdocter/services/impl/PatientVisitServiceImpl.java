@@ -780,7 +780,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						&& patientVisitCollection.getClinicalNotesId() != null
 						&& patientVisitCollection.getClinicalNotesId().size() > 0) {
 					throw new BusinessException(ServiceError.NotAcceptable,
-							"Trying to add multipl clinical notes in visit");
+							"Trying to add multipl clinical notes in visit" + request.getClinicalNote().getId()
+							+patientVisitCollection.getClinicalNotesId() + patientVisitCollection.getClinicalNotesId().size());
 				}
 			} else {
 				patientVisitCollection = new PatientVisitCollection();
