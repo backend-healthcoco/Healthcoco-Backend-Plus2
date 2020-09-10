@@ -43,6 +43,7 @@ public class MessageResponse extends GenericCollection{
 
 	private String hospitalId;
 	
+	private Long totalCreditsSpent=0L;
 
 	public String getBody() {
 		return body;
@@ -85,9 +86,18 @@ public class MessageResponse extends GenericCollection{
 	}
 
 	
+	
 
 	
 	
+
+	public Long getTotalCreditsSpent() {
+		return totalCreditsSpent;
+	}
+
+	public void setTotalCreditsSpent(Long totalCreditsSpent) {
+		this.totalCreditsSpent = totalCreditsSpent;
+	}
 
 	public String getCreatedDateTime() {
 		return createdDateTime;

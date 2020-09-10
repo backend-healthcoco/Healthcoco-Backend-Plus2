@@ -1086,6 +1086,7 @@ public class SMSServicesImpl implements SMSServices {
 				collection.setCreatedTime(new Date());
 				collection.setUpdatedTime(new Date());
 				collection.setMessageType("BULK_SMS");
+				collection.setTotalCreditsSpent(subCredits);
 				messageRepository.save(collection);			
 				response=list.getMessageId();
 				

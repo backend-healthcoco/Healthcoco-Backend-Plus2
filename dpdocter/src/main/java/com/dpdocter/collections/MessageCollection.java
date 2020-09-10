@@ -47,6 +47,9 @@ public class MessageCollection extends GenericCollection{
 	
 	@Field
 	private String messageType;
+	
+	@Field
+	private Long totalCreditsSpent=0L;
 
 	public String getBody() {
 		return body;
@@ -169,6 +172,14 @@ public class MessageCollection extends GenericCollection{
 
 	public void setHospitalId(ObjectId hospitalId) {
 		this.hospitalId = hospitalId;
+	}
+
+	public Long getTotalCreditsSpent() {
+		return totalCreditsSpent;
+	}
+
+	public void setTotalCreditsSpent(Long totalCreditsSpent) {
+		this.totalCreditsSpent = totalCreditsSpent;
 	}
 
 	
