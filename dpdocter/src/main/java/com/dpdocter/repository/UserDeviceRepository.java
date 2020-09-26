@@ -19,4 +19,6 @@ public interface UserDeviceRepository extends MongoRepository<UserDeviceCollecti
 	List<UserDeviceCollection> findByRoleAndDeviceType(String role, String type);
 
 	List<UserDeviceCollection> findByLocaleId(ObjectId localeId);
+
+	List<UserDeviceCollection> findByDeviceType(String type);
 }

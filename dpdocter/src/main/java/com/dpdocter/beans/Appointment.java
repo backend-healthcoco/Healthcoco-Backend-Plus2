@@ -116,6 +116,10 @@ public class Appointment extends GenericCollection {
 	
 	private Long callDurationInMinutes=0L;
 	
+	private Boolean isAnonymousAppointment = false;
+	
+	private String specialityId;
+	
 	public PatientTreatmentResponse getPatientTreatmentResponse() {
 		return patientTreatmentResponse;
 	}
@@ -515,6 +519,22 @@ public class Appointment extends GenericCollection {
 	
 
 	
+	public Boolean getIsAnonymousAppointment() {
+		return isAnonymousAppointment;
+	}
+
+	public void setIsAnonymousAppointment(Boolean isAnonymousAppointment) {
+		this.isAnonymousAppointment = isAnonymousAppointment;
+	}
+
+	public String getSpecialityId() {
+		return specialityId;
+	}
+
+	public void setSpecialityId(String specialityId) {
+		this.specialityId = specialityId;
+	}
+
 	public Long getCallDurationInMinutes() {
 		return callDurationInMinutes;
 	}

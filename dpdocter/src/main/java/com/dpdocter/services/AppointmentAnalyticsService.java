@@ -76,4 +76,7 @@ OnlineConsultationAnalytics getConsultationAnalytics(String fromDate,String toDa
 
 
 	PaymentSummary getPaymentSummary(String fromDate, String toDate, String doctorId);
+
+	OnlineConsultationAnalytics getConsultationAnalyticsWithSpeciality(String fromDate, String toDate, String doctorId,
+			String locationId, String type);
 }

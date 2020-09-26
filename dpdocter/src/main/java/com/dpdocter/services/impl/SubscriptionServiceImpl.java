@@ -911,6 +911,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					doctorSubscriptionPaymentRepository.save(payment);
 					response = new SubscriptionResponse();
 					BeanUtil.map(payment, response);
+					
+				
 				}
 			}
 
@@ -1095,7 +1097,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 								doctorSubscriptionPaymentCollection.getTransactionId(),doctorSubscriptionPaymentCollection.getReciept(),Integer.toString(doctorSubscriptionPaymentCollection.getAmount()),
 								doctorSubscriptionPaymentCollection.getPackageName().toString(),doctorSubscriptionPaymentCollection.getMode().toString(),request.getDuration(),"subscriptionPayment.vm");
 				Boolean mail=	mailService.sendEmail(userCollection.getEmailAddress(),"Subscription Plan Updated on Healthcoco+", body, null);
-//
+
+				pushNotificationServices.notifyUser(userCollection.getId().toString(),
+						"Your Subscription has been updated successfully.", ComponentType.SUBSCRIPTION_PLAN.getType(), null, null);
+
+				//
 //						try {
 //							Boolean ckM = mailService.sendEmail(userCollection.getEmailAddress(), "About payment", body,
 //									null);

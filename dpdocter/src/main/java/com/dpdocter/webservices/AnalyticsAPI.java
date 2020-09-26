@@ -886,5 +886,19 @@ public class AnalyticsAPI {
 		
 	}
 	
+	@Path(value = PathProxy.AnalyticsUrls.GET_ONLINE_CONSULTATION_WITH_SPECIALITIES_ANALYTICS)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_ONLINE_CONSULTATION_WITH_SPECIALITIES_ANALYTICS, notes = PathProxy.AnalyticsUrls.GET_ONLINE_CONSULTATION_WITH_SPECIALITIES_ANALYTICS)
+	public Response<OnlineConsultationAnalytics> getConsultationWithSpecialities(@QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "type") String type,
+			@QueryParam(value = "fromDate") String fromDate, @QueryParam(value = "toDate") String toDate) {
+
+		Response<OnlineConsultationAnalytics> response = new Response<OnlineConsultationAnalytics>();
+		response.setData(appointmentAnalyticsService.getConsultationAnalyticsWithSpeciality(fromDate,toDate, doctorId, locationId, type));
+		return response;
+		
+		
+	}
+	
 
 }

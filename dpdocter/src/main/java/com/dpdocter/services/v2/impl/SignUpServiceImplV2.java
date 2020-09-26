@@ -208,8 +208,9 @@ public class SignUpServiceImplV2 implements SignUpService{
 			List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 			smsDetails.add(smsDetail);
 			smsTrackDetail.setSmsDetails(smsDetails);
-			smsServices.sendSMS(smsTrackDetail, false);
-
+			//smsServices.sendSMS(smsTrackDetail, false);
+			smsServices.sendOtpSms(smsTrackDetail, true);
+			
 		    OTPCollection otpCollection = new OTPCollection();
 		    otpCollection.setCreatedTime(new Date());
 		    otpCollection.setOtpNumber(OTP);
@@ -361,6 +362,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 			doctorClinicProfileCollection.setLocationId(locationCollection.getId());
 			doctorClinicProfileCollection.setMrCode(request.getMrCode());
 			doctorClinicProfileCollection.setIsActivate(true);
+			doctorClinicProfileCollection.setIsSuperAdmin(true);
 			doctorClinicProfileCollection.setCreatedTime(new Date());
 			if(request.getMrCode() != null){
 				pcUserCollection = pcUserRepository.findByMrCode(request.getMrCode());
@@ -437,8 +439,8 @@ public class SignUpServiceImplV2 implements SignUpService{
 			locations.add(locationAndAccessControl);
 			hospital.setLocationsAndAccessControl(locations);
 			response.setHospital(hospital);
-//			pushNotificationServices.notifyUser(userCollection.getId().toString(),
-//					"Your emailId has been verified successfully.", ComponentType.EMAIL_VERIFICATION.getType(), null, null);
+			pushNotificationServices.notifyUser(userCollection.getId().toString(),
+					"Your Signup has been done successfully.", ComponentType.SIGNED_UP.getType(), null, null);
 
 
 		} catch (DuplicateKeyException de) {
@@ -486,6 +488,11 @@ public class SignUpServiceImplV2 implements SignUpService{
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 				tokenCollection.setIsUsed(true);
 				tokenRepository.save(tokenCollection);
+				
+				pushNotificationServices.notifyUser(doctorClinicProfileCollection.getDoctorId().toString(),
+						"Your email has been verified successfully.", ComponentType.EMAIL_VERIFICATION.getType(), null, null);
+
+				
 				return "You have successfully verified your email address."
 						+ "Download the Healthcoco+ app - Every Doctor's Pocket Clinic."
 						+ "Stay Healthy and Happy!";

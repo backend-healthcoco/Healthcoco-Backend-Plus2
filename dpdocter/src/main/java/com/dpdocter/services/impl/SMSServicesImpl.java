@@ -1218,5 +1218,113 @@ public class SMSServicesImpl implements SMSServices {
 		}
 
 	
+	@Override
+	public Boolean sendOtpSms(SMSTrackDetail smsTrackDetail, Boolean save)
+	{
+		
+		Boolean response = false;
+		String responseId = null;
+		
+		
+		try {
+			
+			String type="OTP";
+			String message=smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText();
+			String mobileNumber=smsTrackDetail.getSmsDetails().get(0).getSms().getSmsAddress().getRecipient();
+			String strUrl = "https://api.ap.kaleyra.io/v1/"+SID+"/messages";
+			
+			String senderId=null;
+			
+			
+		
+			 ObjectMapper mapper = new ObjectMapper();
+			Boolean isSMSInAccount = true;
+			UserMobileNumbers userNumber = null;
+//			SubscriptionDetailCollection subscriptionDetailCollection = null;
+
+			if (!isEnvProduction) {
+				FileInputStream fileIn = new FileInputStream(MOBILE_NUMBERS_RESOURCE);
+				ObjectInputStream in = new ObjectInputStream(fileIn);
+				userNumber = (UserMobileNumbers) in.readObject();
+				in.close();
+				fileIn.close();
+			}
+//			if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId())) {
+//				
+//				List<SubscriptionDetailCollection> subscriptionDetailCollections = subscriptionDetailRepository
+//						.findSuscriptionDetailBylocationId(smsTrackDetail.getLocationId());
+//				if(subscriptionDetailCollections !=null)subscriptionDetailCollection = subscriptionDetailCollections.get(0);
+//			}
+			 ByteArrayOutputStream out = new ByteArrayOutputStream();
+			 MessageResponse list=null;
+			for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
+				/*if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
+					isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(), subscriptionDetailCollection);*/
+				if (isSMSInAccount) {
+					if (!isEnvProduction) {
+						String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
+						if (userNumber != null && smsDetails.getSms() != null
+								&& smsDetails.getSms().getSmsAddress() != null) {
+							if (userNumber.mobileNumber.contains(recipient)) {
+								smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE + recipient);
+
+							HttpClient client = HttpClients.custom().build();
+							HttpUriRequest httprequest = RequestBuilder.post().addParameter("to",COUNTRY_CODE + recipient)
+									.addParameter("type", type)
+									.addParameter("body", message)
+									.addParameter("sender",SENDER_ID)
+							  .setUri(strUrl)
+							  .setHeader( "api-key", KEY)
+							  .build();
+							System.out.println("response"+client.execute(httprequest));
+							System.out.println("senderId"+senderId);
+							 org.apache.http.HttpResponse responses = client.execute(httprequest);
+							 responses.getEntity().writeTo(out);
+							 list = mapper.readValue(out.toString(),MessageResponse.class);
+							}
+						}
+						}
+					} 
+				}
+
+			
+				if (save)
+				{
+				   
+				   
+				 
+				 String responseString = out.toString();
+				System.out.println("responseString"+responseString);
+				 
+
+				
+		       
+				MessageCollection collection=new MessageCollection();
+				list.setMessageId(list.getId());
+				list.setId(null);
+				BeanUtil.map(list, collection);
+				collection.setDoctorId(smsTrackDetail.getDoctorId());
+				collection.setLocationId(smsTrackDetail.getLocationId());
+				collection.setHospitalId(smsTrackDetail.getHospitalId());
+				collection.setCreatedTime(new Date());
+				collection.setUpdatedTime(new Date());
+				collection.setMessageType(smsTrackDetail.getType());
+				messageRepository.save(collection);	
+				}
+				//response=list.getMessageId();
+				if (!DPDoctorUtils.anyStringEmpty(responseId))
+					response = true;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+
+		
+	}
+	
+	
 	
 }

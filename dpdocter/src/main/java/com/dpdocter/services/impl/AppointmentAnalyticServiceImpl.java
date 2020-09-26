@@ -2030,6 +2030,120 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		}
 		return response;
 	}
+	
+	@Override
+	public OnlineConsultationAnalytics getConsultationAnalyticsWithSpeciality(String fromDate, String toDate, String doctorId,
+			String locationId, String type) {
+		OnlineConsultationAnalytics response=new OnlineConsultationAnalytics();
+		try {
+			
+			Criteria criteria = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			
+
+//			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+//				criteria.and("locationId").is(new ObjectId(locationId));
+//			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			DateTime fromDateTime=null,toDateTime=null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+			//	DateTime
+				fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+				criteria.and("fromDate").gte(fromDateTime);
+				System.out.println(fromDateTime);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(toDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+			//	DateTime 
+				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				
+				System.out.println(toDateTime);
+
+				criteria.and("toDate").lte(toDateTime);
+			}
+			
+//			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+//				from = new Date(Long.parseLong(fromDate));
+//				to = new Date(Long.parseLong(toDate));
+//
+//			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+//				from = new Date(Long.parseLong(fromDate));
+//				to = new Date();
+//			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+//				from = new Date(date);
+//				to = new Date(Long.parseLong(toDate));
+//			} else {
+//				from = new Date(date);
+//				to = new Date();
+//			}
+//
+//			fromTime = new DateTime(from);
+//			toTime = new DateTime(to);
+//
+//			criteria.and("fromDate").gte(fromTime).lte(toTime)
+					criteria.and("type").is(type);
+					
+					criteria.and("isAnonymousAppointment").is(true);
+
+			
+			
+//			criteria.orOperator(new Criteria("state").is(AppointmentState.CONFIRM.toString()),
+//					new Criteria("state").is(AppointmentState.RESCHEDULE.toString()),
+//					new Criteria("state").is(AppointmentState.NEW.toString()));
+
+			Criteria criteria2=new Criteria();
+			criteria2.and("doctorId").is(new ObjectId(doctorId));
+		//	criteria2.and("locationId").is(new ObjectId(locationId));
+		//	criteria2.and("fromDate").gte(fromTime).lte(toTime)
+			criteria2.and("type").is(type);
+			criteria2.and("consultationType").is(ConsultationType.CHAT.toString());
+			criteria2.and("isAnonymousAppointment").is(true);
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) 
+			criteria2.and("fromDate").gte(fromDateTime);
+			
+			if (!DPDoctorUtils.anyStringEmpty(toDate)) 
+			criteria2.and("toDate").lte(toDateTime);
+			
+		//	response.setTotalOnlineConsultation(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+				criteria.and("consultationType").is(ConsultationType.VIDEO.toString());
+			response.setTotalVideoConsultation(mongoTemplate.count(new Query(criteria), AppointmentCollection.class));
+			//criteria2.and("consultationType").is(ConsultationType.CHAT.toString());
+			response.setTotalChatConsultation(mongoTemplate.count(new Query(criteria2),AppointmentCollection.class));
+			
+			response.setTotalOnlineConsultation(response.getTotalChatConsultation()+response.getTotalVideoConsultation());
+
+			
+		}catch (BusinessException e) {
+			logger.error("Error while getting online Consultation Analytics " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting online Consultation Analytics " + e.getMessage());
+
+		}
+		return response;
+	}
+
 
 
 }

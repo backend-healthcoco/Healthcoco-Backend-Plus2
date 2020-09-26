@@ -2255,7 +2255,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Transactional
 	public Response<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId,
 			String from, String to, int page, int size, String updatedTime, String status, String sortBy,
-			String fromTime, String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb, String type) {
+			String fromTime, String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb, String type,Boolean isAnonymousAppointment) {
 		Response<Appointment> response = new Response<Appointment>();
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -2270,6 +2270,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 			criteria.and("updatedTime").gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
+			
+			if (isAnonymousAppointment !=null)
+				criteria.and("isAnonymousAppointment").is(isAnonymousAppointment);
+
 
 			if (doctorId != null && !doctorId.isEmpty()) {
 				List<ObjectId> doctorObjectIds = new ArrayList<ObjectId>();
