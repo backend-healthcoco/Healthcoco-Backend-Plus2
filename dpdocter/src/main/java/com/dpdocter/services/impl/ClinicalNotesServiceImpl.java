@@ -405,9 +405,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			clinicalNotesCollection.setCreatedBy(createdBy);
 			
-			if (request.getTreatmentObservation() != null) {
-				clinicalNotesCollection.setTreatmentObservation(request.getTreatmentObservation().getObservations());
-			} 
+//			if (request.getTreatmentObservation() != null) {
+//				clinicalNotesCollection.setTreatmentObservation(request.getTreatmentObservation().getObservations());
+//			} 
+			
 			/*
 			 * if(request.getPresentComplaint() != null ||
 			 * !request.getPresentComplaint().isEmpty()) { ArrayList<String>
@@ -1394,14 +1395,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
 			
-			PatientTreatmentResponse treatment=addPatientTreatmentsThroughClinicalNotes(clinicalNotesCollection,
-					request.getTreatmentObservation().getTreatments());
+//			PatientTreatmentResponse treatment=addPatientTreatmentsThroughClinicalNotes(clinicalNotesCollection,
+//					request.getTreatmentObservation().getTreatments());
 			
 			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
 			TreatmentObservation treatmentObservation =new TreatmentObservation();
-			treatmentObservation.setTreatments(treatment.getTreatments());
-			treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
+//			treatmentObservation.setTreatments(treatment.getTreatments());
+//			treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
 			clinicalNotes.setTreatmentObservation(treatmentObservation);
 			// if(complaintIds != null &&
 			// !complaintIds.isEmpty())clinicalNotes.setComplaints(sortComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new
@@ -1589,12 +1590,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				clinicalNotesCollection.setCreatedTime(oldClinicalNotesCollection.getCreatedTime());
 			}
 			
-			if (request.getTreatmentObservation() != null) {
-				clinicalNotesCollection.setTreatmentObservation(request.getTreatmentObservation().getObservations());
-			} else {
-				clinicalNotesCollection.setTreatmentObservation(oldClinicalNotesCollection.getTreatmentObservation());
-
-			}
+//			if (request.getTreatmentObservation() != null) {
+//				clinicalNotesCollection.setTreatmentObservation(request.getTreatmentObservation().getObservations());
+//			} else {
+//				clinicalNotesCollection.setTreatmentObservation(oldClinicalNotesCollection.getTreatmentObservation());
+//
+//			}
 			clinicalNotesCollection.setAdminCreatedTime(oldClinicalNotesCollection.getAdminCreatedTime());
 			clinicalNotesCollection.setCreatedBy(oldClinicalNotesCollection.getCreatedBy());
 			clinicalNotesCollection.setDiscarded(oldClinicalNotesCollection.getDiscarded());
@@ -1606,15 +1607,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			
 			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
-			PatientTreatmentResponse treatment=addPatientTreatmentsThroughClinicalNotes(clinicalNotesCollection,
-					request.getTreatmentObservation().getTreatments());
-			
+//			PatientTreatmentResponse treatment=addPatientTreatmentsThroughClinicalNotes(clinicalNotesCollection,
+//					request.getTreatmentObservation().getTreatments());
+//			
 			
 			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
 			TreatmentObservation treatmentObservation =new TreatmentObservation();
-			treatmentObservation.setTreatments(treatment.getTreatments());
-			treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
+		//	treatmentObservation.setTreatments(treatment.getTreatments());
+		//	treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
 			clinicalNotes.setTreatmentObservation(treatmentObservation);
 
 			if (diagramIds != null && !diagramIds.isEmpty())

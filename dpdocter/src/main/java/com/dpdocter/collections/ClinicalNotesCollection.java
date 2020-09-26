@@ -216,9 +216,9 @@ public class ClinicalNotesCollection extends GenericCollection {
 	@Field
 	private PhysioExamination physioExamination;
 	
-	@Field
-	private List<Observation> treatmentObservation;
-
+	
+	//  @Field private List<Observation> treatmentObservation;
+	 
 
 	public String getProcedureNote() {
 		return procedureNote;
@@ -760,13 +760,13 @@ public class ClinicalNotesCollection extends GenericCollection {
 
 	
 
-	public List<Observation> getTreatmentObservation() {
-		return treatmentObservation;
-	}
-
-	public void setTreatmentObservation(List<Observation> treatmentObservation) {
-		this.treatmentObservation = treatmentObservation;
-	}
+//	public List<Observation> getTreatmentObservation() {
+//		return treatmentObservation;
+//	}
+//
+//	public void setTreatmentObservation(List<Observation> treatmentObservation) {
+//		this.treatmentObservation = treatmentObservation;
+//	}
 
 	public EyeSpecialityObservation getEyeObservation() {
 		return eyeObservation;
