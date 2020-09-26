@@ -103,12 +103,25 @@ public class DoctorProfile extends GenericCollection {
 
 	private BulkSmsCredits bulkSmsCredit;
 	
+	private Boolean isHealthcocoDoctor=false;
+
+	
+	
+	
 	//private Map<DoctorConsultation, String> onlineConsultationFees;
 	
 //	private List<DoctorConsultation> consultationType;
 	
 	//private List<ConsultationType> onlineConsultationType;
 
+
+	public Boolean getIsHealthcocoDoctor() {
+		return isHealthcocoDoctor;
+	}
+
+	public void setIsHealthcocoDoctor(Boolean isHealthcocoDoctor) {
+		this.isHealthcocoDoctor = isHealthcocoDoctor;
+	}
 
 	public String getId() {
 		return id;

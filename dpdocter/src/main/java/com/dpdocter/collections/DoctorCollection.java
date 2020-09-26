@@ -119,6 +119,10 @@ public class DoctorCollection extends GenericCollection {
 	@Field
 	private Boolean isPhotoIdVerified =false;
 
+	@Field
+	private Boolean isHealthcocoDoctor=false;
+
+
 	public Boolean getIsPrescriptionSMS() {
 		return isPrescriptionSMS;
 	}
@@ -398,6 +402,16 @@ public class DoctorCollection extends GenericCollection {
 
 	public void setIsPhotoIdVerified(Boolean isPhotoIdVerified) {
 		this.isPhotoIdVerified = isPhotoIdVerified;
+	}
+	
+	
+
+	public Boolean getIsHealthcocoDoctor() {
+		return isHealthcocoDoctor;
+	}
+
+	public void setIsHealthcocoDoctor(Boolean isHealthcocoDoctor) {
+		this.isHealthcocoDoctor = isHealthcocoDoctor;
 	}
 
 	@Override
