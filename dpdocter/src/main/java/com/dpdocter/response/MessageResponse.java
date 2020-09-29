@@ -27,6 +27,8 @@ public class MessageResponse extends GenericCollection{
 	
 	private Integer  totalCount;
 	
+	private Integer unicode;
+	
 	private List<MessageData> data;
 	
 	private String dlrurl;
@@ -179,6 +181,14 @@ public class MessageResponse extends GenericCollection{
 
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
+	}
+
+	public Integer getUnicode() {
+		return unicode;
+	}
+
+	public void setUnicode(Integer unicode) {
+		this.unicode = unicode;
 	}
 
 	

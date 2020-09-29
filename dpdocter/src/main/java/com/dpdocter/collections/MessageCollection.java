@@ -29,6 +29,10 @@ public class MessageCollection extends GenericCollection{
 	private String createdDateTime;
 	@Field
 	private Integer  totalCount;
+	
+	@Field
+	private Integer unicode;
+	
 	@Field
 	private List<MessageData> data;
 	@Field
@@ -180,6 +184,14 @@ public class MessageCollection extends GenericCollection{
 
 	public void setTotalCreditsSpent(Long totalCreditsSpent) {
 		this.totalCreditsSpent = totalCreditsSpent;
+	}
+
+	public Integer getUnicode() {
+		return unicode;
+	}
+
+	public void setUnicode(Integer unicode) {
+		this.unicode = unicode;
 	}
 
 	

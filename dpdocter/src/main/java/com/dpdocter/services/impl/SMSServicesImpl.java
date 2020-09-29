@@ -1060,10 +1060,11 @@ public class SMSServicesImpl implements SMSServices {
 						.addParameter("type", type)
 						.addParameter("body", message)
 						.addParameter("sender",SENDER_ID)
+						.addParameter("unicode", "1")
 				  .setUri(strUrl)
 				  .setHeader( "api-key", KEY)
 				  .build();
-				System.out.println("response"+client.execute(httprequest));
+				//System.out.println("response"+client.execute(httprequest));
 				 org.apache.http.HttpResponse responses = client.execute(httprequest);
 
 				 
@@ -1151,26 +1152,27 @@ public class SMSServicesImpl implements SMSServices {
 //				}
 				 ByteArrayOutputStream out = new ByteArrayOutputStream();
 				 MessageResponse list=null;
-				for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
+			//	for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
 					/*if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
 						isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(), subscriptionDetailCollection);*/
 					if (isSMSInAccount) {
 						if (!isEnvProduction) {
-							String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
-							if (userNumber != null && smsDetails.getSms() != null
-									&& smsDetails.getSms().getSmsAddress() != null) {
-								if (userNumber.mobileNumber.contains(recipient)) {
-									smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE + recipient);
+						//	String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
+//							if (userNumber != null && smsDetails.getSms() != null
+//									&& smsDetails.getSms().getSmsAddress() != null) {
+								if (userNumber.mobileNumber.contains(mobileNumber)) {
+								//	smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE + mobileNumber);
 
 								HttpClient client = HttpClients.custom().build();
-								HttpUriRequest httprequest = RequestBuilder.post().addParameter("to",COUNTRY_CODE + recipient)
+								HttpUriRequest httprequest = RequestBuilder.post().addParameter("to",COUNTRY_CODE + mobileNumber)
 										.addParameter("type", type)
 										.addParameter("body", message)
 										.addParameter("sender",SENDER_ID)
+										.addParameter("unicode", "1")
 								  .setUri(strUrl)
 								  .setHeader( "api-key", KEY)
 								  .build();
-								System.out.println("response"+client.execute(httprequest));
+								//System.out.println("response"+client.execute(httprequest));
 								System.out.println("senderId"+senderId);
 								 org.apache.http.HttpResponse responses = client.execute(httprequest);
 								 responses.getEntity().writeTo(out);
@@ -1178,8 +1180,8 @@ public class SMSServicesImpl implements SMSServices {
 								}
 							}
 							}
-						} 
-					}
+						 
+					
 
 				
 					if (save)
