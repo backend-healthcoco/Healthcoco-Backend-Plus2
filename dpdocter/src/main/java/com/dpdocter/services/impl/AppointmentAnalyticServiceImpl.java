@@ -44,6 +44,7 @@ import com.dpdocter.beans.PaymentSettlementItems;
 import com.dpdocter.beans.PaymentSettlements;
 import com.dpdocter.beans.PaymentSummary;
 import com.dpdocter.collections.AppointmentCollection;
+import com.dpdocter.collections.AppointmentPaymentTransferCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -2143,6 +2144,172 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		}
 		return response;
 	}
+	
+	
+	@Override
+	public PaymentSummary getConsultationWithSpecialitiesPaymentSummary(String fromDate, String toDate, String doctorId) {
+		PaymentSummary response=null;
+		try {
+			
+			Criteria criteria1 = new Criteria();
+			DateTime fromTime = null;
+			DateTime toTime = null;
+			Date from = null;
+			Date to = null;
+			long date = 0;
+			
+
+		
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria1.and("doctorId").is(new ObjectId(doctorId));
+			}
+			
+			
+			
+//			if (!DPDoctorUtils.anyStringEmpty(fromDate, toDate)) {
+//				from = new Date(Long.parseLong(fromDate));
+//				to = new Date(Long.parseLong(toDate));
+//
+//			} else if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+//				from = new Date(Long.parseLong(fromDate));
+//				to = new Date();
+//			} else if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+//				from = new Date(date);
+//				to = new Date(Long.parseLong(toDate));
+//			} else {
+//				from = new Date(date);
+//				to = new Date();
+//			}
+//
+//			fromTime = new DateTime(from);
+//			toTime = new DateTime(to);
+//
+//			criteria.and("fromDate").gte(fromTime).lte(toTime);
+			
+			
+			
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			DateTime fromDateTime = null, toDateTime = null;
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(toDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			}
+			if (fromDateTime != null && toDateTime != null) {
+				criteria1.and("createdTime").gte(fromDateTime).lte(toDateTime);
+				
+			} else if (fromDateTime != null) {
+				criteria1.and("createdTime").gte(fromDateTime);
+				
+			} else if (toDateTime != null) {
+				criteria1.and("createdTime").lte(toDateTime);
+				
+			}
+
+			
+			Aggregation aggregation = null;
+			
+			
+			
+			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
+					new BasicDBObject("_id", "$_id")
+					.append("doctorId", "$doctorId")
+				//	.append("totalAmountReceivedByChat", "$totalAmountReceivedByChat")
+					 .append("totalAmountReceivedByChat", new BasicDBObject(
+						        "$cond", new BasicDBObject(
+								          "if", new BasicDBObject("$eq", Arrays.asList("$payment.consultationType", ConsultationType.CHAT.getType())))
+								        .append("then", "$amount")
+								        .append("else", 0)))
+					 .append("totalAmountReceivedByVideo", new BasicDBObject(
+						        "$cond", new BasicDBObject(
+								          "if", new BasicDBObject("$eq", Arrays.asList("$payment.consultationType", ConsultationType.VIDEO.getType())))
+								        .append("then", "$amount")
+								        .append("else", 0)))
+					
+			//		.append("consultationType.consultationType", "$consultationType.consultationType")					
+			//		.append("consultationType.cost", "$consultationType.cost")
+			//		.append("consultationType.healthcocoCharges", "$consultationType.healthcocoCharges")
+					.append("createdTime", "$createdTime")					
+					.append("updatedTime", "$updatedTime")));
+			
+			
+			CustomAggregationOperation project2 = new CustomAggregationOperation(new Document("$project",
+					new BasicDBObject("_id", "$_id")
+					.append("doctorId", "$doctorId")
+				//	.append("totalAmountReceivedByChat", "$totalAmountReceivedByChat")
+					 .append("totalAmountfromChat","$totalAmountfromChat")
+					 .append("totalAmountfromVideo","$totalAmountfromVideo")
+					
+			//		.append("consultationType.consultationType", "$consultationType.consultationType")					
+			//		.append("consultationType.cost", "$consultationType.cost")
+			//		.append("consultationType.healthcocoCharges", "$consultationType.healthcocoCharges")
+					.append("createdTime", "$createdTime")					
+					.append("updatedTime", "$updatedTime")));
+			
+			
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
+					
+							new BasicDBObject("_id", "_id")
+							.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("totalAmountReceivedByChat", new BasicDBObject("$sum", "$totalAmountReceivedByChat"))
+									.append("totalAmountReceivedByVideo", new BasicDBObject("$sum", "$totalAmountReceivedByVideo"))
+								//	.append("consultationType", new BasicDBObject("$addToSet", "$consultationType"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))));
+									
+
+
+			
+
+				aggregation = Aggregation.newAggregation( 
+						Aggregation.match(criteria1),
+					
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "payment"), 
+						Aggregation.unwind("payment"),
+						project,
+						group,
+						
+					//	project2,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+		//	}
+			System.out.println("aggregation:"+aggregation);
+					
+			response=mongoTemplate.aggregate(aggregation,AppointmentPaymentTransferCollection.class,PaymentSummary.class).getUniqueMappedResult();
+			
+			List<DoctorClinicProfileCollection> online=	doctorClinicRepository.findByDoctorId(new ObjectId(doctorId));	
+			DoctorClinicProfileCollection doctorClinicProfileCollection=online.get(0);
+			
+			if(response !=null)
+			{
+			response.setConsultationType(doctorClinicProfileCollection.getConsultationType());
+			response.setTotalAmountReceivedByOnlineConsultation(response.getTotalAmountReceivedByChat()+response.getTotalAmountReceivedByVideo());
+
+			}
+				}
+		catch (BusinessException e) {
+			logger.error("Error while getting online Consultation Analytics with analytics " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting online Consultation Analytics with analytics " + e.getMessage());
+
+		}
+		return response;
+
+	}
+
 
 
 
