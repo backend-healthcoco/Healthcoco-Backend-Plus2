@@ -208,7 +208,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 			List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 			smsDetails.add(smsDetail);
 			smsTrackDetail.setSmsDetails(smsDetails);
-			smsServices.sendSMS(smsTrackDetail, false);
+			smsServices.sendOTPSMS(smsTrackDetail, true);
 
 		    OTPCollection otpCollection = new OTPCollection();
 		    otpCollection.setCreatedTime(new Date());

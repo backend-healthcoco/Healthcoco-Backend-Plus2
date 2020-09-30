@@ -43,6 +43,19 @@ public class UnifiedCommunicationApi {
 
 	}
 	
+	
+	@Path(value = PathProxy.ChatUrls.CREATE_USER)
+	@GET
+	@ApiOperation(value = PathProxy.ChatUrls.CREATE_USER, notes = PathProxy.ChatUrls.CREATE_USER)
+	public Response<String> createUser(@PathParam("identity") String identity)
+			throws MessagingException {
+	    
+		Response<String> response = new Response<String>();
+		response.setData(unifiedCommunicationServices.createUser(identity));
+		return response;
+
+	}
+	
 	@Path(value = PathProxy.ChatUrls.CREATE_VIDEO_ACCESS_TOKEN)
 	@GET
 	@ApiOperation(value = PathProxy.ChatUrls.CREATE_VIDEO_ACCESS_TOKEN, notes = PathProxy.ChatUrls.CREATE_VIDEO_ACCESS_TOKEN)

@@ -664,46 +664,32 @@ public class SMSServicesImpl implements SMSServices {
 		return response;
 	}
 
-	@Override
-	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
-		Boolean response = false;
-		try {
-//			if (!isEnvProduction) {
-				response = sendSMS(smsTrackDetail, save);
-//			} else {
-//				if (sendSmsFromTwilio) {
-//					for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
-//						if (smsDetails.getSms() != null && smsDetails.getSms().getSmsAddress() != null) {
-//							String recipient = TWILIO_COUNTRY_CODE + smsDetails.getSms().getSmsAddress().getRecipient();
-//							smsDetails.getSms().getSmsAddress().setRecipient(recipient);
-//							SMS sms = new SMS();
-//							BeanUtil.map(smsDetails.getSms(), sms);
-//							TwilioRestClient client = new TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN);
-//
-//							List<NameValuePair> params = new ArrayList<NameValuePair>();
-//							params.add(new BasicNameValuePair("To", recipient));
-//							params.add(new BasicNameValuePair("From", TWILIO_FROM_NUMBER));// 15005550006
-//							params.add(new BasicNameValuePair("Body", sms.getSmsText()));
-//
-//							MessageFactory messageFactory = client.getAccount().getMessageFactory();
-//							com.twilio.sdk.resource.instance.Message message = messageFactory.create(params);
-//							responseId = message.getSid();
-//							smsTrackDetail.setResponseId(responseId);
-//						}
-//					}
-//					if (!DPDoctorUtils.anyStringEmpty(responseId))
-//						response = true;
-//				} else {
-//					response = sendSMS(smsTrackDetail, save);
-//				}
-//			}
-
-		} catch (BusinessException e) {
-			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, "Error while sendind Sms");
-		}
-		return response;
-	}
+	/*
+	 * @Override public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, Boolean
+	 * save) { Boolean response = false; try { // if (!isEnvProduction) { response =
+	 * sendSMS(smsTrackDetail, save); // } else { // if (sendSmsFromTwilio) { // for
+	 * (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) { // if
+	 * (smsDetails.getSms() != null && smsDetails.getSms().getSmsAddress() != null)
+	 * { // String recipient = TWILIO_COUNTRY_CODE +
+	 * smsDetails.getSms().getSmsAddress().getRecipient(); //
+	 * smsDetails.getSms().getSmsAddress().setRecipient(recipient); // SMS sms = new
+	 * SMS(); // BeanUtil.map(smsDetails.getSms(), sms); // TwilioRestClient client
+	 * = new TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN); // // List<NameValuePair>
+	 * params = new ArrayList<NameValuePair>(); // params.add(new
+	 * BasicNameValuePair("To", recipient)); // params.add(new
+	 * BasicNameValuePair("From", TWILIO_FROM_NUMBER));// 15005550006 //
+	 * params.add(new BasicNameValuePair("Body", sms.getSmsText())); // //
+	 * MessageFactory messageFactory = client.getAccount().getMessageFactory(); //
+	 * com.twilio.sdk.resource.instance.Message message =
+	 * messageFactory.create(params); // responseId = message.getSid(); //
+	 * smsTrackDetail.setResponseId(responseId); // } // } // if
+	 * (!DPDoctorUtils.anyStringEmpty(responseId)) // response = true; // } else {
+	 * // response = sendSMS(smsTrackDetail, save); // } // }
+	 * 
+	 * } catch (BusinessException e) { logger.error(e); throw new
+	 * BusinessException(ServiceError.Unknown, "Error while sendind Sms"); } return
+	 * response; }
+	 */
 
 	public Boolean checkNoOFsms(String massage, SubscriptionDetailCollection subscriptionDetailCollection) {
 		Boolean response = false;
@@ -1219,6 +1205,112 @@ public class SMSServicesImpl implements SMSServices {
 			return response;
 		}
 
+	
+	@Override
+	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
+		Boolean response = false;
+	try {
+
+//				response = sendSMS(smsTrackDetail, save);
+
+				String responseId = null;
+				
+					String type="OTP";
+					String message=smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText();
+					String mobileNumber=smsTrackDetail.getSmsDetails().get(0).getSms().getSmsAddress().getRecipient();
+					String strUrl = "https://api.ap.kaleyra.io/v1/"+SID+"/messages";
+				
+					String senderId=null;
+					
+						senderId=SENDER_ID;
+					
+					
+				
+					 ObjectMapper mapper = new ObjectMapper();
+					Boolean isSMSInAccount = true;
+					UserMobileNumbers userNumber = null;
+//					SubscriptionDetailCollection subscriptionDetailCollection = null;
+
+					if (!isEnvProduction) {
+						FileInputStream fileIn = new FileInputStream(MOBILE_NUMBERS_RESOURCE);
+						ObjectInputStream in = new ObjectInputStream(fileIn);
+						userNumber = (UserMobileNumbers) in.readObject();
+						in.close();
+						fileIn.close();
+					}
+//					if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId())) {
+//						
+//						List<SubscriptionDetailCollection> subscriptionDetailCollections = subscriptionDetailRepository
+//								.findSuscriptionDetailBylocationId(smsTrackDetail.getLocationId());
+//						if(subscriptionDetailCollections !=null)subscriptionDetailCollection = subscriptionDetailCollections.get(0);
+//					}
+					 ByteArrayOutputStream out = new ByteArrayOutputStream();
+					 MessageResponse list=null;
+				//	for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
+						/*if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
+							isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(), subscriptionDetailCollection);*/
+						if (isSMSInAccount) {
+							if (!isEnvProduction) {
+							//	String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
+//								if (userNumber != null && smsDetails.getSms() != null
+//										&& smsDetails.getSms().getSmsAddress() != null) {
+									if (userNumber.mobileNumber.contains(mobileNumber)) {
+									//	smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE + mobileNumber);
+
+									HttpClient client = HttpClients.custom().build();
+									HttpUriRequest httprequest = RequestBuilder.post().addParameter("to",COUNTRY_CODE + mobileNumber)
+											.addParameter("type", type)
+											.addParameter("body", message)
+											.addParameter("sender",SENDER_ID)
+											.addParameter("unicode", "1")
+									  .setUri(strUrl)
+									  .setHeader( "api-key", KEY)
+									  .build();
+									//System.out.println("response"+client.execute(httprequest));
+									System.out.println("senderId"+senderId);
+									 org.apache.http.HttpResponse responses = client.execute(httprequest);
+									 responses.getEntity().writeTo(out);
+									 list = mapper.readValue(out.toString(),MessageResponse.class);
+									 response = true;
+									}
+								}
+								}
+							 
+						
+						if (save)
+						{
+						   
+						   
+						 
+						 String responseString = out.toString();
+						System.out.println("responseString"+responseString);
+						 
+		       
+						MessageCollection collection=new MessageCollection();
+						list.setMessageId(list.getId());
+						list.setId(null);
+						BeanUtil.map(list, collection);
+						collection.setDoctorId(smsTrackDetail.getDoctorId());
+						collection.setLocationId(smsTrackDetail.getLocationId());
+						collection.setHospitalId(smsTrackDetail.getHospitalId());
+						collection.setCreatedTime(new Date());
+						collection.setUpdatedTime(new Date());
+						collection.setMessageType(smsTrackDetail.getType());
+						messageRepository.save(collection);	
+						response = true;
+						}
+						//response=list.getMessageId();
+						
+							
+					
+				
+
+		} catch (Exception e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while sending Sms");
+		} 
+		return response;
+	}
 	
 	
 }

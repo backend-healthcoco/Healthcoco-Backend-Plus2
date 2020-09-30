@@ -2381,6 +2381,8 @@ public interface PathProxy {
 	public interface ChatUrls {
 
 		public static final String CREATE_CHAT_ACCESS_TOKEN = "/chat/accessToken/create/{userId}";
+		
+		public static final String CREATE_USER = "/create/user/{identity}";
 
 		public static final String CREATE_CHAT_ACCESS_TOKEN_ANDROID = "/chat/accessTokenAndroid/create/{userId}";
 

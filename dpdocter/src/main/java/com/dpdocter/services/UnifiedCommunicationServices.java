@@ -12,6 +12,8 @@ public interface UnifiedCommunicationServices {
 
 	Boolean twilioPushNotification(String serviceSID);
 
+	String createUser(String identity);
+
 	
 
 }
