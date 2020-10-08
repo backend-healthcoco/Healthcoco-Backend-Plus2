@@ -330,7 +330,7 @@ public class BillingServiceImpl implements BillingService {
 							"Invoice cannot be edited as old invoice's total is less than paid amount.");
 				}
 				if (request.getCreatedTime() != null) {
-					doctorPatientInvoiceCollection.setCreatedTime(new Date());
+					doctorPatientInvoiceCollection.setCreatedTime(request.getCreatedTime());
 				}
 
 				if (!doctorPatientInvoiceCollection.getDoctorId().toString().equalsIgnoreCase(request.toString())) {

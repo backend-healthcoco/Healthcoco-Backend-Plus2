@@ -1108,14 +1108,9 @@ public class SMSServicesImpl implements SMSServices {
 				String strUrl = "https://api.ap.kaleyra.io/v1/"+SID+"/messages";
 			
 				String senderId=null;
-				if(locationCollection != null && !DPDoctorUtils.anyStringEmpty(locationCollection.getSmsCode()))
-				{
-					senderId=locationCollection.getSmsCode();
-				}
-				else
-				{
+				
 					senderId=SENDER_ID;
-				}
+				
 				
 			
 				 ObjectMapper mapper = new ObjectMapper();
@@ -1129,6 +1124,7 @@ public class SMSServicesImpl implements SMSServices {
 					userNumber = (UserMobileNumbers) in.readObject();
 					in.close();
 					fileIn.close();
+					System.out.println(userNumber);
 				}
 //				if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId())) {
 //					
@@ -1142,11 +1138,11 @@ public class SMSServicesImpl implements SMSServices {
 					/*if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
 						isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(), subscriptionDetailCollection);*/
 					if (isSMSInAccount) {
-						if (!isEnvProduction) {
+			//			if (!isEnvProduction) {
 						//	String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
 //							if (userNumber != null && smsDetails.getSms() != null
 //									&& smsDetails.getSms().getSmsAddress() != null) {
-								if (userNumber.mobileNumber.contains(mobileNumber)) {
+							//	if (userNumber.mobileNumber.contains(mobileNumber)) {
 								//	smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE + mobileNumber);
 
 								HttpClient client = HttpClients.custom().build();
@@ -1164,8 +1160,8 @@ public class SMSServicesImpl implements SMSServices {
 								 responses.getEntity().writeTo(out);
 								 list = mapper.readValue(out.toString(),MessageResponse.class);
 								}
-							}
-							}
+				//			}
+				//			}
 						 
 					
 
@@ -1250,11 +1246,11 @@ public class SMSServicesImpl implements SMSServices {
 						/*if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
 							isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(), subscriptionDetailCollection);*/
 						if (isSMSInAccount) {
-							if (!isEnvProduction) {
+					//		if (!isEnvProduction) {
 							//	String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
 //								if (userNumber != null && smsDetails.getSms() != null
 //										&& smsDetails.getSms().getSmsAddress() != null) {
-									if (userNumber.mobileNumber.contains(mobileNumber)) {
+	//								if (userNumber.mobileNumber.contains(mobileNumber)) {
 									//	smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE + mobileNumber);
 
 									HttpClient client = HttpClients.custom().build();
@@ -1273,8 +1269,8 @@ public class SMSServicesImpl implements SMSServices {
 									 list = mapper.readValue(out.toString(),MessageResponse.class);
 									 response = true;
 									}
-								}
-								}
+							//	}
+				//				}
 							 
 						
 						if (save)
