@@ -149,6 +149,11 @@ public class AppointmentCollection extends GenericCollection {
 	@Field
 	private Long callDurationInMinutes=0L;
 	
+	@Field
+	private Boolean isAnonymousAppointment = false;
+	@Field
+	private ObjectId specialityId;
+	
 
 	public String getCancelledByProfile() {
 		return cancelledByProfile;
@@ -436,6 +441,24 @@ public class AppointmentCollection extends GenericCollection {
 
 	public void setIsCreatedByPatient(Boolean isCreatedByPatient) {
 		this.isCreatedByPatient = isCreatedByPatient;
+	}
+	
+	
+
+	public Boolean getIsAnonymousAppointment() {
+		return isAnonymousAppointment;
+	}
+
+	public void setIsAnonymousAppointment(Boolean isAnonymousAppointment) {
+		this.isAnonymousAppointment = isAnonymousAppointment;
+	}
+
+	public ObjectId getSpecialityId() {
+		return specialityId;
+	}
+
+	public void setSpecialityId(ObjectId specialityId) {
+		this.specialityId = specialityId;
 	}
 
 	public String getBranch() {
