@@ -253,17 +253,17 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
 							userDeviceRepository.save(userDeviceCollection);
 						}
-//						else if (userDeviceCollection.getDeviceType().getType()
-//								.equalsIgnoreCase(DeviceType.WEB.getType())
-//								|| userDeviceCollection.getDeviceType().getType()
-//										.equalsIgnoreCase(DeviceType.WEB.getType())) {
-//							pushNotificationOnWebDevices(userDeviceCollection.getDeviceId(),
-//									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
-//									userDeviceCollection.getDeviceType().getType(),
-//									userDeviceCollection.getRole().getRole(), userId);
-//							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
-//							userDeviceRepository.save(userDeviceCollection);
-//						}
+						else if (userDeviceCollection.getDeviceType().getType()
+								.equalsIgnoreCase(DeviceType.WEB.getType())
+								|| userDeviceCollection.getDeviceType().getType()
+										.equalsIgnoreCase(DeviceType.WEB.getType())) {
+							pushNotificationOnWebDevices(userDeviceCollection.getDeviceId(),
+									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
+									userDeviceCollection.getDeviceType().getType(),
+									userDeviceCollection.getRole().getRole(), userId);
+							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
+							userDeviceRepository.save(userDeviceCollection);
+						}
 					}
 				}
 			}
@@ -439,10 +439,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 						 
 						data.put("to",pushToken.trim());
 						info.put("T", "PR");
-			       //     info.put("title",componentType ); // Notification title
-			      //      info.put("body", message);
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
 			            info.put( "content_available", true);
-			         //   info.put("RI",componentTypeId);
+			            info.put("RI",componentTypeId);
 			         //   info.put("PI",userId);// Notification body
 			            data.put("notification", info);
 					}else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
@@ -452,10 +452,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 						
 						data.put("to",pushToken.trim());
 						info.put("T", "RDI");
-			     //       info.put("title",componentType ); // Notification title
-			    //        info.put("body", message);
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
 			            info.put( "content_available", true);
-			        //    info.put("RI",componentTypeId);
+			            info.put("RI",componentTypeId);
 			       //     info.put("PI",userId);// Notification body
 			            data.put("notification", info);
 					}else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
@@ -465,10 +465,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 						
 						data.put("to",pushToken.trim());
 						info.put("T", "DWR");
-			       //     info.put("title",componentType ); // Notification title
-			       //     info.put("body", message);
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
 			            info.put( "content_available", true);
-			           // info.put("RI",componentTypeId);
+			            info.put("RI",componentTypeId);
 			          //  info.put("PI",userId);// Notification body
 			            data.put("notification", info);
 					}else if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTION_REFRESH.getType())) {
@@ -477,11 +477,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 //						isSilent = true;
 						
 						data.put("to",pushToken.trim());
-						info.put("T", "RX");
-			     //       info.put("title",componentType ); // Notification title
-			      //      info.put("body", message);
+				//		info.put("T", "RX");
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
 			           
-			            info.put( "content_available", true);
+			       //     info.put( "content_available", true);
 			            info.put("PI",componentTypeId);
 			        //    info.put("PI",userId);// Notification body
 			            data.put("notification", info);
@@ -492,8 +492,8 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 						
 						data.put("to",pushToken.trim());
 						info.put("T", "RPV");
-			       //     info.put("title",componentType ); // Notification title
-			        //    info.put("body", message);
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
 						
 						 info.put( "content_available", true);
 			            info.put("PI",componentTypeId);
@@ -506,11 +506,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 						isSilent = true;
 						
 						data.put("to",pushToken.trim());
-						info.put("T", "RCN");
-			        //    info.put("title",componentType ); // Notification title
-			        //    info.put("body", message);
+					//	info.put("T", "RCN");
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
 			           
-			            info.put( "content_available", true);
+			        //    info.put( "content_available", true);
 			            info.put("PI",componentTypeId);
 			           // info.put("PI",userId);// Notification body
 			            data.put("notification", info);
@@ -521,10 +521,10 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 						
 						data.put("to",pushToken.trim());
 						info.put("T", "RT");
-			       //     info.put("title",componentType ); // Notification title
-			        //    info.put("body", message);
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
 			           
-			            info.put( "content_available", true);
+			        //    info.put( "content_available", true);
 			            info.put("PI",componentTypeId);
 			       //     info.put("PI",userId);// Notification body
 			            data.put("notification", info);
@@ -534,9 +534,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 //						isSilent = true;
 						
 						data.put("to",pushToken.trim());
-						info.put("T", "RR");
-			       //     info.put("title",componentType ); // Notification title
-			        //    info.put("body", message);
+				//		info.put("T", "RR");
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
 			            
 			            info.put( "content_available", true);
 			            info.put("PI",componentTypeId);
@@ -563,8 +563,8 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 						
 						data.put("to",pushToken.trim());
 						info.put("T", "RBI");
-			         //   info.put("title",componentType ); // Notification title
-			          //  info.put("body", message);
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
 						 info.put( "content_available", true);
 			            info.put("PI",componentTypeId);
 			           
@@ -577,9 +577,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 						
 						data.put("to",pushToken.trim());
 						info.put("T", "RBR");
-//			            info.put("title",componentType ); // Notification title
-//			            info.put("body", message);
-						 info.put( "content_available", true);
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+						info.put( "content_available", true);
 			            info.put("PI",componentTypeId);
 			           
 			        //    info.put("PI",userId);// Notification body
@@ -625,119 +625,120 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			            info.put("sound","default");
 			       //     info.put("PI",userId);// Notification body
 			            data.put("notification", info);
-					}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
-						customValues.put("EI", componentTypeId);
-						customValues.put("T", "E");
-						
-						data.put("to",pushToken.trim());
-			            info.put("title",componentType ); // Notification title
-			            info.put("body", message);
-			            info.put("EI",componentTypeId);
-			            info.put("sound","default");
-			         //   info.put("PI",userId);// Notification body
-			            data.put("notification", info);
 					}
-					else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
-						customValues.put("RI", "SILENT");
-						customValues.put("T", "PR");
-						
-						data.put("to",pushToken.trim());
-						info.put("T", "PR");
-			   //         info.put("title",componentType ); // Notification title
-			   //         info.put("body", message);
-			            info.put( "content_available", true);
-			        //    info.put("RI",componentTypeId);
-			        //    info.put("PI",userId);// Notification body
-			            data.put("notification", info);
-					}
-					else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
-						customValues.put("RI", "SILENT");
-						customValues.put("T", "DI");
-						
-						data.put("to",pushToken.trim());
-						info.put("T", "RDI");
-						info.put( "content_available", true);
-			     //       info.put("title",componentType ); // Notification title
-			      //      info.put("body", message);
-			        //    info.put("RI",componentTypeId);
-			        //    info.put("PI",userId);// Notification body
-			            data.put("notification", info);
-					}
-					else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
-						customValues.put("RI", "SILENT");
-						customValues.put("T", "DW");
-						
-						data.put("to",pushToken.trim());
-						info.put("T", "RDW");
-			    //        info.put("title",componentType ); // Notification title
-			    //        info.put("body", message);
-			            info.put( "content_available", true);
-			        //    info.put("RI",componentTypeId);
-			         //   info.put("PI",userId);// Notification body
-			            data.put("notification", info);
-					}
-					else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
-						customValues.put("RI", componentTypeId);
-						customValues.put("T", "DI");
-						
-						data.put("to",pushToken.trim());
-			            info.put("title",componentType ); // Notification title
-			            info.put("body", message);
-			            info.put("RI",componentTypeId);
-			            info.put("sound","default");
-			        //    info.put("PI",userId);// Notification body
-			            data.put("notification", info);
-					}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
-						customValues.put("EI", componentTypeId);
-						customValues.put("T", "E");
-						
-						data.put("to",pushToken.trim());
-			            info.put("title",componentType ); // Notification title
-			            info.put("body", message);
-			            info.put("EI",componentTypeId);
-			            info.put("sound","default");
-			        //    info.put("PI",userId);// Notification body
-			            data.put("notification", info);
-					}
-					else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
-						customValues.put("RI", "SILENT");
-						customValues.put("T", "PR");
-						
-						data.put("to",pushToken.trim());
-						info.put("T", "PR");
-			   //         info.put("title",componentType ); // Notification title
-			   //         info.put("body", message);
-			            info.put( "content_available", true);
-			        //    info.put("RI",componentTypeId);
-			        //    info.put("PI",userId);// Notification body
-			            data.put("notification", info);
-					}
-					else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
-						customValues.put("RI", "SILENT");
-						customValues.put("T", "DI");
-						
-						data.put("to",pushToken.trim());
-						info.put("T", "RDI");
-						 info.put( "content_available", true);
-			        //    info.put("title",componentType ); // Notification title
-			        //    info.put("body", message);
-			       //     info.put("RI",componentTypeId);
-			       //     info.put("PI",userId);// Notification body
-			            data.put("notification", info);
-					}
-					else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
-						customValues.put("RI", "SILENT");
-						customValues.put("T", "RDW");
-						
-						data.put("to",pushToken.trim());
-						info.put("T", "RDW");
-			      //      info.put("title",componentType ); // Notification title
-			      //      info.put("body", message);
-			            info.put( "content_available", true);
-			      //      info.put("RI",componentTypeId);
-			      //      info.put("PI",userId);// Notification body
-			            data.put("notification", info);
-					}
+//					else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
+//						customValues.put("EI", componentTypeId);
+//						customValues.put("T", "E");
+//						
+//						data.put("to",pushToken.trim());
+//			            info.put("title",componentType ); // Notification title
+//			            info.put("body", message);
+//			            info.put("EI",componentTypeId);
+//			            info.put("sound","default");
+//			         //   info.put("PI",userId);// Notification body
+//			            data.put("notification", info);
+//					}
+//					else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
+//						customValues.put("RI", "SILENT");
+//						customValues.put("T", "PR");
+//						
+//						data.put("to",pushToken.trim());
+//					//	info.put("T", "PR");
+//			            info.put("title",componentType ); // Notification title
+//			            info.put("body", message);
+//			            info.put( "content_available", true);
+//			            info.put("RI",componentTypeId);
+//			        //    info.put("PI",userId);// Notification body
+//			            data.put("notification", info);
+//					}
+//					else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
+//						customValues.put("RI", "SILENT");
+//						customValues.put("T", "DI");
+//						
+//						data.put("to",pushToken.trim());
+//						info.put("T", "RDI");
+//						info.put( "content_available", true);
+//			     //       info.put("title",componentType ); // Notification title
+//			      //      info.put("body", message);
+//			        //    info.put("RI",componentTypeId);
+//			        //    info.put("PI",userId);// Notification body
+//			            data.put("notification", info);
+//					}
+//					else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
+//						customValues.put("RI", "SILENT");
+//						customValues.put("T", "DW");
+//						
+//						data.put("to",pushToken.trim());
+//						info.put("T", "RDW");
+//			    //        info.put("title",componentType ); // Notification title
+//			    //        info.put("body", message);
+//			            info.put( "content_available", true);
+//			        //    info.put("RI",componentTypeId);
+//			         //   info.put("PI",userId);// Notification body
+//			            data.put("notification", info);
+//					}
+//					else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
+//						customValues.put("RI", componentTypeId);
+//						customValues.put("T", "DI");
+//						
+//						data.put("to",pushToken.trim());
+//			            info.put("title",componentType ); // Notification title
+//			            info.put("body", message);
+//			            info.put("RI",componentTypeId);
+//			            info.put("sound","default");
+//			        //    info.put("PI",userId);// Notification body
+//			            data.put("notification", info);
+//					}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
+//						customValues.put("EI", componentTypeId);
+//						customValues.put("T", "E");
+//						
+//						data.put("to",pushToken.trim());
+//			            info.put("title",componentType ); // Notification title
+//			            info.put("body", message);
+//			            info.put("EI",componentTypeId);
+//			            info.put("sound","default");
+//			        //    info.put("PI",userId);// Notification body
+//			            data.put("notification", info);
+//					}
+//					else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
+//						customValues.put("RI", "SILENT");
+//						customValues.put("T", "PR");
+//						
+//						data.put("to",pushToken.trim());
+//						info.put("T", "PR");
+//			   //         info.put("title",componentType ); // Notification title
+//			   //         info.put("body", message);
+//			            info.put( "content_available", true);
+//			        //    info.put("RI",componentTypeId);
+//			        //    info.put("PI",userId);// Notification body
+//			            data.put("notification", info);
+//					}
+//					else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
+//						customValues.put("RI", "SILENT");
+//						customValues.put("T", "DI");
+//						
+//						data.put("to",pushToken.trim());
+//						info.put("T", "RDI");
+//						 info.put( "content_available", true);
+//			        //    info.put("title",componentType ); // Notification title
+//			        //    info.put("body", message);
+//			       //     info.put("RI",componentTypeId);
+//			       //     info.put("PI",userId);// Notification body
+//			            data.put("notification", info);
+//					}
+//					else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
+//						customValues.put("RI", "SILENT");
+//						customValues.put("T", "RDW");
+//						
+//						data.put("to",pushToken.trim());
+//						info.put("T", "RDW");
+//			      //      info.put("title",componentType ); // Notification title
+//			      //      info.put("body", message);
+//			            info.put( "content_available", true);
+//			      //      info.put("RI",componentTypeId);
+//			      //      info.put("PI",userId);// Notification body
+//			            data.put("notification", info);
+//					}
 					else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_BABY_ACHIEVEMENTS.getType())) {
 						customValues.put("RI", "SILENT");
 						customValues.put("T", "BA");

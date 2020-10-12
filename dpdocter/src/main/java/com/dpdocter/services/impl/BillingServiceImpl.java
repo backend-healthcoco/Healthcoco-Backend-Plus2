@@ -100,6 +100,7 @@ import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.VendorExpenseRepository;
+import com.dpdocter.request.DoctorAmountRequest;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
 import com.dpdocter.request.InvoiceItemChangeStatusRequest;
@@ -3433,5 +3434,36 @@ public class BillingServiceImpl implements BillingService {
 		}
 
 		return response;
+	}
+	
+	
+	@Override
+	public Boolean updateTotalDueAmount(DoctorAmountRequest request)
+	{
+		Boolean response=false;
+		try {
+			DoctorPatientDueAmountCollection dueAmount=doctorPatientDueAmountRepository.find(new ObjectId(request.getPatientId()),new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()),new ObjectId(request.getHospitalId()));
+			if(dueAmount !=null)
+			{
+				dueAmount.setDueAmount(request.getDueAmount());
+				doctorPatientDueAmountRepository.save(dueAmount);
+				response=true;
+			}
+			DoctorPatientReceiptCollection receiptCollection=doctorPatientReceiptRepository.findByPatientIdAndDoctorIdAndLocationIdAndHospitalId(new ObjectId(request.getPatientId()),new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()),new ObjectId(request.getHospitalId()));
+			if(receiptCollection !=null)
+			{
+				receiptCollection.setRemainingAdvanceAmount(request.getRemainingAdvanceAmount());
+				doctorPatientReceiptRepository.save(receiptCollection);
+				response=true;
+			}
+			
+			
+		} catch (BusinessException e) {
+			logger.error("Error while updating the due amount " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while updating the due amount");
+		}
+
+		return response;
+		
 	}
 }

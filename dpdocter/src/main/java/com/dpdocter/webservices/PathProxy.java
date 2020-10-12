@@ -1496,6 +1496,8 @@ public interface PathProxy {
 
 		public static final String GET_VENDOR_EXPENSE_BY_ID = "/vendorExpense/{vendorExpenseId}/get";
 
+		public static final String EDIT_TOTAL_DUE_AMOUNT = "/totalDueAmount/edit";
+
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";

@@ -25,6 +25,7 @@ import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.beans.VendorExpense;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.DoctorAmountRequest;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
 import com.dpdocter.request.InvoiceItemChangeStatusRequest;
@@ -651,5 +652,23 @@ public class BillingApi {
 		response.setData(billingService.getVendorExpenseById(vendorExpenseId));
 		return response;
 	}
+	
+	
+	@Path(value = PathProxy.BillingUrls.EDIT_TOTAL_DUE_AMOUNT)
+	@POST
+	@ApiOperation(value = PathProxy.BillingUrls.EDIT_TOTAL_DUE_AMOUNT, notes = PathProxy.BillingUrls.EDIT_TOTAL_DUE_AMOUNT)
+	public Response<Boolean> updateTotalDueAmount(DoctorAmountRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+	Boolean dueAmount = billingService.updateTotalDueAmount(request);
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(dueAmount);
+		return response;
+	}	
 
 }
