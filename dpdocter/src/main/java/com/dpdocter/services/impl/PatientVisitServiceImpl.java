@@ -2004,27 +2004,19 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						if (eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
 								|| eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH()
 										.equalsIgnoreCase(" plain"))
-							eyResponse.setDistanceSPH(String.format("%.2f",
-									Double.parseDouble(eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH())));
+							eyResponse.setDistanceSPH(eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH());
 					}
 					if (!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getLeftEyeTest().getNearSPH())) {
 						if (eyePrescriptionCollection.getLeftEyeTest().getNearSPH().equalsIgnoreCase("plain")
 								|| eyePrescriptionCollection.getLeftEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
-							eyResponse.setNearSPH(String.format("%.2f",
-									Double.parseDouble(eyePrescriptionCollection.getLeftEyeTest().getNearSPH())));
+							eyResponse.setNearSPH(eyePrescriptionCollection.getLeftEyeTest().getNearSPH());
 					}
-					eyResponse.setDistanceCylinder(
-							String.format("%.2f", eyePrescriptionCollection.getLeftEyeTest().getDistanceCylinder()));
-					eyResponse.setDistanceBaseCurve(
-							String.format("%.2f", eyePrescriptionCollection.getLeftEyeTest().getDistanceBaseCurve()));
-					eyResponse.setDistanceDiameter(
-							String.format("%.2f", eyePrescriptionCollection.getLeftEyeTest().getDistanceDiameter()));
-					eyResponse.setNearCylinder(
-							String.format("%.2f", eyePrescriptionCollection.getLeftEyeTest().getNearCylinder()));
-					eyResponse.setNearBaseCurve(
-							String.format("%.2f", eyePrescriptionCollection.getLeftEyeTest().getNearBaseCurve()));
-					eyResponse.setNearDiameter(
-							String.format("%.2f", eyePrescriptionCollection.getLeftEyeTest().getNearDiameter()));
+					eyResponse.setDistanceCylinder(eyePrescriptionCollection.getLeftEyeTest().getDistanceCylinder());
+					eyResponse.setDistanceBaseCurve(eyePrescriptionCollection.getLeftEyeTest().getDistanceBaseCurve());
+					eyResponse.setDistanceDiameter(eyePrescriptionCollection.getLeftEyeTest().getDistanceDiameter());
+					eyResponse.setNearCylinder(eyePrescriptionCollection.getLeftEyeTest().getNearCylinder());
+					eyResponse.setNearBaseCurve(eyePrescriptionCollection.getLeftEyeTest().getNearBaseCurve());
+					eyResponse.setNearDiameter(eyePrescriptionCollection.getLeftEyeTest().getNearDiameter());
 				}
 				parameters.put("leftEyeTest", eyResponse);
 				eyResponse = new EyeTestJasperResponse();
@@ -2034,27 +2026,19 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						if (eyePrescriptionCollection.getRightEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
 								|| eyePrescriptionCollection.getRightEyeTest().getDistanceSPH()
 										.equalsIgnoreCase(" plain"))
-							eyResponse.setDistanceSPH(String.format("%.2f",
-									Double.parseDouble(eyePrescriptionCollection.getRightEyeTest().getDistanceSPH())));
+							eyResponse.setDistanceSPH(eyePrescriptionCollection.getRightEyeTest().getDistanceSPH());
 					}
 					if (!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getRightEyeTest().getNearSPH())) {
 						if (eyePrescriptionCollection.getRightEyeTest().getNearSPH().equalsIgnoreCase("plain")
 								|| eyePrescriptionCollection.getRightEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
-							eyResponse.setNearSPH(String.format("%.2f",
-									Double.parseDouble(eyePrescriptionCollection.getRightEyeTest().getNearSPH())));
+							eyResponse.setNearSPH(eyePrescriptionCollection.getRightEyeTest().getNearSPH());
 					}
-					eyResponse.setDistanceCylinder(
-							String.format("%.2f", eyePrescriptionCollection.getRightEyeTest().getDistanceCylinder()));
-					eyResponse.setDistanceBaseCurve(
-							String.format("%.2f", eyePrescriptionCollection.getRightEyeTest().getDistanceBaseCurve()));
-					eyResponse.setDistanceDiameter(
-							String.format("%.2f", eyePrescriptionCollection.getRightEyeTest().getDistanceDiameter()));
-					eyResponse.setNearCylinder(
-							String.format("%.2f", eyePrescriptionCollection.getRightEyeTest().getNearCylinder()));
-					eyResponse.setNearBaseCurve(
-							String.format("%.2f", eyePrescriptionCollection.getRightEyeTest().getNearBaseCurve()));
-					eyResponse.setNearDiameter(
-							String.format("%.2f", eyePrescriptionCollection.getRightEyeTest().getNearDiameter()));
+					eyResponse.setDistanceCylinder(eyePrescriptionCollection.getRightEyeTest().getDistanceCylinder());
+					eyResponse.setDistanceBaseCurve(eyePrescriptionCollection.getRightEyeTest().getDistanceBaseCurve());
+					eyResponse.setDistanceDiameter(eyePrescriptionCollection.getRightEyeTest().getDistanceDiameter());
+					eyResponse.setNearCylinder(eyePrescriptionCollection.getRightEyeTest().getNearCylinder());
+					eyResponse.setNearBaseCurve(eyePrescriptionCollection.getRightEyeTest().getNearBaseCurve());
+					eyResponse.setNearDiameter(eyePrescriptionCollection.getRightEyeTest().getNearDiameter());
 				}
 				parameters.put("rightEyeTest", eyResponse);
 				if (!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getType())

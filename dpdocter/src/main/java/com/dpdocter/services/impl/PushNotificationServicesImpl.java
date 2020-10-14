@@ -782,7 +782,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 						data.put("to",pushToken.trim());
 			            info.put("title",componentType ); // Notification title
 			            info.put("body", message);
-			         //   info.put("RI",componentTypeId);
+			            info.put("RI",componentTypeId);
 			        //    info.put("PI",userId);// Notification body
 			            data.put("notification", info);
 					}
