@@ -487,6 +487,12 @@ public class SignUpServiceImplV2 implements SignUpService{
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 				tokenCollection.setIsUsed(true);
 				tokenRepository.save(tokenCollection);
+				
+				pushNotificationServices.notifyUser(userCollection.getId().toString(),
+						"Your Email has been verified by healthcoco", ComponentType.EMAIL_VERIFICATION.getType(), null, null);
+
+
+				
 				return "You have successfully verified your email address."
 						+ "Download the Healthcoco+ app - Every Doctor's Pocket Clinic."
 						+ "Stay Healthy and Happy!";
