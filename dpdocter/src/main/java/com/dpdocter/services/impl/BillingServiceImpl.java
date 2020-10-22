@@ -611,7 +611,7 @@ public class BillingServiceImpl implements BillingService {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
 				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
-			if (!discarded)
+			if (discarded !=null)
 				criteria.and("discarded").is(discarded);
 
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -1015,7 +1015,7 @@ public class BillingServiceImpl implements BillingService {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
 				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
-			if (!discarded)
+			if (discarded !=null)
 				criteria.and("discarded").is(discarded);
 
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));

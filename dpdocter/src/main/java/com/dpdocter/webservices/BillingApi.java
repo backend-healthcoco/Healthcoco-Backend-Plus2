@@ -112,7 +112,7 @@ public class BillingApi {
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@QueryParam("from") String from,@QueryParam("to") String to,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -203,7 +203,7 @@ public class BillingApi {
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@QueryParam("from") String from,@QueryParam("to") String to,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
