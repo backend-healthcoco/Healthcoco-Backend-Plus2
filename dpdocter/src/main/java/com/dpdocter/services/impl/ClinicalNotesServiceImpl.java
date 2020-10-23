@@ -43,6 +43,8 @@ import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.ECGDetails;
 import com.dpdocter.beans.EarsExamination;
 import com.dpdocter.beans.Echo;
+import com.dpdocter.beans.EyeExamination;
+import com.dpdocter.beans.EyeSpecialityObservation;
 import com.dpdocter.beans.GeneralExam;
 import com.dpdocter.beans.Holter;
 import com.dpdocter.beans.IndicationOfUSG;
@@ -114,6 +116,7 @@ import com.dpdocter.collections.XRayDetailsCollection;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LineStyle;
+import com.dpdocter.enums.PainType;
 import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -167,6 +170,8 @@ import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.request.PatientTreatmentAddEditRequest;
+import com.dpdocter.response.EyeTestJasperResponse;
+import com.dpdocter.response.EyeVisualAcuitiesJasperResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
@@ -358,14 +363,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Value(value = "${jasper.print.visit.diagrams.a4.fileName}")
 	private String visitDiagramsA4FileName;
-	
-	
+
 	@Autowired
 	private PatientTreatmentServices patientTreatmentServices;
-	
+
 	@Autowired
 	private PatientVisitService patientTrackService;
-
 
 	@Override
 	@Transactional
@@ -404,11 +407,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNotesCollection.setAdminCreatedTime(new Date());
 
 			clinicalNotesCollection.setCreatedBy(createdBy);
-			
+
 //			if (request.getTreatmentObservation() != null) {
 //				clinicalNotesCollection.setTreatmentObservation(request.getTreatmentObservation().getObservations());
 //			} 
-			
+
 			/*
 			 * if(request.getPresentComplaint() != null ||
 			 * !request.getPresentComplaint().isEmpty()) { ArrayList<String>
@@ -1394,13 +1397,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
-			
 //			PatientTreatmentResponse treatment=addPatientTreatmentsThroughClinicalNotes(clinicalNotesCollection,
 //					request.getTreatmentObservation().getTreatments());
-			
+
 			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
-			TreatmentObservation treatmentObservation =new TreatmentObservation();
+			TreatmentObservation treatmentObservation = new TreatmentObservation();
 //			treatmentObservation.setTreatments(treatment.getTreatments());
 //			treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
 			clinicalNotes.setTreatmentObservation(treatmentObservation);
@@ -1589,7 +1591,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			} else {
 				clinicalNotesCollection.setCreatedTime(oldClinicalNotesCollection.getCreatedTime());
 			}
-			
+
 //			if (request.getTreatmentObservation() != null) {
 //				clinicalNotesCollection.setTreatmentObservation(request.getTreatmentObservation().getObservations());
 //			} else {
@@ -1603,19 +1605,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNotesCollection.setUpdatedTime(new Date());
 			clinicalNotesCollection.setUniqueEmrId(oldClinicalNotesCollection.getUniqueEmrId());
 			clinicalNotesCollection.setIsPatientDiscarded(oldClinicalNotesCollection.getIsPatientDiscarded());
-			
-			
+
 			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
 //			PatientTreatmentResponse treatment=addPatientTreatmentsThroughClinicalNotes(clinicalNotesCollection,
 //					request.getTreatmentObservation().getTreatments());
 //			
-			
+
 			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
-			TreatmentObservation treatmentObservation =new TreatmentObservation();
-		//	treatmentObservation.setTreatments(treatment.getTreatments());
-		//	treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
+			TreatmentObservation treatmentObservation = new TreatmentObservation();
+			// treatmentObservation.setTreatments(treatment.getTreatments());
+			// treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
 			clinicalNotes.setTreatmentObservation(treatmentObservation);
 
 			if (diagramIds != null && !diagramIds.isEmpty())
@@ -3893,7 +3894,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 							emailTrackCollection.setPatientId(user.getId());
 						}
 						JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
-								null, false, false, false, false, false, false, false, false, false,PrintSettingType.EMAIL.getType());
+								null, false, false, false, false, false, false, false, false, false,
+								PrintSettingType.EMAIL.getType());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -4065,7 +4067,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 				JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
 						historyCollection, showPH, showPLH, showFH, showDA, showUSG, isCustomPDF, showLMP, showEDD,
-						showNoOfChildren,PrintSettingType.EMR.getType());
+						showNoOfChildren, PrintSettingType.EMR.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -4086,7 +4088,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	private JasperReportResponse createJasper(ClinicalNotesCollection clinicalNotesCollection,
 			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
 			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP,
-			Boolean showEDD, Boolean showNoOfChildren,String printSettingType) throws IOException, ParseException {
+			Boolean showEDD, Boolean showNoOfChildren, String printSettingType) throws IOException, ParseException {
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
@@ -4096,15 +4098,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		printSettings = printSettingsRepository
 				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 						clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
-						clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType(),
-						printSettingType);
-		if (printSettings == null){
+						clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType(), printSettingType);
+		if (printSettings == null) {
 			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
 					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
-							clinicalNotesCollection.getHospitalId(),ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
-							new Sort(Sort.Direction.DESC, "updatedTime"));
-			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+							clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType(),
+							PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+			if (!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
 				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
@@ -4157,7 +4158,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			showTitle = true;
 		}
 		parameters.put("showExamTitle", showTitle);
-		showTitle = false;
 		if (!isCustomPDF || showUSG) {
 			parameters.put("indicationOfUSG", clinicalNotesCollection.getIndicationOfUSG());
 		}
@@ -4182,7 +4182,258 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("familyHistory", clinicalNotesCollection.getFamilyHistory());
 		parameters.put("priorConsultations", clinicalNotesCollection.getPriorConsultations());
 		parameters.put("painScale", clinicalNotesCollection.getPainScale());
-		parameters.put("priorConsultations", clinicalNotesCollection.getPriorConsultations());
+
+		if (clinicalNotesCollection.getPhysioExamination() != null) {
+			parameters.put("historyOfPresentIllness",
+					clinicalNotesCollection.getPhysioExamination().getHistoryOfPresentIllness());
+			parameters.put("manualMuscleTesting",
+					clinicalNotesCollection.getPhysioExamination().getManualMuscleTesting());
+			parameters.put("treatment", clinicalNotesCollection.getPhysioExamination().getTreatment());
+			parameters.put("physioExaminationPastHistory",
+					clinicalNotesCollection.getPhysioExamination().getPastHistory());
+			parameters.put("otNotes", clinicalNotesCollection.getPhysioExamination().getOtNotes());
+//			if (clinicalNotesCollection.getPhysioExamination().getSpecialTest() != null) {
+//				if (clinicalNotesCollection.getPhysioExamination().getSpecialTest().getShoulder() != null) {
+//					parameters.put("emptyCanTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getEmptyCanTest());
+//					parameters.put("fullCanTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getFullCanTest());
+//					parameters.put("hornBlowerTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getHornBlowerTest());
+//					parameters.put("infrasplnatureTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getInfrasplnatureTest());
+//					parameters.put("speedTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getSpeedTest());
+//					parameters.put("yergasonsTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getYergasonsTest());
+//					parameters.put("impingmentTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getImpingmentTest());
+//					parameters.put("oBrionsTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getOBrionsTest());
+//
+//				}
+//				if (clinicalNotesCollection.getPhysioExamination().getSpecialTest().getHipJoint() != null) {
+//					parameters.put("thomasTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getHipJoint().getThomasTest());
+//					parameters.put("obersTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getHipJoint().getObersTest());
+//				}
+//			}
+			if (clinicalNotesCollection.getPhysioExamination().getHistoryOfPain() != null) {
+				parameters.put("site", clinicalNotesCollection.getPhysioExamination().getHistoryOfPain().getSite());
+				parameters.put("nature",
+						clinicalNotesCollection.getPhysioExamination().getHistoryOfPain().getNature().getType());
+				List<DBObject> types = new ArrayList<DBObject>();
+				if (clinicalNotesCollection.getPhysioExamination().getHistoryOfPain().getType() != null)
+					for (PainType painType : clinicalNotesCollection.getPhysioExamination().getHistoryOfPain()
+							.getType()) {
+						DBObject dbObject = new BasicDBObject();
+						dbObject.put("painType", painType.getType());
+						types.add(dbObject);
+					}
+				if (!types.isEmpty())
+					parameters.put("painType", types);
+				else
+					parameters.put("painType", null);
+			}
+
+			if (clinicalNotesCollection.getPhysioExamination().getPainRatingScale() != null) {
+				parameters.put("onRest",
+						clinicalNotesCollection.getPhysioExamination().getPainRatingScale().getOnRest());
+				parameters.put("onActivity",
+						clinicalNotesCollection.getPhysioExamination().getPainRatingScale().getOnActivity());
+				parameters.put("nprs",
+						String.valueOf(clinicalNotesCollection.getPhysioExamination().getPainRatingScale().getNPRS()));
+			}
+			if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination() != null) {
+				if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getPalpation() != null) {
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getPalpation()
+							.getSpasm() != null) {
+						parameters.put("spasm", clinicalNotesCollection.getPhysioExamination().getGeneralExamination()
+								.getPalpation().getSpasm().getSpasm());
+//						parameters.put("spasmValue", clinicalNotesCollection.getPhysioExamination()
+//								.getGeneralExamination().getPalpation().getSpasm().getValue());
+					}
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getPalpation()
+							.getSwell() != null) {
+						parameters.put("swell", clinicalNotesCollection.getPhysioExamination().getGeneralExamination()
+								.getPalpation().getSwell().getSwell());
+//						parameters.put("swellValue", clinicalNotesCollection.getPhysioExamination()
+//								.getGeneralExamination().getPalpation().getSwell().getValue());
+					}
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getPalpation()
+							.getTenderness() != null) {
+						parameters.put("tenderness", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getPalpation().getTenderness().getTenderness());
+//						parameters.put("tendernessValue", clinicalNotesCollection.getPhysioExamination()
+//								.getGeneralExamination().getPalpation().getTenderness().getValue());
+					}
+				}
+				parameters.put("inspectionOfPartPosture", clinicalNotesCollection.getPhysioExamination()
+						.getGeneralExamination().getInspectionOfPart_Posture());
+
+				if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getRangeOfMotion() != null) {
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getRangeOfMotion()
+							.getShoulder() != null) {
+						parameters.put("shoulderFlexion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getShoulder().getFlexion());
+						parameters.put("shoulderExtension", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getShoulder().getExtension());
+						parameters.put("shoulderAbduction", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getShoulder().getAbduction());
+						parameters.put("shoulderIntegerRotation", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getShoulder().getIntegerRotation());
+						parameters.put("shoulderExternalRotation", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getShoulder().getExternalRotation());
+					}
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getRangeOfMotion()
+							.getAnkle() != null) {
+						parameters.put("anklePlantarlexion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getAnkle().getPlantarflexion());
+						parameters.put("ankleDorsiflexion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getAnkle().getDorsiflexion());
+					}
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getRangeOfMotion()
+							.getElbow() != null) {
+						parameters.put("elbowHexion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getElbow().getHexion());
+						parameters.put("elbowExtension", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getElbow().getExtension());
+						parameters.put("elbowSupination", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getElbow().getSupination());
+						parameters.put("elbowPronotion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getElbow().getPronotion());
+					}
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getRangeOfMotion()
+							.getHipJoint() != null) {
+						parameters.put("hipJointHexion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getHipJoint().getHexion());
+						parameters.put("hipJointExtension", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getHipJoint().getExtension());
+						parameters.put("hipJointAbduction", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getHipJoint().getAbduction());
+					}
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getRangeOfMotion()
+							.getKneeJoint() != null) {
+						parameters.put("kneeJointsHexion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getKneeJoint().getHexion());
+						parameters.put("kneeJointsExtension", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getKneeJoint().getExtension());
+					}
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getRangeOfMotion()
+							.getWrist() != null) {
+						parameters.put("wristHexion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getWrist().getHexion());
+						parameters.put("wristExtension", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getWrist().getExtension());
+						parameters.put("wristRadial_UlnarDeviation", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getWrist().getRadial_UlnarDeviation());
+					}
+				}
+			}
+
+			showTitle = true;
+		}
+		EyeSpecialityObservation eyeObservation = clinicalNotesCollection.getEyeObservation();
+		EyeTestJasperResponse eyResponse = new EyeTestJasperResponse();
+		if (eyeObservation != null) {
+			
+			if (eyeObservation.getEyeExamination() != null) {
+				
+				List<EyeExamination> examinations = eyeObservation.getEyeExamination();
+
+				DBObject dbObject = new BasicDBObject();
+				dbObject.put("eyeExamination", examinations);
+				parameters.put("eyeExamination", examinations);
+
+			}
+			
+			if (eyeObservation.getVision_IOP() != null) {
+				parameters.put("leftVisionPR", eyeObservation.getVision_IOP().getLeftVisionPR());
+				parameters.put("rightVisionPR", eyeObservation.getVision_IOP().getRightVisionPR());
+			}
+			if (eyeObservation.getVision_PR() != null) {
+				parameters.put("leftEyeVisionPR", eyeObservation.getVision_PR().getLeftEye());
+				parameters.put("rightEyeVisionPR", eyeObservation.getVision_PR().getRightEye());
+			}
+			if (eyeObservation.getLeftEyeTest() != null) {
+
+				BeanUtil.map(eyeObservation.getLeftEyeTest(), eyResponse);
+				if (!DPDoctorUtils.anyStringEmpty(eyeObservation.getLeftEyeTest().getDistanceSPH())) {
+					if (eyeObservation.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
+							|| eyeObservation.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase(" plain"))
+						eyResponse.setDistanceSPH(eyeObservation.getLeftEyeTest().getDistanceSPH());
+				}
+				if (!DPDoctorUtils.anyStringEmpty(eyeObservation.getLeftEyeTest().getNearSPH())) {
+					if (eyeObservation.getLeftEyeTest().getNearSPH().equalsIgnoreCase("plain")
+							|| eyeObservation.getLeftEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
+						eyResponse.setNearSPH(eyeObservation.getLeftEyeTest().getNearSPH());
+				}
+				eyResponse.setDistanceCylinder(eyeObservation.getLeftEyeTest().getDistanceCylinder());
+				eyResponse.setDistanceBaseCurve(eyeObservation.getLeftEyeTest().getDistanceBaseCurve());
+				eyResponse.setDistanceDiameter(eyeObservation.getLeftEyeTest().getDistanceDiameter());
+				eyResponse.setNearCylinder(eyeObservation.getLeftEyeTest().getNearCylinder());
+				eyResponse.setNearBaseCurve(eyeObservation.getLeftEyeTest().getNearBaseCurve());
+				eyResponse.setNearDiameter(eyeObservation.getLeftEyeTest().getNearDiameter());
+			}
+			parameters.put("leftEyeTest", eyResponse);
+			eyResponse = new EyeTestJasperResponse();
+			if (eyeObservation.getRightEyeTest() != null) {
+				BeanUtil.map(eyeObservation.getRightEyeTest(), eyResponse);
+				if (!DPDoctorUtils.anyStringEmpty(eyeObservation.getRightEyeTest().getDistanceSPH())) {
+					if (eyeObservation.getRightEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
+							|| eyeObservation.getRightEyeTest().getDistanceSPH().equalsIgnoreCase(" plain"))
+						eyResponse.setDistanceSPH(eyeObservation.getRightEyeTest().getDistanceSPH());
+				}
+				if (!DPDoctorUtils.anyStringEmpty(eyeObservation.getRightEyeTest().getNearSPH())) {
+					if (eyeObservation.getRightEyeTest().getNearSPH().equalsIgnoreCase("plain")
+							|| eyeObservation.getRightEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
+						eyResponse.setNearSPH(eyeObservation.getRightEyeTest().getNearSPH());
+				}
+				eyResponse.setDistanceCylinder(eyeObservation.getRightEyeTest().getDistanceCylinder());
+				eyResponse.setDistanceBaseCurve(eyeObservation.getRightEyeTest().getDistanceBaseCurve());
+				eyResponse.setDistanceDiameter(eyeObservation.getRightEyeTest().getDistanceDiameter());
+				eyResponse.setNearCylinder(eyeObservation.getRightEyeTest().getNearCylinder());
+				eyResponse.setNearBaseCurve(eyeObservation.getRightEyeTest().getNearBaseCurve());
+				eyResponse.setNearDiameter(eyeObservation.getRightEyeTest().getNearDiameter());
+			}
+			parameters.put("rightEyeTest", eyResponse);
+			EyeVisualAcuitiesJasperResponse visualAcuitiesJasperResponse = new EyeVisualAcuitiesJasperResponse();
+			if (eyeObservation.getLeftVisualAcuities() != null) {
+
+				BeanUtil.map(eyeObservation.getLeftVisualAcuities(), visualAcuitiesJasperResponse);
+
+				visualAcuitiesJasperResponse.setUnaided(eyeObservation.getLeftVisualAcuities().getUnaided());
+				visualAcuitiesJasperResponse.setPresentLens(eyeObservation.getLeftVisualAcuities().getPresentLens());
+				if (eyeObservation.getLeftVisualAcuities().getPresentLensUnit() != null)
+					visualAcuitiesJasperResponse
+							.setPresentLensUnit(eyeObservation.getLeftVisualAcuities().getPresentLensUnit().getType());
+				if (eyeObservation.getLeftVisualAcuities().getEyeType() != null)
+					visualAcuitiesJasperResponse
+							.setEyeType(eyeObservation.getLeftVisualAcuities().getEyeType().getType());
+				visualAcuitiesJasperResponse.setPinHole(eyeObservation.getLeftVisualAcuities().getPinHole());
+			}
+			parameters.put("leftVisualAcuities", visualAcuitiesJasperResponse);
+
+			visualAcuitiesJasperResponse = new EyeVisualAcuitiesJasperResponse();
+			if (eyeObservation.getRightVisualAcuities() != null) {
+
+				BeanUtil.map(eyeObservation.getRightVisualAcuities(), visualAcuitiesJasperResponse);
+
+				visualAcuitiesJasperResponse.setUnaided(eyeObservation.getRightVisualAcuities().getUnaided());
+				visualAcuitiesJasperResponse.setPresentLens(eyeObservation.getRightVisualAcuities().getPresentLens());
+				if (eyeObservation.getRightVisualAcuities().getPresentLensUnit() != null)
+					visualAcuitiesJasperResponse
+							.setPresentLensUnit(eyeObservation.getRightVisualAcuities().getPresentLensUnit().getType());
+				if (eyeObservation.getRightVisualAcuities().getEyeType() != null)
+					visualAcuitiesJasperResponse
+							.setEyeType(eyeObservation.getRightVisualAcuities().getEyeType().getType());
+				visualAcuitiesJasperResponse.setPinHole(eyeObservation.getRightVisualAcuities().getPinHole());
+			}
+			parameters.put("rightVisualAcuities", visualAcuitiesJasperResponse);
+		}
+		showTitle = false;
+
 		if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
 			parameters.put("lmp", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
 		if (clinicalNotesCollection.getEdd() != null && (!isCustomPDF || showEDD))
@@ -8398,7 +8649,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					emailTrackCollection.setPatientId(user.getId());
 				}
 				JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user, null,
-						false, false, false, false, false, false, false, false, false,PrintSettingType.EMAIL.getType());
+						false, false, false, false, false, false, false, false, false,
+						PrintSettingType.EMAIL.getType());
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -8481,7 +8733,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						.orElse(null);
 
 				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(
-						clinicalNotesCollections, patient, user,PrintSettingType.EMR.getType());
+						clinicalNotesCollections, patient, user, PrintSettingType.EMR.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -8500,9 +8752,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	private JasperReportResponse createJasperForMultipleClinicalNotes(
-			List<ClinicalNotesCollection> clinicalNotesCollections, PatientCollection patient, 
-			UserCollection user,String printSettingType)
-			throws NumberFormatException, IOException {
+			List<ClinicalNotesCollection> clinicalNotesCollections, PatientCollection patient, UserCollection user,
+			String printSettingType) throws NumberFormatException, IOException {
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
@@ -8511,18 +8762,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		PrintSettingsCollection printSettings = null;
-		 printSettings = printSettingsRepository
+		printSettings = printSettingsRepository
 				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 						clinicalNotesCollections.get(0).getDoctorId(), clinicalNotesCollections.get(0).getLocationId(),
-						clinicalNotesCollections.get(0).getHospitalId(), ComponentType.ALL.getType(),
-						printSettingType);
-		if (printSettings == null){
+						clinicalNotesCollections.get(0).getHospitalId(), ComponentType.ALL.getType(), printSettingType);
+		if (printSettings == null) {
 			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
 					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
-							clinicalNotesCollections.get(0).getDoctorId(), clinicalNotesCollections.get(0).getLocationId(),
-							clinicalNotesCollections.get(0).getHospitalId(),ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
-							new Sort(Sort.Direction.DESC, "updatedTime"));
-			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+							clinicalNotesCollections.get(0).getDoctorId(),
+							clinicalNotesCollections.get(0).getLocationId(),
+							clinicalNotesCollections.get(0).getHospitalId(), ComponentType.ALL.getType(),
+							PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+			if (!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
 				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
@@ -8620,7 +8871,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					emailTrackCollection.setPatientId(user.getId());
 				}
 				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(
-						clinicalNotesCollections, patient, user,PrintSettingType.EMAIL.getType());
+						clinicalNotesCollections, patient, user, PrintSettingType.EMAIL.getType());
 
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
@@ -8686,8 +8937,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			throw new BusinessException(ServiceError.Unknown, "Error while emailing Clinical Notes PDF");
 		}
 	}
-	
-	
+
 	public PatientTreatmentResponse addPatientTreatmentsThroughClinicalNotes(ClinicalNotesCollection request,
 			PatientTreatmentAddEditRequest patientAddEditRequest)
 
@@ -8700,11 +8950,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			patientAddEditRequest.setLocationId(request.getLocationId().toString());
 			patientAddEditRequest.setHospitalId(request.getHospitalId().toString());
 			patientAddEditRequest.setDoctorId(request.getDoctorId().toString());
-		//	patientAddEditRequest.setAppointmentId(request.getAppointmentId());
+			// patientAddEditRequest.setAppointmentId(request.getAppointmentId());
 
 			patientAddEditRequest.setTime(request.getTime());
 			patientAddEditRequest.setFromDate(request.getFromDate());
-		//	patientAddEditRequest.setVisitId(request.getVisitId() != null ? request.getVisitId().toString() : null);
+			// patientAddEditRequest.setVisitId(request.getVisitId() != null ?
+			// request.getVisitId().toString() : null);
 			addEditPatientTreatmentResponse = patientTreatmentServices.addEditPatientTreatment(patientAddEditRequest,
 					false, null, null);
 

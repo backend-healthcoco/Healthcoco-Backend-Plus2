@@ -3,7 +3,12 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.enums.Nature;
+import com.dpdocter.enums.PainType;
+import com.dpdocter.response.EyeTestJasperResponse;
+import com.dpdocter.response.EyeVisualAcuitiesJasperResponse;
 import com.mongodb.DBObject;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
@@ -80,7 +85,7 @@ public class ClinicalNotesJasperDetails {
 	private String noOfChildren;
 
 	private String procedureNote;
-	
+
 	private String pastHistory;
 
 	private String familyHistory;
@@ -96,6 +101,69 @@ public class ClinicalNotesJasperDetails {
 	private String generalHistorySurgical;
 	private String painScale;
 	private String priorConsultations;
+	private String historyOfPresentIllness;
+	private String otNotes;
+	private String site;
+	private String nature;
+	private String physioExaminationPastHistory;
+
+	private List<DBObject> historyOfPainType;
+	private String nprs;
+	private String onRest;
+	private String onActivity;
+//	private List<String> painAggrevatingFactor;
+//	private List<String> painReleavingFactor;
+	private String swell;
+	private Boolean swellValue = false;
+	private String spasm;
+	private Boolean spasmValue = false;
+	private String tenderness;
+	private Boolean tendernessValue = false;
+	private String shoulderFlexion;
+	private String shoulderExtension;
+	private String shoulderAbduction;
+	private String shoulderIntegerRotation;
+	private String shoulderExternalRotation;
+	private String elbowHexion;
+	private String elbowExtension;
+	private String elbowSupination;
+	private String elbowPronotion;
+	private String wristHexion;
+	private String wristExtension;
+	private String wristRadial_UlnarDeviation;
+	private String hipJointHexion;
+	private String hipJointExtension;
+	private String hipJointAbduction;
+	private String kneeJointsHexion;
+	private String kneeJointsExtension;
+	private String anklePlantarlexion;
+	private String ankleDorsiflexion;
+	private String inspectionOfPartPosture;
+	private String manualMuscleTesting;
+	private String treatment;
+	private Boolean emptyCanTest = false;
+	private Boolean fullCanTest = false;
+	private Boolean hornBlowerTest = false;
+	private Boolean infrasplnatureTest = false;
+	private Boolean speedTest = false;
+	private Boolean yergasonsTest = false;
+	private Boolean impingmentTest = false;
+	private Boolean oBrionsTest = false;
+	private Boolean thomasTest;
+	private Boolean obersTest;
+	private String fungusLeftEye;
+	private String fungusRightEye;
+	private String entity_IOP;
+	private String leftVisionPR;
+	private String rightVisionPR;
+	private String entityPr;
+	private String leftEyeVisionPR;
+	private String rightEyeVisionPR;
+	private EyeTestJasperResponse leftEyeTest;
+	private EyeTestJasperResponse rightEyeTest;
+	private EyeVisualAcuitiesJasperResponse rightVisualAcuities;
+	private EyeVisualAcuitiesJasperResponse leftVisualAcuities;
+	private DBObject eyeExamination;
 
 	public String getComplaints() {
 		return complaints;
@@ -487,6 +555,487 @@ public class ClinicalNotesJasperDetails {
 
 	public void setPriorConsultations(String priorConsultations) {
 		this.priorConsultations = priorConsultations;
+	}
+
+	public String getHistoryOfPresentIllness() {
+		return historyOfPresentIllness;
+	}
+
+	public void setHistoryOfPresentIllness(String historyOfPresentIllness) {
+		this.historyOfPresentIllness = historyOfPresentIllness;
+	}
+
+	public String getOtNotes() {
+		return otNotes;
+	}
+
+	public void setOtNotes(String otNotes) {
+		this.otNotes = otNotes;
+	}
+
+	public String getSite() {
+		return site;
+	}
+
+	public void setSite(String site) {
+		this.site = site;
+	}
+
+	public String getNature() {
+		return nature;
+	}
+
+	public void setNature(String nature) {
+		this.nature = nature;
+	}
+
+	public String getOnRest() {
+		return onRest;
+	}
+
+	public void setOnRest(String onRest) {
+		this.onRest = onRest;
+	}
+
+	public String getOnActivity() {
+		return onActivity;
+	}
+
+	public void setOnActivity(String onActivity) {
+		this.onActivity = onActivity;
+	}
+
+	public String getSwell() {
+		return swell;
+	}
+
+	public void setSwell(String swell) {
+		this.swell = swell;
+	}
+
+	public Boolean getSwellValue() {
+		return swellValue;
+	}
+
+	public void setSwellValue(Boolean swellValue) {
+		this.swellValue = swellValue;
+	}
+
+	public String getSpasm() {
+		return spasm;
+	}
+
+	public void setSpasm(String spasm) {
+		this.spasm = spasm;
+	}
+
+	public Boolean getSpasmValue() {
+		return spasmValue;
+	}
+
+	public void setSpasmValue(Boolean spasmValue) {
+		this.spasmValue = spasmValue;
+	}
+
+	public Boolean getTendernessValue() {
+		return tendernessValue;
+	}
+
+	public void setTendernessValue(Boolean tendernessValue) {
+		this.tendernessValue = tendernessValue;
+	}
+
+	public String getTenderness() {
+		return tenderness;
+	}
+
+	public void setTenderness(String tenderness) {
+		this.tenderness = tenderness;
+	}
+
+	public String getShoulderFlexion() {
+		return shoulderFlexion;
+	}
+
+	public void setShoulderFlexion(String shoulderFlexion) {
+		this.shoulderFlexion = shoulderFlexion;
+	}
+
+	public String getShoulderExtension() {
+		return shoulderExtension;
+	}
+
+	public void setShoulderExtension(String shoulderExtension) {
+		this.shoulderExtension = shoulderExtension;
+	}
+
+	public String getShoulderAbduction() {
+		return shoulderAbduction;
+	}
+
+	public void setShoulderAbduction(String shoulderAbduction) {
+		this.shoulderAbduction = shoulderAbduction;
+	}
+
+	public String getShoulderIntegerRotation() {
+		return shoulderIntegerRotation;
+	}
+
+	public void setShoulderIntegerRotation(String shoulderIntegerRotation) {
+		this.shoulderIntegerRotation = shoulderIntegerRotation;
+	}
+
+	public String getShoulderExternalRotation() {
+		return shoulderExternalRotation;
+	}
+
+	public void setShoulderExternalRotation(String shoulderExternalRotation) {
+		this.shoulderExternalRotation = shoulderExternalRotation;
+	}
+
+	public String getElbowHexion() {
+		return elbowHexion;
+	}
+
+	public void setElbowHexion(String elbowHexion) {
+		this.elbowHexion = elbowHexion;
+	}
+
+	public String getElbowExtension() {
+		return elbowExtension;
+	}
+
+	public void setElbowExtension(String elbowExtension) {
+		this.elbowExtension = elbowExtension;
+	}
+
+	public String getElbowSupination() {
+		return elbowSupination;
+	}
+
+	public void setElbowSupination(String elbowSupination) {
+		this.elbowSupination = elbowSupination;
+	}
+
+	public String getElbowPronotion() {
+		return elbowPronotion;
+	}
+
+	public void setElbowPronotion(String elbowPronotion) {
+		this.elbowPronotion = elbowPronotion;
+	}
+
+	public String getWristHexion() {
+		return wristHexion;
+	}
+
+	public void setWristHexion(String wristHexion) {
+		this.wristHexion = wristHexion;
+	}
+
+	public String getWristExtension() {
+		return wristExtension;
+	}
+
+	public void setWristExtension(String wristExtension) {
+		this.wristExtension = wristExtension;
+	}
+
+	public String getWristRadial_UlnarDeviation() {
+		return wristRadial_UlnarDeviation;
+	}
+
+	public void setWristRadial_UlnarDeviation(String wristRadial_UlnarDeviation) {
+		this.wristRadial_UlnarDeviation = wristRadial_UlnarDeviation;
+	}
+
+	public String getHipJointHexion() {
+		return hipJointHexion;
+	}
+
+	public void setHipJointHexion(String hipJointHexion) {
+		this.hipJointHexion = hipJointHexion;
+	}
+
+	public String getHipJointExtension() {
+		return hipJointExtension;
+	}
+
+	public void setHipJointExtension(String hipJointExtension) {
+		this.hipJointExtension = hipJointExtension;
+	}
+
+	public String getHipJointAbduction() {
+		return hipJointAbduction;
+	}
+
+	public void setHipJointAbduction(String hipJointAbduction) {
+		this.hipJointAbduction = hipJointAbduction;
+	}
+
+	public String getKneeJointsHexion() {
+		return kneeJointsHexion;
+	}
+
+	public void setKneeJointsHexion(String kneeJointsHexion) {
+		this.kneeJointsHexion = kneeJointsHexion;
+	}
+
+	public String getKneeJointsExtension() {
+		return kneeJointsExtension;
+	}
+
+	public void setKneeJointsExtension(String kneeJointsExtension) {
+		this.kneeJointsExtension = kneeJointsExtension;
+	}
+
+	public String getAnklePlantarlexion() {
+		return anklePlantarlexion;
+	}
+
+	public void setAnklePlantarlexion(String anklePlantarlexion) {
+		this.anklePlantarlexion = anklePlantarlexion;
+	}
+
+	public String getAnkleDorsiflexion() {
+		return ankleDorsiflexion;
+	}
+
+	public void setAnkleDorsiflexion(String ankleDorsiflexion) {
+		this.ankleDorsiflexion = ankleDorsiflexion;
+	}
+
+	public String getManualMuscleTesting() {
+		return manualMuscleTesting;
+	}
+
+	public void setManualMuscleTesting(String manualMuscleTesting) {
+		this.manualMuscleTesting = manualMuscleTesting;
+	}
+
+	public String getTreatment() {
+		return treatment;
+	}
+
+	public void setTreatment(String treatment) {
+		this.treatment = treatment;
+	}
+
+	public Boolean getEmptyCanTest() {
+		return emptyCanTest;
+	}
+
+	public void setEmptyCanTest(Boolean emptyCanTest) {
+		this.emptyCanTest = emptyCanTest;
+	}
+
+	public Boolean getFullCanTest() {
+		return fullCanTest;
+	}
+
+	public void setFullCanTest(Boolean fullCanTest) {
+		this.fullCanTest = fullCanTest;
+	}
+
+	public Boolean getHornBlowerTest() {
+		return hornBlowerTest;
+	}
+
+	public void setHornBlowerTest(Boolean hornBlowerTest) {
+		this.hornBlowerTest = hornBlowerTest;
+	}
+
+	public Boolean getInfrasplnatureTest() {
+		return infrasplnatureTest;
+	}
+
+	public void setInfrasplnatureTest(Boolean infrasplnatureTest) {
+		this.infrasplnatureTest = infrasplnatureTest;
+	}
+
+	public Boolean getSpeedTest() {
+		return speedTest;
+	}
+
+	public void setSpeedTest(Boolean speedTest) {
+		this.speedTest = speedTest;
+	}
+
+	public Boolean getYergasonsTest() {
+		return yergasonsTest;
+	}
+
+	public void setYergasonsTest(Boolean yergasonsTest) {
+		this.yergasonsTest = yergasonsTest;
+	}
+
+	public Boolean getImpingmentTest() {
+		return impingmentTest;
+	}
+
+	public void setImpingmentTest(Boolean impingmentTest) {
+		this.impingmentTest = impingmentTest;
+	}
+
+	public Boolean getThomasTest() {
+		return thomasTest;
+	}
+
+	public void setThomasTest(Boolean thomasTest) {
+		this.thomasTest = thomasTest;
+	}
+
+	public Boolean getObersTest() {
+		return obersTest;
+	}
+
+	public void setObersTest(Boolean obersTest) {
+		this.obersTest = obersTest;
+	}
+
+	public String getPhysioExaminationPastHistory() {
+		return physioExaminationPastHistory;
+	}
+
+	public void setPhysioExaminationPastHistory(String physioExaminationPastHistory) {
+		this.physioExaminationPastHistory = physioExaminationPastHistory;
+	}
+
+
+	public String getNprs() {
+		return nprs;
+	}
+
+	public void setNprs(String nprs) {
+		this.nprs = nprs;
+	}
+
+	public String getInspectionOfPartPosture() {
+		return inspectionOfPartPosture;
+	}
+
+	public void setInspectionOfPartPosture(String inspectionOfPartPosture) {
+		this.inspectionOfPartPosture = inspectionOfPartPosture;
+	}
+
+	public Boolean getoBrionsTest() {
+		return oBrionsTest;
+	}
+
+	public void setoBrionsTest(Boolean oBrionsTest) {
+		this.oBrionsTest = oBrionsTest;
+	}
+
+	public String getFungusLeftEye() {
+		return fungusLeftEye;
+	}
+
+	public void setFungusLeftEye(String fungusLeftEye) {
+		this.fungusLeftEye = fungusLeftEye;
+	}
+
+	public String getFungusRightEye() {
+		return fungusRightEye;
+	}
+
+	public void setFungusRightEye(String fungusRightEye) {
+		this.fungusRightEye = fungusRightEye;
+	}
+
+	public String getEntity_IOP() {
+		return entity_IOP;
+	}
+
+	public void setEntity_IOP(String entity_IOP) {
+		this.entity_IOP = entity_IOP;
+	}
+
+	public String getLeftVisionPR() {
+		return leftVisionPR;
+	}
+
+	public void setLeftVisionPR(String leftVisionPR) {
+		this.leftVisionPR = leftVisionPR;
+	}
+
+	public String getRightVisionPR() {
+		return rightVisionPR;
+	}
+
+	public void setRightVisionPR(String rightVisionPR) {
+		this.rightVisionPR = rightVisionPR;
+	}
+
+	public String getEntityPr() {
+		return entityPr;
+	}
+
+	public void setEntityPr(String entityPr) {
+		this.entityPr = entityPr;
+	}
+
+	public String getLeftEyeVisionPR() {
+		return leftEyeVisionPR;
+	}
+
+	public void setLeftEyeVisionPR(String leftEyeVisionPR) {
+		this.leftEyeVisionPR = leftEyeVisionPR;
+	}
+
+	public String getRightEyeVisionPR() {
+		return rightEyeVisionPR;
+	}
+
+	public void setRightEyeVisionPR(String rightEyeVisionPR) {
+		this.rightEyeVisionPR = rightEyeVisionPR;
+	}
+
+	public EyeTestJasperResponse getLeftEyeTest() {
+		return leftEyeTest;
+	}
+
+	public void setLeftEyeTest(EyeTestJasperResponse leftEyeTest) {
+		this.leftEyeTest = leftEyeTest;
+	}
+
+	public EyeTestJasperResponse getRightEyeTest() {
+		return rightEyeTest;
+	}
+
+	public void setRightEyeTest(EyeTestJasperResponse rightEyeTest) {
+		this.rightEyeTest = rightEyeTest;
+	}
+
+	public EyeVisualAcuitiesJasperResponse getRightVisualAcuities() {
+		return rightVisualAcuities;
+	}
+
+	public void setRightVisualAcuities(EyeVisualAcuitiesJasperResponse rightVisualAcuities) {
+		this.rightVisualAcuities = rightVisualAcuities;
+	}
+
+	public EyeVisualAcuitiesJasperResponse getLeftVisualAcuities() {
+		return leftVisualAcuities;
+	}
+
+	public void setLeftVisualAcuities(EyeVisualAcuitiesJasperResponse leftVisualAcuities) {
+		this.leftVisualAcuities = leftVisualAcuities;
+	}
+
+	public List<DBObject> getHistoryOfPainType() {
+		return historyOfPainType;
+	}
+
+	public void setHistoryOfPainType(List<DBObject> historyOfPainType) {
+		this.historyOfPainType = historyOfPainType;
+	}
+
+	public DBObject getEyeExamination() {
+		return eyeExamination;
+	}
+
+	public void setEyeExamination(DBObject eyeExamination) {
+		this.eyeExamination = eyeExamination;
 	}
 
 	@Override
