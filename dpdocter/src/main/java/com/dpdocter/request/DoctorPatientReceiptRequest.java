@@ -24,6 +24,8 @@ public class DoctorPatientReceiptRequest {
 	
 	private ModeOfPayment modeOfPayment;
 	
+	private PaymentDetails paymentDetails;
+	
 	private String transactionId;
 	
 	private List<String> invoiceIds;   
@@ -131,6 +133,14 @@ public class DoctorPatientReceiptRequest {
 	}
 	
 	
+
+	public PaymentDetails getPaymentDetails() {
+		return paymentDetails;
+	}
+
+	public void setPaymentDetails(PaymentDetails paymentDetails) {
+		this.paymentDetails = paymentDetails;
+	}
 
 	public String getTransactionId() {
 		return transactionId;

@@ -40,6 +40,9 @@ public class DoctorPatientLedgerCollection extends GenericCollection{
 
 	@Field
 	private Boolean discarded = false;
+	
+	@Field
+	private String type;
 
 	@Field
 	private Boolean isPatientDiscarded = false;
@@ -130,6 +133,16 @@ public class DoctorPatientLedgerCollection extends GenericCollection{
 
 	public void setIsPatientDiscarded(Boolean isPatientDiscarded) {
 		this.isPatientDiscarded = isPatientDiscarded;
+	}
+	
+	
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	@Override
