@@ -310,6 +310,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			dischargeSummaryCollection.setFlowSheets(dischargeSummary.getFlowSheets());
 			dischargeSummaryCollection.setMonitoringChart(dischargeSummary.getMonitoringChart());
 			dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
+			
+			
+
 			if (dischargeSummary.getFlowSheets() != null) {
 				AddEditFlowSheetRequest addEditFlowSheetRequest = new AddEditFlowSheetRequest();
 				addEditFlowSheetRequest.setDoctorId(dischargeSummary.getDoctorId());
@@ -333,7 +336,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				}
 
 			}
-			pushNotificationServices.notifyUser(response.getDoctorId(), "Discharge Summary Added",
+			pushNotificationServices.notifyUser(dischargeSummary.getDoctorId(), "Discharge Summary Added",
 					ComponentType.DISCHARGE_SUMMARY_REFRESH.getType(), response.getPatientId(), null);
 
 		} catch (

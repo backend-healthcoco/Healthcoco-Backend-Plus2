@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.AdvanceReceiptIdWithAmount;
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.ReceiptType;
+import com.dpdocter.request.PaymentDetails;
 
 @Document(collection = "doctor_patient_receipt_cl")
 public class DoctorPatientReceiptCollection extends GenericCollection {
@@ -39,6 +40,9 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 
 	@Field
 	private ModeOfPayment modeOfPayment;
+	
+	@Field
+	private PaymentDetails paymentDetails;
 	
 	@Field
 	private String transactionId;
@@ -218,6 +222,14 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 	}
 	
 	
+
+	public PaymentDetails getPaymentDetails() {
+		return paymentDetails;
+	}
+
+	public void setPaymentDetails(PaymentDetails paymentDetails) {
+		this.paymentDetails = paymentDetails;
+	}
 
 	public String getTransactionId() {
 		return transactionId;
