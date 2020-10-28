@@ -3,10 +3,6 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.dpdocter.enums.Nature;
-import com.dpdocter.enums.PainType;
 import com.dpdocter.response.EyeTestJasperResponse;
 import com.dpdocter.response.EyeVisualAcuitiesJasperResponse;
 import com.mongodb.DBObject;
@@ -107,12 +103,12 @@ public class ClinicalNotesJasperDetails {
 	private String nature;
 	private String physioExaminationPastHistory;
 
-	private List<DBObject> historyOfPainType;
+	private String painType;
 	private String nprs;
 	private String onRest;
 	private String onActivity;
-//	private List<String> painAggrevatingFactor;
-//	private List<String> painReleavingFactor;
+	private String painAggrevatingFactor;
+	private String painReleavingFactor;
 	private String swell;
 	private Boolean swellValue = false;
 	private String spasm;
@@ -163,7 +159,7 @@ public class ClinicalNotesJasperDetails {
 	private EyeTestJasperResponse rightEyeTest;
 	private EyeVisualAcuitiesJasperResponse rightVisualAcuities;
 	private EyeVisualAcuitiesJasperResponse leftVisualAcuities;
-	private DBObject eyeExamination;
+	private List<DBObject> eyeExamination;
 
 	public String getComplaints() {
 		return complaints;
@@ -1021,21 +1017,38 @@ public class ClinicalNotesJasperDetails {
 	public void setLeftVisualAcuities(EyeVisualAcuitiesJasperResponse leftVisualAcuities) {
 		this.leftVisualAcuities = leftVisualAcuities;
 	}
-
-	public List<DBObject> getHistoryOfPainType() {
-		return historyOfPainType;
+	
+	
+	public String getPainType() {
+		return painType;
 	}
 
-	public void setHistoryOfPainType(List<DBObject> historyOfPainType) {
-		this.historyOfPainType = historyOfPainType;
+	public void setPainType(String painType) {
+		this.painType = painType;
 	}
 
-	public DBObject getEyeExamination() {
+	public List<DBObject> getEyeExamination() {
 		return eyeExamination;
 	}
 
-	public void setEyeExamination(DBObject eyeExamination) {
+	public void setEyeExamination(List<DBObject> eyeExamination) {
 		this.eyeExamination = eyeExamination;
+	}
+
+	public String getPainAggrevatingFactor() {
+		return painAggrevatingFactor;
+	}
+
+	public void setPainAggrevatingFactor(String painAggrevatingFactor) {
+		this.painAggrevatingFactor = painAggrevatingFactor;
+	}
+
+	public String getPainReleavingFactor() {
+		return painReleavingFactor;
+	}
+
+	public void setPainReleavingFactor(String painReleavingFactor) {
+		this.painReleavingFactor = painReleavingFactor;
 	}
 
 	@Override
