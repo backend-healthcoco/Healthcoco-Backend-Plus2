@@ -2891,18 +2891,16 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										clinicalNotesCollection.getPhysioExamination().getHistoryOfPain().getSite());
 								clinicalNotesJasperDetails.setNature(clinicalNotesCollection.getPhysioExamination()
 										.getHistoryOfPain().getNature().getType());
-								List<DBObject> types = new ArrayList<DBObject>();
+								String type = "";
 								if (clinicalNotesCollection.getPhysioExamination().getHistoryOfPain().getType() != null)
 									for (PainType painType : clinicalNotesCollection.getPhysioExamination()
 											.getHistoryOfPain().getType()) {
-										DBObject dbObject = new BasicDBObject();
-										dbObject.put("painType", painType.getType());
-										types.add(dbObject);
+										if (!DPDoctorUtils.anyStringEmpty(type))
+											type = type + ",  " + painType;
+										else
+											type = type + painType;
 									}
-								if (!types.isEmpty())
-									clinicalNotesJasperDetails.setHistoryOfPainType(types);
-								else
-									clinicalNotesJasperDetails.setHistoryOfPainType(null);
+								clinicalNotesJasperDetails.setPainType(type);
 							}
 
 							if (clinicalNotesCollection.getPhysioExamination().getPainRatingScale() != null) {
@@ -2912,6 +2910,29 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										.getPainRatingScale().getOnActivity());
 								clinicalNotesJasperDetails.setNprs(clinicalNotesCollection.getPhysioExamination()
 										.getPainRatingScale().getNPRS().toString());
+								String painAggrevatingFactor = "";
+								if (clinicalNotesCollection.getPhysioExamination().getPainRatingScale()
+										.getPainAggrevatingFactor() != null)
+									for (String string : clinicalNotesCollection.getPhysioExamination()
+											.getPainRatingScale().getPainAggrevatingFactor()) {
+										if (!DPDoctorUtils.anyStringEmpty(painAggrevatingFactor))
+											painAggrevatingFactor = painAggrevatingFactor + ",  " + string;
+										else
+											painAggrevatingFactor = painAggrevatingFactor + string;
+									}
+								clinicalNotesJasperDetails.setPainType(painAggrevatingFactor);
+
+								String painReleavingFactor = "";
+								if (clinicalNotesCollection.getPhysioExamination().getPainRatingScale()
+										.getPainReleavingFactor() != null)
+									for (String string : clinicalNotesCollection.getPhysioExamination()
+											.getPainRatingScale().getPainReleavingFactor()) {
+										if (!DPDoctorUtils.anyStringEmpty(painReleavingFactor))
+											painReleavingFactor = painReleavingFactor + ",  " + string;
+										else
+											painReleavingFactor = painReleavingFactor + string;
+									}
+								clinicalNotesJasperDetails.setPainType(painReleavingFactor);
 							}
 							if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination() != null) {
 								if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination()
@@ -3037,15 +3058,19 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						EyeSpecialityObservation eyeObservation = clinicalNotesCollection.getEyeObservation();
 						EyeTestJasperResponse eyResponse = new EyeTestJasperResponse();
 						if (eyeObservation != null) {
+							parameters.put("eyeObservation", "eyeObservation");
 
 							if (eyeObservation.getEyeExamination() != null) {
 								showTitle = true;
 								parameters.put("EyeExaminationTitle", "Eye Examination :");
+								List<DBObject> dbObjects = new ArrayList<DBObject>();
 								List<EyeExamination> examinations = eyeObservation.getEyeExamination();
 
 								DBObject response = new BasicDBObject();
 								response.put("eyeExamination", examinations);
-
+								dbObjects.add(response);
+								parameters.put("eyeExamination", dbObjects);
+								clinicalNotesJasperDetails.setEyeExamination(dbObjects);
 							}
 
 							if (eyeObservation.getVision_IOP() != null) {

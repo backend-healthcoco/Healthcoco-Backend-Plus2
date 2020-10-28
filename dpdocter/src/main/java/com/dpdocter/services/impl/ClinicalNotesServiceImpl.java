@@ -115,6 +115,7 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.XRayDetailsCollection;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.LineStyle;
 import com.dpdocter.enums.PainType;
 import com.dpdocter.enums.PrintSettingType;
@@ -4223,20 +4224,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				parameters.put("site", clinicalNotesCollection.getPhysioExamination().getHistoryOfPain().getSite());
 				parameters.put("nature",
 						clinicalNotesCollection.getPhysioExamination().getHistoryOfPain().getNature().getType());
-				List<DBObject> types = new ArrayList<DBObject>();
+				String type = "";
 				if (clinicalNotesCollection.getPhysioExamination().getHistoryOfPain().getType() != null)
 					for (PainType painType : clinicalNotesCollection.getPhysioExamination().getHistoryOfPain()
 							.getType()) {
-						DBObject dbObject = new BasicDBObject();
-						dbObject.put("painType", painType.getType());
-						types.add(dbObject);
+						if (!DPDoctorUtils.anyStringEmpty(type))
+							type = type + ",  " + painType;
+						else
+							type = type + painType;
 					}
-				if (!types.isEmpty())
-					parameters.put("painType", types);
-				else
-					parameters.put("painType", null);
+				parameters.put("painType", type);
 			}
-
 			if (clinicalNotesCollection.getPhysioExamination().getPainRatingScale() != null) {
 				parameters.put("onRest",
 						clinicalNotesCollection.getPhysioExamination().getPainRatingScale().getOnRest());
@@ -4244,6 +4242,29 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						clinicalNotesCollection.getPhysioExamination().getPainRatingScale().getOnActivity());
 				parameters.put("nprs",
 						String.valueOf(clinicalNotesCollection.getPhysioExamination().getPainRatingScale().getNPRS()));
+				String painAggrevatingFactor = "";
+				if (clinicalNotesCollection.getPhysioExamination().getPainRatingScale()
+						.getPainAggrevatingFactor() != null)
+					for (String string : clinicalNotesCollection.getPhysioExamination()
+							.getPainRatingScale().getPainAggrevatingFactor()) {
+						if (!DPDoctorUtils.anyStringEmpty(painAggrevatingFactor))
+							painAggrevatingFactor = painAggrevatingFactor + ",  " + string;
+						else
+							painAggrevatingFactor = painAggrevatingFactor + string;
+					}
+				parameters.put("painAggrevatingFactor",painAggrevatingFactor);
+
+				String painReleavingFactor = "";
+				if (clinicalNotesCollection.getPhysioExamination().getPainRatingScale()
+						.getPainReleavingFactor() != null)
+					for (String string : clinicalNotesCollection.getPhysioExamination()
+							.getPainRatingScale().getPainReleavingFactor()) {
+						if (!DPDoctorUtils.anyStringEmpty(painReleavingFactor))
+							painReleavingFactor = painReleavingFactor + ",  " + string;
+						else
+							painReleavingFactor = painReleavingFactor + string;
+					}
+				parameters.put("painReleavingFactor",painReleavingFactor);
 			}
 			if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination() != null) {
 				if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getPalpation() != null) {
@@ -4337,14 +4358,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		EyeSpecialityObservation eyeObservation = clinicalNotesCollection.getEyeObservation();
 		EyeTestJasperResponse eyResponse = new EyeTestJasperResponse();
 		if (eyeObservation != null) {
-			
+			parameters.put("eyeObservation", "eyeObservation");
 			if (eyeObservation.getEyeExamination() != null) {
-				
+				List<DBObject>  dbObjects=new ArrayList<DBObject>();
 				List<EyeExamination> examinations = eyeObservation.getEyeExamination();
 
 				DBObject dbObject = new BasicDBObject();
 				dbObject.put("eyeExamination", examinations);
-				parameters.put("eyeExamination", examinations);
+				dbObjects.add(dbObject);
+				parameters.put("eyeExamination", dbObjects);
 
 			}
 			
@@ -4591,7 +4613,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String dateTime = _12HourSDF.format(_24HourDt) + ", " + sdf.format(clinicalNotesCollection.getFromDate());
 			parameters.put("followUpAppointment", "Next Review on " + dateTime);
 		}
-
+		parameters.put("contentLineSpace",
+				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
+						? printSettings.getContentLineSpace()
+						: LineSpace.SMALL.name());
 		if (historyCollection != null) {
 			parameters.put("showHistory", true);
 			patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
