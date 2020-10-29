@@ -41,6 +41,8 @@ public class DoctorPatientReceipt extends GenericCollection{
 	
 	private Double balanceAmount = 0.0;
 	
+	private Double refundAmount = 0.0;
+
 	private Date receivedDate;
 
 	private Boolean discarded = false;
@@ -186,6 +188,15 @@ public class DoctorPatientReceipt extends GenericCollection{
 	
 	
 	
+	
+
+	public Double getRefundAmount() {
+		return refundAmount;
+	}
+
+	public void setRefundAmount(Double refundAmount) {
+		this.refundAmount = refundAmount;
+	}
 
 	public PaymentDetails getPaymentDetails() {
 		return paymentDetails;
