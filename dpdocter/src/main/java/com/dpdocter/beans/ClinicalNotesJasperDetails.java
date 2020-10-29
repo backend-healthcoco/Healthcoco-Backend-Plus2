@@ -160,6 +160,7 @@ public class ClinicalNotesJasperDetails {
 	private EyeVisualAcuitiesJasperResponse rightVisualAcuities;
 	private EyeVisualAcuitiesJasperResponse leftVisualAcuities;
 	private List<DBObject> eyeExamination;
+	private List<DBObject> eyeInvestigation;
 
 	public String getComplaints() {
 		return complaints;
@@ -1049,6 +1050,14 @@ public class ClinicalNotesJasperDetails {
 
 	public void setPainReleavingFactor(String painReleavingFactor) {
 		this.painReleavingFactor = painReleavingFactor;
+	}
+
+	public List<DBObject> getEyeInvestigation() {
+		return eyeInvestigation;
+	}
+
+	public void setEyeInvestigation(List<DBObject> eyeInvestigation) {
+		this.eyeInvestigation = eyeInvestigation;
 	}
 
 	@Override
