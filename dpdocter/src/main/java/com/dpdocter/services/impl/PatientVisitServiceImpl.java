@@ -3065,14 +3065,33 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								parameters.put("EyeExaminationTitle", "Eye Examination :");
 								List<DBObject> dbObjects = new ArrayList<DBObject>();
 								List<EyeExamination> examinations = eyeObservation.getEyeExamination();
-
-								DBObject response = new BasicDBObject();
-								response.put("eyeExamination", examinations);
-								dbObjects.add(response);
+								for (EyeExamination eyeExamination : examinations) {
+									DBObject response = new BasicDBObject();
+									response.put("system", eyeExamination.getSystem());
+									response.put("rightEye", eyeExamination.getRightEye());
+									response.put("leftEye", eyeExamination.getLeftEye());
+									dbObjects.add(response);
+								}
 								parameters.put("eyeExamination", dbObjects);
 								clinicalNotesJasperDetails.setEyeExamination(dbObjects);
 							}
-
+							showTitle = false;
+							if (eyeObservation.getInvestigation() != null) {
+								showTitle = true;
+								parameters.put("EyeInvestigationTitle", "Eye Investigation :");
+								List<DBObject> dbObjects = new ArrayList<DBObject>();
+								List<EyeExamination> investigations = eyeObservation.getInvestigation();
+								for (EyeExamination investigation : investigations) {
+									DBObject response = new BasicDBObject();
+									response.put("system", investigation.getSystem());
+									response.put("rightEye", investigation.getRightEye());
+									response.put("leftEye", investigation.getLeftEye());
+									dbObjects.add(response);
+								}
+								parameters.put("eyeInvestigation", dbObjects);
+								clinicalNotesJasperDetails.setEyeInvestigation(dbObjects);
+							}
+							showTitle = false;
 							if (eyeObservation.getVision_IOP() != null) {
 								clinicalNotesJasperDetails
 										.setLeftVisionPR(eyeObservation.getVision_IOP().getLeftVisionPR());

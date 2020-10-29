@@ -1222,7 +1222,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			fieldXPoint = fieldXPoint + dataWidth;
 			addEyePrescriptionItem("$P{leftEyeVisionPR}", fieldXPoint, dataWidth, false, HorizontalTextAlignEnum.CENTER,
 					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
-//For Eye Examination
+			// For Eye Examination
 
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 			band = new JRDesignBand();
@@ -1246,6 +1246,35 @@ public class JasperReportServiceImpl implements JasperReportService {
 			try {
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(addExaminationItem(parameters,
 						contentFontSize, columnWidth, pageWidth, pageHeight, "$P{eyeExamination}", normalStyle));
+			} catch (JRException e) {
+				e.printStackTrace();
+				logger.error(e);
+				e.printStackTrace();
+			}
+
+			// For Eye Investigation
+
+			band = new JRDesignBand();
+			band.setHeight(1);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(18);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{EyeInvestigationTitle}"));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(220);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			try {
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(addExaminationItem(parameters,
+						contentFontSize, columnWidth, pageWidth, pageHeight, "$P{eyeInvestigation}", normalStyle));
 			} catch (JRException e) {
 				e.printStackTrace();
 				logger.error(e);
@@ -2398,6 +2427,28 @@ public class JasperReportServiceImpl implements JasperReportService {
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addExaminationItem(parameters, contentFontSize,
 					columnWidth, pageWidth, pageHeight, "$F{eyeExamination}", normalStyle));
 
+			// For Eye Investigation
+
+			band = new JRDesignBand();
+			band.setHeight(1);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(18);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{EyeInvestigationTitle}"));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(220);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addExaminationItem(parameters, contentFontSize,
+					columnWidth, pageWidth, pageHeight, "$F{eyeInvestigation}", normalStyle));
 		}
 
 		if ((Boolean) parameters.get("showPhysioExaminationTitle")) {
@@ -2687,7 +2738,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			int pageWidth, int pageHeight, String eyeExamination, JRDesignStyle normalStyle) throws JRException {
 		JasperDesign jasperDesign = JRXmlLoader
 				.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-clinical-notes_eye_items_subreport-A4.jrxml");
-		jasperDesign.setName("Eye Examination");
 		jasperDesign.setPageWidth(pageWidth);
 		jasperDesign.setPageHeight(pageHeight);
 		jasperDesign.setColumnWidth(columnWidth);
@@ -2729,7 +2779,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{RightEye}"));
-		jrDesignTextField.setX(80 + 35);
+		jrDesignTextField.setX(100 + 35);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(35 + dataWidth);
@@ -2740,7 +2790,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{LeftEye}"));
-		jrDesignTextField.setX(65 + dataWidth);
+		jrDesignTextField.setX(85 + dataWidth);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(dataWidth);
@@ -2778,7 +2828,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{rightEye}"));
-		jrDesignTextField.setX(82 + 35);
+		jrDesignTextField.setX(102 + 35);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(dataWidth - 3);
@@ -2788,7 +2838,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{leftEye}"));
-		jrDesignTextField.setX(68 + dataWidth);
+		jrDesignTextField.setX(88 + dataWidth);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(dataWidth - 3);
