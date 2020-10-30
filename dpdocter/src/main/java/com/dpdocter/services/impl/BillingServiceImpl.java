@@ -1137,8 +1137,8 @@ public class BillingServiceImpl implements BillingService {
 									 - advanceAmount);
 					}
 					
-					else
-					doctorPatientDueAmountCollection.setDueAmount(-dueAmount);
+					//else
+					//doctorPatientDueAmountCollection.setDueAmount(-dueAmount);
 				}
 				
 				doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
@@ -1337,6 +1337,7 @@ public class BillingServiceImpl implements BillingService {
 
 						DoctorPatientInvoiceCollection receiptInvoiceCollection = doctorPatientInvoiceRepository
 								.findById(receiptCollection.getInvoiceId()).orElse(null);
+					
 						receiptInvoiceCollection
 								.setBalanceAmount(receiptInvoiceCollection.getBalanceAmount() + usedAdvanceAmt);
 						receiptInvoiceCollection.setUpdatedTime(new Date());
@@ -1357,6 +1358,12 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientReceiptCollection.getPatientId(), doctorPatientReceiptCollection.getDoctorId(),
 					doctorPatientReceiptCollection.getLocationId(), doctorPatientReceiptCollection.getHospitalId());
 			amountCollection.setUpdatedTime(new Date());
+			if(doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.ADVANCE))
+			{
+				amountCollection
+				.setDueAmount(amountCollection.getDueAmount());
+			}
+			else
 			amountCollection
 					.setDueAmount(amountCollection.getDueAmount() + doctorPatientReceiptCollection.getAmountPaid());
 			doctorPatientDueAmountRepository.save(amountCollection);
