@@ -4245,26 +4245,26 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				String painAggrevatingFactor = "";
 				if (clinicalNotesCollection.getPhysioExamination().getPainRatingScale()
 						.getPainAggrevatingFactor() != null)
-					for (String string : clinicalNotesCollection.getPhysioExamination()
-							.getPainRatingScale().getPainAggrevatingFactor()) {
+					for (String string : clinicalNotesCollection.getPhysioExamination().getPainRatingScale()
+							.getPainAggrevatingFactor()) {
 						if (!DPDoctorUtils.anyStringEmpty(painAggrevatingFactor))
 							painAggrevatingFactor = painAggrevatingFactor + ",  " + string;
 						else
 							painAggrevatingFactor = painAggrevatingFactor + string;
 					}
-				parameters.put("painAggrevatingFactor",painAggrevatingFactor);
+				parameters.put("painAggrevatingFactor", painAggrevatingFactor);
 
 				String painReleavingFactor = "";
 				if (clinicalNotesCollection.getPhysioExamination().getPainRatingScale()
 						.getPainReleavingFactor() != null)
-					for (String string : clinicalNotesCollection.getPhysioExamination()
-							.getPainRatingScale().getPainReleavingFactor()) {
+					for (String string : clinicalNotesCollection.getPhysioExamination().getPainRatingScale()
+							.getPainReleavingFactor()) {
 						if (!DPDoctorUtils.anyStringEmpty(painReleavingFactor))
 							painReleavingFactor = painReleavingFactor + ",  " + string;
 						else
 							painReleavingFactor = painReleavingFactor + string;
 					}
-				parameters.put("painReleavingFactor",painReleavingFactor);
+				parameters.put("painReleavingFactor", painReleavingFactor);
 			}
 			if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination() != null) {
 				if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getPalpation() != null) {
@@ -4361,15 +4361,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			parameters.put("eyeObservation", "eyeObservation");
 			parameters.put("EyeExaminationTitle", "Eye Examination :");
 			if (eyeObservation.getEyeExamination() != null) {
-				List<DBObject>  dbObjects=new ArrayList<DBObject>();
+				List<DBObject> dbObjects = new ArrayList<DBObject>();
 				List<EyeExamination> examinations = eyeObservation.getEyeExamination();
 
 				for (EyeExamination eyeExamination : examinations) {
 					DBObject dbObject = new BasicDBObject();
-					dbObject.put("system", eyeExamination.getSystem());
-					dbObject.put("rightEye", eyeExamination.getRightEye());
-					dbObject.put("leftEye", eyeExamination.getLeftEye());
-					dbObjects.add(dbObject);
+					if (!DPDoctorUtils.anyStringEmpty(eyeExamination.getLeftEye())
+							|| !DPDoctorUtils.anyStringEmpty(eyeExamination.getRightEye())) {
+						dbObject.put("system", eyeExamination.getSystem());
+						dbObject.put("rightEye", eyeExamination.getRightEye());
+						dbObject.put("leftEye", eyeExamination.getLeftEye());
+						dbObjects.add(dbObject);
+					}
 				}
 				parameters.put("eyeExamination", dbObjects);
 			}
@@ -4381,10 +4384,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				List<EyeExamination> investigations = eyeObservation.getInvestigation();
 				for (EyeExamination investigation : investigations) {
 					DBObject dbObject = new BasicDBObject();
-					dbObject.put("system", investigation.getSystem());
+					if (!DPDoctorUtils.anyStringEmpty(investigation.getLeftEye())
+							|| !DPDoctorUtils.anyStringEmpty(investigation.getRightEye())) {	dbObject.put("system", investigation.getSystem());
 					dbObject.put("rightEye", investigation.getRightEye());
 					dbObject.put("leftEye", investigation.getLeftEye());
 					dbObjects.add(dbObject);
+					}
 				}
 				parameters.put("eyeInvestigation", dbObjects);
 			}
@@ -4507,14 +4512,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String vitalSigns = null;
 
 			String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
-			pulse = (pulse != null && !pulse.isEmpty() ? "Pulse: " + pulse.trim() + " " + VitalSignsUnit.PULSE.getUnit()
+			pulse = (pulse != null && !pulse.isEmpty()
+					? "Pulse: " + pulse + " " + VitalSignsUnit.PULSE.getUnit()
 					: "");
 			if (!DPDoctorUtils.allStringsEmpty(pulse))
 				vitalSigns = pulse;
 
 			String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
 			temp = (temp != null && !temp.isEmpty()
-					? "Temperature: " + temp.trim() + " " + VitalSignsUnit.TEMPERATURE.getUnit()
+					? "Temperature: " + temp + " " + VitalSignsUnit.TEMPERATURE.getUnit()
 					: "");
 			if (!DPDoctorUtils.allStringsEmpty(temp)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
@@ -4525,7 +4531,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
 			breathing = (breathing != null && !breathing.isEmpty()
-					? "Breathing: " + breathing.trim() + " " + VitalSignsUnit.BREATHING.getUnit()
+					? "Breathing: " + breathing + " " + VitalSignsUnit.BREATHING.getUnit()
 					: "");
 			if (!DPDoctorUtils.allStringsEmpty(breathing)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
@@ -4536,9 +4542,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			String weight = clinicalNotesCollection.getVitalSigns().getWeight();
 			weight = (weight != null && !weight.isEmpty()
-					? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit()
+					? "Weight: " + weight + " " + VitalSignsUnit.WEIGHT.getUnit()
 					: "");
-			if (!DPDoctorUtils.allStringsEmpty(temp)) {
+			if (!DPDoctorUtils.allStringsEmpty(weight)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + weight;
 				else
@@ -4547,14 +4553,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			String bloodPressure = "";
 			if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
-				String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getSystolic();
-				systolic = systolic != null && !systolic.isEmpty() ? systolic.trim() : "";
+				String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure()
+						.getSystolic();
+				systolic = systolic != null && !systolic.isEmpty() ? systolic : "";
 
-				String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic();
-				diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic.trim() : "";
+				String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure()
+						.getDiastolic();
+				diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
 
 				if (!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
-					bloodPressure = "B.P: " + systolic + "/" + diastolic + " " + VitalSignsUnit.BLOODPRESSURE.getUnit();
+					bloodPressure = "B.P: " + systolic + "/" + diastolic + " "
+							+ VitalSignsUnit.BLOODPRESSURE.getUnit();
 				if (!DPDoctorUtils.allStringsEmpty(bloodPressure)) {
 					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 						vitalSigns = vitalSigns + ",  " + bloodPressure;
@@ -4562,8 +4571,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						vitalSigns = bloodPressure;
 				}
 			}
+
 			String spo2 = clinicalNotesCollection.getVitalSigns().getSpo2();
-			spo2 = (spo2 != null && !spo2.isEmpty() ? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit() : "");
+			spo2 = (spo2 != null && !spo2.isEmpty()
+					? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit()
+					: "");
 			if (!DPDoctorUtils.allStringsEmpty(spo2)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + spo2;
@@ -4571,7 +4583,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					vitalSigns = spo2;
 			}
 			String height = clinicalNotesCollection.getVitalSigns().getHeight();
-			height = (height != null && !height.isEmpty() ? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
+			height = (height != null && !height.isEmpty()
+					? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
 					: "");
 			if (!DPDoctorUtils.allStringsEmpty(height)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
@@ -4582,8 +4595,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
 			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-				if (bmi.equalsIgnoreCase("nan"))
+				if (bmi.equalsIgnoreCase("nan")) {
 					bmi = "";
+				}
 
 			} else {
 				bmi = "";
@@ -4591,10 +4605,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
 				bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
-				if (!DPDoctorUtils.allStringsEmpty(bmi))
+				if (!DPDoctorUtils.allStringsEmpty(bmi)) {
 					vitalSigns = vitalSigns + ",  " + bmi;
-				else
+				} else {
 					vitalSigns = bmi;
+				}
 			}
 
 			String bsa = clinicalNotesCollection.getVitalSigns().getBsa();

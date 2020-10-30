@@ -2920,7 +2920,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										else
 											painAggrevatingFactor = painAggrevatingFactor + string;
 									}
-								clinicalNotesJasperDetails.setPainType(painAggrevatingFactor);
+								clinicalNotesJasperDetails.setPainAggrevatingFactor(painAggrevatingFactor);
 
 								String painReleavingFactor = "";
 								if (clinicalNotesCollection.getPhysioExamination().getPainRatingScale()
@@ -2932,7 +2932,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										else
 											painReleavingFactor = painReleavingFactor + string;
 									}
-								clinicalNotesJasperDetails.setPainType(painReleavingFactor);
+								clinicalNotesJasperDetails.setPainReleavingFactor(painReleavingFactor);
 							}
 							if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination() != null) {
 								if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination()
@@ -3061,32 +3061,40 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							parameters.put("eyeObservation", "eyeObservation");
 
 							if (eyeObservation.getEyeExamination() != null) {
+								parameters.put("showEyeExamination", "showEyeExamination");
 								showTitle = true;
 								parameters.put("EyeExaminationTitle", "Eye Examination :");
 								List<DBObject> dbObjects = new ArrayList<DBObject>();
 								List<EyeExamination> examinations = eyeObservation.getEyeExamination();
 								for (EyeExamination eyeExamination : examinations) {
 									DBObject response = new BasicDBObject();
-									response.put("system", eyeExamination.getSystem());
-									response.put("rightEye", eyeExamination.getRightEye());
-									response.put("leftEye", eyeExamination.getLeftEye());
-									dbObjects.add(response);
+									if (!DPDoctorUtils.anyStringEmpty(eyeExamination.getLeftEye())
+											|| !DPDoctorUtils.anyStringEmpty(eyeExamination.getRightEye())) {
+										response.put("system", eyeExamination.getSystem());
+										response.put("rightEye", eyeExamination.getRightEye());
+										response.put("leftEye", eyeExamination.getLeftEye());
+										dbObjects.add(response);
+									}
 								}
 								parameters.put("eyeExamination", dbObjects);
 								clinicalNotesJasperDetails.setEyeExamination(dbObjects);
 							}
 							showTitle = false;
 							if (eyeObservation.getInvestigation() != null) {
+								parameters.put("showEyeInvestigation", "showEyeInvestigation");
 								showTitle = true;
 								parameters.put("EyeInvestigationTitle", "Eye Investigation :");
 								List<DBObject> dbObjects = new ArrayList<DBObject>();
 								List<EyeExamination> investigations = eyeObservation.getInvestigation();
 								for (EyeExamination investigation : investigations) {
-									DBObject response = new BasicDBObject();
-									response.put("system", investigation.getSystem());
-									response.put("rightEye", investigation.getRightEye());
-									response.put("leftEye", investigation.getLeftEye());
-									dbObjects.add(response);
+									DBObject dbObject = new BasicDBObject();
+									if (!DPDoctorUtils.anyStringEmpty(investigation.getLeftEye())
+											|| !DPDoctorUtils.anyStringEmpty(investigation.getRightEye())) {
+										dbObject.put("system", investigation.getSystem());
+										dbObject.put("rightEye", investigation.getRightEye());
+										dbObject.put("leftEye", investigation.getLeftEye());
+										dbObjects.add(dbObject);
+									}
 								}
 								parameters.put("eyeInvestigation", dbObjects);
 								clinicalNotesJasperDetails.setEyeInvestigation(dbObjects);
