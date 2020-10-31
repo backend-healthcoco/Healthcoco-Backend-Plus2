@@ -841,7 +841,7 @@ public class BillingServiceImpl implements BillingService {
 				DoctorPatientReceiptCollection doPatientReceiptCollections=null;
 				if(request.getInvoiceIds() !=null) {
 					doPatientReceiptCollections = doctorPatientReceiptRepository
-						.findByInvoiceId(new ObjectId(request.getInvoiceIds().get(0)));
+						.findByInvoiceIdAndReceiptType(new ObjectId(request.getInvoiceIds().get(0)),ReceiptType.INVOICE.toString());
 				if (doPatientReceiptCollections != null ) {
 					
 
@@ -854,12 +854,12 @@ public class BillingServiceImpl implements BillingService {
 										.findById(receiptIdWithAmount.getReceiptId()).orElse(null);
 								patientReceiptCollection
 										.setRemainingAdvanceAmount(patientReceiptCollection.getRemainingAdvanceAmount()-request.getUsedAdvanceAmount());
-								patientReceiptCollection.setRefundAmount(request.getUsedAdvanceAmount());
+							//	patientReceiptCollection.setRefundAmount(request.getAmountPaid());
 								patientReceiptCollection.setUpdatedTime(new Date());
 								doctorPatientReceiptRepository.save(patientReceiptCollection);
 							}
 						}
-					
+						doctorPatientReceiptCollection.setRefundAmount(request.getAmountPaid());
 
 						doPatientReceiptCollections.setUpdatedTime(new Date());
 						// receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
@@ -887,7 +887,9 @@ public class BillingServiceImpl implements BillingService {
 									new Sort(Direction.ASC, "createdTime"));
 					if (receiptsOfAdvancePayment == null || receiptsOfAdvancePayment.isEmpty())
 						throw new BusinessException(ServiceError.InvalidInput, "Advance Amount is not available");
-
+					
+					doctorPatientReceiptCollection.setRefundAmount(request.getUsedAdvanceAmount());
+					
 					Double advanceAmountToBeUsed = request.getUsedAdvanceAmount() != null
 							? request.getUsedAdvanceAmount()
 							: 0.0;
@@ -941,7 +943,7 @@ public class BillingServiceImpl implements BillingService {
 					}
 				}
 			//	advanceAmount = advanceAmount + doctorPatientReceiptCollection.getUsedAdvanceAmount();
-				doctorPatientReceiptCollection.setAmountPaid(request.getAmountPaid());
+				doctorPatientReceiptCollection.setRefundAmount(request.getAmountPaid());
 				doctorPatientReceiptCollection.setBalanceAmount(0.0);
 				doctorPatientReceiptCollection.setRemainingAdvanceAmount(0.0);
 				if (request.getInvoiceIds() != null && !request.getInvoiceIds().isEmpty()) {
@@ -1122,20 +1124,27 @@ public class BillingServiceImpl implements BillingService {
 				}
 				if(doctorPatientDueAmountCollection.getDueAmount() !=null && doctorPatientDueAmountCollection.getDueAmount() >0) {
 					if(doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.REFUND))
-						doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() + dueAmount);
+							if(request.getInvoiceIds() !=null)
+							doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - dueAmount);
+						else
+							doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() + dueAmount);
+
 					else
 					doctorPatientDueAmountCollection
 						.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - dueAmount);
-					if(doctorPatientDueAmountCollection.getDueAmount() !=null && doctorPatientDueAmountCollection.getDueAmount() <0)
+					if(doctorPatientDueAmountCollection.getDueAmount() !=null && doctorPatientDueAmountCollection.getDueAmount() <0) {
+			//	DoctorPatientReceiptCollection reciptCollection=new DoctorPatientReceiptCollection();
+			//		BeanUtil.map(doctorPatientReceiptCollection, reciptCollection);
+					doctorPatientReceiptCollection.setReceiptType(ReceiptType.ADVANCE);	
 					doctorPatientReceiptCollection.setRemainingAdvanceAmount(-doctorPatientDueAmountCollection.getDueAmount());
-					doctorPatientReceiptCollection = doctorPatientReceiptRepository
-							.save(doctorPatientReceiptCollection);
+					 doctorPatientReceiptRepository .save(doctorPatientReceiptCollection);
+					}
 				}
 				else {
 					if(doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.REFUND)) { 
 						if(request.getInvoiceIds() !=null)
-						doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount()
-								- invoice.getBalanceAmount() - advanceAmount);
+						doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount()+request.getAmountPaid());
+								//- invoice.getBalanceAmount() - advanceAmount);
 						else
 							doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount()
 									 - advanceAmount);
