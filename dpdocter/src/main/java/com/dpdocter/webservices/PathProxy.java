@@ -2441,4 +2441,12 @@ public interface PathProxy {
 		public static final String GET_TRANSACTION_SMS_REPORT = "/transaction/report/get";
 
 	}
+	
+	public static final String NMC_HCM_BASE_URL = BASE_URL + "/nmcHcm";
+	public interface NmcHcmUrls{
+		
+		public static final String GET_NMC_HCM_DETAILS = "/get";
+		
+	}
+
 }
