@@ -77,6 +77,9 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 	@Field
 	private Boolean isPatientDiscarded = false;
 	
+	@Field
+	private Double refundAmount=0.0;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -237,6 +240,16 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 
 	public void setTransactionId(String transactionId) {
 		this.transactionId = transactionId;
+	}
+	
+	
+
+	public Double getRefundAmount() {
+		return refundAmount;
+	}
+
+	public void setRefundAmount(Double refundAmount) {
+		this.refundAmount = refundAmount;
 	}
 
 	@Override
