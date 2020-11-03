@@ -61,10 +61,10 @@ public class NmcHcmApi {
 	public Response<NmcHcm> getNmcHcmDetails(@DefaultValue("0") @QueryParam(value ="size") int size, 
 			@DefaultValue("0") @QueryParam( value ="page") int page, 
 			@QueryParam( value ="searchTerm") String searchTerm,
-			@QueryParam( value ="type") String type) {
+			@QueryParam( value ="type") String type,@DefaultValue("false")@QueryParam( value ="discarded") Boolean discarded) {
 		
 		Response<NmcHcm> response = new Response<NmcHcm>();
-		
+			response.setCount(nmcHcmServices.countNmcData(type, searchTerm,discarded));
 			response.setDataList(nmcHcmServices.getDetails(page, size, searchTerm,type));
 		
 		return response;

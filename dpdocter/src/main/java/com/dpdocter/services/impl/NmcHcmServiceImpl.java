@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.NmcHcm;
@@ -93,5 +94,29 @@ public class NmcHcmServiceImpl implements NmcHcmServices{
 		}
 		return response;
 	}
+	
+	 @Override
+		public Integer countNmcData(String type, String searchTerm,Boolean discarded) {
+			Integer response=null;
+			try {
+				Criteria criteria = new Criteria();
+				if(type !=null)
+				criteria=criteria.and("type").is(type);
+				if(discarded !=null)
+					criteria=criteria.and("discarded").is(discarded);
+				
+				if(searchTerm !=null)
+			    criteria = criteria.orOperator(new Criteria("nameOfFacility").regex("^" + searchTerm, "i"),
+					new Criteria("nameOfFacility").regex("^" + searchTerm));
+
+		response = (int) mongoTemplate.count(new Query(criteria), NmcHcmCollection.class);
+	} catch (BusinessException e) {
+		logger.error("Error while counting nmc data " + e.getMessage());
+		e.printStackTrace();
+		throw new BusinessException(ServiceError.Unknown, "Error while counting nmc data " + e.getMessage());
+
+	}
+			return response;
+		}
 
 }

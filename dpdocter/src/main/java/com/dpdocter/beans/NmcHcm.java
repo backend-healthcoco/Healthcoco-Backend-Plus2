@@ -23,7 +23,11 @@ public class NmcHcm extends GenericCollection{
 	
 	private String typeOfFacility;
 	
+	private String otherFacilities;
+	
 	private String categoryofHealthWorker;
+	
+	private String otherCategoryOfHealthWorker;
 	
 	private String hCWsName;
 	
@@ -223,6 +227,22 @@ public class NmcHcm extends GenericCollection{
 
 	public void setType(NmcHcmType type) {
 		this.type = type;
+	}
+
+	public String getOtherFacilities() {
+		return otherFacilities;
+	}
+
+	public void setOtherFacilities(String otherFacilities) {
+		this.otherFacilities = otherFacilities;
+	}
+
+	public String getOtherCategoryOfHealthWorker() {
+		return otherCategoryOfHealthWorker;
+	}
+
+	public void setOtherCategoryOfHealthWorker(String otherCategoryOfHealthWorker) {
+		this.otherCategoryOfHealthWorker = otherCategoryOfHealthWorker;
 	}
 	
 	
