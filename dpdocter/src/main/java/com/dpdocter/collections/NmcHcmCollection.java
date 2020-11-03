@@ -16,7 +16,7 @@ public class NmcHcmCollection extends GenericCollection {
 	private ObjectId id;
 	
 	@Field
-private String stateOrUT;
+	private String stateOrUT;
 	@Field
 	private String district;
 	@Field
@@ -34,7 +34,11 @@ private String stateOrUT;
 	@Field
 	private String typeOfFacility;
 	@Field
+	private String otherFacilities;
+	@Field
 	private String categoryofHealthWorker;
+	@Field
+	private String otherCategoryOfHealthWorker;
 	@Field
 	private String hCWsName;
 	@Field
@@ -62,6 +66,9 @@ private String stateOrUT;
 	
 	@Field
 	private NmcHcmType type;
+	
+	@Field
+	private boolean discarded=false;
 	
 	
 	public ObjectId getId() {
@@ -201,6 +208,24 @@ private String stateOrUT;
 	}
 	public void setType(NmcHcmType type) {
 		this.type = type;
+	}
+	public boolean isDiscarded() {
+		return discarded;
+	}
+	public void setDiscarded(boolean discarded) {
+		this.discarded = discarded;
+	}
+	public String getOtherFacilities() {
+		return otherFacilities;
+	}
+	public void setOtherFacilities(String otherFacilities) {
+		this.otherFacilities = otherFacilities;
+	}
+	public String getOtherCategoryOfHealthWorker() {
+		return otherCategoryOfHealthWorker;
+	}
+	public void setOtherCategoryOfHealthWorker(String otherCategoryOfHealthWorker) {
+		this.otherCategoryOfHealthWorker = otherCategoryOfHealthWorker;
 	}
 	
 	
