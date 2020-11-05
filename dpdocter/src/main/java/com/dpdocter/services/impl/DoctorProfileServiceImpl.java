@@ -1792,6 +1792,41 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
+	
+	
+	@Override
+	public Services addEditServices(Services request) {
+		Services response = null;
+		try {
+
+			ServicesCollection servicesCollection = null;
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				servicesCollection = servicesRepository.findById(new ObjectId(request.getId())).orElse(null);
+				if (servicesCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, " Services not present with Id");
+				}
+				BeanUtil.map(request, servicesCollection);
+				servicesCollection.setUpdatedTime(new Date());
+				servicesCollection.setCreatedBy("Admin");
+			} else {
+				servicesCollection = new ServicesCollection();
+				BeanUtil.map(request, servicesCollection);
+				servicesCollection.setUpdatedTime(new Date());
+				servicesCollection.setCreatedTime(new Date());
+				servicesCollection.setCreatedBy("Admin");
+			}
+			servicesCollection = servicesRepository.save(servicesCollection);
+			response = new Services();
+			BeanUtil.map(servicesCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Editing Services");
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Services");
+		}
+		return response;
+	}
+
 
 	@Override
 	@Transactional

@@ -144,4 +144,6 @@ public interface DoctorProfileService {
 	
 	String uploadRegistrationDetails(DoctorRegistrationDetails request);
 
+	Services addEditServices(Services request);
+
 }

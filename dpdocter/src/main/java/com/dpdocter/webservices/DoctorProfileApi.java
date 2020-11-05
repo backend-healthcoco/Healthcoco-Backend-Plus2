@@ -36,10 +36,13 @@ import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Services;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.UserSymptom;
+import com.dpdocter.elasticsearch.document.ESServicesDocument;
+import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorAddEditFacilityRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
@@ -97,6 +100,9 @@ public class DoctorProfileApi {
 
 	@Autowired
 	private DoctorStatsService doctorStatsService;
+	
+	@Autowired
+	private ESMasterService esMasterService;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -191,19 +197,41 @@ public class DoctorProfileApi {
 	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES)
 	@POST
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES)
-	public Response<DoctorServicesAddEditRequest> addEditServices(DoctorServicesAddEditRequest request) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	public Response<Services> addEditServices(@RequestBody Services request) {
+		Response<Services> response = null;
+		try {
+			if (request == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "request is null");
+			}
+			response = new Response<Services>();
+			Services services = doctorProfileService.addEditServices(request);
+			if (services != null) {
+				transnationalService.addResource(new ObjectId(services.getId()), Resource.SERVICE,
+						true);
+				ESServicesDocument esServicesDocument = new ESServicesDocument();
+				BeanUtil.map(services, esServicesDocument);
+				esMasterService.addEditServices(esServicesDocument);
+			}
+			response.setData(services);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		DoctorServicesAddEditRequest specialityResponse = doctorProfileService.addEditServices(request);
-
-		if (specialityResponse != null)
-			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
-		Response<DoctorServicesAddEditRequest> response = new Response<DoctorServicesAddEditRequest>();
-		response.setData(specialityResponse);
 		return response;
 	}
+	
+	//	public Response<DoctorServicesAddEditRequest> addEditServices(DoctorServicesAddEditRequest request) {
+//		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+//			logger.warn("Invalid Input");
+//			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+//		}
+//		DoctorServicesAddEditRequest specialityResponse = doctorProfileService.addEditServices(request);
+//
+//		if (specialityResponse != null)
+//			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
+//		Response<DoctorServicesAddEditRequest> response = new Response<DoctorServicesAddEditRequest>();
+//		response.setData(specialityResponse);
+//		return response;
+//	}
 
 	
 	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT)
