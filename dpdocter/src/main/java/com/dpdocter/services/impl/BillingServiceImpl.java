@@ -961,7 +961,7 @@ public class BillingServiceImpl implements BillingService {
 					System.out.println("Invoice:"+doctorPatientInvoiceCollection);
 					doctorPatientReceiptCollection.setInvoiceId(new ObjectId(request.getInvoiceIds().get(0)));
 					doctorPatientReceiptCollection.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
-				//	doctorPatientInvoiceCollection.setRefundAmount(request.getAmountPaid());
+					doctorPatientInvoiceCollection.setRefundAmount(request.getAmountPaid());
 					doctorPatientInvoiceCollection.setUpdatedTime(new Date());
 					doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
 					invoice = new DoctorPatientInvoice();
@@ -1146,6 +1146,7 @@ public class BillingServiceImpl implements BillingService {
 						//doctorPatientReceiptCollection.setReceiptType(ReceiptType.REFUND); -working
 						// doctorPatientReceiptRepository .save(doctorPatientReceiptCollection);
 						DoctorPatientReceiptCollection reciptCollection=new DoctorPatientReceiptCollection();
+		
 					reciptCollection.setDoctorId(doctorPatientReceiptCollection.getDoctorId());
 					reciptCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
 					reciptCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
