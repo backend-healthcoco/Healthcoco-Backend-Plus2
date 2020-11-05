@@ -1768,19 +1768,22 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	}
 
 	@Override
-	public List<Services> getServices(int page, int size, String updatedTime) {
+	public List<Services> getServices(int page, int size, String updatedTime, String searchTerm) {
 		List<Services> response = null;
 		try {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria.and("service").regex(searchTerm, "i");
+
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(
-						Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((long)(page) * size),
-						Aggregation.limit(size));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(
-						Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<Services> aggregationResults = mongoTemplate.aggregate(aggregation,
 					ServicesCollection.class, Services.class);

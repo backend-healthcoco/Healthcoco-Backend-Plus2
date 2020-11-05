@@ -124,7 +124,7 @@ public interface DoctorProfileService {
 
 	Boolean addEditDrugTypePlacement(String doctorId, String drugTypePlacement);
 
-	List<Services> getServices(int page, int size, String updatedTime);
+//	List<Services> getServices(int page, int size, String updatedTime);
 	
 	Boolean addEditOnlineWorkingTime(DoctorOnlineWorkingTimeRequest request);
 
@@ -145,5 +145,7 @@ public interface DoctorProfileService {
 	String uploadRegistrationDetails(DoctorRegistrationDetails request);
 
 	Services addEditServices(Services request);
+
+	List<Services> getServices(int page, int size, String updatedTime, String searchTerm);
 
 }

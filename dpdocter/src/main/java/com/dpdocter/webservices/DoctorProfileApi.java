@@ -556,9 +556,9 @@ public class DoctorProfileApi {
 	@Path(value = PathProxy.DoctorProfileUrls.GET_SERVICES)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_SERVICES, notes = PathProxy.DoctorProfileUrls.GET_SERVICES)
-	public Response<Services> getServices(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<Services> getServices(@QueryParam("page") int page, @QueryParam("size") int size,@QueryParam("searchTerm") String searchTerm,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
-		List<Services> specialities = doctorProfileService.getServices(page, size, updatedTime);
+		List<Services> specialities = doctorProfileService.getServices(page, size, updatedTime,searchTerm);
 		Response<Services> response = new Response<Services>();
 		response.setDataList(specialities);
 		return response;
