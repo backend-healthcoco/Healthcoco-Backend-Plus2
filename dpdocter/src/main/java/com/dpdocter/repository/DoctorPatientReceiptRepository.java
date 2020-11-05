@@ -45,5 +45,5 @@ public interface DoctorPatientReceiptRepository extends MongoRepository<DoctorPa
 
 	DoctorPatientReceiptCollection findByInvoiceId(ObjectId objectId);
 
-	DoctorPatientReceiptCollection findByInvoiceIdAndReceiptType(ObjectId objectId,String receiptType);
+	List<DoctorPatientReceiptCollection> findByInvoiceIdAndReceiptType(ObjectId objectId,String receiptType);
 }

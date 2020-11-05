@@ -17,6 +17,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dpdocter.beans.AddEditSEORequest;
@@ -194,28 +195,19 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES)
-	@POST
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES)
-	public Response<Services> addEditServices(@RequestBody Services request) {
-		Response<Services> response = null;
-		try {
-			if (request == null) {
-				throw new BusinessException(ServiceError.InvalidInput, "request is null");
-			}
-			response = new Response<Services>();
-			Services services = doctorProfileService.addEditServices(request);
-			if (services != null) {
-				transnationalService.addResource(new ObjectId(services.getId()), Resource.SERVICE,
-						true);
-				ESServicesDocument esServicesDocument = new ESServicesDocument();
-				BeanUtil.map(services, esServicesDocument);
-				esMasterService.addEditServices(esServicesDocument);
-			}
-			response.setData(services);
-		} catch (Exception e) {
-			e.printStackTrace();
+	public Response<DoctorServicesAddEditRequest> addEditServices(@RequestBody DoctorServicesAddEditRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
+		DoctorServicesAddEditRequest specialityResponse = doctorProfileService.addEditServices(request);
+
+		if (specialityResponse != null)
+			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
+		Response<DoctorServicesAddEditRequest> response = new Response<DoctorServicesAddEditRequest>();
+		response.setData(specialityResponse);
 		return response;
 	}
 	

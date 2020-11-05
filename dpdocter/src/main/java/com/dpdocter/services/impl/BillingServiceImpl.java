@@ -840,19 +840,22 @@ public class BillingServiceImpl implements BillingService {
 				
 				if(request.getUsedAdvanceAmount() !=null)
 					doctorPatientReceiptCollection.setRefundAmount(request.getUsedAdvanceAmount());
+				
+				if(request.getAmountPaid() !=null)
+					doctorPatientReceiptCollection.setRefundAmount(request.getAmountPaid());
 			System.out.println("Refund"+doctorPatientReceiptCollection.getRefundAmount());
 
-				DoctorPatientReceiptCollection doPatientReceiptCollections=null;
+				List<DoctorPatientReceiptCollection> doPatientReceiptCollections=null;
 				if(request.getInvoiceIds() !=null) {
 					doPatientReceiptCollections = doctorPatientReceiptRepository
 						.findByInvoiceIdAndReceiptType(new ObjectId(request.getInvoiceIds().get(0)),ReceiptType.INVOICE.toString());
 				if (doPatientReceiptCollections != null ) {
 					
-
-						if (doPatientReceiptCollections.getAdvanceReceiptIdWithAmounts() != null
-								&& !doPatientReceiptCollections.getAdvanceReceiptIdWithAmounts().isEmpty()) {
-							advanceAmount = advanceAmount + doPatientReceiptCollections.getUsedAdvanceAmount();
-							for (AdvanceReceiptIdWithAmount receiptIdWithAmount : doPatientReceiptCollections
+							for(DoctorPatientReceiptCollection doPatientReceiptCollection:doPatientReceiptCollections) {
+						if (doPatientReceiptCollection.getAdvanceReceiptIdWithAmounts() != null
+								&& !doPatientReceiptCollection.getAdvanceReceiptIdWithAmounts().isEmpty()) {
+							advanceAmount = advanceAmount + doPatientReceiptCollection.getUsedAdvanceAmount();
+							for (AdvanceReceiptIdWithAmount receiptIdWithAmount : doPatientReceiptCollection
 									.getAdvanceReceiptIdWithAmounts()) {
 								DoctorPatientReceiptCollection patientReceiptCollection = doctorPatientReceiptRepository
 										.findById(receiptIdWithAmount.getReceiptId()).orElse(null);
@@ -865,7 +868,7 @@ public class BillingServiceImpl implements BillingService {
 						}
 					//	doctorPatientReceiptCollection.setRefundAmount(request.getAmountPaid());
 
-						doPatientReceiptCollections.setUpdatedTime(new Date());
+						doPatientReceiptCollection.setUpdatedTime(new Date());
 						// receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 			
 					
@@ -876,8 +879,9 @@ public class BillingServiceImpl implements BillingService {
 					// receiptCollection.setUpdatedTime(new Date());
 					// }
 
-					doctorPatientReceiptRepository.save(doPatientReceiptCollections);
+					doctorPatientReceiptRepository.save(doPatientReceiptCollection);
 					}
+				}
 				}
 				else {
 					List<AdvanceReceiptIdWithAmount> receiptIdWithAmounts = doctorPatientReceiptCollection
