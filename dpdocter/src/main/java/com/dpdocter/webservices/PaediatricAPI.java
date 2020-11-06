@@ -52,8 +52,8 @@ public class PaediatricAPI {
 	@POST
 	@ApiOperation(value = PathProxy.PaediatricUrls.ADD_EDIT_VACCINE, notes = PathProxy.PaediatricUrls.ADD_EDIT_VACCINE)
 	public Response<VaccineResponse> addVaccines(VaccineRequest request) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId())) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(),
+				request.getLocationId(), request.getHospitalId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -77,7 +77,7 @@ public class PaediatricAPI {
 		response.setData(growthChart);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PaediatricUrls.ADD_EDIT_ACHIEVEMENT)
 	@POST
 	@ApiOperation(value = PathProxy.PaediatricUrls.ADD_EDIT_ACHIEVEMENT, notes = PathProxy.PaediatricUrls.ADD_EDIT_ACHIEVEMENT)
@@ -119,7 +119,7 @@ public class PaediatricAPI {
 		response.setData(growthChart);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENT_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENT_BY_ID, notes = PathProxy.PaediatricUrls.GET_ACHIEVEMENT_BY_ID)
@@ -133,7 +133,7 @@ public class PaediatricAPI {
 		response.setData(birthAchievement);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PaediatricUrls.DISCARD_GROWTH_CHART_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.PaediatricUrls.DISCARD_GROWTH_CHART_BY_ID, notes = PathProxy.PaediatricUrls.DISCARD_GROWTH_CHART_BY_ID)
@@ -184,22 +184,24 @@ public class PaediatricAPI {
 		response.setDataList(vaccineResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENTS)
 	@GET
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENTS, notes = PathProxy.PaediatricUrls.GET_ACHIEVEMENTS)
-	public Response<BirthAchievement> getGrowthCharts(@PathParam("patientId") String patientId ,@DefaultValue("0") @QueryParam("updatedTime") String updatedTime , @QueryParam("page") int page ,@QueryParam("size") int size) {
+	public Response<BirthAchievement> getGrowthCharts(@PathParam("patientId") String patientId,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @QueryParam("page") int page,
+			@QueryParam("size") int size) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<BirthAchievement> vaccineResponse = paediatricService.getBirthAchievementList(patientId, updatedTime , page ,size);
+		List<BirthAchievement> vaccineResponse = paediatricService.getBirthAchievementList(patientId, updatedTime, page,
+				size);
 		Response<BirthAchievement> response = new Response<BirthAchievement>();
 		response.setDataList(vaccineResponse);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION)
 	@GET
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION, notes = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION)
@@ -282,7 +284,6 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	
 	@Path(value = PathProxy.PaediatricUrls.GET_GROUPED_VACCINES)
 	@GET
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_GROUPED_VACCINES, notes = PathProxy.PaediatricUrls.GET_GROUPED_VACCINES)
@@ -296,12 +297,12 @@ public class PaediatricAPI {
 		response.setDataList(vaccineResponse);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.PaediatricUrls.UPDATE_VACCINATION_CHART)
 	@GET
 	@ApiOperation(value = PathProxy.PaediatricUrls.UPDATE_VACCINATION_CHART, notes = PathProxy.PaediatricUrls.UPDATE_VACCINATION_CHART)
-	public Response<Boolean> updateVaccinationChart(@PathParam("patientId") String patientId , @PathParam("vaccineStartDate") Long vaccineStartDate) {
+	public Response<Boolean> updateVaccinationChart(@PathParam("patientId") String patientId,
+			@PathParam("vaccineStartDate") Long vaccineStartDate) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -311,11 +312,12 @@ public class PaediatricAPI {
 		response.setData(vaccineResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS_GRAPH)
 	@GET
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS_GRAPH, notes = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS_GRAPH)
-	public Response<GrowthChartGraphResponse> getGrowthCharts(@QueryParam("patientId") String patientId,@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+	public Response<GrowthChartGraphResponse> getGrowthCharts(@QueryParam("patientId") String patientId,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -323,6 +325,22 @@ public class PaediatricAPI {
 		List<GrowthChartGraphResponse> vaccineResponse = paediatricService.getGrowthChartList(patientId, updatedTime);
 		Response<GrowthChartGraphResponse> response = new Response<GrowthChartGraphResponse>();
 		response.setDataList(vaccineResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.PaediatricUrls.DOWNLOAD_VACCINE_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.PaediatricUrls.DOWNLOAD_VACCINE_BY_ID, notes = PathProxy.PaediatricUrls.DOWNLOAD_VACCINE_BY_ID)
+	public Response<String> downloadCVaccineById(@PathParam("periodTime") Integer periodTime,
+			@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(
+				paediatricService.downloadVaccineById(periodTime, patientId, doctorId, locationId, hospitalId));
 		return response;
 	}
 }
