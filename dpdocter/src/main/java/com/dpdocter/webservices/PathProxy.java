@@ -2216,6 +2216,7 @@ public interface PathProxy {
 		public static final String GET_ACHIEVEMENTS = "achievement/getList/{patientId}";
 		public static final String UPDATE_VACCINATION_CHART = "vaccine/updateChart/{patientId}/{vaccineStartDate}";
 		public static final String GET_GROWTH_CHARTS_GRAPH = "growthChartGraph/getList";
+		public static final String DOWNLOAD_VACCINE_BY_ID = "/download/{periodTime}";
 	}
 
 	public static final String SOLR_BILLING_BASE_URL = BASE_URL + "/solr/billing";

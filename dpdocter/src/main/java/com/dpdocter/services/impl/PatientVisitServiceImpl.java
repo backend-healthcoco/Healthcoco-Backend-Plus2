@@ -2476,7 +2476,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		parameters.put("footerHeight", footerHeight);
 		parameters.put("headerHeight", headerHeight);
 		parameters.put("footerSignature", footerSignature);
-		parameters.put("poweredBy", poweredBy);
+//		parameters.put("poweredBy", poweredBy);
 		parameters.put("bottomSignText", bottomSignText);
 		parameters.put("contentFontSize", contentFontSize);
 		parameters.put("headerLeftText", headerLeftText);

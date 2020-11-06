@@ -206,6 +206,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-doctor-lab-A4.jrxml");
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DIET_PLAN.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-nutrition-diet-plan-A4.jrxml");
+		} else if (componentType.getType().equalsIgnoreCase(ComponentType.VACCINATION.getType())) {
+			jasperDesign = JRXmlLoader
+					.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-vaccinations_subreport-A4.jrxml");
 		} else {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-data-A4.jrxml");
 		}
@@ -396,6 +399,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 					normalStyle);
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DIET_PLAN.getType()))
 			createDietPlan(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight, normalStyle);
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.VACCINATION.getType()))
+			createVaccinationReport(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight,
+					normalStyle);
 
 		if (parameters.get("followUpAppointment") != null
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
@@ -473,6 +479,201 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		return jasperDesign;
 
+	}
+
+	private void createVaccinationReport(JasperDesign jasperDesign, Map<String, Object> parameters,
+			Integer contentFontSize, int columnWidth, int pageWidth, int pageHeight, JRDesignStyle normalStyle) {
+		int fieldWidth = 118;
+		if (contentFontSize > 13)
+			fieldWidth = 145;
+		else if (contentFontSize > 11)
+			fieldWidth = 128;
+		if (parameters.get("VaccinationTitle") != null) {
+
+			band = new JRDesignBand();
+			band.setHeight(1);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(18);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{VaccinationTitle}"));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(columnWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+			((JRDesignSection) jasperDesign.getDetailSection())
+					.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+
+			band = new JRDesignBand();
+			band.setHeight(1);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(18);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{duration}"));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(220);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addVaccinationItem(parameters, contentFontSize,
+					columnWidth, pageWidth, pageHeight, "$P{vaccination}", normalStyle));
+
+		}
+	}
+
+	private JRBand addVaccinationItem(Map<String, Object> parameters, Integer contentFontSize, int columnWidth,
+			int pageWidth, int pageHeight, String string, JRDesignStyle normalStyle) {
+		try {
+			JasperDesign jasperDesign;
+			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-vaccinations_subreport-A4.jrxml");
+
+			jasperDesign.setPageWidth(pageWidth);
+			jasperDesign.setPageHeight(pageHeight);
+			jasperDesign.setColumnWidth(columnWidth);
+			jasperDesign.setColumnSpacing(0);
+			jasperDesign.setBottomMargin(0);
+			jasperDesign.setLeftMargin(0);
+			jasperDesign.setRightMargin(0);
+			jasperDesign.setTopMargin(0);
+
+			jasperDesign.addStyle(normalStyle);
+
+			band = new JRDesignBand();
+			band.setHeight(26);
+
+			int dataWidth = (50 * (columnWidth - 41)) / 100;
+
+			Integer titleFontSize = contentFontSize;
+			if (contentFontSize > 13)
+				titleFontSize = 13;
+
+			jrDesignLine = new JRDesignLine();
+			jrDesignLine.setX(0);
+			jrDesignLine.setY(0);
+			jrDesignLine.setHeight(1);
+			jrDesignLine.setWidth(columnWidth);
+			jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+			band.addElement(jrDesignLine);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{Name}"));
+			jrDesignTextField.setX(10);
+			jrDesignTextField.setY(4);
+			jrDesignTextField.setHeight(15);
+			jrDesignTextField.setWidth(150);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{Status}"));
+			jrDesignTextField.setX(117 + dataWidth);
+			jrDesignTextField.setY(4);
+			jrDesignTextField.setHeight(15);
+			jrDesignTextField.setWidth(dataWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+			band.addElement(jrDesignTextField);
+
+			jrDesignLine = new JRDesignLine();
+			jrDesignLine.setX(0);
+			jrDesignLine.setY(22);
+			jrDesignLine.setHeight(1);
+			jrDesignLine.setWidth(columnWidth);
+			jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+			band.addElement(jrDesignLine);
+			jasperDesign.setColumnHeader(band);
+
+			band = new JRDesignBand();
+			band.setSplitType(SplitTypeEnum.STRETCH);
+			if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.SMALL.name()))
+				band.setHeight(22);
+			else if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.MEDIUM.name()))
+				band.setHeight(27);
+			else if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.LARGE.name()))
+				band.setHeight(32);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{name}"));
+			jrDesignTextField.setX(12);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(150);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{status}"));
+			jrDesignTextField.setX(117 + dataWidth);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(dataWidth - 3);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(13);
+			jrDesignLine = new JRDesignLine();
+			jrDesignLine.setX(0);
+			jrDesignLine.setY(0);
+			jrDesignLine.setHeight(1);
+			jrDesignLine.setWidth(columnWidth);
+			band.addElement(jrDesignLine);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(12);
+			jrDesignTextField.setWidth(columnWidth);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setBlankWhenNull(true);
+			band.addElement(jrDesignTextField);
+			jasperDesign.setColumnFooter(band);
+			JasperCompileManager.compileReportToFile(jasperDesign,
+					JASPER_TEMPLATES_RESOURCE + "new/mongo-vaccinations_subreport-A4.jasper");
+			JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign);
+			jSubreport.setUsingCache(false);
+			jSubreport.setRemoveLineWhenBlank(true);
+			jSubreport.setPrintRepeatedValues(false);
+			jSubreport.setWidth(columnWidth);
+			jSubreport.setHeight(0);
+			jSubreport.setX(0);
+			jSubreport.setY(0);
+
+			jSubreport.setDataSourceExpression(new JRDesignExpression(
+					"new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(" + string + ")"));
+
+			jSubreport.setExpression(new JRDesignExpression(
+					"\"" + JASPER_TEMPLATES_RESOURCE + "new/mongo-vaccinations_subreport-A4.jasper\""));
+			JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();
+			designSubreportParameter.setName("REPORT_CONNECTION");
+			designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
+			band = new JRDesignBand();
+			band.setHeight(0);
+			band.addElement(jSubreport);
+		} catch (JRException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return band;
 	}
 
 	private void createHistory(JasperDesign jasperDesign, Map<String, Object> parameters, Integer contentFontSize,
@@ -3586,21 +3787,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band.setSplitType(SplitTypeEnum.IMMEDIATE);
 
-		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
-			jrDesignTextField.setFontSize(Float.valueOf(12));
-			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(Startwith);
-			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(175);
-			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
-			jrDesignTextField.setMarkup("html");
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-			jrDesignTextField.setStretchWithOverflow(true);
-			band.addElement(jrDesignTextField);
-		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("signatureImage").toString())) {
 			JRDesignImage jrDesignImage = new JRDesignImage(null);
 			jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
@@ -3630,6 +3816,23 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
+
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
+			jrDesignTextField.setFontSize(Float.valueOf(12));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(Startwith);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(175);
+			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+		}
+
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())
 				|| !DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
 			Startwith = Startwith + 25;
@@ -3680,22 +3883,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		int Startwith = 2;
 		band.setSplitType(SplitTypeEnum.STRETCH);
 
-		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
-			jrDesignTextField.setFontSize(Float.valueOf(9));
-			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(Startwith);
-			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(175);
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
-			jrDesignTextField.setMarkup("html");
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-			jrDesignTextField.setStretchWithOverflow(true);
-			band.addElement(jrDesignTextField);
-		}
-
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("signatureImage").toString())) {
 			JRDesignImage jrDesignImage = new JRDesignImage(null);
 			jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
@@ -3723,6 +3910,22 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setWidth(columnWidth - 176);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+		}
+
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
+			jrDesignTextField.setFontSize(Float.valueOf(9));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(Startwith);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(175);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
