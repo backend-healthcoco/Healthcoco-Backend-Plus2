@@ -195,7 +195,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES)
+	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES)
+	@POST
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES)
 	public Response<DoctorServicesAddEditRequest> addEditServices(@RequestBody DoctorServicesAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
