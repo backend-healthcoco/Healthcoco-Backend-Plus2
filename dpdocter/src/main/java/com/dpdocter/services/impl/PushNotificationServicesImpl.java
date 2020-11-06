@@ -152,6 +152,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 
 	@Value(value = "${image.path}")
 	private String imagePath;
+	
+	
+	@Value("${admin.web.google.services.api.key}")
+	private String ADMIN_WEB_SERVICES_API_KEY;
+
 
 	@Override
 	@Transactional
@@ -253,6 +258,18 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
 							userDeviceRepository.save(userDeviceCollection);
 						}
+						else if (userDeviceCollection.getDeviceType().getType()
+								.equalsIgnoreCase(DeviceType.WEB.getType())
+								|| userDeviceCollection.getDeviceType().getType()
+										.equalsIgnoreCase(DeviceType.WEB.getType())) {
+							pushNotificationOnWebDevices(userDeviceCollection.getDeviceId(),
+									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
+									userDeviceCollection.getDeviceType().getType(),
+									userDeviceCollection.getRole().getRole(), userId);
+							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
+							userDeviceRepository.save(userDeviceCollection);
+						}
+						
 						else if (userDeviceCollection.getDeviceType().getType()
 								.equalsIgnoreCase(DeviceType.WEB.getType())
 								|| userDeviceCollection.getDeviceType().getType()
@@ -838,6 +855,585 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			e.printStackTrace();
 		} 
 	}
+	
+	
+	
+	public void pushNotificationOnAdminWebDevices(String deviceId, String pushToken, String message, String componentType,
+			String componentTypeId, String deviceType, String role, String userId)  {
+		try {
+			//pushToken="dbRUQpQZT9m9WUbK36uOBL:APA91bF3iRMaF2YbQ6ezjspN2PPuQdFkgq4w0v1Br4_OfNbz56owml9cefgPU5yw2p41tq7p_PKoaFggyPK7IZfuCzSUFJWD-ASpdVEawaAle55RV81ETg_YkYPNw3eDfnRcYbgLff-s";
+//		FCMSender sender = new FCMSender(DOCTOR_WEB_SERVICES_API_KEY);
+			 JSONObject data = new JSONObject();
+	            JSONObject info = new JSONObject();
+	            ObjectMapper mapper = new ObjectMapper();
+	            Boolean isSilent = false;
+	            Map<String, Object> customValues = new HashMap<String, Object>();
+				if (!DPDoctorUtils.anyStringEmpty(componentType)) {
+					if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType())) {
+					//	customValues.put("XI", componentTypeId);
+					//	customValues.put("T", "X");
+					//	customValues.put("PI", userId);
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("XI",componentTypeId);
+			            info.put("PI",userId);// Notification body
+			            info.put("sound","default");
+			            info.put("priority","high");
+			            data.put("notification", info);
+						
+					} else if (componentType.equalsIgnoreCase(ComponentType.REPORTS.getType())) {
+//						customValues.put("RI", componentTypeId);
+//						customValues.put("T", "R");
+//						customValues.put("PI", userId);
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("RI",componentTypeId);
+			            info.put("PI",userId);// Notification body
+			            info.put("sound","default");
+			            data.put("notification", info);
+						
+					} else if (componentType.equalsIgnoreCase(ComponentType.PATIENT.getType())) {
+//						customValues.put("PI", componentTypeId);
+//						customValues.put("T", "P");
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("RI",componentTypeId);
+			            info.put("PI",userId);// Notification body
+			            info.put("sound","default");
+			            data.put("notification", info);
+						
+						
+					} else if (componentType.equalsIgnoreCase(ComponentType.DOCTOR.getType())) {
+						customValues.put("DI", componentTypeId);
+						customValues.put("T", "D");
+
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("DI",componentTypeId);
+			          //  info.put("PI",userId);// Notification body
+			            info.put("sound","default");
+			            data.put("notification", info);
+					} else if (componentType.equalsIgnoreCase(ComponentType.APPOINTMENT.getType())) {
+						customValues.put("AI", componentTypeId);
+						customValues.put("T", "A");
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("AI",componentTypeId);
+			            info.put("sound","default");
+			            info.put("priority","high");
+			            //info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					} else if (componentType.equalsIgnoreCase(ComponentType.CALENDAR_REMINDER.getType())) {
+						//customValues.put("T", "C");
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("sound","default");
+			        //    info.put("body", message);
+			         //   info.put("RI",componentTypeId);
+			          //  info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					} else if (componentType.equalsIgnoreCase(ComponentType.DOCTOR_LAB_REPORTS.getType())) {
+					//	customValues.put("RI", componentTypeId);
+					//	customValues.put("T", "DLR");
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("RI",componentTypeId);
+			            info.put("sound","default");
+			         //   info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					} else if (componentType.equalsIgnoreCase(ComponentType.USER_RECORD.getType())) {
+					//	customValues.put("RI", componentTypeId);
+					//	customValues.put("T", "UR");
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("RI",componentTypeId);
+			            info.put("sound","default");
+			     //       info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+						
+					} else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DOCTOR_LAB_REPORTS.getType())) {
+						customValues.put("RI", componentTypeId);
+						customValues.put("T", "SI");
+						isSilent = true;
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "SI");
+						info.put( "content_available", true);
+			     //       info.put("title",componentType ); // Notification title
+			     //       info.put("body", message);
+			            info.put("RI",componentTypeId);
+			        //    info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+						
+					} else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORKS.getType())) {
+
+						customValues.put("RI", componentTypeId);
+						customValues.put("T", "DW");
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("RI",componentTypeId);
+			            info.put("sound","default");
+			        //    info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
+						customValues.put("RI", componentTypeId);
+						customValues.put("T", "DI");
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("sound","default");
+			            info.put("RI",componentTypeId);
+			       //     info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
+						customValues.put("EI", componentTypeId);
+						customValues.put("T", "E");
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("EI",componentTypeId);
+			            info.put("sound","default");
+			          //  info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
+						customValues.put("RI", "SILENT");
+						customValues.put("T", "PR");
+						
+						 
+						data.put("to",pushToken.trim());
+						info.put("T", "PR");
+			       //     info.put("title",componentType ); // Notification title
+			      //      info.put("body", message);
+			            info.put( "content_available", true);
+			         //   info.put("RI",componentTypeId);
+			         //   info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
+						customValues.put("RI", "SILENT");
+						customValues.put("T", "RDI");
+						isSilent = true;
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RDI");
+			     //       info.put("title",componentType ); // Notification title
+			    //        info.put("body", message);
+			            info.put( "content_available", true);
+			        //    info.put("RI",componentTypeId);
+			       //     info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
+//						customValues.put("RI", "SILENT");
+//						customValues.put("T", "DWR");
+//						isSilent = true;
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "DWR");
+			       //     info.put("title",componentType ); // Notification title
+			       //     info.put("body", message);
+			            info.put( "content_available", true);
+			           // info.put("RI",componentTypeId);
+			          //  info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}else if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTION_REFRESH.getType())) {
+//						customValues.put("PI",componentTypeId);
+//						customValues.put("T", "RX");
+//						isSilent = true;
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RX");
+			     //       info.put("title",componentType ); // Notification title
+			      //      info.put("body", message);
+			           
+			            info.put( "content_available", true);
+			            info.put("PI",componentTypeId);
+			        //    info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_VISIT_REFRESH.getType())) {
+				//		customValues.put("PI",componentTypeId);
+				//		customValues.put("T", "RPV");
+				//		isSilent = true;
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RPV");
+			       //     info.put("title",componentType ); // Notification title
+			        //    info.put("body", message);
+						
+						 info.put( "content_available", true);
+			            info.put("PI",componentTypeId);
+			          
+			         //   info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}else if (componentType.equalsIgnoreCase(ComponentType.CLINICAL_NOTES_REFRESH.getType())) {
+						customValues.put("PI",componentTypeId);
+						customValues.put("T", "RCN");
+						isSilent = true;
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RCN");
+			        //    info.put("title",componentType ); // Notification title
+			        //    info.put("body", message);
+			           
+			            info.put( "content_available", true);
+			            info.put("PI",componentTypeId);
+			           // info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}else if (componentType.equalsIgnoreCase(ComponentType.TREATMENTS_REFRESH.getType())) {
+//						customValues.put("PI",componentTypeId);
+//						customValues.put("T", "RT");
+//						isSilent = true;
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RT");
+			       //     info.put("title",componentType ); // Notification title
+			        //    info.put("body", message);
+			           
+			            info.put( "content_available", true);
+			            info.put("PI",componentTypeId);
+			       //     info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}else if (componentType.equalsIgnoreCase(ComponentType.RECORDS_REFRESH.getType())) {
+//						customValues.put("PI",componentTypeId);
+//						customValues.put("T", "RR");
+//						isSilent = true;
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RR");
+			       //     info.put("title",componentType ); // Notification title
+			        //    info.put("body", message);
+			            
+			            info.put( "content_available", true);
+			            info.put("PI",componentTypeId);
+			         //   info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}else if (componentType.equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY_REFRESH.getType())) {
+//						customValues.put("PI",componentTypeId);
+//						customValues.put("T", "RDS");
+//						isSilent = true;
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RDS");
+			         //   info.put("title",componentType ); // Notification title
+			          //  info.put("body", message);
+						 info.put( "content_available", true);
+			            info.put("PI",componentTypeId);
+			           
+			       //     info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}else if (componentType.equalsIgnoreCase(ComponentType.INVOICE_REFRESH.getType())) {
+						customValues.put("PI",componentTypeId);
+						customValues.put("T", "RBI");
+						isSilent = true;
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RBI");
+			         //   info.put("title",componentType ); // Notification title
+			          //  info.put("body", message);
+						 info.put( "content_available", true);
+			            info.put("PI",componentTypeId);
+			           
+			       //     info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}else if (componentType.equalsIgnoreCase(ComponentType.RECEIPT_REFRESH.getType())) {
+						customValues.put("PI",componentTypeId);
+						customValues.put("T", "RBR");
+						isSilent = true;
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RBR");
+//			            info.put("title",componentType ); // Notification title
+//			            info.put("body", message);
+						 info.put( "content_available", true);
+			            info.put("PI",componentTypeId);
+			           
+			        //    info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}else if (componentType.equalsIgnoreCase(ComponentType.APPOINTMENT_REFRESH.getType())) {
+					//	customValues.put("AI",componentTypeId);
+					//	customValues.put("T", "AR");
+
+						isSilent = true;
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "AR");
+			        //    info.put("title",componentType); // Notification title
+			        //    info.put("body", message);
+			            info.put( "content_available", true);
+						
+			            info.put("PI",componentTypeId);
+			           
+			         //   info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+			
+					}else if (componentType.equalsIgnoreCase(ComponentType.APPOINTMENT_STATUS_CHANGE.getType())) {
+						customValues.put("AI",componentTypeId);
+						customValues.put("T", "ASC");
+						isSilent = true;
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("sound","default");
+			            info.put("AI",componentTypeId);
+			       //     info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
+						customValues.put("RI", componentTypeId);
+						customValues.put("T", "DI");
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("RI",componentTypeId);
+			            info.put("sound","default");
+			       //     info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
+						customValues.put("EI", componentTypeId);
+						customValues.put("T", "E");
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("EI",componentTypeId);
+			            info.put("sound","default");
+			         //   info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
+						customValues.put("RI", "SILENT");
+						customValues.put("T", "PR");
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "PR");
+			   //         info.put("title",componentType ); // Notification title
+			   //         info.put("body", message);
+			            info.put( "content_available", true);
+			        //    info.put("RI",componentTypeId);
+			        //    info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
+						customValues.put("RI", "SILENT");
+						customValues.put("T", "DI");
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RDI");
+						info.put( "content_available", true);
+			     //       info.put("title",componentType ); // Notification title
+			      //      info.put("body", message);
+			        //    info.put("RI",componentTypeId);
+			        //    info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
+						customValues.put("RI", "SILENT");
+						customValues.put("T", "DW");
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RDW");
+			    //        info.put("title",componentType ); // Notification title
+			    //        info.put("body", message);
+			            info.put( "content_available", true);
+			        //    info.put("RI",componentTypeId);
+			         //   info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_IMAGING_REQUEST.getType())) {
+						customValues.put("RI", componentTypeId);
+						customValues.put("T", "DI");
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("RI",componentTypeId);
+			            info.put("sound","default");
+			        //    info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}else if (componentType.equalsIgnoreCase(ComponentType.EVENT.getType())) {
+						customValues.put("EI", componentTypeId);
+						customValues.put("T", "E");
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("EI",componentTypeId);
+			            info.put("sound","default");
+			        //    info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					else if (componentType.equalsIgnoreCase(ComponentType.PATIENT_REFRESH.getType())) {
+						customValues.put("RI", "SILENT");
+						customValues.put("T", "PR");
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "PR");
+			   //         info.put("title",componentType ); // Notification title
+			   //         info.put("body", message);
+			            info.put( "content_available", true);
+			        //    info.put("RI",componentTypeId);
+			        //    info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_DENTAL_IMAGING.getType())) {
+						customValues.put("RI", "SILENT");
+						customValues.put("T", "DI");
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RDI");
+						 info.put( "content_available", true);
+			        //    info.put("title",componentType ); // Notification title
+			        //    info.put("body", message);
+			       //     info.put("RI",componentTypeId);
+			       //     info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					else if (componentType.equalsIgnoreCase(ComponentType.DENTAL_WORK_REFRESH.getType())) {
+						customValues.put("RI", "SILENT");
+						customValues.put("T", "RDW");
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RDW");
+			      //      info.put("title",componentType ); // Notification title
+			      //      info.put("body", message);
+			            info.put( "content_available", true);
+			      //      info.put("RI",componentTypeId);
+			      //      info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_BABY_ACHIEVEMENTS.getType())) {
+						customValues.put("RI", "SILENT");
+						customValues.put("T", "BA");
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RBA");
+			       //     info.put("title",componentType ); // Notification title
+			       //     info.put("body", message);
+			            info.put( "content_available", true);
+			      //      info.put("RI",componentTypeId);
+			      //      info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_GROWTH_CHART.getType())) {
+						customValues.put("RI", "SILENT");
+						customValues.put("T", "GC");
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RGC");
+			   //         info.put("title",componentType ); // Notification title
+			    //        info.put("body", message);
+			            info.put( "content_available", true);
+			       //     info.put("RI",componentTypeId);
+			      //      info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_VACCINATION.getType())) {
+						customValues.put("RI", "SILENT");
+						customValues.put("T", "VN");
+						
+						data.put("to",pushToken.trim());
+						info.put("T", "RVN");
+			   //         info.put("title",componentType ); // Notification title
+			   //         info.put("body", message);
+			            info.put( "content_available", true);
+			         //   info.put("RI",componentTypeId);
+			        //    info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					
+					else if (componentType.equalsIgnoreCase(ComponentType.EMAIL_VERIFICATION.getType())) {
+						customValues.put("EVI", componentTypeId);
+					
+						
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			            info.put("EVI",componentTypeId);
+			            info.put("sound","default");
+			            info.put("priority","high");
+			            //info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+					else {
+						data.put("to",pushToken.trim());
+			            info.put("title",componentType ); // Notification title
+			            info.put("body", message);
+			         //   info.put("RI",componentTypeId);
+			            info.put("PI",userId);// Notification body
+			            data.put("notification", info);
+					}
+				}
+
+	            
+				String url="https://fcm.googleapis.com/fcm/send";
+//				 
+//				// String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
+				URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+	//
+//				
+				con.setDoOutput(true);
+//				
+//				System.out.println(con.getErrorStream());
+				con.setDoInput(true);
+//				// optional default is POST
+				con.setRequestMethod("POST");
+				con.setRequestProperty("Content-Type","application/json");
+				con.setRequestProperty("Authorization","key="+ADMIN_WEB_SERVICES_API_KEY);
+
+				
+				
+	            
+	            System.out.println(data.toString());
+	            OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
+	            wr.write(data.toString());
+	            wr.flush();
+	            wr.close();
+
+	            int responseCode = con.getResponseCode();
+	            System.out.println("Response Code : " + responseCode);
+
+	            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	            String inputLine;
+	            StringBuffer response = new StringBuffer();
+
+	            while ((inputLine = in.readLine()) != null) {
+	                response.append(inputLine);
+	            }
+				
+	            System.out.println("Resonse: " + response);
+
+	            
+	            System.out.println("Response"+response);
+			System.out.println("pushToken"+pushToken);
+
+		} 
+		
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
+
 
 	
 	
