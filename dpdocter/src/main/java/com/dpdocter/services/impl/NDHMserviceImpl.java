@@ -35,6 +35,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.MessageResponse;
 import com.dpdocter.services.NDHMservices;
 import com.dpdocter.webservices.LoginApi;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
@@ -416,7 +417,9 @@ public class NDHMserviceImpl implements NDHMservices{
 				  ObjectMapper mapper = new ObjectMapper();
 			String output=respons.toString();
 				 
-				//List<NDHMStates>	 response = mapper.readValues(output,TypeFactory.collectionType(List.class,NDHMStates.class));
+			JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, NDHMStates.class);
+			response = mapper.readValue(output,type);
+				
 				 System.out.println("response"+respons.toString());
 		}
 		catch (Exception e) {
@@ -470,7 +473,8 @@ public class NDHMserviceImpl implements NDHMservices{
 				  ObjectMapper mapper = new ObjectMapper();
 			String output=respons.toString();
 				 
-				//List<NDHMStates>	 response = mapper.readValues(output,TypeFactory.collectionType(List.class,NDHMStates.class));
+			JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, Districts.class);
+					response = mapper.readValue(output,type);
 				 System.out.println("response"+respons.toString());
 		}
 		catch (Exception e) {
