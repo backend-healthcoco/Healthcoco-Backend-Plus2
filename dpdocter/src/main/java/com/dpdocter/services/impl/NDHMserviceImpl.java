@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.NdhmMobileOtp;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -102,8 +103,68 @@ public class NDHMserviceImpl implements NDHMservices{
 			
 			String url="https://healthidsbx.ndhm.gov.in/api/v1/registration/mobile/generateOtp";
 			JSONObject orderRequest = new JSONObject();
-			orderRequest.put("clientId",NDHM_CLIENTID);
-			orderRequest.put("clientSecret",  NDHM_CLIENT_SECRET);
+			orderRequest.put("mobileNumber",mobileNumber);
+			
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			
+			con.setDoOutput(true);
+			
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+
+			con.setRequestProperty("Content-Type","application/json");
+			con.setRequestProperty("Accept-Language","en-US");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			System.out.println("Orderrequest:"+orderRequest.toString());
+			  wr.flush();
+	            wr.close();
+	            con.disconnect();
+	            InputStream in=con.getInputStream();
+	        //    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				String inputLine;
+				System.out.println(con.getErrorStream());
+				/* response = new StringBuffer(); */
+				StringBuffer output = new StringBuffer();
+				int c = 0;
+				while ((c=in.read()) !=-1) {
+
+					output.append((char) c);
+					
+				}
+				System.out.println("response:"+output.toString());
+				  //ObjectMapper mapper = new ObjectMapper();
+			
+			 response =output.toString();// mapper.readValue(output.toString(),Strin.class);
+			System.out.println("response"+output.toString());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+		
+	}
+	
+	
+	@Override
+	public String verifyOtp(String otp,String txnId) {
+		String response=null;
+		try {
+			
+			NdhmOauthResponse oauth=session();
+			
+			String url="https://healthidsbx.ndhm.gov.in/api/v1/registration/mobile/verifyOtp";
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("otp",otp);
+			orderRequest.put("txnId",  txnId);
 
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();

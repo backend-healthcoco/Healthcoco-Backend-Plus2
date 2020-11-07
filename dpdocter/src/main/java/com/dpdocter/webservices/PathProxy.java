@@ -2457,6 +2457,8 @@ public interface PathProxy {
 		
 		public static final String GET_GENERATE_MOBILE_OTP="/generateMobileOtp";
 		
+		public static final String GET_VERIFY_MOBILE_OTP="/verifyMobileOtp";
+		
 		
 	}
 

@@ -60,5 +60,17 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
+	
+	
+	@Path(value = PathProxy.NdhmUrls.GET_VERIFY_MOBILE_OTP)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_VERIFY_MOBILE_OTP, notes = PathProxy.NdhmUrls.GET_VERIFY_MOBILE_OTP)
+	public Response<String> generateMobileOtp(@QueryParam("otp")String otp,@QueryParam("txnId")String txnId) {
+		
+		String mobile=ndhmService.verifyOtp(otp, txnId);
+		Response<String> response = new Response<String>();
+		response.setData(mobile);
+		return response;
+	}
 
 }

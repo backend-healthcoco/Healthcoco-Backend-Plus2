@@ -7,4 +7,6 @@ public interface NDHMservices {
 	//NdhmOauthResponse session();
 
 	String generateOtp(String mobileNumber);
+
+	String verifyOtp(String otp, String txnId);
 }
