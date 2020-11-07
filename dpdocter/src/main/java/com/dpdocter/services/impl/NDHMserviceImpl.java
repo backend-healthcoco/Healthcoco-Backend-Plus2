@@ -17,6 +17,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.HealthIdRequest;
+import com.dpdocter.beans.HealthIdResponse;
 import com.dpdocter.beans.NdhmMobileOtp;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.exceptions.BusinessException;
@@ -103,7 +105,7 @@ public class NDHMserviceImpl implements NDHMservices{
 			
 			String url="https://healthidsbx.ndhm.gov.in/api/v1/registration/mobile/generateOtp";
 			JSONObject orderRequest = new JSONObject();
-			orderRequest.put("mobileNumber",mobileNumber);
+			orderRequest.put("mobile",mobileNumber);
 			
 
 			URL obj = new URL(url);
@@ -119,7 +121,7 @@ public class NDHMserviceImpl implements NDHMservices{
 
 			con.setRequestProperty("Content-Type","application/json");
 			con.setRequestProperty("Accept-Language","en-US");
-			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+		//	con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(orderRequest.toString());
 			System.out.println("Orderrequest:"+orderRequest.toString());
@@ -212,6 +214,158 @@ public class NDHMserviceImpl implements NDHMservices{
 		return response;
 		
 	}
+	
+	@Override
+	public Boolean resendOtp(String txnId) {
+		Boolean response=null;
+		try {
+			
+			NdhmOauthResponse oauth=session();
+			
+			String url="https://healthidsbx.ndhm.gov.in/api/v1/registration/mobile/resendOtp";
+			JSONObject orderRequest = new JSONObject();
+			
+			orderRequest.put("txnId",  txnId);
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			
+			con.setDoOutput(true);
+			
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+
+			con.setRequestProperty("Content-Type","application/json");
+			con.setRequestProperty("Accept-Language","en-US");
+			//con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			
+			System.out.println("Bearer"+oauth.getAccessToken());
+			System.out.println("Orderrequest:"+orderRequest.toString());
+			  wr.flush();
+	            wr.close();
+	            con.disconnect();
+	            InputStream in=con.getInputStream();
+	        //    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				String inputLine;
+				System.out.println(con.getErrorStream());
+				/* response = new StringBuffer(); */
+				StringBuffer output = new StringBuffer();
+				int c = 0;
+				while ((c=in.read()) !=-1) {
+
+					output.append((char) c);
+					
+				}
+				System.out.println("response:"+output.toString());
+				  //ObjectMapper mapper = new ObjectMapper();
+			
+			 response =Boolean.parseBoolean(output.toString());// mapper.readValue(output.toString(),Strin.class);
+			System.out.println("response"+output.toString());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+		
+	}
+	
+	
+	@Override
+	public HealthIdResponse createHealthId(HealthIdRequest request) {
+		HealthIdResponse response=null;
+		try {
+			
+			NdhmOauthResponse oauth=session();
+			
+			String url="https://healthidsbx.ndhm.gov.in/api/v1/registration/mobile/createHealthId";
+			JSONObject orderRequest = new JSONObject();
+			
+			orderRequest.put("address", request.getAddress());
+			orderRequest.put("dayOfBirth", request.getDayOfBirth());
+			orderRequest.put("districtCode", request.getDistrictCode());
+			orderRequest.put("email", request.getEmail());
+			orderRequest.put("firstName", request.getFirstName());
+			orderRequest.put("pincode", request.getPincode());
+			orderRequest.put("gender", request.getGender());
+			orderRequest.put("healthId", request.getHealthId());
+			orderRequest.put("lastName", request.getLastName());
+			orderRequest.put("middleName", request.getMiddleName());
+			orderRequest.put("monthOfBirth", request.getMonthOfBirth());
+			orderRequest.put("name", request.getName());
+			orderRequest.put("password", request.getPassword());
+			orderRequest.put("restrictions", request.getRestrictions());
+			orderRequest.put("profilePhoto", request.getProfilePhoto());
+			orderRequest.put("stateCode", request.getStateCode());
+			orderRequest.put("subdistrictCode", request.getSubdistrictCode());
+			orderRequest.put("token", request.getToken());
+			orderRequest.put("townCode", request.getTownCode());
+			orderRequest.put("txnId", request.getTxnId());
+			orderRequest.put("villageCode", request.getVillageCode());
+			orderRequest.put("wardCode", request.getWardCode());
+			orderRequest.put("yearOfBirth", request.getYearOfBirth());
+			
+			
+			
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			
+			con.setDoOutput(true);
+			
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+
+			con.setRequestProperty("Content-Type","application/json");
+			con.setRequestProperty("Accept-Language","en-US");
+			//con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			
+			System.out.println("Bearer"+oauth.getAccessToken());
+			System.out.println("Orderrequest:"+orderRequest.toString());
+			  wr.flush();
+	            wr.close();
+	            con.disconnect();
+	            InputStream in=con.getInputStream();
+	        //    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				String inputLine;
+				System.out.println(con.getErrorStream());
+				/* response = new StringBuffer(); */
+				StringBuffer output = new StringBuffer();
+				int c = 0;
+				while ((c=in.read()) !=-1) {
+
+					output.append((char) c);
+					
+				}
+				System.out.println("response:"+output.toString());
+				  ObjectMapper mapper = new ObjectMapper();
+			
+			 response = mapper.readValue(output.toString(),HealthIdResponse.class);
+			 
+			System.out.println("response"+output.toString());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+		
+	}
+	
+	
+	
 	
 	
 

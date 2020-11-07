@@ -2459,6 +2459,10 @@ public interface PathProxy {
 		
 		public static final String GET_VERIFY_MOBILE_OTP="/verifyMobileOtp";
 		
+		public static final String GET_RESEND_MOBILE_OTP="/resendMobileOtp";
+		
+		public static final String CREATE_HEALTH_ID="/createHealthId";
+		
 		
 	}
 

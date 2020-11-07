@@ -2,6 +2,7 @@ package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -12,10 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.DoctorLoginPin;
+import com.dpdocter.beans.HealthIdRequest;
+import com.dpdocter.beans.HealthIdResponse;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -65,10 +69,32 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_VERIFY_MOBILE_OTP)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_VERIFY_MOBILE_OTP, notes = PathProxy.NdhmUrls.GET_VERIFY_MOBILE_OTP)
-	public Response<String> generateMobileOtp(@QueryParam("otp")String otp,@QueryParam("txnId")String txnId) {
+	public Response<String> verifyMobileOtp(@QueryParam("otp")String otp,@QueryParam("txnId")String txnId) {
 		
 		String mobile=ndhmService.verifyOtp(otp, txnId);
 		Response<String> response = new Response<String>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_RESEND_MOBILE_OTP)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_RESEND_MOBILE_OTP, notes = PathProxy.NdhmUrls.GET_RESEND_MOBILE_OTP)
+	public Response<Boolean> resendMobileOtp(@QueryParam("txnId")String txnId) {
+		
+		Boolean mobile=ndhmService.resendOtp(txnId);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.CREATE_HEALTH_ID)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.CREATE_HEALTH_ID, notes = PathProxy.NdhmUrls.CREATE_HEALTH_ID)
+	public Response<HealthIdResponse> generateHealthId(@RequestBody HealthIdRequest request) {
+		
+		HealthIdResponse mobile=ndhmService.createHealthId(request);
+		Response<HealthIdResponse> response = new Response<HealthIdResponse>();
 		response.setData(mobile);
 		return response;
 	}
