@@ -1,5 +1,10 @@
 package com.dpdocter.webservices;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +27,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping(value=PathProxy.NDHM_BASE_URL, consumes =MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+@Path(value=PathProxy.NDHM_BASE_URL)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.NDHM_BASE_URL, description = "Endpoint for ndhm")
 public class NdhmApi {
 
@@ -31,7 +38,8 @@ public class NdhmApi {
 	@Autowired
 	private NDHMservices ndhmService;
 	
-	@GetMapping(value = PathProxy.NdhmUrls.GET_SESSION)
+	@Path(value = PathProxy.NdhmUrls.GET_SESSION)
+	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_SESSION, notes = PathProxy.NdhmUrls.GET_SESSION)
 	public Response<NdhmOauthResponse> getLoginPin() {
 		

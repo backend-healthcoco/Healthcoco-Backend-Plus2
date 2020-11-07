@@ -2448,5 +2448,14 @@ public interface PathProxy {
 		public static final String GET_NMC_HCM_DETAILS = "/get";
 		
 	}
+	
+	public static final String NDHM_BASE_URL = BASE_URL + "/ndhm";
+	public interface NdhmUrls{
+		
+		
+		public static final String GET_SESSION="/session";
+		
+		
+	}
 
 }
