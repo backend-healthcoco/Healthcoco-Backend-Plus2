@@ -4,6 +4,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,14 +39,25 @@ public class NdhmApi {
 	@Autowired
 	private NDHMservices ndhmService;
 	
-	@Path(value = PathProxy.NdhmUrls.GET_SESSION)
+//	@Path(value = PathProxy.NdhmUrls.GET_SESSION)
+//	@GET
+//	@ApiOperation(value = PathProxy.NdhmUrls.GET_SESSION, notes = PathProxy.NdhmUrls.GET_SESSION)
+//	public Response<NdhmOauthResponse> getSe() {
+//		
+//		NdhmOauthResponse ndhmOauth = ndhmService.session();
+//		Response<NdhmOauthResponse> response = new Response<NdhmOauthResponse>();
+//		response.setData(ndhmOauth);
+//		return response;
+//	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_GENERATE_MOBILE_OTP)
 	@GET
-	@ApiOperation(value = PathProxy.NdhmUrls.GET_SESSION, notes = PathProxy.NdhmUrls.GET_SESSION)
-	public Response<NdhmOauthResponse> getLoginPin() {
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_GENERATE_MOBILE_OTP, notes = PathProxy.NdhmUrls.GET_GENERATE_MOBILE_OTP)
+	public Response<String> generateMobileOtp(@QueryParam("mobileNumber")String mobileNumber) {
 		
-		NdhmOauthResponse ndhmOauth = ndhmService.session();
-		Response<NdhmOauthResponse> response = new Response<NdhmOauthResponse>();
-		response.setData(ndhmOauth);
+		String mobile=ndhmService.generateOtp(mobileNumber);
+		Response<String> response = new Response<String>();
+		response.setData(mobile);
 		return response;
 	}
 

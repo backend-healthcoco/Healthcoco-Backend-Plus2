@@ -4,5 +4,7 @@ import com.dpdocter.beans.NdhmOauthResponse;
 
 public interface NDHMservices {
 
-	NdhmOauthResponse session();
+	//NdhmOauthResponse session();
+
+	String generateOtp(String mobileNumber);
 }
