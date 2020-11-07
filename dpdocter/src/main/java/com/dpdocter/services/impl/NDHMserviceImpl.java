@@ -1,11 +1,14 @@
 package com.dpdocter.services.impl;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
+import java.util.List;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -13,14 +16,20 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.codehaus.jackson.map.type.TypeFactory;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.Districts;
 import com.dpdocter.beans.HealthIdRequest;
 import com.dpdocter.beans.HealthIdResponse;
+import com.dpdocter.beans.HealthIdSearch;
+import com.dpdocter.beans.HealthIdSearchRequest;
+import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmMobileOtp;
 import com.dpdocter.beans.NdhmOauthResponse;
+import com.dpdocter.beans.SMSDeliveryReports;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.MessageResponse;
@@ -365,8 +374,296 @@ public class NDHMserviceImpl implements NDHMservices{
 	}
 	
 	
+	@Override
+	public List<NDHMStates> getListforStates() {
+		List<NDHMStates>response=null;
+		try {
+			
+			NdhmOauthResponse oauth=session();
+			
+			String url="https://healthidsbx.ndhm.gov.in/api/v1/ha/lgd/states";
+//			JSONObject orderRequest = new JSONObject();
+//			orderRequest.put("otp",otp);
+//			orderRequest.put("txnId",  txnId);
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			
+			con.setDoOutput(true);
+			
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("GET");
+
+			con.setRequestProperty("Content-Type","application/json");
+			con.setRequestProperty("Accept-Language","en-US");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			
+			int responseCode = con.getResponseCode();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			/* response = new StringBuffer(); */
+			StringBuffer respons = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+
+				respons.append(inputLine);
+
+			}
+			in.close();			
+				System.out.println("response:"+respons.toString());
+				  ObjectMapper mapper = new ObjectMapper();
+			String output=respons.toString();
+				 
+				//List<NDHMStates>	 response = mapper.readValues(output,TypeFactory.collectionType(List.class,NDHMStates.class));
+				 System.out.println("response"+respons.toString());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+		
+	}
+	
+	@Override
+	public List<Districts> getListforDistricts(String statecode) {
+		List<Districts> response=null;
+		try {
+			
+			NdhmOauthResponse oauth=session();
+			
+			String url="https://healthidsbx.ndhm.gov.in/api/v1/ha/lgd/districts?stateCode="+statecode;
+//			JSONObject orderRequest = new JSONObject();
+//			orderRequest.put("otp",otp);
+//			orderRequest.put("txnId",  txnId);
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			
+			con.setDoOutput(true);
+			
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("GET");
+
+			con.setRequestProperty("Content-Type","application/json");
+			con.setRequestProperty("Accept-Language","en-US");
+			con.setRequestProperty("Authorization", "Bearer" + oauth.getAccessToken());
+			
+			int responseCode = con.getResponseCode();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			/* response = new StringBuffer(); */
+			StringBuffer respons = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+
+				respons.append(inputLine);
+
+			}
+			in.close();			
+				System.out.println("response:"+respons.toString());
+				  ObjectMapper mapper = new ObjectMapper();
+			String output=respons.toString();
+				 
+				//List<NDHMStates>	 response = mapper.readValues(output,TypeFactory.collectionType(List.class,NDHMStates.class));
+				 System.out.println("response"+respons.toString());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+		
+	}
 	
 	
+	@Override
+	public String existsByHealthId(String healthId) {
+		String response=null;
+		try {
+			
+			NdhmOauthResponse oauth=session();
+			
+			String url="https://healthidsbx.ndhm.gov.in/api/v1/search/existsByHealthId";
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("healthId",healthId);
+			
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			
+			con.setDoOutput(true);
+			
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+
+			con.setRequestProperty("Content-Type","application/json");
+			con.setRequestProperty("Accept-Language","en-US");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			System.out.println("Orderrequest:"+orderRequest.toString());
+			  wr.flush();
+	            wr.close();
+	            con.disconnect();
+	            InputStream in=con.getInputStream();
+	        //    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				String inputLine;
+				System.out.println(con.getErrorStream());
+				/* response = new StringBuffer(); */
+				StringBuffer output = new StringBuffer();
+				int c = 0;
+				while ((c=in.read()) !=-1) {
+
+					output.append((char) c);
+					
+				}
+				System.out.println("response:"+output.toString());
+				  //ObjectMapper mapper = new ObjectMapper();
+			
+			 response =output.toString();// mapper.readValue(output.toString(),Strin.class);
+			System.out.println("response"+output.toString());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+		
+	}
+	
+	
+	@Override
+	public HealthIdSearch searchByHealthId(String healthId) {
+		HealthIdSearch response=null;
+		try {
+			
+			NdhmOauthResponse oauth=session();
+			
+			String url="https://healthidsbx.ndhm.gov.in/api/v1/search/searchByHealthId";
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("healthId",healthId);
+			
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			
+			con.setDoOutput(true);
+			
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+
+			con.setRequestProperty("Content-Type","application/json");
+			con.setRequestProperty("Accept-Language","en-US");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			System.out.println("Orderrequest:"+orderRequest.toString());
+			  wr.flush();
+	            wr.close();
+	            con.disconnect();
+	            InputStream in=con.getInputStream();
+	        //    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				String inputLine;
+				System.out.println(con.getErrorStream());
+				/* response = new StringBuffer(); */
+				StringBuffer output = new StringBuffer();
+				int c = 0;
+				while ((c=in.read()) !=-1) {
+
+					output.append((char) c);
+					
+				}
+				System.out.println("response:"+output.toString());
+				  ObjectMapper mapper = new ObjectMapper();
+			
+			 response = mapper.readValue(output.toString(),HealthIdSearch.class);
+			System.out.println("response"+output.toString());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+		
+	}
+	
+	
+	@Override
+	public HealthIdSearch searchBymobileNumber(HealthIdSearchRequest request) {
+		HealthIdSearch response=null;
+		try {
+			
+			NdhmOauthResponse oauth=session();
+			
+			String url="https://healthidsbx.ndhm.gov.in/api/v1/search/searchByMobile";
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("gender",request.getGender());
+			orderRequest.put("mobile",request.getMobile());
+			orderRequest.put("name",request.getName());
+			orderRequest.put("yearOfBirth",request.getYearOfBirth());
+			
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			
+			con.setDoOutput(true);
+			
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+
+			con.setRequestProperty("Content-Type","application/json");
+			con.setRequestProperty("Accept-Language","en-US");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			System.out.println("Orderrequest:"+orderRequest.toString());
+			  wr.flush();
+	            wr.close();
+	            con.disconnect();
+	            InputStream in=con.getInputStream();
+	        //    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				String inputLine;
+				System.out.println(con.getErrorStream());
+				/* response = new StringBuffer(); */
+				StringBuffer output = new StringBuffer();
+				int c = 0;
+				while ((c=in.read()) !=-1) {
+
+					output.append((char) c);
+					
+				}
+				System.out.println("response:"+output.toString());
+				  ObjectMapper mapper = new ObjectMapper();
+			
+			 response = mapper.readValue(output.toString(),HealthIdSearch.class);
+			System.out.println("response"+output.toString());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+		
+	}
 	
 
 	

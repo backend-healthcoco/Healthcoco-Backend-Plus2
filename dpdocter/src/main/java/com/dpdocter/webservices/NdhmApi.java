@@ -1,5 +1,7 @@
 package com.dpdocter.webservices;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -17,9 +19,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dpdocter.beans.Districts;
 import com.dpdocter.beans.DoctorLoginPin;
 import com.dpdocter.beans.HealthIdRequest;
 import com.dpdocter.beans.HealthIdResponse;
+import com.dpdocter.beans.HealthIdSearch;
+import com.dpdocter.beans.HealthIdSearchRequest;
+import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -95,6 +101,63 @@ public class NdhmApi {
 		
 		HealthIdResponse mobile=ndhmService.createHealthId(request);
 		Response<HealthIdResponse> response = new Response<HealthIdResponse>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_LIST_STATES)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_LIST_STATES, notes = PathProxy.NdhmUrls.GET_LIST_STATES)
+	public Response<NDHMStates> getlistOfStates() {
+		
+		List<NDHMStates> mobile=ndhmService.getListforStates();
+		Response<NDHMStates> response = new Response<NDHMStates>();
+		response.setDataList(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmUrls.GET_LIST_DISTRICTS)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_LIST_DISTRICTS, notes = PathProxy.NdhmUrls.GET_LIST_DISTRICTS)
+	public Response<Districts> getlistOfStates(@QueryParam(value = "stateCode")String statecode) {
+		
+		List<Districts> mobile=ndhmService.getListforDistricts(statecode);
+		Response<Districts> response = new Response<Districts>();
+		response.setDataList(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_SEARCH_BY_HEALTH_ID)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_SEARCH_BY_HEALTH_ID, notes = PathProxy.NdhmUrls.GET_SEARCH_BY_HEALTH_ID)
+	public Response<HealthIdSearch> searchByMobileNumber(@QueryParam(value = "healthId") String healthId) {
+		
+		HealthIdSearch mobile=ndhmService.searchByHealthId(healthId);
+		Response<HealthIdSearch> response = new Response<HealthIdSearch>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmUrls.GET_EXISTS_BY_HEALTH_ID)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_EXISTS_BY_HEALTH_ID, notes = PathProxy.NdhmUrls.GET_EXISTS_BY_HEALTH_ID)
+	public Response<String> existsByHealthId(@QueryParam(value = "healthId") String healthId) {
+		
+		String mobile=ndhmService.existsByHealthId(healthId);
+		Response<String> response = new Response<String>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_SEARCH_BY_MOBILE_NUMBER)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_SEARCH_BY_MOBILE_NUMBER, notes = PathProxy.NdhmUrls.GET_SEARCH_BY_MOBILE_NUMBER)
+	public Response<HealthIdSearch> searchByMobileNumber(@RequestBody HealthIdSearchRequest  request) {
+		
+		HealthIdSearch mobile=ndhmService.searchBymobileNumber(request);
+		Response<HealthIdSearch> response = new Response<HealthIdSearch>();
 		response.setData(mobile);
 		return response;
 	}

@@ -2463,6 +2463,17 @@ public interface PathProxy {
 		
 		public static final String CREATE_HEALTH_ID="/createHealthId";
 		
+		public static final String GET_LIST_STATES="/states/get";
+		
+		public static final String GET_LIST_DISTRICTS="/districts/get";
+		
+		public static final String GET_SEARCH_BY_HEALTH_ID="/searchByHealthId/get";
+		
+		public static final String GET_EXISTS_BY_HEALTH_ID="/existsByHealthId/get";
+		
+		public static final String GET_SEARCH_BY_MOBILE_NUMBER="/searchBymobileNumber/get";
+		
+		
 		
 	}
 
