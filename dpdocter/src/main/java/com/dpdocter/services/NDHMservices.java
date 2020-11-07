@@ -9,7 +9,12 @@ import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
+import com.dpdocter.beans.MobileTokenRequest;
+import com.dpdocter.beans.NdhmOauthResponse;
+import com.dpdocter.request.CreateAadhaarRequest;
+import com.dpdocter.request.CreateProfileRequest;
 
+import common.util.web.Response;
 public interface NDHMservices {
 
 	//NdhmOauthResponse session();
@@ -31,4 +36,41 @@ public interface NDHMservices {
 	HealthIdSearch searchByHealthId(String healthId);
 
 	HealthIdSearch searchBymobileNumber(HealthIdSearchRequest request);
+
+	//auth
+	Response<Object> sendAuthPassword(String healthId, String password);
+
+	Response<Object> sendAuthWithMobile(String healthId);
+
+	Response<Object> sendAuthWithMobileToken(MobileTokenRequest request);
+
+	Response<Object> sendAuthInit(String healthId, String authMethod);
+	
+	Response<Object> confirmWithMobileOTP(String otp, String txnId);
+
+	Response<Object> confirmWithAadhaarOtp(String otp, String txnId);
+	//aadhar
+	Response<Object> aadharGenerateOtp(String aadhaar);
+
+	Response<Object> aadharGenerateMobileOtp(String mobile, String txnId);
+
+	Response<Object> aadharVerifyOtp(String otp, String restrictions, String txnId);
+
+	Response<Object> aadharVerifyMobileOtp(String otp, String txnId);
+
+	Response<Object> createHealthIdWithAadhaarOtp(CreateAadhaarRequest request);
+
+	Response<Object> resendAadhaarOtp(String txnId);
+
+	//profile
+	Response<Object> profileGetCard(String authToken);
+
+	Response<Object> profileGetPngCard(String authToken);
+
+	Response<Object> getProfileDetail(String authToken);
+
+	Response<Object> createProfile(CreateProfileRequest request, String authToken);
+
+	Response<Object> DeleteProfileDetail(String authToken);
+
 }

@@ -4,19 +4,19 @@ package com.dpdocter.webservices;
  * @author veeraj
  */
 public interface PathProxy {
-	
+
 	public static final String BULK_SMS_BASE_URL = "/bulk";
 
 	public interface BulkSMSUrls {
 		public static final String UPDATE_DELIVERY_REPORTS = "/sms/updateDeliveryReports";
 	}
-	
+
 	public static final String RAZORPAY_BASE_URL = "/razorpay";
 
 	public interface RazorPayUrls {
 		public static final String GET_SETTLEMENT = "/payment/settlements";
 	}
-	
+
 	public static final String HOME_URL = "/";
 
 	public static final String BASE_URL = "/v1";
@@ -923,7 +923,7 @@ public interface PathProxy {
 		public static final String DELETE_PRINT_SETTINGS = "/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
-		
+
 		public static final String GET_PRINT_SETTING_BY_TYPE = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}/{printSettingType}";
 
 		public static final String GET_LAB_PRINT_SETTING = "/{printFilter}/{locationId}/{hospitalId}";
@@ -931,9 +931,9 @@ public interface PathProxy {
 		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String UPLOAD_FILE = "/upload/file/";
-		
+
 		public static final String GET_PRINT_SETTING_TYPE = "/updateCollection";
-		
+
 		public static final String UPLOAD_SIGNATURE = "/upload/signature/";
 
 	}
@@ -1719,11 +1719,11 @@ public interface PathProxy {
 		public static final String GET_BOOKED_AND_CANCELLED_APPOINTMENT_ANALYTIC = "appointment/booked/cancel/{locationId}/{hospitalId}";
 		public static final String GET_BOOKED_BY_APPOINTMENT_ANALYTIC = "appointment/bookedby/{locationId}/{hospitalId}";
 
-		public static final String GET_ONLINE_CONSULTATION_ANALYTICS="onlineConsultation/analytics";
-		public static final String GET_PAYMENT_SUMMARY="onlineConsultation/paymentSummary";
-		public static final String FETCH_SETTLEMENT="onlineConsultation/settlements";
-		public static final String GET_PAYMENT_SETTLEMENT="payment/settlements";
-		public static final String GET_PATIENT_PAYMENT_SETTLEMENTS="patients/payment/settlements";
+		public static final String GET_ONLINE_CONSULTATION_ANALYTICS = "onlineConsultation/analytics";
+		public static final String GET_PAYMENT_SUMMARY = "onlineConsultation/paymentSummary";
+		public static final String FETCH_SETTLEMENT = "onlineConsultation/settlements";
+		public static final String GET_PAYMENT_SETTLEMENT = "payment/settlements";
+		public static final String GET_PATIENT_PAYMENT_SETTLEMENTS = "patients/payment/settlements";
 	}
 
 	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";
@@ -2383,7 +2383,7 @@ public interface PathProxy {
 	public interface ChatUrls {
 
 		public static final String CREATE_CHAT_ACCESS_TOKEN = "/chat/accessToken/create/{userId}";
-		
+
 		public static final String CREATE_USER = "/create/user/{identity}";
 
 		public static final String CREATE_CHAT_ACCESS_TOKEN_ANDROID = "/chat/accessTokenAndroid/create/{userId}";
@@ -2407,7 +2407,7 @@ public interface PathProxy {
 		public static final String GENERATE_ID = "/payment/generateId";
 		public static final String CREATE_PAYMENT = "/payment/create";
 		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
-		
+
 		public static final String GET_SMS_STATUS = "/status/get";
 
 	}
@@ -2433,7 +2433,7 @@ public interface PathProxy {
 		public static final String GET_PACKAGES = "/package/getList";
 
 	}
-	
+
 	public static final String TRANSACTION_SMS_BASE_URL = BASE_URL + "/transaction";
 
 	public interface TransactionSmsUrls {
@@ -2441,14 +2441,15 @@ public interface PathProxy {
 		public static final String GET_TRANSACTION_SMS_REPORT = "/transaction/report/get";
 
 	}
-	
+
 	public static final String NMC_HCM_BASE_URL = BASE_URL + "/nmcHcm";
-	public interface NmcHcmUrls{
-		
+
+	public interface NmcHcmUrls {
+
 		public static final String GET_NMC_HCM_DETAILS = "/get";
-		
+
 	}
-	
+
 	public static final String NDHM_BASE_URL = BASE_URL + "/ndhm";
 	public interface NdhmUrls{
 		
@@ -2474,7 +2475,30 @@ public interface PathProxy {
 		public static final String GET_SEARCH_BY_MOBILE_NUMBER="/searchBymobileNumber/get";
 		
 		
-		
+		// Authentication
+		public static final String GET_AUTH_INIT = "/auth/init";
+		public static final String GET_AUTH_WITH_MOBILE = "/auth/getAuthMobile";
+		public static final String GET_AUTH_WITH_MOBILE_TOKEN = "/auth/getAuthMobileToken";
+		public static final String CONFIRM_AUTH_WITH_MOBILE_OTP = "/auth/confirmWithMobileOTP";
+		public static final String CONFIRM_AUTH_WITH_AADHAAR_OTP = "/auth/confirmWithAadhaarOtp";
+
+		// aadhar api
+		public static final String GET_AADHAR_GENERATE_OTP = "/reg/aadhar/generateOTP";
+		public static final String GET_AADHAR_GENERATE_MOBILE_OTP = "/reg/aadhar/generateMobileOTP";
+		public static final String GET_AADHAR_VERIFY_OTP = "/reg/aadhaar/verifyOTP";
+		public static final String GET_AADHAR_VERIFY_MOBILE_OTP = "/reg/aadhaar/verifyMobileOTP";
+		public static final String CREATE_HEALTHID_AADHAAR_OTP = "/reg/aadhaar/createHealthIdWithAadhaarOtp";
+		public static final String RESENT_AADHAAR_OTP = "/reg/aadhaar/resendAadhaarOtp";
+
+		// profile api
+		public static final String GET_PROFILE_CARD = "/profile/account/getCard";
+		public static final String GET_PROFILE_PNGCARD = "/profile/account/getPngCard";
+		public static final String GET_PROFILE = "/profile/account/getProfile";
+		public static final String CREATE_PROFILE = "/profile/account/createProfile";
+		public static final String DELETE_PROFILE = "/profile/account/deleteProfile";
+		public static final String GET_PROFILE_TOKEN = "/profile/account/token";
+		public static final String RESET_PROFILE_PASSWORD = "/profile/account/resetPassowrd";
+
 	}
 
 }
