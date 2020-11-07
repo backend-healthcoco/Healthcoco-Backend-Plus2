@@ -98,9 +98,12 @@ public class NdhmApi {
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_AUTH_INIT, notes = PathProxy.NdhmUrls.GET_AUTH_INIT)
 	public Response<Object> sendAuthPassword(@QueryParam(value = "healthId") String healthId,
 			@DefaultValue("AADHAAR_OTP")@QueryParam(value = "authMethod") String authMethod) {		
-		Response<Object> ndhmToken = ndhmService.sendAuthInit(healthId,authMethod);
-		Response<Object> response = new Response<Object>();
-		response.setData(ndhmToken);
+		
+		if (healthId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " healthId Required");
+		}
+		Response<Object> response = ndhmService.sendAuthInit(healthId,authMethod);
+
 		return response;
 	}
 	
@@ -108,9 +111,12 @@ public class NdhmApi {
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_AUTH_WITH_MOBILE, notes = PathProxy.NdhmUrls.GET_AUTH_WITH_MOBILE)
 	public Response<Object> sendAuthWithMobile(@QueryParam(value = "healthid") String healthId) {		
-		Response<Object> ndhmToken = ndhmService.sendAuthWithMobile(healthId);
-		Response<Object> response = new Response<Object>();
-		response.setData(ndhmToken);
+				
+		if (healthId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " healthId Required");
+		}
+		Response<Object> response = ndhmService.sendAuthWithMobile(healthId);
+
 		return response;
 	}
 	
@@ -119,9 +125,12 @@ public class NdhmApi {
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_AUTH_WITH_MOBILE_TOKEN, notes = PathProxy.NdhmUrls.GET_AUTH_WITH_MOBILE_TOKEN)
 	public Response<Object> sendAuthWithMobileToken(@RequestBody MobileTokenRequest request) {		
-		Response<Object> ndhmToken = ndhmService.sendAuthWithMobileToken(request);
-		Response<Object> response = new Response<Object>();
-		response.setData(ndhmToken);
+				
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " aadhaar Required");
+		}
+		Response<Object> response = ndhmService.sendAuthWithMobileToken(request);
+
 		return response;
 	}
 	
@@ -129,9 +138,12 @@ public class NdhmApi {
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.CONFIRM_AUTH_WITH_MOBILE_OTP, notes = PathProxy.NdhmUrls.CONFIRM_AUTH_WITH_MOBILE_OTP)
 	public Response<Object> confirmWithMobileOTP(@QueryParam(value = "otp") String otp,@QueryParam(value = "txnId") String txnId) {		
-		Response<Object> ndhmToken = ndhmService.confirmWithMobileOTP(otp,txnId);
-		Response<Object> response = new Response<Object>();
-		response.setData(ndhmToken);
+				
+		if (otp == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " otp Required");
+		}
+		Response<Object> response = confirmWithMobileOTP(otp,txnId);
+
 		return response;
 	}
 	
@@ -139,9 +151,12 @@ public class NdhmApi {
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.CONFIRM_AUTH_WITH_AADHAAR_OTP, notes = PathProxy.NdhmUrls.CONFIRM_AUTH_WITH_AADHAAR_OTP)
 	public Response<Object> confirmWithAadhaarOtp(@QueryParam(value = "otp") String otp,@QueryParam(value = "txnId") String txnId) {		
-		Response<Object> ndhmToken = ndhmService.confirmWithAadhaarOtp(otp,txnId);
-		Response<Object> response = new Response<Object>();
-		response.setData(ndhmToken);
+			
+		if (otp == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " otp Required");
+		}
+		Response<Object> response = confirmWithAadhaarOtp(otp,txnId);
+
 		return response;
 	}
 	
@@ -214,7 +229,6 @@ public class NdhmApi {
 		return response;
 	}
 	
-<<<<<<< Updated upstream
 	@Path(value = PathProxy.NdhmUrls.GET_RESEND_MOBILE_OTP)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_RESEND_MOBILE_OTP, notes = PathProxy.NdhmUrls.GET_RESEND_MOBILE_OTP)
@@ -293,7 +307,7 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
-=======
+
 	@Path(value = PathProxy.NdhmUrls.RESENT_AADHAAR_OTP)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.RESENT_AADHAAR_OTP, notes = PathProxy.NdhmUrls.RESENT_AADHAAR_OTP)
@@ -318,7 +332,6 @@ public class NdhmApi {
 			throw new BusinessException(ServiceError.InvalidInput, " authToken Required");
 		}
 		Response<Object> response = ndhmService.profileGetCard(authToken);
->>>>>>> Stashed changes
 
 		return response;
 	}
