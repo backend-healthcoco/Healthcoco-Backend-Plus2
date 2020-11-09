@@ -168,6 +168,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private AppointmentSlot onlineConsultationSlot;
 	
+	@Field
+	private Boolean isRegisteredNDHMFacility = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -554,6 +557,16 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setClinicOwnershipImageUrl(String clinicOwnershipImageUrl) {
 		this.clinicOwnershipImageUrl = clinicOwnershipImageUrl;
+	}
+	
+	
+
+	public Boolean getIsRegisteredNDHMFacility() {
+		return isRegisteredNDHMFacility;
+	}
+
+	public void setIsRegisteredNDHMFacility(Boolean isRegisteredNDHMFacility) {
+		this.isRegisteredNDHMFacility = isRegisteredNDHMFacility;
 	}
 
 	@Override

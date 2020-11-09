@@ -912,6 +912,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 					}
 
 					patientCollection.setIsChild(request.getIsChild());
+					
+					if(request.getAdhaarId() !=null)
+						patientCollection.setAdhaarId(request.getAdhaarId());
+					
+					if(request.getHealthId() !=null)
+						patientCollection.setHealthId(request.getHealthId());
+					
 					// patientCollection.setRegistrationDate(request.getRegistrationDate());
 				} else {
 					logger.error("Incorrect User Id, DoctorId, LocationId, HospitalId");

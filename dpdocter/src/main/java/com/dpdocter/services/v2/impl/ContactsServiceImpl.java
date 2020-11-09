@@ -224,7 +224,7 @@ public class ContactsServiceImpl implements ContactsService {
 
 			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("_id", "$_id").append("userId", "$userId").append("firstName", "$firstName")
-							.append("localPatientName", "$localPatientName")
+							.append("localPatientName", "$localPatientName").append("adhaarId", "$adhaarId")
 							.append("insensitiveLocalPatientName", new BasicDBObject("$toLower", "$localPatientName"))
 							.append("userName", "$userName").append("emailAddress", "$emailAddress")
 							.append("imageUrl", "$imageUrl").append("thumbnailUrl", "$thumbnailUrl")
@@ -243,6 +243,7 @@ public class ContactsServiceImpl implements ContactsService {
 			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("id", "$_id").append("userId", new BasicDBObject("$first", "$userId"))
 							.append("firstName", new BasicDBObject("$first", "$firstName"))
+							.append("adhaarId", new BasicDBObject("$first", "$adhaarId"))
 							.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
 							.append("userName", new BasicDBObject("$first", "$userName"))
 							.append("emailAddress", new BasicDBObject("$first", "$emailAddress"))

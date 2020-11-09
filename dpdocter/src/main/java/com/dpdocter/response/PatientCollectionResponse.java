@@ -85,6 +85,9 @@ public class PatientCollectionResponse {
 	
 	private String landlineNumber;
 	
+	private List<String> healthId;
+	
+	
 	public String getId() {
 		return id;
 	}
@@ -371,6 +374,16 @@ public class PatientCollectionResponse {
 
 	public void setLandlineNumber(String landlineNumber) {
 		this.landlineNumber = landlineNumber;
+	}
+	
+	
+
+	public List<String> getHealthId() {
+		return healthId;
+	}
+
+	public void setHealthId(List<String> healthId) {
+		this.healthId = healthId;
 	}
 
 	@Override

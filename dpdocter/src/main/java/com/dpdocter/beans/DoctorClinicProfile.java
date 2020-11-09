@@ -162,6 +162,8 @@ public class DoctorClinicProfile {
 
 //	private List<ConsultationType> onlineConsultationType;
 //>>>>>>> Stashed changes
+	
+	private Boolean isRegisteredNDHMFacility = false;
 
 	public Boolean getIsSuperAdmin() {
 		return isSuperAdmin;
@@ -760,6 +762,16 @@ public class DoctorClinicProfile {
 
 	public void setIsOnlineConsultationAvailable(Boolean isOnlineConsultationAvailable) {
 		this.isOnlineConsultationAvailable = isOnlineConsultationAvailable;
+	}
+	
+	
+
+	public Boolean getIsRegisteredNDHMFacility() {
+		return isRegisteredNDHMFacility;
+	}
+
+	public void setIsRegisteredNDHMFacility(Boolean isRegisteredNDHMFacility) {
+		this.isRegisteredNDHMFacility = isRegisteredNDHMFacility;
 	}
 
 	@Override

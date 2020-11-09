@@ -76,6 +76,10 @@ public class RegisteredPatientDetails extends GenericCollection {
 	
 	private Boolean isSuperStar = false;
 	
+	private String adhaarId;
+	
+	private List<String> healthId;
+	
 	public List<UserNutritionSubscriptionResponse> getUserNutritionSubscriptions() {
 		return userNutritionSubscriptions;
 	}
@@ -340,6 +344,24 @@ public class RegisteredPatientDetails extends GenericCollection {
 
 	public void setIsSuperStar(Boolean isSuperStar) {
 		this.isSuperStar = isSuperStar;
+	}
+	
+	
+
+	public String getAdhaarId() {
+		return adhaarId;
+	}
+
+	public void setAdhaarId(String adhaarId) {
+		this.adhaarId = adhaarId;
+	}
+
+	public List<String> getHealthId() {
+		return healthId;
+	}
+
+	public void setHealthId(List<String> healthId) {
+		this.healthId = healthId;
 	}
 
 	@Override

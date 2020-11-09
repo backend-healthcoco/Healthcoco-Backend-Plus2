@@ -141,7 +141,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			con.setRequestProperty("Content-Type","application/json");
 			con.setRequestProperty("Accept-Language","en-US");
-		//	con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(orderRequest.toString());
 			System.out.println("Orderrequest:"+orderRequest.toString());

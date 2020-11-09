@@ -137,6 +137,9 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private Boolean isChild = false;
+	
+	@Field
+	private List<String> healthId;
 
 	public ObjectId getId() {
 		return id;
@@ -453,6 +456,16 @@ public class PatientCollection extends GenericCollection {
 
 	public void setLandlineNumber(String landlineNumber) {
 		this.landlineNumber = landlineNumber;
+	}
+	
+	
+
+	public List<String> getHealthId() {
+		return healthId;
+	}
+
+	public void setHealthId(List<String> healthId) {
+		this.healthId = healthId;
 	}
 
 	@Override

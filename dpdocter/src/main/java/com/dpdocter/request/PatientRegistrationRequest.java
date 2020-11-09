@@ -106,6 +106,8 @@ public class PatientRegistrationRequest {
 	private String motherName;
 	
 	private String imageUrl;
+		
+	private List<String> healthId;
 
 	public String getRecordId() {
 		return recordId;
@@ -476,6 +478,13 @@ public class PatientRegistrationRequest {
 	}
 	
 	
+	public List<String> getHealthId() {
+		return healthId;
+	}
+
+	public void setHealthId(List<String> healthId) {
+		this.healthId = healthId;
+	}
 
 	public String getImageUrl() {
 		return imageUrl;
