@@ -1,12 +1,14 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class NDHMStates {
 
 	private String code;
 	
 	private String name;
 	
-	private Districts districts;
+	private List<Districts> districts;
 
 	public String getCode() {
 		return code;
@@ -24,13 +26,15 @@ public class NDHMStates {
 		this.name = name;
 	}
 
-	public Districts getDistricts() {
+	public List<Districts> getDistricts() {
 		return districts;
 	}
 
-	public void setDistricts(Districts districts) {
+	public void setDistricts(List<Districts> districts) {
 		this.districts = districts;
 	}
+
+	
 	
 	
 	

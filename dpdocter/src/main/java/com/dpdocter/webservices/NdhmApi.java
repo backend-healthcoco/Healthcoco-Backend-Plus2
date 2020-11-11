@@ -299,10 +299,10 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_EXISTS_BY_HEALTH_ID)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_EXISTS_BY_HEALTH_ID, notes = PathProxy.NdhmUrls.GET_EXISTS_BY_HEALTH_ID)
-	public Response<String> existsByHealthId(@QueryParam(value = "healthId") String healthId) {
+	public Response<Boolean> existsByHealthId(@QueryParam(value = "healthId") String healthId) {
 		
-		String mobile=ndhmService.existsByHealthId(healthId);
-		Response<String> response = new Response<String>();
+		Boolean mobile=ndhmService.existsByHealthId(healthId);
+		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}

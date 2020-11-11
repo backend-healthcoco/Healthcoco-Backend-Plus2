@@ -161,9 +161,10 @@ public class NDHMserviceImpl implements NDHMservices {
 					
 				}
 				System.out.println("response:"+output.toString());
-				  //ObjectMapper mapper = new ObjectMapper();
+				  ObjectMapper mapper = new ObjectMapper();
 			
-			 response =output.toString();// mapper.readValue(output.toString(),Strin.class);
+			 response =output.toString();//
+		//	response= mapper.readValue(output.toString(),String.class);
 			System.out.println("response"+output.toString());
 		}
 		catch (Exception e) {
@@ -466,7 +467,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			con.setRequestProperty("Content-Type","application/json");
 			con.setRequestProperty("Accept-Language","en-US");
-			con.setRequestProperty("Authorization", "Bearer" + oauth.getAccessToken());
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			
 			int responseCode = con.getResponseCode();
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -688,7 +689,7 @@ public class NDHMserviceImpl implements NDHMservices {
 	//auth
 	@Override
 	public Response<Object> sendAuthPassword(String healthId, String password) {
-		Response<Object> response = null;
+		Response<Object> response = new Response<Object>();
 
 		try {
 			NdhmOauthResponse oauth = session();
@@ -748,14 +749,14 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Response<Object> sendAuthWithMobile(String healthId) {
-		Response<Object> response = null;
+		Response<Object> response = new Response<Object>();
 
 		try {
 			NdhmOauthResponse oauth = session();
 
 			ObjectMapper mapper = new ObjectMapper();
 			JSONObject requestBody = new JSONObject();
-			requestBody.put("healthId", healthId);
+			requestBody.put("healthid", healthId);
 
 			System.out.println(requestBody);
 			String url = "https://healthidsbx.ndhm.gov.in/api/v1/auth/authWithMobile";
@@ -774,7 +775,7 @@ public class NDHMserviceImpl implements NDHMservices {
 					"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
 			con.setRequestProperty("Accept-Charset", "UTF-8");
 			con.setRequestProperty("Content-Type", "application/json");
-//			con.setRequestProperty("Authorization", "Basic " + authStringEnc);
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(requestBody.toString());
 			wr.flush();
@@ -807,7 +808,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Response<Object> sendAuthWithMobileToken(MobileTokenRequest request) {
-		 Response<Object> response=null;
+		 Response<Object> response=new Response<Object>();
 			
 			try {
 				NdhmOauthResponse oauth = session();
@@ -862,7 +863,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Response<Object> sendAuthInit(String healthId, String authMethod) {
-		 Response<Object> response=null;
+		 Response<Object> response=new Response<Object>();
 			
 			try {
 				NdhmOauthResponse oauth = session();
@@ -916,7 +917,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Response<Object> confirmWithMobileOTP(String otp, String txnId) {
-		Response<Object> response=null;
+		Response<Object> response=new Response<Object>();
 
 		try {
 
@@ -947,7 +948,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			wr.close();
 			con.disconnect();
 			
-			System.out.println("hed" + con.getHeaderFields());
+		
 			InputStream in = con.getInputStream();
 			// BufferedReader in = new BufferedReader(new
 			// InputStreamReader(con.getInputStream()));
@@ -977,7 +978,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Response<Object> confirmWithAadhaarOtp(String otp, String txnId) {
-		Response<Object> response=null;
+		Response<Object> response=new Response<Object>();
 
 		try {
 
@@ -1039,7 +1040,7 @@ public class NDHMserviceImpl implements NDHMservices {
 	//aadh
 	@Override
 	public Response<Object> aadharGenerateOtp(String aadhaar) {
-		 Response<Object> response=null;
+		 Response<Object> response=new Response<Object>();
 			
 			try {
 				
@@ -1098,7 +1099,7 @@ public class NDHMserviceImpl implements NDHMservices {
 	@Override
 	public Response<Object> aadharGenerateMobileOtp(String mobile, String txnId) {
 		
-		 Response<Object> response=null;
+		 Response<Object> response=new Response<Object>();
 
 		try {
 
@@ -1155,7 +1156,7 @@ public class NDHMserviceImpl implements NDHMservices {
 	@Override
 	public Response<Object> aadharVerifyOtp(String otp, String restrictions, String txnId) {
 
-		 Response<Object> response=null;
+		 Response<Object> response=new Response<Object>();
 
 		try {
 
@@ -1214,7 +1215,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Response<Object> aadharVerifyMobileOtp(String otp, String txnId) {
-		 Response<Object> response=null;
+		 Response<Object> response=new Response<Object>();
 
 			try {
 
@@ -1274,7 +1275,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Response<Object> createHealthIdWithAadhaarOtp(CreateAadhaarRequest request) {
-		Response<Object> response=null;
+		Response<Object> response=new Response<Object>();
 
 		try {
 
@@ -1333,7 +1334,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Response<Object> resendAadhaarOtp(String txnId) {
-		Response<Object> response=null;
+		Response<Object> response=new Response<Object>();
 
 		try {
 
@@ -1392,7 +1393,7 @@ public class NDHMserviceImpl implements NDHMservices {
 	
 	@Override
 	public Response<Object> profileGetCard(String authToken) {
-		Response<Object> response=null;
+		Response<Object> response=new Response<Object>();
 
 		try {
 
@@ -1411,16 +1412,12 @@ public class NDHMserviceImpl implements NDHMservices {
 			System.out.println(con.getErrorStream());
 			con.setDoInput(true);
 			// optional default is POST
-			con.setRequestMethod("POST");
+			con.setRequestMethod("GET");
 			con.setRequestProperty("Content-Type", "application/json");			
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			con.setRequestProperty("X-Token", "Bearer " + authToken);
 
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-//			wr.writeBytes(orderRequest.toString());
-//			System.out.println("Orderrequest:" + orderRequest.toString());
-			wr.flush();
-			wr.close();
+		
 			con.disconnect();
 			
 			System.out.println("hed" + con.getHeaderFields());
@@ -1439,7 +1436,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			}
 			System.out.println("response:" + output.toString());
 			// ObjectMapper mapper = new ObjectMapper();
-			response.setData(output.toString());
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1451,7 +1448,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Response<Object> profileGetPngCard(String authToken) {
-		Response<Object> response=null;
+		Response<Object> response=new Response<Object>();
 
 		try {
 
@@ -1470,7 +1467,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			System.out.println(con.getErrorStream());
 			con.setDoInput(true);
 			// optional default is POST
-			con.setRequestMethod("POST");
+			con.setRequestMethod("GET");
 			con.setRequestProperty("Accept-Language", "en-US");
 			con.setRequestProperty("Content-Type", "application/json");			
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
@@ -1511,7 +1508,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Response<Object> getProfileDetail(String authToken) {
-		Response<Object> response=null;
+		Response<Object> response=new Response<Object>();
 
 		try {
 
@@ -1571,7 +1568,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Response<Object> createProfile(CreateProfileRequest request, String authToken) {
-		Response<Object> response=null;
+		Response<Object> response=new Response<Object>();
 
 		try {
 
@@ -1629,7 +1626,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Response<Object> DeleteProfileDetail(String authToken) {
-		Response<Object> response=null;
+		Response<Object> response=new Response<Object>();
 
 		try {
 
