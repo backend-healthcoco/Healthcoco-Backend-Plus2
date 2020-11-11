@@ -31,7 +31,7 @@ public interface NDHMservices {
 
 	List<Districts> getListforDistricts(String statecode);
 
-	String existsByHealthId(String mobileNumber);
+	Boolean existsByHealthId(String mobileNumber);
 
 	HealthIdSearch searchByHealthId(String healthId);
 

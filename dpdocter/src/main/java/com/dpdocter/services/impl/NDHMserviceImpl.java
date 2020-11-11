@@ -498,8 +498,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	
 	
 	@Override
-	public String existsByHealthId(String healthId) {
-		String response=null;
+	public Boolean existsByHealthId(String healthId) {
+		Boolean response=null;
 		try {
 			
 			NdhmOauthResponse oauth=session();
@@ -541,11 +541,14 @@ public class NDHMserviceImpl implements NDHMservices {
 					output.append((char) c);
 					
 				}
+				int responseCode=con.getResponseCode();
+				if(responseCode==200)
+					response=true;
 				System.out.println("response:"+output.toString());
 				  //ObjectMapper mapper = new ObjectMapper();
 			
-			 response =output.toString();// mapper.readValue(output.toString(),Strin.class);
-			System.out.println("response"+output.toString());
+			// response =output.toString();// mapper.readValue(output.toString(),Strin.class);
+			//System.out.println("response"+output.toString());
 		}
 		catch (Exception e) {
 			e.printStackTrace();
