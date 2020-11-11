@@ -38,17 +38,18 @@ public interface NDHMservices {
 	HealthIdSearch searchBymobileNumber(HealthIdSearchRequest request);
 
 	//auth
-	Response<Object> sendAuthPassword(String healthId, String password);
+	String sendAuthPassword(String healthId, String password);
 
-	Response<Object> sendAuthWithMobile(String healthId);
+	String sendAuthWithMobile(String healthId);
 
-	Response<Object> sendAuthWithMobileToken(MobileTokenRequest request);
+	String sendAuthWithMobileToken(MobileTokenRequest request);
 
-	Response<Object> sendAuthInit(String healthId, String authMethod);
+	String sendAuthInit(String healthId, String authMethod);
 	
-	Response<Object> confirmWithMobileOTP(String otp, String txnId);
+	String confirmWithMobileOTP(String otp, String txnId);
 
-	Response<Object> confirmWithAadhaarOtp(String otp, String txnId);
+	String confirmWithAadhaarOtp(String otp, String txnId);
+	
 	//aadhar
 	Response<Object> aadharGenerateOtp(String aadhaar);
 

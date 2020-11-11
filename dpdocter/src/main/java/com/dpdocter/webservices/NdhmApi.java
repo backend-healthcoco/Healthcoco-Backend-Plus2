@@ -106,13 +106,14 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_AUTH_INIT)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_AUTH_INIT, notes = PathProxy.NdhmUrls.GET_AUTH_INIT)
-	public Response<Object> sendAuthPassword(@QueryParam(value = "healthId") String healthId,
+	public Response<String> sendAuthPassword(@QueryParam(value = "healthId") String healthId,
 			@DefaultValue("AADHAAR_OTP")@QueryParam(value = "authMethod") String authMethod) {		
 		
 		if (healthId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " healthId Required");
 		}
-		Response<Object> response = ndhmService.sendAuthInit(healthId,authMethod);
+		Response<String> response = new Response<String>();
+		response.setData(ndhmService.sendAuthInit(healthId,authMethod));
 
 		return response;
 	}
@@ -120,12 +121,13 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_AUTH_WITH_MOBILE)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_AUTH_WITH_MOBILE, notes = PathProxy.NdhmUrls.GET_AUTH_WITH_MOBILE)
-	public Response<Object> sendAuthWithMobile(@QueryParam(value = "healthid") String healthId) {		
+	public Response<String> sendAuthWithMobile(@QueryParam(value = "healthid") String healthId) {		
 				
 		if (healthId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " healthId Required");
 		}
-		Response<Object> response = ndhmService.sendAuthWithMobile(healthId);
+		Response<String> response = new Response<String>();
+		response.setData(ndhmService.sendAuthWithMobile(healthId));
 
 		return response;
 	}
@@ -134,12 +136,13 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_AUTH_WITH_MOBILE_TOKEN)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_AUTH_WITH_MOBILE_TOKEN, notes = PathProxy.NdhmUrls.GET_AUTH_WITH_MOBILE_TOKEN)
-	public Response<Object> sendAuthWithMobileToken(@RequestBody MobileTokenRequest request) {		
+	public Response<String> sendAuthWithMobileToken(@RequestBody MobileTokenRequest request) {		
 				
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " aadhaar Required");
 		}
-		Response<Object> response = ndhmService.sendAuthWithMobileToken(request);
+		Response<String> response = new Response<String>();
+		response.setData(ndhmService.sendAuthWithMobileToken(request));
 
 		return response;
 	}
@@ -147,12 +150,13 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.CONFIRM_AUTH_WITH_MOBILE_OTP)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.CONFIRM_AUTH_WITH_MOBILE_OTP, notes = PathProxy.NdhmUrls.CONFIRM_AUTH_WITH_MOBILE_OTP)
-	public Response<Object> confirmWithMobileOTP(@QueryParam(value = "otp") String otp,@QueryParam(value = "txnId") String txnId) {		
+	public Response<String> confirmWithMobileOTP(@QueryParam(value = "otp") String otp,@QueryParam(value = "txnId") String txnId) {		
 				
 		if (otp == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " otp Required");
 		}
-		Response<Object> response = confirmWithMobileOTP(otp,txnId);
+		Response<String> response = new Response<String>();
+		response.setData(ndhmService.confirmWithMobileOTP(otp,txnId));
 
 		return response;
 	}
@@ -160,12 +164,13 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.CONFIRM_AUTH_WITH_AADHAAR_OTP)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.CONFIRM_AUTH_WITH_AADHAAR_OTP, notes = PathProxy.NdhmUrls.CONFIRM_AUTH_WITH_AADHAAR_OTP)
-	public Response<Object> confirmWithAadhaarOtp(@QueryParam(value = "otp") String otp,@QueryParam(value = "txnId") String txnId) {		
+	public Response<String> confirmWithAadhaarOtp(@QueryParam(value = "otp") String otp,@QueryParam(value = "txnId") String txnId) {		
 			
 		if (otp == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " otp Required");
 		}
-		Response<Object> response = confirmWithAadhaarOtp(otp,txnId);
+		Response<String> response = new Response<String>();
+		response.setData(ndhmService.confirmWithAadhaarOtp(otp,txnId));
 
 		return response;
 	}
