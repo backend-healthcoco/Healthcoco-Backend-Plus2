@@ -11,6 +11,9 @@ public class NdhmStatus {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
+	
+	
 	
 	
 }
