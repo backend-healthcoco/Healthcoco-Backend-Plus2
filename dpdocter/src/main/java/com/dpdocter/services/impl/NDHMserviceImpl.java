@@ -838,7 +838,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			ObjectMapper mapper = new ObjectMapper();
 			JSONObject requestBody = new JSONObject();
-			requestBody.put("healthId", healthId);
+			requestBody.put("healthid", healthId);
 			requestBody.put("authMethod", authMethod);
 
 			String url = "https://healthidsbx.ndhm.gov.in/api/v1/auth/init";
