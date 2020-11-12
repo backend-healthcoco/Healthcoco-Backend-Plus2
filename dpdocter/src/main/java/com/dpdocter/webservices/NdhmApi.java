@@ -254,10 +254,10 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_RESEND_MOBILE_OTP)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_RESEND_MOBILE_OTP, notes = PathProxy.NdhmUrls.GET_RESEND_MOBILE_OTP)
-	public Response<Boolean> resendMobileOtp(@QueryParam("txnId") String txnId) {
+	public Response<NdhmStatus> resendMobileOtp(@QueryParam("txnId") String txnId) {
 
-		Boolean mobile = ndhmService.resendOtp(txnId);
-		Response<Boolean> response = new Response<Boolean>();
+		NdhmStatus mobile = ndhmService.resendOtp(txnId);
+		Response<NdhmStatus> response = new Response<NdhmStatus>();
 		response.setData(mobile);
 		return response;
 	}

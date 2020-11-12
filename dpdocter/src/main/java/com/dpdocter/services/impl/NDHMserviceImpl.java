@@ -238,8 +238,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public Boolean resendOtp(String txnId) {
-		Boolean response = null;
+	public NdhmStatus resendOtp(String txnId) {
+		NdhmStatus response = null;
 		try {
 
 			NdhmOauthResponse oauth = session();
@@ -261,11 +261,11 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Accept-Language", "en-US");
-			// con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(orderRequest.toString());
 
-			System.out.println("Bearer" + oauth.getAccessToken());
+			System.out.println("Bearer " + oauth.getAccessToken());
 			System.out.println("Orderrequest:" + orderRequest.toString());
 			wr.flush();
 			wr.close();
@@ -284,9 +284,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			// ObjectMapper mapper = new ObjectMapper();
+			 ObjectMapper mapper = new ObjectMapper();
 
-			response = Boolean.parseBoolean(output.toString());// mapper.readValue(output.toString(),Strin.class);
+			response = mapper.readValue(output.toString(),NdhmStatus.class);
 			System.out.println("response" + output.toString());
 		} catch (Exception e) {
 			e.printStackTrace();

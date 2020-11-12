@@ -28,7 +28,7 @@ public interface NDHMservices {
 
 	NdhmOtp verifyOtp(String otp, String txnId);
 
-	Boolean resendOtp(String txnId);
+	NdhmStatus resendOtp(String txnId);
 
 	HealthIdResponse createHealthId(HealthIdRequest request);
 
