@@ -1447,13 +1447,13 @@ public class NDHMserviceImpl implements NDHMservices {
 	            System.out.println("fileName = " + fileName);
 	 
 	            String saveDir = "Downloads";
-
+	            fileName="idCard.pdf";
 	            // opens input stream from the HTTP connection
 	            InputStream inputStream = con.getInputStream();
 	            String saveFilePath = saveDir + File.separator + fileName;
 	             
 	            // opens an output stream to save into file
-	            FileOutputStream outputStream = new FileOutputStream(saveFilePath);
+	            FileOutputStream outputStream = new FileOutputStream("/home/ubuntu/idcard.pdf");
 	 
 	            int bytesRead = -1;
 	            byte[] buffer = new byte[BUFFER_SIZE];
@@ -1461,8 +1461,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	                outputStream.write(buffer, 0, bytesRead);
 	            }
 	 
-	            outputStream.close();
-	            inputStream.close();
+//	            outputStream.close();
+//	            inputStream.close();
 	 
 	            System.out.println("File downloaded");
 	        } else {
