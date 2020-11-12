@@ -2,6 +2,9 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
+
 import com.dpdocter.beans.Districts;
 import com.dpdocter.beans.HealthIdRequest;
 import com.dpdocter.beans.HealthIdResponse;
@@ -65,7 +68,7 @@ public interface NDHMservices {
 	Response<Object> resendAadhaarOtp(String txnId);
 
 	//profile
-	Response<Object> profileGetCard(String authToken);
+	ResponseEntity<InputStreamResource> profileGetCard(String authToken);
 
 	Response<Object> profileGetPngCard(String authToken);
 

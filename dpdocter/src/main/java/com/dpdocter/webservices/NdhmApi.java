@@ -14,12 +14,14 @@ import javax.ws.rs.QueryParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.Districts;
@@ -339,18 +341,20 @@ public class NdhmApi {
 	}
 
 	// profile API
-
+@RequestMapping(method = RequestMethod.GET, produces = "application/pdf")
 	@Path(value = PathProxy.NdhmUrls.GET_PROFILE_CARD)
 	@GET
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_PROFILE_CARD, notes = PathProxy.NdhmUrls.GET_PROFILE_CARD)
-	public Response<Object> ProfileGetCard(@QueryParam(value = "authToken") String authToken) {
+	public ResponseEntity<InputStreamResource> ProfileGetCard(@QueryParam(value = "authToken") String authToken) {
 
 		if (authToken == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " authToken Required");
 		}
-		Response<Object> response = ndhmService.profileGetCard(authToken);
+		 
+		
 
-		return response;
+		return ndhmService.profileGetCard(authToken);
 	}
 
 	@Path(value = PathProxy.NdhmUrls.GET_PROFILE_PNGCARD)
