@@ -11,6 +11,7 @@ import com.dpdocter.beans.HealthIdResponse;
 import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.NdhmOtp;
+import com.dpdocter.beans.NdhmStatus;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.MobileTokenRequest;
@@ -35,7 +36,7 @@ public interface NDHMservices {
 
 	List<Districts> getListforDistricts(String statecode);
 
-	Boolean existsByHealthId(String mobileNumber);
+	NdhmStatus existsByHealthId(String mobileNumber);
 
 	HealthIdSearch searchByHealthId(String healthId);
 

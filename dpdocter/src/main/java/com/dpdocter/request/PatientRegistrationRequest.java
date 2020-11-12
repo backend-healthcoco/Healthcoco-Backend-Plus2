@@ -108,6 +108,8 @@ public class PatientRegistrationRequest {
 	private String imageUrl;
 		
 	private List<String> healthId;
+	
+	private String ndhmToken;
 
 	public String getRecordId() {
 		return recordId;
@@ -492,6 +494,16 @@ public class PatientRegistrationRequest {
 
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
+	}
+	
+	
+
+	public String getNdhmToken() {
+		return ndhmToken;
+	}
+
+	public void setNdhmToken(String ndhmToken) {
+		this.ndhmToken = ndhmToken;
 	}
 
 	@Override

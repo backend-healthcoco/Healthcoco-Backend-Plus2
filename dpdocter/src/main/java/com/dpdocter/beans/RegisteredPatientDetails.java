@@ -80,6 +80,8 @@ public class RegisteredPatientDetails extends GenericCollection {
 	
 	private List<String> healthId;
 	
+	private String ndhmToken;
+	
 	public List<UserNutritionSubscriptionResponse> getUserNutritionSubscriptions() {
 		return userNutritionSubscriptions;
 	}
@@ -362,6 +364,16 @@ public class RegisteredPatientDetails extends GenericCollection {
 
 	public void setHealthId(List<String> healthId) {
 		this.healthId = healthId;
+	}
+	
+	
+
+	public String getNdhmToken() {
+		return ndhmToken;
+	}
+
+	public void setNdhmToken(String ndhmToken) {
+		this.ndhmToken = ndhmToken;
 	}
 
 	@Override

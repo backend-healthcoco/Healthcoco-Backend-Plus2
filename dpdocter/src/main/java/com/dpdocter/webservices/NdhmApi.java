@@ -34,6 +34,7 @@ import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.NdhmOtp;
+import com.dpdocter.beans.NdhmStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.CreateAadhaarRequest;
@@ -308,10 +309,10 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_EXISTS_BY_HEALTH_ID)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_EXISTS_BY_HEALTH_ID, notes = PathProxy.NdhmUrls.GET_EXISTS_BY_HEALTH_ID)
-	public Response<Boolean> existsByHealthId(@QueryParam(value = "healthId") String healthId) {
+	public Response<NdhmStatus> existsByHealthId(@QueryParam(value = "healthId") String healthId) {
 
-		Boolean mobile = ndhmService.existsByHealthId(healthId);
-		Response<Boolean> response = new Response<Boolean>();
+		NdhmStatus mobile = ndhmService.existsByHealthId(healthId);
+		Response<NdhmStatus> response = new Response<NdhmStatus>();
 		response.setData(mobile);
 		return response;
 	}

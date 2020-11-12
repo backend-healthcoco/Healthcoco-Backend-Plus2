@@ -45,7 +45,7 @@ public class HealthIdResponse {
 	
 	private String token;
 	
-	private Boolean isNew;
+	//private boolean new;
 	
 	private NdhmTags tags;
 	
@@ -205,13 +205,7 @@ public class HealthIdResponse {
 		this.token = token;
 	}
 
-	public Boolean getIsNew() {
-		return isNew;
-	}
-
-	public void setIsNew(Boolean isNew) {
-		this.isNew = isNew;
-	}
+	
 
 	public NdhmTags getTags() {
 		return tags;

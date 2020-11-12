@@ -30,6 +30,7 @@ import com.dpdocter.beans.NdhmMobileOtp;
 import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.NdhmOtp;
+import com.dpdocter.beans.NdhmStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.CreateAadhaarRequest;
@@ -489,8 +490,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public Boolean existsByHealthId(String healthId) {
-		Boolean response = null;
+	public NdhmStatus existsByHealthId(String healthId) {
+		NdhmStatus response = null;
 		try {
 
 			NdhmOauthResponse oauth = session();
@@ -532,13 +533,13 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			int responseCode = con.getResponseCode();
-			if (responseCode == 200)
-				response = true;
-			System.out.println("response:" + output.toString());
-			// ObjectMapper mapper = new ObjectMapper();
+//			if (responseCode == 200)
+//				response = true;
+//			System.out.println("response:" + output.toString());
+			 ObjectMapper mapper = new ObjectMapper();
 
 			// response =output.toString();//
-			// mapper.readValue(output.toString(),Strin.class);
+			response= mapper.readValue(output.toString(),NdhmStatus.class);
 			// System.out.println("response"+output.toString());
 		} catch (Exception e) {
 			e.printStackTrace();

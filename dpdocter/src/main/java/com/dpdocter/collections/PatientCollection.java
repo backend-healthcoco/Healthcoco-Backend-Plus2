@@ -140,6 +140,9 @@ public class PatientCollection extends GenericCollection {
 	
 	@Field
 	private List<String> healthId;
+	
+	@Field
+	private String ndhmToken;
 
 	public ObjectId getId() {
 		return id;
@@ -466,6 +469,16 @@ public class PatientCollection extends GenericCollection {
 
 	public void setHealthId(List<String> healthId) {
 		this.healthId = healthId;
+	}
+	
+	
+
+	public String getNdhmToken() {
+		return ndhmToken;
+	}
+
+	public void setNdhmToken(String ndhmToken) {
+		this.ndhmToken = ndhmToken;
 	}
 
 	@Override
