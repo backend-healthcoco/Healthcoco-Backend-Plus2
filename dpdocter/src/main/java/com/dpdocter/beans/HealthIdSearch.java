@@ -1,10 +1,12 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import com.dpdocter.enums.NdhmAuthMethods;
 
 public class HealthIdSearch {
 	
-	private NdhmAuthMethods authMethods;
+	private List<NdhmAuthMethods> authMethods;
 
 	private String healthId;
 	
@@ -46,13 +48,14 @@ public class HealthIdSearch {
 		this.tags = tags;
 	}
 
-	public NdhmAuthMethods getAuthMethods() {
+	public List<NdhmAuthMethods> getAuthMethods() {
 		return authMethods;
 	}
 
-	public void setAuthMethods(NdhmAuthMethods authMethods) {
+	public void setAuthMethods(List<NdhmAuthMethods> authMethods) {
 		this.authMethods = authMethods;
 	}
+
 	
 	
 	

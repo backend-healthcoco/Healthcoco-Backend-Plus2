@@ -219,7 +219,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			 ObjectMapper mapper = new ObjectMapper();
 
 			//response = output.toString();//
-			mapper.readValue(output.toString(),NdhmOtp.class);
+			response=mapper.readValue(output.toString(),NdhmOtp.class);
 			System.out.println("response" + output.toString());
 		} catch (Exception e) {
 			e.printStackTrace();

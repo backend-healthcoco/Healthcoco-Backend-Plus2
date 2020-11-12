@@ -57,6 +57,8 @@ public class PatientCard extends GenericCollection {
 	private String imageUrl;
 
 	private String adhaarId;	
+	
+	private List<String> healthId;
 
 
 	public User getUser() {
@@ -237,6 +239,16 @@ public class PatientCard extends GenericCollection {
 
 	public void setAdhaarId(String adhaarId) {
 		this.adhaarId = adhaarId;
+	}
+	
+	
+
+	public List<String> getHealthId() {
+		return healthId;
+	}
+
+	public void setHealthId(List<String> healthId) {
+		this.healthId = healthId;
 	}
 
 	@Override
