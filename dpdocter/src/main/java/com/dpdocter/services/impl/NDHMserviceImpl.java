@@ -3,6 +3,8 @@ package com.dpdocter.services.impl;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -53,7 +55,7 @@ import common.util.web.Response;
 public class NDHMserviceImpl implements NDHMservices {
 
 	private static Logger logger = LogManager.getLogger(NDHMserviceImpl.class.getName());
-
+	private static final int BUFFER_SIZE = 4096;
 	@Value(value = "${ndhm.clientId}")
 	private String NDHM_CLIENTID;
 
@@ -1418,6 +1420,56 @@ public class NDHMserviceImpl implements NDHMservices {
 			ObjectMapper mapper = new ObjectMapper();
 			String output = respons.toString();
 
+			
+			 // always check HTTP response code first
+	        if (responseCode == HttpURLConnection.HTTP_OK) {
+	            String fileName = "";
+	            String disposition = con.getHeaderField("Content-Disposition");
+	            String contentType = con.getContentType();
+	            int contentLength = con.getContentLength();
+	 
+	            if (disposition != null) {
+	                // extracts file name from header field
+	                int index = disposition.indexOf("filename=");
+	                if (index > 0) {
+	                    fileName = disposition.substring(index + 10,
+	                            disposition.length() - 1);
+	                }
+	            } else {
+	                // extracts file name from URL
+	                fileName = url.substring(url.lastIndexOf("/") + 1,
+	                		url.length());
+	            }
+	 
+	            System.out.println("Content-Type = " + contentType);
+	            System.out.println("Content-Disposition = " + disposition);
+	            System.out.println("Content-Length = " + contentLength);
+	            System.out.println("fileName = " + fileName);
+	 
+	            String saveDir = "Downloads";
+
+	            // opens input stream from the HTTP connection
+	            InputStream inputStream = con.getInputStream();
+	            String saveFilePath = saveDir + File.separator + fileName;
+	             
+	            // opens an output stream to save into file
+	            FileOutputStream outputStream = new FileOutputStream(saveFilePath);
+	 
+	            int bytesRead = -1;
+	            byte[] buffer = new byte[BUFFER_SIZE];
+	            while ((bytesRead = inputStream.read(buffer)) != -1) {
+	                outputStream.write(buffer, 0, bytesRead);
+	            }
+	 
+	            outputStream.close();
+	            inputStream.close();
+	 
+	            System.out.println("File downloaded");
+	        } else {
+	            System.out.println("No file to download. Server replied HTTP code: " + responseCode);
+	        }
+	        
+	        
 //			JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, GetCardProfileResponse.class);
 //			response = mapper.readValue(output,type);
 
