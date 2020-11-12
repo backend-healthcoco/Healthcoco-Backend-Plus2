@@ -1,5 +1,9 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
+import com.dpdocter.enums.NdhmAuthMethods;
+
 public class HealthIdResponse {
 
 	
@@ -46,6 +50,8 @@ public class HealthIdResponse {
 	private NdhmTags tags;
 	
 	private String yearOfBirth;
+	
+	private List<NdhmAuthMethods> authMethods;
 
 	public String getDayOfBirth() {
 		return dayOfBirth;
@@ -222,6 +228,16 @@ public class HealthIdResponse {
 	public void setYearOfBirth(String yearOfBirth) {
 		this.yearOfBirth = yearOfBirth;
 	}
+
+	public List<NdhmAuthMethods> getAuthMethods() {
+		return authMethods;
+	}
+
+	public void setAuthMethods(List<NdhmAuthMethods> authMethods) {
+		this.authMethods = authMethods;
+	}
+	
+	
 	
 	
 }
