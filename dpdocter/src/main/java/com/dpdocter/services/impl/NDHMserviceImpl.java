@@ -662,8 +662,8 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	// auth
 	@Override
-	public String sendAuthPassword(String healthId, String password) {
-		String response = null;
+	public NdhmOtp sendAuthPassword(String healthId, String password) {
+		NdhmOtp response = null;
 
 		try {
 			NdhmOauthResponse oauth = session();
@@ -705,8 +705,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
+			response= mapper.readValue(output.toString(),NdhmOtp.class);
 
-			response = output.toString();
+//			response = output.toString();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -717,15 +718,15 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public String sendAuthWithMobile(String healthId) {
-		String response = null;
+	public NdhmOtp sendAuthWithMobile(String healthid) {
+		NdhmOtp response = null;
 
 		try {
 			NdhmOauthResponse oauth = session();
 
 			ObjectMapper mapper = new ObjectMapper();
 			JSONObject requestBody = new JSONObject();
-			requestBody.put("healthid", healthId);
+			requestBody.put("healthid", healthid);
 
 			System.out.println(requestBody);
 			String url = "https://healthidsbx.ndhm.gov.in/api/v1/auth/authWithMobile";
@@ -760,7 +761,9 @@ public class NDHMserviceImpl implements NDHMservices {
 			}
 			System.out.println("response:" + output.toString());
 
-			response = output.toString();
+//			response = output.toString();
+			 response= mapper.readValue(output.toString(),NdhmOtp.class);
+
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -771,8 +774,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public String sendAuthWithMobileToken(MobileTokenRequest request) {
-		String response = null;
+	public NdhmOtp sendAuthWithMobileToken(MobileTokenRequest request) {
+		NdhmOtp response = null;
 
 		try {
 			NdhmOauthResponse oauth = session();
@@ -814,7 +817,8 @@ public class NDHMserviceImpl implements NDHMservices {
 
 //				OrderReponse list = mapper.readValue(output.toString(), ass);
 
-			response = output.toString();
+//			response = output.toString();
+			response= mapper.readValue(output.toString(),NdhmOtp.class);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -826,8 +830,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public String sendAuthInit(String healthId, String authMethod) {
-		String response = null;
+	public NdhmOtp sendAuthInit(String healthId, String authMethod) {
+		NdhmOtp response = null;
 
 		try {
 			NdhmOauthResponse oauth = session();
@@ -868,7 +872,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 //				OrderReponse list = mapper.readValue(output.toString(), ass);
 
-			response = output.toString();
+//			response = output.toString();
+			response= mapper.readValue(output.toString(),NdhmOtp.class);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
@@ -878,8 +884,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public String confirmWithMobileOTP(String otp, String txnId) {
-		String response = null;
+	public NdhmOtp confirmWithMobileOTP(String otp, String txnId) {
+		NdhmOtp response = null;
 
 		try {
 
@@ -926,7 +932,10 @@ public class NDHMserviceImpl implements NDHMservices {
 				output.append((char) c);
 
 			}
+			 ObjectMapper mapper = new ObjectMapper();
+
 			System.out.println("response:" + output.toString());
+			response= mapper.readValue(output.toString(),NdhmOtp.class);
 		
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -937,8 +946,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public String confirmWithAadhaarOtp(String otp, String txnId) {
-		String response = null;
+	public NdhmOtp confirmWithAadhaarOtp(String otp, String txnId) {
+		NdhmOtp response = null;
 
 		try {
 
@@ -981,8 +990,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			// ObjectMapper mapper = new ObjectMapper();
-			response = output.toString();
+			 ObjectMapper mapper = new ObjectMapper();
+//			response = output.toString();
+			response= mapper.readValue(output.toString(),NdhmOtp.class);
 
 //			response = output.toString();// mapper.readValue(output.toString(),Strin.class);
 			System.out.println("response" + output.toString());
@@ -996,8 +1006,8 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	// aadh
 	@Override
-	public Response<Object> aadharGenerateOtp(String aadhaar) {
-		Response<Object> response = new Response<Object>();
+	public NdhmOtp aadharGenerateOtp(String aadhaar) {
+		NdhmOtp response = null;
 
 		try {
 
@@ -1040,7 +1050,9 @@ public class NDHMserviceImpl implements NDHMservices {
 			}
 			System.out.println("response:" + output.toString());
 
-			response.setData(output.toString());
+//			response.setData(output.toString());
+			response= mapper.readValue(output.toString(),NdhmOtp.class);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());

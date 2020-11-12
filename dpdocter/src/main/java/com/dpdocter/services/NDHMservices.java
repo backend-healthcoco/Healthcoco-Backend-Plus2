@@ -39,20 +39,20 @@ public interface NDHMservices {
 	HealthIdSearch searchBymobileNumber(HealthIdSearchRequest request);
 
 	//auth
-	String sendAuthPassword(String healthId, String password);
+	NdhmOtp sendAuthPassword(String healthId, String password);
 
-	String sendAuthWithMobile(String healthId);
+	NdhmOtp sendAuthWithMobile(String healthid);
 
-	String sendAuthWithMobileToken(MobileTokenRequest request);
+	NdhmOtp sendAuthWithMobileToken(MobileTokenRequest request);
 
-	String sendAuthInit(String healthId, String authMethod);
+	NdhmOtp sendAuthInit(String healthId, String authMethod);
 	
-	String confirmWithMobileOTP(String otp, String txnId);
+	NdhmOtp confirmWithMobileOTP(String otp, String txnId);
 
-	String confirmWithAadhaarOtp(String otp, String txnId);
+	NdhmOtp confirmWithAadhaarOtp(String otp, String txnId);
 	
 	//aadhar
-	Response<Object> aadharGenerateOtp(String aadhaar);
+	NdhmOtp aadharGenerateOtp(String aadhaar);
 
 	Response<Object> aadharGenerateMobileOtp(String mobile, String txnId);
 
