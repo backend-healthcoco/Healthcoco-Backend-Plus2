@@ -2479,14 +2479,14 @@ public interface PathProxy {
 		public static final String GET_AUTH_INIT = "/auth/init";
 		public static final String GET_AUTH_WITH_MOBILE = "/auth/getAuthMobile";
 		public static final String GET_AUTH_WITH_MOBILE_TOKEN = "/auth/getAuthMobileToken";
-		public static final String CONFIRM_AUTH_WITH_MOBILE_OTP = "/auth/confirmWithMobileOTP";
+		public static final String CONFIRM_AUTH_WITH_MOBILE_OTP = "/auth/confirmWithMobileOtp";
 		public static final String CONFIRM_AUTH_WITH_AADHAAR_OTP = "/auth/confirmWithAadhaarOtp";
 
 		// aadhar api
-		public static final String GET_AADHAR_GENERATE_OTP = "/reg/aadhar/generateOTP";
-		public static final String GET_AADHAR_GENERATE_MOBILE_OTP = "/reg/aadhar/generateMobileOTP";
-		public static final String GET_AADHAR_VERIFY_OTP = "/reg/aadhaar/verifyOTP";
-		public static final String GET_AADHAR_VERIFY_MOBILE_OTP = "/reg/aadhaar/verifyMobileOTP";
+		public static final String GET_AADHAR_GENERATE_OTP = "/reg/aadhar/generateOtp";
+		public static final String GET_AADHAR_GENERATE_MOBILE_OTP = "/reg/aadhar/generateMobileOtp";
+		public static final String GET_AADHAR_VERIFY_OTP = "/reg/aadhaar/verifyOtp";
+		public static final String GET_AADHAR_VERIFY_MOBILE_OTP = "/reg/aadhaar/verifyMobileOtp";
 		public static final String CREATE_HEALTHID_AADHAAR_OTP = "/reg/aadhaar/createHealthIdWithAadhaarOtp";
 		public static final String RESENT_AADHAAR_OTP = "/reg/aadhaar/resendAadhaarOtp";
 

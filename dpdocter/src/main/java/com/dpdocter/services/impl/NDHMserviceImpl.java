@@ -887,6 +887,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			orderRequest.put("otp", otp);
 			orderRequest.put("txnId", txnId);
 
+			System.out.println(orderRequest.toString());
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -1311,8 +1312,6 @@ public class NDHMserviceImpl implements NDHMservices {
 			wr.flush();
 			wr.close();
 			con.disconnect();
-
-			System.out.println("hed" + con.getHeaderFields());
 			InputStream in = con.getInputStream();
 			// BufferedReader in = new BufferedReader(new
 			// InputStreamReader(con.getInputStream()));
@@ -1537,8 +1536,6 @@ public class NDHMserviceImpl implements NDHMservices {
 			wr.flush();
 			wr.close();
 			con.disconnect();
-
-			System.out.println("hed" + con.getHeaderFields());
 			InputStream in = con.getInputStream();
 			// BufferedReader in = new BufferedReader(new
 			// InputStreamReader(con.getInputStream()));
@@ -1590,14 +1587,12 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			con.setRequestProperty("X-Token", "Bearer " + authToken);
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+//			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 //			wr.writeBytes(orderRequest.toString());
 //			System.out.println("Orderrequest:" + orderRequest.toString());
-			wr.flush();
-			wr.close();
+//			wr.flush();
+//			wr.close();
 			con.disconnect();
-
-			System.out.println("hed" + con.getHeaderFields());
 			InputStream in = con.getInputStream();
 			// BufferedReader in = new BufferedReader(new
 			// InputStreamReader(con.getInputStream()));
