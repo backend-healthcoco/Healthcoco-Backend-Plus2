@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.NdhmMobileOtp;
 import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NdhmOauthResponse;
+import com.dpdocter.beans.NdhmOtp;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.CreateAadhaarRequest;
@@ -113,8 +114,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public String generateOtp(String mobileNumber) {
-		String response = null;
+	public NdhmOtp generateOtp(String mobileNumber) {
+		NdhmOtp response = null;
 		try {
 
 			NdhmOauthResponse oauth = session();
@@ -158,8 +159,8 @@ public class NDHMserviceImpl implements NDHMservices {
 			System.out.println("response:" + output.toString());
 			ObjectMapper mapper = new ObjectMapper();
 
-			response = output.toString();//
-			// response= mapper.readValue(output.toString(),String.class);
+			//response = output.toString();//
+			 response= mapper.readValue(output.toString(),NdhmOtp.class);
 			System.out.println("response" + output.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -171,8 +172,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public String verifyOtp(String otp, String txnId) {
-		String response = null;
+	public NdhmOtp verifyOtp(String otp, String txnId) {
+		NdhmOtp response = null;
 		try {
 
 			NdhmOauthResponse oauth = session();
@@ -215,9 +216,10 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			// ObjectMapper mapper = new ObjectMapper();
+			 ObjectMapper mapper = new ObjectMapper();
 
-			response = output.toString();// mapper.readValue(output.toString(),Strin.class);
+			//response = output.toString();//
+			mapper.readValue(output.toString(),NdhmOtp.class);
 			System.out.println("response" + output.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
