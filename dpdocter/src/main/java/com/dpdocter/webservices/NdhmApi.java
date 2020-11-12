@@ -31,6 +31,7 @@ import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmOauthResponse;
+import com.dpdocter.beans.NdhmOtp;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.CreateAadhaarRequest;
@@ -79,10 +80,10 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_GENERATE_MOBILE_OTP)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_GENERATE_MOBILE_OTP, notes = PathProxy.NdhmUrls.GET_GENERATE_MOBILE_OTP)
-	public Response<String> generateMobileOtp(@QueryParam("mobileNumber")String mobileNumber) {
+	public Response<NdhmOtp> generateMobileOtp(@QueryParam("mobileNumber")String mobileNumber) {
 		
-		String mobile=ndhmService.generateOtp(mobileNumber);
-		Response<String> response = new Response<String>();
+		NdhmOtp mobile=ndhmService.generateOtp(mobileNumber);
+		Response<NdhmOtp> response = new Response<NdhmOtp>();
 		response.setData(mobile);
 		return response;
 	}
@@ -91,10 +92,10 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_VERIFY_MOBILE_OTP)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_VERIFY_MOBILE_OTP, notes = PathProxy.NdhmUrls.GET_VERIFY_MOBILE_OTP)
-	public Response<String> verifyMobileOtp(@QueryParam("otp")String otp,@QueryParam("txnId")String txnId) {
+	public Response<NdhmOtp> verifyMobileOtp(@QueryParam("otp")String otp,@QueryParam("txnId")String txnId) {
 		
-		String mobile=ndhmService.verifyOtp(otp, txnId);
-		Response<String> response = new Response<String>();
+		NdhmOtp mobile=ndhmService.verifyOtp(otp, txnId);
+		Response<NdhmOtp> response = new Response<NdhmOtp>();
 		response.setData(mobile);
 		return response;
 
