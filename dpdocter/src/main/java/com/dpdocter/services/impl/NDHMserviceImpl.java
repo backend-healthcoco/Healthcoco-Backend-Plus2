@@ -1105,8 +1105,10 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			// ObjectMapper mapper = new ObjectMapper();
-			response.setData(output.toString());
+			 ObjectMapper mapper = new ObjectMapper();
+//			response.setData(output.toString());
+			 response.setData( mapper.readValue(output.toString(),NdhmOtp.class));
+
 
 //			response = output.toString();// mapper.readValue(output.toString(),Strin.class);
 			System.out.println("response" + output.toString());
@@ -1165,8 +1167,10 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			// ObjectMapper mapper = new ObjectMapper();
-			response.setData(output.toString());
+			 ObjectMapper mapper = new ObjectMapper();
+//			response.setData(output.toString());
+			 response.setData(mapper.readValue(output.toString(),NdhmOtp.class));
+
 
 //			response = output.toString();// mapper.readValue(output.toString(),Strin.class);
 			System.out.println("response" + output.toString());
@@ -1225,8 +1229,10 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			// ObjectMapper mapper = new ObjectMapper();
-			response.setData(output.toString());
+			 ObjectMapper mapper = new ObjectMapper();
+//			response.setData(output.toString());
+			 response.setData(mapper.readValue(output.toString(),NdhmOtp.class));
+
 
 //				response = output.toString();// mapper.readValue(output.toString(),Strin.class);
 			System.out.println("response" + output.toString());
@@ -1241,6 +1247,20 @@ public class NDHMserviceImpl implements NDHMservices {
 	@Override
 	public Response<Object> createHealthIdWithAadhaarOtp(CreateAadhaarRequest request) {
 		Response<Object> response = new Response<Object>();
+		JSONObject orderRequest = new JSONObject();
+
+		
+		orderRequest.put("email", request.getEmail());
+		orderRequest.put("firstName", request.getFirstName());
+		orderRequest.put("lastName", request.getLastName());
+		orderRequest.put("middleName", request.getMiddleName());
+		orderRequest.put("mobile", request.getMobile());
+		orderRequest.put("otp", request.getOtp());
+		orderRequest.put("password", request.getPassword());
+		orderRequest.put("restrictions", request.getRestrictions());
+		orderRequest.put("profilePhoto", request.getProfilePhoto());
+		orderRequest.put("txnId", request.getTxnId());
+		orderRequest.put("username", request.getUsername());
 
 		try {
 
@@ -1265,8 +1285,8 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestProperty("Accept-Language", "en-US");
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(request.toString());
-			System.out.println("Orderrequest:" + request.toString());
+			wr.writeBytes(orderRequest.toString());
+			System.out.println("Orderrequest:" + orderRequest.toString());
 			wr.flush();
 			wr.close();
 			con.disconnect();
@@ -1286,8 +1306,10 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			// ObjectMapper mapper = new ObjectMapper();
-			response.setData(output.toString());
+			 ObjectMapper mapper = new ObjectMapper();
+				response.setData(mapper.readValue(output.toString(),GetCardProfileResponse.class));
+
+//			response.setData(output.toString());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1342,8 +1364,10 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			// ObjectMapper mapper = new ObjectMapper();
-			response.setData(output.toString());
+			 ObjectMapper mapper = new ObjectMapper();
+//			response.setData(output.toString());
+				response.setData(mapper.readValue(output.toString(),GetCardProfileResponse.class));
+
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1399,7 +1423,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			System.out.println("response" + respons.toString());
 
-			response.setData(respons.toString());
+//			response.setData(respons.toString());
+			response.setData(mapper.readValue(output.toString(),GetCardProfileResponse.class));
+
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1455,7 +1481,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			System.out.println("response" + respons.toString());
 
-			response.setData(respons.toString());
+//			response.setData(respons.toString());
+			response.setData(mapper.readValue(output.toString(),GetCardProfileResponse.class));
+
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1511,7 +1539,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			System.out.println("response" + respons.toString());
 
-			response.setData(respons.toString());
+//			response.setData(respons.toString());
+			response.setData(mapper.readValue(output.toString(),GetCardProfileResponse.class));
+
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1525,6 +1555,24 @@ public class NDHMserviceImpl implements NDHMservices {
 	public Response<Object> createProfile(CreateProfileRequest request, String authToken) {
 		Response<Object> response = new Response<Object>();
 
+		JSONObject orderRequest = new JSONObject();
+
+		orderRequest.put("address", request.getAddress());
+		orderRequest.put("districtCode", request.getDistrictCode());
+		orderRequest.put("email", request.getEmail());
+		orderRequest.put("firstName", request.getFirstName());
+		orderRequest.put("pincode", request.getPincode());
+		orderRequest.put("healthId", request.getHealthId());
+		orderRequest.put("lastName", request.getLastName());
+		orderRequest.put("middleName", request.getMiddleName());
+		orderRequest.put("password", request.getPassword());
+		orderRequest.put("profilePhoto", request.getProfilePhoto());
+		orderRequest.put("stateCode", request.getStateCode());
+		orderRequest.put("subdistrictCode", request.getSubdistrictCode());
+		orderRequest.put("townCode", request.getTownCode());
+		orderRequest.put("villageCode", request.getVillageCode());
+		orderRequest.put("wardCode", request.getWardCode());
+		
 		try {
 
 			NdhmOauthResponse oauth = session();
@@ -1548,7 +1596,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			con.setRequestProperty("X-Token", "Bearer " + authToken);
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(request.toString());
+			wr.writeBytes(orderRequest.toString());
 			wr.flush();
 			wr.close();
 			con.disconnect();
@@ -1566,8 +1614,10 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			// ObjectMapper mapper = new ObjectMapper();
-			response.setData(output.toString());
+			 ObjectMapper mapper = new ObjectMapper();
+//			response.setData(output.toString());
+			response.setData(mapper.readValue(output.toString(),GetCardProfileResponse.class));
+
 
 		} catch (Exception e) {
 			e.printStackTrace();
