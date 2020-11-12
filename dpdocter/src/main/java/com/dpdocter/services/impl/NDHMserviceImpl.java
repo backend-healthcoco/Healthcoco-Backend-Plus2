@@ -1424,8 +1424,9 @@ public class NDHMserviceImpl implements NDHMservices {
 			System.out.println("response" + respons.toString());
 
 //			response.setData(respons.toString());
-			response.setData(mapper.readValue(output.toString(),GetCardProfileResponse.class));
-
+			//output.replaceFirst("new", "isNew");
+			//response.setData(mapper.readValue(output.toString(),GetCardProfileResponse.class));
+response.setData(respons);
 
 		} catch (Exception e) {
 			e.printStackTrace();

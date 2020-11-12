@@ -20,7 +20,7 @@ public class GetCardProfileResponse {
 	private String mobile;
 	private String monthOfBirth;
 	private String name;
-//private Boolean new;
+	private boolean isNew;
 	private String pincode;
 	private String profilePhoto;
 	private String stateCode;
@@ -277,4 +277,14 @@ public class GetCardProfileResponse {
 	private String wardCode;
 	private String wardName;
 	private String yearOfBirth;
+
+	public boolean isNew() {
+		return isNew;
+	}
+
+	public void setNew(boolean isNew) {
+		this.isNew = isNew;
+	}
+	
+	
 }
