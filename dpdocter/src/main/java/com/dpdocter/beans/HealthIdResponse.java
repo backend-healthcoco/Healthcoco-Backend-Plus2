@@ -45,7 +45,7 @@ public class HealthIdResponse {
 	
 	private String token;
 	
-	//private boolean new;
+	private Boolean isNew;
 	
 	private NdhmTags tags;
 	
@@ -229,6 +229,25 @@ public class HealthIdResponse {
 
 	public void setAuthMethods(List<NdhmAuthMethods> authMethods) {
 		this.authMethods = authMethods;
+	}
+
+	public Boolean getIsNew() {
+		return isNew;
+	}
+
+	public void setIsNew(Boolean isNew) {
+		this.isNew = isNew;
+	}
+
+	@Override
+	public String toString() {
+		return "HealthIdResponse [dayOfBirth=" + dayOfBirth + ", districtCode=" + districtCode + ", districtName="
+				+ districtName + ", email=" + email + ", firstName=" + firstName + ", gender=" + gender + ", healthId="
+				+ healthId + ", healthIdNumber=" + healthIdNumber + ", lastName=" + lastName + ", middleName="
+				+ middleName + ", monthOfBirth=" + monthOfBirth + ", name=" + name + ", kycPhoto=" + kycPhoto
+				+ ", mobile=" + mobile + ", stateName=" + stateName + ", profilePhoto=" + profilePhoto + ", stateCode="
+				+ stateCode + ", subdistrictCode=" + subdistrictCode + ", token=" + token + ", isNew=" + isNew
+				+ ", tags=" + tags + ", yearOfBirth=" + yearOfBirth + ", authMethods=" + authMethods + "]";
 	}
 	
 	

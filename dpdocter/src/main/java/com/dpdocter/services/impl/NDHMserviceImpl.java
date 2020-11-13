@@ -1,33 +1,32 @@
 package com.dpdocter.services.impl;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Base64;
 import java.util.List;
 
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.dpdocter.beans.NdhmMobileOtp;
+import com.dpdocter.beans.Districts;
+import com.dpdocter.beans.HealthIdRequest;
+import com.dpdocter.beans.HealthIdResponse;
+import com.dpdocter.beans.HealthIdSearch;
+import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.MobileTokenRequest;
+import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.NdhmOtp;
 import com.dpdocter.beans.NdhmStatus;
@@ -35,24 +34,10 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.CreateAadhaarRequest;
 import com.dpdocter.request.CreateProfileRequest;
-import com.dpdocter.request.SubscriptionRequest;
 import com.dpdocter.response.GetCardProfileResponse;
-import com.dpdocter.response.MessageResponse;
-import com.dpdocter.response.OrderReponse;
 import com.dpdocter.services.NDHMservices;
-import com.dpdocter.webservices.LoginApi;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.dpdocter.beans.Districts;
-import com.dpdocter.beans.HealthIdRequest;
-import com.dpdocter.beans.HealthIdResponse;
-import com.dpdocter.beans.HealthIdSearch;
-import com.dpdocter.beans.HealthIdSearchRequest;
-import com.dpdocter.beans.NDHMStates;
-import com.dpdocter.beans.NdhmMobileOtp;
-import com.dpdocter.beans.NdhmOauthResponse;
-import com.dpdocter.beans.SMSDeliveryReports;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import common.util.web.Response;
 
@@ -367,12 +352,15 @@ public class NDHMserviceImpl implements NDHMservices {
 				output.append((char) c);
 
 			}
-			System.out.println("response:" + output.toString());
+			
+			String outputString = output.toString();
+			outputString = outputString.replaceFirst("new", "isNew");
+			System.out.println("outputString:" + outputString);
 			ObjectMapper mapper = new ObjectMapper();
 
-			response = mapper.readValue(output.toString(), HealthIdResponse.class);
+			response = mapper.readValue(outputString, HealthIdResponse.class);
 
-			System.out.println("response" + output.toString());
+			System.out.println("output" + output.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
@@ -1385,24 +1373,19 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public ResponseEntity<InputStreamResource> profileGetCard(String authToken) {
-		Response<Object> response = new Response<Object>();
-
+	public ResponseEntity<byte[]> profileGetCard(String authToken) {
 		try {
 
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
 			String url = "https://healthidsbx.ndhm.gov.in/api/v1/account/getCard";
-//			JSONObject orderRequest = new JSONObject();
-//			orderRquest.put("txnId", txnId);
 
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
 			con.setDoOutput(true);
 
-			System.out.println(con.getErrorStream());
 			con.setDoInput(true);
 			// optional default is POST
 			con.setRequestMethod("GET");
@@ -1410,18 +1393,36 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			con.setRequestProperty("X-Token", "Bearer " + authToken);
 
-			int responseCode = con.getResponseCode();
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			
-			
-		
+			System.out.println("responseCode......"+con.getResponseCode()+"...."+con.getInputStream());			
+			String disposition = con.getHeaderField("Content-Disposition");
+            String fileName = "";
+            if (disposition != null) {
+                // extracts file name from header field
+                int index = disposition.indexOf("filename=");
+                if (index > 0) {
+                    fileName = disposition.substring(index + 10,
+                            disposition.length());
+                }	
+            }
+            
+            byte[] output = con.getInputStream().readAllBytes();
 
-		    return ResponseEntity
-		            .ok()
-		            .contentLength(con.getContentLength())
-		            .contentType(
-		                    MediaType.APPLICATION_PDF)
-		            .body(new InputStreamResource(con.getInputStream()));
+    	    HttpHeaders responseHeaders = new HttpHeaders();
+    	    responseHeaders.set("charset", "utf-8");
+    	    responseHeaders.setContentType(org.springframework.http.MediaType.valueOf("application/pdf"));
+    	    responseHeaders.setContentLength(output.length);
+    	    responseHeaders.set("Content-disposition", "attachment; filename="+fileName);
+
+    	    return new ResponseEntity<byte[]>(output, responseHeaders, HttpStatus.OK);
+
+//					    return ResponseEntity
+//					            .ok()
+//					            .header("Content-Disposition",
+//					                    "attachment; filename="+fileName)
+//					            .contentLength(con.getContentLength())
+//					            .contentType(
+//					                    MediaType.APPLICATION_OCTET_STREAM)
+//					            .body(new InputStreamResource(con.getInputStream()));
 //			String inputLine;
 //			/* response = new StringBuffer(); */
 //			StringBuffer respons = new StringBuffer();

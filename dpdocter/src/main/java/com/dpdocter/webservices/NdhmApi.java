@@ -1,7 +1,11 @@
 package com.dpdocter.webservices;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -10,49 +14,32 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.Districts;
-import com.dpdocter.beans.DoctorLoginPin;
 import com.dpdocter.beans.HealthIdRequest;
 import com.dpdocter.beans.HealthIdResponse;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NDHMStates;
-import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.NdhmOtp;
 import com.dpdocter.beans.NdhmStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.CreateAadhaarRequest;
 import com.dpdocter.request.CreateProfileRequest;
-import com.dpdocter.request.SubscriptionRequest;
-import com.dpdocter.services.LoginService;
 import com.dpdocter.services.NDHMservices;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import common.util.web.DPDoctorUtils;
+
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -342,18 +329,17 @@ public class NdhmApi {
 	}
 
 	// profile API
-@RequestMapping(method = RequestMethod.GET, produces = "application/pdf")
+//@RequestMapping(method = RequestMethod.GET, produces = "application/pdf")
 	@Path(value = PathProxy.NdhmUrls.GET_PROFILE_CARD)
 	@GET
-	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+//	@Produces("application/pdf")
+//	@RequestMapping(value = PathProxy.NdhmUrls.GET_PROFILE_CARD, method = RequestMethod.GET)
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_PROFILE_CARD, notes = PathProxy.NdhmUrls.GET_PROFILE_CARD)
-	public ResponseEntity<InputStreamResource> ProfileGetCard(@QueryParam(value = "authToken") String authToken) {
+	public ResponseEntity<byte[]> ProfileGetCard(@QueryParam(value = "authToken") String authToken, HttpServletResponse response) throws IOException {
 
 		if (authToken == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " authToken Required");
 		}
-		 
-		
 
 		return ndhmService.profileGetCard(authToken);
 	}
