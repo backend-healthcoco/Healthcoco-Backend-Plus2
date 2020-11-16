@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Patient {
@@ -78,6 +79,12 @@ public class Patient {
 	private String backendPatientId;
 
 	private String landlineNumber;
+	
+   private List<String> healthId;
+	
+	
+	private String ndhmToken;
+
 	
 	public String getLocalPatientName() {
 		return localPatientName;
@@ -365,6 +372,24 @@ public class Patient {
 
 	public void setLandlineNumber(String landlineNumber) {
 		this.landlineNumber = landlineNumber;
+	}
+	
+	
+
+	public List<String> getHealthId() {
+		return healthId;
+	}
+
+	public void setHealthId(List<String> healthId) {
+		this.healthId = healthId;
+	}
+
+	public String getNdhmToken() {
+		return ndhmToken;
+	}
+
+	public void setNdhmToken(String ndhmToken) {
+		this.ndhmToken = ndhmToken;
 	}
 
 	@Override

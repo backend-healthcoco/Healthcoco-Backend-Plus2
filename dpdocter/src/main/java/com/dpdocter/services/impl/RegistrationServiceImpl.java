@@ -582,6 +582,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 			patientCollection.setFirstName(request.getLocalPatientName());
 			patientCollection.setUserId(userCollection.getId());
 			patientCollection.setIsChild(request.getIsChild());
+
+			if (request.getNdhmToken() != null)
+				patientCollection.setNdhmToken(request.getNdhmToken());
+
+			if (request.getHealthId() != null)
+				patientCollection.setHealthId(request.getHealthId());
+
+			
 			if (request.getRegistrationDate() != null)
 				patientCollection.setRegistrationDate(request.getRegistrationDate());
 			else
@@ -887,6 +895,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 					if (request.getAddress() != null)
 						patientCollection.setAddress(request.getAddress());
+					
+					if (request.getNdhmToken() != null)
+						patientCollection.setNdhmToken(request.getNdhmToken());
+
+					if (request.getHealthId() != null)
+						patientCollection.setHealthId(request.getHealthId());
+
 
 					if (infoType != null && !infoType.isEmpty()) {
 						if (infoType.contains("PERSONALINFO"))

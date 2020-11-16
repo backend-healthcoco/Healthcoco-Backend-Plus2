@@ -87,6 +87,8 @@ public class PatientCollectionResponse {
 	
 	private List<String> healthId;
 	
+	private String ndhmToken;
+	
 	
 	public String getId() {
 		return id;
@@ -377,6 +379,15 @@ public class PatientCollectionResponse {
 	}
 	
 	
+	
+
+	public String getNdhmToken() {
+		return ndhmToken;
+	}
+
+	public void setNdhmToken(String ndhmToken) {
+		this.ndhmToken = ndhmToken;
+	}
 
 	public List<String> getHealthId() {
 		return healthId;
