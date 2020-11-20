@@ -588,6 +588,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			if (request.getHealthId() != null)
 				patientCollection.setHealthId(request.getHealthId());
+			
+			if (request.getProfileToken() != null)
+				patientCollection.setProfileToken(request.getProfileToken());
 
 			
 			if (request.getRegistrationDate() != null)
@@ -901,6 +904,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 					if (request.getHealthId() != null)
 						patientCollection.setHealthId(request.getHealthId());
+					
+					if (request.getProfileToken() != null)
+						patientCollection.setProfileToken(request.getProfileToken());
+
 
 
 					if (infoType != null && !infoType.isEmpty()) {

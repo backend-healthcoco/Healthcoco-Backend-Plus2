@@ -84,6 +84,9 @@ public class Patient {
 	
 	
 	private String ndhmToken;
+	
+	private String profileToken;
+
 
 	
 	public String getLocalPatientName() {
@@ -390,6 +393,16 @@ public class Patient {
 
 	public void setNdhmToken(String ndhmToken) {
 		this.ndhmToken = ndhmToken;
+	}
+	
+	
+
+	public String getProfileToken() {
+		return profileToken;
+	}
+
+	public void setProfileToken(String profileToken) {
+		this.profileToken = profileToken;
 	}
 
 	@Override

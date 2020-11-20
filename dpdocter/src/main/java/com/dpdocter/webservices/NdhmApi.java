@@ -36,6 +36,8 @@ import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmOtp;
 import com.dpdocter.beans.NdhmOtpStatus;
 import com.dpdocter.beans.NdhmStatus;
+import com.dpdocter.beans.OnAuthConfirmRequest;
+import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -425,4 +427,49 @@ public class NdhmApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.NdhmUrls.AUTH_INIT)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.AUTH_INIT, notes = PathProxy.NdhmUrls.AUTH_INIT)
+	public Response<Boolean> authInit(@RequestBody FetchModesRequest request) {
+
+		Boolean mobile = ndhmService.authInit(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_AUTH_INIT_HIP)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_AUTH_INIT_HIP, notes = PathProxy.NdhmUrls.GET_AUTH_INIT_HIP)
+	public Response<OnAuthInitRequest> getAuthInit(@QueryParam ("requestId")String requestId) {
+
+		OnAuthInitRequest mobile = ndhmService.getOnAuthInit(requestId);
+		Response<OnAuthInitRequest> response = new Response<OnAuthInitRequest>();
+		response.setData(mobile);
+		return response;
+	}
+
+	@Path(value = PathProxy.NdhmUrls.AUTH_CONFIRM)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.AUTH_CONFIRM, notes = PathProxy.NdhmUrls.AUTH_CONFIRM)
+	public Response<Boolean> authConfirm(@RequestBody FetchModesRequest request) {
+
+		Boolean mobile = ndhmService.authInit(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_AUTH_CONFIRM_HIP)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_AUTH_CONFIRM_HIP, notes = PathProxy.NdhmUrls.GET_AUTH_CONFIRM_HIP)
+	public Response<OnAuthConfirmRequest> getAuthConfirm(@QueryParam ("requestId")String requestId) {
+
+		OnAuthConfirmRequest mobile = ndhmService.getOnAuthConfirm(requestId);
+		Response<OnAuthConfirmRequest> response = new Response<OnAuthConfirmRequest>();
+		response.setData(mobile);
+		return response;
+	}
+
+	
 }

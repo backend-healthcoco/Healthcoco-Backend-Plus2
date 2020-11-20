@@ -1,5 +1,7 @@
 package com.dpdocter.webservices;
 
+import java.io.IOException;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -8,11 +10,16 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dpdocter.beans.FetchModesRequest;
+import com.dpdocter.beans.OnAuthConfirmRequest;
+import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.services.NDHMservices;
 
@@ -35,9 +42,40 @@ public class NDHMPushBackApi {
 	@Path(value = PathProxy.NdhmPushUrls.ON_FETCH_MODES)
 	@POST
 	@ApiOperation(value =PathProxy.NdhmPushUrls.ON_FETCH_MODES, notes = PathProxy.NdhmPushUrls.ON_FETCH_MODES)
-	public Response<Boolean> fetchModes(@RequestBody OnFetchModesRequest request) {
+	public Response<Boolean> fetchModes(String request) throws JsonParseException, JsonMappingException, IOException {
 
-		Boolean mobile = ndhmService.onFetchModes(request);
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		OnFetchModesRequest request1= mapper.readValue(request,OnFetchModesRequest.class);
+		Boolean mobile = ndhmService.onFetchModes(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmPushUrls.ON_AUTH_INIT)
+	@POST
+	@ApiOperation(value =PathProxy.NdhmPushUrls.ON_AUTH_INIT, notes = PathProxy.NdhmPushUrls.ON_AUTH_INIT)
+	public Response<Boolean> authInit(String request) throws JsonParseException, JsonMappingException, IOException {
+
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		OnAuthInitRequest request1= mapper.readValue(request,OnAuthInitRequest.class);
+		Boolean mobile = ndhmService.onAuthinit(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmPushUrls.ON_AUTH_CONFIRM)
+	@POST
+	@ApiOperation(value =PathProxy.NdhmPushUrls.ON_AUTH_CONFIRM, notes = PathProxy.NdhmPushUrls.ON_AUTH_CONFIRM)
+	public Response<Boolean> authConfirm(String request) throws JsonParseException, JsonMappingException, IOException {
+
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		OnAuthConfirmRequest request1= mapper.readValue(request,OnAuthConfirmRequest.class);
+		Boolean mobile = ndhmService.onAuthConfirm(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;

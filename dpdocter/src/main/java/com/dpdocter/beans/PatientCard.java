@@ -100,6 +100,8 @@ public class PatientCard extends GenericCollection {
 	private String backendPatientId;
 	
 	private String ndhmToken;
+	
+	private String profileToken;
 
 	public PatientCollection getPatient() {
 		return patient;
@@ -551,6 +553,16 @@ public class PatientCard extends GenericCollection {
 
 	public void setBackendPatientId(String backendPatientId) {
 		this.backendPatientId = backendPatientId;
+	}
+	
+	
+
+	public String getProfileToken() {
+		return profileToken;
+	}
+
+	public void setProfileToken(String profileToken) {
+		this.profileToken = profileToken;
 	}
 
 	@Override

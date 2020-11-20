@@ -192,6 +192,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							.append("profession", "$patient.profession").append("relations", "$patient.relations")
 							.append("consultantDoctorIds", "$patient.consultantDoctorIds")
 							.append("registrationDate", "$patient.registrationDate")
+							.append("healthId", "$healthId").append("ndhmToken", "$ndhmToken").append("profileToken", "$profileToken")
 							.append("createdTime", "$patient.createdTime").append("updatedTime", "$patient.updatedTime")
 							.append("createdBy", "$patient.createdBy").append("visitedTime", "$visitedTime")));
 
@@ -226,6 +227,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+							.append("healthId", new BasicDBObject("$first", "$healthId"))
+							.append("ndhmToken", new BasicDBObject("$first", "$ndhmToken"))
+							.append("profileToken", new BasicDBObject("$first", "$profileToken"))
+
 							.append("visitedTime", new BasicDBObject("$first", "$visitedTime"))));
 
 			Aggregation aggregation = null;

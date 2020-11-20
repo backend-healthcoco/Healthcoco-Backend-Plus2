@@ -23,7 +23,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.dpdocter.beans.AuthInitRequest;
+import com.dpdocter.beans.AuthConfirmRequest;
+
 import com.dpdocter.beans.Districts;
 import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.HealthIdRequest;
@@ -36,11 +37,17 @@ import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.NdhmOtp;
 import com.dpdocter.beans.NdhmOtpStatus;
 import com.dpdocter.beans.NdhmStatus;
+import com.dpdocter.beans.OnAuthConfirmCollection;
+import com.dpdocter.beans.OnAuthConfirmRequest;
+import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
+import com.dpdocter.collections.OnAuthInitCollection;
 import com.dpdocter.collections.OnFetchModeCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.OnAuthConfirmRepository;
+import com.dpdocter.repository.OnAuthInitRepository;
 import com.dpdocter.repository.OnFetchModeRepository;
 import com.dpdocter.request.CreateAadhaarRequest;
 import com.dpdocter.request.CreateProfileRequest;
@@ -64,6 +71,14 @@ public class NDHMserviceImpl implements NDHMservices {
 	
 	@Autowired
 	private OnFetchModeRepository onFetchModeRepository;
+	
+	@Autowired
+	private OnAuthInitRepository onAuthInitRepository;
+	
+	@Autowired
+	private OnAuthConfirmRepository onAuthConfirmRepository;
+	
+	
 
 	public NdhmOauthResponse session() {
 		NdhmOauthResponse response = null;
@@ -1782,7 +1797,7 @@ public class NDHMserviceImpl implements NDHMservices {
 	public Boolean fetchModes(FetchModesRequest request) {
 		Boolean response=false;
 		try {
-			
+			System.out.println("requestId"+request.getRequestId());
 			JSONObject orderRequest = new JSONObject();
 
 			JSONObject orderRequest1 = new JSONObject();
@@ -1799,7 +1814,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimeStamp());
-			orderRequest.put("query",orderRequest2 );
+			orderRequest.put("query",orderRequest1 );
 			
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
@@ -1905,6 +1920,7 @@ public class NDHMserviceImpl implements NDHMservices {
 		Boolean response=false;
 		try {
 			
+			System.out.println("requestId"+request.getRequestId());
 			JSONObject orderRequest = new JSONObject();
 
 			JSONObject orderRequest1 = new JSONObject();
@@ -1922,7 +1938,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimeStamp());
-			orderRequest.put("query",orderRequest2 );
+			orderRequest.put("query",orderRequest1 );
 			
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
@@ -1978,6 +1994,174 @@ public class NDHMserviceImpl implements NDHMservices {
 		return response;
 	}
 	
-	
+	@Override
+	public Boolean onAuthinit(OnAuthInitRequest request) {
+		Boolean response=false;
+		try {
+			
+			OnAuthInitCollection collection=new OnAuthInitCollection();
 
+		BeanUtil.map(request, collection);
+		collection.setCreatedTime(new Date());
+		onAuthInitRepository.save(collection);
+			response=true;
+		}
+		
+		
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+	
+	
+	@Override
+	public OnAuthInitRequest getOnAuthInit(String requestId)
+	{
+		OnAuthInitRequest response=null;
+		try {
+			OnAuthInitCollection  collection=onAuthInitRepository.findByRespRequestId(requestId);
+		if(collection !=null)
+		{
+			BeanUtil.map(collection, response);
+		}
+		
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+		
+	}
+
+	
+	
+	@Override
+	public Boolean authConfirm(AuthConfirmRequest request) {
+		Boolean response=false;
+		try {
+			
+			System.out.println("requestId"+request.getRequestId());
+			JSONObject orderRequest = new JSONObject();
+
+			JSONObject orderRequest1 = new JSONObject();
+			JSONObject orderRequest2 = new JSONObject();	
+			
+			orderRequest1.put("authCode", request.getCredential().getAuthCode());
+			orderRequest1.put("demographic", request.getCredential().getDemographic());
+			orderRequest1.put("name", request.getCredential().getName());
+			orderRequest1.put("gender", request.getCredential().getGender());
+			orderRequest1.put("dateOfBirth", request.getCredential().getDateOfBirth());
+			orderRequest1.put("identifier", orderRequest2);
+			
+				
+			orderRequest2.put("type", request.getCredential().getIdentifier().getType());
+			orderRequest2.put("value", request.getCredential().getIdentifier().getValue());
+			
+			
+			orderRequest.put("requestId", request.getRequestId());
+			orderRequest.put("timestamp", request.getTimestamp());
+			orderRequest.put("transactionId", request.getTransactionId());
+			orderRequest.put("credential",orderRequest1 );
+			
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://dev.ndhm.gov.in/gateway/v0.5/users/auth/init";
+//			JSONObject orderRequest = new JSONObject();
+//			orderRquest.put("txnId", txnId);
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID","sbx" );
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if(responseCode ==202)
+				response=true;
+			
+		}
+		
+		
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+	
+	@Override
+	public Boolean onAuthConfirm(OnAuthConfirmRequest request) {
+		Boolean response=false;
+		try {
+			
+			OnAuthConfirmCollection collection=new OnAuthConfirmCollection();
+
+		BeanUtil.map(request, collection);
+		collection.setCreatedTime(new Date());
+		onAuthConfirmRepository.save(collection);
+			response=true;
+		}
+		
+		
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public OnAuthConfirmRequest getOnAuthConfirm(String requestId)
+	{
+		OnAuthConfirmRequest response=null;
+		try {
+			OnAuthConfirmCollection  collection=onAuthConfirmRepository.findByRespRequestId(requestId);
+		if(collection !=null)
+		{
+			BeanUtil.map(collection, response);
+		}
+		
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+		
+	}
+	
+	
 }

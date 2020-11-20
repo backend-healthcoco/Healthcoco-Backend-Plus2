@@ -110,6 +110,9 @@ public class PatientRegistrationRequest {
 	private List<String> healthId;
 	
 	private String ndhmToken;
+	
+	private String profileToken;
+
 
 	public String getRecordId() {
 		return recordId;
@@ -497,6 +500,14 @@ public class PatientRegistrationRequest {
 	}
 	
 	
+
+	public String getProfileToken() {
+		return profileToken;
+	}
+
+	public void setProfileToken(String profileToken) {
+		this.profileToken = profileToken;
+	}
 
 	public String getNdhmToken() {
 		return ndhmToken;

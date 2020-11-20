@@ -61,6 +61,8 @@ public class PatientCard extends GenericCollection {
 	private List<String> healthId;
 	
 	private String ndhmToken;
+	
+	private String profileToken;
 
 
 	public User getUser() {
@@ -259,6 +261,16 @@ public class PatientCard extends GenericCollection {
 
 	public void setHealthId(List<String> healthId) {
 		this.healthId = healthId;
+	}
+	
+	
+
+	public String getProfileToken() {
+		return profileToken;
+	}
+
+	public void setProfileToken(String profileToken) {
+		this.profileToken = profileToken;
 	}
 
 	@Override

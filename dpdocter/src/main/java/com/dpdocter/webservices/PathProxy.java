@@ -2478,6 +2478,13 @@ public interface PathProxy {
 		
 		public static final String GET_SEARCH_BY_MOBILE_NUMBER="/searchBymobileNumber/get";
 		
+		public static final String AUTH_INIT="/authInit";
+		
+		public static final String GET_AUTH_INIT_HIP="/authInit/get";
+		
+		public static final String AUTH_CONFIRM="/authConfirm";
+		
+		public static final String GET_AUTH_CONFIRM_HIP="/authConfirm/get";
 		
 		// Authentication
 		public static final String GET_AUTH_INIT = "/auth/init";
@@ -2509,5 +2516,9 @@ public interface PathProxy {
 	public interface NdhmPushUrls{
 		
 		public static final String ON_FETCH_MODES="/v0.5/users/auth/on-fetch-modes";
+		
+		public static final String ON_AUTH_INIT="/v0.5/users/auth/on-init";
+		
+		public static final String ON_AUTH_CONFIRM="/v0.5/users/auth/on-confirm";
 	}
 }

@@ -7,6 +7,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 
+import com.dpdocter.beans.AuthConfirmRequest;
 import com.dpdocter.beans.Districts;
 import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.HealthIdRequest;
@@ -16,6 +17,8 @@ import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.NdhmOtp;
 import com.dpdocter.beans.NdhmOtpStatus;
 import com.dpdocter.beans.NdhmStatus;
+import com.dpdocter.beans.OnAuthConfirmRequest;
+import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
@@ -91,6 +94,16 @@ public interface NDHMservices {
 	OnFetchModesRequest getFetchModes(String requestId);
 
 	Boolean authInit(FetchModesRequest request);
+
+	Boolean authConfirm(AuthConfirmRequest request);
+
+	Boolean onAuthinit(OnAuthInitRequest request);
+
+	OnAuthInitRequest getOnAuthInit(String requestId);
+
+	Boolean onAuthConfirm(OnAuthConfirmRequest request);
+
+	OnAuthConfirmRequest getOnAuthConfirm(String requestId);
 	
 	
 	
