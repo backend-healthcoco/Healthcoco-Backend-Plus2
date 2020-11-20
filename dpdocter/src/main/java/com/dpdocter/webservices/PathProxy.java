@@ -2464,6 +2464,10 @@ public interface PathProxy {
 		
 		public static final String CREATE_HEALTH_ID="/createHealthId";
 		
+		public static final String FETCH_MODES="/fetchModes";
+		
+		public static final String GET_FETCH_MODES="/fetchModes/get";
+		
 		public static final String GET_LIST_STATES="/states/get";
 		
 		public static final String GET_LIST_DISTRICTS="/districts/get";
@@ -2500,5 +2504,10 @@ public interface PathProxy {
 		public static final String RESET_PROFILE_PASSWORD = "/profile/account/resetPassowrd";
 
 	}
-
+	
+	public static final String NDHM_PUSH_BACK_BASE_URL =  "/ndhmPushBack";
+	public interface NdhmPushUrls{
+		
+		public static final String ON_FETCH_MODES="/v0.5/users/auth/on-fetch-modes";
+	}
 }

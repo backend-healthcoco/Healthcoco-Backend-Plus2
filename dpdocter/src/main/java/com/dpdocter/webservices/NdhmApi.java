@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dpdocter.beans.Districts;
+import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.HealthIdRequest;
 import com.dpdocter.beans.HealthIdResponse;
 import com.dpdocter.beans.HealthIdSearch;
@@ -33,7 +34,9 @@ import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmOtp;
+import com.dpdocter.beans.NdhmOtpStatus;
 import com.dpdocter.beans.NdhmStatus;
+import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.CreateAadhaarRequest;
@@ -241,10 +244,10 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_RESEND_MOBILE_OTP)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_RESEND_MOBILE_OTP, notes = PathProxy.NdhmUrls.GET_RESEND_MOBILE_OTP)
-	public Response<NdhmStatus> resendMobileOtp(@QueryParam("txnId") String txnId) {
+	public Response<NdhmOtpStatus> resendMobileOtp(@QueryParam("txnId") String txnId) {
 
-		NdhmStatus mobile = ndhmService.resendOtp(txnId);
-		Response<NdhmStatus> response = new Response<NdhmStatus>();
+		NdhmOtpStatus mobile = ndhmService.resendOtp(txnId);
+		Response<NdhmOtpStatus> response = new Response<NdhmOtpStatus>();
 		response.setData(mobile);
 		return response;
 	}
@@ -259,6 +262,9 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
+	
+	
+	
 
 	@Path(value = PathProxy.NdhmUrls.GET_LIST_STATES)
 	@GET
@@ -394,6 +400,28 @@ public class NdhmApi {
 		}
 		Response<Object> response = ndhmService.DeleteProfileDetail(authToken);
 
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.FETCH_MODES)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.FETCH_MODES, notes = PathProxy.NdhmUrls.FETCH_MODES)
+	public Response<Boolean> fetchModes(@RequestBody FetchModesRequest request) {
+
+		Boolean mobile = ndhmService.fetchModes(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_FETCH_MODES)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_FETCH_MODES, notes = PathProxy.NdhmUrls.GET_FETCH_MODES)
+	public Response<OnFetchModesRequest> getfetchModes(@QueryParam ("requestId")String requestId) {
+
+		OnFetchModesRequest mobile = ndhmService.getFetchModes(requestId);
+		Response<OnFetchModesRequest> response = new Response<OnFetchModesRequest>();
+		response.setData(mobile);
 		return response;
 	}
 

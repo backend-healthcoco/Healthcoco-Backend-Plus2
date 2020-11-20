@@ -20,13 +20,24 @@ public class GetCardProfileResponse {
 	private String mobile;
 	private String monthOfBirth;
 	private String name;
-	private boolean isNew;
+	private Boolean isNew;
 	private String pincode;
 	private String profilePhoto;
 	private String stateCode;
 	private String stateName;
 	private String subDistrictCode;
 	private String subdistrictName;
+	private boolean kycVerified;
+	private AdditionalProp tags;
+
+	private String townCode;
+	private String townName;
+	private String villageCode;
+	private String villageName;
+	private String wardCode;
+	private String wardName;
+	private String yearOfBirth;
+	private String token;
 
 	public String getAddress() {
 		return address;
@@ -268,23 +279,31 @@ public class GetCardProfileResponse {
 		this.yearOfBirth = yearOfBirth;
 	}
 
-	private AdditionalProp tags;
+	public boolean isKycVerified() {
+		return kycVerified;
+	}
 
-	private String townCode;
-	private String townName;
-	private String villageCode;
-	private String villageName;
-	private String wardCode;
-	private String wardName;
-	private String yearOfBirth;
+	public void setKycVerified(boolean kycVerified) {
+		this.kycVerified = kycVerified;
+	}
 
-	public boolean isNew() {
+	public Boolean getIsNew() {
 		return isNew;
 	}
 
-	public void setNew(boolean isNew) {
+	public void setIsNew(Boolean isNew) {
 		this.isNew = isNew;
 	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
+	
 	
 	
 }

@@ -8,12 +8,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 
 import com.dpdocter.beans.Districts;
+import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.HealthIdRequest;
 import com.dpdocter.beans.HealthIdResponse;
 import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.NdhmOtp;
+import com.dpdocter.beans.NdhmOtpStatus;
 import com.dpdocter.beans.NdhmStatus;
+import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.MobileTokenRequest;
@@ -30,7 +33,7 @@ public interface NDHMservices {
 
 	NdhmOtp verifyOtp(String otp, String txnId);
 
-	NdhmStatus resendOtp(String txnId);
+	NdhmOtpStatus resendOtp(String txnId);
 
 	HealthIdResponse createHealthId(HealthIdRequest request);
 
@@ -80,5 +83,17 @@ public interface NDHMservices {
 	Response<Object> createProfile(CreateProfileRequest request, String authToken);
 
 	Response<Object> DeleteProfileDetail(String authToken);
+	
+	Boolean fetchModes(FetchModesRequest request);
+
+	Boolean onFetchModes(OnFetchModesRequest request);
+
+	OnFetchModesRequest getFetchModes(String requestId);
+
+	Boolean authInit(FetchModesRequest request);
+	
+	
+	
+	
 
 }

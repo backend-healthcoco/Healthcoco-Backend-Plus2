@@ -59,6 +59,8 @@ public class PatientCard extends GenericCollection {
 	private String adhaarId;	
 	
 	private List<String> healthId;
+	
+	private String ndhmToken;
 
 
 	public User getUser() {
@@ -242,6 +244,14 @@ public class PatientCard extends GenericCollection {
 	}
 	
 	
+
+	public String getNdhmToken() {
+		return ndhmToken;
+	}
+
+	public void setNdhmToken(String ndhmToken) {
+		this.ndhmToken = ndhmToken;
+	}
 
 	public List<String> getHealthId() {
 		return healthId;

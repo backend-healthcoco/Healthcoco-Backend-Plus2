@@ -236,6 +236,7 @@ public class ContactsServiceImpl implements ContactsService {
 							.append("colorCode", "$user.colorCode").append("user", "$user")
 							.append("address", "$address").append("patientId", "$userId")
 							.append("profession", "$profession").append("relations", "$relations")
+							.append("healthId", "$healthId").append("ndhmToken", "$ndhmToken")
 							.append("consultantDoctorIds", "$consultantDoctorIds").append("doctorId", "$doctorId")
 							.append("registrationDate", "$registrationDate").append("createdTime", "$createdTime")
 							.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")));
@@ -273,6 +274,8 @@ public class ContactsServiceImpl implements ContactsService {
 									new BasicDBObject("$first", "$insensitiveLocalPatientName"))
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+							.append("healthId", new BasicDBObject("$first", "$healthId"))
+							.append("ndhmToken", new BasicDBObject("$first", "$ndhmToken"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
 			if (size > 0)

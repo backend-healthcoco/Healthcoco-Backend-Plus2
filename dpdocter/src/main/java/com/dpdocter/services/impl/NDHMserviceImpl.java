@@ -6,11 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -20,7 +23,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.AuthInitRequest;
 import com.dpdocter.beans.Districts;
+import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.HealthIdRequest;
 import com.dpdocter.beans.HealthIdResponse;
 import com.dpdocter.beans.HealthIdSearch;
@@ -29,9 +34,14 @@ import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.NdhmOtp;
+import com.dpdocter.beans.NdhmOtpStatus;
 import com.dpdocter.beans.NdhmStatus;
+import com.dpdocter.beans.OnFetchModesRequest;
+import com.dpdocter.collections.OnFetchModeCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.OnFetchModeRepository;
 import com.dpdocter.request.CreateAadhaarRequest;
 import com.dpdocter.request.CreateProfileRequest;
 import com.dpdocter.response.GetCardProfileResponse;
@@ -51,6 +61,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Value(value = "${ndhm.clientSecret}")
 	private String NDHM_CLIENT_SECRET;
+	
+	@Autowired
+	private OnFetchModeRepository onFetchModeRepository;
 
 	public NdhmOauthResponse session() {
 		NdhmOauthResponse response = null;
@@ -223,8 +236,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public NdhmStatus resendOtp(String txnId) {
-		NdhmStatus response = null;
+	public NdhmOtpStatus resendOtp(String txnId) {
+		NdhmOtpStatus response = new NdhmOtpStatus();
 		try {
 
 			NdhmOauthResponse oauth = session();
@@ -270,8 +283,13 @@ public class NDHMserviceImpl implements NDHMservices {
 			}
 			System.out.println("response:" + output.toString());
 			 ObjectMapper mapper = new ObjectMapper();
-
-			response = mapper.readValue(output.toString(),NdhmStatus.class);
+			 int responseCode=con.getResponseCode(); 
+			 if(responseCode ==200)
+			 {
+				 response.setStatus(true);
+			 }
+			
+			//response = mapper.readValue(output.toString(),NdhmOtpStatus.class);
 			System.out.println("response" + output.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1066,7 +1084,8 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://healthidsbx.ndhm.gov.in/api/v1/registration/mobile/generateMobileOTP";
+			String url = "https://healthidsbx.ndhm.gov.in/api/v1/registration/aadhaar/generateMobileOTP";
+					//"https://healthidsbx.ndhm.gov.in/api/v1/registration/mobile/generateMobileOTP";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("mobile", mobile);
 			orderRequest.put("txnId", txnId);
@@ -1300,9 +1319,12 @@ public class NDHMserviceImpl implements NDHMservices {
 				output.append((char) c);
 
 			}
-			System.out.println("response:" + output.toString());
+			String respons=output.toString();
+			respons = respons.replaceFirst("new", "isNew");
+			System.out.println("outputString:" + respons);
+		
 			 ObjectMapper mapper = new ObjectMapper();
-				response.setData(mapper.readValue(output.toString(),GetCardProfileResponse.class));
+				response.setData(mapper.readValue(respons,GetCardProfileResponse.class));
 
 //			response.setData(output.toString());
 
@@ -1609,7 +1631,8 @@ public class NDHMserviceImpl implements NDHMservices {
 //						response = mapper.readValue(output,type);
 
 			System.out.println("response" + respons.toString());
-
+			output = output.replaceFirst("new", "isNew");
+			System.out.println("outputString:" + output);
 //			response.setData(respons.toString());
 			response.setData(mapper.readValue(output.toString(),GetCardProfileResponse.class));
 
@@ -1754,5 +1777,207 @@ public class NDHMserviceImpl implements NDHMservices {
 		}
 		return response;
 	}
+
+	@Override
+	public Boolean fetchModes(FetchModesRequest request) {
+		Boolean response=false;
+		try {
+			
+			JSONObject orderRequest = new JSONObject();
+
+			JSONObject orderRequest1 = new JSONObject();
+			JSONObject orderRequest2 = new JSONObject();	
+			
+			orderRequest1.put("id", request.getQuery().getId());
+			orderRequest1.put("purpose", request.getQuery().getPurpose());
+			orderRequest1.put("requester", orderRequest2);
+			
+				
+			orderRequest2.put("id", request.getQuery().getRequester().getId());
+			orderRequest2.put("type", request.getQuery().getRequester().getType());
+			
+			
+			orderRequest.put("requestId", request.getRequestId());
+			orderRequest.put("timestamp", request.getTimeStamp());
+			orderRequest.put("query",orderRequest2 );
+			
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://dev.ndhm.gov.in/gateway/v0.5/users/auth/fetch-modes";
+//			JSONObject orderRequest = new JSONObject();
+//			orderRquest.put("txnId", txnId);
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID","sbx" );
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if(responseCode ==202)
+				response=true;
+			
+		}
+		
+		
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+	
+	
+	
+	@Override
+	public Boolean onFetchModes(OnFetchModesRequest request) {
+		Boolean response=false;
+		try {
+			
+		OnFetchModeCollection collection=new OnFetchModeCollection();
+
+		BeanUtil.map(request, collection);
+		collection.setCreatedTime(new Date());
+		onFetchModeRepository.save(collection);
+			response=true;
+		}
+		
+		
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+	
+	@Override
+	public OnFetchModesRequest getFetchModes(String requestId)
+	{
+		OnFetchModesRequest response=null;
+		try {
+			OnFetchModeCollection collection=onFetchModeRepository.findByRespRequestId(requestId);
+		if(collection !=null)
+		{
+			BeanUtil.map(collection, response);
+		}
+		
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+		
+	}
+	
+	
+	@Override
+	public Boolean authInit(FetchModesRequest request) {
+		Boolean response=false;
+		try {
+			
+			JSONObject orderRequest = new JSONObject();
+
+			JSONObject orderRequest1 = new JSONObject();
+			JSONObject orderRequest2 = new JSONObject();	
+			
+			orderRequest1.put("id", request.getQuery().getId());
+			orderRequest1.put("purpose", request.getQuery().getPurpose());
+			orderRequest1.put("authMode", request.getQuery().getAuthMode());
+			orderRequest1.put("requester", orderRequest2);
+			
+				
+			orderRequest2.put("id", request.getQuery().getRequester().getId());
+			orderRequest2.put("type", request.getQuery().getRequester().getType());
+			
+			
+			orderRequest.put("requestId", request.getRequestId());
+			orderRequest.put("timestamp", request.getTimeStamp());
+			orderRequest.put("query",orderRequest2 );
+			
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://dev.ndhm.gov.in/gateway/v0.5/users/auth/init";
+//			JSONObject orderRequest = new JSONObject();
+//			orderRquest.put("txnId", txnId);
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID","sbx" );
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if(responseCode ==202)
+				response=true;
+			
+		}
+		
+		
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+	
+	
 
 }
