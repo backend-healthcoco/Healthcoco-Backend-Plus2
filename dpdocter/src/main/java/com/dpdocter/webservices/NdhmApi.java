@@ -25,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.dpdocter.beans.AuthConfirmRequest;
 import com.dpdocter.beans.Districts;
 import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.HealthIdRequest;
@@ -452,9 +453,9 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.AUTH_CONFIRM)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmUrls.AUTH_CONFIRM, notes = PathProxy.NdhmUrls.AUTH_CONFIRM)
-	public Response<Boolean> authConfirm(@RequestBody FetchModesRequest request) {
+	public Response<Boolean> authConfirm(@RequestBody AuthConfirmRequest request) {
 
-		Boolean mobile = ndhmService.authInit(request);
+		Boolean mobile = ndhmService.authConfirm(request);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;

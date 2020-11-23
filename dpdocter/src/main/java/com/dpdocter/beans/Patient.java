@@ -85,7 +85,7 @@ public class Patient {
 	
 	private String ndhmToken;
 	
-	private String profileToken;
+	private String linkToken;
 
 
 	
@@ -396,13 +396,12 @@ public class Patient {
 	}
 	
 	
-
-	public String getProfileToken() {
-		return profileToken;
+	public String getLinkToken() {
+		return linkToken;
 	}
 
-	public void setProfileToken(String profileToken) {
-		this.profileToken = profileToken;
+	public void setLinkToken(String linkToken) {
+		this.linkToken = linkToken;
 	}
 
 	@Override

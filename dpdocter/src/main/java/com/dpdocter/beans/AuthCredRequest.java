@@ -4,15 +4,9 @@ public class AuthCredRequest {
 
 	private String authCode;
 	
-	private String demographic;
+	private AuthDemographic demographic;
 	
-	private String name;
 	
-	private String gender;
-	
-	private String dateOfBirth;
-	
-	private AuthConfirmIdentifier identifier;
 
 	public String getAuthCode() {
 		return authCode;
@@ -22,47 +16,14 @@ public class AuthCredRequest {
 		this.authCode = authCode;
 	}
 
-	public String getDemographic() {
+	public AuthDemographic getDemographic() {
 		return demographic;
 	}
 
-	public void setDemographic(String demographic) {
+	public void setDemographic(AuthDemographic demographic) {
 		this.demographic = demographic;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-
-	public String getDateOfBirth() {
-		return dateOfBirth;
-	}
-
-	public void setDateOfBirth(String dateOfBirth) {
-		this.dateOfBirth = dateOfBirth;
-	}
-
-	public AuthConfirmIdentifier getIdentifier() {
-		return identifier;
-	}
-
-	public void setIdentifier(AuthConfirmIdentifier identifier) {
-		this.identifier = identifier;
-	}
-	
-	
-	
+		
 	
 }

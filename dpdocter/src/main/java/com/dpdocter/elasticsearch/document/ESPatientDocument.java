@@ -111,6 +111,15 @@ public class ESPatientDocument {
 
 	@Field(type = FieldType.Text)
 	private String motherName;
+	
+	@Field(type = FieldType.Text)
+	private List<String> healthId;
+	
+	@Field(type = FieldType.Text)
+	private String ndhmToken;
+	
+	@Field(type = FieldType.Text)
+	private String linkToken;
 
 	public String getId() {
 		return id;
@@ -376,6 +385,32 @@ public class ESPatientDocument {
 
 	public void setMotherName(String motherName) {
 		this.motherName = motherName;
+	}
+	
+	
+
+	public List<String> getHealthId() {
+		return healthId;
+	}
+
+	public void setHealthId(List<String> healthId) {
+		this.healthId = healthId;
+	}
+
+	public String getNdhmToken() {
+		return ndhmToken;
+	}
+
+	public void setNdhmToken(String ndhmToken) {
+		this.ndhmToken = ndhmToken;
+	}
+
+	public String getLinkToken() {
+		return linkToken;
+	}
+
+	public void setLinkToken(String linkToken) {
+		this.linkToken = linkToken;
 	}
 
 	@Override

@@ -1902,6 +1902,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			OnFetchModeCollection collection=onFetchModeRepository.findByRespRequestId(requestId);
 		if(collection !=null)
 		{
+			response=new OnFetchModesRequest();
 			BeanUtil.map(collection, response);
 		}
 		
@@ -2025,6 +2026,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			OnAuthInitCollection  collection=onAuthInitRepository.findByRespRequestId(requestId);
 		if(collection !=null)
 		{
+			response=new OnAuthInitRequest();
 			BeanUtil.map(collection, response);
 		}
 		
@@ -2049,18 +2051,21 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			JSONObject orderRequest1 = new JSONObject();
 			JSONObject orderRequest2 = new JSONObject();	
+			JSONObject orderRequest3 = new JSONObject();	
 			
+			if(request.getCredential().getAuthCode() !=null)
 			orderRequest1.put("authCode", request.getCredential().getAuthCode());
-			orderRequest1.put("demographic", request.getCredential().getDemographic());
-			orderRequest1.put("name", request.getCredential().getName());
-			orderRequest1.put("gender", request.getCredential().getGender());
-			orderRequest1.put("dateOfBirth", request.getCredential().getDateOfBirth());
-			orderRequest1.put("identifier", orderRequest2);
 			
-				
-			orderRequest2.put("type", request.getCredential().getIdentifier().getType());
-			orderRequest2.put("value", request.getCredential().getIdentifier().getValue());
+			if(request.getCredential().getDemographic() !=null) {
+			orderRequest1.put("demographic", orderRequest3);
 			
+			orderRequest3.put("name", request.getCredential().getDemographic().getName());
+			orderRequest3.put("gender", request.getCredential().getDemographic().getGender());
+			orderRequest3.put("dateOfBirth", request.getCredential().getDemographic().getDateOfBirth());
+			orderRequest3.put("identifier", orderRequest2);	
+			orderRequest2.put("type", request.getCredential().getDemographic().getIdentifier().getType());
+			orderRequest2.put("value", request.getCredential().getDemographic().getIdentifier().getValue());
+			}
 			
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
@@ -2070,7 +2075,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/users/auth/init";
+			String url = "https://dev.ndhm.gov.in/gateway/v0.5/users/auth/confirm";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRquest.put("txnId", txnId);
 
@@ -2151,6 +2156,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			OnAuthConfirmCollection  collection=onAuthConfirmRepository.findByRespRequestId(requestId);
 		if(collection !=null)
 		{
+			response= new OnAuthConfirmRequest();
 			BeanUtil.map(collection, response);
 		}
 		

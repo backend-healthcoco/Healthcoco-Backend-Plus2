@@ -145,7 +145,7 @@ public class PatientCollection extends GenericCollection {
 	private String ndhmToken;
 	
 	@Field
-	private String profileToken;
+	private String linkToken;
 
 	public ObjectId getId() {
 		return id;
@@ -486,12 +486,14 @@ public class PatientCollection extends GenericCollection {
 	
 	
 
-	public String getProfileToken() {
-		return profileToken;
+	
+
+	public String getLinkToken() {
+		return linkToken;
 	}
 
-	public void setProfileToken(String profileToken) {
-		this.profileToken = profileToken;
+	public void setLinkToken(String linkToken) {
+		this.linkToken = linkToken;
 	}
 
 	@Override

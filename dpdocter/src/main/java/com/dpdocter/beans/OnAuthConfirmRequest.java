@@ -11,6 +11,8 @@ public class OnAuthConfirmRequest {
 	private NdhmErrorObject error;
 	
 	private FetchResponse resp;
+	
+	private String cause;
 
 	public String getRequestId() {
 		return requestId;

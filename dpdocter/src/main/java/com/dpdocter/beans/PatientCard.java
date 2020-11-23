@@ -101,7 +101,7 @@ public class PatientCard extends GenericCollection {
 	
 	private String ndhmToken;
 	
-	private String profileToken;
+	private String linkToken;
 
 	public PatientCollection getPatient() {
 		return patient;
@@ -557,12 +557,12 @@ public class PatientCard extends GenericCollection {
 	
 	
 
-	public String getProfileToken() {
-		return profileToken;
+	public String getLinkToken() {
+		return linkToken;
 	}
 
-	public void setProfileToken(String profileToken) {
-		this.profileToken = profileToken;
+	public void setLinkToken(String linkToken) {
+		this.linkToken = linkToken;
 	}
 
 	@Override

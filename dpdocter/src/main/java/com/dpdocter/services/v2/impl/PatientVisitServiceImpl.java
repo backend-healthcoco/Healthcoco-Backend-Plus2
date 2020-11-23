@@ -192,7 +192,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							.append("profession", "$patient.profession").append("relations", "$patient.relations")
 							.append("consultantDoctorIds", "$patient.consultantDoctorIds")
 							.append("registrationDate", "$patient.registrationDate")
-							.append("healthId", "$healthId").append("ndhmToken", "$ndhmToken").append("profileToken", "$profileToken")
+							.append("healthId", "$patient.healthId").append("ndhmToken", "$patient.ndhmToken").append("linkToken", "$patient.linkToken")
 							.append("createdTime", "$patient.createdTime").append("updatedTime", "$patient.updatedTime")
 							.append("createdBy", "$patient.createdBy").append("visitedTime", "$visitedTime")));
 
@@ -229,7 +229,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 							.append("healthId", new BasicDBObject("$first", "$healthId"))
 							.append("ndhmToken", new BasicDBObject("$first", "$ndhmToken"))
-							.append("profileToken", new BasicDBObject("$first", "$profileToken"))
+							.append("linkToken", new BasicDBObject("$first", "$linkToken"))
 
 							.append("visitedTime", new BasicDBObject("$first", "$visitedTime"))));
 
@@ -364,6 +364,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							.append("profession", "$patient.profession").append("relations", "$patient.relations")
 							.append("consultantDoctorIds", "$patient.consultantDoctorIds")
 							.append("registrationDate", "$patient.registrationDate")
+							.append("healthId", "$patient.healthId").append("ndhmToken", "$patient.ndhmToken").append("linkToken", "$patient.linkToken")
 							.append("createdTime", "$patient.createdTime").append("updatedTime", "$patient.updatedTime")
 							.append("createdBy", "$patient.createdBy").append("count", "$count")));
 
@@ -398,6 +399,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+							.append("healthId", new BasicDBObject("$first", "$healthId"))
+							.append("ndhmToken", new BasicDBObject("$first", "$ndhmToken"))
+							.append("linkToken", new BasicDBObject("$first", "$linkToken"))
 							.append("count", new BasicDBObject("$first", "$count"))));
 
 			Aggregation aggregation = null;
