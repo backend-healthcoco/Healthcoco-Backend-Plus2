@@ -2,7 +2,7 @@ package com.dpdocter.beans;
 
 public class AuthDemographic {
 
-private String name;
+	private String name;
 	
 	private String gender;
 	

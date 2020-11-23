@@ -387,8 +387,6 @@ public class ESPatientDocument {
 		this.motherName = motherName;
 	}
 	
-	
-
 	public List<String> getHealthId() {
 		return healthId;
 	}

@@ -6,8 +6,6 @@ public class AuthCredRequest {
 	
 	private AuthDemographic demographic;
 	
-	
-
 	public String getAuthCode() {
 		return authCode;
 	}
