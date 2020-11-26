@@ -89,6 +89,8 @@ public class PatientCollectionResponse {
 	
 	private String ndhmToken;
 	
+	private String linkToken;
+	
 	
 	public String getId() {
 		return id;
@@ -395,6 +397,16 @@ public class PatientCollectionResponse {
 
 	public void setHealthId(List<String> healthId) {
 		this.healthId = healthId;
+	}
+	
+	
+
+	public String getLinkToken() {
+		return linkToken;
+	}
+
+	public void setLinkToken(String linkToken) {
+		this.linkToken = linkToken;
 	}
 
 	@Override

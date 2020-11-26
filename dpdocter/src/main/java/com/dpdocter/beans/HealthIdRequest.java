@@ -26,7 +26,7 @@ public class HealthIdRequest {
 	
 	private String password;
 	
-	private String pincode;
+	private Integer pincode;
 	
 	private String restrictions;
 	
@@ -144,11 +144,12 @@ public class HealthIdRequest {
 		this.password = password;
 	}
 
-	public String getPincode() {
+	
+	public Integer getPincode() {
 		return pincode;
 	}
 
-	public void setPincode(String pincode) {
+	public void setPincode(Integer pincode) {
 		this.pincode = pincode;
 	}
 

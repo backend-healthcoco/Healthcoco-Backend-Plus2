@@ -3714,7 +3714,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (patient.getPatient() != null) {
 				BeanUtil.map(patient.getPatient(), esPatientDocument);
 			}
+			
+						
 			BeanUtil.map(patient, esPatientDocument);
+			
+			if(patient.getPatient().getHealthId() !=null)
+				esPatientDocument.setHealthId(patient.getPatient().getHealthId());
+
+			
 			if (patient.getBackendPatientId() != null)
 				esPatientDocument.setId(patient.getBackendPatientId());
 			if (patient.getReferredBy() != null)
