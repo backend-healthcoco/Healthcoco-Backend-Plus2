@@ -12,7 +12,9 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -441,7 +443,16 @@ public class SignUpServiceImplV2 implements SignUpService{
 //			pushNotificationServices.notifyUser(userCollection.getId().toString(),
 //					"Your emailId has been verified successfully.", ComponentType.EMAIL_VERIFICATION.getType(), null, null);
 
+			List<User>users=notificationToAdmin();
+			System.out.println("usersAdmin"+users);
+				for(User userr:users)
+				{
+					pushNotificationServices.notifyUser(userr.getId().toString(),
+							"NEW Doctor has been Signed up ", ComponentType.SIGNED_UP.getType(), null, null);
 
+							}
+			
+			
 		} catch (DuplicateKeyException de) {
 			logger.error(de);
 			throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
@@ -458,6 +469,22 @@ public class SignUpServiceImplV2 implements SignUpService{
 		return response;
 	}
 
+	
+	List<User> notificationToAdmin()
+	{
+		
+		Criteria criteria = new Criteria("userState").is("ADMIN");
+		criteria.and("isAnonymousAppointment").is(true);
+	//	criteria.and("signedUp").is(true);
+		
+		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+		
+		System.out.println("AdminAggregation"+aggregation);
+		List<User> user=mongoTemplate.aggregate(aggregation, UserCollection.class, User.class).getMappedResults();
+		return user;
+
+	}
 
 	@Override
 	@Transactional
