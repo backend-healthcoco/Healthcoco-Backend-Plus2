@@ -282,6 +282,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 			userCollection.setPassword(passwordEncoder.encode(String.valueOf(request.getPassword())).toCharArray());
 //			userCollection.setPassword(request.getPassword());
 			userCollection.setIsPasswordSet(true);
+			userCollection.setSignedUp(true);
 			userCollection = userRepository.save(userCollection);
 			// save doctor specific details
 			DoctorCollection doctorCollection = new DoctorCollection();
