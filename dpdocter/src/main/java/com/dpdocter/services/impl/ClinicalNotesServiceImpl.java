@@ -4359,8 +4359,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		EyeTestJasperResponse eyResponse = new EyeTestJasperResponse();
 		if (eyeObservation != null) {
 			parameters.put("eyeObservation", "eyeObservation");
-			parameters.put("EyeExaminationTitle", "Eye Examination :");
 			if (eyeObservation.getEyeExamination() != null) {
+				parameters.put("showEyeExamination", "showEyeExamination");
+				showTitle = true;
+				parameters.put("EyeExaminationTitle", "Eye Examination :");
+
 				List<DBObject> dbObjects = new ArrayList<DBObject>();
 				List<EyeExamination> examinations = eyeObservation.getEyeExamination();
 

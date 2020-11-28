@@ -1423,10 +1423,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 			fieldXPoint = fieldXPoint + dataWidth;
 			addEyePrescriptionItem("$P{leftEyeVisionPR}", fieldXPoint, dataWidth, false, HorizontalTextAlignEnum.CENTER,
 					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
 			// For Eye Examination
 			if (parameters.get("showEyeExamination") != null) {
 
-				((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 				band = new JRDesignBand();
 				band.setHeight(1);
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
@@ -2606,7 +2608,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 			// For Eye Examination
 			if (parameters.get("showEyeExamination") != null) {
-				((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 				band = new JRDesignBand();
 				band.setHeight(1);
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
