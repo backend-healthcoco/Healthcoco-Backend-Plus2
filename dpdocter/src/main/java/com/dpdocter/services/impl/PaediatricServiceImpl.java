@@ -1094,6 +1094,15 @@ public class PaediatricServiceImpl implements PaediatricService {
 			DBObject dbObject = new BasicDBObject();
 			if (!DPDoctorUtils.allStringsEmpty(vaccineResponse.getName()))
 				dbObject.put("name", vaccineResponse.getName());
+			if (!DPDoctorUtils.allStringsEmpty(vaccineResponse.getNote()))
+				dbObject.put("note", vaccineResponse.getNote());
+			else
+				dbObject.put("note", "--");
+			if (vaccineResponse.getGivenDate() != null)
+				dbObject.put("givenDate", simpleDateFormat.format(vaccineResponse.getGivenDate()));
+			else
+				dbObject.put("givenDate", "--");
+
 			if (vaccineResponse.getStatus() != null)
 				dbObject.put("status", vaccineResponse.getStatus().getStatus());
 			if (!DPDoctorUtils.allStringsEmpty(vaccineResponse.getDuration()) && vaccineResponse.getDueDate() != null)

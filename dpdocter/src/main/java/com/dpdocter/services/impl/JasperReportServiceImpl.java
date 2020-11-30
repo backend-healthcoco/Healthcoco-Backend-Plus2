@@ -555,7 +555,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band = new JRDesignBand();
 			band.setHeight(26);
 
-			int dataWidth = (50 * (columnWidth - 41)) / 100;
+			int dataWidth = (25 * (columnWidth - 30)) / 100;
 
 			Integer titleFontSize = contentFontSize;
 			if (contentFontSize > 13)
@@ -574,7 +574,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setX(10);
 			jrDesignTextField.setY(4);
 			jrDesignTextField.setHeight(15);
-			jrDesignTextField.setWidth(150);
+			jrDesignTextField.setWidth(100);
 			jrDesignTextField.setBold(true);
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
@@ -582,7 +582,29 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Status}"));
-			jrDesignTextField.setX(117 + dataWidth);
+			jrDesignTextField.setX(50 + dataWidth);
+			jrDesignTextField.setY(4);
+			jrDesignTextField.setHeight(15);
+			jrDesignTextField.setWidth(dataWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{GivenDate}"));
+			jrDesignTextField.setX(50 + dataWidth + dataWidth);
+			jrDesignTextField.setY(4);
+			jrDesignTextField.setHeight(15);
+			jrDesignTextField.setWidth(dataWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{Note}"));
+			jrDesignTextField.setX(50 + dataWidth + dataWidth + dataWidth);
 			jrDesignTextField.setY(4);
 			jrDesignTextField.setHeight(15);
 			jrDesignTextField.setWidth(dataWidth);
@@ -614,13 +636,31 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setX(12);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(150);
+			jrDesignTextField.setWidth(100);
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{status}"));
-			jrDesignTextField.setX(117 + dataWidth);
+			jrDesignTextField.setX(50 + dataWidth);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(dataWidth - 3);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{givenDate}"));
+			jrDesignTextField.setX(50 + dataWidth + dataWidth);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(dataWidth - 3);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{note}"));
+			jrDesignTextField.setX(50 + dataWidth + dataWidth + dataWidth);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
 			jrDesignTextField.setWidth(dataWidth - 3);
@@ -1423,7 +1463,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			fieldXPoint = fieldXPoint + dataWidth;
 			addEyePrescriptionItem("$P{leftEyeVisionPR}", fieldXPoint, dataWidth, false, HorizontalTextAlignEnum.CENTER,
 					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
-			
+
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 			// For Eye Examination
