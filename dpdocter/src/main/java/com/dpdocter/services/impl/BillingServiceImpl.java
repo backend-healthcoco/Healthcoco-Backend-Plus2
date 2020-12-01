@@ -1106,7 +1106,7 @@ public class BillingServiceImpl implements BillingService {
 					// doctorPatientReceiptCollection.getAmountPaid());
 					if(doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.REFUND))
 					{
-						doctorPatientLedgerCollection.setDebitAmount(doctorPatientReceiptCollection.getAmountPaid());
+						doctorPatientLedgerCollection.setDebitAmount(doctorPatientReceiptCollection.getRefundAmount());
 					}else {
 						doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());	
 					}
@@ -1116,7 +1116,7 @@ public class BillingServiceImpl implements BillingService {
 				} else {
 					if(doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.REFUND))
 					{
-						doctorPatientLedgerCollection.setDebitAmount(doctorPatientReceiptCollection.getAmountPaid());
+						doctorPatientLedgerCollection.setDebitAmount(doctorPatientReceiptCollection.getRefundAmount());
 					}else {
 						doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());	
 					}
