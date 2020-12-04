@@ -9,6 +9,7 @@ import com.dpdocter.beans.ECGDetails;
 import com.dpdocter.beans.EarsExamination;
 import com.dpdocter.beans.Echo;
 import com.dpdocter.beans.EyeSpecialityObservation;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.GeneralExam;
 import com.dpdocter.beans.Holter;
 import com.dpdocter.beans.IndicationOfUSG;
@@ -272,6 +273,8 @@ public class ClinicalNotesAddRequest {
 	private EyeSpecialityObservation eyeObservation;
 	
 	private PhysioExamination physioExamination;	
+	
+	private List<Fields> treatmentFields;
 	
 //	private TreatmentObservationRequest treatmentObservation;
 
@@ -1274,6 +1277,14 @@ public class ClinicalNotesAddRequest {
 //	public void setTreatmentObservation(TreatmentObservationRequest treatmentObservation) {
 //		this.treatmentObservation = treatmentObservation;
 //	}
+
+	public List<Fields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<Fields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
 
 	@Override
 	public String toString() {

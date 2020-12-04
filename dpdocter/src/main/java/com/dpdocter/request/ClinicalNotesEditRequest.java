@@ -7,6 +7,7 @@ import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.EarsExamination;
 import com.dpdocter.beans.EyeSpecialityObservation;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.GeneralExam;
 import com.dpdocter.beans.IndirectLarygoscopyExamination;
 import com.dpdocter.beans.Investigation;
@@ -181,7 +182,9 @@ public class ClinicalNotesEditRequest {
 	
 	private EyeSpecialityObservation eyeObservation;
 	
-	private PhysioExamination physioExamination;	
+	private PhysioExamination physioExamination;
+	
+	private List<Fields> treatmentFields;
 	
 //	private TreatmentObservationRequest treatmentObservation;
 
@@ -1195,6 +1198,14 @@ public class ClinicalNotesEditRequest {
 //	public void setTreatmentObservation(TreatmentObservationRequest treatmentObservation) {
 //		this.treatmentObservation = treatmentObservation;
 //	}
+
+	public List<Fields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<Fields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
 
 	@Override
 	public String toString() {
