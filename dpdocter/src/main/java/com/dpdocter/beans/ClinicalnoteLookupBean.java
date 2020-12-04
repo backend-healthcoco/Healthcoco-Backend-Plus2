@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -139,6 +140,9 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 	private List<TreatmentResponse> treatments;
 	
 	private List<Observation> treatmentObservation;
+	
+	@Field
+	private List<FieldsCollection> treatmentFields;
 
 	public ObjectId getId() {
 		return id;
@@ -691,6 +695,14 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 	}
 	
 	
+
+	public List<FieldsCollection> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<FieldsCollection> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
 
 	public List<Observation> getTreatmentObservation() {
 		return treatmentObservation;

@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.beans.EyeSpecialityObservation;
+import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.PhysioExamination;
 import com.dpdocter.beans.TreatmentObservation;
 import com.dpdocter.beans.VitalSigns;
@@ -141,6 +142,8 @@ public class ClinicalNotes extends GenericCollection {
 	private PhysioExamination physioExamination;	
 	
 	private TreatmentObservation TreatmentObservation;
+	
+	private List<Fields> treatmentFields;
 
 
 	public AppointmentDetails getAppointmentRequest() {
@@ -673,6 +676,14 @@ public class ClinicalNotes extends GenericCollection {
 	}
 	
 	
+
+	public List<Fields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<Fields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
 
 	public TreatmentObservation getTreatmentObservation() {
 		return TreatmentObservation;

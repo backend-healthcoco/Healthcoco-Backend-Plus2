@@ -14,7 +14,7 @@ import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.ConsentForm;
-
+import com.dpdocter.beans.DoctorCalendarView;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.Location;
@@ -195,5 +195,9 @@ public interface RegistrationService {
 	public Boolean updatePatientAge();
 
 	public Boolean updateDoctorAge();
+
+	DoctorCalendarView updateCalendarView(DoctorCalendarView request);
+	
+	DoctorCalendarView getDoctorCalendarView(String doctorId,String locationId);
 
 }

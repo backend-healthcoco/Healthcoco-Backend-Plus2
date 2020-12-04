@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.EyeSpecialityObservation;
+import com.dpdocter.beans.FieldsCollection;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.PhysioExamination;
 import com.dpdocter.beans.VitalSigns;
@@ -215,6 +216,10 @@ public class ClinicalNotesCollection extends GenericCollection {
 	
 	@Field
 	private PhysioExamination physioExamination;
+	
+	
+	@Field
+	private List<FieldsCollection> treatmentFields;
 	
 	
 	//  @Field private List<Observation> treatmentObservation;
@@ -777,6 +782,14 @@ public class ClinicalNotesCollection extends GenericCollection {
 	}
 	
 	
+
+	public List<FieldsCollection> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<FieldsCollection> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
 
 	public PhysioExamination getPhysioExamination() {
 		return physioExamination;
