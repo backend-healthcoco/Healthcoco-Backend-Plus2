@@ -278,6 +278,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 
 			userCollection.setUserState(UserState.NOTVERIFIED);
 			userCollection.setIsVerified(false);
+			userCollection.setSignedUp(true);
 			if(request.getPassword()!=null&&request.getPassword().length>0)
 			userCollection.setPassword(passwordEncoder.encode(String.valueOf(request.getPassword())).toCharArray());
 //			userCollection.setPassword(request.getPassword());
