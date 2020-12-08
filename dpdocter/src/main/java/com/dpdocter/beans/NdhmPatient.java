@@ -14,7 +14,7 @@ public class NdhmPatient {
 	
 	private NdhmAddress address;
 	
-	private List<AuthConfirmIdentifier> identifiers;
+	
 
 	public String getId() {
 		return id;
@@ -56,13 +56,8 @@ public class NdhmPatient {
 		this.address = address;
 	}
 
-	public List<AuthConfirmIdentifier> getIdentifiers() {
-		return identifiers;
-	}
-
-	public void setIdentifiers(List<AuthConfirmIdentifier> identifiers) {
-		this.identifiers = identifiers;
-	}
+	
+	
 
 	
 	

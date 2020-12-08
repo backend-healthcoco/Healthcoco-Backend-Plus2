@@ -12,7 +12,7 @@ public class OnAuthConfirmRequest {
 	
 	private FetchResponse resp;
 	
-	private String cause;
+
 
 	public String getRequestId() {
 		return requestId;
