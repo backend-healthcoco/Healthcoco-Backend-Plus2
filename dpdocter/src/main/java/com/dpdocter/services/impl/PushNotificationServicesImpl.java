@@ -258,23 +258,23 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
 							userDeviceRepository.save(userDeviceCollection);
 						}
-						else if (userDeviceCollection.getDeviceType().getType()
-								.equalsIgnoreCase(DeviceType.WEB.getType())
-								|| userDeviceCollection.getDeviceType().getType()
-										.equalsIgnoreCase(DeviceType.WEB.getType())) {
-							pushNotificationOnWebDevices(userDeviceCollection.getDeviceId(),
-									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
-									userDeviceCollection.getDeviceType().getType(),
-									userDeviceCollection.getRole().getRole(), userId);
-							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
-							userDeviceRepository.save(userDeviceCollection);
-						}
+//						else if (userDeviceCollection.getDeviceType().getType()
+//								.equalsIgnoreCase(DeviceType.WEB.getType())
+//								|| userDeviceCollection.getDeviceType().getType()
+//										.equalsIgnoreCase(DeviceType.WEB.getType())) {
+//							pushNotificationOnWebDevices(userDeviceCollection.getDeviceId(),
+//									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
+//									userDeviceCollection.getDeviceType().getType(),
+//									userDeviceCollection.getRole().getRole(), userId);
+//							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
+//							userDeviceRepository.save(userDeviceCollection);
+//						}
 						
 						else if (userDeviceCollection.getDeviceType().getType()
-								.equalsIgnoreCase(DeviceType.WEB.getType())
+								.equalsIgnoreCase(DeviceType.WEB_ADMIN.getType())
 								|| userDeviceCollection.getDeviceType().getType()
-										.equalsIgnoreCase(DeviceType.WEB.getType())) {
-							pushNotificationOnWebDevices(userDeviceCollection.getDeviceId(),
+										.equalsIgnoreCase(DeviceType.WEB_ADMIN.getType())) {
+							pushNotificationOnAdminWebDevices(userDeviceCollection.getDeviceId(),
 									userDeviceCollection.getPushToken(), message, componentType, componentTypeId,
 									userDeviceCollection.getDeviceType().getType(),
 									userDeviceCollection.getRole().getRole(), userId);
