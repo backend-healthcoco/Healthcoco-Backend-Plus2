@@ -3391,15 +3391,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										drugName = (drugType + drugName) == "" ? "--"
 												: drugType + " " + drugName + genericName;
 									}
-									String drugQuantity = "";
-									if (prescriptionItem.getInventoryQuantity() != null
-											&& prescriptionItem.getInventoryQuantity() > 0) {
-										showDrugQty = true;
-										drugQuantity = "" + prescriptionItem.getInventoryQuantity().toString();
-										System.out.println("drugqty" + drugQuantity);
-										drugName = drugName + "<br>" + "<b>QTY: </b>" + drugQuantity;
-										System.out.println("drugName" + drugName);
-									}
+//									String drugQuantity = "";
+//									if (prescriptionItem.getInventoryQuantity() != null
+//											&& prescriptionItem.getInventoryQuantity() > 0) {
+//										showDrugQty = true;
+//										drugQuantity = "" + prescriptionItem.getInventoryQuantity().toString();
+//										System.out.println("drugqty" + drugQuantity);
+//										drugName = drugName + "<br>" + "<b>QTY: </b>" + drugQuantity;
+//										System.out.println("drugName" + drugName);
+//									}
 									String durationValue = prescriptionItem.getDuration() != null
 											? (prescriptionItem.getDuration().getValue() != null
 													? prescriptionItem.getDuration().getValue()
