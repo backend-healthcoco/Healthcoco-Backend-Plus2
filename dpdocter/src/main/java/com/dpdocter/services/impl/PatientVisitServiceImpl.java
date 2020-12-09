@@ -2444,9 +2444,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						footerSignature = doctorUser.getTitle() + " " + doctorUser.getFirstName();
 				}
 
-				if (printSettings.getFooterSetup().getShowPoweredBy()) {
-					parameters.put("poweredBy", "<font color='#9d9fa0'>" + footerText + "</font>");
-				}
+//				if (printSettings.getFooterSetup().getShowPoweredBy()) {
+//					parameters.put("poweredBy", "<font color='#9d9fa0'>" + footerText + "</font>");
+//				}
 				if (printSettings.getFooterSetup().getShowBottomSignText()
 						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getBottomSignText())) {
 					parameters.put("bottomSignText", printSettings.getFooterSetup().getBottomSignText());
@@ -2477,6 +2477,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		parameters.put("headerHeight", headerHeight);
 		parameters.put("footerSignature", footerSignature);
 //		parameters.put("poweredBy", poweredBy);
+		parameters.put("poweredBy", "<font color='#9d9fa0'>" + footerText + "</font>");
 		parameters.put("bottomSignText", bottomSignText);
 		parameters.put("contentFontSize", contentFontSize);
 		parameters.put("headerLeftText", headerLeftText);
