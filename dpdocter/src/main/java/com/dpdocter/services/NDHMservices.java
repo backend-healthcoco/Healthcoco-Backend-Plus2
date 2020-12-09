@@ -8,6 +8,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 
 import com.dpdocter.beans.AuthConfirmRequest;
+import com.dpdocter.beans.CareContextDiscoverRequest;
+import com.dpdocter.beans.CareContextRequest;
 import com.dpdocter.beans.Districts;
 import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.HealthIdRequest;
@@ -19,6 +21,8 @@ import com.dpdocter.beans.NdhmOtpStatus;
 import com.dpdocter.beans.NdhmStatus;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
+import com.dpdocter.beans.OnCareContext;
+import com.dpdocter.beans.OnDiscoverRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
@@ -105,6 +109,15 @@ public interface NDHMservices {
 
 	OnAuthConfirmRequest getOnAuthConfirm(String requestId);
 	
+	Boolean addCareContext(CareContextRequest request);
+	
+	Boolean onCareContext(OnCareContext request); 
+	
+	Boolean discover(CareContextDiscoverRequest  request);
+	
+	CareContextDiscoverRequest getCareContextDiscover(String requestId);
+	
+	Boolean onDiscover(OnDiscoverRequest request);
 	
 	
 	
