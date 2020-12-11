@@ -49,6 +49,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.CreateAadhaarRequest;
 import com.dpdocter.request.CreateProfileRequest;
+import com.dpdocter.request.DataFlowRequest;
 import com.dpdocter.services.NDHMservices;
 
 import common.util.web.Response;
@@ -512,6 +513,7 @@ public class NdhmApi {
 		return response;
 	}
 	
+
 	@Path(value = PathProxy.NdhmUrls.ON_LINK_INIT)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmUrls.ON_LINK_INIT, notes = PathProxy.NdhmUrls.ON_LINK_INIT)
@@ -522,6 +524,26 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
+	/**
+	 * API called by CM to request Health information from HIP against a validated consent artefact
+	 * Data Flow health information request
+	 * @param request
+	 * @return
+	 */
+	@Path(value = PathProxy.NdhmUrls.GET_HEALTH_INFORMATION_REQUEST)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_HEALTH_INFORMATION_REQUEST, notes = PathProxy.NdhmUrls.GET_HEALTH_INFORMATION_REQUEST)
+	public Response<Boolean> onDataFlowRequest(@RequestBody DataFlowRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		Boolean mobile = ndhmService.onDataFlowRequest(request);
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+
 	
 	@Path(value = PathProxy.NdhmUrls.ON_LINK_CONFIRM)
 	@POST
@@ -534,8 +556,26 @@ public class NdhmApi {
 		return response;
 	}
 	
+
 	
-	
+	/**
+	 * API called by HIP to acknowledge Health information request receipt. Either the hiRequest or error must be specified. hiRequest element returns the same transactionId as before with a status indicating that the request is acknowledged.
+	 * Gateway health information on-request
+	 * @param request
+	 * @return
+	 */
+	@Path(value = PathProxy.NdhmUrls.GET_HEALTH_INFORMATION_REQUEST)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_HEALTH_INFORMATION_REQUEST, notes = PathProxy.NdhmUrls.GET_HEALTH_INFORMATION_REQUEST)
+	public Response<Boolean> onGateWayOnRequest(@RequestBody GateWayOnRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		Boolean mobile = ndhmService.onGateWayOnRequest(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
 	
 
 	

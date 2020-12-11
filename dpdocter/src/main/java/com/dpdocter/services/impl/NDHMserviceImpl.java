@@ -70,8 +70,10 @@ import com.dpdocter.repository.OnCareContextRepository;
 import com.dpdocter.repository.OnFetchModeRepository;
 import com.dpdocter.request.CreateAadhaarRequest;
 import com.dpdocter.request.CreateProfileRequest;
+import com.dpdocter.request.DataFlowRequest;
 import com.dpdocter.response.GetCardProfileResponse;
 import com.dpdocter.services.NDHMservices;
+import com.dpdocter.webservices.GateWayOnRequest;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -81,42 +83,40 @@ import common.util.web.Response;
 public class NDHMserviceImpl implements NDHMservices {
 
 	private static Logger logger = LogManager.getLogger(NDHMserviceImpl.class.getName());
-	
-	
+
 	@Value(value = "${ndhm.clientId}")
 	private String NDHM_CLIENTID;
 
 	@Value(value = "${ndhm.clientSecret}")
 	private String NDHM_CLIENT_SECRET;
-	
+
 	@Autowired
 	private OnFetchModeRepository onFetchModeRepository;
-	
+
 	@Autowired
 	private OnAuthInitRepository onAuthInitRepository;
-	
+
 	@Autowired
 	private OnAuthConfirmRepository onAuthConfirmRepository;
-	
-	
+
 	@Autowired
 	private OnCareContextRepository onCareContextRepository;
-	
-	
+
 	@Autowired
 	private CareContextDiscoverRepository careContextDiscoverRepository;
-	
-	
+
 	@Autowired
 	private LinkInitRepository linkInitRepository;
-	
+
 	@Autowired
 	private LinkConfirmRepository linkConfirmRepository;
+
 	
 	@Autowired
 	private NdhmNotifyRepository ndhmNotifyRepository;
 	
 	
+
 
 	public NdhmOauthResponse session() {
 		NdhmOauthResponse response = null;
@@ -217,8 +217,8 @@ public class NDHMserviceImpl implements NDHMservices {
 			System.out.println("response:" + output.toString());
 			ObjectMapper mapper = new ObjectMapper();
 
-			//response = output.toString();//
-			 response= mapper.readValue(output.toString(),NdhmOtp.class);
+			// response = output.toString();//
+			response = mapper.readValue(output.toString(), NdhmOtp.class);
 			System.out.println("response" + output.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -274,10 +274,10 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			 ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = new ObjectMapper();
 
-			//response = output.toString();//
-			response=mapper.readValue(output.toString(),NdhmOtp.class);
+			// response = output.toString();//
+			response = mapper.readValue(output.toString(), NdhmOtp.class);
 			System.out.println("response" + output.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -335,14 +335,13 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			 ObjectMapper mapper = new ObjectMapper();
-			 int responseCode=con.getResponseCode(); 
-			 if(responseCode ==200)
-			 {
-				 response.setStatus(true);
-			 }
-			
-			//response = mapper.readValue(output.toString(),NdhmOtpStatus.class);
+			ObjectMapper mapper = new ObjectMapper();
+			int responseCode = con.getResponseCode();
+			if (responseCode == 200) {
+				response.setStatus(true);
+			}
+
+			// response = mapper.readValue(output.toString(),NdhmOtpStatus.class);
 			System.out.println("response" + output.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -397,9 +396,8 @@ public class NDHMserviceImpl implements NDHMservices {
 			// optional default is POST
 			con.setRequestMethod("POST");
 
-
-			con.setRequestProperty("Content-Type","application/json");
-			con.setRequestProperty("Accept-Language","en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Accept-Language", "en-US");
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
@@ -423,7 +421,7 @@ public class NDHMserviceImpl implements NDHMservices {
 				output.append((char) c);
 
 			}
-			
+
 			String outputString = output.toString();
 			outputString = outputString.replaceFirst("new", "isNew");
 			System.out.println("outputString:" + outputString);
@@ -595,10 +593,10 @@ public class NDHMserviceImpl implements NDHMservices {
 //			if (responseCode == 200)
 //				response = true;
 //			System.out.println("response:" + output.toString());
-			 ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = new ObjectMapper();
 
 			// response =output.toString();//
-			response= mapper.readValue(output.toString(),NdhmStatus.class);
+			response = mapper.readValue(output.toString(), NdhmStatus.class);
 			// System.out.println("response"+output.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -771,7 +769,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			response= mapper.readValue(output.toString(),NdhmOtp.class);
+			response = mapper.readValue(output.toString(), NdhmOtp.class);
 
 //			response = output.toString();
 
@@ -828,8 +826,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			System.out.println("response:" + output.toString());
 
 //			response = output.toString();
-			 response= mapper.readValue(output.toString(),NdhmOtp.class);
-
+			response = mapper.readValue(output.toString(), NdhmOtp.class);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -884,7 +881,7 @@ public class NDHMserviceImpl implements NDHMservices {
 //				OrderReponse list = mapper.readValue(output.toString(), ass);
 
 //			response = output.toString();
-			response= mapper.readValue(output.toString(),NdhmOtp.class);
+			response = mapper.readValue(output.toString(), NdhmOtp.class);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -939,8 +936,8 @@ public class NDHMserviceImpl implements NDHMservices {
 //				OrderReponse list = mapper.readValue(output.toString(), ass);
 
 //			response = output.toString();
-			response= mapper.readValue(output.toString(),NdhmOtp.class);
-			
+			response = mapper.readValue(output.toString(), NdhmOtp.class);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
@@ -971,15 +968,13 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			System.out.println(con.getErrorStream());
 			con.setDoInput(true);
-			
-			
+
 			// optional default is POST
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Accept-Language", "en-US");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-			
-			
+
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(orderRequest.toString());
 			wr.flush();
@@ -998,11 +993,11 @@ public class NDHMserviceImpl implements NDHMservices {
 				output.append((char) c);
 
 			}
-			 ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = new ObjectMapper();
 
 			System.out.println("response:" + output.toString());
-			response= mapper.readValue(output.toString(),NdhmOtp.class);
-		
+			response = mapper.readValue(output.toString(), NdhmOtp.class);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
@@ -1056,9 +1051,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			 ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = new ObjectMapper();
 //			response = output.toString();
-			response= mapper.readValue(output.toString(),NdhmOtp.class);
+			response = mapper.readValue(output.toString(), NdhmOtp.class);
 
 //			response = output.toString();// mapper.readValue(output.toString(),Strin.class);
 			System.out.println("response" + output.toString());
@@ -1117,7 +1112,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			System.out.println("response:" + output.toString());
 
 //			response.setData(output.toString());
-			response= mapper.readValue(output.toString(),NdhmOtp.class);
+			response = mapper.readValue(output.toString(), NdhmOtp.class);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1138,7 +1133,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			System.out.println("token" + oauth.getAccessToken());
 
 			String url = "https://healthidsbx.ndhm.gov.in/api/v1/registration/aadhaar/generateMobileOTP";
-					//"https://healthidsbx.ndhm.gov.in/api/v1/registration/mobile/generateMobileOTP";
+			// "https://healthidsbx.ndhm.gov.in/api/v1/registration/mobile/generateMobileOTP";
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("mobile", mobile);
 			orderRequest.put("txnId", txnId);
@@ -1172,10 +1167,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			 ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = new ObjectMapper();
 //			response.setData(output.toString());
-			 response.setData( mapper.readValue(output.toString(),NdhmOtp.class));
-
+			response.setData(mapper.readValue(output.toString(), NdhmOtp.class));
 
 //			response = output.toString();// mapper.readValue(output.toString(),Strin.class);
 			System.out.println("response" + output.toString());
@@ -1234,10 +1228,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			 ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = new ObjectMapper();
 //			response.setData(output.toString());
-			 response.setData(mapper.readValue(output.toString(),NdhmOtp.class));
-
+			response.setData(mapper.readValue(output.toString(), NdhmOtp.class));
 
 //			response = output.toString();// mapper.readValue(output.toString(),Strin.class);
 			System.out.println("response" + output.toString());
@@ -1296,10 +1289,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			 ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = new ObjectMapper();
 //			response.setData(output.toString());
-			 response.setData(mapper.readValue(output.toString(),NdhmOtp.class));
-
+			response.setData(mapper.readValue(output.toString(), NdhmOtp.class));
 
 //				response = output.toString();// mapper.readValue(output.toString(),Strin.class);
 			System.out.println("response" + output.toString());
@@ -1316,7 +1308,6 @@ public class NDHMserviceImpl implements NDHMservices {
 		Response<Object> response = new Response<Object>();
 		JSONObject orderRequest = new JSONObject();
 
-		
 		orderRequest.put("email", request.getEmail());
 		orderRequest.put("firstName", request.getFirstName());
 		orderRequest.put("lastName", request.getLastName());
@@ -1350,7 +1341,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("X-HIP-ID", NDHM_CLIENTID);
-			//con.setRequestProperty("Accept-Language", "en-US");
+			// con.setRequestProperty("Accept-Language", "en-US");
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(orderRequest.toString());
@@ -1373,12 +1364,12 @@ public class NDHMserviceImpl implements NDHMservices {
 				output.append((char) c);
 
 			}
-			String respons=output.toString();
+			String respons = output.toString();
 			respons = respons.replaceFirst("new", "isNew");
 			System.out.println("outputString:" + respons);
-		
-			 ObjectMapper mapper = new ObjectMapper();
-				response.setData(mapper.readValue(respons,GetCardProfileResponse.class));
+
+			ObjectMapper mapper = new ObjectMapper();
+			response.setData(mapper.readValue(respons, GetCardProfileResponse.class));
 
 //			response.setData(output.toString());
 
@@ -1435,10 +1426,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			 ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = new ObjectMapper();
 //			response.setData(output.toString());
-				response.setData(mapper.readValue(output.toString(),GetCardProfileResponse.class));
-
+			response.setData(mapper.readValue(output.toString(), GetCardProfileResponse.class));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1469,27 +1459,26 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			con.setRequestProperty("X-Token", "Bearer " + authToken);
 
-			System.out.println("responseCode......"+con.getResponseCode()+"...."+con.getInputStream());			
+			System.out.println("responseCode......" + con.getResponseCode() + "...." + con.getInputStream());
 			String disposition = con.getHeaderField("Content-Disposition");
-            String fileName = "";
-            if (disposition != null) {
-                // extracts file name from header field
-                int index = disposition.indexOf("filename=");
-                if (index > 0) {
-                    fileName = disposition.substring(index + 10,
-                            disposition.length());
-                }	
-            }
-            
-            byte[] output = con.getInputStream().readAllBytes();
+			String fileName = "";
+			if (disposition != null) {
+				// extracts file name from header field
+				int index = disposition.indexOf("filename=");
+				if (index > 0) {
+					fileName = disposition.substring(index + 10, disposition.length());
+				}
+			}
 
-    	    HttpHeaders responseHeaders = new HttpHeaders();
-    	    responseHeaders.set("charset", "utf-8");
-    	    responseHeaders.setContentType(org.springframework.http.MediaType.valueOf("application/pdf"));
-    	    responseHeaders.setContentLength(output.length);
-    	    responseHeaders.set("Content-disposition", "attachment; filename="+fileName);
+			byte[] output = con.getInputStream().readAllBytes();
 
-    	    return new ResponseEntity<byte[]>(output, responseHeaders, HttpStatus.OK);
+			HttpHeaders responseHeaders = new HttpHeaders();
+			responseHeaders.set("charset", "utf-8");
+			responseHeaders.setContentType(org.springframework.http.MediaType.valueOf("application/pdf"));
+			responseHeaders.setContentLength(output.length);
+			responseHeaders.set("Content-disposition", "attachment; filename=" + fileName);
+
+			return new ResponseEntity<byte[]>(output, responseHeaders, HttpStatus.OK);
 
 //					    return ResponseEntity
 //					            .ok()
@@ -1579,7 +1568,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
-		//return response;
+		// return response;
 	}
 
 	@Override
@@ -1629,8 +1618,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			System.out.println("response" + respons.toString());
 
 //			response.setData(respons.toString());
-			response.setData(mapper.readValue(output.toString(),GetCardProfileResponse.class));
-
+			response.setData(mapper.readValue(output.toString(), GetCardProfileResponse.class));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1688,8 +1676,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			output = output.replaceFirst("new", "isNew");
 			System.out.println("outputString:" + output);
 //			response.setData(respons.toString());
-			response.setData(mapper.readValue(output.toString(),GetCardProfileResponse.class));
-
+			response.setData(mapper.readValue(output.toString(), GetCardProfileResponse.class));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1720,7 +1707,7 @@ public class NDHMserviceImpl implements NDHMservices {
 		orderRequest.put("townCode", request.getTownCode());
 		orderRequest.put("villageCode", request.getVillageCode());
 		orderRequest.put("wardCode", request.getWardCode());
-		
+
 		try {
 
 			NdhmOauthResponse oauth = session();
@@ -1762,10 +1749,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			}
 			System.out.println("response:" + output.toString());
-			 ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = new ObjectMapper();
 //			response.setData(output.toString());
-			response.setData(mapper.readValue(output.toString(),GetCardProfileResponse.class));
-
+			response.setData(mapper.readValue(output.toString(), GetCardProfileResponse.class));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1834,27 +1820,25 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean fetchModes(FetchModesRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			System.out.println("requestId"+request.getRequestId());
+			System.out.println("requestId" + request.getRequestId());
 			JSONObject orderRequest = new JSONObject();
 
 			JSONObject orderRequest1 = new JSONObject();
-			JSONObject orderRequest2 = new JSONObject();	
-			
+			JSONObject orderRequest2 = new JSONObject();
+
 			orderRequest1.put("id", request.getQuery().getId());
 			orderRequest1.put("purpose", request.getQuery().getPurpose());
 			orderRequest1.put("requester", orderRequest2);
-			
-				
+
 			orderRequest2.put("id", request.getQuery().getRequester().getId());
 			orderRequest2.put("type", request.getQuery().getRequester().getType());
-			
-			
+
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimeStamp());
-			orderRequest.put("query",orderRequest1 );
-			
+			orderRequest.put("query", orderRequest1);
+
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
@@ -1874,7 +1858,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestProperty("Accept-Language", "en-US");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-			con.setRequestProperty("X-CM-ID","sbx" );
+			con.setRequestProperty("X-CM-ID", "sbx");
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(orderRequest.toString());
 			wr.flush();
@@ -1895,12 +1879,11 @@ public class NDHMserviceImpl implements NDHMservices {
 			}
 			System.out.println("response:" + output.toString());
 			int responseCode = con.getResponseCode();
-			if(responseCode ==202)
-				response=true;
-			
+			if (responseCode == 202)
+				response = true;
+
 		}
-		
-		
+
 		catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
@@ -1908,23 +1891,20 @@ public class NDHMserviceImpl implements NDHMservices {
 		}
 		return response;
 	}
-	
-	
-	
+
 	@Override
 	public Boolean onFetchModes(OnFetchModesRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			
-		OnFetchModeCollection collection=new OnFetchModeCollection();
 
-		BeanUtil.map(request, collection);
-		collection.setCreatedTime(new Date());
-		onFetchModeRepository.save(collection);
-			response=true;
+			OnFetchModeCollection collection = new OnFetchModeCollection();
+
+			BeanUtil.map(request, collection);
+			collection.setCreatedTime(new Date());
+			onFetchModeRepository.save(collection);
+			response = true;
 		}
-		
-		
+
 		catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
@@ -1932,54 +1912,49 @@ public class NDHMserviceImpl implements NDHMservices {
 		}
 		return response;
 	}
-	
+
 	@Override
-	public OnFetchModesRequest getFetchModes(String requestId)
-	{
-		OnFetchModesRequest response=null;
+	public OnFetchModesRequest getFetchModes(String requestId) {
+		OnFetchModesRequest response = null;
 		try {
-			OnFetchModeCollection collection=onFetchModeRepository.findByRespRequestId(requestId);
-		if(collection !=null)
-		{
-			response=new OnFetchModesRequest();
-			BeanUtil.map(collection, response);
-		}
-		
-		}catch (Exception e) {
+			OnFetchModeCollection collection = onFetchModeRepository.findByRespRequestId(requestId);
+			if (collection != null) {
+				response = new OnFetchModesRequest();
+				BeanUtil.map(collection, response);
+			}
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
-		
+
 	}
-	
-	
+
 	@Override
 	public Boolean authInit(FetchModesRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			
-			System.out.println("requestId"+request.getRequestId());
+
+			System.out.println("requestId" + request.getRequestId());
 			JSONObject orderRequest = new JSONObject();
 
 			JSONObject orderRequest1 = new JSONObject();
-			JSONObject orderRequest2 = new JSONObject();	
-			
+			JSONObject orderRequest2 = new JSONObject();
+
 			orderRequest1.put("id", request.getQuery().getId());
 			orderRequest1.put("purpose", request.getQuery().getPurpose());
 			orderRequest1.put("authMode", request.getQuery().getAuthMode());
 			orderRequest1.put("requester", orderRequest2);
-			
-				
+
 			orderRequest2.put("id", request.getQuery().getRequester().getId());
 			orderRequest2.put("type", request.getQuery().getRequester().getType());
-			
-			
+
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimeStamp());
-			orderRequest.put("query",orderRequest1 );
-			
+			orderRequest.put("query", orderRequest1);
+
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
@@ -1999,7 +1974,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestProperty("Accept-Language", "en-US");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-			con.setRequestProperty("X-CM-ID","sbx" );
+			con.setRequestProperty("X-CM-ID", "sbx");
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(orderRequest.toString());
 			wr.flush();
@@ -2020,12 +1995,11 @@ public class NDHMserviceImpl implements NDHMservices {
 			}
 			System.out.println("response:" + output.toString());
 			int responseCode = con.getResponseCode();
-			if(responseCode ==202)
-				response=true;
-			
+			if (responseCode == 202)
+				response = true;
+
 		}
-		
-		
+
 		catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
@@ -2033,21 +2007,20 @@ public class NDHMserviceImpl implements NDHMservices {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public Boolean onAuthinit(OnAuthInitRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			
-			OnAuthInitCollection collection=new OnAuthInitCollection();
 
-		BeanUtil.map(request, collection);
-		collection.setCreatedTime(new Date());
-		onAuthInitRepository.save(collection);
-			response=true;
+			OnAuthInitCollection collection = new OnAuthInitCollection();
+
+			BeanUtil.map(request, collection);
+			collection.setCreatedTime(new Date());
+			onAuthInitRepository.save(collection);
+			response = true;
 		}
-		
-		
+
 		catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
@@ -2055,62 +2028,57 @@ public class NDHMserviceImpl implements NDHMservices {
 		}
 		return response;
 	}
-	
-	
+
 	@Override
-	public OnAuthInitRequest getOnAuthInit(String requestId)
-	{
-		OnAuthInitRequest response=null;
+	public OnAuthInitRequest getOnAuthInit(String requestId) {
+		OnAuthInitRequest response = null;
 		try {
-			OnAuthInitCollection  collection=onAuthInitRepository.findByRespRequestId(requestId);
-		if(collection !=null)
-		{
-			response=new OnAuthInitRequest();
-			BeanUtil.map(collection, response);
-		}
-		
-		}catch (Exception e) {
+			OnAuthInitCollection collection = onAuthInitRepository.findByRespRequestId(requestId);
+			if (collection != null) {
+				response = new OnAuthInitRequest();
+				BeanUtil.map(collection, response);
+			}
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
-		
+
 	}
 
-	
-	
 	@Override
 	public Boolean authConfirm(AuthConfirmRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			
-			System.out.println("requestId"+request.getRequestId());
+
+			System.out.println("requestId" + request.getRequestId());
 			JSONObject orderRequest = new JSONObject();
 
 			JSONObject orderRequest1 = new JSONObject();
-			JSONObject orderRequest2 = new JSONObject();	
-			JSONObject orderRequest3 = new JSONObject();	
-			
-			if(request.getCredential().getAuthCode() !=null)
-			orderRequest1.put("authCode", request.getCredential().getAuthCode());
-			
-			if(request.getCredential().getDemographic() !=null) {
-			orderRequest1.put("demographic", orderRequest3);
-			
-			orderRequest3.put("name", request.getCredential().getDemographic().getName());
-			orderRequest3.put("gender", request.getCredential().getDemographic().getGender());
-			orderRequest3.put("dateOfBirth", request.getCredential().getDemographic().getDateOfBirth());
-			orderRequest3.put("identifier", orderRequest2);	
-			orderRequest2.put("type", request.getCredential().getDemographic().getIdentifier().getType());
-			orderRequest2.put("value", request.getCredential().getDemographic().getIdentifier().getValue());
+			JSONObject orderRequest2 = new JSONObject();
+			JSONObject orderRequest3 = new JSONObject();
+
+			if (request.getCredential().getAuthCode() != null)
+				orderRequest1.put("authCode", request.getCredential().getAuthCode());
+
+			if (request.getCredential().getDemographic() != null) {
+				orderRequest1.put("demographic", orderRequest3);
+
+				orderRequest3.put("name", request.getCredential().getDemographic().getName());
+				orderRequest3.put("gender", request.getCredential().getDemographic().getGender());
+				orderRequest3.put("dateOfBirth", request.getCredential().getDemographic().getDateOfBirth());
+				orderRequest3.put("identifier", orderRequest2);
+				orderRequest2.put("type", request.getCredential().getDemographic().getIdentifier().getType());
+				orderRequest2.put("value", request.getCredential().getDemographic().getIdentifier().getValue());
 			}
-			
+
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
 			orderRequest.put("transactionId", request.getTransactionId());
-			orderRequest.put("credential",orderRequest1 );
-			
+			orderRequest.put("credential", orderRequest1);
+
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
@@ -2130,7 +2098,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestProperty("Accept-Language", "en-US");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-			con.setRequestProperty("X-CM-ID","sbx" );
+			con.setRequestProperty("X-CM-ID", "sbx");
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(orderRequest.toString());
 			wr.flush();
@@ -2151,12 +2119,11 @@ public class NDHMserviceImpl implements NDHMservices {
 			}
 			System.out.println("response:" + output.toString());
 			int responseCode = con.getResponseCode();
-			if(responseCode ==202)
-				response=true;
-			
+			if (responseCode == 202)
+				response = true;
+
 		}
-		
-		
+
 		catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
@@ -2164,21 +2131,20 @@ public class NDHMserviceImpl implements NDHMservices {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public Boolean onAuthConfirm(OnAuthConfirmRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			
-			OnAuthConfirmCollection collection=new OnAuthConfirmCollection();
 
-		BeanUtil.map(request, collection);
-		collection.setCreatedTime(new Date());
-		onAuthConfirmRepository.save(collection);
-			response=true;
+			OnAuthConfirmCollection collection = new OnAuthConfirmCollection();
+
+			BeanUtil.map(request, collection);
+			collection.setCreatedTime(new Date());
+			onAuthConfirmRepository.save(collection);
+			response = true;
 		}
-		
-		
+
 		catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
@@ -2188,56 +2154,50 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public OnAuthConfirmRequest getOnAuthConfirm(String requestId)
-	{
-		OnAuthConfirmRequest response=null;
+	public OnAuthConfirmRequest getOnAuthConfirm(String requestId) {
+		OnAuthConfirmRequest response = null;
 		try {
-			OnAuthConfirmCollection  collection=onAuthConfirmRepository.findByRespRequestId(requestId);
-		if(collection !=null)
-		{
-			response= new OnAuthConfirmRequest();
-			BeanUtil.map(collection, response);
-		}
-		
-		}catch (Exception e) {
+			OnAuthConfirmCollection collection = onAuthConfirmRepository.findByRespRequestId(requestId);
+			if (collection != null) {
+				response = new OnAuthConfirmRequest();
+				BeanUtil.map(collection, response);
+			}
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
-		
+
 	}
 
 	@Override
 	public Boolean addCareContext(CareContextRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			
-			
+
 			JSONObject orderRequest = new JSONObject();
 
 			JSONObject orderRequest1 = new JSONObject();
-			JSONObject orderRequest2 = new JSONObject();	
-			JSONObject orderRequest3 = new JSONObject();	
-			
-			
+			JSONObject orderRequest2 = new JSONObject();
+			JSONObject orderRequest3 = new JSONObject();
+
 			orderRequest1.put("accessToken", request.getLink().getAccessToken());
-			
-		
+
 			orderRequest1.put("patient", orderRequest2);
-			
+
 			orderRequest2.put("referenceNumber", request.getLink().getPatient().getReferenceNumber());
 			orderRequest2.put("display", request.getLink().getPatient().getDisplay());
-			orderRequest2.put("careContexts", orderRequest3);	
+			orderRequest2.put("careContexts", orderRequest3);
 			orderRequest3.put("referenceNumber", request.getLink().getPatient().getCareContexts().getReferenceNumber());
 			orderRequest3.put("display", request.getLink().getPatient().getCareContexts().getDisplay());
-			
-			
+
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
-			
-			orderRequest.put("link",orderRequest1 );
-			
+
+			orderRequest.put("link", orderRequest1);
+
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
@@ -2257,7 +2217,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestProperty("Accept-Language", "en-US");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-			con.setRequestProperty("X-CM-ID","sbx" );
+			con.setRequestProperty("X-CM-ID", "sbx");
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(orderRequest.toString());
 			wr.flush();
@@ -2278,12 +2238,11 @@ public class NDHMserviceImpl implements NDHMservices {
 			}
 			System.out.println("response:" + output.toString());
 			int responseCode = con.getResponseCode();
-			if(responseCode ==202)
-				response=true;
-			
+			if (responseCode == 202)
+				response = true;
+
 		}
-		
-		
+
 		catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
@@ -2295,16 +2254,15 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean onCareContext(OnCareContext request) {
-		Boolean response =false;
+		Boolean response = false;
 		try {
-			OnCareContextCollection collection=new OnCareContextCollection();
+			OnCareContextCollection collection = new OnCareContextCollection();
 			BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			onCareContextRepository.save(collection);
-			response=true;
-			
-			
-		}catch (Exception e) {
+			response = true;
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -2314,37 +2272,35 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean discover(CareContextDiscoverRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			CareContextDiscoverCollection collection= new CareContextDiscoverCollection();
+			CareContextDiscoverCollection collection = new CareContextDiscoverCollection();
 			BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			careContextDiscoverRepository.save(collection);
-			response=true;
-			
-		}catch (Exception e) {
+			response = true;
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 		}
 		return response;
-		
-		
+
 	}
-	
+
 	@Override
 	public CareContextDiscoverRequest getCareContextDiscover(String requestId) {
-		CareContextDiscoverRequest response=null;
+		CareContextDiscoverRequest response = null;
 		try {
-			CareContextDiscoverCollection collection=careContextDiscoverRepository.findByRequestId(requestId);
-			if(collection !=null)
-			{
-				response=new CareContextDiscoverRequest();
+			CareContextDiscoverCollection collection = careContextDiscoverRepository.findByRequestId(requestId);
+			if (collection != null) {
+				response = new CareContextDiscoverRequest();
 				BeanUtil.map(collection, response);
-				
+
 			}
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -2354,9 +2310,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean onDiscover(OnDiscoverRequest request) {
-		Boolean response =false;
+		Boolean response = false;
 		try {
-			
+
 //			JSONObject orderRequest = new JSONObject();
 //
 //			JSONObject orderRequest1 = new JSONObject();
@@ -2389,7 +2345,7 @@ public class NDHMserviceImpl implements NDHMservices {
 //			
 //			
 //			orderRequest.put("patient",orderRequest1 );
-			
+
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
@@ -2409,7 +2365,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestProperty("Accept-Language", "en-US");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-			con.setRequestProperty("X-CM-ID","sbx" );
+			con.setRequestProperty("X-CM-ID", "sbx");
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(request.toString());
 			wr.flush();
@@ -2430,13 +2386,10 @@ public class NDHMserviceImpl implements NDHMservices {
 			}
 			System.out.println("response:" + output.toString());
 			int responseCode = con.getResponseCode();
-			if(responseCode ==202)
-				response=true;
+			if (responseCode == 202)
+				response = true;
 
-			
-			
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -2446,17 +2399,16 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean linkInit(LinkRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			LinkInitCollection collection=new LinkInitCollection();
+			LinkInitCollection collection = new LinkInitCollection();
 			BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			linkInitRepository.save(collection);
-			response=true;
-			
+			response = true;
+
 		}
-		
-		
+
 		catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
@@ -2468,10 +2420,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean onLinkInit(OnLinkRequest request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			
-			
+
 //			JSONObject orderRequest = new JSONObject();
 //
 //			JSONObject orderRequest1 = new JSONObject();
@@ -2495,7 +2446,7 @@ public class NDHMserviceImpl implements NDHMservices {
 //			orderRequest.put("timestamp", request.getTimestamp());
 //			
 //			orderRequest.put("link",orderRequest1 );
-			
+
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
@@ -2515,7 +2466,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestProperty("Accept-Language", "en-US");
 			con.setRequestProperty("Content-Type", "application/json");
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-			con.setRequestProperty("X-CM-ID","sbx" );
+			con.setRequestProperty("X-CM-ID", "sbx");
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(request.toString());
 			wr.flush();
@@ -2536,9 +2487,9 @@ public class NDHMserviceImpl implements NDHMservices {
 			}
 			System.out.println("response:" + output.toString());
 			int responseCode = con.getResponseCode();
-			if(responseCode ==202)
-				response=true;
-			
+			if (responseCode == 202)
+				response = true;
+
 		}
 
 		catch (Exception e) {
@@ -2551,14 +2502,13 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public OnLinkRequest getLinkInit(String requestId) {
-		OnLinkRequest response=null;
+		OnLinkRequest response = null;
 		try {
-		LinkInitCollection collection=linkInitRepository.findByRequestId(requestId);
-		response=new OnLinkRequest();
-		BeanUtil.map(collection, response);
-			
-		}
-		catch (Exception e) {
+			LinkInitCollection collection = linkInitRepository.findByRequestId(requestId);
+			response = new OnLinkRequest();
+			BeanUtil.map(collection, response);
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -2568,16 +2518,16 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean linkConfirm(LinkConfirm request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-			
-			LinkConfirmCollection collection=new LinkConfirmCollection();
+
+			LinkConfirmCollection collection = new LinkConfirmCollection();
 			BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			linkConfirmRepository.save(collection);
-			response=true;
-			
-		}catch (Exception e) {
+			response = true;
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -2587,62 +2537,175 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	public Boolean onLinkConfirm(OnLinkConfirm request) {
-		Boolean response=false;
+		Boolean response = false;
 		try {
-		
-		NdhmOauthResponse oauth = session();
-		System.out.println("token" + oauth.getAccessToken());
 
-		String url = "https://dev.ndhm.gov.in/gateway/v0.5/links/link/on-confirm";
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://dev.ndhm.gov.in/gateway/v0.5/links/link/on-confirm";
 //		JSONObject orderRequest = new JSONObject();
 //		orderRquest.put("txnId", txnId);
 
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-		con.setDoOutput(true);
+			con.setDoOutput(true);
 
-		System.out.println(con.getErrorStream());
-		con.setDoInput(true);
-		// optional default is POST
-		con.setRequestMethod("POST");
-		con.setRequestProperty("Accept-Language", "en-US");
-		con.setRequestProperty("Content-Type", "application/json");
-		con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-		con.setRequestProperty("X-CM-ID","sbx" );
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(request.toString());
-		wr.flush();
-		wr.close();
-		con.disconnect();
-		InputStream in = con.getInputStream();
-		// BufferedReader in = new BufferedReader(new
-		// InputStreamReader(con.getInputStream()));
-		String inputLine;
-		System.out.println(con.getErrorStream());
-		/* response = new StringBuffer(); */
-		StringBuffer output = new StringBuffer();
-		int c = 0;
-		while ((c = in.read()) != -1) {
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID", "sbx");
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(request.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
 
-			output.append((char) c);
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
 
 		}
-		System.out.println("response:" + output.toString());
-		int responseCode = con.getResponseCode();
-		if(responseCode ==202)
-			response=true;
-		
-	}
 
-	catch (Exception e) {
-		e.printStackTrace();
-		logger.error("Error : " + e.getMessage());
-		throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
-	}
-	return response;
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
 
 	}
+
+	@Override
+	public Boolean onDataFlowRequest(DataFlowRequest request) {
+		Boolean response = false;
+		try {
+
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://your-hrp-server.com/v0.5/health-information/hip/request";
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-HIP-ID", NDHM_CLIENTID);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(request.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean onGateWayOnRequest(GateWayOnRequest request) {
+		Boolean response = false;
+		try {
+
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://dev.ndhm.gov.in/gateway/v0.5/health-information/hip/on-request";
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID", "sbx");
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(request.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
 
 	@Override
 	public Boolean ndhmNotify(NotifyRequest request) {
@@ -2720,9 +2783,5 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	}
 	
-	
 
-	
-	
-	
 }
