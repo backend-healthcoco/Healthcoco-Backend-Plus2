@@ -511,24 +511,8 @@ public class NdhmApi {
 		return response;
 	}
 	
-	/**
-	 * API called by CM to request Health information from HIP against a validated consent artefact
-	 * Data Flow health information request
-	 * @param request
-	 * @return
-	 */
-	@Path(value = PathProxy.NdhmUrls.GET_HEALTH_INFORMATION_REQUEST)
-	@POST
-	@ApiOperation(value = PathProxy.NdhmUrls.GET_HEALTH_INFORMATION_REQUEST, notes = PathProxy.NdhmUrls.GET_HEALTH_INFORMATION_REQUEST)
-	public Response<Boolean> onDataFlowRequest(@RequestBody DataFlowRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, " request Required");
-		}
-		Boolean mobile = ndhmService.onDataFlowRequest(request);
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(mobile);
-		return response;
-	}
+	
+	
 	
 	/**
 	 * API called by HIP to acknowledge Health information request receipt. Either the hiRequest or error must be specified. hiRequest element returns the same transactionId as before with a status indicating that the request is acknowledged.
@@ -536,9 +520,9 @@ public class NdhmApi {
 	 * @param request
 	 * @return
 	 */
-	@Path(value = PathProxy.NdhmUrls.GET_HEALTH_INFORMATION_REQUEST)
+	@Path(value = PathProxy.NdhmUrls.HEALTH_INFORMATION_ON_REQUEST)
 	@POST
-	@ApiOperation(value = PathProxy.NdhmUrls.GET_HEALTH_INFORMATION_REQUEST, notes = PathProxy.NdhmUrls.GET_HEALTH_INFORMATION_REQUEST)
+	@ApiOperation(value = PathProxy.NdhmUrls.HEALTH_INFORMATION_ON_REQUEST, notes = PathProxy.NdhmUrls.HEALTH_INFORMATION_ON_REQUEST)
 	public Response<Boolean> onGateWayOnRequest(@RequestBody GateWayOnRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " request Required");

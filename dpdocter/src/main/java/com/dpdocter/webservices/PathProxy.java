@@ -2517,10 +2517,9 @@ public interface PathProxy {
 		public static final String GET_DISCOVER="/discover/get";
 		
 		//data flow 
-		public static final String GET_HEALTH_INFORMATION_REQUEST="/health-information/hip/request";
-
 		
-		public static final String GET_HEALTH_INFORMATION_ON_REQUEST="/health-information/hip/on-request";
+		
+		public static final String HEALTH_INFORMATION_ON_REQUEST="/health-information/hip/on-request";
 
 
 	}
@@ -2537,5 +2536,8 @@ public interface PathProxy {
 		public static final String ON_CARE_CONTEXT="/v0.5/links/link/on-add-contexts";
 		
 		public static final String DISCOVER = "/v0.5/care-contexts/discover";
+		
+		public static final String HEALTH_INFORMATION_REQUEST="/v0.5/health-information/hip/request";
+
 	}
 }
