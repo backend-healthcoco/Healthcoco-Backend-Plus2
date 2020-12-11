@@ -34,6 +34,8 @@ import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.request.CreateAadhaarRequest;
 import com.dpdocter.request.CreateProfileRequest;
+import com.dpdocter.request.DataFlowRequest;
+import com.dpdocter.webservices.GateWayOnRequest;
 
 import common.util.web.Response;
 public interface NDHMservices {
@@ -132,6 +134,10 @@ public interface NDHMservices {
 	Boolean linkConfirm(LinkConfirm request);
 	
 	Boolean onLinkConfirm(OnLinkConfirm request);
+
+	Boolean onDataFlowRequest(DataFlowRequest request);
+
+	Boolean onGateWayOnRequest(GateWayOnRequest request);
 	
 	
 	

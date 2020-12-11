@@ -2515,6 +2515,13 @@ public interface PathProxy {
 		public static final String ON_DISCOVER="/onDiscover";
 		
 		public static final String GET_DISCOVER="/discover/get";
+		
+		//data flow 
+		public static final String GET_HEALTH_INFORMATION_REQUEST="/health-information/hip/request";
+
+		
+		public static final String GET_HEALTH_INFORMATION_ON_REQUEST="/health-information/hip/on-request";
+
 
 	}
 	
