@@ -2509,6 +2509,12 @@ public interface PathProxy {
 		public static final String DELETE_PROFILE = "/profile/account/deleteProfile";
 		public static final String GET_PROFILE_TOKEN = "/profile/account/token";
 		public static final String RESET_PROFILE_PASSWORD = "/profile/account/resetPassowrd";
+		
+		public static final String ADD_CARE_CONTEXT="/addCareContext";
+		
+		public static final String ON_DISCOVER="/onDiscover";
+		
+		public static final String GET_DISCOVER="/discover/get";
 
 	}
 	
@@ -2520,5 +2526,9 @@ public interface PathProxy {
 		public static final String ON_AUTH_INIT="/v0.5/users/auth/on-init";
 		
 		public static final String ON_AUTH_CONFIRM="/v0.5/users/auth/on-confirm";
+		
+		public static final String ON_CARE_CONTEXT="/v0.5/links/link/on-add-contexts";
+		
+		public static final String DISCOVER = "/v0.5/care-contexts/discover";
 	}
 }

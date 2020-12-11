@@ -24,8 +24,12 @@ import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnCareContext;
 import com.dpdocter.beans.OnDiscoverRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
+import com.dpdocter.beans.OnLinkConfirm;
+import com.dpdocter.beans.OnLinkRequest;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
+import com.dpdocter.beans.LinkConfirm;
+import com.dpdocter.beans.LinkRequest;
 import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.request.CreateAadhaarRequest;
@@ -118,6 +122,16 @@ public interface NDHMservices {
 	CareContextDiscoverRequest getCareContextDiscover(String requestId);
 	
 	Boolean onDiscover(OnDiscoverRequest request);
+	
+	Boolean linkInit(LinkRequest request);
+	
+	Boolean onLinkInit(OnLinkRequest request);
+	
+	OnLinkRequest getLinkInit(String requestId);
+	
+	Boolean linkConfirm(LinkConfirm request);
+	
+	Boolean onLinkConfirm(OnLinkConfirm request);
 	
 	
 	

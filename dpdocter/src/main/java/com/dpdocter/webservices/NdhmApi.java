@@ -26,6 +26,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dpdocter.beans.AuthConfirmRequest;
+import com.dpdocter.beans.CareContextDiscoverRequest;
+import com.dpdocter.beans.CareContextRequest;
 import com.dpdocter.beans.Districts;
 import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.HealthIdRequest;
@@ -39,6 +41,7 @@ import com.dpdocter.beans.NdhmOtpStatus;
 import com.dpdocter.beans.NdhmStatus;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
+import com.dpdocter.beans.OnDiscoverRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -471,6 +474,45 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
+	
+	@Path(value = PathProxy.NdhmUrls.ADD_CARE_CONTEXT)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.ADD_CARE_CONTEXT, notes = PathProxy.NdhmUrls.ADD_CARE_CONTEXT)
+	public Response<Boolean> addContext(@RequestBody CareContextRequest request) {
+
+		Boolean mobile = ndhmService.addCareContext(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmUrls.GET_DISCOVER)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_DISCOVER, notes = PathProxy.NdhmUrls.GET_DISCOVER)
+	public Response<CareContextDiscoverRequest> getDiscover(@QueryParam("requestId")String requestId) {
+
+		CareContextDiscoverRequest mobile = ndhmService.getCareContextDiscover(requestId);
+		Response<CareContextDiscoverRequest> response = new Response<CareContextDiscoverRequest>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmUrls.ON_DISCOVER)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.ON_DISCOVER, notes = PathProxy.NdhmUrls.ON_DISCOVER)
+	public Response<Boolean> onDiscover(@RequestBody OnDiscoverRequest request) {
+
+		Boolean mobile = ndhmService.onDiscover(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	
+	
 
 	
 }

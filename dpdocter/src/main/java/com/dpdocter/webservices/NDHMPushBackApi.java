@@ -17,9 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.dpdocter.beans.CareContextDiscoverRequest;
 import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
+import com.dpdocter.beans.OnCareContext;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.services.NDHMservices;
 
@@ -76,6 +78,36 @@ public class NDHMPushBackApi {
 		ObjectMapper mapper = new ObjectMapper();
 		OnAuthConfirmRequest request1= mapper.readValue(request,OnAuthConfirmRequest.class);
 		Boolean mobile = ndhmService.onAuthConfirm(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmPushUrls.ON_CARE_CONTEXT)
+	@POST
+	@ApiOperation(value=PathProxy.NdhmPushUrls.ON_CARE_CONTEXT, notes = PathProxy.NdhmPushUrls.ON_CARE_CONTEXT)
+	public Response<Boolean> onCareContext(String request) throws JsonParseException, JsonMappingException, IOException {
+
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		OnCareContext request1= mapper.readValue(request,OnCareContext.class);
+		Boolean mobile = ndhmService.onCareContext(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmPushUrls.DISCOVER)
+	@POST
+	@ApiOperation(value=PathProxy.NdhmPushUrls.DISCOVER, notes = PathProxy.NdhmPushUrls.DISCOVER)
+	public Response<Boolean> discover(String request) throws JsonParseException, JsonMappingException, IOException {
+
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		CareContextDiscoverRequest request1= mapper.readValue(request,CareContextDiscoverRequest.class);
+		Boolean mobile = ndhmService.discover(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
