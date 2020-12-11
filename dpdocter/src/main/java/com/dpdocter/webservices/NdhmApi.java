@@ -43,6 +43,8 @@ import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnDiscoverRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
+import com.dpdocter.beans.OnLinkConfirm;
+import com.dpdocter.beans.OnLinkRequest;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.CreateAadhaarRequest;
@@ -505,6 +507,28 @@ public class NdhmApi {
 	public Response<Boolean> onDiscover(@RequestBody OnDiscoverRequest request) {
 
 		Boolean mobile = ndhmService.onDiscover(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.ON_LINK_INIT)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.ON_LINK_INIT, notes = PathProxy.NdhmUrls.ON_LINK_INIT)
+	public Response<Boolean> onLinkInit(@RequestBody OnLinkRequest request) {
+
+		Boolean mobile = ndhmService.onLinkInit(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.ON_LINK_CONFIRM)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.ON_LINK_CONFIRM, notes = PathProxy.NdhmUrls.ON_LINK_CONFIRM)
+	public Response<Boolean> onLinkConfirm(@RequestBody OnLinkConfirm request) {
+
+		Boolean mobile = ndhmService.onLinkConfirm(request);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;

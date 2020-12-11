@@ -2514,6 +2514,10 @@ public interface PathProxy {
 		
 		public static final String ON_DISCOVER="/onDiscover";
 		
+		public static final String ON_LINK_INIT="/onLinkInit";
+		
+		public static final String ON_LINK_CONFIRM = "/onLinkConfirm";
+		
 		public static final String GET_DISCOVER="/discover/get";
 
 	}
@@ -2530,5 +2534,9 @@ public interface PathProxy {
 		public static final String ON_CARE_CONTEXT="/v0.5/links/link/on-add-contexts";
 		
 		public static final String DISCOVER = "/v0.5/care-contexts/discover";
+		
+		public static final String LINK_INIT = "/v0.5/links/link/init";
+		
+		public static final String LINK_CONFIRM = "/v0.5/links/link/confirm";
 	}
 }

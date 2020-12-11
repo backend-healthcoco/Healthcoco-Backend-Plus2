@@ -34,6 +34,7 @@ import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.LinkConfirm;
 import com.dpdocter.collections.LinkConfirmCollection;
+import com.dpdocter.collections.NdhmNotifyCollection;
 import com.dpdocter.beans.LinkInitCollection;
 import com.dpdocter.beans.LinkRequest;
 import com.dpdocter.beans.MobileTokenRequest;
@@ -42,6 +43,7 @@ import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.NdhmOtp;
 import com.dpdocter.beans.NdhmOtpStatus;
 import com.dpdocter.beans.NdhmStatus;
+import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmCollection;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
@@ -50,6 +52,7 @@ import com.dpdocter.beans.OnDiscoverRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.beans.OnLinkConfirm;
 import com.dpdocter.beans.OnLinkRequest;
+import com.dpdocter.beans.OnNotifyRequest;
 import com.dpdocter.collections.CareContextDiscoverCollection;
 import com.dpdocter.collections.OnAuthInitCollection;
 import com.dpdocter.collections.OnCareContextCollection;
@@ -60,6 +63,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CareContextDiscoverRepository;
 import com.dpdocter.repository.LinkConfirmRepository;
 import com.dpdocter.repository.LinkInitRepository;
+import com.dpdocter.repository.NdhmNotifyRepository;
 import com.dpdocter.repository.OnAuthConfirmRepository;
 import com.dpdocter.repository.OnAuthInitRepository;
 import com.dpdocter.repository.OnCareContextRepository;
@@ -108,6 +112,9 @@ public class NDHMserviceImpl implements NDHMservices {
 	
 	@Autowired
 	private LinkConfirmRepository linkConfirmRepository;
+	
+	@Autowired
+	private NdhmNotifyRepository ndhmNotifyRepository;
 	
 	
 
@@ -2636,6 +2643,84 @@ public class NDHMserviceImpl implements NDHMservices {
 	return response;
 
 	}
+
+	@Override
+	public Boolean ndhmNotify(NotifyRequest request) {
+	Boolean response=false;
+		try {
+		NdhmNotifyCollection collection=new NdhmNotifyCollection();
+		BeanUtil.map(request, collection);
+		collection.setCreatedTime(new Date());
+		ndhmNotifyRepository.save(collection);
+		response=true;
+		
+	}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean onNotify(OnNotifyRequest request) {
+		Boolean response=false;
+		try {
+		NdhmOauthResponse oauth = session();
+		System.out.println("token" + oauth.getAccessToken());
+
+		String url = "https://dev.ndhm.gov.in/gateway/v0.5/consents/hip/on-notify";
+//		JSONObject orderRequest = new JSONObject();
+//		orderRquest.put("txnId", txnId);
+
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+		con.setDoOutput(true);
+
+		System.out.println(con.getErrorStream());
+		con.setDoInput(true);
+		// optional default is POST
+		con.setRequestMethod("POST");
+		con.setRequestProperty("Accept-Language", "en-US");
+		con.setRequestProperty("Content-Type", "application/json");
+		con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+		con.setRequestProperty("X-CM-ID","sbx" );
+		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+		wr.writeBytes(request.toString());
+		wr.flush();
+		wr.close();
+		con.disconnect();
+		InputStream in = con.getInputStream();
+		// BufferedReader in = new BufferedReader(new
+		// InputStreamReader(con.getInputStream()));
+		String inputLine;
+		System.out.println(con.getErrorStream());
+		/* response = new StringBuffer(); */
+		StringBuffer output = new StringBuffer();
+		int c = 0;
+		while ((c = in.read()) != -1) {
+
+			output.append((char) c);
+
+		}
+		System.out.println("response:" + output.toString());
+		int responseCode = con.getResponseCode();
+		if(responseCode ==202)
+			response=true;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+
+
+	}
+	
+	
 
 	
 	

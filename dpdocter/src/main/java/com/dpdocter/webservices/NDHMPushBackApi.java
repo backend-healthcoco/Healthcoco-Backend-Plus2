@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dpdocter.beans.CareContextDiscoverRequest;
 import com.dpdocter.beans.FetchModesRequest;
+import com.dpdocter.beans.LinkConfirm;
+import com.dpdocter.beans.LinkRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnCareContext;
@@ -108,6 +110,36 @@ public class NDHMPushBackApi {
 		ObjectMapper mapper = new ObjectMapper();
 		CareContextDiscoverRequest request1= mapper.readValue(request,CareContextDiscoverRequest.class);
 		Boolean mobile = ndhmService.discover(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmPushUrls.LINK_INIT)
+	@POST
+	@ApiOperation(value=PathProxy.NdhmPushUrls.LINK_INIT, notes = PathProxy.NdhmPushUrls.LINK_INIT)
+	public Response<Boolean> linkInit(String request) throws JsonParseException, JsonMappingException, IOException {
+
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		LinkRequest request1= mapper.readValue(request,LinkRequest.class);
+		Boolean mobile = ndhmService.linkInit(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmPushUrls.LINK_INIT)
+	@POST
+	@ApiOperation(value=PathProxy.NdhmPushUrls.LINK_INIT, notes = PathProxy.NdhmPushUrls.LINK_INIT)
+	public Response<Boolean> linkConfirm(String request) throws JsonParseException, JsonMappingException, IOException {
+
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		LinkConfirm request1= mapper.readValue(request,LinkConfirm.class);
+		Boolean mobile = ndhmService.linkConfirm(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;

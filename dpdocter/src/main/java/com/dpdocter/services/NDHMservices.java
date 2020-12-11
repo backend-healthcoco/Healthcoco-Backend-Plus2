@@ -19,6 +19,7 @@ import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.NdhmOtp;
 import com.dpdocter.beans.NdhmOtpStatus;
 import com.dpdocter.beans.NdhmStatus;
+import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnCareContext;
@@ -26,6 +27,7 @@ import com.dpdocter.beans.OnDiscoverRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.beans.OnLinkConfirm;
 import com.dpdocter.beans.OnLinkRequest;
+import com.dpdocter.beans.OnNotifyRequest;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.LinkConfirm;
@@ -132,6 +134,10 @@ public interface NDHMservices {
 	Boolean linkConfirm(LinkConfirm request);
 	
 	Boolean onLinkConfirm(OnLinkConfirm request);
+	
+	Boolean ndhmNotify(NotifyRequest request);
+	
+	Boolean onNotify(OnNotifyRequest request);
 	
 	
 	
