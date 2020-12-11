@@ -25,6 +25,9 @@ import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnCareContext;
 import com.dpdocter.beans.OnFetchModesRequest;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.DataFlowRequest;
 import com.dpdocter.services.NDHMservices;
 
 import common.util.web.Response;
@@ -115,6 +118,7 @@ public class NDHMPushBackApi {
 		return response;
 	}
 	
+
 	
 	@Path(value = PathProxy.NdhmPushUrls.LINK_INIT)
 	@POST
@@ -140,6 +144,23 @@ public class NDHMPushBackApi {
 		ObjectMapper mapper = new ObjectMapper();
 		LinkConfirm request1= mapper.readValue(request,LinkConfirm.class);
 		Boolean mobile = ndhmService.linkConfirm(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+
+	@Path(value = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_REQUEST)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_REQUEST, notes = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_REQUEST)
+	public Response<Boolean> onDataFlowRequest(String request) throws JsonParseException, JsonMappingException, IOException {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		DataFlowRequest request1=mapper.readValue(request,DataFlowRequest.class);
+		Boolean mobile = ndhmService.onDataFlowRequest(request1);
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;

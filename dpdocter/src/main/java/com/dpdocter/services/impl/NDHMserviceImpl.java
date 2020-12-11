@@ -54,6 +54,7 @@ import com.dpdocter.beans.OnLinkConfirm;
 import com.dpdocter.beans.OnLinkRequest;
 import com.dpdocter.beans.OnNotifyRequest;
 import com.dpdocter.collections.CareContextDiscoverCollection;
+import com.dpdocter.collections.HipDataFlowCollection;
 import com.dpdocter.collections.OnAuthInitCollection;
 import com.dpdocter.collections.OnCareContextCollection;
 import com.dpdocter.collections.OnFetchModeCollection;
@@ -61,6 +62,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CareContextDiscoverRepository;
+import com.dpdocter.repository.HipDataFlowRepository;
 import com.dpdocter.repository.LinkConfirmRepository;
 import com.dpdocter.repository.LinkInitRepository;
 import com.dpdocter.repository.NdhmNotifyRepository;
@@ -110,6 +112,9 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Autowired
 	private LinkConfirmRepository linkConfirmRepository;
+	
+	@Autowired
+	private HipDataFlowRepository hipDataFlowRepository;
 
 	
 	@Autowired
@@ -2599,45 +2604,49 @@ public class NDHMserviceImpl implements NDHMservices {
 		Boolean response = false;
 		try {
 
-			NdhmOauthResponse oauth = session();
-			System.out.println("token" + oauth.getAccessToken());
+		//	NdhmOauthResponse oauth = session();
+		//	System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://your-hrp-server.com/v0.5/health-information/hip/request";
+			//String url = "https://your-hrp-server.com/v0.5/health-information/hip/request";
 
-			URL obj = new URL(url);
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-			con.setDoOutput(true);
-
-			System.out.println(con.getErrorStream());
-			con.setDoInput(true);
-			// optional default is POST
-			con.setRequestMethod("POST");
-			con.setRequestProperty("Accept-Language", "en-US");
-			con.setRequestProperty("Content-Type", "application/json");
-			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
-			con.setRequestProperty("X-HIP-ID", NDHM_CLIENTID);
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(request.toString());
-			wr.flush();
-			wr.close();
-			con.disconnect();
-			InputStream in = con.getInputStream();
-			// BufferedReader in = new BufferedReader(new
-			// InputStreamReader(con.getInputStream()));
-			String inputLine;
-			System.out.println(con.getErrorStream());
-			/* response = new StringBuffer(); */
-			StringBuffer output = new StringBuffer();
-			int c = 0;
-			while ((c = in.read()) != -1) {
-
-				output.append((char) c);
-
-			}
-			System.out.println("response:" + output.toString());
-			int responseCode = con.getResponseCode();
-			if (responseCode == 202)
+//			URL obj = new URL(url);
+//			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+//
+//			con.setDoOutput(true);
+//
+//			System.out.println(con.getErrorStream());
+//			con.setDoInput(true);
+//			// optional default is POST
+//			con.setRequestMethod("POST");
+//			con.setRequestProperty("Accept-Language", "en-US");
+//			con.setRequestProperty("Content-Type", "application/json");
+//			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+//			con.setRequestProperty("X-HIP-ID", NDHM_CLIENTID);
+//			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+//			wr.writeBytes(request.toString());
+//			wr.flush();
+//			wr.close();
+//			con.disconnect();
+//			InputStream in = con.getInputStream();
+//			// BufferedReader in = new BufferedReader(new
+//			// InputStreamReader(con.getInputStream()));
+//			String inputLine;
+//			System.out.println(con.getErrorStream());
+//			/* response = new StringBuffer(); */
+//			StringBuffer output = new StringBuffer();
+//			int c = 0;
+//			while ((c = in.read()) != -1) {
+//
+//				output.append((char) c);
+//
+//			}
+//			System.out.println("response:" + output.toString());
+//			int responseCode = con.getResponseCode();
+//			if (responseCode == 202)
+			HipDataFlowCollection collection=new HipDataFlowCollection();
+			BeanUtil.map(request, collection);
+			collection.setCreatedTime(new Date());
+			hipDataFlowRepository.save(collection);
 				response = true;
 
 		}
