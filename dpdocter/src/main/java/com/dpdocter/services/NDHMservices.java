@@ -32,9 +32,13 @@ import com.dpdocter.beans.LinkConfirm;
 import com.dpdocter.beans.LinkRequest;
 import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NdhmOauthResponse;
+import com.dpdocter.request.ConsentOnInitRequest;
 import com.dpdocter.request.CreateAadhaarRequest;
 import com.dpdocter.request.CreateProfileRequest;
 import com.dpdocter.request.DataFlowRequest;
+import com.dpdocter.request.DataTransferRequest;
+import com.dpdocter.request.GatewayConsentInitRequest;
+import com.dpdocter.request.GatewayConsentStatusRequest;
 import com.dpdocter.webservices.GateWayOnRequest;
 
 import common.util.web.Response;
@@ -138,6 +142,14 @@ public interface NDHMservices {
 	Boolean onDataFlowRequest(DataFlowRequest request);
 
 	Boolean onGateWayOnRequest(GateWayOnRequest request);
+
+	Boolean onDataTransferApi(DataTransferRequest request);
+
+	Boolean onConsentRequestOnInitApi(ConsentOnInitRequest request);
+
+	Boolean onGatewayConsentRequestInitApi(GatewayConsentInitRequest request);
+
+	Boolean onGatewayConsentRequestStatusApi(GatewayConsentStatusRequest request);
 	
 	
 	

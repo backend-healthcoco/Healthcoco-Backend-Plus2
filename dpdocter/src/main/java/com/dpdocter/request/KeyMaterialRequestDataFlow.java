@@ -2,8 +2,8 @@ package com.dpdocter.request;
 
 public class KeyMaterialRequestDataFlow {
 
-	private String cryptoAlg;
-	private String curve;
+	private String cryptoAlg="ECDH";
+	private String curve="Curve25519";
 	private DhPublicKeyDataFlowRequest dhPublicKey;
 	private String nonce;
 	public String getCryptoAlg() {

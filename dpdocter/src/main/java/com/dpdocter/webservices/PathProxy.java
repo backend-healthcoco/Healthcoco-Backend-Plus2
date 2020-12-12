@@ -2516,10 +2516,15 @@ public interface PathProxy {
 		
 		public static final String GET_DISCOVER="/discover/get";
 		
-		//data flow 
-		
-		
+		//data flow 	
 		public static final String HEALTH_INFORMATION_ON_REQUEST="/health-information/hip/on-request";
+		// data transfer
+		public static final String HEALTH_INFORMATION_TRANSFER="/health-information/transfer";
+		//consent flow
+		public static final String CONSENT_REQUEST_ON_INIT="/consent-requests/on-init";
+		// gateway flow
+		public static final String GATEWAY_CONSENT_REQUEST_INIT="/gateway/consent-requests/init";
+		public static final String GATWAY_CONSENT_REQUEST_STATUS = "/consent-requests/status";
 
 
 	}
