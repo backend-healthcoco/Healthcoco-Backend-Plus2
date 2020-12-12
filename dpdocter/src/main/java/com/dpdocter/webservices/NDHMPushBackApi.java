@@ -136,9 +136,9 @@ public class NDHMPushBackApi {
 	}
 	
 	
-	@Path(value = PathProxy.NdhmPushUrls.LINK_INIT)
+	@Path(value = PathProxy.NdhmPushUrls.LINK_CONFIRM)
 	@POST
-	@ApiOperation(value=PathProxy.NdhmPushUrls.LINK_INIT, notes = PathProxy.NdhmPushUrls.LINK_INIT)
+	@ApiOperation(value=PathProxy.NdhmPushUrls.LINK_CONFIRM, notes = PathProxy.NdhmPushUrls.LINK_CONFIRM)
 	public Response<Boolean> linkConfirm(String request) throws JsonParseException, JsonMappingException, IOException {
 
 		System.out.println("request"+request); 
