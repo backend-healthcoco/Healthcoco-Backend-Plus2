@@ -21,6 +21,7 @@ import com.dpdocter.beans.CareContextDiscoverRequest;
 import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.LinkConfirm;
 import com.dpdocter.beans.LinkRequest;
+import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnCareContext;
@@ -161,6 +162,21 @@ public class NDHMPushBackApi {
 		DataFlowRequest request1=mapper.readValue(request,DataFlowRequest.class);
 		Boolean mobile = ndhmService.onDataFlowRequest(request1);
 
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmPushUrls.NOTIFY)
+	@POST
+	@ApiOperation(value=PathProxy.NdhmPushUrls.NOTIFY, notes = PathProxy.NdhmPushUrls.NOTIFY)
+	public Response<Boolean> notify(String request) throws JsonParseException, JsonMappingException, IOException {
+
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		NotifyRequest request1= mapper.readValue(request,NotifyRequest.class);
+		Boolean mobile = ndhmService.ndhmNotify(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;

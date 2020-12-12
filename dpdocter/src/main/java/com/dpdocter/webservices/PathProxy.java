@@ -2520,6 +2520,8 @@ public interface PathProxy {
 		
 		public static final String GET_DISCOVER="/discover/get";
 		
+		public static final String ON_NOTIFY="/onNotify";
+		
 		//data flow 
 		
 		
@@ -2541,6 +2543,7 @@ public interface PathProxy {
 		
 		public static final String DISCOVER = "/v0.5/care-contexts/discover";
 		
+		public static final String NOTIFY="/v0.5/consents/hip/notify";
 
 		public static final String LINK_INIT = "/v0.5/links/link/init";
 		

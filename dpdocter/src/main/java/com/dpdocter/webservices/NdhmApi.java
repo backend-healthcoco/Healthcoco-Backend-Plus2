@@ -45,6 +45,7 @@ import com.dpdocter.beans.OnDiscoverRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.beans.OnLinkConfirm;
 import com.dpdocter.beans.OnLinkRequest;
+import com.dpdocter.beans.OnNotifyRequest;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.CreateAadhaarRequest;
@@ -399,9 +400,9 @@ public class NdhmApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.NdhmUrls.GET_PROFILE)
+	@Path(value = PathProxy.NdhmUrls.DELETE_PROFILE)
 	@DELETE
-	@ApiOperation(value = PathProxy.NdhmUrls.GET_PROFILE, notes = PathProxy.NdhmUrls.GET_PROFILE)
+	@ApiOperation(value = PathProxy.NdhmUrls.DELETE_PROFILE, notes = PathProxy.NdhmUrls.DELETE_PROFILE)
 	public Response<Object> DeleteProfileDetail(@QueryParam(value = "authToken") String authToken) {
 
 		if (authToken == null) {
@@ -574,6 +575,18 @@ public class NdhmApi {
 			throw new BusinessException(ServiceError.InvalidInput, " request Required");
 		}
 		Boolean mobile = ndhmService.onGateWayOnRequest(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmUrls.ON_NOTIFY)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.ON_NOTIFY, notes = PathProxy.NdhmUrls.ON_NOTIFY)
+	public Response<Boolean> onNotify(@RequestBody OnNotifyRequest request) {
+
+		Boolean mobile = ndhmService.onNotify(request);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
