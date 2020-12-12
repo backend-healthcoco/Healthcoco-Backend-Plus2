@@ -121,6 +121,8 @@ public interface NDHMservices {
 	
 	Boolean onCareContext(OnCareContext request); 
 	
+	OnCareContext getCareContext(String requestId); 
+	
 	Boolean discover(CareContextDiscoverRequest  request);
 	
 	CareContextDiscoverRequest getCareContextDiscover(String requestId);
@@ -131,21 +133,25 @@ public interface NDHMservices {
 	
 	Boolean onLinkInit(OnLinkRequest request);
 	
-	OnLinkRequest getLinkInit(String requestId);
+	LinkRequest getLinkInit(String requestId);
 	
 	Boolean linkConfirm(LinkConfirm request);
 	
 	Boolean onLinkConfirm(OnLinkConfirm request);
 
+	LinkConfirm getLinkConfim(String requestId);
+	
 	Boolean onDataFlowRequest(DataFlowRequest request);
 
 	Boolean onGateWayOnRequest(GateWayOnRequest request);
+	
+	GateWayOnRequest getDataFlowRequest(String requestId);
 	
 	Boolean ndhmNotify(NotifyRequest request);
 	
 	Boolean onNotify(OnNotifyRequest request);
 	
-	
+	NotifyRequest getNotify(String requestId);
 	
 
 }

@@ -3,6 +3,8 @@ package com.dpdocter.beans;
 public class HipConsent {
 
 	private String id;
+	
+	private String name;
 
 	public String getId() {
 		return id;
@@ -11,6 +13,15 @@ public class HipConsent {
 	public void setId(String id) {
 		this.id = id;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	
 	
 }

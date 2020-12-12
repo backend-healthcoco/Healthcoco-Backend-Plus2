@@ -2520,6 +2520,14 @@ public interface PathProxy {
 		
 		public static final String GET_DISCOVER="/discover/get";
 		
+		public static final String GET_CARE_CONTEXT="/careContext/get";
+		
+		public static final String GET_LINK_INIT="/linkInit/get";
+		
+		public static final String GET_LINK_CONFIRM="/linkConfirm/get";
+		
+		public static final String GET_NOTIFY="/notify/get";
+		
 		public static final String ON_NOTIFY="/onNotify";
 		
 		//data flow 

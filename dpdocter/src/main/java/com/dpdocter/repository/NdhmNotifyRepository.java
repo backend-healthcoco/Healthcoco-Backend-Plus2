@@ -7,4 +7,6 @@ import com.dpdocter.collections.NdhmNotifyCollection;
 
 public interface NdhmNotifyRepository extends MongoRepository<NdhmNotifyCollection,ObjectId>{
 
+	NdhmNotifyCollection findByRequestId(String requestId);
+
 }

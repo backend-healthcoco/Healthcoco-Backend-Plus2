@@ -24,7 +24,7 @@ public class ConsentDetail {
 	
 	private ConsentPermission permission;
 	
-	private String signature;
+	
 
 	public String getSchemaVersion() {
 		return schemaVersion;
@@ -106,13 +106,7 @@ public class ConsentDetail {
 		this.permission = permission;
 	}
 
-	public String getSignature() {
-		return signature;
-	}
 
-	public void setSignature(String signature) {
-		this.signature = signature;
-	}
 	
 	
 	

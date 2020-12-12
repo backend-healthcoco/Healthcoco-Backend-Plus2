@@ -2194,10 +2194,8 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			orderRequest2.put("referenceNumber", request.getLink().getPatient().getReferenceNumber());
 			orderRequest2.put("display", request.getLink().getPatient().getDisplay());
-			orderRequest2.put("careContexts", orderRequest3);
-			orderRequest3.put("referenceNumber", request.getLink().getPatient().getCareContexts().getReferenceNumber());
-			orderRequest3.put("display", request.getLink().getPatient().getCareContexts().getDisplay());
-
+			orderRequest2.put("careContexts", request.getLink().getPatient().getCareContexts());
+			
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
 
@@ -2506,11 +2504,11 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public OnLinkRequest getLinkInit(String requestId) {
-		OnLinkRequest response = null;
+	public LinkRequest getLinkInit(String requestId) {
+		LinkRequest response = null;
 		try {
 			LinkInitCollection collection = linkInitRepository.findByRequestId(requestId);
-			response = new OnLinkRequest();
+			response = new LinkRequest();
 			BeanUtil.map(collection, response);
 
 		} catch (Exception e) {
@@ -2790,6 +2788,61 @@ public class NDHMserviceImpl implements NDHMservices {
 		return response;
 
 
+	}
+
+	@Override
+	public OnCareContext getCareContext(String requestId) {
+		OnCareContext response=null;
+		try {
+			OnCareContextCollection collection	= onCareContextRepository.findByRespRequestId(requestId);
+			response=new OnCareContext();
+			BeanUtil.map(collection, response);
+			
+		}
+		 catch (Exception e) {
+				e.printStackTrace();
+				logger.error("Error : " + e.getMessage());
+				throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+			}
+			return response;
+	}
+
+	@Override
+	public LinkConfirm getLinkConfim(String requestId) {
+		LinkConfirm response=null;
+		try {
+		LinkConfirmCollection collection = linkConfirmRepository.findByRequestId(requestId);
+		response=new LinkConfirm();
+		BeanUtil.map(collection, response);
+		}catch (Exception e) {
+				e.printStackTrace();
+				logger.error("Error : " + e.getMessage());
+				throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+			}
+			return response;
+	}
+
+	@Override
+	public GateWayOnRequest getDataFlowRequest(String requestId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public NotifyRequest getNotify(String requestId) {
+		NotifyRequest response=null;
+		try {
+			NdhmNotifyCollection collection=ndhmNotifyRepository.findByRequestId(requestId);
+			response=new NotifyRequest();
+			BeanUtil.map(collection, response);
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
 	}
 	
 

@@ -7,4 +7,8 @@ import com.dpdocter.collections.LinkConfirmCollection;
 
 public interface LinkConfirmRepository extends MongoRepository<LinkConfirmCollection, ObjectId>{
 
+	LinkConfirmCollection findByRequestId(String requestId);
+
+
+
 }

@@ -34,13 +34,17 @@ import com.dpdocter.beans.HealthIdRequest;
 import com.dpdocter.beans.HealthIdResponse;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
+import com.dpdocter.beans.LinkConfirm;
+import com.dpdocter.beans.LinkRequest;
 import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmOtp;
 import com.dpdocter.beans.NdhmOtpStatus;
 import com.dpdocter.beans.NdhmStatus;
+import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
+import com.dpdocter.beans.OnCareContext;
 import com.dpdocter.beans.OnDiscoverRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.beans.OnLinkConfirm;
@@ -490,14 +494,13 @@ public class NdhmApi {
 		return response;
 	}
 	
-	
-	@Path(value = PathProxy.NdhmUrls.GET_DISCOVER)
+	@Path(value = PathProxy.NdhmUrls.GET_CARE_CONTEXT)
 	@GET
-	@ApiOperation(value = PathProxy.NdhmUrls.GET_DISCOVER, notes = PathProxy.NdhmUrls.GET_DISCOVER)
-	public Response<CareContextDiscoverRequest> getDiscover(@QueryParam("requestId")String requestId) {
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_CARE_CONTEXT, notes = PathProxy.NdhmUrls.GET_CARE_CONTEXT)
+	public Response<OnCareContext> getCareContext(@QueryParam("requestId")String requestId) {
 
-		CareContextDiscoverRequest mobile = ndhmService.getCareContextDiscover(requestId);
-		Response<CareContextDiscoverRequest> response = new Response<CareContextDiscoverRequest>();
+		OnCareContext mobile = ndhmService.getCareContext(requestId);
+		Response<OnCareContext> response = new Response<OnCareContext>();
 		response.setData(mobile);
 		return response;
 	}
@@ -514,7 +517,17 @@ public class NdhmApi {
 		return response;
 	}
 	
+	@Path(value = PathProxy.NdhmUrls.GET_DISCOVER)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_DISCOVER, notes = PathProxy.NdhmUrls.GET_DISCOVER)
+	public Response<CareContextDiscoverRequest> getDiscover(@QueryParam("requestId")String requestId) {
 
+		CareContextDiscoverRequest mobile = ndhmService.getCareContextDiscover(requestId);
+		Response<CareContextDiscoverRequest> response = new Response<CareContextDiscoverRequest>();
+		response.setData(mobile);
+		return response;
+	}
+	
 
 	@Path(value = PathProxy.NdhmUrls.ON_LINK_INIT)
 	@POST
@@ -526,6 +539,18 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_LINK_INIT)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_LINK_INIT, notes = PathProxy.NdhmUrls.GET_LINK_INIT)
+	public Response<LinkRequest> getLinkInit(@QueryParam("requestId")String requestId) {
+
+		LinkRequest mobile = ndhmService.getLinkInit(requestId);
+		Response<LinkRequest> response = new Response<LinkRequest>();
+		response.setData(mobile);
+		return response;
+	}
+	
 	/**
 	 * API called by CM to request Health information from HIP against a validated consent artefact
 	 * Data Flow health information request
@@ -558,6 +583,16 @@ public class NdhmApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.NdhmUrls.GET_LINK_CONFIRM)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_LINK_CONFIRM, notes = PathProxy.NdhmUrls.GET_LINK_CONFIRM)
+	public Response<LinkConfirm> getLinkConfirm(@QueryParam("requestId")String requestId) {
+
+		LinkConfirm mobile = ndhmService.getLinkConfim(requestId);
+		Response<LinkConfirm> response = new Response<LinkConfirm>();
+		response.setData(mobile);
+		return response;
+	}
 	
 
 	
@@ -592,6 +627,15 @@ public class NdhmApi {
 		return response;
 	}
 	
+	@Path(value = PathProxy.NdhmUrls.GET_NOTIFY)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_NOTIFY, notes = PathProxy.NdhmUrls.GET_NOTIFY)
+	public Response<NotifyRequest> getNotify(@QueryParam("requestId")String requestId) {
 
+		NotifyRequest mobile = ndhmService.getNotify(requestId);
+		Response<NotifyRequest> response = new Response<NotifyRequest>();
+		response.setData(mobile);
+		return response;
+	}
 	
 }
