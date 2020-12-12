@@ -2520,6 +2520,7 @@ public interface PathProxy {
 		
 		public static final String GET_DISCOVER="/discover/get";
 		
+
 		public static final String GET_CARE_CONTEXT="/careContext/get";
 		
 		public static final String GET_LINK_INIT="/linkInit/get";
@@ -2530,10 +2531,20 @@ public interface PathProxy {
 		
 		public static final String ON_NOTIFY="/onNotify";
 		
-		//data flow 
-		
-		
+		public static final String GET_DATAFLOW="/health/dataflow/get";
+
 		public static final String HEALTH_INFORMATION_ON_REQUEST="/health-information/hip/on-request";
+		// data transfer
+		public static final String HEALTH_INFORMATION_TRANSFER="/health-information/transfer";
+		//consent flow
+		
+		// gateway flow
+		public static final String GATEWAY_CONSENT_REQUEST_INIT="/gateway/consent-requests/init";
+		public static final String GATWAY_CONSENT_REQUEST_STATUS = "/consent-requests/status";
+		
+		public static final String GET_CONSENT_INIT="/consentInit/get";
+		
+		public static final String HEALTH_INFORMATION_NOTIFY="/healthInfo/notify";
 
 
 	}
@@ -2558,6 +2569,8 @@ public interface PathProxy {
 		public static final String LINK_CONFIRM = "/v0.5/links/link/confirm";
 
 		public static final String HEALTH_INFORMATION_REQUEST="/v0.5/health-information/hip/request";
+		
+		public static final String CONSENT_REQUEST_ON_INIT="/v0.5/consent-requests/on-init";
 
 	}
 }

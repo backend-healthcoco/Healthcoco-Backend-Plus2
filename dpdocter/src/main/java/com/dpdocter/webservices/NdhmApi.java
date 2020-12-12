@@ -34,6 +34,7 @@ import com.dpdocter.beans.HealthIdRequest;
 import com.dpdocter.beans.HealthIdResponse;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
+import com.dpdocter.beans.HealthInfoNotify;
 import com.dpdocter.beans.LinkConfirm;
 import com.dpdocter.beans.LinkRequest;
 import com.dpdocter.beans.MobileTokenRequest;
@@ -52,9 +53,13 @@ import com.dpdocter.beans.OnLinkRequest;
 import com.dpdocter.beans.OnNotifyRequest;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.ConsentOnInitRequest;
 import com.dpdocter.request.CreateAadhaarRequest;
 import com.dpdocter.request.CreateProfileRequest;
 import com.dpdocter.request.DataFlowRequest;
+import com.dpdocter.request.DataTransferRequest;
+import com.dpdocter.request.GatewayConsentInitRequest;
+import com.dpdocter.request.GatewayConsentStatusRequest;
 import com.dpdocter.services.NDHMservices;
 
 import common.util.web.Response;
@@ -615,17 +620,75 @@ public class NdhmApi {
 		return response;
 	}
 	
+
 	
 	@Path(value = PathProxy.NdhmUrls.ON_NOTIFY)
 	@POST
 	@ApiOperation(value = PathProxy.NdhmUrls.ON_NOTIFY, notes = PathProxy.NdhmUrls.ON_NOTIFY)
 	public Response<Boolean> onNotify(@RequestBody OnNotifyRequest request) {
 
-		Boolean mobile = ndhmService.onNotify(request);
+	Boolean mobile = ndhmService.onNotify(request);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(mobile);
+	return response;
+}
+	/**
+	 * Data Transfer health information transfer api
+	 * @param request
+	 * @return
+	 */
+	@Path(value = PathProxy.NdhmUrls.HEALTH_INFORMATION_TRANSFER)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.HEALTH_INFORMATION_TRANSFER, notes = PathProxy.NdhmUrls.HEALTH_INFORMATION_TRANSFER)
+	public Response<Boolean> onDataTransferApi(@RequestBody DataTransferRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		Boolean mobile = ndhmService.onDataTransferApi(request);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}
+	
+	
+	
+	/**
+	 * gateway consent-requests/init hiu swagger  init api
+	 * @param request
+	 * @return
+	 */
+	@Path(value = PathProxy.NdhmUrls.GATEWAY_CONSENT_REQUEST_INIT)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.GATEWAY_CONSENT_REQUEST_INIT, notes = PathProxy.NdhmUrls.GATEWAY_CONSENT_REQUEST_INIT)
+	public Response<Boolean> onGatewayConsentRequestInitApi(@RequestBody GatewayConsentInitRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		Boolean mobile = ndhmService.onGatewayConsentRequestInitApi(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	/**
+	 * gateway consent-requests/status hiu swagger  init api
+	 * @param request
+	 * @return
+	 */
+	@Path(value = PathProxy.NdhmUrls.GATWAY_CONSENT_REQUEST_STATUS)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.GATWAY_CONSENT_REQUEST_STATUS, notes = PathProxy.NdhmUrls.GATWAY_CONSENT_REQUEST_STATUS)
+	public Response<Boolean> onGatewayConsentRequestStatusApi(@RequestBody GatewayConsentStatusRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		Boolean mobile = ndhmService.onGatewayConsentRequestStatusApi(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+
+	
 	
 	@Path(value = PathProxy.NdhmUrls.GET_NOTIFY)
 	@GET
@@ -634,6 +697,42 @@ public class NdhmApi {
 
 		NotifyRequest mobile = ndhmService.getNotify(requestId);
 		Response<NotifyRequest> response = new Response<NotifyRequest>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmUrls.GET_DATAFLOW)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_DATAFLOW, notes = PathProxy.NdhmUrls.GET_DATAFLOW)
+	public Response<DataFlowRequest> getHealthDataFlow(@QueryParam("transactionId")String transactionId) {
+
+		DataFlowRequest mobile = ndhmService.getDataFlow(transactionId);
+		Response<DataFlowRequest> response = new Response<DataFlowRequest>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_CONSENT_INIT)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_CONSENT_INIT, notes = PathProxy.NdhmUrls.GET_CONSENT_INIT)
+	public Response<ConsentOnInitRequest> getConsentInit(@QueryParam("requestId")String requestId) {
+
+		ConsentOnInitRequest mobile = ndhmService.getConsentInitRequest(requestId);
+		Response<ConsentOnInitRequest> response = new Response<ConsentOnInitRequest>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.HEALTH_INFORMATION_NOTIFY)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.HEALTH_INFORMATION_NOTIFY, notes = PathProxy.NdhmUrls.HEALTH_INFORMATION_NOTIFY)
+	public Response<Boolean> healthInfoNotify(@RequestBody HealthInfoNotify request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		Boolean mobile = ndhmService.healthInformationNotify(request);
+		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;
 	}

@@ -30,13 +30,18 @@ import com.dpdocter.beans.OnLinkRequest;
 import com.dpdocter.beans.OnNotifyRequest;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
+import com.dpdocter.beans.HealthInfoNotify;
 import com.dpdocter.beans.LinkConfirm;
 import com.dpdocter.beans.LinkRequest;
 import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NdhmOauthResponse;
+import com.dpdocter.request.ConsentOnInitRequest;
 import com.dpdocter.request.CreateAadhaarRequest;
 import com.dpdocter.request.CreateProfileRequest;
 import com.dpdocter.request.DataFlowRequest;
+import com.dpdocter.request.DataTransferRequest;
+import com.dpdocter.request.GatewayConsentInitRequest;
+import com.dpdocter.request.GatewayConsentStatusRequest;
 import com.dpdocter.webservices.GateWayOnRequest;
 
 import common.util.web.Response;
@@ -145,13 +150,27 @@ public interface NDHMservices {
 
 	Boolean onGateWayOnRequest(GateWayOnRequest request);
 	
-	GateWayOnRequest getDataFlowRequest(String requestId);
+	DataFlowRequest getDataFlow(String transactionId);
+
+	Boolean onDataTransferApi(DataTransferRequest request);
+
+	Boolean onConsentRequestOnInitApi(ConsentOnInitRequest request);
+
+	Boolean onGatewayConsentRequestInitApi(GatewayConsentInitRequest request);
+
+	Boolean onGatewayConsentRequestStatusApi(GatewayConsentStatusRequest request);
+	
+	ConsentOnInitRequest getConsentInitRequest(String requestId);
 	
 	Boolean ndhmNotify(NotifyRequest request);
 	
 	Boolean onNotify(OnNotifyRequest request);
 	
 	NotifyRequest getNotify(String requestId);
+	
+	Boolean healthInformationNotify(HealthInfoNotify request);
+	
+	
 	
 
 }

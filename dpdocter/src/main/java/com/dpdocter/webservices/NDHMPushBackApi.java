@@ -28,6 +28,7 @@ import com.dpdocter.beans.OnCareContext;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.ConsentOnInitRequest;
 import com.dpdocter.request.DataFlowRequest;
 import com.dpdocter.services.NDHMservices;
 
@@ -177,6 +178,27 @@ public class NDHMPushBackApi {
 		ObjectMapper mapper = new ObjectMapper();
 		NotifyRequest request1= mapper.readValue(request,NotifyRequest.class);
 		Boolean mobile = ndhmService.ndhmNotify(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	/**
+	 * consent request hiu swagger  on-init api
+	 * @param request
+	 * @return
+	 */
+	@Path(value = PathProxy.NdhmPushUrls.CONSENT_REQUEST_ON_INIT)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmPushUrls.CONSENT_REQUEST_ON_INIT, notes = PathProxy.NdhmPushUrls.CONSENT_REQUEST_ON_INIT)
+	public Response<Boolean> onConsentRequestOnInitApi(String request)throws JsonParseException, JsonMappingException, IOException {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		ConsentOnInitRequest request1= mapper.readValue(request,ConsentOnInitRequest.class);
+		Boolean mobile = ndhmService.onConsentRequestOnInitApi(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;

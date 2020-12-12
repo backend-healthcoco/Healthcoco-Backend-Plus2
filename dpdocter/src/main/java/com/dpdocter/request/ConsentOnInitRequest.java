@@ -1,24 +1,16 @@
-package com.dpdocter.beans;
+package com.dpdocter.request;
 
-public class OnLinkConfirm {
+import com.dpdocter.beans.FetchResponse;
+import com.dpdocter.beans.NdhmErrorObject;
 
-	
-	
+public class ConsentOnInitRequest {
+
 	private String requestId;
-	
 	private String timestamp;
-	
-	private LinkConfirmPatient patient;
-	
-	
-	
+	private ConsentDataFlowRequest consentRequest;
 	private NdhmErrorObject error;
-	
 	private FetchResponse resp;
 
-	
-
-	
 	public String getRequestId() {
 		return requestId;
 	}
@@ -35,12 +27,14 @@ public class OnLinkConfirm {
 		this.timestamp = timestamp;
 	}
 
-	public LinkConfirmPatient getPatient() {
-		return patient;
+	
+
+	public ConsentDataFlowRequest getConsentRequest() {
+		return consentRequest;
 	}
 
-	public void setPatient(LinkConfirmPatient patient) {
-		this.patient = patient;
+	public void setConsentRequest(ConsentDataFlowRequest consentRequest) {
+		this.consentRequest = consentRequest;
 	}
 
 	public NdhmErrorObject getError() {
@@ -58,6 +52,5 @@ public class OnLinkConfirm {
 	public void setResp(FetchResponse resp) {
 		this.resp = resp;
 	}
-	
-	
+
 }
