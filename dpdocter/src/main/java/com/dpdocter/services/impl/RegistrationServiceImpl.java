@@ -578,6 +578,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 			// save Patient Info
 			PatientCollection patientCollection = new PatientCollection();
+			patientCollection.setHealthId(null);
 			BeanUtil.map(request, patientCollection);
 			patientCollection.setFirstName(request.getLocalPatientName());
 			patientCollection.setUserId(userCollection.getId());
@@ -586,9 +587,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (request.getNdhmToken() != null)
 				patientCollection.setNdhmToken(request.getNdhmToken());
 
-			if (request.getHealthId() != null)
-				patientCollection.setHealthId(request.getHealthId());
-			
+//			if (request.getHealthId() != null) {
+//				
+//				patientCollection.setHealthId(request.getHealthId());
+//			}
 			if (request.getLinkToken() != null)
 				patientCollection.setLinkToken(request.getLinkToken());
 
@@ -902,9 +904,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 					if (request.getNdhmToken() != null)
 						patientCollection.setNdhmToken(request.getNdhmToken());
 
-					if (request.getHealthId() != null)
+					if (request.getHealthId() != null) {
+						patientCollection.setHealthId(null);
 						patientCollection.setHealthId(request.getHealthId());
-					
+					}
 					if (request.getLinkToken() != null)
 						patientCollection.setLinkToken(request.getLinkToken());
 
@@ -939,6 +942,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						patientCollection.setAdhaarId(request.getAdhaarId());
 					
 					if(request.getHealthId() !=null)
+						patientCollection.setHealthId(null);
 						patientCollection.setHealthId(request.getHealthId());
 					
 					// patientCollection.setRegistrationDate(request.getRegistrationDate());
@@ -997,6 +1001,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						PNUM = patientCollection.getPNUM();
 
 					// request.setRegistrationDate(patientCollection.getRegistrationDate());
+					patientCollection.setHealthId(null);
 					BeanUtil.map(request, patientCollection);
 					patientCollection.setId(patientId);
 					patientCollection.setUpdatedTime(new Date());

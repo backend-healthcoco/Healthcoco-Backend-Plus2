@@ -31,6 +31,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ConsentOnInitRequest;
 import com.dpdocter.request.DataFlowRequest;
+import com.dpdocter.request.DataTransferRequest;
 import com.dpdocter.services.NDHMservices;
 
 import common.util.web.Response;
@@ -221,6 +222,27 @@ public class NDHMPushBackApi {
 		response.setData(mobile);
 		return response;
 	}
+	
+	/**
+	 * Data Transfer health information transfer api
+	 * @param request
+	 * @return
+	 */
+	@Path(value = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_TRANSFER)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_TRANSFER, notes = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_TRANSFER)
+	public Response<Boolean> onDataTransferApi(String request)throws JsonParseException, JsonMappingException, IOException {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		ObjectMapper mapper = new ObjectMapper();
+		DataTransferRequest request1= mapper.readValue(request,DataTransferRequest.class);
+		Boolean mobile = ndhmService.onDataTransferApi(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
 	
 
 }

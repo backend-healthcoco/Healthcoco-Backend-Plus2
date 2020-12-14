@@ -2535,7 +2535,7 @@ public interface PathProxy {
 
 		public static final String HEALTH_INFORMATION_ON_REQUEST="/health-information/hip/on-request";
 		// data transfer
-		public static final String HEALTH_INFORMATION_TRANSFER="/health-information/transfer";
+	
 		//consent flow
 		
 		// gateway flow
@@ -2574,6 +2574,8 @@ public interface PathProxy {
 		public static final String CONSENT_REQUEST_ON_INIT="/v0.5/consent-requests/onInit";
 		
 		public static final String CONSENT_REQUEST_ON_STATUS="/v0.5/consent-requests/onStatus";
+		
+		public static final String HEALTH_INFORMATION_TRANSFER="/v0.5/health-information/transfer";
 
 	}
 }

@@ -633,23 +633,6 @@ public class NdhmApi {
 	response.setData(mobile);
 	return response;
 }
-	/**
-	 * Data Transfer health information transfer api
-	 * @param request
-	 * @return
-	 */
-	@Path(value = PathProxy.NdhmUrls.HEALTH_INFORMATION_TRANSFER)
-	@POST
-	@ApiOperation(value = PathProxy.NdhmUrls.HEALTH_INFORMATION_TRANSFER, notes = PathProxy.NdhmUrls.HEALTH_INFORMATION_TRANSFER)
-	public Response<Boolean> onDataTransferApi(@RequestBody DataTransferRequest request) {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, " request Required");
-		}
-		Boolean mobile = ndhmService.onDataTransferApi(request);
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(mobile);
-		return response;
-	}
 	
 	
 	
