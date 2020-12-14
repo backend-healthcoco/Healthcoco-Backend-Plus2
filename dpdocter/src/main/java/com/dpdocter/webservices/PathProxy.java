@@ -2545,7 +2545,8 @@ public interface PathProxy {
 		public static final String GET_CONSENT_INIT="/consentInit/get";
 		
 		public static final String HEALTH_INFORMATION_NOTIFY="/healthInfo/notify";
-
+		
+		public static final String GET_CONSENT_STATUS="/consentStatus/get";
 
 	}
 	
@@ -2570,7 +2571,9 @@ public interface PathProxy {
 
 		public static final String HEALTH_INFORMATION_REQUEST="/v0.5/health-information/hip/request";
 		
-		public static final String CONSENT_REQUEST_ON_INIT="/v0.5/consent-requests/on-init";
+		public static final String CONSENT_REQUEST_ON_INIT="/v0.5/consent-requests/onInit";
+		
+		public static final String CONSENT_REQUEST_ON_STATUS="/v0.5/consent-requests/onStatus";
 
 	}
 }

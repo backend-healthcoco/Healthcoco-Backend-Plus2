@@ -46,6 +46,7 @@ import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnCareContext;
+import com.dpdocter.beans.OnConsentRequestStatus;
 import com.dpdocter.beans.OnDiscoverRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.beans.OnLinkConfirm;
@@ -733,6 +734,17 @@ public class NdhmApi {
 		}
 		Boolean mobile = ndhmService.healthInformationNotify(request);
 		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_CONSENT_STATUS)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_CONSENT_STATUS, notes = PathProxy.NdhmUrls.GET_CONSENT_STATUS)
+	public Response<OnConsentRequestStatus> getConsentStatus(@QueryParam("requestId")String requestId) {
+
+		OnConsentRequestStatus mobile = ndhmService.getConsentStatus(requestId);
+		Response<OnConsentRequestStatus> response = new Response<OnConsentRequestStatus>();
 		response.setData(mobile);
 		return response;
 	}

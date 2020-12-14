@@ -25,6 +25,7 @@ import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnCareContext;
+import com.dpdocter.beans.OnConsentRequestStatus;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -199,6 +200,23 @@ public class NDHMPushBackApi {
 		ObjectMapper mapper = new ObjectMapper();
 		ConsentOnInitRequest request1= mapper.readValue(request,ConsentOnInitRequest.class);
 		Boolean mobile = ndhmService.onConsentRequestOnInitApi(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmPushUrls.CONSENT_REQUEST_ON_STATUS)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmPushUrls.CONSENT_REQUEST_ON_STATUS, notes = PathProxy.NdhmPushUrls.CONSENT_REQUEST_ON_STATUS)
+	public Response<Boolean> onConsentRequestOnStatus(String request)throws JsonParseException, JsonMappingException, IOException {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		OnConsentRequestStatus request1= mapper.readValue(request,OnConsentRequestStatus.class);
+		Boolean mobile = ndhmService.onConsentRequestStatus(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;

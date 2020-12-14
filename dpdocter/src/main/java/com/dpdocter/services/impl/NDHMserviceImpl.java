@@ -49,6 +49,7 @@ import com.dpdocter.beans.OnAuthConfirmCollection;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnCareContext;
+import com.dpdocter.beans.OnConsentRequestStatus;
 import com.dpdocter.beans.OnDiscoverRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.beans.OnLinkConfirm;
@@ -59,12 +60,14 @@ import com.dpdocter.collections.ConsentInitCollection;
 import com.dpdocter.collections.HipDataFlowCollection;
 import com.dpdocter.collections.OnAuthInitCollection;
 import com.dpdocter.collections.OnCareContextCollection;
+import com.dpdocter.collections.OnConsentRequestStatusCollection;
 import com.dpdocter.collections.OnFetchModeCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CareContextDiscoverRepository;
 import com.dpdocter.repository.ConsentInitRepository;
+import com.dpdocter.repository.ConsentStatusRequestRepository;
 import com.dpdocter.repository.HealthDataFlowRepository;
 import com.dpdocter.repository.HipDataFlowRepository;
 import com.dpdocter.repository.LinkConfirmRepository;
@@ -141,6 +144,9 @@ public class NDHMserviceImpl implements NDHMservices {
 	
 	@Autowired
 	private ConsentInitRepository consentInitRepository;
+	
+	@Autowired
+	private ConsentStatusRequestRepository consentStatusRequestRepository;
 
 
 	public NdhmOauthResponse session() {
@@ -3373,6 +3379,113 @@ public class NDHMserviceImpl implements NDHMservices {
 			int responseCode = con.getResponseCode();
 			if (responseCode == 202)
 				response = true;
+			
+		}
+		catch (Exception e) {
+			
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean onConsentRequestStatus(OnConsentRequestStatus request) {
+		Boolean response=false;
+		try {
+//			JSONObject orderRequest = new JSONObject();
+//			orderRequest.put("requestId", request.getRequestId());
+//			orderRequest.put("timestamp", request.getTimestamp());
+//			orderRequest.put("consentRequest",request.getConsentRequest());
+//			orderRequest.put("error", request.getError());
+//			orderRequest.put("resp",request.getResp());
+//			JSONObject hiRequestRequest = new JSONObject();
+//			hiRequestRequest.put("consentId", request.getNotification().getTransactionId());
+//			hiRequestRequest.put("transactionId", request.getNotification().getTransactionId());
+//			hiRequestRequest.put("doneAt", request.getNotification().getDoneAt());
+//			hiRequestRequest.put("notifier", request.getNotification().getNotifier());
+//			hiRequestRequest.put("statusNotification", request.getNotification().getStatusNotification());
+//			System.out.println(hiRequestRequest);
+//			orderRequest.put("notification", hiRequestRequest);
+
+//			JSONObject errorRequest = new JSONObject();
+//			errorRequest.put("code", request.getError().getCode());
+//			errorRequest.put("message", request.getError().getMessage());
+//			System.out.println(errorRequest);
+//			orderRequest.put("error", errorRequest);
+//			
+//			JSONObject requestId = new JSONObject();
+//			requestId.put("requestId", request.getResp().getRequestId());
+//			orderRequest.put("resp",requestId);
+			
+//			NdhmOauthResponse oauth = session();
+//			System.out.println("token" + oauth.getAccessToken());
+//
+//			String url = "https://dev.ndhm.gov.in/gateway/v0.5/health-information/notify";
+//
+//			URL obj = new URL(url);
+//			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+//
+//			con.setDoOutput(true);
+//
+//			System.out.println(con.getErrorStream());
+//			con.setDoInput(true);
+//			// optional default is POST
+//			con.setRequestMethod("POST");
+//			con.setRequestProperty("Accept-Language", "en-US");
+//			con.setRequestProperty("Content-Type", "application/json");
+//			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+//			con.setRequestProperty("X-CM-ID", "sbx");
+//			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+//			wr.writeBytes(orderRequest.toString());
+//			wr.flush();
+//			wr.close();
+//			con.disconnect();
+//			InputStream in = con.getInputStream();
+//			// BufferedReader in = new BufferedReader(new
+//			// InputStreamReader(con.getInputStream()));
+//			String inputLine;
+//			System.out.println(con.getErrorStream());
+//			/* response = new StringBuffer(); */
+//			StringBuffer output = new StringBuffer();
+//			int c = 0;
+//			while ((c = in.read()) != -1) {
+//
+//				output.append((char) c);
+//
+//			}
+//			System.out.println("response:" + output.toString());
+//			int responseCode = con.getResponseCode();
+//			if (responseCode == 202)
+			
+			OnConsentRequestStatusCollection collection=new OnConsentRequestStatusCollection();
+			BeanUtil.map(request, collection);
+			collection.setCreatedTime(new Date());
+			consentStatusRequestRepository.save(collection);
+			
+				response = true;
+			
+		}
+		catch (Exception e) {
+			
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public OnConsentRequestStatus getConsentStatus(String requestId) {
+		OnConsentRequestStatus response=null;
+		try {
+			OnConsentRequestStatusCollection collection=consentStatusRequestRepository.findByRespRequestId(requestId);
+			response=new OnConsentRequestStatus();
+			if(collection !=null)
+			{
+				BeanUtil.map(collection, response);
+			}
 			
 		}
 		catch (Exception e) {

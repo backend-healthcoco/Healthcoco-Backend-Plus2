@@ -23,6 +23,7 @@ import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnCareContext;
+import com.dpdocter.beans.OnConsentRequestStatus;
 import com.dpdocter.beans.OnDiscoverRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.beans.OnLinkConfirm;
@@ -170,7 +171,9 @@ public interface NDHMservices {
 	
 	Boolean healthInformationNotify(HealthInfoNotify request);
 	
+	Boolean onConsentRequestStatus(OnConsentRequestStatus request);
 	
+	OnConsentRequestStatus getConsentStatus(String requestId);
 	
 
 }
