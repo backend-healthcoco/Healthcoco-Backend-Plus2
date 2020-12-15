@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,11 +16,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -34,11 +32,15 @@ import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.HealthInfoNotify;
 import com.dpdocter.beans.LinkConfirm;
-import com.dpdocter.collections.LinkConfirmCollection;
-import com.dpdocter.collections.NdhmNotifyCollection;
 import com.dpdocter.beans.LinkInitCollection;
 import com.dpdocter.beans.LinkRequest;
 import com.dpdocter.beans.MobileTokenRequest;
+import com.dpdocter.beans.NDHMPrecriptionRecordData;
+import com.dpdocter.beans.NDHMRecordDataCode;
+import com.dpdocter.beans.NDHMRecordDataDosageInstruction;
+import com.dpdocter.beans.NDHMRecordDataRequester;
+import com.dpdocter.beans.NDHMRecordDataResource;
+import com.dpdocter.beans.NDHMRecordDataSubject;
 import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.NdhmOtp;
@@ -58,10 +60,15 @@ import com.dpdocter.beans.OnNotifyRequest;
 import com.dpdocter.collections.CareContextDiscoverCollection;
 import com.dpdocter.collections.ConsentInitCollection;
 import com.dpdocter.collections.HipDataFlowCollection;
+import com.dpdocter.collections.LinkConfirmCollection;
+import com.dpdocter.collections.NdhmNotifyCollection;
 import com.dpdocter.collections.OnAuthInitCollection;
 import com.dpdocter.collections.OnCareContextCollection;
 import com.dpdocter.collections.OnConsentRequestStatusCollection;
 import com.dpdocter.collections.OnFetchModeCollection;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.enums.NDHMRecordDataResourceType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -77,6 +84,7 @@ import com.dpdocter.repository.OnAuthConfirmRepository;
 import com.dpdocter.repository.OnAuthInitRepository;
 import com.dpdocter.repository.OnCareContextRepository;
 import com.dpdocter.repository.OnFetchModeRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.request.ConsentOnInitRequest;
 import com.dpdocter.request.CreateAadhaarRequest;
 import com.dpdocter.request.CreateProfileRequest;
@@ -108,8 +116,6 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Value(value = "${ndhm.hiu.clientSecret}")
 	private String NDHM_HIU_CLIENT_SECRET;
-
-	
 	
 	@Autowired
 	private OnFetchModeRepository onFetchModeRepository;
@@ -134,7 +140,6 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Autowired
 	private HipDataFlowRepository hipDataFlowRepository;
-
 	
 	@Autowired
 	private NdhmNotifyRepository ndhmNotifyRepository;
@@ -148,6 +153,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	@Autowired
 	private ConsentStatusRequestRepository consentStatusRequestRepository;
 
+	@Autowired
+	private PatientRepository patientRepository;
 
 	public NdhmOauthResponse session() {
 		NdhmOauthResponse response = null;
@@ -3245,9 +3252,53 @@ public class NDHMserviceImpl implements NDHMservices {
 				throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 			}
 			return response;
-	}
-
+	}	
 	
+	public void mapPrescriptionRecordData(PrescriptionCollection prescriptionCollection) {
+		List<NDHMPrecriptionRecordData> precriptionRecordData = new ArrayList<NDHMPrecriptionRecordData>();
+		
+		if(prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
+			PatientCollection patientCollection = patientRepository.
+					findByUserIdAndDoctorIdAndLocationIdAndHospitalId(prescriptionCollection.getPatientId(), 
+							prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(), 
+							prescriptionCollection.getHospitalId());
+			
+			for(int i =0; i<prescriptionCollection.getItems().size()-1; i++) {
+				NDHMPrecriptionRecordData ndhmPrecriptionRecordData = new NDHMPrecriptionRecordData();
+				ndhmPrecriptionRecordData.setFullUrl(NDHMRecordDataResourceType.MedicationRequest.getResourceType()+"/"+(i+1));
+				NDHMRecordDataResource resource = new NDHMRecordDataResource();
+				resource.setResourceType(NDHMRecordDataResourceType.MedicationRequest.getResourceType());
+				resource.setId(prescriptionCollection.getItems().get(i).getDrugId().toString());
+				resource.setStatus(prescriptionCollection.getIsActive() ? "active":"inactive");
+				
+				NDHMRecordDataCode medicationCodeableConcept = new NDHMRecordDataCode();
+				medicationCodeableConcept.setText(prescriptionCollection.getItems().get(i).getDrugName()+" "
+												+prescriptionCollection.getItems().get(i).getDosage()+" "
+												+prescriptionCollection.getItems().get(i).getDrugType());
+				
+				resource.setMedicationCodeableConcept(medicationCodeableConcept);
+				
+				NDHMRecordDataSubject subject = new NDHMRecordDataSubject();
+				subject.setDisplay(patientCollection.getLocalPatientName());
+				resource.setSubject(subject);
+				resource.setAuthoredOn(prescriptionCollection.getCreatedTime()+"");
+				
+				NDHMRecordDataRequester requester = new NDHMRecordDataRequester();
+				requester.setDisplay(prescriptionCollection.getCreatedBy());
+				
+				List<NDHMRecordDataDosageInstruction> dosageInstruction = new ArrayList<NDHMRecordDataDosageInstruction>();
+				NDHMRecordDataDosageInstruction dataDosageInstruction = new NDHMRecordDataDosageInstruction();
+				dataDosageInstruction.setText(prescriptionCollection.getItems().get(i).getDosage());
+				dosageInstruction.add(dataDosageInstruction);
+				
+				resource.setDosageInstruction(dosageInstruction);
+				ndhmPrecriptionRecordData.setResource(resource);
+				
+				precriptionRecordData.add(ndhmPrecriptionRecordData);
+			}
+		}
+		
+	}	
 
 	@Override
 	public NotifyRequest getNotify(String requestId) {
