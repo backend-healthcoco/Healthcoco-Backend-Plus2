@@ -9,7 +9,7 @@ public class TreatmentObservation {
 
 	private List<Observation> observations;
 	
-	private List<TreatmentResponse> treatments;
+	private List<ClinicalNotesTreatment> treatments;
 
 	public List<Observation> getObservations() {
 		return observations;
@@ -19,13 +19,17 @@ public class TreatmentObservation {
 		this.observations = observations;
 	}
 
-	public List<TreatmentResponse> getTreatments() {
+	public List<ClinicalNotesTreatment> getTreatments() {
 		return treatments;
 	}
 
-	public void setTreatments(List<TreatmentResponse> treatments) {
+	public void setTreatments(List<ClinicalNotesTreatment> treatments) {
 		this.treatments = treatments;
 	}
+	
+	
+
+	
 
 	
 	

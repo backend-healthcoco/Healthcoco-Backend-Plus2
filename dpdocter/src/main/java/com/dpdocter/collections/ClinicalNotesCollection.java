@@ -15,6 +15,7 @@ import com.dpdocter.beans.EyeSpecialityObservation;
 import com.dpdocter.beans.FieldsCollection;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.PhysioExamination;
+import com.dpdocter.beans.TreatmentObservation;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
 
@@ -219,7 +220,7 @@ public class ClinicalNotesCollection extends GenericCollection {
 	
 	
 	@Field
-	private List<FieldsCollection> treatmentFields;
+	private TreatmentObservation TreatmentObservation;
 	
 	
 	//  @Field private List<Observation> treatmentObservation;
@@ -783,12 +784,14 @@ public class ClinicalNotesCollection extends GenericCollection {
 	
 	
 
-	public List<FieldsCollection> getTreatmentFields() {
-		return treatmentFields;
+	
+
+	public TreatmentObservation getTreatmentObservation() {
+		return TreatmentObservation;
 	}
 
-	public void setTreatmentFields(List<FieldsCollection> treatmentFields) {
-		this.treatmentFields = treatmentFields;
+	public void setTreatmentObservation(TreatmentObservation treatmentObservation) {
+		TreatmentObservation = treatmentObservation;
 	}
 
 	public PhysioExamination getPhysioExamination() {

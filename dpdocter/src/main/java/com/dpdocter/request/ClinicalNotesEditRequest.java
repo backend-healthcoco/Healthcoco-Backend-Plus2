@@ -28,6 +28,7 @@ import com.dpdocter.beans.PresentingComplaintThroat;
 import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
+import com.dpdocter.beans.TreatmentObservation;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
 
@@ -184,7 +185,7 @@ public class ClinicalNotesEditRequest {
 	
 	private PhysioExamination physioExamination;
 	
-	private List<Fields> treatmentFields;
+	private TreatmentObservation TreatmentObservation;
 	
 //	private TreatmentObservationRequest treatmentObservation;
 
@@ -1183,7 +1184,13 @@ public class ClinicalNotesEditRequest {
 		this.eyeObservation = eyeObservation;
 	}
 	
-	
+	public TreatmentObservation getTreatmentObservation() {
+		return TreatmentObservation;
+	}
+
+	public void setTreatmentObservation(TreatmentObservation treatmentObservation) {
+		TreatmentObservation = treatmentObservation;
+	}
 
 	
 
@@ -1199,14 +1206,8 @@ public class ClinicalNotesEditRequest {
 //		this.treatmentObservation = treatmentObservation;
 //	}
 
-	public List<Fields> getTreatmentFields() {
-		return treatmentFields;
-	}
-
-	public void setTreatmentFields(List<Fields> treatmentFields) {
-		this.treatmentFields = treatmentFields;
-	}
-
+	
+	
 	@Override
 	public String toString() {
 		return "ClinicalNotesEditRequest [id=" + id + ", patientId=" + patientId + ", observation=" + observation
@@ -1248,4 +1249,6 @@ public class ClinicalNotesEditRequest {
 				+ ", edd=" + edd + ", noOfFemaleChildren=" + noOfFemaleChildren + ", noOfMaleChildren="
 				+ noOfMaleChildren + "]";
 	}
+
+	
 }

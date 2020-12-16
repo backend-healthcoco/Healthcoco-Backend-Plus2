@@ -137,12 +137,12 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 	
 	private PhysioExamination physioExamination;
 	
-	private List<TreatmentResponse> treatments;
+	private List<ClinicalNotesTreatment> treatments;
 	
 	private List<Observation> treatmentObservation;
 	
 	@Field
-	private List<FieldsCollection> treatmentFields;
+	private TreatmentObservation TreatmentObservation;
 
 	public ObjectId getId() {
 		return id;
@@ -684,24 +684,18 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 		this.physioExamination = physioExamination;
 	}
 	
-	
 
-	public List<TreatmentResponse> getTreatments() {
+
+	public List<ClinicalNotesTreatment> getTreatments() {
 		return treatments;
 	}
 
-	public void setTreatments(List<TreatmentResponse> treatments) {
+	public void setTreatments(List<ClinicalNotesTreatment> treatments) {
 		this.treatments = treatments;
 	}
-	
-	
 
-	public List<FieldsCollection> getTreatmentFields() {
-		return treatmentFields;
-	}
-
-	public void setTreatmentFields(List<FieldsCollection> treatmentFields) {
-		this.treatmentFields = treatmentFields;
+	public void setTreatmentObservation(TreatmentObservation treatmentObservation) {
+		TreatmentObservation = treatmentObservation;
 	}
 
 	public List<Observation> getTreatmentObservation() {

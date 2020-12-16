@@ -143,7 +143,7 @@ public class ClinicalNotes extends GenericCollection {
 	
 	private TreatmentObservation TreatmentObservation;
 	
-	private List<Fields> treatmentFields;
+	
 
 
 	public AppointmentDetails getAppointmentRequest() {
@@ -677,14 +677,7 @@ public class ClinicalNotes extends GenericCollection {
 	
 	
 
-	public List<Fields> getTreatmentFields() {
-		return treatmentFields;
-	}
-
-	public void setTreatmentFields(List<Fields> treatmentFields) {
-		this.treatmentFields = treatmentFields;
-	}
-
+	
 	public TreatmentObservation getTreatmentObservation() {
 		return TreatmentObservation;
 	}
