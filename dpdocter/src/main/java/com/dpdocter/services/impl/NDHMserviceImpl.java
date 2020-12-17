@@ -2375,7 +2375,7 @@ public class NDHMserviceImpl implements NDHMservices {
 					careContexts.add(care);
 					patient.setCareContexts(careContexts);
 					List<String>matchedBy=new ArrayList<String>();
-					matchedBy.add("MOBILE");
+					matchedBy.add("HEALTH_ID");
 				patient.setMatchedBy(matchedBy);
 					discover.setPatient(patient);
 					FetchResponse resp=new FetchResponse();
