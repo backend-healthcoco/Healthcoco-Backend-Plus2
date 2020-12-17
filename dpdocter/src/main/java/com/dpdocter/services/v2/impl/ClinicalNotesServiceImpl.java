@@ -205,10 +205,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	public ClinicalNotes getClinicalNote(ClinicalnoteLookupBean clinicalNotesCollection) {
 		ClinicalNotes clinicalNote = new ClinicalNotes();
 		BeanUtil.map(clinicalNotesCollection, clinicalNote);
-		TreatmentObservation treatmentObservation =new TreatmentObservation();
-		treatmentObservation.setTreatments(clinicalNotesCollection.getTreatments());
-		treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
-		clinicalNote.setTreatmentObservation(treatmentObservation);
+	//	TreatmentObservation treatmentObservation =new TreatmentObservation();
+	//	treatmentObservation.setTreatments(clinicalNotesCollection.getTreatments());
+	//	treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
+	//	clinicalNote.setTreatmentObservation(treatmentObservation);
 
 		// if(clinicalNotesCollection.getComplaints() != null &&
 		// !clinicalNotesCollection.getComplaints().isEmpty())
