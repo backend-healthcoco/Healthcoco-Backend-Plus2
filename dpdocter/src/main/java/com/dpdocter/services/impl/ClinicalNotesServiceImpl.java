@@ -1403,10 +1403,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
-			TreatmentObservation treatmentObservation = new TreatmentObservation();
+		//	TreatmentObservation treatmentObservation = new TreatmentObservation();
 //			treatmentObservation.setTreatments(treatment.getTreatments());
 //			treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
-			clinicalNotes.setTreatmentObservation(treatmentObservation);
+		//	clinicalNotes.setTreatmentObservation(treatmentObservation);
 			// if(complaintIds != null &&
 			// !complaintIds.isEmpty())clinicalNotes.setComplaints(sortComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new
 			// Criteria("id").in(complaintIds))), ComplaintCollection.class,
