@@ -11,7 +11,8 @@ import java.util.ArrayList;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -2335,11 +2336,14 @@ public class NDHMserviceImpl implements NDHMservices {
 				OnDiscoverRequest discover=new OnDiscoverRequest();
 				UUID uuid=UUID.randomUUID();
 				discover.setRequestId(uuid.toString());
-				TimeZone tz = TimeZone.getTimeZone("UTC");
-				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
-				df.setTimeZone(tz);
-				String nowAsISO = df.format(new Date());
-				discover.setTimestamp(nowAsISO);
+//				TimeZone tz = TimeZone.getTimeZone("UTC");
+//				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
+//				df.setTimeZone(tz);
+//				String nowAsISO = df.format(new Date());
+		//		discover.setTimestamp(nowAsISO);
+				LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+				System.out.println("timeStamp"+time.toString());
+				discover.setTimestamp(time.toString());
 				discover.setTransactionId(collection.getTransactionId());
 				
 				String patientId=collection.getPatient().getId();
@@ -2522,15 +2526,18 @@ public class NDHMserviceImpl implements NDHMservices {
 				OnLinkRequest discover=new OnLinkRequest();
 				UUID uuid=UUID.randomUUID();
 				discover.setRequestId(uuid.toString());
-				TimeZone tz = TimeZone.getTimeZone("UTC");
-				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
-				df.setTimeZone(tz);
-				String nowAsISO = df.format(new Date());
-				discover.setTimestamp(nowAsISO);
+//				TimeZone tz = TimeZone.getTimeZone("UTC");
+//				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
+//				df.setTimeZone(tz);
+		//		String nowAsISO = df.format(new Date());
+			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+			System.out.println("timeStamp"+time.toString());
+				discover.setTimestamp(time.toString());
 				discover.setTransactionId(collection.getTransactionId());
 				LinkResponse link=new LinkResponse();
 				link.setAuthenticationType("DIRECT");
 				link.setReferenceNumber(collection.getPatient().getReferenceNumber());
+				
 				LinkMeta meta =new LinkMeta();
 				meta.setCommunicationMedium("MOBILE");
 				link.setMeta(meta);
@@ -2575,14 +2582,21 @@ public class NDHMserviceImpl implements NDHMservices {
 //			orderRequest3.put("referenceNumber", request.getLink().getPatient().getCareContexts().getReferenceNumber());
 //			orderRequest3.put("display", request.getLink().getPatient().getCareContexts().getDisplay());
 			
-			
+		
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
 			orderRequest.put("transactionId", request.getTransactionId());
-			orderRequest.put("link",request.getLink());
+			
+			orderRequest1.put("referenceNumber",request.getLink().getReferenceNumber());
+			orderRequest1.put("authenticationType",request.getLink().getAuthenticationType());
+			orderRequest2.put("communicationMedium",request.getLink().getMeta().getCommunicationMedium());
+			orderRequest1.put("meta",orderRequest2);
+		    orderRequest.put("link",request.getLink());
 			orderRequest.put("error",request.getError());
-			orderRequest.put("resp",request.getResp());
-
+			orderRequest3.put("requestId",request.getResp().getRequestId());
+			orderRequest.put("resp",orderRequest3);
+			orderRequest.put("link", orderRequest1);
+			
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 			System.out.println("req"+orderRequest);
@@ -2670,11 +2684,14 @@ public class NDHMserviceImpl implements NDHMservices {
 				OnLinkConfirm discover=new OnLinkConfirm();
 				UUID uuid=UUID.randomUUID();
 				discover.setRequestId(uuid.toString());
-				TimeZone tz = TimeZone.getTimeZone("UTC");
-				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
-				df.setTimeZone(tz);
-				String nowAsISO = df.format(new Date());
-				discover.setTimestamp(nowAsISO);
+//				TimeZone tz = TimeZone.getTimeZone("UTC");
+//				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
+//				df.setTimeZone(tz);
+//				String nowAsISO = df.format(new Date());
+//				discover.setTimestamp(nowAsISO);
+				LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+				System.out.println("timeStamp"+time.toString());
+					discover.setTimestamp(time.toString());
 				
 				LinkConfirmPatient link=new LinkConfirmPatient();
 				link.setDisplay("LinkConfirm");
@@ -2688,6 +2705,7 @@ public class NDHMserviceImpl implements NDHMservices {
 				FetchResponse resp=new FetchResponse();
 				resp.setRequestId(collection.getRequestId());
 				discover.setResp(resp);
+				discover.setPatient(link);
 		Boolean	status=	onLinkConfirm(discover);
 		System.out.println("Status"+status);
 			}
@@ -2726,10 +2744,14 @@ public class NDHMserviceImpl implements NDHMservices {
 			
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
+			orderRequest1.put("referenceNumber", request.getPatient().getReferenceNumber());
+			orderRequest1.put("display",request.getPatient().getDisplay());
+			orderRequest1.put("careContexts",request.getPatient().getCareContexts());
+			orderRequest.put("patient",orderRequest1);
 			
-			orderRequest.put("patient",request.getPatient());
 			orderRequest.put("error",request.getError());
-			orderRequest.put("resp",request.getResp());
+			orderRequest3.put("requestId",request.getResp().getRequestId());
+			orderRequest.put("resp",orderRequest3);
 			System.out.println("req"+orderRequest);
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
@@ -3274,11 +3296,14 @@ public class NDHMserviceImpl implements NDHMservices {
 			OnNotifyRequest req=new OnNotifyRequest();
 			UUID uuid=UUID.randomUUID();
 			req.setRequestId(uuid.toString());
-			TimeZone tz = TimeZone.getTimeZone("UTC");
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
-			df.setTimeZone(tz);
-			String nowAsISO = df.format(new Date());
-			req.setTimestamp(nowAsISO);
+//			TimeZone tz = TimeZone.getTimeZone("UTC");
+//			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
+//			df.setTimeZone(tz);
+//			String nowAsISO = df.format(new Date());
+//			req.setTimestamp(nowAsISO);
+			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+			System.out.println("timeStamp"+time.toString());
+			req.setTimestamp(time.toString());
 			AcknowledgementRequest acknowledgementRequest=new AcknowledgementRequest();
 			acknowledgementRequest.setConsentId(collection.getNotification().getConsentId());
 			acknowledgementRequest.setStatus("OK");

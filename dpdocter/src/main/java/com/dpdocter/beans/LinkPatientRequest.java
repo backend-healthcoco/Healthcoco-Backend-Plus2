@@ -1,12 +1,14 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class LinkPatientRequest {
 
 	private String id;
 	
 	private String referenceNumber;
 	
-	private CareContext careContexts;
+	private List<CareContext> careContexts;
 
 	public String getId() {
 		return id;
@@ -24,13 +26,15 @@ public class LinkPatientRequest {
 		this.referenceNumber = referenceNumber;
 	}
 
-	public CareContext getCareContexts() {
+	public List<CareContext> getCareContexts() {
 		return careContexts;
 	}
 
-	public void setCareContexts(CareContext careContexts) {
+	public void setCareContexts(List<CareContext> careContexts) {
 		this.careContexts = careContexts;
 	}
+
+	
 	
 	
 	
