@@ -51,6 +51,12 @@ public class OnNotifyRequest {
 	public void setResp(FetchResponse resp) {
 		this.resp = resp;
 	}
+
+	@Override
+	public String toString() {
+		return "OnNotifyRequest [requestId=" + requestId + ", timestamp=" + timestamp + ", acknowledgement="
+				+ acknowledgement + ", error=" + error + ", resp=" + resp + "]";
+	}
 	
 	
 	

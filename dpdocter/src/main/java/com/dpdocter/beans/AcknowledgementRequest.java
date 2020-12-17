@@ -21,6 +21,11 @@ public class AcknowledgementRequest {
 	public void setConsentId(String consentId) {
 		this.consentId = consentId;
 	}
+
+	@Override
+	public String toString() {
+		return "AcknowledgementRequest [status=" + status + ", consentId=" + consentId + "]";
+	}
 	
 	
 }

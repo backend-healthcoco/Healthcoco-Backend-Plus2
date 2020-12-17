@@ -6,9 +6,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
 import java.util.ArrayList;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,19 +28,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.AcknowledgementRequest;
 import com.dpdocter.beans.AuthConfirmRequest;
+import com.dpdocter.beans.CareContext;
 import com.dpdocter.beans.CareContextDiscoverRequest;
 import com.dpdocter.beans.CareContextRequest;
+import com.dpdocter.beans.DiscoverPatientResponse;
 import com.dpdocter.beans.Districts;
 import com.dpdocter.beans.FetchModesRequest;
+import com.dpdocter.beans.FetchResponse;
 import com.dpdocter.beans.HealthIdRequest;
 import com.dpdocter.beans.HealthIdResponse;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.HealthInfoNotify;
 import com.dpdocter.beans.LinkConfirm;
+import com.dpdocter.beans.LinkConfirmPatient;
 import com.dpdocter.beans.LinkInitCollection;
+import com.dpdocter.beans.LinkMeta;
 import com.dpdocter.beans.LinkRequest;
+import com.dpdocter.beans.LinkResponse;
 import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NDHMPrecriptionRecordData;
 import com.dpdocter.beans.NDHMRecordDataCode;
@@ -2315,6 +2329,61 @@ public class NDHMserviceImpl implements NDHMservices {
 			collection.setCreatedTime(new Date());
 			careContextDiscoverRepository.save(collection);
 			response = true;
+			System.out.println("response"+response);
+			if(response==true)
+			{
+				OnDiscoverRequest discover=new OnDiscoverRequest();
+				UUID uuid=UUID.randomUUID();
+				discover.setRequestId(uuid.toString());
+				TimeZone tz = TimeZone.getTimeZone("UTC");
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
+				df.setTimeZone(tz);
+				String nowAsISO = df.format(new Date());
+				discover.setTimestamp(nowAsISO);
+				discover.setTransactionId(collection.getTransactionId());
+				
+				String patientId=collection.getPatient().getId();
+				String patientName=collection.getPatient().getName();
+				String gender=request.getPatient().getGender();
+				if(gender.equals("M"))
+				{
+					gender="MALE";
+				}
+				else if (gender.equals("F")) {
+					gender="FEMALE";
+				} else{
+					gender="OTHER";
+				}
+				System.out.println("Gender"+gender);
+				System.out.println("HealthId"+patientId);
+				System.out.println("PatientName "+patientName);
+				List<PatientCollection> patientCollections=patientRepository.findByHealthIdAndLocalPatientNameAndGender(patientId,patientName,gender);
+				PatientCollection patientCollection=patientCollections.get(0);
+				if(patientCollection !=null)
+				{
+					DiscoverPatientResponse patient=new DiscoverPatientResponse();
+					patient.setReferenceNumber(patientCollection.getId().toString());
+					patient.setDisplay("Health-Information");
+					CareContext care=new CareContext();
+					care.setDisplay("Health-Information");
+					care.setReferenceNumber(NDHM_CLIENTID);
+					List<CareContext>careContexts=new ArrayList<CareContext>();
+					careContexts.add(care);
+					patient.setCareContexts(careContexts);
+					List<String>matchedBy=new ArrayList<String>();
+					matchedBy.add("MOBILE");
+				patient.setMatchedBy(matchedBy);
+					discover.setPatient(patient);
+					FetchResponse resp=new FetchResponse();
+					resp.setRequestId(collection.getRequestId());
+					discover.setResp(resp);
+					Boolean status=false;
+					status=onDiscover( discover);
+					System.out.println("status"+status); 
+				}
+				
+			}
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2370,12 +2439,13 @@ public class NDHMserviceImpl implements NDHMservices {
 			
 			
 			array.put(request.getPatient().getMatchedBy());
-			orderRequest2.put("matchedBy", array);	
-			orderRequest2.put("error",orderRequest3);
-			orderRequest3.put("code", request.getError().getCode());
-			orderRequest3.put("message", request.getError().getMessage());
-			orderRequest2.put("resp",orderRequest4);
-			orderRequest4.put("requestId", request.getResp().getRequestId());
+			System.out.println("matchedBy"+request.getPatient().getMatchedBy());
+			orderRequest1.put("matchedBy", request.getPatient().getMatchedBy());	
+			//orderRequest2.put("error",orderRequest3);
+		//	orderRequest3.put("code", request.getError().getCode());
+		//	orderRequest3.put("message", request.getError().getMessage());
+			//orderRequest2.put("resp",orderRequest4);
+			//orderRequest4.put("requestId", request.getResp().getRequestId());
 			
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
@@ -2383,11 +2453,14 @@ public class NDHMserviceImpl implements NDHMservices {
 			
 			
 			orderRequest.put("patient",orderRequest1 );
-
+			orderRequest.put("error",request.getError());
+			orderRequest.put("resp",orderRequest2);
+			orderRequest2.put("requestId",request.getResp().getRequestId());
+			System.out.println("req"+orderRequest);
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/gateway/v0.5/links/link/add-contexts";
+			String url = "https://dev.ndhm.gov.in/gateway/v0.5/care-contexts/on-discover";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRquest.put("txnId", txnId);
 
@@ -2444,7 +2517,30 @@ public class NDHMserviceImpl implements NDHMservices {
 			collection.setCreatedTime(new Date());
 			linkInitRepository.save(collection);
 			response = true;
-
+			if(response==true)
+			{
+				OnLinkRequest discover=new OnLinkRequest();
+				UUID uuid=UUID.randomUUID();
+				discover.setRequestId(uuid.toString());
+				TimeZone tz = TimeZone.getTimeZone("UTC");
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
+				df.setTimeZone(tz);
+				String nowAsISO = df.format(new Date());
+				discover.setTimestamp(nowAsISO);
+				discover.setTransactionId(collection.getTransactionId());
+				LinkResponse link=new LinkResponse();
+				link.setAuthenticationType("DIRECT");
+				link.setReferenceNumber(collection.getPatient().getReferenceNumber());
+				LinkMeta meta =new LinkMeta();
+				meta.setCommunicationMedium("MOBILE");
+				link.setMeta(meta);
+				discover.setLink(link);
+				FetchResponse resp=new FetchResponse();
+				resp.setRequestId(collection.getRequestId());
+				discover.setResp(resp);
+		Boolean	status=	onLinkInit(discover);
+		System.out.println("Status"+status);
+			}
 		}
 
 		catch (Exception e) {
@@ -2489,7 +2585,7 @@ public class NDHMserviceImpl implements NDHMservices {
 
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
-
+			System.out.println("req"+orderRequest);
 			String url = "https://dev.ndhm.gov.in/gateway/v0.5/links/link/on-init";
 //			JSONObject orderRequest = new JSONObject();
 //			orderRquest.put("txnId", txnId);
@@ -2568,6 +2664,33 @@ public class NDHMserviceImpl implements NDHMservices {
 			collection.setCreatedTime(new Date());
 			linkConfirmRepository.save(collection);
 			response = true;
+			
+			if(response==true)
+			{
+				OnLinkConfirm discover=new OnLinkConfirm();
+				UUID uuid=UUID.randomUUID();
+				discover.setRequestId(uuid.toString());
+				TimeZone tz = TimeZone.getTimeZone("UTC");
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
+				df.setTimeZone(tz);
+				String nowAsISO = df.format(new Date());
+				discover.setTimestamp(nowAsISO);
+				
+				LinkConfirmPatient link=new LinkConfirmPatient();
+				link.setDisplay("LinkConfirm");
+				link.setReferenceNumber(collection.getId().toString());
+				List<CareContext>careContexts=new ArrayList<CareContext>();
+				CareContext care=new CareContext();
+				care.setDisplay("Health-Information");
+				care.setReferenceNumber(NDHM_CLIENTID);
+				careContexts.add(care);
+				link.setCareContexts(careContexts);
+				FetchResponse resp=new FetchResponse();
+				resp.setRequestId(collection.getRequestId());
+				discover.setResp(resp);
+		Boolean	status=	onLinkConfirm(discover);
+		System.out.println("Status"+status);
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2607,7 +2730,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			orderRequest.put("patient",request.getPatient());
 			orderRequest.put("error",request.getError());
 			orderRequest.put("resp",request.getResp());
-
+			System.out.println("req"+orderRequest);
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
@@ -3138,11 +3261,36 @@ public class NDHMserviceImpl implements NDHMservices {
 	Boolean response=false;
 		try {
 		NdhmNotifyCollection collection=new NdhmNotifyCollection();
+		if(collection !=null) {
 		BeanUtil.map(request, collection);
 		collection.setCreatedTime(new Date());
-		ndhmNotifyRepository.save(collection);
-		response=true;
 		
+		ndhmNotifyRepository.save(collection);
+		
+		response=true;
+		}
+		System.out.println("response"+response);
+		if(response==true) {
+			OnNotifyRequest req=new OnNotifyRequest();
+			UUID uuid=UUID.randomUUID();
+			req.setRequestId(uuid.toString());
+			TimeZone tz = TimeZone.getTimeZone("UTC");
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SS"); // Quoted "Z" to indicate UTC, no timezone offset
+			df.setTimeZone(tz);
+			String nowAsISO = df.format(new Date());
+			req.setTimestamp(nowAsISO);
+			AcknowledgementRequest acknowledgementRequest=new AcknowledgementRequest();
+			acknowledgementRequest.setConsentId(collection.getNotification().getConsentId());
+			acknowledgementRequest.setStatus("OK");
+			req.setAcknowledgement(acknowledgementRequest);
+			FetchResponse resp=new FetchResponse();
+			resp.setRequestId(collection.getRequestId());
+			
+			req.setResp(resp);
+			Boolean status=false;
+			status=onNotify(req);
+		System.out.println("Status"+status);
+		}
 	}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -3156,13 +3304,21 @@ public class NDHMserviceImpl implements NDHMservices {
 	public Boolean onNotify(OnNotifyRequest request) {
 		Boolean response=false;
 		try {
+			//System.out.println("OnNotify "+request);
 			JSONObject orderRequest = new JSONObject();
+			JSONObject acknowledge = new JSONObject();
+			JSONObject resp = new JSONObject();
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
-			orderRequest.put("acknowledgement",request.getAcknowledgement());
+			
+			acknowledge.put("status", request.getAcknowledgement().getStatus());
+			acknowledge.put("consentId", request.getAcknowledgement().getConsentId());
+			orderRequest.put("acknowledgement",acknowledge);
 			orderRequest.put("error",request.getError());
-			orderRequest.put("resp",request.getResp());
-			System.out.println("request " + orderRequest);
+			resp.put("requestId",request.getResp().getRequestId());
+			orderRequest.put("resp",resp);
+			
+			System.out.println("On notify request: " + orderRequest);
 		NdhmOauthResponse oauth = session();
 		System.out.println("token" + oauth.getAccessToken());
 
@@ -3179,12 +3335,12 @@ public class NDHMserviceImpl implements NDHMservices {
 		con.setDoInput(true);
 		// optional default is POST
 		con.setRequestMethod("POST");
-		con.setRequestProperty("Accept-Language", "en-US");
+	//	con.setRequestProperty("Accept-Language", "en-US");
 		con.setRequestProperty("Content-Type", "application/json");
 		con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 		con.setRequestProperty("X-CM-ID","sbx" );
 		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(request.toString());
+		wr.writeBytes(orderRequest.toString());
 		wr.flush();
 		wr.close();
 		con.disconnect();

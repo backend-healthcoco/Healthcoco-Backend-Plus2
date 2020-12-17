@@ -11,6 +11,12 @@ public class FetchResponse {
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
 	}
+
+	@Override
+	public String toString() {
+		return "FetchResponse [requestId=" + requestId + "]";
+	}
+	
 	
 	
 }
