@@ -15,6 +15,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.jce.spec.ECPrivateKeySpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
+
+import com.dpdocter.beans.DataEncryptionResponse;
+
 import org.bouncycastle.crypto.ec.CustomNamedCurves;
 
 import javax.crypto.KeyAgreement;
@@ -32,15 +35,17 @@ import java.security.Security;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
+
 public class DHKeyExchangeCrypto {
     public static final String ALGORITHM = "ECDH";
     public static final String CURVE = "curve25519";
     public static final String PROVIDER = BouncyCastleProvider.PROVIDER_NAME;
-    public static final String strToPerformActionOn = "SomeValue";
+  //  public static final String strToPerformActionOn = "{\"resourceType\":\"Bundle\",\"id\":\"744719b9-0590-4560-a60f-db27092d63bf\",\"meta\":{\"lastUpdated\":\"2018-08-01T00:00:00.000+05:30\"},\"identifier\":{\"system\":\"https:\\/\\/www.max.in\\/bundle\",\"value\":\"744719b9-0590-4560-a60f-db27092d63bf\"},\"type\":\"document\",\"timestamp\":\"2018-08-01T00:00:00.000+05:30\",\"entry\":[{\"fullUrl\":\"Composition\\/784953a5-097c-4265-959a-9fa9d62833d5\",\"resource\":{\"resourceType\":\"Composition\",\"id\":\"784953a5-097c-4265-959a-9fa9d62833d5\",\"identifier\":{\"system\":\"https:\\/\\/www.max.in\\/document\",\"value\":\"784953a5-097c-4265-959a-9fa9d62833d5\"},\"status\":\"final\",\"type\":{\"coding\":[{\"system\":\"https:\\/\\/projecteka.in\\/sct\",\"code\":\"440545006\",\"display\":\"Prescription record\"}]},\"subject\":{\"reference\":\"Patient\\/TEST-HIP-002\"},\"date\":\"2018-08-01T00:00:00.605+05:30\",\"author\":[{\"reference\":\"Practitioner\\/MAX191101\",\"display\":\"Dr Amit M K\"}],\"title\":\"Prescription\",\"section\":[{\"title\":\"OPD Prescription\",\"code\":{\"coding\":[{\"system\":\"https:\\/\\/projecteka.in\\/sct\",\"code\":\"440545006\",\"display\":\"Prescription record\"}]},\"entry\":[{\"reference\":\"MedicationRequest\\/67fa1415-6834-41b8-99b2-ca73d241fb07\"}]}]}},{\"fullUrl\":\"Practitioner\\/MAX191101\",\"resource\":{\"resourceType\":\"Practitioner\",\"id\":\"MAX191101\",\"identifier\":[{\"system\":\"https:\\/\\/www.mciindia.in\\/doctor\",\"value\":\"MAX191101\"}],\"name\":[{\"text\":\"Amit M K\",\"prefix\":[\"Dr\"],\"suffix\":[\"MD\"]}]}},{\"fullUrl\":\"Patient\\/TEST-HIP-003\",\"resource\":{\"resourceType\":\"Patient\",\"id\":\"TEST-HIP-002\",\"name\":[{\"text\":\"Sadio Mane\"}],\"gender\":\"male\"}},{\"fullUrl\":\"Condition\\/87974d86-0a41-4b92-9ae2-933edaf8fd2c\",\"resource\":{\"resourceType\":\"Condition\",\"id\":\"87974d86-0a41-4b92-9ae2-933edaf8fd2c\",\"code\":{\"text\":\"worm infection\"},\"subject\":{\"reference\":\"Patient\\/TEST-HIP-002\"}}},{\"fullUrl\":\"Medication\\/7741f00b-fb45-4562-9c8f-d3bc316bb971\",\"resource\":{\"resourceType\":\"Medication\",\"id\":\"7741f00b-fb45-4562-9c8f-d3bc316bb971\",\"code\":{\"text\":\"albendazole 400 mg\"}}},{\"fullUrl\":\"MedicationRequest\\/67fa1415-6834-41b8-99b2-ca73d241fb07\",\"resource\":{\"resourceType\":\"MedicationRequest\",\"id\":\"67fa1415-6834-41b8-99b2-ca73d241fb07\",\"status\":\"active\",\"intent\":\"order\",\"medicationReference\":{\"reference\":\"Medication\\/7741f00b-fb45-4562-9c8f-d3bc316bb971\"},\"subject\":{\"reference\":\"Patient\\/TEST-HIP-002\"},\"authoredOn\":\"2018-08-01T00:00:00+05:30\",\"requester\":{\"reference\":\"Practitioner\\/MAX191101\"},\"reasonReference\":[{\"reference\":\"Condition\\/87974d86-0a41-4b92-9ae2-933edaf8fd2c\"}],\"dosageInstruction\":[{\"text\":\"1 time only\"}]}}]}";
 
     // Driver function
-    public static void main(String[] args) throws Exception {
-        Security.addProvider(new BouncyCastleProvider());
+    public static DataEncryptionResponse convert(String strToPerformActionOn,String nounce,String keypair) throws Exception {
+    	DataEncryptionResponse response=new DataEncryptionResponse();
+    	Security.addProvider(new BouncyCastleProvider());
 
         System.out.println("Details");
         System.out.println("ALGORITHM: " + ALGORITHM);
@@ -52,30 +57,44 @@ public class DHKeyExchangeCrypto {
         // Generate the DH keys for sender and receiver
         KeyPair receiverKeyPair = generateKeyPair();
         String receiverPrivateKey = getBase64String(getEncodedPrivateKey(receiverKeyPair.getPrivate()));
-        String receiverPublicKey = getBase64String(getEncodedPublicKey(receiverKeyPair.getPublic()));
-
+        //KeyMaterial.dhPublicKey.keyValue from POST
+      //  String receiverPublicKey = "BEvxLZDvQ5b8oXzje7+YVy2rg2pUgXQgoey6RojQG+vrTc15mK+9+4d6JWX+DWVrjM/l4sszrFb9B3boXjJwPyw=";
+        String receiverPublicKey =keypair;
         KeyPair senderKeyPair = generateKeyPair();
         String senderPrivateKey = getBase64String(getEncodedPrivateKey(senderKeyPair.getPrivate()));
         String senderPublicKey = getBase64String(getEncodedPublicKey(senderKeyPair.getPublic()));
-
+        String senderPublicKey1 = getBase64String(getEncodedPublicKeyForProjectEKAHIU(senderKeyPair.getPublic()));
+        String senderPrivateKey1 = getBase64String(getEncodedPrivateKey(senderKeyPair.getPrivate()));
         // Generate random key for sender and receiver
         String randomSender = generateRandomKey();
-        String randomReceiver = generateRandomKey();
+        // nonce from POST
+        String randomReceiver = nounce;
 
         // Generating Xor of random Keys
         byte[] xorOfRandom = xorOfRandom(randomSender, randomReceiver);
 
-        String encryptedData = encrypt(xorOfRandom, senderPrivateKey, receiverPublicKey, strToPerformActionOn);
+        String encryptedData = encrypt(xorOfRandom, senderPrivateKey1, receiverPublicKey, strToPerformActionOn);
 
         System.out.println("\n");
 
         String decryptedData = decrypt(xorOfRandom, receiverPrivateKey, senderPublicKey, encryptedData);
 
         System.out.println("\n");
-        System.out.println("Data to encrypt: " + strToPerformActionOn + " , encrypted Data: " + encryptedData + " , decrypted data: " + decryptedData);
+        // POST in content
+        System.out.println("encrypted Data: " + encryptedData);
+        //System.out.println("decrypted data: " + decryptedData);
+        //System.out.println("senderKeyPair DH Key: "+senderPublicKey);
+        
+        //POST in keyValue
+        System.out.println("senderKeyPair DH Key 1: "+senderPublicKey1);
+        //POST in Nonce
+        System.out.println("generateRandomKey Nonce: "+randomSender);
         System.out.println("\n");
         System.out.println("<---------------- DONE ------------------->");
-
+        response.setEncryptedData(encryptedData);
+        response.setRandomSender(randomSender);
+        response.setSenderPublicKey(senderPublicKey1);
+        return response;
     }
 
     // Method for encryption
@@ -151,7 +170,6 @@ public class DHKeyExchangeCrypto {
         System.out.println("<---------------- Done ------------------->");
         return decryptedData;
     }
-
     // Method for generating random string
     public static String generateRandomKey() {
         byte[] salt = new byte[32];
@@ -169,6 +187,7 @@ public class DHKeyExchangeCrypto {
                 ecParameters.getN(), ecParameters.getH(), ecParameters.getSeed());
 
         keyPairGenerator.initialize(ecSpec, new SecureRandom());
+        //System.out.println("DH keys "+ keyPairGenerator.generateKeyPair());
         return keyPairGenerator.generateKeyPair();
     }
 
@@ -257,7 +276,7 @@ public class DHKeyExchangeCrypto {
         ECPublicKey ecKey = (ECPublicKey)key;
         return ecKey.getEncoded();
     }
-    
+
     // Replacement for ------> loadPublicKey
     private static PublicKey loadPublicKeyForProjectEKAHIU (byte [] data) throws Exception
     {

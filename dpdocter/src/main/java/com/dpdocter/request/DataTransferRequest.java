@@ -4,21 +4,24 @@ import java.util.List;
 
 public class DataTransferRequest {
 
-	private String pageNumber;
-	private String pageCount;
+	private Integer pageNumber;
+	private Integer pageCount;
 	private String transactionId;
 	private List<EntriesDataTransferRequest> entries;
 	private KeyMaterialRequestDataFlow keyMaterial;
-	public String getPageNumber() {
+	
+	
+	
+	public Integer getPageNumber() {
 		return pageNumber;
 	}
-	public void setPageNumber(String pageNumber) {
+	public void setPageNumber(Integer pageNumber) {
 		this.pageNumber = pageNumber;
 	}
-	public String getPageCount() {
+	public Integer getPageCount() {
 		return pageCount;
 	}
-	public void setPageCount(String pageCount) {
+	public void setPageCount(Integer pageCount) {
 		this.pageCount = pageCount;
 	}
 	public String getTransactionId() {

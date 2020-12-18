@@ -24,6 +24,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +37,7 @@ import com.dpdocter.beans.AuthConfirmRequest;
 import com.dpdocter.beans.CareContext;
 import com.dpdocter.beans.CareContextDiscoverRequest;
 import com.dpdocter.beans.CareContextRequest;
+import com.dpdocter.beans.DataEncryptionResponse;
 import com.dpdocter.beans.DiscoverPatientResponse;
 import com.dpdocter.beans.Districts;
 import com.dpdocter.beans.FetchModesRequest;
@@ -72,6 +76,7 @@ import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.beans.OnLinkConfirm;
 import com.dpdocter.beans.OnLinkRequest;
 import com.dpdocter.beans.OnNotifyRequest;
+import com.dpdocter.beans.PatientVisitLookupBean;
 import com.dpdocter.collections.CareContextDiscoverCollection;
 import com.dpdocter.collections.ConsentInitCollection;
 import com.dpdocter.collections.HipDataFlowCollection;
@@ -82,6 +87,7 @@ import com.dpdocter.collections.OnCareContextCollection;
 import com.dpdocter.collections.OnConsentRequestStatusCollection;
 import com.dpdocter.collections.OnFetchModeCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.enums.NDHMRecordDataResourceType;
 import com.dpdocter.exceptions.BusinessException;
@@ -100,18 +106,25 @@ import com.dpdocter.repository.OnAuthInitRepository;
 import com.dpdocter.repository.OnCareContextRepository;
 import com.dpdocter.repository.OnFetchModeRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.request.ConsentOnInitRequest;
 import com.dpdocter.request.CreateAadhaarRequest;
 import com.dpdocter.request.CreateProfileRequest;
 import com.dpdocter.request.DataFlowRequest;
 import com.dpdocter.request.DataTransferRequest;
+import com.dpdocter.request.DhPublicKeyDataFlowRequest;
+import com.dpdocter.request.EntriesDataTransferRequest;
 import com.dpdocter.request.GatewayConsentInitRequest;
 import com.dpdocter.request.GatewayConsentStatusRequest;
+import com.dpdocter.request.KeyMaterialRequestDataFlow;
 import com.dpdocter.response.GetCardProfileResponse;
+import com.dpdocter.security.DHKeyExchangeCrypto;
 import com.dpdocter.services.NDHMservices;
+import com.dpdocter.webservices.GateWayHiOnRequest;
 import com.dpdocter.webservices.GateWayOnRequest;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 import common.util.web.Response;
 
@@ -170,6 +183,16 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Autowired
 	private PatientRepository patientRepository;
+	
+	
+	
+	
+	@Autowired
+	private PrescriptionRepository prescriptionRepository;
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
+
 
 	public NdhmOauthResponse session() {
 		NdhmOauthResponse response = null;
@@ -2857,7 +2880,72 @@ public class NDHMserviceImpl implements NDHMservices {
 			collection.setCreatedTime(new Date());
 			hipDataFlowRepository.save(collection);
 			response = true;
+			Boolean status=false;
+			if(response==true)
+			{
+				GateWayOnRequest gate=new GateWayOnRequest();
+				UUID uuid=UUID.randomUUID();
+				gate.setRequestId(uuid.toString());
+				LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+				System.out.println("timeStamp"+time.toString());
+				gate.setTimestamp(time.toString());
+				GateWayHiOnRequest gateWay=new GateWayHiOnRequest();
+				gateWay.setTransactionId(collection.getTransactionId());
+				gateWay.setSessionStatus("ACKNOWLEDGED");
+				gate.setHiRequest(gateWay);
+				FetchResponse resp=new FetchResponse();
+				resp.setRequestId(collection.getRequestId());
+				gate.setResp(resp);
+			 status=	onGateWayOnRequest(gate);
+			}
+			
+			NdhmNotifyCollection notify=ndhmNotifyRepository.findByNotificationConsentId(request.getHiRequest().getConsent().getId());
+		
+			if(notify !=null)
+			{
+				List<String>hiTypes=notify.getNotification().getConsentDetail().getHiTypes();
+				System.out.println("HiTypes"+hiTypes);
+				if(hiTypes !=null)
+				{
+					String hiType=hiTypes.get(0);
+					if(hiType.equals("Prescription"))
+					{
+						PatientCollection patientCollection=patientRepository.findByHealthId(notify.getNotification().getConsentDetail().getPatient().getId());
+						
+						if(patientCollection !=null)
+						{
+							Criteria criteria =new Criteria();
+							criteria.and("createdTime").gte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getFrom())
+							.lte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getTo());
 
+							criteria.and("patientId").is(patientCollection.getId());
+							Aggregation aggregation = null;
+
+							List<PrescriptionCollection> prescriptionCollection =mongoTemplate.aggregate(aggregation,
+										PrescriptionCollection.class, PrescriptionCollection.class).getMappedResults();
+						
+							DataEncryptionResponse data=	mapPrescriptionRecordData(prescriptionCollection, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+						DataTransferRequest transfer=new DataTransferRequest();
+						EntriesDataTransferRequest entry=new EntriesDataTransferRequest();
+						entry.setCareContextReference("Prescription");
+						KeyMaterialRequestDataFlow key=new KeyMaterialRequestDataFlow();
+						key.setNonce(data.getRandomSender());
+						DhPublicKeyDataFlowRequest dhPublic=new DhPublicKeyDataFlowRequest();
+						dhPublic.setKeyValue(data.getSenderPublicKey());
+					key.setDhPublicKey(dhPublic);
+					transfer.setKeyMaterial(key);
+						transfer.setPageCount(0); 
+						transfer.setPageNumber(0);
+						List<EntriesDataTransferRequest> entries=new ArrayList<EntriesDataTransferRequest>();
+						entries.add(entry);
+						transfer.setEntries(entries);						
+						onDataTransfer(transfer);
+						
+						
+						}
+					}
+				}
+			}
 		}
 
 		catch (Exception e) {
@@ -2883,11 +2971,11 @@ public class NDHMserviceImpl implements NDHMservices {
 			System.out.println(hiRequestRequest);
 			orderRequest.put("hiRequest", hiRequestRequest);
 
-			JSONObject errorRequest = new JSONObject();
-			errorRequest.put("code", request.getError().getCode());
-			errorRequest.put("message", request.getError().getMessage());
-			System.out.println(errorRequest);
-			orderRequest.put("error", errorRequest);
+		//	JSONObject errorRequest = new JSONObject();
+		//	errorRequest.put("code", request.getError().getCode());
+		//	errorRequest.put("message", request.getError().getMessage());
+		//	System.out.println(errorRequest);
+			orderRequest.put("error", request.getError());
 			
 			JSONObject requestId = new JSONObject();
 			requestId.put("requestId", request.getResp().getRequestId());
@@ -2943,11 +3031,95 @@ public class NDHMserviceImpl implements NDHMservices {
 		}
 		return response;
 	}
+	
+	@Override
+	public Boolean onDataTransfer(DataTransferRequest request) {
+		Boolean response = false;
+		try {
+			
+			
+			
+			
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("pageNumber", request.getPageNumber());
+			orderRequest.put("pageCount", request.getPageCount());
+			orderRequest.put("transactionId", request.getTransactionId());
+			orderRequest.put("entries", request.getEntries());// list
+
+			JSONObject keyMaterialRequest = new JSONObject();
+			keyMaterialRequest.put("cryptoAlg", request.getKeyMaterial().getCryptoAlg());
+			keyMaterialRequest.put("curve", request.getKeyMaterial().getCurve());
+			keyMaterialRequest.put("nonce", request.getKeyMaterial().getNonce());
+
+			JSONObject dhPublicKeyRequest = new JSONObject();
+			dhPublicKeyRequest.put("expiry", request.getKeyMaterial().getDhPublicKey().getExpiry());
+			dhPublicKeyRequest.put("parameters", request.getKeyMaterial().getDhPublicKey().getParameters());
+			dhPublicKeyRequest.put("keyValue", request.getKeyMaterial().getDhPublicKey().getKeyValue());
+
+			keyMaterialRequest.put("dhPublicKey", dhPublicKeyRequest);
+
+			orderRequest.put("keyMaterial", keyMaterialRequest);
+
+			System.out.println("request " + orderRequest);
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://dev.ndhm.gov.in/patient-hiu/data/notification";
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
 
 	@Override
 	public Boolean onDataTransferApi(DataTransferRequest request) {
 		Boolean response = false;
 		try {
+			
+			
+			
+			
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("pageNumber", request.getPageNumber());
 			orderRequest.put("pageCount", request.getPageCount());
@@ -3435,9 +3607,10 @@ public class NDHMserviceImpl implements NDHMservices {
 			return response;
 	}	
 	
-	public void mapPrescriptionRecordData(PrescriptionCollection prescriptionCollection) {
+	public DataEncryptionResponse mapPrescriptionRecordData(List<PrescriptionCollection> prescriptionCollections,String nounce,String keyPair) throws Exception {
 		List<NDHMPrecriptionRecordData> precriptionRecordData = new ArrayList<NDHMPrecriptionRecordData>();
-		
+		DataEncryptionResponse data=null;
+		for(PrescriptionCollection prescriptionCollection:prescriptionCollections) {
 		if(prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
 			PatientCollection patientCollection = patientRepository.
 					findByUserIdAndDoctorIdAndLocationIdAndHospitalId(prescriptionCollection.getPatientId(), 
@@ -3474,10 +3647,14 @@ public class NDHMserviceImpl implements NDHMservices {
 				
 				resource.setDosageInstruction(dosageInstruction);
 				ndhmPrecriptionRecordData.setResource(resource);
-				
-				precriptionRecordData.add(ndhmPrecriptionRecordData);
+				 data=DHKeyExchangeCrypto.convert(ndhmPrecriptionRecordData.toString(),nounce,keyPair);
+		
+				//	precriptionRecordData.add(ndhmPrecriptionRecordData);
+				}
 			}
 		}
+	//	return precriptionRecordData;
+		return data;
 		
 	}	
 

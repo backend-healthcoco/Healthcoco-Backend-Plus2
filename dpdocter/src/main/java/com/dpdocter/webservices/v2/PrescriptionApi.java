@@ -1,5 +1,6 @@
 package com.dpdocter.webservices.v2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -12,13 +13,27 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DataEncryptionResponse;
+import com.dpdocter.beans.NDHMPrecriptionRecordData;
+import com.dpdocter.beans.NDHMRecordDataCode;
+import com.dpdocter.beans.NDHMRecordDataDosageInstruction;
+import com.dpdocter.beans.NDHMRecordDataRequester;
+import com.dpdocter.beans.NDHMRecordDataResource;
+import com.dpdocter.beans.NDHMRecordDataSubject;
 import com.dpdocter.beans.v2.Drug;
 import com.dpdocter.beans.v2.Prescription;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.enums.NDHMRecordDataResourceType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.security.DHKeyExchangeCrypto;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.v2.PrescriptionServices;
 
@@ -41,6 +56,9 @@ public class PrescriptionApi {
 
 	@Autowired
 	private OTPService otpService;
+	
+	@Autowired
+	private PatientRepository patientRepository;
 
 	@GET
 	@ApiOperation(value = "GET_PRESCRIPTIONS", notes = "GET_PRESCRIPTIONS")
@@ -48,7 +66,7 @@ public class PrescriptionApi {
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) throws Exception {
 		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
@@ -57,11 +75,66 @@ public class PrescriptionApi {
 		prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId,
 				updatedTime, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded,
 				false);
-
+		
+		
 		Response<Prescription> response = new Response<Prescription>();
 		response.setDataList(prescriptions);
 		return response;
 	}
+	
+	
+	
+	public DataEncryptionResponse mapPrescriptionRecordData(List<Prescription> prescriptionCollections,String nounce,String keyPair) throws Exception {
+		List<NDHMPrecriptionRecordData> precriptionRecordData = new ArrayList<NDHMPrecriptionRecordData>();
+		DataEncryptionResponse data=null;
+		for(Prescription prescriptionCollection:prescriptionCollections) {
+		if(prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
+			PatientCollection patientCollection = patientRepository.
+					findByUserIdAndDoctorIdAndLocationIdAndHospitalId(new ObjectId(prescriptionCollection.getPatientId()), 
+						new ObjectId(prescriptionCollection.getDoctorId()), new ObjectId(prescriptionCollection.getLocationId()), 
+						new ObjectId(prescriptionCollection.getHospitalId()));
+			
+			for(int i =0; i<prescriptionCollection.getItems().size()-1; i++) {
+				NDHMPrecriptionRecordData ndhmPrecriptionRecordData = new NDHMPrecriptionRecordData();
+				ndhmPrecriptionRecordData.setFullUrl(NDHMRecordDataResourceType.MedicationRequest.getResourceType()+"/"+(i+1));
+				NDHMRecordDataResource resource = new NDHMRecordDataResource();
+				resource.setResourceType(NDHMRecordDataResourceType.MedicationRequest.getResourceType());
+				resource.setId(prescriptionCollection.getItems().get(i).getDrugId().toString());
+				resource.setStatus(prescriptionCollection.getIsActive() ? "active":"inactive");
+				
+				NDHMRecordDataCode medicationCodeableConcept = new NDHMRecordDataCode();
+				medicationCodeableConcept.setText(prescriptionCollection.getItems().get(i).getDrugName()+" "
+												+prescriptionCollection.getItems().get(i).getDosage()+" "
+												+prescriptionCollection.getItems().get(i).getDrugType());
+				
+				resource.setMedicationCodeableConcept(medicationCodeableConcept);
+				
+				NDHMRecordDataSubject subject = new NDHMRecordDataSubject();
+				subject.setDisplay(patientCollection.getLocalPatientName());
+				resource.setSubject(subject);
+				resource.setAuthoredOn(prescriptionCollection.getCreatedTime()+"");
+				
+				NDHMRecordDataRequester requester = new NDHMRecordDataRequester();
+				requester.setDisplay(prescriptionCollection.getCreatedBy());
+				
+				List<NDHMRecordDataDosageInstruction> dosageInstruction = new ArrayList<NDHMRecordDataDosageInstruction>();
+				NDHMRecordDataDosageInstruction dataDosageInstruction = new NDHMRecordDataDosageInstruction();
+				dataDosageInstruction.setText(prescriptionCollection.getItems().get(i).getDosage());
+				dosageInstruction.add(dataDosageInstruction);
+				
+				resource.setDosageInstruction(dosageInstruction);
+				ndhmPrecriptionRecordData.setResource(resource);
+				 data=DHKeyExchangeCrypto.convert(ndhmPrecriptionRecordData.toString(),nounce,keyPair);
+		
+				//	precriptionRecordData.add(ndhmPrecriptionRecordData);
+				}
+			}
+		}
+	//	return precriptionRecordData;
+		return data;
+		
+	}	
+
 	
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTIONS_FOR_EMR, notes = PathProxy.PrescriptionUrls.GET_PRESCRIPTIONS_FOR_EMR)
@@ -70,14 +143,16 @@ public class PrescriptionApi {
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,@QueryParam("from") String from,@QueryParam("to") String to,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) throws Exception {
 		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
 		List<Prescription> prescriptions = null;
-
+		
 		prescriptions = prescriptionServices.getPrescriptionsForEMR(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId),from,to, discarded, false);
-
+		
+		DataEncryptionResponse data=	mapPrescriptionRecordData(prescriptions,"1WkLQ+YUx+WiYwac2Ty65MjIfSZyMxDDx2HpR4lxhPg=", "BDKpqv+VwreCa6xzO7JhDSaGX1xZLENXCoeNb37y6JO6Y73v7VXwNpsY7cTPTxilQVqPQWqrwx84yv05J7B41aQ=");
+		System.out.println("data"+data);
 		Response<Prescription> response = new Response<Prescription>();
 		response.setDataList(prescriptions);
 		return response;

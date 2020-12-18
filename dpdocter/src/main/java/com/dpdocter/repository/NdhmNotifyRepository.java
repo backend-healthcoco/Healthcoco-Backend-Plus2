@@ -9,4 +9,6 @@ public interface NdhmNotifyRepository extends MongoRepository<NdhmNotifyCollecti
 
 	NdhmNotifyCollection findByRequestId(String requestId);
 
+	NdhmNotifyCollection findByNotificationConsentId(String id);
+
 }

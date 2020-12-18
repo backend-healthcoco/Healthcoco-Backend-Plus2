@@ -56,6 +56,8 @@ public class Prescription extends GenericCollection {
 	private Quantity quantity;
 
 	private String locationName;
+	
+	private Boolean isActive = true;
 
 	public String getLocationName() {
 		return locationName;
@@ -216,7 +218,17 @@ public class Prescription extends GenericCollection {
 	public void setQuantity(Quantity quantity) {
 		this.quantity = quantity;
 	}
+	
+	
 
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 
 	@Override
 	public String toString() {

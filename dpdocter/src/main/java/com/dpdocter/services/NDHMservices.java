@@ -174,6 +174,8 @@ public interface NDHMservices {
 	Boolean onConsentRequestStatus(OnConsentRequestStatus request);
 	
 	OnConsentRequestStatus getConsentStatus(String requestId);
+
+	Boolean onDataTransfer(DataTransferRequest request);
 	
 
 }
