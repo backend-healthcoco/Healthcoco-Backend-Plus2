@@ -2918,7 +2918,7 @@ public class NDHMserviceImpl implements NDHMservices {
 							criteria.and("createdTime").gte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getFrom())
 							.lte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getTo());
 
-							criteria.and("patientId").is(patientCollection.getId());
+							criteria.and("patientId").is(patientCollection.getUserId());
 							Aggregation aggregation = null;
 
 							List<PrescriptionCollection> prescriptionCollection =mongoTemplate.aggregate(aggregation,
