@@ -1,12 +1,12 @@
 package com.dpdocter.security;
 
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -26,6 +26,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Composition.CompositionStatus;
+import org.hl7.fhir.r4.model.Composition.DocumentConfidentiality;
 import org.hl7.fhir.r4.model.Composition.SectionComponent;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Identifier;
@@ -35,8 +36,6 @@ import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StructureDefinition;
-
-import com.dpdocter.collections.PrescriptionCollection;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
@@ -48,9 +47,9 @@ import ca.uhn.fhir.validation.ValidationResult;
 
 
 /**
- * The PrescriptionSample class populates, validates, parse and serializes Clinical Artifact - Prescription
+ * The DischargeSummarySample class populates, validates, parse and serializes Clinical Artifact - DischargeSummary
  */
-public class PrescriptionSample {
+public class DischargeSummarySample {
 
 	// The FHIR context is the central starting point for the use of the HAPI FHIR API
 	// It should be created once, and then used as a factory for various other types of objects (parsers, clients, etc.)
@@ -59,19 +58,19 @@ public class PrescriptionSample {
 	static FhirInstanceValidator instanceValidator;
 	static FhirValidator validator;
 
-	public static void prescriptionConvert(PrescriptionCollection prescriptionCollection) throws DataFormatException, IOException
+	public static void main(String[] args) throws DataFormatException, IOException
 	{
 		//Initialize validation support and loads all required profiles
 		init();
-
+				
 		// Populate the resource
-		Bundle prescriptionBundle = populatePrescriptionBundle(prescriptionCollection);
+		Bundle dischargeSummaryBundle = populateDischargeSummaryBundle();
 
 		// Validate it. Validate method return result of validation in boolean
-		// If validation result is true then parse, serialize operations are performed
-		if(validate(prescriptionBundle))	
+		// If validation result is true then parse, serialize operations are performed		
+		if(validate(dischargeSummaryBundle))
 		{
-			System.out.println("Validated populated Prescripton bundle successfully");
+			System.out.println("Validated populated DischargeSummary bundle successfully");
 
 			// Instantiate a new parser
 			IParser parser; 
@@ -93,7 +92,8 @@ public class PrescriptionSample {
 			else
 			{
 				System.out.println("Invalid file extention!");
-				scanner.close();
+				if(scanner!=null)
+					scanner.close();
 				return;
 			}
 
@@ -101,7 +101,7 @@ public class PrescriptionSample {
 			parser.setPrettyPrint(true);
 
 			// Serialize populated bundle
-			String serializeBundle = parser.encodeResourceToString(prescriptionBundle);
+			String serializeBundle = parser.encodeResourceToString(dischargeSummaryBundle);
 
 			// Write serialized bundle in xml/json file
 			file = new File(filePath);
@@ -129,10 +129,10 @@ public class PrescriptionSample {
 		}
 	}
 
-	// Populate Composition for Prescription
-	static Composition populatePrescriptionCompositionResource()
+	// Populate Composition for DischargeSummary
+	static Composition populateDischargeSummaryCompositionResource()
 	{
-		Composition composition = new Composition();	
+		Composition composition = new Composition();
 
 		// Set logical id of this artifact
 		composition.setId("Composition-01");
@@ -141,7 +141,7 @@ public class PrescriptionSample {
 		Meta meta = composition.getMeta();
 		meta.setVersionId("1");
 		meta.setLastUpdatedElement(new InstantType("2020-07-09T15:32:26.605+05:30"));
-		meta.addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/PrescriptionRecord");
+		meta.addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/DischargeSummaryRecord");
 
 		// Set language of the resource content
 		composition.setLanguage("en-IN");
@@ -149,7 +149,7 @@ public class PrescriptionSample {
 		// Plain text representation of the concept
 		Narrative text= composition.getText();
 		text.setStatus((NarrativeStatus.GENERATED));
-		text.setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Prescription report</div>");
+		text.setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\"><h4>Narrative with Details</h4><p>This is a Discharge Summary record for Patient ABC. Generated Summary: id: 1; Medical Record Number = 1234 (System : {https://healthid.ndhm.gov.in}); active; ABC ; ph: +919818512600(HOME); gender: male; birthDate: 1981-01-12</p></div>");
 
 		// Set version-independent identifier for the Composition
 		Identifier identifier = composition.getIdentifier();
@@ -159,56 +159,86 @@ public class PrescriptionSample {
 		// Status can be preliminary | final | amended | entered-in-error
 		composition.setStatus(CompositionStatus.FINAL);
 
-		// Kind of composition ("Prescription record ")
-		composition.setType(new CodeableConcept(new Coding("http://snomed.info/sct", "440545006", "Prescription record")));
+		// Kind of composition ("Discharge summary")
+		CodeableConcept type = composition.getType();
+		type.addCoding(new Coding("http://snomed.info/sct", "373942005", "Discharge summary"));
+		type.setText("Discharge Summary");
 
-		// Set subject - Who and/or what the composition/Prescription record is about
+		// Set subject - Who and/or what the composition/DischargeSummary record is about
 		composition.setSubject(new Reference().setReference("Patient/Patient-01"));
+
+		// Set Context of the Composition
+		composition.setEncounter(new Reference().setReference("Encounter/Encounter-01"));
 
 		// Set Timestamp
 		composition.setDateElement(new DateTimeType("2017-05-27T11:46:09+05:30"));
 
-		// Set author - Who and/or what authored the composition/Presciption record
+		// Set author - Who and/or what authored the composition/DischargeSummary record
 		composition.addAuthor(new Reference().setReference("Practitioner/Practitioner-01"));
 
 		// Set a Human Readable name/title
-		composition.setTitle("Prescription record");
+		composition.setTitle("Discharge summary");
 
-		// Composition is broken into sections / Prescription record contains single section to define the relevant medication requests
+		// Set confidentiality as defined by affinity domain
+		composition.setConfidentiality(DocumentConfidentiality.N);
+
+		// Set Custodian - Organization which maintains the composition
+		composition.setCustodian(new Reference().setReference("Organization/Organization-01"));
+
+		// Composition is broken into sections / DischargeSummary record contains single section to define the relevant medication requests
 		// Entry is a reference to data that supports this section
-		Reference reference1 = new Reference();
-		reference1.setReference("MedicationRequest/MedicationRequest-01");
-		reference1.setType("MedicationRequest");
+		SectionComponent section1 = new SectionComponent();
+		section1.setTitle("Chief complaints");
+		section1.setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "422843007", "Chief complaint section"))).
+		addEntry(new Reference().setReference("Condition/Condition-02"));
 
-		Reference reference2 = new Reference();
-		reference2.setReference("MedicationRequest/MedicationRequest-02");
-		reference2.setType("MedicationRequest");
+		SectionComponent section2 = new SectionComponent();
+		section2.setTitle("Medical History");
+		section2.setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "371529009", "History and physical report"))).
+		addEntry(new Reference().setReference("Procedure/Procedure-01")).
+		addEntry(new Reference().setReference("Condition/Condition-01"));
 
-		Reference reference3 = new Reference();
-		reference3.setReference("Binary/Binary-01");
-		reference3.setType("Binary");
+		SectionComponent section3 = new SectionComponent();
+		section3.setTitle("Investigations");
+		section3.setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "721981007", "Diagnostic studies report"))).
+		addEntry(new Reference().setReference("DiagnosticReport/DiagnosticReport-01"));
 
-		SectionComponent section = new SectionComponent();
-		section.setTitle("Prescription record");
-		section.setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "440545006", "Prescription record"))).
-		addEntry(reference1).
-		addEntry(reference2).
-		addEntry(reference3);
-		composition.addSection(section);	
+		SectionComponent section4 = new SectionComponent();
+		section4.setTitle("Procedures");
+		section4.setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "371525003", "Clinical procedure report"))).
+		addEntry(new Reference().setReference("Procedure/Procedure-02"));
+
+		SectionComponent section5 = new SectionComponent();
+		section5.setTitle("Care Plan");
+		section5.setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "734163000", "Care plan"))).
+		addEntry(new Reference().setReference("CarePlan/CarePlan-01"));
+
+		SectionComponent section6 = new SectionComponent();
+		section6.setTitle("Document Reference");
+		section6.setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "373942005", "Discharge summary"))).
+		addEntry(new Reference().setReference("DocumentReference/DocumentReference-01"));
+
+		List<SectionComponent> sectionList = new ArrayList<SectionComponent>();
+		sectionList.add(section1);
+		sectionList.add(section2);
+		sectionList.add(section3);
+		sectionList.add(section4);
+		sectionList.add(section5);
+		sectionList.add(section6);
+		composition.setSection(sectionList);
 
 		return composition;
 	}
 
-	// Populate Prescription Bundle
-	public static Bundle populatePrescriptionBundle(PrescriptionCollection prescriptionCollection)
+	static Bundle populateDischargeSummaryBundle()
 	{
-		Bundle prescriptionBundle = new Bundle();
+		Bundle dischargeSummaryBundle = new Bundle();
 
 		// Set logical id of this artifact
-		prescriptionBundle.setId("prescription-bundle-01");
+		dischargeSummaryBundle.setId("diagnostic-bundle-01");
 
-		// Set metadata about the resource
-		Meta meta = prescriptionBundle.getMeta();
+		// Set metadata about the resource - Version Id, Lastupdated Date, Profile
+		Meta meta = dischargeSummaryBundle.getMeta();
 		meta.setVersionId("1");
 		meta.setLastUpdatedElement(new InstantType("2020-07-09T15:32:26.605+05:30"));
 		meta.addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentBundle");
@@ -216,47 +246,87 @@ public class PrescriptionSample {
 		// Set Confidentiality as defined by affinity domain
 		meta.addSecurity(new Coding("http://terminology.hl7.org/CodeSystem/v3-Confidentiality", "V", "very restricted"));
 
-		// Set version-independent identifier for the Bundle
-		Identifier identifier = prescriptionBundle.getIdentifier();
-		identifier.setValue("bc3c6c57-2053-4d0e-ac40-139ccccff645");
+		// Set version-independent identifier for the Composition
+		Identifier identifier = dischargeSummaryBundle.getIdentifier();
+		identifier.setValue("eba2ef3a-320f-4f16-8789-ed64965943a3");
 		identifier.setSystem("http://hip.in");
 
-		// Set Bundle Type 
-		prescriptionBundle.setType(BundleType.DOCUMENT);
+		// Set Bundle Type
+		dischargeSummaryBundle.setType(BundleType.DOCUMENT);
 
-		// Set Timestamp 
-		prescriptionBundle.setTimestampElement(new InstantType("2020-07-09T15:32:26.605+05:30"));
+		// Set Timestamp
+		dischargeSummaryBundle.setTimestampElement(new InstantType("2020-07-09T15:32:26.605+05:30"));
 
 		// Add resources entries for bundle with Full URL
-		List<BundleEntryComponent> listBundleEntries = prescriptionBundle.getEntry();
+		List<BundleEntryComponent> listBundleEntries = dischargeSummaryBundle.getEntry();
 
 		BundleEntryComponent bundleEntry1 = new BundleEntryComponent();
 		bundleEntry1.setFullUrl("Composition/Composition-01");
-		bundleEntry1.setResource(populatePrescriptionCompositionResource());
+		bundleEntry1.setResource(populateDischargeSummaryCompositionResource());
 
 		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
-		bundleEntry2.setFullUrl("Patient/Patient-01");
-		bundleEntry2.setResource(ResourcePopulator.populatePatientResource(null));
+		bundleEntry2.setFullUrl("Practitioner/Practitioner-01");
+		bundleEntry2.setResource(ResourcePopulator.populatePractitionerResource());
 
 		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
-		bundleEntry3.setFullUrl("Practitioner/Practitioner-01");
-		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource());
+		bundleEntry3.setFullUrl("Organization/Organization-01");
+		bundleEntry3.setResource(ResourcePopulator.populateOrganizationResource());
 
 		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
-		bundleEntry4.setFullUrl("MedicationRequest/MedicationRequest-01");
-		bundleEntry4.setResource(ResourcePopulator.populateMedicationRequestResource());
+		bundleEntry4.setFullUrl("Organization/Organization-02");
+		bundleEntry4.setResource(ResourcePopulator.populateSecondOrganizationResource());
 
 		BundleEntryComponent bundleEntry5 = new BundleEntryComponent();
-		bundleEntry5.setFullUrl("MedicationRequest/MedicationRequest-02");
-		bundleEntry5.setResource(ResourcePopulator.populateSecondMedicationRequestResource());
+		bundleEntry5.setFullUrl("Patient/Patient-01");
+		bundleEntry5.setResource(ResourcePopulator.populatePatientResource());
 
 		BundleEntryComponent bundleEntry6 = new BundleEntryComponent();
-		bundleEntry6.setFullUrl("Condition/Condition-01");
-		bundleEntry6.setResource(ResourcePopulator.populateConditionResource());
+		bundleEntry6.setFullUrl("Encounter/Encounter-01");
+		bundleEntry6.setResource(ResourcePopulator.populateEncounterResource());
 
 		BundleEntryComponent bundleEntry7 = new BundleEntryComponent();
-		bundleEntry7.setFullUrl("Binary/Binary-01");
-		bundleEntry7.setResource(ResourcePopulator.populateBinaryResource());
+		bundleEntry7.setFullUrl("Appointment/Appointment-01");
+		bundleEntry7.setResource(ResourcePopulator.populateAppointmentResource());
+
+		BundleEntryComponent bundleEntry8 = new BundleEntryComponent();
+		bundleEntry8.setFullUrl("Condition/Condition-01");
+		bundleEntry8.setResource(ResourcePopulator.populateConditionResource());
+
+		BundleEntryComponent bundleEntry9 = new BundleEntryComponent();
+		bundleEntry9.setFullUrl("Condition/Condition-02");
+		bundleEntry9.setResource(ResourcePopulator.populateSecondConditionResource());
+
+		BundleEntryComponent bundleEntry10 = new BundleEntryComponent();
+		bundleEntry10.setFullUrl("DiagnosticReport/DiagnosticReport-01");
+		bundleEntry10.setResource(ResourcePopulator.populateDiagonosticReportLabResource());
+
+		BundleEntryComponent bundleEntry11 = new BundleEntryComponent();
+		bundleEntry11.setFullUrl("Observation/Observation-cholesterol");
+		bundleEntry11.setResource(ResourcePopulator.populateCholesterolObservationResource());
+
+		BundleEntryComponent bundleEntry12 = new BundleEntryComponent();
+		bundleEntry12.setFullUrl("Observation/Observation-triglyceride");
+		bundleEntry12.setResource(ResourcePopulator.populateTriglycerideObservationResource());
+
+		BundleEntryComponent bundleEntry13 = new BundleEntryComponent();
+		bundleEntry13.setFullUrl("Procedure/Procedure-01");
+		bundleEntry13.setResource(ResourcePopulator.populateProcedureResource());
+
+		BundleEntryComponent bundleEntry14 = new BundleEntryComponent();
+		bundleEntry14.setFullUrl("Procedure/Procedure-02");
+		bundleEntry14.setResource(ResourcePopulator.populateSecondProcedureResource());
+
+		BundleEntryComponent bundleEntry15 = new BundleEntryComponent();
+		bundleEntry15.setFullUrl("MedicationRequest/MedicationRequest-01");
+		bundleEntry15.setResource(ResourcePopulator.populateMedicationRequestResource());
+
+		BundleEntryComponent bundleEntry16 = new BundleEntryComponent();
+		bundleEntry16.setFullUrl("CarePlan/CarePlan-01");
+		bundleEntry16.setResource(ResourcePopulator.populateCarePlanResource());
+
+		BundleEntryComponent bundleEntry17 = new BundleEntryComponent();
+		bundleEntry17.setFullUrl("DocumentReference/DocumentReference-01");
+		bundleEntry17.setResource(ResourcePopulator.populateDocumentReferenceResource());
 
 		listBundleEntries.add(bundleEntry1);
 		listBundleEntries.add(bundleEntry2);
@@ -265,8 +335,18 @@ public class PrescriptionSample {
 		listBundleEntries.add(bundleEntry5);
 		listBundleEntries.add(bundleEntry6);
 		listBundleEntries.add(bundleEntry7);
+		listBundleEntries.add(bundleEntry8);
+		listBundleEntries.add(bundleEntry9);
+		listBundleEntries.add(bundleEntry10);
+		listBundleEntries.add(bundleEntry11);
+		listBundleEntries.add(bundleEntry12);
+		listBundleEntries.add(bundleEntry13);
+		listBundleEntries.add(bundleEntry14);
+		listBundleEntries.add(bundleEntry15);
+		listBundleEntries.add(bundleEntry16);
+		listBundleEntries.add(bundleEntry17);
 
-		return prescriptionBundle;
+		return dischargeSummaryBundle;
 	}
 
 	/**
@@ -295,11 +375,11 @@ public class PrescriptionSample {
 		
 		/** LOADING PROFILES **/
 		// Read all Profile Structure Definitions 
-		String[] fileList = new File("/home/Ubuntu/ndhmSample/").list(new WildcardFileFilter("*.xml"));
+		String[] fileList = new File("<path for folder where all profiles are copied>").list(new WildcardFileFilter("*.xml"));
 		for(String file:fileList)
 		{
 			//Parse All Profiles and add to prepopulated support
-			sd = parser.parseResource(StructureDefinition.class, new FileReader("/home/Ubuntu/ndhmSample/"+file));
+			sd = parser.parseResource(StructureDefinition.class, new FileReader("<path for folder where all profiles are copied>"+file));
 			prePopulatedSupport.addStructureDefinition(sd);
 		}
 
@@ -336,4 +416,3 @@ public class PrescriptionSample {
 	}
 
 }
-

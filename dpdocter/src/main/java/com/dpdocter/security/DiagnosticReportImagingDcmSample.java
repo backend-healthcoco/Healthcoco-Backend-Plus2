@@ -1,7 +1,6 @@
 package com.dpdocter.security;
 
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -36,8 +35,6 @@ import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StructureDefinition;
 
-import com.dpdocter.collections.PrescriptionCollection;
-
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
 import ca.uhn.fhir.parser.DataFormatException;
@@ -48,9 +45,9 @@ import ca.uhn.fhir.validation.ValidationResult;
 
 
 /**
- * The PrescriptionSample class populates, validates, parse and serializes Clinical Artifact - Prescription
+ * The DiagnosticReportImagingDcmSample class populates, validates, parse and serializes Clinical Artifact - DiagnosticReport Imaging DCM
  */
-public class PrescriptionSample {
+public class DiagnosticReportImagingDcmSample {
 
 	// The FHIR context is the central starting point for the use of the HAPI FHIR API
 	// It should be created once, and then used as a factory for various other types of objects (parsers, clients, etc.)
@@ -59,25 +56,25 @@ public class PrescriptionSample {
 	static FhirInstanceValidator instanceValidator;
 	static FhirValidator validator;
 
-	public static void prescriptionConvert(PrescriptionCollection prescriptionCollection) throws DataFormatException, IOException
+	public static void main(String[] args) throws DataFormatException, IOException
 	{
 		//Initialize validation support and loads all required profiles
 		init();
-
+				
 		// Populate the resource
-		Bundle prescriptionBundle = populatePrescriptionBundle(prescriptionCollection);
+		Bundle diagnosticReportImagingDCMBundle = populateDiagnosticReportImagingDCMBundle();
 
 		// Validate it. Validate method return result of validation in boolean
-		// If validation result is true then parse, serialize operations are performed
-		if(validate(prescriptionBundle))	
+		// If validation result is true then parse, serialize operations are performed	
+		if(validate(diagnosticReportImagingDCMBundle))
 		{
-			System.out.println("Validated populated Prescripton bundle successfully");
+			System.out.println("Validated populated DiagnosticReportImagingDCM bundle successfully");
 
 			// Instantiate a new parser
 			IParser parser; 
 
 			// Enter file path (Eg: C://generatedexamples//bundle-prescriptionrecord.json)
-			// Depending on file type xml/json instantiate the parser
+			// Depending on file type xml/json instantiate the parser type
 			File file;
 			Scanner scanner = new Scanner(System.in);
 			System.out.println("\nEnter file path to write bundle");
@@ -93,7 +90,8 @@ public class PrescriptionSample {
 			else
 			{
 				System.out.println("Invalid file extention!");
-				scanner.close();
+				if(scanner!=null)
+					scanner.close();
 				return;
 			}
 
@@ -101,7 +99,7 @@ public class PrescriptionSample {
 			parser.setPrettyPrint(true);
 
 			// Serialize populated bundle
-			String serializeBundle = parser.encodeResourceToString(prescriptionBundle);
+			String serializeBundle = parser.encodeResourceToString(diagnosticReportImagingDCMBundle);
 
 			// Write serialized bundle in xml/json file
 			file = new File(filePath);
@@ -129,10 +127,10 @@ public class PrescriptionSample {
 		}
 	}
 
-	// Populate Composition for Prescription
-	static Composition populatePrescriptionCompositionResource()
+	// Populate Composition for DiagnosticReport
+	static Composition populateDiagnosticReportRecordDCMCompositionResource()
 	{
-		Composition composition = new Composition();	
+		Composition composition = new Composition();
 
 		// Set logical id of this artifact
 		composition.setId("Composition-01");
@@ -141,7 +139,7 @@ public class PrescriptionSample {
 		Meta meta = composition.getMeta();
 		meta.setVersionId("1");
 		meta.setLastUpdatedElement(new InstantType("2020-07-09T15:32:26.605+05:30"));
-		meta.addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/PrescriptionRecord");
+		meta.addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/DiagnosticReportRecord");
 
 		// Set language of the resource content
 		composition.setLanguage("en-IN");
@@ -149,7 +147,7 @@ public class PrescriptionSample {
 		// Plain text representation of the concept
 		Narrative text= composition.getText();
 		text.setStatus((NarrativeStatus.GENERATED));
-		text.setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Prescription report</div>");
+		text.setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\"><h4>Narrative with Details</h4>\r\n      <p><b>id:</b> 1</p>\r\n\t  <p><b>status:</b> final</p>\r\n\t  <p><b>category:</b> Computerized tomography service (Details : {http://snomed.info/sct} code '310128004' = 'Computerized tomography service')</p>\r\n\t  <p><b>subject:</b> ABC. Generated Summary: id: 1; Medical Record Number = 1234 (System : {https://healthid.ndhm.gov.in/}); active; ABC ; ph: +919818512600(HOME); gender: male; birthDate: 1981-01-12</p>\r\n\t  <p><b>issued:</b> 2020-07-09</p>\r\n\t  <p><b>performer:</b> XYZ Lab Pvt.Ltd.</p>\r\n\t  <p><b>resultInterpreter:</b> Dr. DEF. Generated Summary: id: 1; Medical License number = 7601003178999 (System : {doctor.ndhm.gov.in})</p>\n\t\t\t\t\t\t<h3>Diagnostic Report for ABC issued 9-July 2020 14:26</h3>\n\t\t\t\t\t\t<pre>\ncode: CT of head-neck\nImaging Study: HEAD and NECK CT DICOM imaging study\nConclusion: CT brains: large tumor sphenoid/clivus. </pre>\n\t\t\t\t\t\t<p>XYZ Lab Pvt.Ltd., Inc signed: Dr. DEF Radiologist</p>\n\t\t\t\t\t</div>");
 
 		// Set version-independent identifier for the Composition
 		Identifier identifier = composition.getIdentifier();
@@ -159,56 +157,51 @@ public class PrescriptionSample {
 		// Status can be preliminary | final | amended | entered-in-error
 		composition.setStatus(CompositionStatus.FINAL);
 
-		// Kind of composition ("Prescription record ")
-		composition.setType(new CodeableConcept(new Coding("http://snomed.info/sct", "440545006", "Prescription record")));
+		// Kind of composition ("Diagnostic studies report")
+		composition.setType(new CodeableConcept(new Coding("http://snomed.info/sct", "721981007", "Diagnostic studies report")));
 
-		// Set subject - Who and/or what the composition/Prescription record is about
+		// Set subject - Who and/or what the composition/DiagnosticReport record is about
 		composition.setSubject(new Reference().setReference("Patient/Patient-01"));
 
 		// Set Timestamp
 		composition.setDateElement(new DateTimeType("2017-05-27T11:46:09+05:30"));
 
-		// Set author - Who and/or what authored the composition/Presciption record
+		// Set author - Who and/or what authored the composition/DiagnosticReport record
 		composition.addAuthor(new Reference().setReference("Practitioner/Practitioner-01"));
 
 		// Set a Human Readable name/title
-		composition.setTitle("Prescription record");
+		composition.setTitle("Diagnostic Report- Imaging DICOM");
 
-		// Composition is broken into sections / Prescription record contains single section to define the relevant medication requests
+		// Composition is broken into sections / DiagnosticReport record contains single section to define the relevant medication requests
 		// Entry is a reference to data that supports this section
 		Reference reference1 = new Reference();
-		reference1.setReference("MedicationRequest/MedicationRequest-01");
-		reference1.setType("MedicationRequest");
+		reference1.setReference("DiagnosticReport/DiagnosticReport-01");
+		reference1.setType("DiagnosticReport");
 
 		Reference reference2 = new Reference();
-		reference2.setReference("MedicationRequest/MedicationRequest-02");
-		reference2.setType("MedicationRequest");
-
-		Reference reference3 = new Reference();
-		reference3.setReference("Binary/Binary-01");
-		reference3.setType("Binary");
+		reference2.setReference("DocumentReference/DocumentReference-01");
+		reference2.setType("DocumentReference");
 
 		SectionComponent section = new SectionComponent();
-		section.setTitle("Prescription record");
-		section.setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "440545006", "Prescription record"))).
+		section.setTitle("Computed tomography imaging report");
+		section.setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "4261000179100", "Computed tomography imaging report"))).
 		addEntry(reference1).
-		addEntry(reference2).
-		addEntry(reference3);
+		addEntry(reference2);
 		composition.addSection(section);	
 
 		return composition;
 	}
 
-	// Populate Prescription Bundle
-	public static Bundle populatePrescriptionBundle(PrescriptionCollection prescriptionCollection)
+	// Populate DiagnosticReport Imaging DCM Bundle
+	static Bundle populateDiagnosticReportImagingDCMBundle()
 	{
-		Bundle prescriptionBundle = new Bundle();
+		Bundle diagnosticReportBundle = new Bundle();
 
 		// Set logical id of this artifact
-		prescriptionBundle.setId("prescription-bundle-01");
+		diagnosticReportBundle.setId("DiagnosticReport-Imaging-DCM-example-01");
 
 		// Set metadata about the resource
-		Meta meta = prescriptionBundle.getMeta();
+		Meta meta = diagnosticReportBundle.getMeta();
 		meta.setVersionId("1");
 		meta.setLastUpdatedElement(new InstantType("2020-07-09T15:32:26.605+05:30"));
 		meta.addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentBundle");
@@ -217,46 +210,62 @@ public class PrescriptionSample {
 		meta.addSecurity(new Coding("http://terminology.hl7.org/CodeSystem/v3-Confidentiality", "V", "very restricted"));
 
 		// Set version-independent identifier for the Bundle
-		Identifier identifier = prescriptionBundle.getIdentifier();
-		identifier.setValue("bc3c6c57-2053-4d0e-ac40-139ccccff645");
+		Identifier identifier = diagnosticReportBundle.getIdentifier();
+		identifier.setValue("242590bb-b122-45d0-8eb2-883392297ee1");
 		identifier.setSystem("http://hip.in");
 
 		// Set Bundle Type 
-		prescriptionBundle.setType(BundleType.DOCUMENT);
+		diagnosticReportBundle.setType(BundleType.DOCUMENT);
 
-		// Set Timestamp 
-		prescriptionBundle.setTimestampElement(new InstantType("2020-07-09T15:32:26.605+05:30"));
+		// Set Timestamp
+		diagnosticReportBundle.setTimestampElement(new InstantType("2020-07-09T15:32:26.605+05:30"));
 
 		// Add resources entries for bundle with Full URL
-		List<BundleEntryComponent> listBundleEntries = prescriptionBundle.getEntry();
+		List<BundleEntryComponent> listBundleEntries = diagnosticReportBundle.getEntry();
 
 		BundleEntryComponent bundleEntry1 = new BundleEntryComponent();
 		bundleEntry1.setFullUrl("Composition/Composition-01");
-		bundleEntry1.setResource(populatePrescriptionCompositionResource());
+		bundleEntry1.setResource(populateDiagnosticReportRecordDCMCompositionResource());
 
 		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
 		bundleEntry2.setFullUrl("Patient/Patient-01");
-		bundleEntry2.setResource(ResourcePopulator.populatePatientResource(null));
+		bundleEntry2.setResource(ResourcePopulator.populatePatientResource());
 
 		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
 		bundleEntry3.setFullUrl("Practitioner/Practitioner-01");
 		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource());
 
 		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
-		bundleEntry4.setFullUrl("MedicationRequest/MedicationRequest-01");
-		bundleEntry4.setResource(ResourcePopulator.populateMedicationRequestResource());
+		bundleEntry4.setFullUrl("Organization/Organization-01");
+		bundleEntry4.setResource(ResourcePopulator.populateOrganizationResource());
 
 		BundleEntryComponent bundleEntry5 = new BundleEntryComponent();
-		bundleEntry5.setFullUrl("MedicationRequest/MedicationRequest-02");
-		bundleEntry5.setResource(ResourcePopulator.populateSecondMedicationRequestResource());
+		bundleEntry5.setFullUrl("DiagnosticReport/DiagnosticReport-01");
+		bundleEntry5.setResource(ResourcePopulator.populateDiagnosticReportImagingDCMResource());
 
 		BundleEntryComponent bundleEntry6 = new BundleEntryComponent();
-		bundleEntry6.setFullUrl("Condition/Condition-01");
-		bundleEntry6.setResource(ResourcePopulator.populateConditionResource());
+		bundleEntry6.setFullUrl("ImagingStudy/ImagingStudy-01");
+		bundleEntry6.setResource(ResourcePopulator.populateImagingStudyResource());
 
 		BundleEntryComponent bundleEntry7 = new BundleEntryComponent();
-		bundleEntry7.setFullUrl("Binary/Binary-01");
-		bundleEntry7.setResource(ResourcePopulator.populateBinaryResource());
+		bundleEntry7.setFullUrl("Media/Media-01");
+		bundleEntry7.setResource(ResourcePopulator.populateMediaResource());		
+
+		BundleEntryComponent bundleEntry8 = new BundleEntryComponent();
+		bundleEntry8.setFullUrl("ServiceRequest/ServiceRequest-01");
+		bundleEntry8.setResource(ResourcePopulator.populateServiceRequestResource());
+
+		BundleEntryComponent bundleEntry9 = new BundleEntryComponent();
+		bundleEntry9.setFullUrl("MedicationRequest/MedicationRequest-01");
+		bundleEntry9.setResource(ResourcePopulator.populateMedicationRequestResource());
+
+		BundleEntryComponent bundleEntry10 = new BundleEntryComponent();
+		bundleEntry10.setFullUrl("MedicationRequest/MedicationRequest-02");
+		bundleEntry10.setResource(ResourcePopulator.populateSecondMedicationRequestResource());
+
+		BundleEntryComponent bundleEntry11 = new BundleEntryComponent();
+		bundleEntry11.setFullUrl("DocumentReference/DocumentReference-01");
+		bundleEntry11.setResource(ResourcePopulator.populateDocumentReferenceResource());
 
 		listBundleEntries.add(bundleEntry1);
 		listBundleEntries.add(bundleEntry2);
@@ -265,8 +274,12 @@ public class PrescriptionSample {
 		listBundleEntries.add(bundleEntry5);
 		listBundleEntries.add(bundleEntry6);
 		listBundleEntries.add(bundleEntry7);
+		listBundleEntries.add(bundleEntry8);
+		listBundleEntries.add(bundleEntry9);
+		listBundleEntries.add(bundleEntry10);
+		listBundleEntries.add(bundleEntry11);
 
-		return prescriptionBundle;
+		return diagnosticReportBundle;
 	}
 
 	/**
@@ -295,11 +308,11 @@ public class PrescriptionSample {
 		
 		/** LOADING PROFILES **/
 		// Read all Profile Structure Definitions 
-		String[] fileList = new File("/home/Ubuntu/ndhmSample/").list(new WildcardFileFilter("*.xml"));
+		String[] fileList = new File("<path for folder where all profiles are copied>").list(new WildcardFileFilter("*.xml"));
 		for(String file:fileList)
 		{
 			//Parse All Profiles and add to prepopulated support
-			sd = parser.parseResource(StructureDefinition.class, new FileReader("/home/Ubuntu/ndhmSample/"+file));
+			sd = parser.parseResource(StructureDefinition.class, new FileReader("<path for folder where all profiles are copied>"+file));
 			prePopulatedSupport.addStructureDefinition(sd);
 		}
 
@@ -334,6 +347,4 @@ public class PrescriptionSample {
 
 		return result.isSuccessful();
 	}
-
 }
-

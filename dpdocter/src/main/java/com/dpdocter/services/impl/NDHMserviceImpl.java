@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -89,6 +90,7 @@ import com.dpdocter.collections.OnFetchModeCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.NDHMRecordDataResourceType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -107,6 +109,7 @@ import com.dpdocter.repository.OnCareContextRepository;
 import com.dpdocter.repository.OnFetchModeRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
+import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ConsentOnInitRequest;
 import com.dpdocter.request.CreateAadhaarRequest;
 import com.dpdocter.request.CreateProfileRequest;
@@ -119,6 +122,8 @@ import com.dpdocter.request.GatewayConsentStatusRequest;
 import com.dpdocter.request.KeyMaterialRequestDataFlow;
 import com.dpdocter.response.GetCardProfileResponse;
 import com.dpdocter.security.DHKeyExchangeCrypto;
+import com.dpdocter.security.PrescriptionSample;
+import com.dpdocter.security.ResourcePopulator;
 import com.dpdocter.services.NDHMservices;
 import com.dpdocter.webservices.GateWayHiOnRequest;
 import com.dpdocter.webservices.GateWayOnRequest;
@@ -189,6 +194,10 @@ public class NDHMserviceImpl implements NDHMservices {
 	
 	@Autowired
 	private PrescriptionRepository prescriptionRepository;
+	
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -2907,10 +2916,13 @@ public class NDHMserviceImpl implements NDHMservices {
 				System.out.println("HiTypes"+hiTypes);
 				if(hiTypes !=null)
 				{
-					String hiType=hiTypes.get(0);
-					if(hiType.equals("Prescription"))
+					//String hiType=hiTypes.get(0);
+					if(hiTypes.contains("Prescription"))
 					{
 						PatientCollection patientCollection=patientRepository.findByHealthId(notify.getNotification().getConsentDetail().getPatient().getId());
+						UserCollection user=userRepository.findById(patientCollection.getUserId()).orElse(null);
+						patientCollection.setSecMobile(user.getMobileNumber());
+						ResourcePopulator.populatePatientResource(patientCollection);
 						
 						if(patientCollection !=null)
 						{
@@ -2921,10 +2933,14 @@ public class NDHMserviceImpl implements NDHMservices {
 							criteria.and("patientId").is(patientCollection.getUserId());
 							Aggregation aggregation = null;
 
-							List<PrescriptionCollection> prescriptionCollection =mongoTemplate.aggregate(aggregation,
+							List<PrescriptionCollection> prescriptionCollections =mongoTemplate.aggregate(aggregation,
 										PrescriptionCollection.class, PrescriptionCollection.class).getMappedResults();
-						
-							DataEncryptionResponse data=	mapPrescriptionRecordData(prescriptionCollection, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+						for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
+						{
+							PrescriptionSample.prescriptionConvert(prescriptionCollection);
+							DataEncryptionResponse data=	mapPrescriptionRecordData(prescriptionCollections, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+							DHKeyExchangeCrypto.convert(prescriptionCollection.toString(), collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+							
 						DataTransferRequest transfer=new DataTransferRequest();
 						EntriesDataTransferRequest entry=new EntriesDataTransferRequest();
 						entry.setCareContextReference("Prescription");
@@ -2932,8 +2948,8 @@ public class NDHMserviceImpl implements NDHMservices {
 						key.setNonce(data.getRandomSender());
 						DhPublicKeyDataFlowRequest dhPublic=new DhPublicKeyDataFlowRequest();
 						dhPublic.setKeyValue(data.getSenderPublicKey());
-					key.setDhPublicKey(dhPublic);
-					transfer.setKeyMaterial(key);
+						key.setDhPublicKey(dhPublic);
+						transfer.setKeyMaterial(key);
 						transfer.setPageCount(0); 
 						transfer.setPageNumber(0);
 						List<EntriesDataTransferRequest> entries=new ArrayList<EntriesDataTransferRequest>();
@@ -2941,7 +2957,7 @@ public class NDHMserviceImpl implements NDHMservices {
 						transfer.setEntries(entries);						
 						onDataTransfer(transfer);
 						
-						
+						}
 						}
 					}
 				}

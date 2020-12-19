@@ -78,21 +78,23 @@ import org.hl7.fhir.r4.model.Timing;
 import org.hl7.fhir.r4.model.Timing.TimingRepeatComponent;
 import org.hl7.fhir.r4.model.Timing.UnitsOfTime;
 
+import com.dpdocter.collections.PatientCollection;
+
 /**
  * The FhirResourcePopulator class populates all the FHIR resources 
  */
 public class ResourcePopulator {
 	
 	// Populate Patient Resource
-	public static Patient populatePatientResource()
+	public static Patient populatePatientResource(PatientCollection patientCollection)
 	{
 		Patient patient = new Patient();
-		patient.setId("Patient-01");
+		patient.setId(patientCollection.getId().toString());
 		patient.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType("2020-07-09T14:58:58.181+05:30")).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient");
 		patient.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">ABC, 41 year, Male</div>");
 		patient.addIdentifier().setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "MR", "Medical record number"))).setSystem("https://ndhm.in/SwasthID").setValue("1234");
-		patient.addName().setText("ABC");
-		patient.addTelecom().setSystem(ContactPointSystem.PHONE).setValue("+919818512600").setUse(ContactPointUse.HOME);
+		patient.addName().setText(patientCollection.getLocalPatientName());
+		patient.addTelecom().setSystem(ContactPointSystem.PHONE).setValue("+91"+patientCollection.getSecMobile()).setUse(ContactPointUse.HOME);
 		patient.setGender(AdministrativeGender.MALE).setBirthDateElement(new DateType("1981-01-12"));
 		return patient;
 	}
