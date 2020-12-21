@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.log4j.Logger;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.PrePopulatedValidationSupport;
@@ -33,10 +34,22 @@ import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StructureDefinition;
 
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.services.impl.JasperReportServiceImpl;
+import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
@@ -45,12 +58,33 @@ import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.SingleValidationMessage;
 import ca.uhn.fhir.validation.ValidationResult;
+import common.util.web.DPDoctorUtils;
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
 
 
 /**
  * The PrescriptionSample class populates, validates, parse and serializes Clinical Artifact - Prescription
  */
 public class PrescriptionSample {
+	
+	private static Logger logger = Logger.getLogger(PrescriptionSample.class.getName());
+	
+	
+	@Value(value = "${bucket.name}")
+	private String bucketName;
+
+	@Value(value = "${mail.aws.key.id}")
+	private String AWS_KEY;
+
+	@Value(value = "${mail.aws.secret.key}")
+	private String AWS_SECRET_KEY;
 
 	// The FHIR context is the central starting point for the use of the HAPI FHIR API
 	// It should be created once, and then used as a factory for various other types of objects (parsers, clients, etc.)
@@ -59,18 +93,21 @@ public class PrescriptionSample {
 	static FhirInstanceValidator instanceValidator;
 	static FhirValidator validator;
 
-	public static void prescriptionConvert(PrescriptionCollection prescriptionCollection) throws DataFormatException, IOException
+	public static String prescriptionConvert(PrescriptionCollection prescriptionCollection) throws DataFormatException, IOException
 	{
+//	public static void main(String[] args) throws DataFormatException, IOException
+//	{
+		String response;
 		//Initialize validation support and loads all required profiles
 		init();
 
 		// Populate the resource
-		Bundle prescriptionBundle = populatePrescriptionBundle(prescriptionCollection);
+		Bundle prescriptionBundle = populatePrescriptionBundle();
 
 		// Validate it. Validate method return result of validation in boolean
 		// If validation result is true then parse, serialize operations are performed
-		if(validate(prescriptionBundle))	
-		{
+	//	if(validate(prescriptionBundle))	
+	//	{
 			System.out.println("Validated populated Prescripton bundle successfully");
 
 			// Instantiate a new parser
@@ -94,7 +131,7 @@ public class PrescriptionSample {
 			{
 				System.out.println("Invalid file extention!");
 				scanner.close();
-				return;
+				return null;
 			}
 
 			// Indent the output
@@ -102,8 +139,9 @@ public class PrescriptionSample {
 
 			// Serialize populated bundle
 			String serializeBundle = parser.encodeResourceToString(prescriptionBundle);
-
+			System.out.println("out"+serializeBundle);
 			// Write serialized bundle in xml/json file
+			
 			file = new File(filePath);
 			file.createNewFile();	
 			FileWriter writer = new FileWriter(file);
@@ -113,22 +151,66 @@ public class PrescriptionSample {
 			scanner.close();
 
 			// Parse the xml/json file
-			IBaseResource resource = parser.parseResource(new FileReader(new File(filePath)));
+			//IBaseResource resource = parser.parseResource(new FileReader(new File(filePath)));
+			IBaseResource resource = parser.parseResource(serializeBundle);
+				return serializeBundle;
 
 			// Validate Parsed file
-			if(validate(resource)){
-				System.out.println("Validated parsed file successfully");
-			}
-			else{
-				System.out.println("Failed to validate parsed file");
-			}
+//			if(validate(resource)){
+//				System.out.println("Validated parsed file successfully");
+//			}
+//			else{
+//				System.out.println("Failed to validate parsed file");
+//			}
 		}
-		else
-		{
-			System.out.println("Failed to validate populate Prescription bundle");
-		}
-	}
+//		else
+//		{
+//			System.out.println("Failed to validate populate Prescription bundle");
+//		}
+//	}
 
+//	String saveFile(String fileName)
+//	{
+//		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+//		AmazonS3 s3client = new AmazonS3Client(credentials);
+//	
+//		try {
+//			String path="ndhm";
+//			 fileName = fileName + "." + "json";
+//			String imageUrl = path + "/" + fileName;
+////			if (!DPDoctorUtils.anyStringEmpty(fileName)) {
+////				pdfName = pdfName.replaceAll("[^a-zA-Z0-9]", "");
+////			}
+//
+//			
+//			FileSystemResource fileSystemResource = new FileSystemResource(
+//					imageUrl);
+//			
+//			ObjectMetadata metadata = new ObjectMetadata();
+//			metadata.setContentEncoding("json");
+//			metadata.setContentType("application/json");
+//			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+//			PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName,
+//					imageUrl,fileSystemResource.getFile()
+//					);
+//			putObjectRequest.setMetadata(metadata);
+//			s3client.putObject(putObjectRequest);
+//
+//			
+//			return null;
+//		} catch (BusinessException e) {
+//			e.printStackTrace();
+//			logger.error(e);
+//		
+//			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+//
+//		}
+//
+//		
+//	}
+	
+	
+	
 	// Populate Composition for Prescription
 	static Composition populatePrescriptionCompositionResource()
 	{
@@ -200,7 +282,7 @@ public class PrescriptionSample {
 	}
 
 	// Populate Prescription Bundle
-	public static Bundle populatePrescriptionBundle(PrescriptionCollection prescriptionCollection)
+	public static Bundle populatePrescriptionBundle()
 	{
 		Bundle prescriptionBundle = new Bundle();
 
@@ -236,7 +318,7 @@ public class PrescriptionSample {
 
 		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
 		bundleEntry2.setFullUrl("Patient/Patient-01");
-		bundleEntry2.setResource(ResourcePopulator.populatePatientResource(null));
+		bundleEntry2.setResource(ResourcePopulator.populatePatientResource());
 
 		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
 		bundleEntry3.setFullUrl("Practitioner/Practitioner-01");
@@ -276,7 +358,7 @@ public class PrescriptionSample {
 	{
 
 		// Create xml parser object for reading profiles
-		IParser parser = ctx.newXmlParser();
+		IParser parser = ctx.newJsonParser();
 
 		// Create a chain that will hold our modules
 		ValidationSupportChain supportChain = new ValidationSupportChain();
@@ -295,11 +377,11 @@ public class PrescriptionSample {
 		
 		/** LOADING PROFILES **/
 		// Read all Profile Structure Definitions 
-		String[] fileList = new File("/home/Ubuntu/ndhmSample/").list(new WildcardFileFilter("*.xml"));
+		String[] fileList = new File("/home/healthcoco/Desktop/Ndhm/").list(new WildcardFileFilter("*.json"));
 		for(String file:fileList)
 		{
 			//Parse All Profiles and add to prepopulated support
-			sd = parser.parseResource(StructureDefinition.class, new FileReader("/home/Ubuntu/ndhmSample/"+file));
+			sd = parser.parseResource(StructureDefinition.class, new FileReader("/home/healthcoco/Desktop/Ndhm/"+file));
 			prePopulatedSupport.addStructureDefinition(sd);
 		}
 

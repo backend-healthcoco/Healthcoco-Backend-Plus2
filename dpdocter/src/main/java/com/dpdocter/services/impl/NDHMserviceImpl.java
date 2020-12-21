@@ -2905,7 +2905,7 @@ public class NDHMserviceImpl implements NDHMservices {
 				FetchResponse resp=new FetchResponse();
 				resp.setRequestId(collection.getRequestId());
 				gate.setResp(resp);
-			 status=	onGateWayOnRequest(gate);
+			 status= onGateWayOnRequest(gate);
 			}
 			
 			NdhmNotifyCollection notify=ndhmNotifyRepository.findByNotificationConsentId(request.getHiRequest().getConsent().getId());
@@ -2922,7 +2922,7 @@ public class NDHMserviceImpl implements NDHMservices {
 						PatientCollection patientCollection=patientRepository.findByHealthId(notify.getNotification().getConsentDetail().getPatient().getId());
 						UserCollection user=userRepository.findById(patientCollection.getUserId()).orElse(null);
 						patientCollection.setSecMobile(user.getMobileNumber());
-						ResourcePopulator.populatePatientResource(patientCollection);
+						ResourcePopulator.populatePatientResource();
 						
 						if(patientCollection !=null)
 						{
@@ -2935,29 +2935,38 @@ public class NDHMserviceImpl implements NDHMservices {
 
 							List<PrescriptionCollection> prescriptionCollections =mongoTemplate.aggregate(aggregation,
 										PrescriptionCollection.class, PrescriptionCollection.class).getMappedResults();
-						for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
+						
+							List<EntriesDataTransferRequest> entries=new ArrayList<EntriesDataTransferRequest>();
+							KeyMaterialRequestDataFlow key=new KeyMaterialRequestDataFlow();
+							for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
 						{
-							PrescriptionSample.prescriptionConvert(prescriptionCollection);
-							DataEncryptionResponse data=	mapPrescriptionRecordData(prescriptionCollections, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
-							DHKeyExchangeCrypto.convert(prescriptionCollection.toString(), collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
-							
-						DataTransferRequest transfer=new DataTransferRequest();
+						String bundle=	PrescriptionSample.prescriptionConvert(prescriptionCollection);
+							//	mapPrescriptionRecordData(prescriptionCollections, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+						DataEncryptionResponse data=DHKeyExchangeCrypto.convert(bundle, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+						
+						
 						EntriesDataTransferRequest entry=new EntriesDataTransferRequest();
 						entry.setCareContextReference("Prescription");
-						KeyMaterialRequestDataFlow key=new KeyMaterialRequestDataFlow();
+						entry.setContent(data.getEncryptedData());
+						
 						key.setNonce(data.getRandomSender());
 						DhPublicKeyDataFlowRequest dhPublic=new DhPublicKeyDataFlowRequest();
 						dhPublic.setKeyValue(data.getSenderPublicKey());
 						key.setDhPublicKey(dhPublic);
-						transfer.setKeyMaterial(key);
-						transfer.setPageCount(0); 
-						transfer.setPageNumber(0);
-						List<EntriesDataTransferRequest> entries=new ArrayList<EntriesDataTransferRequest>();
+						
+						
 						entries.add(entry);
-						transfer.setEntries(entries);						
-						onDataTransfer(transfer);
+										
+						
 						
 						}
+							DataTransferRequest transfer=new DataTransferRequest();
+							transfer.setKeyMaterial(key);
+							transfer.setPageCount(0); 
+							transfer.setPageNumber(0);
+							transfer.setEntries(entries);		
+							onDataTransfer(transfer);
+							
 						}
 					}
 				}

@@ -63,16 +63,17 @@ public class DiagnosticReportImagingDcmSample {
 				
 		// Populate the resource
 		Bundle diagnosticReportImagingDCMBundle = populateDiagnosticReportImagingDCMBundle();
-
+		System.out.println("diag1  "+diagnosticReportImagingDCMBundle.fhirType());
 		// Validate it. Validate method return result of validation in boolean
 		// If validation result is true then parse, serialize operations are performed	
-		if(validate(diagnosticReportImagingDCMBundle))
-		{
+		//if(validate(diagnosticReportImagingDCMBundle))
+	//	{
 			System.out.println("Validated populated DiagnosticReportImagingDCM bundle successfully");
 
 			// Instantiate a new parser
 			IParser parser; 
 
+			
 			// Enter file path (Eg: C://generatedexamples//bundle-prescriptionrecord.json)
 			// Depending on file type xml/json instantiate the parser type
 			File file;
@@ -120,11 +121,11 @@ public class DiagnosticReportImagingDcmSample {
 			else{
 				System.out.println("Failed to validate parsed file");
 			}
-		}
-		else
-		{
-			System.out.println("Failed to validate populate Prescription bundle");
-		}
+//		}
+//		else
+//		{
+//			System.out.println("Failed to validate populate Prescription bundle");
+//		}
 	}
 
 	// Populate Composition for DiagnosticReport
@@ -289,7 +290,7 @@ public class DiagnosticReportImagingDcmSample {
 	{
 
 		// Create xml parser object for reading profiles
-		IParser parser = ctx.newXmlParser();
+		IParser parser = ctx.newJsonParser();
 
 		// Create a chain that will hold our modules
 		ValidationSupportChain supportChain = new ValidationSupportChain();
@@ -308,11 +309,11 @@ public class DiagnosticReportImagingDcmSample {
 		
 		/** LOADING PROFILES **/
 		// Read all Profile Structure Definitions 
-		String[] fileList = new File("<path for folder where all profiles are copied>").list(new WildcardFileFilter("*.xml"));
+		String[] fileList = new File("/home/healthcoco/Desktop/Ndhm/").list(new WildcardFileFilter("*.json"));
 		for(String file:fileList)
 		{
 			//Parse All Profiles and add to prepopulated support
-			sd = parser.parseResource(StructureDefinition.class, new FileReader("<path for folder where all profiles are copied>"+file));
+			sd = parser.parseResource(StructureDefinition.class, new FileReader("/home/healthcoco/Desktop/Ndhm/"+file));
 			prePopulatedSupport.addStructureDefinition(sd);
 		}
 
