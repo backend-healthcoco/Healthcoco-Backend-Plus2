@@ -37,6 +37,11 @@ import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StructureDefinition;
 
+import com.dpdocter.collections.DischargeSummaryCollection;
+import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.UserCollection;
+
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
 import ca.uhn.fhir.parser.DataFormatException;
@@ -58,13 +63,14 @@ public class DischargeSummarySample {
 	static FhirInstanceValidator instanceValidator;
 	static FhirValidator validator;
 
-	public static void main(String[] args) throws DataFormatException, IOException
+	public static String dischargeSummaryConvert(DischargeSummaryCollection dischargeSummaryCollection, PatientCollection patientCollection,UserCollection userCollection) throws DataFormatException, IOException
 	{
+		String serializeBundle=null;
 		//Initialize validation support and loads all required profiles
 		init();
 				
 		// Populate the resource
-		Bundle dischargeSummaryBundle = populateDischargeSummaryBundle();
+		Bundle dischargeSummaryBundle = populateDischargeSummaryBundle(dischargeSummaryCollection,patientCollection,userCollection);
 
 		// Validate it. Validate method return result of validation in boolean
 		// If validation result is true then parse, serialize operations are performed		
@@ -94,14 +100,14 @@ public class DischargeSummarySample {
 				System.out.println("Invalid file extention!");
 				if(scanner!=null)
 					scanner.close();
-				return;
+				return null;
 			}
 
 			// Indent the output
 			parser.setPrettyPrint(true);
 
 			// Serialize populated bundle
-			String serializeBundle = parser.encodeResourceToString(dischargeSummaryBundle);
+			serializeBundle = parser.encodeResourceToString(dischargeSummaryBundle);
 
 			// Write serialized bundle in xml/json file
 			file = new File(filePath);
@@ -127,6 +133,7 @@ public class DischargeSummarySample {
 		{
 			System.out.println("Failed to validate populate Prescription bundle");
 		}
+		return serializeBundle;
 	}
 
 	// Populate Composition for DischargeSummary
@@ -230,7 +237,7 @@ public class DischargeSummarySample {
 		return composition;
 	}
 
-	static Bundle populateDischargeSummaryBundle()
+	static Bundle populateDischargeSummaryBundle(DischargeSummaryCollection dischargeSummaryCollection, PatientCollection patientCollection, UserCollection userCollection)
 	{
 		Bundle dischargeSummaryBundle = new Bundle();
 
@@ -266,7 +273,7 @@ public class DischargeSummarySample {
 
 		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
 		bundleEntry2.setFullUrl("Practitioner/Practitioner-01");
-		bundleEntry2.setResource(ResourcePopulator.populatePractitionerResource());
+		bundleEntry2.setResource(ResourcePopulator.populatePractitionerResource(userCollection));
 
 		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
 		bundleEntry3.setFullUrl("Organization/Organization-01");
@@ -278,7 +285,7 @@ public class DischargeSummarySample {
 
 		BundleEntryComponent bundleEntry5 = new BundleEntryComponent();
 		bundleEntry5.setFullUrl("Patient/Patient-01");
-		bundleEntry5.setResource(ResourcePopulator.populatePatientResource());
+		bundleEntry5.setResource(ResourcePopulator.populatePatientResource(patientCollection));
 
 		BundleEntryComponent bundleEntry6 = new BundleEntryComponent();
 		bundleEntry6.setFullUrl("Encounter/Encounter-01");
@@ -318,7 +325,7 @@ public class DischargeSummarySample {
 
 		BundleEntryComponent bundleEntry15 = new BundleEntryComponent();
 		bundleEntry15.setFullUrl("MedicationRequest/MedicationRequest-01");
-		bundleEntry15.setResource(ResourcePopulator.populateMedicationRequestResource());
+		//bundleEntry15.setResource(ResourcePopulator.populateMedicationRequestResource());
 
 		BundleEntryComponent bundleEntry16 = new BundleEntryComponent();
 		bundleEntry16.setFullUrl("CarePlan/CarePlan-01");

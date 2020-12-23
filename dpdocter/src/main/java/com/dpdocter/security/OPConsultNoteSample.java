@@ -36,6 +36,9 @@ import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StructureDefinition;
 
+import com.dpdocter.collections.OperationNoteCollection;
+import com.dpdocter.collections.PatientCollection;
+
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
 import ca.uhn.fhir.parser.DataFormatException;
@@ -57,13 +60,14 @@ public class OPConsultNoteSample {
 	static FhirInstanceValidator instanceValidator;
 	static FhirValidator validator;
 
-	public static void main(String[] args) throws DataFormatException, IOException
+	public static String OpConvert(OperationNoteCollection operationNotesCollection, PatientCollection patientCollection) throws DataFormatException, IOException
 	{
+		String serializeBundle=null;
 		//Initialize validation support and loads all required profiles
 		init();
 				
 		// Populate the resource
-		Bundle OPConsultNoteBundle = populateOPConsultNoteBundle();
+		Bundle OPConsultNoteBundle = populateOPConsultNoteBundle(operationNotesCollection,patientCollection);
 
 		// Validate it. Validate method return result of validation in boolean
 		// If validation result is true then parse, serialize operations are performed
@@ -93,14 +97,14 @@ public class OPConsultNoteSample {
 				System.out.println("Invalid file extention!");
 				if(scanner!=null)
 					scanner.close();
-				return;
+				return null;
 			}
 
 			// Indent the output
 			parser.setPrettyPrint(true);
 
 			// Serialize populated bundle
-			String serializeBundle = parser.encodeResourceToString(OPConsultNoteBundle);
+			 serializeBundle = parser.encodeResourceToString(OPConsultNoteBundle);
 
 			// Write serialized bundle in xml/json file
 			file = new File(filePath);
@@ -126,6 +130,7 @@ public class OPConsultNoteSample {
 		{
 			System.out.println("Failed to validate populate Prescription bundle");
 		}
+		return serializeBundle;
 	}
 
 	// Populate Composition for OPConsultNote
@@ -249,7 +254,7 @@ public class OPConsultNoteSample {
 		return composition;
 	}
 
-	static Bundle populateOPConsultNoteBundle()
+	static Bundle populateOPConsultNoteBundle(OperationNoteCollection operationNotesCollection, PatientCollection patientCollection)
 	{
 		Bundle opCounsultNoteBundle = new Bundle();
 
@@ -285,7 +290,7 @@ public class OPConsultNoteSample {
 
 		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
 		bundleEntry2.setFullUrl("Practitioner/Practitioner-01");
-		bundleEntry2.setResource(ResourcePopulator.populatePractitionerResource());
+		bundleEntry2.setResource(ResourcePopulator.populatePractitionerResource(null));
 
 		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
 		bundleEntry3.setFullUrl("Organization/Organization-01");
@@ -293,7 +298,7 @@ public class OPConsultNoteSample {
 
 		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
 		bundleEntry4.setFullUrl("Patient/Patient-01");
-		bundleEntry4.setResource(ResourcePopulator.populatePatientResource());
+		bundleEntry4.setResource(ResourcePopulator.populatePatientResource(patientCollection));
 
 		BundleEntryComponent bundleEntry5 = new BundleEntryComponent();
 		bundleEntry5.setFullUrl("Encounter/Encounter-01");
@@ -333,7 +338,7 @@ public class OPConsultNoteSample {
 
 		BundleEntryComponent bundleEntry14 = new BundleEntryComponent();
 		bundleEntry14.setFullUrl("MedicationRequest/MedicationRequest-01");
-		bundleEntry14.setResource(ResourcePopulator.populateMedicationRequestResource());
+		//bundleEntry14.setResource(ResourcePopulator.populateMedicationRequestResource());
 
 		BundleEntryComponent bundleEntry15 = new BundleEntryComponent();
 		bundleEntry15.setFullUrl("DocumentReference/DocumentReference-01");

@@ -2,7 +2,7 @@ package com.dpdocter.security;
 
 import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.crypto.digests.SHA256Digest;
-
+import org.bouncycastle.crypto.ec.CustomNamedCurves;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.generators.HKDFBytesGenerator;
 import org.bouncycastle.crypto.modes.GCMBlockCipher;
@@ -17,8 +17,6 @@ import org.bouncycastle.jce.spec.ECPrivateKeySpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
 
 import com.dpdocter.beans.DataEncryptionResponse;
-
-import org.bouncycastle.crypto.ec.CustomNamedCurves;
 
 import javax.crypto.KeyAgreement;
 import java.math.BigInteger;
@@ -35,13 +33,11 @@ import java.security.Security;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
-
 public class DHKeyExchangeCrypto {
     public static final String ALGORITHM = "ECDH";
     public static final String CURVE = "curve25519";
     public static final String PROVIDER = BouncyCastleProvider.PROVIDER_NAME;
-  //  public static final String strToPerformActionOn = "{\"resourceType\":\"Bundle\",\"id\":\"744719b9-0590-4560-a60f-db27092d63bf\",\"meta\":{\"lastUpdated\":\"2018-08-01T00:00:00.000+05:30\"},\"identifier\":{\"system\":\"https:\\/\\/www.max.in\\/bundle\",\"value\":\"744719b9-0590-4560-a60f-db27092d63bf\"},\"type\":\"document\",\"timestamp\":\"2018-08-01T00:00:00.000+05:30\",\"entry\":[{\"fullUrl\":\"Composition\\/784953a5-097c-4265-959a-9fa9d62833d5\",\"resource\":{\"resourceType\":\"Composition\",\"id\":\"784953a5-097c-4265-959a-9fa9d62833d5\",\"identifier\":{\"system\":\"https:\\/\\/www.max.in\\/document\",\"value\":\"784953a5-097c-4265-959a-9fa9d62833d5\"},\"status\":\"final\",\"type\":{\"coding\":[{\"system\":\"https:\\/\\/projecteka.in\\/sct\",\"code\":\"440545006\",\"display\":\"Prescription record\"}]},\"subject\":{\"reference\":\"Patient\\/TEST-HIP-002\"},\"date\":\"2018-08-01T00:00:00.605+05:30\",\"author\":[{\"reference\":\"Practitioner\\/MAX191101\",\"display\":\"Dr Amit M K\"}],\"title\":\"Prescription\",\"section\":[{\"title\":\"OPD Prescription\",\"code\":{\"coding\":[{\"system\":\"https:\\/\\/projecteka.in\\/sct\",\"code\":\"440545006\",\"display\":\"Prescription record\"}]},\"entry\":[{\"reference\":\"MedicationRequest\\/67fa1415-6834-41b8-99b2-ca73d241fb07\"}]}]}},{\"fullUrl\":\"Practitioner\\/MAX191101\",\"resource\":{\"resourceType\":\"Practitioner\",\"id\":\"MAX191101\",\"identifier\":[{\"system\":\"https:\\/\\/www.mciindia.in\\/doctor\",\"value\":\"MAX191101\"}],\"name\":[{\"text\":\"Amit M K\",\"prefix\":[\"Dr\"],\"suffix\":[\"MD\"]}]}},{\"fullUrl\":\"Patient\\/TEST-HIP-003\",\"resource\":{\"resourceType\":\"Patient\",\"id\":\"TEST-HIP-002\",\"name\":[{\"text\":\"Sadio Mane\"}],\"gender\":\"male\"}},{\"fullUrl\":\"Condition\\/87974d86-0a41-4b92-9ae2-933edaf8fd2c\",\"resource\":{\"resourceType\":\"Condition\",\"id\":\"87974d86-0a41-4b92-9ae2-933edaf8fd2c\",\"code\":{\"text\":\"worm infection\"},\"subject\":{\"reference\":\"Patient\\/TEST-HIP-002\"}}},{\"fullUrl\":\"Medication\\/7741f00b-fb45-4562-9c8f-d3bc316bb971\",\"resource\":{\"resourceType\":\"Medication\",\"id\":\"7741f00b-fb45-4562-9c8f-d3bc316bb971\",\"code\":{\"text\":\"albendazole 400 mg\"}}},{\"fullUrl\":\"MedicationRequest\\/67fa1415-6834-41b8-99b2-ca73d241fb07\",\"resource\":{\"resourceType\":\"MedicationRequest\",\"id\":\"67fa1415-6834-41b8-99b2-ca73d241fb07\",\"status\":\"active\",\"intent\":\"order\",\"medicationReference\":{\"reference\":\"Medication\\/7741f00b-fb45-4562-9c8f-d3bc316bb971\"},\"subject\":{\"reference\":\"Patient\\/TEST-HIP-002\"},\"authoredOn\":\"2018-08-01T00:00:00+05:30\",\"requester\":{\"reference\":\"Practitioner\\/MAX191101\"},\"reasonReference\":[{\"reference\":\"Condition\\/87974d86-0a41-4b92-9ae2-933edaf8fd2c\"}],\"dosageInstruction\":[{\"text\":\"1 time only\"}]}}]}";
-
+   
     // Driver function
     public static DataEncryptionResponse convert(String strToPerformActionOn,String nounce,String keypair) throws Exception {
     	DataEncryptionResponse response=new DataEncryptionResponse();
@@ -58,7 +54,6 @@ public class DHKeyExchangeCrypto {
         KeyPair receiverKeyPair = generateKeyPair();
         String receiverPrivateKey = getBase64String(getEncodedPrivateKey(receiverKeyPair.getPrivate()));
         //KeyMaterial.dhPublicKey.keyValue from POST
-      //  String receiverPublicKey = "BEvxLZDvQ5b8oXzje7+YVy2rg2pUgXQgoey6RojQG+vrTc15mK+9+4d6JWX+DWVrjM/l4sszrFb9B3boXjJwPyw=";
         String receiverPublicKey =keypair;
         KeyPair senderKeyPair = generateKeyPair();
         String senderPrivateKey = getBase64String(getEncodedPrivateKey(senderKeyPair.getPrivate()));

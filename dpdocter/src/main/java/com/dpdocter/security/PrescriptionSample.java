@@ -36,6 +36,7 @@ import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.scheduling.annotation.Async;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StructureDefinition;
 
@@ -44,7 +45,11 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.JasperReportResponse;
@@ -72,6 +77,7 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 /**
  * The PrescriptionSample class populates, validates, parse and serializes Clinical Artifact - Prescription
  */
+
 public class PrescriptionSample {
 	
 	private static Logger logger = Logger.getLogger(PrescriptionSample.class.getName());
@@ -93,121 +99,92 @@ public class PrescriptionSample {
 	static FhirInstanceValidator instanceValidator;
 	static FhirValidator validator;
 
-	public static String prescriptionConvert(PrescriptionCollection prescriptionCollection) throws DataFormatException, IOException
+	public static String prescriptionConvert(PrescriptionCollection prescriptionCollection,PatientCollection patientCollection, UserCollection userCollection) throws DataFormatException, IOException
 	{
-//	public static void main(String[] args) throws DataFormatException, IOException
-//	{
-		String response;
+
+		String serializeBundle=null;
+		try {
 		//Initialize validation support and loads all required profiles
 		init();
 
 		// Populate the resource
-		Bundle prescriptionBundle = populatePrescriptionBundle();
+		Bundle prescriptionBundle = populatePrescriptionBundle(prescriptionCollection,patientCollection,userCollection);
 
 		// Validate it. Validate method return result of validation in boolean
 		// If validation result is true then parse, serialize operations are performed
 	//	if(validate(prescriptionBundle))	
-	//	{
+		{
 			System.out.println("Validated populated Prescripton bundle successfully");
 
 			// Instantiate a new parser
-			IParser parser; 
+			IParser parser= ctx.newJsonParser(); 
 
 			// Enter file path (Eg: C://generatedexamples//bundle-prescriptionrecord.json)
 			// Depending on file type xml/json instantiate the parser
-			File file;
-			Scanner scanner = new Scanner(System.in);
-			System.out.println("\nEnter file path to write bundle");
-			String filePath = scanner.nextLine();
-			if(FilenameUtils.getExtension(filePath).equals("json"))
-			{
-				parser = ctx.newJsonParser();
-			}
-			else if(FilenameUtils.getExtension(filePath).equals("xml"))
-			{
-				parser = ctx.newXmlParser();
-			}
-			else
-			{
-				System.out.println("Invalid file extention!");
-				scanner.close();
-				return null;
-			}
+//			File file;
+//			Scanner scanner = new Scanner(System.in);
+//			System.out.println("\nEnter file path to write bundle");
+//			String filePath = scanner.nextLine();
+//			if(FilenameUtils.getExtension(filePath).equals("json"))
+//			{
+//				parser = ctx.newJsonParser();
+//			}
+//			else if(FilenameUtils.getExtension(filePath).equals("xml"))
+//			{
+//				parser = ctx.newXmlParser();
+//			}
+//			else
+//			{
+//				System.out.println("Invalid file extention!");
+//				scanner.close();
+//				return null;
+//			}
 
 			// Indent the output
 			parser.setPrettyPrint(true);
 
 			// Serialize populated bundle
-			String serializeBundle = parser.encodeResourceToString(prescriptionBundle);
-			System.out.println("out"+serializeBundle);
+			serializeBundle = parser.encodeResourceToString(prescriptionBundle);
+			//System.out.println("out"+serializeBundle);
 			// Write serialized bundle in xml/json file
 			
-			file = new File(filePath);
-			file.createNewFile();	
-			FileWriter writer = new FileWriter(file);
-			writer.write(serializeBundle);
-			writer.flush();
-			writer.close();
-			scanner.close();
+//			file = new File(filePath);
+//			file.createNewFile();	
+//			FileWriter writer = new FileWriter(file);
+//			writer.write(serializeBundle);
+//			writer.flush();
+//			writer.close();
+//			scanner.close();
 
 			// Parse the xml/json file
 			//IBaseResource resource = parser.parseResource(new FileReader(new File(filePath)));
 			IBaseResource resource = parser.parseResource(serializeBundle);
-				return serializeBundle;
+				
 
 			// Validate Parsed file
 //			if(validate(resource)){
 //				System.out.println("Validated parsed file successfully");
 //			}
 //			else{
-//				System.out.println("Failed to validate parsed file");
+//				throw new BusinessException(ServiceError.Unknown, "Failed to validate parsed file");
 //			}
 		}
 //		else
 //		{
-//			System.out.println("Failed to validate populate Prescription bundle");
-//		}
-//	}
+//			throw new BusinessException(ServiceError.Unknown, "Failed to validate populate Prescription bundle : ");
+//			}
+		}
+		catch (BusinessException e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return serializeBundle;
+	}
 
-//	String saveFile(String fileName)
-//	{
-//		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
-//		AmazonS3 s3client = new AmazonS3Client(credentials);
-//	
-//		try {
-//			String path="ndhm";
-//			 fileName = fileName + "." + "json";
-//			String imageUrl = path + "/" + fileName;
-////			if (!DPDoctorUtils.anyStringEmpty(fileName)) {
-////				pdfName = pdfName.replaceAll("[^a-zA-Z0-9]", "");
-////			}
-//
-//			
-//			FileSystemResource fileSystemResource = new FileSystemResource(
-//					imageUrl);
-//			
-//			ObjectMetadata metadata = new ObjectMetadata();
-//			metadata.setContentEncoding("json");
-//			metadata.setContentType("application/json");
-//			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-//			PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName,
-//					imageUrl,fileSystemResource.getFile()
-//					);
-//			putObjectRequest.setMetadata(metadata);
-//			s3client.putObject(putObjectRequest);
-//
-//			
-//			return null;
-//		} catch (BusinessException e) {
-//			e.printStackTrace();
-//			logger.error(e);
-//		
-//			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-//
-//		}
-//
-//		
-//	}
+
+		
+	
 	
 	
 	
@@ -282,7 +259,7 @@ public class PrescriptionSample {
 	}
 
 	// Populate Prescription Bundle
-	public static Bundle populatePrescriptionBundle()
+	public static Bundle populatePrescriptionBundle(PrescriptionCollection prescriptionCollection, PatientCollection patientCollection, UserCollection userCollection)
 	{
 		Bundle prescriptionBundle = new Bundle();
 
@@ -318,16 +295,19 @@ public class PrescriptionSample {
 
 		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
 		bundleEntry2.setFullUrl("Patient/Patient-01");
-		bundleEntry2.setResource(ResourcePopulator.populatePatientResource());
+		bundleEntry2.setResource(ResourcePopulator.populatePatientResource(patientCollection));
 
 		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
 		bundleEntry3.setFullUrl("Practitioner/Practitioner-01");
-		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource());
+		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource(userCollection));
 
 		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
+		for(PrescriptionItem item:prescriptionCollection.getItems()) {
+		
 		bundleEntry4.setFullUrl("MedicationRequest/MedicationRequest-01");
-		bundleEntry4.setResource(ResourcePopulator.populateMedicationRequestResource());
-
+		bundleEntry4.setResource(ResourcePopulator.populateMedicationRequestResource(item,userCollection,patientCollection,prescriptionCollection.getCreatedTime()));
+		listBundleEntries.add(bundleEntry4);
+		}
 		BundleEntryComponent bundleEntry5 = new BundleEntryComponent();
 		bundleEntry5.setFullUrl("MedicationRequest/MedicationRequest-02");
 		bundleEntry5.setResource(ResourcePopulator.populateSecondMedicationRequestResource());
@@ -377,11 +357,11 @@ public class PrescriptionSample {
 		
 		/** LOADING PROFILES **/
 		// Read all Profile Structure Definitions 
-		String[] fileList = new File("/home/healthcoco/Desktop/Ndhm/").list(new WildcardFileFilter("*.json"));
+		String[] fileList = new File("/home/ubuntu/Ndhm Sample/").list(new WildcardFileFilter("*.json"));
 		for(String file:fileList)
 		{
 			//Parse All Profiles and add to prepopulated support
-			sd = parser.parseResource(StructureDefinition.class, new FileReader("/home/healthcoco/Desktop/Ndhm/"+file));
+			sd = parser.parseResource(StructureDefinition.class, new FileReader("/home/ubuntu/Ndhm Sample/"+file));
 			prePopulatedSupport.addStructureDefinition(sd);
 		}
 

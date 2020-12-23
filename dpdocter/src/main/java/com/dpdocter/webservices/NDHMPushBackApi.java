@@ -228,20 +228,20 @@ public class NDHMPushBackApi {
 	 * @param request
 	 * @return
 	 */
-	@Path(value = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_TRANSFER)
-	@POST
-	@ApiOperation(value = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_TRANSFER, notes = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_TRANSFER)
-	public Response<Boolean> onDataTransferApi(String request)throws JsonParseException, JsonMappingException, IOException {
-		if (request == null) {
-			throw new BusinessException(ServiceError.InvalidInput, " request Required");
-		}
-		ObjectMapper mapper = new ObjectMapper();
-		DataTransferRequest request1= mapper.readValue(request,DataTransferRequest.class);
-		Boolean mobile = ndhmService.onDataTransferApi(request1);
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(mobile);
-		return response;
-	}
+//	@Path(value = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_TRANSFER)
+//	@POST
+//	@ApiOperation(value = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_TRANSFER, notes = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_TRANSFER)
+//	public Response<Boolean> onDataTransferApi(String request)throws JsonParseException, JsonMappingException, IOException {
+//		if (request == null) {
+//			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+//		}
+//		ObjectMapper mapper = new ObjectMapper();
+//		DataTransferRequest request1= mapper.readValue(request,DataTransferRequest.class);
+//		Boolean mobile = ndhmService.onDataTransferApi(request1);
+//		Response<Boolean> response = new Response<Boolean>();
+//		response.setData(mobile);
+//		return response;
+//	}
 	
 	
 

@@ -57,6 +57,6 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 
 	List<PatientCollection> findByHealthIdAndLocalPatientNameAndGender(String patientId, String patientName, String gender);
 
-	PatientCollection findByHealthId(String id);
+	List<PatientCollection> findByHealthId(String id);
 
 }

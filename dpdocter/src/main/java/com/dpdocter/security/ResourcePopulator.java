@@ -1,7 +1,9 @@
 package com.dpdocter.security;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.hl7.fhir.r4.model.AllergyIntolerance;
@@ -78,7 +80,11 @@ import org.hl7.fhir.r4.model.Timing;
 import org.hl7.fhir.r4.model.Timing.TimingRepeatComponent;
 import org.hl7.fhir.r4.model.Timing.UnitsOfTime;
 
+import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.UserCollection;
 
 /**
  * The FhirResourcePopulator class populates all the FHIR resources 
@@ -86,28 +92,32 @@ import com.dpdocter.collections.PatientCollection;
 public class ResourcePopulator {
 	
 	// Populate Patient Resource
-	public static Patient populatePatientResource()
+	public static Patient populatePatientResource(PatientCollection patientCollection)
 	{
 		Patient patient = new Patient();
-		patient.setId("Patient-01");
-		patient.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType("2020-07-09T14:58:58.181+05:30")).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient");
-		patient.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">ABC, 41 year, Male</div>");
-		patient.addIdentifier().setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "MR", "Medical record number"))).setSystem("https://ndhm.in/SwasthID").setValue("1234");
-		patient.addName().setText("ABC");
-		patient.addTelecom().setSystem(ContactPointSystem.PHONE).setValue("+919818512600").setUse(ContactPointUse.HOME);
-		patient.setGender(AdministrativeGender.MALE).setBirthDateElement(new DateType("1981-01-12"));
+		patient.setId(patientCollection.getId().toString());
+		patient.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType(patientCollection.getUpdatedTime())).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient");
+		patient.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">"+patientCollection.getLocalPatientName()+",21 years,"+ patientCollection.getGender()+"</div>");
+		patient.addIdentifier().setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "PNUM", "Medical record number"))).setSystem("https://ndhm.in/SwasthID").setValue(patientCollection.getPNUM());
+		patient.addName().setText(patientCollection.getLocalPatientName());
+		patient.addTelecom().setSystem(ContactPointSystem.PHONE).setValue("+91"+patientCollection.getSecMobile()).setUse(ContactPointUse.HOME);
+//		int d=patientCollection.getDob().getDays();
+//		int m=patientCollection.getDob().getMonths();
+//		int y=patientCollection.getDob().getYears();
+		
+		patient.setGender(AdministrativeGender.MALE).setBirthDateElement(new DateType("1995-01-12"));
 		return patient;
 	}
 	
 	// Populate Practitioner Resource
-	public static Practitioner populatePractitionerResource()
+	public static Practitioner populatePractitionerResource(UserCollection userCollection)
 	{
 		Practitioner practitioner = new Practitioner();
 		practitioner.setId("Practitioner-01");
-		practitioner.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType("2019-05-29T14:58:58.181+05:30")).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner");
-		practitioner.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Dr. DEF, MD (Medicine)</div>");
-		practitioner.addIdentifier().setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "MD", "Medical License number"))).setSystem("https://ndhm.in/DigiDoc").setValue("7601003178999");
-		practitioner.addName().setText("Dr. DEF");
+		practitioner.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType(userCollection.getUpdatedTime())).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner");
+		practitioner.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Dr."+userCollection.getFirstName()+"</div>");
+		practitioner.addIdentifier().setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "MD", "Medical License number"))).setSystem("https://ndhm.in/DigiDoc").setValue(userCollection.getMobileNumber());
+		practitioner.addName().setText("Dr."+userCollection.getFirstName());
 		return practitioner;
 	}
 	
@@ -356,23 +366,26 @@ public class ResourcePopulator {
 	}
 	
 	// Populate Medication Request Resource
-	public static MedicationRequest populateMedicationRequestResource()
+	public static MedicationRequest populateMedicationRequestResource(PrescriptionItem item, UserCollection userCollection, PatientCollection patientCollection, Date date2)
 	{
 		MedicationRequest medicationRequest = new MedicationRequest();
-		medicationRequest.setId("MedicationRequest-01");
+		medicationRequest.setId("MedicationRequest");
 		medicationRequest.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/MedicationRequest");
 		medicationRequest.setStatus(MedicationRequestStatus.ACTIVE);
 		medicationRequest.setIntent(MedicationRequestIntent.ORDER);
-		medicationRequest.setMedication(new CodeableConcept(new Coding("http://snomed.info/sct", "324252006", "Azithromycin (as azithromycin dihydrate) 250 mg oral capsule")));
-		medicationRequest.setSubject(new Reference().setReference("Patient/Patient-01").setDisplay("ABC"));
-		medicationRequest.setAuthoredOnElement(new DateTimeType("2020-07-09"));
-		medicationRequest.setRequester(new Reference().setReference("Practitioner/Practitioner-01").setDisplay("Dr DEF"));
-		medicationRequest.getReasonCode().add(new CodeableConcept(new Coding("http://snomed.info/sct", "11840006", "Traveller's Diarrhea (disorder)")));
+		medicationRequest.setMedication(new CodeableConcept(new Coding("http://snomed.info/sct","324252006", item.getDrugName() +"(as "+item.getGenericNames() +")")));
+		medicationRequest.setSubject(new Reference().setReference("Patient/Patient-01").setDisplay(patientCollection.getFirstName()));
+		String pattern = "yyyy-MM-dd";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		String date=simpleDateFormat.format(date2);
+		medicationRequest.setAuthoredOnElement(new DateTimeType(date));
+		medicationRequest.setRequester(new Reference().setReference("Practitioner/Practitioner-01").setDisplay("Dr "+userCollection.getFirstName()));
+		medicationRequest.getReasonCode().add(new CodeableConcept(new Coding("http://snomed.info/sct", item.getDrugId().toString(), item.getExplanation())));
 		medicationRequest.getReasonReference().add(new Reference().setReference("Condition/Condition-01"));
-		medicationRequest.addDosageInstruction(new Dosage().setText("One tablet at once").addAdditionalInstruction(new CodeableConcept(new Coding("http://snomed.info/sct", "311504000", "With or after food"))).
+		medicationRequest.addDosageInstruction(new Dosage().setText(item.getDosage()).addAdditionalInstruction(new CodeableConcept(new Coding("http://snomed.info/sct","11840006" , item.getInstructions()))).
 				setTiming(new Timing().setRepeat(new TimingRepeatComponent().setFrequency(1).setPeriod(1).setPeriodUnit(UnitsOfTime.D))).
-				setRoute(new CodeableConcept(new Coding("http://snomed.info/sct", "26643006", "Oral Route"))).
-				setMethod(new CodeableConcept(new Coding("http://snomed.info/sct", "421521009", "Swallow"))));
+				setRoute(new CodeableConcept(new Coding("http://snomed.info/sct", "26643006", item.getDirection().get(0).getDirection()))).
+				setMethod(new CodeableConcept(new Coding("http://snomed.info/sct", "421521009",item.getDirection().get(0).getDirection()))));
 		return medicationRequest;
 	}
 	

@@ -230,11 +230,11 @@ public class DiagnosticReportImagingDcmSample {
 
 		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
 		bundleEntry2.setFullUrl("Patient/Patient-01");
-		bundleEntry2.setResource(ResourcePopulator.populatePatientResource());
+		bundleEntry2.setResource(ResourcePopulator.populatePatientResource(null));
 
 		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
 		bundleEntry3.setFullUrl("Practitioner/Practitioner-01");
-		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource());
+		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource(null));
 
 		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
 		bundleEntry4.setFullUrl("Organization/Organization-01");
@@ -258,7 +258,7 @@ public class DiagnosticReportImagingDcmSample {
 
 		BundleEntryComponent bundleEntry9 = new BundleEntryComponent();
 		bundleEntry9.setFullUrl("MedicationRequest/MedicationRequest-01");
-		bundleEntry9.setResource(ResourcePopulator.populateMedicationRequestResource());
+	//	bundleEntry9.setResource(ResourcePopulator.populateMedicationRequestResource());
 
 		BundleEntryComponent bundleEntry10 = new BundleEntryComponent();
 		bundleEntry10.setFullUrl("MedicationRequest/MedicationRequest-02");

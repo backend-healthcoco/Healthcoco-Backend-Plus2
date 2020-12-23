@@ -21,10 +21,12 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -32,6 +34,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AcknowledgementRequest;
 import com.dpdocter.beans.AuthConfirmRequest;
@@ -80,6 +83,8 @@ import com.dpdocter.beans.OnNotifyRequest;
 import com.dpdocter.beans.PatientVisitLookupBean;
 import com.dpdocter.collections.CareContextDiscoverCollection;
 import com.dpdocter.collections.ConsentInitCollection;
+import com.dpdocter.collections.DischargeSummaryCollection;
+import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.HipDataFlowCollection;
 import com.dpdocter.collections.LinkConfirmCollection;
 import com.dpdocter.collections.NdhmNotifyCollection;
@@ -87,6 +92,7 @@ import com.dpdocter.collections.OnAuthInitCollection;
 import com.dpdocter.collections.OnCareContextCollection;
 import com.dpdocter.collections.OnConsentRequestStatusCollection;
 import com.dpdocter.collections.OnFetchModeCollection;
+import com.dpdocter.collections.OperationNoteCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
@@ -98,6 +104,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CareContextDiscoverRepository;
 import com.dpdocter.repository.ConsentInitRepository;
 import com.dpdocter.repository.ConsentStatusRequestRepository;
+import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HealthDataFlowRepository;
 import com.dpdocter.repository.HipDataFlowRepository;
 import com.dpdocter.repository.LinkConfirmRepository;
@@ -122,6 +129,8 @@ import com.dpdocter.request.GatewayConsentStatusRequest;
 import com.dpdocter.request.KeyMaterialRequestDataFlow;
 import com.dpdocter.response.GetCardProfileResponse;
 import com.dpdocter.security.DHKeyExchangeCrypto;
+import com.dpdocter.security.DischargeSummarySample;
+import com.dpdocter.security.OPConsultNoteSample;
 import com.dpdocter.security.PrescriptionSample;
 import com.dpdocter.security.ResourcePopulator;
 import com.dpdocter.services.NDHMservices;
@@ -189,7 +198,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	@Autowired
 	private PatientRepository patientRepository;
 	
-	
+	@Autowired
+	private DoctorRepository doctorRepository;
 	
 	
 	@Autowired
@@ -2727,7 +2737,7 @@ public class NDHMserviceImpl implements NDHMservices {
 				
 				LinkConfirmPatient link=new LinkConfirmPatient();
 				link.setDisplay("LinkConfirm");
-				link.setReferenceNumber(collection.getId().toString());
+				link.setReferenceNumber(collection.getConfirmation().getLinkRefNumber());
 				List<CareContext>careContexts=new ArrayList<CareContext>();
 				CareContext care=new CareContext();
 				care.setDisplay("Health-Information");
@@ -2806,7 +2816,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
 			con.setRequestProperty("X-CM-ID", "sbx");
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(request.toString());
+			wr.writeBytes(orderRequest.toString());
 			wr.flush();
 			wr.close();
 			con.disconnect();
@@ -2840,6 +2850,7 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
+	@Transactional
 	public Boolean onDataFlowRequest(DataFlowRequest request) {
 		Boolean response = false;
 		try {
@@ -2917,34 +2928,46 @@ public class NDHMserviceImpl implements NDHMservices {
 				if(hiTypes !=null)
 				{
 					//String hiType=hiTypes.get(0);
-					if(hiTypes.contains("Prescription"))
-					{
-						PatientCollection patientCollection=patientRepository.findByHealthId(notify.getNotification().getConsentDetail().getPatient().getId());
+					
+						List<PatientCollection> patientCollections=patientRepository.findByHealthId(notify.getNotification().getConsentDetail().getPatient().getId());
+						PatientCollection patientCollection =patientCollections.get(0);
 						UserCollection user=userRepository.findById(patientCollection.getUserId()).orElse(null);
 						patientCollection.setSecMobile(user.getMobileNumber());
-						ResourcePopulator.populatePatientResource();
-						
+						//ResourcePopulator.populatePatientResource(patientCollection);
+						List<EntriesDataTransferRequest> entries=new ArrayList<EntriesDataTransferRequest>();
+						KeyMaterialRequestDataFlow key=new KeyMaterialRequestDataFlow();
+
+						if(hiTypes.contains("Prescription"))
+						{
 						if(patientCollection !=null)
 						{
 							Criteria criteria =new Criteria();
-							criteria.and("createdTime").gte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getFrom())
-							.lte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getTo());
+							//criteria.and("createdTime").gte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getFrom())
+							//.lte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getTo());
 
 							criteria.and("patientId").is(patientCollection.getUserId());
 							Aggregation aggregation = null;
+							aggregation=Aggregation
+									.newAggregation(
+											Aggregation.match(criteria),Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 							List<PrescriptionCollection> prescriptionCollections =mongoTemplate.aggregate(aggregation,
 										PrescriptionCollection.class, PrescriptionCollection.class).getMappedResults();
+						System.out.println("aggregation"+aggregation);
 						
-							List<EntriesDataTransferRequest> entries=new ArrayList<EntriesDataTransferRequest>();
-							KeyMaterialRequestDataFlow key=new KeyMaterialRequestDataFlow();
-							for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
-						{
-						String bundle=	PrescriptionSample.prescriptionConvert(prescriptionCollection);
-							//	mapPrescriptionRecordData(prescriptionCollections, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+						PrescriptionCollection prescriptionCollection=prescriptionCollections.get(0);
+						//for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
+						//{
+						DoctorCollection doctorCollection=doctorRepository.findByUserId(prescriptionCollection.getDoctorId());
+						System.out.println("Doctor "+doctorCollection);
+						UserCollection userCollection=userRepository.findById(doctorCollection.getUserId()).orElse(null);
+						System.out.println("User "+doctorCollection);
+						String bundle =	PrescriptionSample.prescriptionConvert(prescriptionCollection,patientCollection,userCollection);
+						System.out.println("Fhir:"+bundle);
+						//	mapPrescriptionRecordData(prescriptionCollections, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
 						DataEncryptionResponse data=DHKeyExchangeCrypto.convert(bundle, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
 						
-						
+						System.out.println("encrypt"+data);
 						EntriesDataTransferRequest entry=new EntriesDataTransferRequest();
 						entry.setCareContextReference("Prescription");
 						entry.setContent(data.getEncryptedData());
@@ -2959,16 +2982,91 @@ public class NDHMserviceImpl implements NDHMservices {
 										
 						
 						
-						}
-							DataTransferRequest transfer=new DataTransferRequest();
-							transfer.setKeyMaterial(key);
-							transfer.setPageCount(0); 
-							transfer.setPageNumber(0);
-							transfer.setEntries(entries);		
-							onDataTransfer(transfer);
+						//}
+							
 							
 						}
 					}
+//						else if(hiTypes.contains("OPConsultation")) {
+//							Criteria criteria =new Criteria();
+//							criteria.and("createdTime").gte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getFrom())
+//							.lte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getTo());
+//
+//							criteria.and("patientId").is(patientCollection.getUserId());
+//							Aggregation aggregation = null;
+//							
+//							aggregation=Aggregation
+//									.newAggregation(
+//											Aggregation.match(criteria),Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+//
+//							List<OperationNoteCollection> operationNotesCollections =mongoTemplate.aggregate(aggregation,
+//									OperationNoteCollection.class, OperationNoteCollection.class).getMappedResults();
+//							for(OperationNoteCollection operationNotesCollection:operationNotesCollections)
+//							{
+//								String bundle =	OPConsultNoteSample.OpConvert(operationNotesCollection,patientCollection);
+//								//	mapPrescriptionRecordData(prescriptionCollections, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+//							DataEncryptionResponse data=DHKeyExchangeCrypto.convert(bundle, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+//							
+//							
+//							EntriesDataTransferRequest entry=new EntriesDataTransferRequest();
+//							entry.setCareContextReference("OpConsultation");
+//							entry.setContent(data.getEncryptedData());
+//							
+//							key.setNonce(data.getRandomSender());
+//							DhPublicKeyDataFlowRequest dhPublic=new DhPublicKeyDataFlowRequest();
+//							dhPublic.setKeyValue(data.getSenderPublicKey());
+//							key.setDhPublicKey(dhPublic);
+//							
+//							
+//							entries.add(entry);
+//
+//								
+//							}
+//						}
+//						else if(hiTypes.contains("DischargeSummary")) {
+//							
+//							Criteria criteria =new Criteria();
+//							criteria.and("createdTime").gte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getFrom())
+//							.lte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getTo());
+//
+//							criteria.and("patientId").is(patientCollection.getUserId());
+//							Aggregation aggregation = null;
+//							aggregation=Aggregation
+//									.newAggregation(
+//											Aggregation.match(criteria),Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+//
+//							List<DischargeSummaryCollection> dischargeSummaryCollections =mongoTemplate.aggregate(aggregation,
+//									DischargeSummaryCollection.class, DischargeSummaryCollection.class).getMappedResults();
+//							for(DischargeSummaryCollection dischargeSummaryCollection:dischargeSummaryCollections)
+//							{
+//								String bundle =	DischargeSummarySample.dischargeSummaryConvert(dischargeSummaryCollection,patientCollection);
+//								//	mapPrescriptionRecordData(prescriptionCollections, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+//							DataEncryptionResponse data=DHKeyExchangeCrypto.convert(bundle, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+//							
+//							
+//							EntriesDataTransferRequest entry=new EntriesDataTransferRequest();
+//							entry.setCareContextReference("DischargeSummary");
+//							entry.setContent(data.getEncryptedData());
+//							
+//							key.setNonce(data.getRandomSender());
+//							DhPublicKeyDataFlowRequest dhPublic=new DhPublicKeyDataFlowRequest();
+//							dhPublic.setKeyValue(data.getSenderPublicKey());
+//							key.setDhPublicKey(dhPublic);
+//							
+//							
+//							entries.add(entry);
+//
+//							}
+//						}
+						
+						DataTransferRequest transfer=new DataTransferRequest();
+						transfer.setKeyMaterial(key);
+						transfer.setPageCount(0); 
+						transfer.setPageNumber(0);
+						transfer.setEntries(entries);	
+						transfer.setTransactionId(collection.getTransactionId());
+					Boolean transferResponse=	onDataTransfer(transfer);
+					System.out.println("transferReponse"+transferResponse);
 				}
 			}
 		}
@@ -3632,56 +3730,56 @@ public class NDHMserviceImpl implements NDHMservices {
 			return response;
 	}	
 	
-	public DataEncryptionResponse mapPrescriptionRecordData(List<PrescriptionCollection> prescriptionCollections,String nounce,String keyPair) throws Exception {
-		List<NDHMPrecriptionRecordData> precriptionRecordData = new ArrayList<NDHMPrecriptionRecordData>();
-		DataEncryptionResponse data=null;
-		for(PrescriptionCollection prescriptionCollection:prescriptionCollections) {
-		if(prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
-			PatientCollection patientCollection = patientRepository.
-					findByUserIdAndDoctorIdAndLocationIdAndHospitalId(prescriptionCollection.getPatientId(), 
-							prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(), 
-							prescriptionCollection.getHospitalId());
-			
-			for(int i =0; i<prescriptionCollection.getItems().size()-1; i++) {
-				NDHMPrecriptionRecordData ndhmPrecriptionRecordData = new NDHMPrecriptionRecordData();
-				ndhmPrecriptionRecordData.setFullUrl(NDHMRecordDataResourceType.MedicationRequest.getResourceType()+"/"+(i+1));
-				NDHMRecordDataResource resource = new NDHMRecordDataResource();
-				resource.setResourceType(NDHMRecordDataResourceType.MedicationRequest.getResourceType());
-				resource.setId(prescriptionCollection.getItems().get(i).getDrugId().toString());
-				resource.setStatus(prescriptionCollection.getIsActive() ? "active":"inactive");
-				
-				NDHMRecordDataCode medicationCodeableConcept = new NDHMRecordDataCode();
-				medicationCodeableConcept.setText(prescriptionCollection.getItems().get(i).getDrugName()+" "
-												+prescriptionCollection.getItems().get(i).getDosage()+" "
-												+prescriptionCollection.getItems().get(i).getDrugType());
-				
-				resource.setMedicationCodeableConcept(medicationCodeableConcept);
-				
-				NDHMRecordDataSubject subject = new NDHMRecordDataSubject();
-				subject.setDisplay(patientCollection.getLocalPatientName());
-				resource.setSubject(subject);
-				resource.setAuthoredOn(prescriptionCollection.getCreatedTime()+"");
-				
-				NDHMRecordDataRequester requester = new NDHMRecordDataRequester();
-				requester.setDisplay(prescriptionCollection.getCreatedBy());
-				
-				List<NDHMRecordDataDosageInstruction> dosageInstruction = new ArrayList<NDHMRecordDataDosageInstruction>();
-				NDHMRecordDataDosageInstruction dataDosageInstruction = new NDHMRecordDataDosageInstruction();
-				dataDosageInstruction.setText(prescriptionCollection.getItems().get(i).getDosage());
-				dosageInstruction.add(dataDosageInstruction);
-				
-				resource.setDosageInstruction(dosageInstruction);
-				ndhmPrecriptionRecordData.setResource(resource);
-				 data=DHKeyExchangeCrypto.convert(ndhmPrecriptionRecordData.toString(),nounce,keyPair);
-		
-				//	precriptionRecordData.add(ndhmPrecriptionRecordData);
-				}
-			}
-		}
-	//	return precriptionRecordData;
-		return data;
-		
-	}	
+//	public DataEncryptionResponse mapPrescriptionRecordData(List<PrescriptionCollection> prescriptionCollections,String nounce,String keyPair) throws Exception {
+//		List<NDHMPrecriptionRecordData> precriptionRecordData = new ArrayList<NDHMPrecriptionRecordData>();
+//		DataEncryptionResponse data=null;
+//		for(PrescriptionCollection prescriptionCollection:prescriptionCollections) {
+//		if(prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
+//			PatientCollection patientCollection = patientRepository.
+//					findByUserIdAndDoctorIdAndLocationIdAndHospitalId(prescriptionCollection.getPatientId(), 
+//							prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(), 
+//							prescriptionCollection.getHospitalId());
+//			
+//			for(int i =0; i<prescriptionCollection.getItems().size()-1; i++) {
+//				NDHMPrecriptionRecordData ndhmPrecriptionRecordData = new NDHMPrecriptionRecordData();
+//				ndhmPrecriptionRecordData.setFullUrl(NDHMRecordDataResourceType.MedicationRequest.getResourceType()+"/"+(i+1));
+//				NDHMRecordDataResource resource = new NDHMRecordDataResource();
+//				resource.setResourceType(NDHMRecordDataResourceType.MedicationRequest.getResourceType());
+//				resource.setId(prescriptionCollection.getItems().get(i).getDrugId().toString());
+//				resource.setStatus(prescriptionCollection.getIsActive() ? "active":"inactive");
+//				
+//				NDHMRecordDataCode medicationCodeableConcept = new NDHMRecordDataCode();
+//				medicationCodeableConcept.setText(prescriptionCollection.getItems().get(i).getDrugName()+" "
+//												+prescriptionCollection.getItems().get(i).getDosage()+" "
+//												+prescriptionCollection.getItems().get(i).getDrugType());
+//				
+//				resource.setMedicationCodeableConcept(medicationCodeableConcept);
+//				
+//				NDHMRecordDataSubject subject = new NDHMRecordDataSubject();
+//				subject.setDisplay(patientCollection.getLocalPatientName());
+//				resource.setSubject(subject);
+//				resource.setAuthoredOn(prescriptionCollection.getCreatedTime()+"");
+//				
+//				NDHMRecordDataRequester requester = new NDHMRecordDataRequester();
+//				requester.setDisplay(prescriptionCollection.getCreatedBy());
+//				
+//				List<NDHMRecordDataDosageInstruction> dosageInstruction = new ArrayList<NDHMRecordDataDosageInstruction>();
+//				NDHMRecordDataDosageInstruction dataDosageInstruction = new NDHMRecordDataDosageInstruction();
+//				dataDosageInstruction.setText(prescriptionCollection.getItems().get(i).getDosage());
+//				dosageInstruction.add(dataDosageInstruction);
+//				
+//				resource.setDosageInstruction(dosageInstruction);
+//				ndhmPrecriptionRecordData.setResource(resource);
+//				 data=DHKeyExchangeCrypto.convert(ndhmPrecriptionRecordData.toString(),nounce,keyPair);
+//		
+//				//	precriptionRecordData.add(ndhmPrecriptionRecordData);
+//				}
+//			}
+//		}
+//	//	return precriptionRecordData;
+//		return data;
+//		
+//	}	
 
 	@Override
 	public NotifyRequest getNotify(String requestId) {
