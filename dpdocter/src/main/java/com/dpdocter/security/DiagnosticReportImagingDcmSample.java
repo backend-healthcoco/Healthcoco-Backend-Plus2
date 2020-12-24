@@ -228,13 +228,13 @@ public class DiagnosticReportImagingDcmSample {
 		bundleEntry1.setFullUrl("Composition/Composition-01");
 		bundleEntry1.setResource(populateDiagnosticReportRecordDCMCompositionResource());
 
-		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
-		bundleEntry2.setFullUrl("Patient/Patient-01");
-		bundleEntry2.setResource(ResourcePopulator.populatePatientResource(null));
-
-		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
-		bundleEntry3.setFullUrl("Practitioner/Practitioner-01");
-		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource(null));
+//		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
+//		bundleEntry2.setFullUrl("Patient/Patient-01");
+//		bundleEntry2.setResource(ResourcePopulator.populatePatientResource(null));
+//
+//		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
+//		bundleEntry3.setFullUrl("Practitioner/Practitioner-01");
+//		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource(null));
 
 		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
 		bundleEntry4.setFullUrl("Organization/Organization-01");
@@ -269,8 +269,8 @@ public class DiagnosticReportImagingDcmSample {
 		bundleEntry11.setResource(ResourcePopulator.populateDocumentReferenceResource());
 
 		listBundleEntries.add(bundleEntry1);
-		listBundleEntries.add(bundleEntry2);
-		listBundleEntries.add(bundleEntry3);
+	//	listBundleEntries.add(bundleEntry2);
+	//	listBundleEntries.add(bundleEntry3);
 		listBundleEntries.add(bundleEntry4);
 		listBundleEntries.add(bundleEntry5);
 		listBundleEntries.add(bundleEntry6);

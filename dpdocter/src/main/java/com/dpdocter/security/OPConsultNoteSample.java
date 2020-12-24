@@ -36,8 +36,11 @@ import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StructureDefinition;
 
+import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.OTReportsCollection;
 import com.dpdocter.collections.OperationNoteCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.UserCollection;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
@@ -60,14 +63,14 @@ public class OPConsultNoteSample {
 	static FhirInstanceValidator instanceValidator;
 	static FhirValidator validator;
 
-	public static String OpConvert(OperationNoteCollection operationNotesCollection, PatientCollection patientCollection) throws DataFormatException, IOException
+	public static String OpConvert(OTReportsCollection otReportsCollection, PatientCollection patientCollection, UserCollection userCollection) throws DataFormatException, IOException
 	{
 		String serializeBundle=null;
 		//Initialize validation support and loads all required profiles
 		init();
 				
 		// Populate the resource
-		Bundle OPConsultNoteBundle = populateOPConsultNoteBundle(operationNotesCollection,patientCollection);
+		Bundle OPConsultNoteBundle = populateOPConsultNoteBundle(otReportsCollection,patientCollection,userCollection);
 
 		// Validate it. Validate method return result of validation in boolean
 		// If validation result is true then parse, serialize operations are performed
@@ -254,7 +257,7 @@ public class OPConsultNoteSample {
 		return composition;
 	}
 
-	static Bundle populateOPConsultNoteBundle(OperationNoteCollection operationNotesCollection, PatientCollection patientCollection)
+	static Bundle populateOPConsultNoteBundle(OTReportsCollection otReportsCollection, PatientCollection patientCollection, UserCollection userCollection)
 	{
 		Bundle opCounsultNoteBundle = new Bundle();
 
@@ -290,11 +293,11 @@ public class OPConsultNoteSample {
 
 		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
 		bundleEntry2.setFullUrl("Practitioner/Practitioner-01");
-		bundleEntry2.setResource(ResourcePopulator.populatePractitionerResource(null));
+		bundleEntry2.setResource(ResourcePopulator.populatePractitionerResource(userCollection));
 
-		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
-		bundleEntry3.setFullUrl("Organization/Organization-01");
-		bundleEntry3.setResource(ResourcePopulator.populateOrganizationResource());
+//		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
+//		bundleEntry3.setFullUrl("Organization/Organization-01");
+//		bundleEntry3.setResource(ResourcePopulator.populateOrganizationResource());
 
 		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
 		bundleEntry4.setFullUrl("Patient/Patient-01");
@@ -310,55 +313,55 @@ public class OPConsultNoteSample {
 
 		BundleEntryComponent bundleEntry7 = new BundleEntryComponent();
 		bundleEntry7.setFullUrl("Appointment/Appointment-01");
-		bundleEntry7.setResource(ResourcePopulator.populateAppointmentResource());
+		bundleEntry7.setResource(ResourcePopulator.populateAppointmentResource(otReportsCollection.getCreatedTime(),otReportsCollection.getOperationDate()));
 
-		BundleEntryComponent bundleEntry8 = new BundleEntryComponent();
-		bundleEntry8.setFullUrl("Condition/Condition-01");
-		bundleEntry8.setResource(ResourcePopulator.populateConditionResource());
-
-		BundleEntryComponent bundleEntry9 = new BundleEntryComponent();
-		bundleEntry9.setFullUrl("Condition/Condition-02");
-		bundleEntry9.setResource(ResourcePopulator.populateSecondConditionResource());
-
-		BundleEntryComponent bundleEntry10 = new BundleEntryComponent();
-		bundleEntry10.setFullUrl("Condition/Condition-03");
-		bundleEntry10.setResource(ResourcePopulator.populateThirdConditionResource());
+//		BundleEntryComponent bundleEntry8 = new BundleEntryComponent();
+//		bundleEntry8.setFullUrl("Condition/Condition-01");
+//		bundleEntry8.setResource(ResourcePopulator.populateConditionResource());
+//
+//		BundleEntryComponent bundleEntry9 = new BundleEntryComponent();
+//		bundleEntry9.setFullUrl("Condition/Condition-02");
+//		bundleEntry9.setResource(ResourcePopulator.populateSecondConditionResource());
+//
+//		BundleEntryComponent bundleEntry10 = new BundleEntryComponent();
+//		bundleEntry10.setFullUrl("Condition/Condition-03");
+//		bundleEntry10.setResource(ResourcePopulator.populateThirdConditionResource());
 
 		BundleEntryComponent bundleEntry11 = new BundleEntryComponent();
 		bundleEntry11.setFullUrl("Procedure/Procedure-01");
-		bundleEntry11.setResource(ResourcePopulator.populateProcedureResource());
+		bundleEntry11.setResource(ResourcePopulator.populateProcedureResource(otReportsCollection.getRemarks(),otReportsCollection.getUpdatedTime()));
 
-		BundleEntryComponent bundleEntry12 = new BundleEntryComponent();
-		bundleEntry12.setFullUrl("ServiceRequest/ServiceRequest-01");
-		bundleEntry12.setResource(ResourcePopulator.populateServiceRequestResource());
+//		BundleEntryComponent bundleEntry12 = new BundleEntryComponent();
+//		bundleEntry12.setFullUrl("ServiceRequest/ServiceRequest-01");
+//		bundleEntry12.setResource(ResourcePopulator.populateServiceRequestResource());
 
 		BundleEntryComponent bundleEntry13 = new BundleEntryComponent();
 		bundleEntry13.setFullUrl("MedicationStatement/MedicationStatement-01");
-		bundleEntry13.setResource(ResourcePopulator.populateMedicationStatementResource());
+		bundleEntry13.setResource(ResourcePopulator.populateMedicationStatementResource(otReportsCollection.getFinalDiagnosis()));
 
-		BundleEntryComponent bundleEntry14 = new BundleEntryComponent();
-		bundleEntry14.setFullUrl("MedicationRequest/MedicationRequest-01");
-		//bundleEntry14.setResource(ResourcePopulator.populateMedicationRequestResource());
+//		BundleEntryComponent bundleEntry14 = new BundleEntryComponent();
+//		bundleEntry14.setFullUrl("MedicationRequest/MedicationRequest-01");
+//		bundleEntry14.setResource(ResourcePopulator.populateMedicationRequestResource());
 
-		BundleEntryComponent bundleEntry15 = new BundleEntryComponent();
-		bundleEntry15.setFullUrl("DocumentReference/DocumentReference-01");
-		bundleEntry15.setResource(ResourcePopulator.populateDocumentReferenceResource());
+//		BundleEntryComponent bundleEntry15 = new BundleEntryComponent();
+//		bundleEntry15.setFullUrl("DocumentReference/DocumentReference-01");
+//		bundleEntry15.setResource(ResourcePopulator.populateDocumentReferenceResource());
 
 		listBundleEntries.add(bundleEntry1);
 		listBundleEntries.add(bundleEntry2);
-		listBundleEntries.add(bundleEntry3);
+	//	listBundleEntries.add(bundleEntry3);
 		listBundleEntries.add(bundleEntry4);
 		listBundleEntries.add(bundleEntry5);
 		listBundleEntries.add(bundleEntry6);
 		listBundleEntries.add(bundleEntry7);
-		listBundleEntries.add(bundleEntry8);
-		listBundleEntries.add(bundleEntry9);
-		listBundleEntries.add(bundleEntry10);
+	//	listBundleEntries.add(bundleEntry8);
+	//	listBundleEntries.add(bundleEntry9);
+	//	listBundleEntries.add(bundleEntry10);
 		listBundleEntries.add(bundleEntry11);
-		listBundleEntries.add(bundleEntry12);
+	//	listBundleEntries.add(bundleEntry12);
 		listBundleEntries.add(bundleEntry13);
-		listBundleEntries.add(bundleEntry14);
-		listBundleEntries.add(bundleEntry15);
+		//listBundleEntries.add(bundleEntry14);
+	//	listBundleEntries.add(bundleEntry15);
 
 		return opCounsultNoteBundle;
 	}

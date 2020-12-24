@@ -2,6 +2,8 @@ package com.dpdocter.security;
 
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -181,7 +183,7 @@ public class ResourcePopulator {
 	}
 	
 	// Populate Appointment Resource
-	public static Appointment populateAppointmentResource()
+	public static Appointment populateAppointmentResource(Date date, Date date2)
 	{
 		Appointment appointment = new Appointment();
 		appointment.setId("Appointment-01");
@@ -189,6 +191,11 @@ public class ResourcePopulator {
 		appointment.setStatus(AppointmentStatus.BOOKED);
 		appointment.getParticipant().add(new AppointmentParticipantComponent().setActor(new Reference().setReference("Patient/Patient-01")).
 				setStatus(ParticipationStatus.ACCEPTED).setActor(new Reference().setReference("Practitioner/Practitioner-01")).setStatus(ParticipationStatus.ACCEPTED));
+		String pattern = "yyyy-MM-dd";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+//		String startdate=simpleDateFormat.format(date);
+//		String enddate=simpleDateFormat.format(date2);
+//		LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
 		appointment.setStartElement(new InstantType("2020-07-12T09:00:00Z"));
 		appointment.setEndElement(new InstantType("2020-07-12T09:30:00Z"));
 		appointment.addReasonReference(new Reference().setReference("Condition/Condition-01"));
@@ -408,26 +415,26 @@ public class ResourcePopulator {
 	}
 	
 	// Populate Medication Statement Resource
-	public static MedicationStatement populateMedicationStatementResource()
+	public static MedicationStatement populateMedicationStatementResource(String diagnosis)
 	{
 		MedicationStatement medicationStatement = new MedicationStatement();
-		medicationStatement.setId("MedicationStatement-01");
+		medicationStatement.setId("Diagnosis");
 		medicationStatement.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/MedicationStatement");
 		medicationStatement.setStatus(MedicationStatementStatus.COMPLETED);
-		medicationStatement.setMedication(new CodeableConcept(new Coding("http://snomed.info/sct", "134463001", "Telmisartan 20 mg oral tablet")));
+		medicationStatement.setMedication(new CodeableConcept(new Coding("http://snomed.info/sct", "134463001", diagnosis)));
 		medicationStatement.setSubject(new Reference().setReference("Patient/Patient-01"));
 		medicationStatement.setDateAssertedElement(new DateTimeType("2020-02-02T14:58:58.181+05:30"));
 		return medicationStatement;
 	}
 	
 	// Populate Observation Resource
-	public static Observation populateObservationResource()
+	public static Observation populateObservationResource(String observations)
 	{
 		Observation observation = new Observation();
 		observation.setId("Observation-01");
 		observation.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Observation");
 		observation.setStatus(ObservationStatus.FINAL);
-		observation.setCode(new CodeableConcept(new Coding("http://loinc.org", "35200-5", "Cholesterol [Moles/​volume] in Serum or Plasma")).setText("Cholesterol"));
+		observation.setCode(new CodeableConcept(new Coding("http://loinc.org", "35200-5", observations)).setText(observations));
 		observation.setValue(new Quantity().setValueElement(new DecimalType("6.3")).setCode("258813002").setUnit("mmol/L").setSystem("http://snomed.info/sct"));
 		observation.getReferenceRange().add(new ObservationReferenceRangeComponent().setHigh(new Quantity().setValueElement(new DecimalType("6.3")).setCode("258813002").setUnit("mmol/L").setSystem("http://snomed.info/sct")));
 		observation.setSubject(new Reference().setReference("Patient/Patient-01"));
@@ -527,15 +534,18 @@ public class ResourcePopulator {
 	}
 	
 	// Populate Procedure Resource
-	public static Procedure populateProcedureResource()
+	public static Procedure populateProcedureResource(String procedur, Date date)
 	{
 		Procedure procedure = new Procedure();
 		procedure.setId("Procedure-01");
 		procedure.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Procedure");
 		procedure.setStatus(ProcedureStatus.COMPLETED);
-		procedure.setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "36969009", "Placement of stent in coronary artery")).setText("Placement of stent in coronary artery"));
+		procedure.setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "36969009", procedur)).setText(procedur));
 		procedure.setSubject(new Reference().setReference("Patient/Patient-01"));
-		procedure.setPerformed(new DateTimeType("2019-05-12"));
+		String pattern = "yyyy-MM-dd";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		String date2=simpleDateFormat.format(date);
+		procedure.setPerformed(new DateTimeType(date2));
 		procedure.getComplication().add(new CodeableConcept(new Coding("http://snomed.info/sct", "131148009", "Bleeding")));
 		return procedure;
 	}

@@ -37,6 +37,7 @@ import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StructureDefinition;
 
+import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -293,7 +294,7 @@ public class DischargeSummarySample {
 
 		BundleEntryComponent bundleEntry7 = new BundleEntryComponent();
 		bundleEntry7.setFullUrl("Appointment/Appointment-01");
-		bundleEntry7.setResource(ResourcePopulator.populateAppointmentResource());
+		bundleEntry7.setResource(ResourcePopulator.populateAppointmentResource(dischargeSummaryCollection.getAdmissionDate(),dischargeSummaryCollection.getDischargeDate()));
 
 		BundleEntryComponent bundleEntry8 = new BundleEntryComponent();
 		bundleEntry8.setFullUrl("Condition/Condition-01");
@@ -308,25 +309,27 @@ public class DischargeSummarySample {
 		bundleEntry10.setResource(ResourcePopulator.populateDiagonosticReportLabResource());
 
 		BundleEntryComponent bundleEntry11 = new BundleEntryComponent();
-		bundleEntry11.setFullUrl("Observation/Observation-cholesterol");
-		bundleEntry11.setResource(ResourcePopulator.populateCholesterolObservationResource());
+		bundleEntry11.setFullUrl("Observation/Observation-1");
+		bundleEntry11.setResource(ResourcePopulator.populateObservationResource(dischargeSummaryCollection.getObservation()));
 
-		BundleEntryComponent bundleEntry12 = new BundleEntryComponent();
-		bundleEntry12.setFullUrl("Observation/Observation-triglyceride");
-		bundleEntry12.setResource(ResourcePopulator.populateTriglycerideObservationResource());
+//		BundleEntryComponent bundleEntry12 = new BundleEntryComponent();
+//		bundleEntry12.setFullUrl("Observation/Observation-triglyceride");
+//		bundleEntry12.setResource(ResourcePopulator.populateTriglycerideObservationResource());
 
 		BundleEntryComponent bundleEntry13 = new BundleEntryComponent();
 		bundleEntry13.setFullUrl("Procedure/Procedure-01");
-		bundleEntry13.setResource(ResourcePopulator.populateProcedureResource());
+		bundleEntry13.setResource(ResourcePopulator.populateProcedureResource(dischargeSummaryCollection.getProcedureNote(),dischargeSummaryCollection.getCreatedTime()));
 
 		BundleEntryComponent bundleEntry14 = new BundleEntryComponent();
 		bundleEntry14.setFullUrl("Procedure/Procedure-02");
 		bundleEntry14.setResource(ResourcePopulator.populateSecondProcedureResource());
 
+		for(PrescriptionItem item:dischargeSummaryCollection.getPrescriptions().getItems()) {
 		BundleEntryComponent bundleEntry15 = new BundleEntryComponent();
 		bundleEntry15.setFullUrl("MedicationRequest/MedicationRequest-01");
-		//bundleEntry15.setResource(ResourcePopulator.populateMedicationRequestResource());
-
+		bundleEntry15.setResource(ResourcePopulator.populateMedicationRequestResource(item, userCollection, patientCollection,dischargeSummaryCollection.getCreatedTime()));
+		listBundleEntries.add(bundleEntry15);
+		}
 		BundleEntryComponent bundleEntry16 = new BundleEntryComponent();
 		bundleEntry16.setFullUrl("CarePlan/CarePlan-01");
 		bundleEntry16.setResource(ResourcePopulator.populateCarePlanResource());
@@ -346,10 +349,10 @@ public class DischargeSummarySample {
 		listBundleEntries.add(bundleEntry9);
 		listBundleEntries.add(bundleEntry10);
 		listBundleEntries.add(bundleEntry11);
-		listBundleEntries.add(bundleEntry12);
+		//listBundleEntries.add(bundleEntry12);
 		listBundleEntries.add(bundleEntry13);
 		listBundleEntries.add(bundleEntry14);
-		listBundleEntries.add(bundleEntry15);
+		
 		listBundleEntries.add(bundleEntry16);
 		listBundleEntries.add(bundleEntry17);
 

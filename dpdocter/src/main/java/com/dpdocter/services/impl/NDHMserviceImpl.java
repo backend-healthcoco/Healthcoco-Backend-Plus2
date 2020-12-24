@@ -88,6 +88,7 @@ import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.HipDataFlowCollection;
 import com.dpdocter.collections.LinkConfirmCollection;
 import com.dpdocter.collections.NdhmNotifyCollection;
+import com.dpdocter.collections.OTReportsCollection;
 import com.dpdocter.collections.OnAuthInitCollection;
 import com.dpdocter.collections.OnCareContextCollection;
 import com.dpdocter.collections.OnConsentRequestStatusCollection;
@@ -2987,42 +2988,48 @@ public class NDHMserviceImpl implements NDHMservices {
 							
 						}
 					}
-//						else if(hiTypes.contains("OPConsultation")) {
-//							Criteria criteria =new Criteria();
-//							criteria.and("createdTime").gte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getFrom())
-//							.lte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getTo());
-//
-//							criteria.and("patientId").is(patientCollection.getUserId());
-//							Aggregation aggregation = null;
-//							
-//							aggregation=Aggregation
-//									.newAggregation(
-//											Aggregation.match(criteria),Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-//
-//							List<OperationNoteCollection> operationNotesCollections =mongoTemplate.aggregate(aggregation,
-//									OperationNoteCollection.class, OperationNoteCollection.class).getMappedResults();
-//							for(OperationNoteCollection operationNotesCollection:operationNotesCollections)
-//							{
-//								String bundle =	OPConsultNoteSample.OpConvert(operationNotesCollection,patientCollection);
-//								//	mapPrescriptionRecordData(prescriptionCollections, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
-//							DataEncryptionResponse data=DHKeyExchangeCrypto.convert(bundle, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
-//							
-//							
-//							EntriesDataTransferRequest entry=new EntriesDataTransferRequest();
-//							entry.setCareContextReference("OpConsultation");
-//							entry.setContent(data.getEncryptedData());
-//							
-//							key.setNonce(data.getRandomSender());
-//							DhPublicKeyDataFlowRequest dhPublic=new DhPublicKeyDataFlowRequest();
-//							dhPublic.setKeyValue(data.getSenderPublicKey());
-//							key.setDhPublicKey(dhPublic);
-//							
-//							
-//							entries.add(entry);
-//
-//								
-//							}
-//						}
+						else if(hiTypes.contains("OPConsultation")) {
+							Criteria criteria =new Criteria();
+							criteria.and("createdTime").gte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getFrom())
+							.lte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getTo());
+
+							criteria.and("patientId").is(patientCollection.getUserId());
+							Aggregation aggregation = null;
+							
+							aggregation=Aggregation
+									.newAggregation(
+											Aggregation.match(criteria),Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+							List<OTReportsCollection> operationNotesCollections =mongoTemplate.aggregate(aggregation,
+									OTReportsCollection.class, OTReportsCollection.class).getMappedResults();
+						
+							OTReportsCollection operationNotesCollection=operationNotesCollections.get(0);
+							DoctorCollection doctorCollection=doctorRepository.findByUserId(operationNotesCollection.getDoctorId());
+							System.out.println("Doctor "+doctorCollection);
+							UserCollection userCollection=userRepository.findById(doctorCollection.getUserId()).orElse(null);
+							System.out.println("User "+doctorCollection);
+							//	for(OperationNoteCollection operationNotesCollection:operationNotesCollections)
+						//	{
+								String bundle =	OPConsultNoteSample.OpConvert(operationNotesCollection,patientCollection,userCollection);
+								//	mapPrescriptionRecordData(prescriptionCollections, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+							DataEncryptionResponse data=DHKeyExchangeCrypto.convert(bundle, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+							
+							
+							EntriesDataTransferRequest entry=new EntriesDataTransferRequest();
+							entry.setCareContextReference("OpConsultation");
+							entry.setContent(data.getEncryptedData());
+							
+							key.setNonce(data.getRandomSender());
+							DhPublicKeyDataFlowRequest dhPublic=new DhPublicKeyDataFlowRequest();
+							dhPublic.setKeyValue(data.getSenderPublicKey());
+							key.setDhPublicKey(dhPublic);
+							
+							
+							entries.add(entry);
+
+								
+						//	}
+						}
 //						else if(hiTypes.contains("DischargeSummary")) {
 //							
 //							Criteria criteria =new Criteria();

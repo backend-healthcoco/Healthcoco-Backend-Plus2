@@ -289,24 +289,24 @@ public class PrescriptionSample {
 		// Add resources entries for bundle with Full URL
 		List<BundleEntryComponent> listBundleEntries = prescriptionBundle.getEntry();
 
-		BundleEntryComponent bundleEntry1 = new BundleEntryComponent();
-		bundleEntry1.setFullUrl("Composition/Composition-01");
-		bundleEntry1.setResource(populatePrescriptionCompositionResource());
-
-		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
-		bundleEntry2.setFullUrl("Patient/Patient-01");
-		bundleEntry2.setResource(ResourcePopulator.populatePatientResource(patientCollection));
-
-		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
-		bundleEntry3.setFullUrl("Practitioner/Practitioner-01");
-		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource(userCollection));
-
-		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
-		for(PrescriptionItem item:prescriptionCollection.getItems()) {
-		
-		bundleEntry4.setFullUrl("MedicationRequest/MedicationRequest-01");
-		bundleEntry4.setResource(ResourcePopulator.populateMedicationRequestResource(item,userCollection,patientCollection,prescriptionCollection.getCreatedTime()));
-		listBundleEntries.add(bundleEntry4);
+//		BundleEntryComponent bundleEntry1 = new BundleEntryComponent();
+//		bundleEntry1.setFullUrl("Composition/Composition-01");
+//		bundleEntry1.setResource(populatePrescriptionCompositionResource());
+//
+//		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
+//		bundleEntry2.setFullUrl("Patient/Patient-01");
+//		bundleEntry2.setResource(ResourcePopulator.populatePatientResource(patientCollection));
+//
+//		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
+//		bundleEntry3.setFullUrl("Practitioner/Practitioner-01");
+//		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource(userCollection));
+//
+//		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
+//		for(PrescriptionItem item:prescriptionCollection.getItems()) {
+//		
+//		bundleEntry4.setFullUrl("MedicationRequest/MedicationRequest-01");
+//		bundleEntry4.setResource(ResourcePopulator.populateMedicationRequestResource(item,userCollection,patientCollection,prescriptionCollection.getCreatedTime()));
+//		listBundleEntries.add(bundleEntry4);
 		}
 		BundleEntryComponent bundleEntry5 = new BundleEntryComponent();
 		bundleEntry5.setFullUrl("MedicationRequest/MedicationRequest-02");
