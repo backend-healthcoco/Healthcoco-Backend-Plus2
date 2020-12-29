@@ -10,19 +10,24 @@ import org.springframework.http.ResponseEntity;
 import com.dpdocter.beans.AuthConfirmRequest;
 import com.dpdocter.beans.CareContextDiscoverRequest;
 import com.dpdocter.beans.CareContextRequest;
+import com.dpdocter.beans.ConsentFetchRequest;
 import com.dpdocter.beans.Districts;
 import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.HealthIdRequest;
 import com.dpdocter.beans.HealthIdResponse;
 import com.dpdocter.beans.NDHMStates;
 import com.dpdocter.beans.NdhmOauthResponse;
+import com.dpdocter.beans.NdhmOnPatientFindRequest;
 import com.dpdocter.beans.NdhmOtp;
 import com.dpdocter.beans.NdhmOtpStatus;
+import com.dpdocter.beans.NdhmPatientRequest;
 import com.dpdocter.beans.NdhmStatus;
+import com.dpdocter.beans.NotifyHiuRequest;
 import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnCareContext;
+import com.dpdocter.beans.OnConsentFetchRequest;
 import com.dpdocter.beans.OnConsentRequestStatus;
 import com.dpdocter.beans.OnDiscoverRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
@@ -32,6 +37,8 @@ import com.dpdocter.beans.OnNotifyRequest;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.HealthInfoNotify;
+import com.dpdocter.beans.HiuDataRequest;
+import com.dpdocter.beans.HiuOnNotify;
 import com.dpdocter.beans.LinkConfirm;
 import com.dpdocter.beans.LinkRequest;
 import com.dpdocter.beans.MobileTokenRequest;
@@ -176,6 +183,32 @@ public interface NDHMservices {
 	OnConsentRequestStatus getConsentStatus(String requestId);
 
 	Boolean onDataTransfer(DataTransferRequest request);
+	
+	Boolean findPatient(NdhmPatientRequest request);
+	
+	Boolean onFindPatient(NdhmOnPatientFindRequest request);
+
+	NdhmOnPatientFindRequest getNdhmPatient(String requestId);
+	
+	Boolean notifyHiu(NotifyHiuRequest request);
+	
+	
+	
+	NotifyHiuRequest getHiuNotify(String requestId);
+
+	Boolean onNotifyHiu(HiuOnNotify request);
+	
+	Boolean consentFetch(ConsentFetchRequest request);
+	
+	Boolean onConsentFetch(OnConsentFetchRequest request);
+
+	OnConsentFetchRequest getConsentFetch(String requestId);
+	
+	Boolean hiuDataRequest(HiuDataRequest request);
+
+	Boolean onHiuDatarequest(GateWayOnRequest request);
+
+	GateWayOnRequest getHiuDataRequest(String requestId);
 	
 
 }

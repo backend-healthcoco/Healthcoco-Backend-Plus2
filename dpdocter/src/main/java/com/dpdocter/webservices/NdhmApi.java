@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.dpdocter.beans.AuthConfirmRequest;
 import com.dpdocter.beans.CareContextDiscoverRequest;
 import com.dpdocter.beans.CareContextRequest;
+import com.dpdocter.beans.ConsentFetchRequest;
 import com.dpdocter.beans.Districts;
 import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.HealthIdRequest;
@@ -35,17 +36,23 @@ import com.dpdocter.beans.HealthIdResponse;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.HealthInfoNotify;
+import com.dpdocter.beans.HiuDataRequest;
+import com.dpdocter.beans.HiuOnNotify;
 import com.dpdocter.beans.LinkConfirm;
 import com.dpdocter.beans.LinkRequest;
 import com.dpdocter.beans.MobileTokenRequest;
 import com.dpdocter.beans.NDHMStates;
+import com.dpdocter.beans.NdhmOnPatientFindRequest;
 import com.dpdocter.beans.NdhmOtp;
 import com.dpdocter.beans.NdhmOtpStatus;
+import com.dpdocter.beans.NdhmPatientRequest;
 import com.dpdocter.beans.NdhmStatus;
+import com.dpdocter.beans.NotifyHiuRequest;
 import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnCareContext;
+import com.dpdocter.beans.OnConsentFetchRequest;
 import com.dpdocter.beans.OnConsentRequestStatus;
 import com.dpdocter.beans.OnDiscoverRequest;
 import com.dpdocter.beans.OnFetchModesRequest;
@@ -731,5 +738,105 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
+
+	@Path(value = PathProxy.NdhmUrls.NDHM_PATIENT)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.NDHM_PATIENT, notes = PathProxy.NdhmUrls.NDHM_PATIENT)
+	public Response<Boolean> findPatient(@RequestBody NdhmPatientRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		Boolean mobile = ndhmService.findPatient(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_NDHM_PATIENT)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_NDHM_PATIENT, notes = PathProxy.NdhmUrls.GET_NDHM_PATIENT)
+	public Response<NdhmOnPatientFindRequest> getNdhmPatient(@QueryParam("requestId")String requestId) {
+
+		NdhmOnPatientFindRequest mobile = ndhmService.getNdhmPatient(requestId);
+		Response<NdhmOnPatientFindRequest> response = new Response<NdhmOnPatientFindRequest>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.HIU_ON_NOTIFY)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.HIU_ON_NOTIFY, notes = PathProxy.NdhmUrls.HIU_ON_NOTIFY)
+	public Response<Boolean> hiuOnNotify(@RequestBody HiuOnNotify request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		Boolean mobile = ndhmService.onNotifyHiu(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmUrls.GET_HIU_NOTIFY)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_HIU_NOTIFY, notes = PathProxy.NdhmUrls.GET_HIU_NOTIFY)
+	public Response<NotifyHiuRequest> getHiuNotify(@QueryParam("requestId")String requestId) {
+
+		NotifyHiuRequest mobile = ndhmService.getHiuNotify(requestId);
+		Response<NotifyHiuRequest> response = new Response<NotifyHiuRequest>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.HIU_CONSENT_FETCH)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.HIU_CONSENT_FETCH, notes = PathProxy.NdhmUrls.HIU_CONSENT_FETCH)
+	public Response<Boolean> hiuConsentFetch(@RequestBody ConsentFetchRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		Boolean mobile = ndhmService.consentFetch(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmUrls.GET_CONSENT_FETCH)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_CONSENT_FETCH, notes = PathProxy.NdhmUrls.GET_CONSENT_FETCH)
+	public Response<OnConsentFetchRequest> getHiuConsentArtifact(@QueryParam("requestId")String requestId) {
+
+		OnConsentFetchRequest mobile = ndhmService.getConsentFetch(requestId);
+		Response<OnConsentFetchRequest> response = new Response<OnConsentFetchRequest>();
+		response.setData(mobile);
+		return response;
+	}
+
+	
+	@Path(value = PathProxy.NdhmUrls.HIU_DATA_REQUEST)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.HIU_DATA_REQUEST, notes = PathProxy.NdhmUrls.HIU_DATA_REQUEST)
+	public Response<Boolean> hiuDataRequest(@RequestBody HiuDataRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		Boolean mobile = ndhmService.hiuDataRequest(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_HIU_DATA_REQUEST)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_HIU_DATA_REQUEST, notes = PathProxy.NdhmUrls.GET_HIU_DATA_REQUEST)
+	public Response<GateWayOnRequest> getHiuDataRequest(@QueryParam("requestId")String requestId) {
+
+		GateWayOnRequest mobile = ndhmService.getHiuDataRequest(requestId);
+		Response<GateWayOnRequest> response = new Response<GateWayOnRequest>();
+		response.setData(mobile);
+		return response;
+	}
+	
 	
 }

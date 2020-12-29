@@ -2547,6 +2547,22 @@ public interface PathProxy {
 		public static final String HEALTH_INFORMATION_NOTIFY="/healthInfo/notify";
 		
 		public static final String GET_CONSENT_STATUS="/consentStatus/get";
+		
+		public static final String GET_NDHM_PATIENT="/ndhmPatient/get";
+		
+		public static final String NDHM_PATIENT="/ndhmPatient";
+		
+		public static final String HIU_ON_NOTIFY="/hiu/OnNotify";
+		
+		public static final String GET_HIU_NOTIFY="/hiuNotify/get";
+		
+		public static final String HIU_CONSENT_FETCH="/consentFetch";
+		
+		public static final String GET_CONSENT_FETCH="/consentFetch/get";
+		
+		public static final String HIU_DATA_REQUEST="/hiu/DataTransfer";
+		
+		public static final String GET_HIU_DATA_REQUEST="/hiuDataRequest/get";
 
 	}
 	
@@ -2576,6 +2592,14 @@ public interface PathProxy {
 		public static final String CONSENT_REQUEST_ON_STATUS="/v0.5/consent-requests/onStatus";
 		
 		public static final String HEALTH_INFORMATION_TRANSFER="/v0.5/health-information/transfer";
+		
+		public static final String NDHM_ON_PATIENT="/v0.5/patients/on-find";
+		
+		public static final String HIU_NOTIFY="/v0.5/consents/hiu/notify";
+		
+		public static final String ON_CONSENT_FETCH="/v0.5/consents/on-fetch";
+		
+		public static final String ON_HIU_DATA_REQUEST = "/v0.5/health-information/hiu/on-request";
 
 	}
 }

@@ -21,10 +21,13 @@ import com.dpdocter.beans.CareContextDiscoverRequest;
 import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.LinkConfirm;
 import com.dpdocter.beans.LinkRequest;
+import com.dpdocter.beans.NdhmOnPatientFindRequest;
+import com.dpdocter.beans.NdhmPatientRequest;
 import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
 import com.dpdocter.beans.OnCareContext;
+import com.dpdocter.beans.OnConsentFetchRequest;
 import com.dpdocter.beans.OnConsentRequestStatus;
 import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.exceptions.BusinessException;
@@ -227,6 +230,9 @@ public class NDHMPushBackApi {
 	 * Data Transfer health information transfer api
 	 * @param request
 	 * @return
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
 	 */
 //	@Path(value = PathProxy.NdhmPushUrls.HEALTH_INFORMATION_TRANSFER)
 //	@POST
@@ -243,6 +249,71 @@ public class NDHMPushBackApi {
 //		return response;
 //	}
 	
+	@Path(value = PathProxy.NdhmPushUrls.NDHM_ON_PATIENT)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmPushUrls.NDHM_ON_PATIENT, notes = PathProxy.NdhmPushUrls.NDHM_ON_PATIENT)
+	public Response<Boolean> findPatient(String request) throws JsonParseException, JsonMappingException, IOException {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		NdhmOnPatientFindRequest request1= mapper.readValue(request,NdhmOnPatientFindRequest.class);
+		Boolean mobile = ndhmService.onFindPatient(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
 	
+	@Path(value = PathProxy.NdhmPushUrls.HIU_NOTIFY)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmPushUrls.HIU_NOTIFY, notes = PathProxy.NdhmPushUrls.HIU_NOTIFY)
+	public Response<Boolean> hiuNotify(String request) throws JsonParseException, JsonMappingException, IOException {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		NdhmOnPatientFindRequest request1= mapper.readValue(request,NdhmOnPatientFindRequest.class);
+
+		Boolean mobile = ndhmService.onFindPatient(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmPushUrls.ON_CONSENT_FETCH)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmPushUrls.ON_CONSENT_FETCH, notes = PathProxy.NdhmPushUrls.ON_CONSENT_FETCH)
+	public Response<Boolean> hiuOnConsentFetch(String request) throws JsonParseException, JsonMappingException, IOException {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		OnConsentFetchRequest request1= mapper.readValue(request,OnConsentFetchRequest.class);
+
+		Boolean mobile = ndhmService.onConsentFetch(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmPushUrls.ON_HIU_DATA_REQUEST)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmPushUrls.ON_HIU_DATA_REQUEST, notes = PathProxy.NdhmPushUrls.ON_HIU_DATA_REQUEST)
+	public Response<Boolean> hiuOnConsentFe(String request) throws JsonParseException, JsonMappingException, IOException {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		GateWayOnRequest request1= mapper.readValue(request,GateWayOnRequest.class);
+
+		Boolean mobile = ndhmService.onHiuDatarequest(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
 
 }
