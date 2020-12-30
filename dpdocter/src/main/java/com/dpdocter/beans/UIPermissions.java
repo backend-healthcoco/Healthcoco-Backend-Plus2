@@ -20,6 +20,8 @@ public class UIPermissions {
 	private List<String> patientCertificatePermissions = new ArrayList<String>();
 	private Boolean showSidePanels = true;
 	private Boolean isIPDIvoice=false;
+	private Boolean isIPDSection= true;
+
 	
 	public List<String> getTabPermissions() {
 		return tabPermissions;
@@ -117,6 +119,15 @@ public class UIPermissions {
 
 	public void setIsIPDIvoice(Boolean isIPDIvoice) {
 		this.isIPDIvoice = isIPDIvoice;
+	}
+
+	
+	public Boolean getIsIPDSection() {
+		return isIPDSection;
+	}
+
+	public void setIsIPDSection(Boolean isIPDSection) {
+		this.isIPDSection = isIPDSection;
 	}
 
 	@Override
