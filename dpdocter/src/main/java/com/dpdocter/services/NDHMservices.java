@@ -160,7 +160,7 @@ public interface NDHMservices {
 	
 	DataFlowRequest getDataFlow(String transactionId);
 
-	Boolean onDataTransferApi(DataTransferRequest request);
+	
 
 	Boolean onConsentRequestOnInitApi(ConsentOnInitRequest request);
 
@@ -209,6 +209,10 @@ public interface NDHMservices {
 	Boolean onHiuDatarequest(GateWayOnRequest request);
 
 	GateWayOnRequest getHiuDataRequest(String requestId);
+
+	Boolean onHiuDataTransferApi(DataTransferRequest request);
+	
+	DataTransferRequest getHiuData(String transactionId);
 	
 
 }

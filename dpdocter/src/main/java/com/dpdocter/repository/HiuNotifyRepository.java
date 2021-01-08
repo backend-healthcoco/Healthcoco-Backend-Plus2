@@ -8,6 +8,6 @@ import com.dpdocter.collections.HiuNotifyCollection;
 
 public interface HiuNotifyRepository extends MongoRepository<HiuNotifyCollection, ObjectId>{
 
-	HiuNotifyCollection findByRespRequestId(String requestId);
+	HiuNotifyCollection findByRequestId(String requestId);
 
 }

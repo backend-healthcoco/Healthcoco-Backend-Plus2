@@ -1,5 +1,4 @@
 package com.dpdocter.security;
-
 import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.ec.CustomNamedCurves;
@@ -33,223 +32,50 @@ import java.security.Security;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
-public class DHKeyExchangeCrypto {
+public class DhKeyExchangeCryptoHiu {
     public static final String ALGORITHM = "ECDH";
     public static final String CURVE = "curve25519";
     public static final String PROVIDER = BouncyCastleProvider.PROVIDER_NAME;
    
     // Driver function
-    public static DataEncryptionResponse convert(String strToPerformActionOn,String nounce,String keypair) throws Exception {
+    public static DataEncryptionResponse convert() throws Exception {
     	DataEncryptionResponse response=new DataEncryptionResponse();
     	Security.addProvider(new BouncyCastleProvider());
 
         System.out.println("Details");
         System.out.println("ALGORITHM: " + ALGORITHM);
         System.out.println("CURVE: " + CURVE);
-        System.out.println("DATA: " + strToPerformActionOn);
+       // System.out.println("DATA: " + strToPerformActionOn);
         System.out.println("<---------------- BEGIN ------------------->");
         System.out.println("\n");
 
-   String     strToPerformActionOn1="\n" + 
-        		"    {\n" + 
-        		"        \"id\": \"Prescrip-dbf18d24-9d81-4212-8225-f1dfee8fd76d\",\n" + 
-        		"        \"timestamp\": \"2021-01-06T16:02:10.010+05:30\",\n" + 
-        		"        \"entry\": [\n" + 
-        		"            {\n" + 
-        		"                \"fullUrl\": \"Composition/8518720\",\n" + 
-        		"                \"resource\": {\n" + 
-        		"                    \"author\": [\n" + 
-        		"                        {\n" + 
-        		"                            \"reference\": \"Practitioner/8518720\"\n" + 
-        		"                        }\n" + 
-        		"                    ],\n" + 
-        		"                    \"title\": \"Prescription Record\",\n" + 
-        		"                    \"status\": \"final\",\n" + 
-        		"                    \"subject\": {\n" + 
-        		"                        \"reference\": \"Patient/8518720\"\n" + 
-        		"                    },\n" + 
-        		"                    \"type\": {\n" + 
-        		"                        \"text\": \"Prescription record\",\n" + 
-        		"                        \"coding\": [\n" + 
-        		"                            {\n" + 
-        		"                                \"system\": \"http://snomed.info/sct\",\n" + 
-        		"                                \"display\": \"Prescription record\",\n" + 
-        		"                                \"code\": \"440545006\"\n" + 
-        		"                            }\n" + 
-        		"                        ]\n" + 
-        		"                    },\n" + 
-        		"                    \"date\": \"2021-01-06T16:02:10.010+05:30\",\n" + 
-        		"                    \"identifier\": {\n" + 
-        		"                        \"system\": \"https://ndhm.in/phr\",\n" + 
-        		"                        \"value\": \"63399db7-af19-4a58-a3d6-302b947e6709\"\n" + 
-        		"                    },\n" + 
-        		"                    \"section\": [\n" + 
-        		"                        {\n" + 
-        		"                            \"title\": \"Prescription record\",\n" + 
-        		"                            \"entry\": [\n" + 
-        		"                                {\n" + 
-        		"                                    \"reference\": \"MedicationRequest/16917053\"\n" + 
-        		"                                }\n" + 
-        		"                            ],\n" + 
-        		"                            \"code\": {\n" + 
-        		"                                \"coding\": [\n" + 
-        		"                                    {\n" + 
-        		"                                        \"system\": \"http://snomed.info/sct\",\n" + 
-        		"                                        \"display\": \"Prescription record\",\n" + 
-        		"                                        \"code\": \"440545006\"\n" + 
-        		"                                    }\n" + 
-        		"                                ]\n" + 
-        		"                            }\n" + 
-        		"                        }\n" + 
-        		"                    ],\n" + 
-        		"                    \"resourceType\": \"Composition\"\n" + 
-        		"                }\n" + 
-        		"            },\n" + 
-        		"            {\n" + 
-        		"                \"fullUrl\": \"MedicationRequest/16917053\",\n" + 
-        		"                \"resource\": {\n" + 
-        		"                    \"requester\": {\n" + 
-        		"                        \"reference\": \"Practitioner/8518720\"\n" + 
-        		"                    },\n" + 
-        		"                    \"status\": \"active\",\n" + 
-        		"                    \"subject\": {\n" + 
-        		"                        \"reference\": \"Patient/8518720\"\n" + 
-        		"                    },\n" + 
-        		"                    \"authoredOn\": \"2021-01-05\",\n" + 
-        		"                    \"medicationCodeableConcept\": {\n" + 
-        		"                        \"text\": \"TAB.AZITHROMYCIN 250MG\"\n" + 
-        		"                    },\n" + 
-        		"                    \"intent\": \"order\",\n" + 
-        		"                    \"dosageInstruction\": [\n" + 
-        		"                        {\n" + 
-        		"                            \"text\": \"Take two tablets orally with or after meal once a day\"\n" + 
-        		"                        }\n" + 
-        		"                    ],\n" + 
-        		"                    \"reasonReference\": [\n" + 
-        		"                        {\n" + 
-        		"                            \"reference\": \"Condition/8518720\"\n" + 
-        		"                        }\n" + 
-        		"                    ],\n" + 
-        		"                    \"resourceType\": \"MedicationRequest\"\n" + 
-        		"                }\n" + 
-        		"            },\n" + 
-        		"            {\n" + 
-        		"                \"fullUrl\": \"Practitioner/8518720\",\n" + 
-        		"                \"resource\": {\n" + 
-        		"                    \"name\": [\n" + 
-        		"                        {\n" + 
-        		"                            \"text\": \"Dr.Dipesh Patel\"\n" + 
-        		"                        }\n" + 
-        		"                    ],\n" + 
-        		"                    \"identifier\": [\n" + 
-        		"                        {\n" + 
-        		"                            \"system\": \"eaarogya\",\n" + 
-        		"                            \"value\": \"-\",\n" + 
-        		"                            \"type\": {\n" + 
-        		"                                \"coding\": [\n" + 
-        		"                                    {\n" + 
-        		"                                        \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n" + 
-        		"                                        \"display\": \"Medical License number\",\n" + 
-        		"                                        \"code\": \"MD\"\n" + 
-        		"                                    }\n" + 
-        		"                                ]\n" + 
-        		"                            }\n" + 
-        		"                        }\n" + 
-        		"                    ],\n" + 
-        		"                    \"resourceType\": \"Practitioner\"\n" + 
-        		"                }\n" + 
-        		"            },\n" + 
-        		"            {\n" + 
-        		"                \"fullUrl\": \"Patient/8518720\",\n" + 
-        		"                \"resource\": {\n" + 
-        		"                    \"identifier\": [\n" + 
-        		"                        {\n" + 
-        		"                            \"system\": \"eAarogya\",\n" + 
-        		"                            \"value\": \"1735955\",\n" + 
-        		"                            \"type\": {\n" + 
-        		"                                \"coding\": [\n" + 
-        		"                                    {\n" + 
-        		"                                        \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n" + 
-        		"                                        \"display\": \"Medical record number\",\n" + 
-        		"                                        \"code\": \"MR\"\n" + 
-        		"                                    }\n" + 
-        		"                                ]\n" + 
-        		"                            }\n" + 
-        		"                        }\n" + 
-        		"                    ],\n" + 
-        		"                    \"resourceType\": \"Patient\"\n" + 
-        		"                }\n" + 
-        		"            },\n" + 
-        		"            {\n" + 
-        		"                \"fullUrl\": \"Condition/8518720\",\n" + 
-        		"                \"resource\": {\n" + 
-        		"                    \"subject\": {\n" + 
-        		"                        \"reference\": \"Patient/8518720\"\n" + 
-        		"                    },\n" + 
-        		"                    \"clinicalStatus\": {\n" + 
-        		"                        \"coding\": [\n" + 
-        		"                            {\n" + 
-        		"                                \"system\": \"http://terminology.hl7.org/CodeSystem/condition-clinical\",\n" + 
-        		"                                \"display\": \"Active\",\n" + 
-        		"                                \"code\": \"active\"\n" + 
-        		"                            }\n" + 
-        		"                        ]\n" + 
-        		"                    },\n" + 
-        		"                    \"code\": {\n" + 
-        		"                        \"text\": \"Cold and Cough 3 days\"\n" + 
-        		"                    },\n" + 
-        		"                    \"resourceType\": \"Condition\"\n" + 
-        		"                }\n" + 
-        		"            }\n" + 
-        		"        ],\n" + 
-        		"        \"type\": \"document\",\n" + 
-        		"        \"identifier\": {\n" + 
-        		"            \"system\": \"http://hip.in\",\n" + 
-        		"            \"value\": \"c1f656a7-ddb5-46f8-a9c6-afaba4bdc599\"\n" + 
-        		"        },\n" + 
-        		"        \"meta\": {\n" + 
-        		"            \"lastUpdated\": \"2021-01-06T16:02:10.010\",\n" + 
-        		"            \"versionId\": \"1\",\n" + 
-        		"            \"security\": [\n" + 
-        		"                {\n" + 
-        		"                    \"system\": \"http://terminology.hl7.org/CodeSystem/v3-Confidentiality\",\n" + 
-        		"                    \"display\": \"very restricted\",\n" + 
-        		"                    \"code\": \"V\"\n" + 
-        		"                }\n" + 
-        		"            ],\n" + 
-        		"            \"profile\": [\n" + 
-        		"                \"https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentBundle\"\n" + 
-        		"            ]\n" + 
-        		"        },\n" + 
-        		"        \"resourceType\": \"Bundle\"\n" + 
-        		"    }";
         // Generate the DH keys for sender and receiver
         KeyPair receiverKeyPair = generateKeyPair();
         String receiverPrivateKey = getBase64String(getEncodedPrivateKey(receiverKeyPair.getPrivate()));
         //KeyMaterial.dhPublicKey.keyValue from POST
-        String receiverPublicKey =keypair;
+        String receiverPublicKey =getBase64String(getEncodedPublicKey(receiverKeyPair.getPublic()));
         KeyPair senderKeyPair = generateKeyPair();
         String senderPrivateKey = getBase64String(getEncodedPrivateKey(senderKeyPair.getPrivate()));
         String senderPublicKey = getBase64String(getEncodedPublicKey(senderKeyPair.getPublic()));
-        String senderPublicKey1 = getBase64String(getEncodedPublicKeyForProjectEKAHIU(senderKeyPair.getPublic()));
+        String senderPublicKey1 = getBase64String(getEncodedPublicKey(senderKeyPair.getPublic()));
         String senderPrivateKey1 = getBase64String(getEncodedPrivateKey(senderKeyPair.getPrivate()));
         // Generate random key for sender and receiver
         String randomSender = generateRandomKey();
         // nonce from POST
-        String randomReceiver = nounce;
+        String randomReceiver = generateRandomKey();
 
         // Generating Xor of random Keys
         byte[] xorOfRandom = xorOfRandom(randomSender, randomReceiver);
 
-        String encryptedData = encrypt(xorOfRandom, senderPrivateKey1, receiverPublicKey, strToPerformActionOn);
+     //   String encryptedData = encrypt(xorOfRandom, senderPrivateKey1, receiverPublicKey, strToPerformActionOn);
 
         System.out.println("\n");
 
-        String decryptedData = decrypt(xorOfRandom, receiverPrivateKey, senderPublicKey, encryptedData);
+   //     String decryptedData = decrypt(xorOfRandom, receiverPrivateKey, senderPublicKey, encryptedData);
 
         System.out.println("\n");
         // POST in content
-        System.out.println("encrypted Data: " + encryptedData);
+   //     System.out.println("encrypted Data: " + encryptedData);
         //System.out.println("decrypted data: " + decryptedData);
         //System.out.println("senderKeyPair DH Key: "+senderPublicKey);
         
@@ -259,7 +85,7 @@ public class DHKeyExchangeCrypto {
         System.out.println("generateRandomKey Nonce: "+randomSender);
         System.out.println("\n");
         System.out.println("<---------------- DONE ------------------->");
-        response.setEncryptedData(encryptedData);
+       // response.setEncryptedData(encryptedData);
         response.setRandomSender(randomSender);
         response.setSenderPublicKey(senderPublicKey1);
         return response;

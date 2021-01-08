@@ -315,5 +315,22 @@ public class NDHMPushBackApi {
 		response.setData(mobile);
 		return response;
 	}
+	
+	@Path(value = PathProxy.NdhmPushUrls.HIU_DATA_TRANSFER)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmPushUrls.HIU_DATA_TRANSFER, notes = PathProxy.NdhmPushUrls.HIU_DATA_TRANSFER)
+	public Response<Boolean> hiuDataTransfer(String request) throws JsonParseException, JsonMappingException, IOException {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		DataTransferRequest request1= mapper.readValue(request,DataTransferRequest.class);
+
+		Boolean mobile = ndhmService.onHiuDataTransferApi(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
 
 }

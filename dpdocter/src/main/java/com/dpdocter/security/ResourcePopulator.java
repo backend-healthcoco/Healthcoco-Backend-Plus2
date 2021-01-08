@@ -44,6 +44,7 @@ import org.hl7.fhir.r4.model.FamilyMemberHistory;
 import org.hl7.fhir.r4.model.FamilyMemberHistory.FamilyHistoryStatus;
 import org.hl7.fhir.r4.model.FamilyMemberHistory.FamilyMemberHistoryConditionComponent;
 import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.ImagingStudy;
 import org.hl7.fhir.r4.model.ImagingStudy.ImagingStudySeriesComponent;
 import org.hl7.fhir.r4.model.ImagingStudy.ImagingStudySeriesInstanceComponent;
@@ -88,6 +89,8 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.UserCollection;
 
+import io.grpc.netty.shaded.io.netty.handler.codec.AsciiHeadersEncoder.NewlineType;
+
 /**
  * The FhirResourcePopulator class populates all the FHIR resources 
  */
@@ -97,17 +100,19 @@ public class ResourcePopulator {
 	public static Patient populatePatientResource(PatientCollection patientCollection)
 	{
 		Patient patient = new Patient();
-		patient.setId(patientCollection.getId().toString());
-		patient.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType(patientCollection.getUpdatedTime())).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient");
-		patient.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">"+patientCollection.getLocalPatientName()+patientCollection.getDob().getAge().getYears()+ patientCollection.getGender()+"</div>");
-		patient.addIdentifier().setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "PNUM", "Medical record number"))).setSystem("https://ndhm.in/SwasthID").setValue(patientCollection.getPNUM());
-		patient.addName().setText(patientCollection.getLocalPatientName());
-		patient.addTelecom().setSystem(ContactPointSystem.PHONE).setValue("+91"+patientCollection.getSecMobile()).setUse(ContactPointUse.HOME);
+		//patient.setId(patientCollection.getId().toString());
+		//patient.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType(patientCollection.getUpdatedTime())).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient");
+		//patientCollection.getDob().getAge().getYears()
+		//patient.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">"+patientCollection.getLocalPatientName()+"  15"+ patientCollection.getGender()+"</div>");
+		
+		patient.addIdentifier().setSystem("Healthcoco").setValue("-").setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "PID",patientCollection.getId().toString())));
+	//	patient.addName().setText(patientCollection.getLocalPatientName());
+	//	patient.addTelecom().setSystem(ContactPointSystem.PHONE).setValue("+91"+patientCollection.getSecMobile()).setUse(ContactPointUse.HOME);
 //		int d=patientCollection.getDob().getDays();
 //		int m=patientCollection.getDob().getMonths();
 //		int y=patientCollection.getDob().getYears();
 		
-		patient.setGender(AdministrativeGender.MALE).setBirthDateElement(new DateType("1995-01-12"));
+//		patient.setGender(AdministrativeGender.MALE).setBirthDateElement(new DateType("1995-01-12"));
 		return patient;
 	}
 	
@@ -115,11 +120,16 @@ public class ResourcePopulator {
 	public static Practitioner populatePractitionerResource(UserCollection userCollection)
 	{
 		Practitioner practitioner = new Practitioner();
-		practitioner.setId("Practitioner-01");
-		practitioner.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType(userCollection.getUpdatedTime())).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner");
-		practitioner.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Dr."+userCollection.getFirstName()+"</div>");
-		practitioner.addIdentifier().setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "MD", "Medical License number"))).setSystem("https://ndhm.in/DigiDoc").setValue(userCollection.getMobileNumber());
+		//practitioner.setId("Practitioner-01");
+		//practitioner.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType(userCollection.getUpdatedTime())).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner");
+		//practitioner.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Dr."+userCollection.getFirstName()+"</div>");
+		practitioner.addIdentifier().setSystem("healthcoco").setValue("-").setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "MD", "Medical License number")));
+		//.setText(userCollection.getId().toString())
+		//practitioner.addIdentifier().setUse(IdentifierUse.TEMP);
+		//practitioner.addIdentifier();
+		//practitioner.addIdentifier().setAssigner(new Reference().setDisplay(null));
 		practitioner.addName().setText("Dr."+userCollection.getFirstName());
+		
 		return practitioner;
 	}
 	
@@ -376,26 +386,32 @@ public class ResourcePopulator {
 	public static MedicationRequest populateMedicationRequestResource(PrescriptionItem item, UserCollection userCollection, PatientCollection patientCollection, Date date2)
 	{
 		MedicationRequest medicationRequest = new MedicationRequest();
-		medicationRequest.setId("MedicationRequest");
-		medicationRequest.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/MedicationRequest");
+	//	medicationRequest.setId("MedicationRequest");
+	//	medicationRequest.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/MedicationRequest");
 		medicationRequest.setStatus(MedicationRequestStatus.ACTIVE);
 		medicationRequest.setIntent(MedicationRequestIntent.ORDER);
-		medicationRequest.setMedication(new CodeableConcept(new Coding("http://snomed.info/sct","324252006", item.getDrugName() +"(as "+item.getGenericNames() +")")));
-		medicationRequest.setSubject(new Reference().setReference("Patient/Patient-01").setDisplay(patientCollection.getFirstName()));
+	//	medicationRequest.setMedication(new CodeableConcept(new Coding("http://snomed.info/sct","324252006", item.getDrugName() +"(as "+item.getGenericNames() +")")));
+		medicationRequest.setMedication(new CodeableConcept().setText(item.getDrugName()));
+		medicationRequest.setSubject(new Reference().setReference("Patient/Patient-01"));
+		//.setDisplay(patientCollection.getFirstName())
 		String pattern = "yyyy-MM-dd";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		String date=simpleDateFormat.format(date2);
 		medicationRequest.setAuthoredOnElement(new DateTimeType(date));
-		medicationRequest.setRequester(new Reference().setReference("Practitioner/Practitioner-01").setDisplay("Dr "+userCollection.getFirstName()));
-		medicationRequest.getReasonCode().add(new CodeableConcept(new Coding("http://snomed.info/sct", item.getDrugId().toString(), item.getExplanation())));
-		medicationRequest.getReasonReference().add(new Reference().setReference("Condition/Condition-01"));
-		medicationRequest.addDosageInstruction(new Dosage().setText(item.getDosage()).addAdditionalInstruction(new CodeableConcept(new Coding("http://snomed.info/sct","11840006" , item.getInstructions()))).
-				setTiming(new Timing().setRepeat(new TimingRepeatComponent().setFrequency(1).setPeriod(1).setPeriodUnit(UnitsOfTime.D))).
-				setRoute(new CodeableConcept(new Coding("http://snomed.info/sct", "26643006", item.getDirection().get(0).getDirection()))).
-				setMethod(new CodeableConcept(new Coding("http://snomed.info/sct", "421521009",item.getDirection().get(0).getDirection()))));
+		medicationRequest.setRequester(new Reference().setReference("Practitioner/Practitioner-01"));
+		//.setDisplay("Dr "+userCollection.getFirstName())
+	//	medicationRequest.getReasonCode().add(new CodeableConcept(new Coding("http://snomed.info/sct", item.getDrugId().toString(), item.getExplanation())));
+	//	medicationRequest.getReasonCode().add(new CodeableConcept().setText(item.getDrugId().toString()+","+ item.getExplanation()));
+		medicationRequest.getReasonReference().add(new Reference().setReference("Condition/8518720"));
+		//item.getInstructions()
+		medicationRequest.addDosageInstruction(new Dosage().setText(item.getDosage()));
+		//.addAdditionalInstruction(new CodeableConcept().setText(item.getInstructions())).		
+		//		setRoute(new CodeableConcept().setText("test")).
+		//		setMethod(new CodeableConcept().setText("test")));
 		return medicationRequest;
 	}
-	
+	//item.getDirection().get(0).getDirection()
+	//item.getDirection().get(0).getDirection()
 	// Populate Medication Request Resource
 	public static MedicationRequest populateSecondMedicationRequestResource()
 	{

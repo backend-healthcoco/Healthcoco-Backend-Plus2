@@ -230,11 +230,11 @@ public class DiagnosticReportImagingDcmSample {
 
 //		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
 //		bundleEntry2.setFullUrl("Patient/Patient-01");
-//		bundleEntry2.setResource(ResourcePopulator.populatePatientResource(null));
+//		bundleEntry2.setResource(ResourcePopulator.populatePatientResource());
 //
 //		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
 //		bundleEntry3.setFullUrl("Practitioner/Practitioner-01");
-//		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource(null));
+//		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource());
 
 		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
 		bundleEntry4.setFullUrl("Organization/Organization-01");

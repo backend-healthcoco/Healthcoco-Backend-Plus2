@@ -5,7 +5,7 @@ import java.util.List;
 public class GatewayConsentInitRequestBody {
 
 	private ConsentPurposeRequest purpose;
-	private ConsentDataFlowRequest patientId;
+	private ConsentDataFlowRequest patient;
 	private ConsentDataFlowRequest hip;
 	private ConsentDataFlowRequest hiu;
 	private List<String> hiTypes;
@@ -18,11 +18,12 @@ public class GatewayConsentInitRequestBody {
 	public void setPurpose(ConsentPurposeRequest purpose) {
 		this.purpose = purpose;
 	}
-	public ConsentDataFlowRequest getPatientId() {
-		return patientId;
+	
+	public ConsentDataFlowRequest getPatient() {
+		return patient;
 	}
-	public void setPatientId(ConsentDataFlowRequest patientId) {
-		this.patientId = patientId;
+	public void setPatient(ConsentDataFlowRequest patient) {
+		this.patient = patient;
 	}
 	public ConsentDataFlowRequest getHip() {
 		return hip;

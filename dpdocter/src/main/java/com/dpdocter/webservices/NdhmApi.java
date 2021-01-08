@@ -655,6 +655,7 @@ public class NdhmApi {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " request Required");
 		}
+		System.out.println("request " + request);
 		Boolean mobile = ndhmService.onGatewayConsentRequestInitApi(request);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
@@ -834,6 +835,18 @@ public class NdhmApi {
 
 		GateWayOnRequest mobile = ndhmService.getHiuDataRequest(requestId);
 		Response<GateWayOnRequest> response = new Response<GateWayOnRequest>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmUrls.GET_HIU_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_HIU_DATA, notes = PathProxy.NdhmUrls.GET_HIU_DATA)
+	public Response<DataTransferRequest> getHiuData(@QueryParam("transactionId")String transactionId) {
+
+		DataTransferRequest mobile = ndhmService.getHiuData(transactionId);
+		Response<DataTransferRequest> response = new Response<DataTransferRequest>();
 		response.setData(mobile);
 		return response;
 	}
