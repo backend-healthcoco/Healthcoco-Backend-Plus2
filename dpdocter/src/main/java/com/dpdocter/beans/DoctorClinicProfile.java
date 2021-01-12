@@ -72,6 +72,9 @@ public class DoctorClinicProfile {
 	private Boolean isNABLAccredited = false;
 
 	private Boolean isHomeServiceAvailable = false;
+	
+	
+	private boolean isTransactionalSms = true;
 
 	private String locality;
 
@@ -739,9 +742,19 @@ public class DoctorClinicProfile {
 //	public void setOnlineConsultationType(List<ConsultationType> onlineConsultationType) {
 //		this.onlineConsultationType = onlineConsultationType;
 //	}
+	
+	
 
 	public AppointmentSlot getOnlineConsultationSlot() {
 		return onlineConsultationSlot;
+	}
+
+	public boolean isTransactionalSms() {
+		return isTransactionalSms;
+	}
+
+	public void setTransactionalSms(boolean isTransactionalSms) {
+		this.isTransactionalSms = isTransactionalSms;
 	}
 
 	public void setOnlineConsultationSlot(AppointmentSlot onlineConsultationSlot) {

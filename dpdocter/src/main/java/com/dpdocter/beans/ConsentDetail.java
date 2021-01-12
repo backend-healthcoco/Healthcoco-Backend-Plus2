@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import com.dpdocter.request.ConsentRequester;
+
 public class ConsentDetail {
 
 	private String schemaVersion;
@@ -18,11 +20,15 @@ public class ConsentDetail {
 	
 	private HipConsent hip;
 	
+	private HipConsent hiu;
+	
 	private HipConsent consentManager;
 	
 	private List<String> hiTypes;
 	
 	private ConsentPermission permission;
+	
+	private ConsentRequester requester;
 	
 	
 
@@ -104,6 +110,22 @@ public class ConsentDetail {
 
 	public void setPermission(ConsentPermission permission) {
 		this.permission = permission;
+	}
+
+	public HipConsent getHiu() {
+		return hiu;
+	}
+
+	public void setHiu(HipConsent hiu) {
+		this.hiu = hiu;
+	}
+
+	public ConsentRequester getRequester() {
+		return requester;
+	}
+
+	public void setRequester(ConsentRequester requester) {
+		this.requester = requester;
 	}
 
 

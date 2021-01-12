@@ -128,6 +128,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private Boolean isAdminNutritionist = false;
+	
+	@Field
+	private boolean isTransactionalSms = true;
 
 	@Field
 	private String mrCode;
@@ -560,6 +563,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	}
 	
 	
+
+	public boolean isTransactionalSms() {
+		return isTransactionalSms;
+	}
+
+	public void setTransactionalSms(boolean isTransactionalSms) {
+		this.isTransactionalSms = isTransactionalSms;
+	}
 
 	public Boolean getIsRegisteredNDHMFacility() {
 		return isRegisteredNDHMFacility;

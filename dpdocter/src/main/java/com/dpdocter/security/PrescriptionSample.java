@@ -103,7 +103,7 @@ public class PrescriptionSample {
 
 	public static String prescriptionConvert(PrescriptionCollection prescriptionCollection,PatientCollection patientCollection, UserCollection userCollection) throws DataFormatException, IOException
 	{
-
+		System.out.println("PrescriptionConvert");
 		String serializeBundle=null;
 		try {
 		//Initialize validation support and loads all required profiles
@@ -147,6 +147,7 @@ public class PrescriptionSample {
 
 			// Serialize populated bundle
 			serializeBundle = parser.encodeResourceToString(prescriptionBundle);
+			
 			//System.out.println("out"+serializeBundle);
 			// Write serialized bundle in xml/json file
 			
@@ -194,7 +195,7 @@ public class PrescriptionSample {
 	static Composition populatePrescriptionCompositionResource()
 	{
 		Composition composition = new Composition();	
-
+		System.out.println("PrescriptionBundle Composition");
 		// Set logical id of this artifact
 	//	composition.setId("Composition-01");
 
@@ -223,7 +224,7 @@ public class PrescriptionSample {
 
 		// Kind of composition ("Prescription record ")
 		composition.setType(new CodeableConcept(new Coding("http://snomed.info/sct", "440545006", "Prescription record")));
-		composition.setType(new CodeableConcept().setText("Prescription record"));
+	//.setText("Prescription record")
 		// Set subject - Who and/or what the composition/Prescription record is about
 		composition.setSubject(new Reference().setReference("Patient/Patient-01"));
 
@@ -265,9 +266,9 @@ public class PrescriptionSample {
 	public static Bundle populatePrescriptionBundle(PrescriptionCollection prescriptionCollection, PatientCollection patientCollection, UserCollection userCollection)
 	{
 		Bundle prescriptionBundle = new Bundle();
-
+		System.out.println("PrescriptionBundle");
 		// Set logical id of this artifact
-		prescriptionBundle.setId("prescription-bundle-01");
+		prescriptionBundle.setId("prescription-bundle-011");
 
 		// Set metadata about the resource
 		
@@ -328,7 +329,7 @@ public class PrescriptionSample {
 		prescriptionBundle.setEntry(listBundleEntries);
 		Meta meta = prescriptionBundle.getMeta();
 		meta.setVersionId("1");
-		meta.setLastUpdatedElement(new InstantType(prescriptionCollection.getUpdatedTime()));
+		meta.setLastUpdatedElement(new InstantType(time.toString()+"+05:30"));
 		meta.addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentBundle");
 
 		// Set Confidentiality as defined by affinity domain

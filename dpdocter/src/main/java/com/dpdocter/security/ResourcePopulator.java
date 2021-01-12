@@ -99,6 +99,7 @@ public class ResourcePopulator {
 	// Populate Patient Resource
 	public static Patient populatePatientResource(PatientCollection patientCollection)
 	{
+		System.out.println("Patient Data");
 		Patient patient = new Patient();
 		//patient.setId(patientCollection.getId().toString());
 		//patient.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType(patientCollection.getUpdatedTime())).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient");
@@ -119,6 +120,7 @@ public class ResourcePopulator {
 	// Populate Practitioner Resource
 	public static Practitioner populatePractitionerResource(UserCollection userCollection)
 	{
+		System.out.println("Practitioner Data");
 		Practitioner practitioner = new Practitioner();
 		//practitioner.setId("Practitioner-01");
 		//practitioner.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType(userCollection.getUpdatedTime())).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner");
@@ -385,6 +387,7 @@ public class ResourcePopulator {
 	// Populate Medication Request Resource
 	public static MedicationRequest populateMedicationRequestResource(PrescriptionItem item, UserCollection userCollection, PatientCollection patientCollection, Date date2)
 	{
+		System.out.println("Medical Request");
 		MedicationRequest medicationRequest = new MedicationRequest();
 	//	medicationRequest.setId("MedicationRequest");
 	//	medicationRequest.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/MedicationRequest");

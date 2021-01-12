@@ -23,6 +23,7 @@ import com.dpdocter.beans.LinkConfirm;
 import com.dpdocter.beans.LinkRequest;
 import com.dpdocter.beans.NdhmOnPatientFindRequest;
 import com.dpdocter.beans.NdhmPatientRequest;
+import com.dpdocter.beans.NotifyHiuRequest;
 import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
@@ -274,9 +275,9 @@ public class NDHMPushBackApi {
 		}
 		System.out.println("request"+request); 
 		ObjectMapper mapper = new ObjectMapper();
-		NdhmOnPatientFindRequest request1= mapper.readValue(request,NdhmOnPatientFindRequest.class);
+		NotifyHiuRequest request1= mapper.readValue(request,NotifyHiuRequest.class);
 
-		Boolean mobile = ndhmService.onFindPatient(request1);
+		Boolean mobile = ndhmService.notifyHiu(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;

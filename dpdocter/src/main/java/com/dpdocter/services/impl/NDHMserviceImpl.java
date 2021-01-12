@@ -33,6 +33,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +53,8 @@ import com.dpdocter.beans.HealthIdResponse;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.HealthInfoNotify;
+import com.dpdocter.beans.HipInfoNotify;
+import com.dpdocter.beans.HipNotifier;
 import com.dpdocter.beans.HiuDataRequest;
 import com.dpdocter.beans.HiuOnNotify;
 import com.dpdocter.beans.LinkConfirm;
@@ -91,6 +94,8 @@ import com.dpdocter.beans.PatientVisitLookupBean;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.StatusNotify;
+import com.dpdocter.beans.StatusResponse;
 import com.dpdocter.collections.CareContextDiscoverCollection;
 import com.dpdocter.collections.ConsentFetchRequestCollection;
 import com.dpdocter.collections.ConsentInitCollection;
@@ -2967,10 +2972,11 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Override
 	@Transactional
+	@Async
 	public Boolean onDataFlowRequest(DataFlowRequest request) {
 		Boolean response = false;
 		try {
-
+			System.out.println("OnDataFlow Request");
 			// NdhmOauthResponse oauth = session();
 			// System.out.println("token" + oauth.getAccessToken());
 
@@ -3070,11 +3076,11 @@ public class NDHMserviceImpl implements NDHMservices {
 							List<PrescriptionCollection> prescriptionCollections =mongoTemplate.aggregate(aggregation,
 										PrescriptionCollection.class, PrescriptionCollection.class).getMappedResults();
 						System.out.println("aggregation"+aggregation);
-						PrescriptionCollection prescriptionCollection=null;
+						//PrescriptionCollection prescriptionCollection=null;
 						if(prescriptionCollections!=null)
-							prescriptionCollection  = prescriptionCollections.get(0);
-					//	for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
-					//	{
+						for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
+						{
+							
 						DoctorCollection doctorCollection=doctorRepository.findByUserId(prescriptionCollection.getDoctorId());
 						System.out.println("Doctor "+doctorCollection);
 						UserCollection userCollection=userRepository.findById(doctorCollection.getUserId()).orElse(null);
@@ -3082,7 +3088,10 @@ public class NDHMserviceImpl implements NDHMservices {
 						String bundle =	PrescriptionSample.prescriptionConvert(prescriptionCollection,patientCollection,userCollection);
 						System.out.println("Fhir:"+bundle);
 						//	mapPrescriptionRecordData(prescriptionCollections, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
-						DataEncryptionResponse data=DHKeyExchangeCrypto.convert(bundle, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+						DataEncryptionResponse data=null;
+						if( collection.getHiRequest().getKeyMaterial() !=null)
+						{
+						data=DHKeyExchangeCrypto.convert(bundle, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
 						
 						System.out.println("encrypt"+data);
 						EntriesDataTransferRequest entry=new EntriesDataTransferRequest();
@@ -3096,10 +3105,10 @@ public class NDHMserviceImpl implements NDHMservices {
 						
 						
 						entries.add(entry);
-										
+						}		
 						
 						
-					//	}
+						}
 							
 							
 						}
@@ -3191,7 +3200,40 @@ public class NDHMserviceImpl implements NDHMservices {
 						transfer.setEntries(entries);	
 						transfer.setTransactionId(collection.getTransactionId());
 					Boolean transferResponse=	onDataTransfer(transfer);
+					
+					Boolean info=false;
+					if(transferResponse ==true)
+					{
+						HealthInfoNotify dataFlow=new HealthInfoNotify();
+						UUID uuid=UUID.randomUUID();
+						
+						LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+						dataFlow.setRequestId(uuid.toString());
+						dataFlow.setTimestamp(time.toString());
+						
+						HipInfoNotify hipNotify=new HipInfoNotify();
+						hipNotify.setTransactionId(collection.getTransactionId());
+						hipNotify.setConsentId(request.getHiRequest().getConsent().getId());
+						hipNotify.setDoneAt(time.toString());
+						HipNotifier notifier=new HipNotifier();
+						notifier.setId(NDHM_CLIENTID);
+						notifier.setType("HIP");
+						StatusNotify statusNotify=new StatusNotify();
+						statusNotify.setSessionStatus("TRANSFERRED");
+						statusNotify.setHipId(NDHM_CLIENTID);
+						StatusResponse statusResponse=new StatusResponse();
+						statusResponse.setHiStatus("DELIVERED");
+						statusResponse.setCareContextReference("Healthcoco");
+						statusNotify.setStatusResponses(statusResponse);
+						hipNotify.setStatusNotification(statusNotify);
+						dataFlow.setNotification(hipNotify);
+						info=healthInformationNotify(dataFlow);	
+						
+					}
+					
 					System.out.println("transferReponse"+transferResponse);
+					
+					System.out.println("HealthNotify"+info);
 				}
 			}
 		}
@@ -3208,7 +3250,7 @@ public class NDHMserviceImpl implements NDHMservices {
 	public Boolean onGateWayOnRequest(GateWayOnRequest request) {
 		Boolean response = false;
 		try {
-
+			System.out.println("OnGateway Request");
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
@@ -3286,7 +3328,7 @@ public class NDHMserviceImpl implements NDHMservices {
 		try {
 			
 			
-			
+			System.out.println("DataTransfer");
 			
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("pageNumber", request.getPageNumber());
@@ -3300,12 +3342,14 @@ public class NDHMserviceImpl implements NDHMservices {
 			keyMaterialRequest.put("nonce", request.getKeyMaterial().getNonce());
 
 			JSONObject dhPublicKeyRequest = new JSONObject();
+			if(request.getKeyMaterial() !=null && request.getKeyMaterial().getDhPublicKey() !=null) {
 			dhPublicKeyRequest.put("expiry", request.getKeyMaterial().getDhPublicKey().getExpiry());
 			dhPublicKeyRequest.put("parameters", request.getKeyMaterial().getDhPublicKey().getParameters());
+			
 			dhPublicKeyRequest.put("keyValue", request.getKeyMaterial().getDhPublicKey().getKeyValue());
 
 			keyMaterialRequest.put("dhPublicKey", dhPublicKeyRequest);
-
+			}
 			orderRequest.put("keyMaterial", keyMaterialRequest);
 
 			System.out.println("request " + orderRequest);
@@ -3572,7 +3616,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
-			orderRequest.put("consentRequestId",request.getRequestId() );
+			orderRequest.put("consentRequestId",request.getConsentRequestId() );
 			System.out.println("request " + orderRequest);
 
 			NdhmOauthResponse oauth = session();
@@ -3664,6 +3708,8 @@ public class NDHMserviceImpl implements NDHMservices {
 			req.setResp(resp);
 			Boolean status=false;
 			status=onNotify(req);
+			
+			
 		System.out.println("Status"+status);
 		}
 	}
@@ -4286,7 +4332,7 @@ public class NDHMserviceImpl implements NDHMservices {
 	public NotifyHiuRequest getHiuNotify(String requestId) {
 		NotifyHiuRequest response=null;
 		try {
-			HiuNotifyCollection collection=hiuNotifyRepository.findByRequestId(requestId);
+			HiuNotifyCollection collection=hiuNotifyRepository.findByNotificationConsentRequestId(requestId);
 			response=new NotifyHiuRequest();
 			if(collection !=null)
 			{
@@ -4368,7 +4414,7 @@ public class NDHMserviceImpl implements NDHMservices {
 		try {
 			ConsentFetchRequestCollection collection=new ConsentFetchRequestCollection();
 			
-				BeanUtil.map(collection, response);
+				BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			collection.setUpdatedTime(new Date());
 			consentFetchRepository.save(collection);
@@ -4409,6 +4455,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	public Boolean hiuDataRequest(HiuDataRequest request) {
 		Boolean response = false;
 		try {
+			
+			KeyMaterialRequestDataFlow key=new KeyMaterialRequestDataFlow();
 			DataEncryptionResponse hiu=DhKeyExchangeCryptoHiu.convert();
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("requestId", request.getRequestId());
@@ -4425,8 +4473,8 @@ public class NDHMserviceImpl implements NDHMservices {
 			hiRequestRequest.put("dataPushUrl", request.getHiRequest().getDataPushUrl());
 		
 			JSONObject keymaterial = new JSONObject();
-			keymaterial.put("cryptoAlg", request.getHiRequest().getKeyMaterial().getCryptoAlg());
-			keymaterial.put("curve", request.getHiRequest().getKeyMaterial().getCurve());
+			keymaterial.put("cryptoAlg", key.getCryptoAlg());
+			keymaterial.put("curve", key.getCurve());
 			keymaterial.put("nounce", hiu.getRandomSender());
 			JSONObject dhPublicKey = new JSONObject();
 			dhPublicKey.put("expiry",request.getHiRequest().getKeyMaterial().getDhPublicKey().getExpiry());
@@ -4563,7 +4611,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			
 			HiuDataRequestCollection collection=new HiuDataRequestCollection();
 			
-			BeanUtil.map(collection, response);
+			BeanUtil.map(request, collection);
 		collection.setCreatedTime(new Date());
 		collection.setUpdatedTime(new Date());
 		hiuDataRequestRepository.save(collection);

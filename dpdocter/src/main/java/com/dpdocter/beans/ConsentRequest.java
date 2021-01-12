@@ -1,12 +1,14 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class ConsentRequest {
 
 	private String id;
 	
 	private String status;
 	
-	private ConsentArtifact consentArtefacts;
+	private List<ConsentArtifact> consentArtefacts;
 
 	public String getId() {
 		return id;
@@ -24,13 +26,15 @@ public class ConsentRequest {
 		this.status = status;
 	}
 
-	public ConsentArtifact getConsentArtefacts() {
+	public List<ConsentArtifact> getConsentArtefacts() {
 		return consentArtefacts;
 	}
 
-	public void setConsentArtefacts(ConsentArtifact consentArtefacts) {
+	public void setConsentArtefacts(List<ConsentArtifact> consentArtefacts) {
 		this.consentArtefacts = consentArtefacts;
 	}
+
+	
 	
 	
 }

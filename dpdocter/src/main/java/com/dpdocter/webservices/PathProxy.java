@@ -2603,6 +2603,8 @@ public interface PathProxy {
 		
 		public static final String ON_HIU_DATA_REQUEST = "/v0.5/health-information/hiu/on-request";
 		
+		
+		
 		public static final String HIU_DATA_TRANSFER = "/hiu-data/transfer";
 
 	}

@@ -10,4 +10,6 @@ public interface HiuNotifyRepository extends MongoRepository<HiuNotifyCollection
 
 	HiuNotifyCollection findByRequestId(String requestId);
 
+	HiuNotifyCollection findByNotificationConsentRequestId(String requestId);
+
 }
