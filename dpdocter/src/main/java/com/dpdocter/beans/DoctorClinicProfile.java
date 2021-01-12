@@ -136,6 +136,9 @@ public class DoctorClinicProfile {
 	private Boolean isAdminNutritionist = false;
 
 	private Boolean isSuperAdmin = false;
+	
+	@Field
+	private Boolean isTransactionalSms = true;
 
 	private String mrCode;
 
@@ -737,9 +740,21 @@ public class DoctorClinicProfile {
 //	public void setOnlineConsultationType(List<ConsultationType> onlineConsultationType) {
 //		this.onlineConsultationType = onlineConsultationType;
 //	}
+	
+	
 
 	public AppointmentSlot getOnlineConsultationSlot() {
 		return onlineConsultationSlot;
+	}
+
+	
+
+	public Boolean getIsTransactionalSms() {
+		return isTransactionalSms;
+	}
+
+	public void setIsTransactionalSms(Boolean isTransactionalSms) {
+		this.isTransactionalSms = isTransactionalSms;
 	}
 
 	public void setOnlineConsultationSlot(AppointmentSlot onlineConsultationSlot) {
