@@ -4,6 +4,7 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -273,6 +274,11 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
+import java.text.DateFormat; 
+import java.time.Period;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 
@@ -478,7 +484,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private AcadamicProfileRespository acadamicProfileRespository;
-	
+
 	@Autowired
 	private DoctorCalendarViewRepository doctorCalendarViewRepository;
 
@@ -1204,7 +1210,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return registeredPatientDetails;
 	}
 
-	 @Scheduled(cron = "0 30 12 * * ?", zone = "IST")
+	@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
 	@Override
 	public Boolean updatePatientAge() {
 		PatientCollection patientCollection = null;
@@ -1246,7 +1252,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	}
 
-	 @Scheduled(cron = "0 30 12 * * ?", zone = "IST")
+	@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
 	@Override
 	public Boolean updateDoctorAge() {
 		DoctorCollection doctorCollection = null;
@@ -1589,6 +1595,24 @@ public class RegistrationServiceImpl implements RegistrationService {
 				registeredPatientDetails.setPatient(patient);
 				registeredPatientDetails.setAddress(patientCard.getAddress());
 				registeredPatientDetails.setBackendPatientId(patientCard.getId());
+
+				if (registeredPatientDetails.getDob() != null) {
+
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+					LocalDate today = LocalDate.now();
+					LocalDate birthday = LocalDate.parse(registeredPatientDetails.getDob().getDays()+"/"+registeredPatientDetails.getDob().getMonths()
+							+"/"+registeredPatientDetails.getDob().getYears(), formatter);
+
+					System.out.println(birthday + " "+today);
+					Period p = Period.between(birthday, today);
+					System.out.println("You are " + p.getYears() + " years, " + p.getMonths() + " months and "
+							+ p.getDays() + " days old.");
+					
+					registeredPatientDetails.getDob().getAge().setDays(p.getDays());
+					registeredPatientDetails.getDob().getAge().setMonths(p.getMonths());
+					registeredPatientDetails.getDob().getAge().setYears(p.getYears());
+
+				}
 				@SuppressWarnings("unchecked")
 				Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
 						new BeanToPropertyValueTransformer("groupId"));
@@ -2601,17 +2625,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (!DPDoctorUtils.anyStringEmpty(request.getColorCode())) {
 				userCollection.setColorCode(request.getColorCode());
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(request.getFirstName())) {
 				userCollection.setFirstName(request.getFirstName());
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
 				userCollection.setMobileNumber(request.getMobileNumber());
 			}
-				userCollection.setUpdatedTime(new Date());
-				userRepository.save(userCollection);
-			
+			userCollection.setUpdatedTime(new Date());
+			userRepository.save(userCollection);
 
 			if (doctorRole != null) {
 
@@ -4014,13 +4037,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 						consentFormCollection.getDoctorId(), consentFormCollection.getLocationId(),
 						consentFormCollection.getHospitalId(), ComponentType.ALL.getType(), printSettString);
-		if (printSettings == null){
+		if (printSettings == null) {
 			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
 					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							consentFormCollection.getDoctorId(), consentFormCollection.getLocationId(),
 							consentFormCollection.getHospitalId(), ComponentType.ALL.getType(),
-							PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
-			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+							PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+			if (!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
 				printSettings = printSettingsCollections.get(0);
 		}
 		if (printSettings == null) {
@@ -5533,53 +5556,51 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		return response;
 	}
-	
-	
+
 	@Override
 	@Transactional
-	public DoctorCalendarView updateCalendarView(DoctorCalendarView request)
-	{
+	public DoctorCalendarView updateCalendarView(DoctorCalendarView request) {
 		DoctorCalendarView response = null;
 		try {
-		
+
 			DoctorCalendarViewCollection collection = null;
-			collection = doctorCalendarViewRepository.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()));
-		if(collection !=null)
-		{
-			collection.setType(request.getType());
-			collection.setUpdatedTime(new Date());
+			collection = doctorCalendarViewRepository.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),
+					new ObjectId(request.getLocationId()));
+			if (collection != null) {
+				collection.setType(request.getType());
+				collection.setUpdatedTime(new Date());
+			} else {
+				collection = new DoctorCalendarViewCollection();
+				BeanUtil.map(request, collection);
+				collection.setCreatedTime(new Date());
+				collection.setUpdatedTime(new Date());
+			}
+			doctorCalendarViewRepository.save(collection);
+			response = new DoctorCalendarView();
+			BeanUtil.map(collection, response);
+
+		} catch (BusinessException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while updating doctor calendar view");
 		}
-		else {
-			collection=new DoctorCalendarViewCollection();
-			BeanUtil.map(request, collection);
-			collection.setCreatedTime(new Date());
-			collection.setUpdatedTime(new Date());		
-		}
-		doctorCalendarViewRepository.save(collection);
-		response=new DoctorCalendarView();
-		BeanUtil.map(collection, response);
-	
-	} catch (BusinessException e) {
-		e.printStackTrace();
-		logger.error(e);
-		throw new BusinessException(ServiceError.Unknown,"Error while updating doctor calendar view");
-	}
-	return response;
+		return response;
 	}
 
 	@Override
 	public DoctorCalendarView getDoctorCalendarView(String doctorId, String locationId) {
-		DoctorCalendarView response=null;
-		
+		DoctorCalendarView response = null;
+
 		try {
-			DoctorCalendarViewCollection collection = doctorCalendarViewRepository.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
-			response=new DoctorCalendarView();
+			DoctorCalendarViewCollection collection = doctorCalendarViewRepository
+					.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+			response = new DoctorCalendarView();
 			BeanUtil.map(collection, response);
-			
-		}catch (BusinessException e) {
+
+		} catch (BusinessException e) {
 			e.printStackTrace();
 			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown,"Error while getting doctor calendar view");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting doctor calendar view");
 		}
 		return response;
 	}

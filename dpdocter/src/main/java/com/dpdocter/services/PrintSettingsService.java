@@ -26,4 +26,6 @@ public interface PrintSettingsService {
 
 	Boolean putSettingByType();
 
+	String createBlankPrint(String patientId, String locationId, String hospitalId, String doctorId);
+
 }

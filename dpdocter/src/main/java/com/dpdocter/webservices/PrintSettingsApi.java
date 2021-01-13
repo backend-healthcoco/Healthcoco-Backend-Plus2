@@ -109,8 +109,7 @@ public class PrintSettingsApi {
 	@ApiOperation(value = "GET_PRINT_SETTING_BY_TYPE", notes = "GET_PRINT_SETTING_BY_TYPE")
 	public Response<PrintSettings> getSettingByType(@PathParam(value = "printFilter") String printFilter,
 			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@PathParam("printSettingType") String printSettingType,
+			@PathParam(value = "hospitalId") String hospitalId, @PathParam("printSettingType") String printSettingType,
 			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(printFilter, locationId, hospitalId)) {
@@ -119,7 +118,8 @@ public class PrintSettingsApi {
 					"PrintFilter, DoctorId or locationId or hospitalId cannot be null");
 		}
 
-		PrintSettings printSetting = printSettingsService.getSettingByType(printFilter, doctorId, locationId, hospitalId, discarded, printSettingType);
+		PrintSettings printSetting = printSettingsService.getSettingByType(printFilter, doctorId, locationId,
+				hospitalId, discarded, printSettingType);
 		if (printSetting != null) {
 			printSetting.setClinicLogoUrl(getFinalImageURL(printSetting.getClinicLogoUrl()));
 		}
@@ -137,7 +137,7 @@ public class PrintSettingsApi {
 		response.setData(printSettingsService.putSettingByType());
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PrintSettingsUrls.GET_LAB_PRINT_SETTING)
 	@GET
 	@ApiOperation(value = "GET_LAB_PRINT_SETTING", notes = "GET_LAB_PRINT_SETTING")
@@ -243,6 +243,21 @@ public class PrintSettingsApi {
 		Response<String> response = new Response<String>();
 		String file = printSettingsService.uploadSignature(fileDetails);
 		response.setData(file);
+		return response;
+	}
+
+	@Path(value = PathProxy.PrintSettingsUrls.BLANK_PRINT)
+	@GET
+	@ApiOperation(value = PathProxy.PrintSettingsUrls.BLANK_PRINT, notes = PathProxy.PrintSettingsUrls.BLANK_PRINT)
+	public Response<String> createBlankPrint(@PathParam("patientId") String patientId,
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(patientId)) {
+			logger.error("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(printSettingsService.createBlankPrint(patientId, locationId, hospitalId, doctorId));
 		return response;
 	}
 }
