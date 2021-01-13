@@ -3086,7 +3086,7 @@ public class NDHMserviceImpl implements NDHMservices {
 						UserCollection userCollection=userRepository.findById(doctorCollection.getUserId()).orElse(null);
 						System.out.println("User "+doctorCollection);
 						String bundle =	PrescriptionSample.prescriptionConvert(prescriptionCollection,patientCollection,userCollection);
-						System.out.println("Fhir:"+bundle);
+						System.out.println("Fhir:"+null);
 						//	mapPrescriptionRecordData(prescriptionCollections, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
 						DataEncryptionResponse data=null;
 						if( collection.getHiRequest().getKeyMaterial() !=null)

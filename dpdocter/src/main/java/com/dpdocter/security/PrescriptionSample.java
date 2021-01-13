@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -36,11 +37,13 @@ import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.scheduling.annotation.Async;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StructureDefinition;
+
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
@@ -195,14 +198,25 @@ public class PrescriptionSample {
 	static Composition populatePrescriptionCompositionResource()
 	{
 		Composition composition = new Composition();	
-		System.out.println("PrescriptionBundle Composition");
+		String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+		// Set Timestamp 
+		LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+		String date=time.format(dtf);
+	//	System.out.println("PrescriptionBundle Composition");
 		// Set logical id of this artifact
 	//	composition.setId("Composition-01");
-
+		composition.addAuthor(new Reference().setReference("Practitioner/Practitioner-01"));
+		composition.setTitle("Prescription record");
+		composition.setStatus(CompositionStatus.FINAL);
+		composition.setSubject(new Reference().setReference("Patient/Patient-01"));
+		composition.setType(new CodeableConcept(new Coding("http://snomed.info/sct", "440545006", "Prescription record")).setText("Prescription record"));
+		composition.setDateElement(new DateTimeType(date+"+05:30"));
 		// Set metadata about the resource - Version Id, Lastupdated Date, Profile
 //		Meta meta = composition.getMeta();
 //		meta.setVersionId("1");
-		LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+	//	LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+		
 //		meta.setLastUpdatedElement(new InstantType(time.toString()));
 //		meta.addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/PrescriptionRecord");
 //
@@ -220,23 +234,22 @@ public class PrescriptionSample {
 		identifier.setValue("645bb0c3-ff7e-4123-bef5-3852a4784813");
 
 		// Status can be preliminary | final | amended | entered-in-error
-		composition.setStatus(CompositionStatus.FINAL);
+		
 
 		// Kind of composition ("Prescription record ")
-		composition.setType(new CodeableConcept(new Coding("http://snomed.info/sct", "440545006", "Prescription record")));
-	//.setText("Prescription record")
+			//
 		// Set subject - Who and/or what the composition/Prescription record is about
-		composition.setSubject(new Reference().setReference("Patient/Patient-01"));
+	
 
 		// Set Timestamp
 	
-		composition.setDateElement(new DateTimeType(time.toString()+"+05:30"));
+		
 
 		// Set author - Who and/or what authored the composition/Presciption record
-		composition.addAuthor(new Reference().setReference("Practitioner/Practitioner-01"));
+		
 
 		// Set a Human Readable name/title
-		composition.setTitle("Prescription record");
+		
 
 		// Composition is broken into sections / Prescription record contains single section to define the relevant medication requests
 		// Entry is a reference to data that supports this section
@@ -253,7 +266,7 @@ public class PrescriptionSample {
 //		reference3.setType("Binary");
 
 		SectionComponent section = new SectionComponent();
-		section.setTitle("Prescription record").
+		section.setTitle("Prescription record-1").
 		setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "440545006", "Prescription record"))).
 		addEntry(reference1);
 	//	addEntry(reference2);
@@ -268,17 +281,20 @@ public class PrescriptionSample {
 		Bundle prescriptionBundle = new Bundle();
 		System.out.println("PrescriptionBundle");
 		// Set logical id of this artifact
-		prescriptionBundle.setId("prescription-bundle-011");
+		prescriptionBundle.setId("prescription/"+prescriptionCollection.getId());
 
 		// Set metadata about the resource
 		
 
 		// Set Bundle Type 
 		
-
+	//	String pattern = "yyyy-MM-dd'T'H:mm:ssz";
+		String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
 		// Set Timestamp 
 		LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
-		prescriptionBundle.setTimestampElement(new InstantType(time.toString()+"+05:30"));
+		String date=time.format(dtf);
+		prescriptionBundle.setTimestampElement(new InstantType(date+"+05:30"));
 
 		// Add resources entries for bundle with Full URL
 		List<BundleEntryComponent> listBundleEntries = prescriptionBundle.getEntry();
@@ -329,7 +345,7 @@ public class PrescriptionSample {
 		prescriptionBundle.setEntry(listBundleEntries);
 		Meta meta = prescriptionBundle.getMeta();
 		meta.setVersionId("1");
-		meta.setLastUpdatedElement(new InstantType(time.toString()+"+05:30"));
+		meta.setLastUpdatedElement(new InstantType(date+"+05:30"));
 		meta.addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentBundle");
 
 		// Set Confidentiality as defined by affinity domain

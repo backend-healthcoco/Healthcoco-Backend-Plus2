@@ -3,12 +3,8 @@ package com.dpdocter.test;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.temporal.TemporalUnit;
+import java.time.format.DateTimeFormatter;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 public class DrugTypeTests {
 
@@ -20,14 +16,12 @@ public class DrugTypeTests {
 //
 //		System.out.println("today is --> " + today);
 //		System.out.println("expiryDate is --> " + expiryDate);
-		org.joda.time.LocalDateTime time= org.joda.time.LocalDateTime.now(DateTimeZone.UTC);
-		
-		
-		String dateString = "2010-03-01T00:00:00+05:30";
-		String pattern = "yyyy-MM-dd'T'H:mm:ssz";
-		
-		DateTimeFormatter dtf = DateTimeFormat.forPattern(pattern);
+		String pattern = "yyyy-MM-dd'T'H:mm:ss.SSS";
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+		// Set Timestamp 
+		LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+		time.format(dtf);
 	//	DateTime dateTime = dtf.parseDateTime(time.);
-		System.out.println(time.toString(pattern));
+		System.out.println(time.format(dtf));
 	}
 }

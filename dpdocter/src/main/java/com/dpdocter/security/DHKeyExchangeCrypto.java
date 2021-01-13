@@ -50,179 +50,178 @@ public class DHKeyExchangeCrypto {
         System.out.println("<---------------- BEGIN ------------------->");
         System.out.println("\n");
 
-   String     strToPerformActionOn1="\n" + 
-        		"    {\n" + 
-        		"        \"id\": \"Prescrip-dbf18d24-9d81-4212-8225-f1dfee8fd76d\",\n" + 
-        		"        \"timestamp\": \"2021-01-06T16:02:10.010+05:30\",\n" + 
-        		"        \"entry\": [\n" + 
-        		"            {\n" + 
-        		"                \"fullUrl\": \"Composition/8518720\",\n" + 
-        		"                \"resource\": {\n" + 
-        		"                    \"author\": [\n" + 
-        		"                        {\n" + 
-        		"                            \"reference\": \"Practitioner/8518720\"\n" + 
-        		"                        }\n" + 
-        		"                    ],\n" + 
-        		"                    \"title\": \"Prescription Record\",\n" + 
-        		"                    \"status\": \"final\",\n" + 
-        		"                    \"subject\": {\n" + 
-        		"                        \"reference\": \"Patient/8518720\"\n" + 
-        		"                    },\n" + 
-        		"                    \"type\": {\n" + 
-        		"                        \"text\": \"Prescription record\",\n" + 
-        		"                        \"coding\": [\n" + 
-        		"                            {\n" + 
-        		"                                \"system\": \"http://snomed.info/sct\",\n" + 
-        		"                                \"display\": \"Prescription record\",\n" + 
-        		"                                \"code\": \"440545006\"\n" + 
-        		"                            }\n" + 
-        		"                        ]\n" + 
-        		"                    },\n" + 
-        		"                    \"date\": \"2021-01-06T16:02:10.010+05:30\",\n" + 
-        		"                    \"identifier\": {\n" + 
-        		"                        \"system\": \"https://ndhm.in/phr\",\n" + 
-        		"                        \"value\": \"63399db7-af19-4a58-a3d6-302b947e6709\"\n" + 
-        		"                    },\n" + 
-        		"                    \"section\": [\n" + 
-        		"                        {\n" + 
-        		"                            \"title\": \"Prescription record\",\n" + 
-        		"                            \"entry\": [\n" + 
-        		"                                {\n" + 
-        		"                                    \"reference\": \"MedicationRequest/16917053\"\n" + 
-        		"                                }\n" + 
-        		"                            ],\n" + 
-        		"                            \"code\": {\n" + 
-        		"                                \"coding\": [\n" + 
-        		"                                    {\n" + 
-        		"                                        \"system\": \"http://snomed.info/sct\",\n" + 
-        		"                                        \"display\": \"Prescription record\",\n" + 
-        		"                                        \"code\": \"440545006\"\n" + 
-        		"                                    }\n" + 
-        		"                                ]\n" + 
-        		"                            }\n" + 
-        		"                        }\n" + 
-        		"                    ],\n" + 
-        		"                    \"resourceType\": \"Composition\"\n" + 
-        		"                }\n" + 
-        		"            },\n" + 
-        		"            {\n" + 
-        		"                \"fullUrl\": \"MedicationRequest/16917053\",\n" + 
-        		"                \"resource\": {\n" + 
-        		"                    \"requester\": {\n" + 
-        		"                        \"reference\": \"Practitioner/8518720\"\n" + 
-        		"                    },\n" + 
-        		"                    \"status\": \"active\",\n" + 
-        		"                    \"subject\": {\n" + 
-        		"                        \"reference\": \"Patient/8518720\"\n" + 
-        		"                    },\n" + 
-        		"                    \"authoredOn\": \"2021-01-05\",\n" + 
-        		"                    \"medicationCodeableConcept\": {\n" + 
-        		"                        \"text\": \"TAB.AZITHROMYCIN 250MG\"\n" + 
-        		"                    },\n" + 
-        		"                    \"intent\": \"order\",\n" + 
-        		"                    \"dosageInstruction\": [\n" + 
-        		"                        {\n" + 
-        		"                            \"text\": \"Take two tablets orally with or after meal once a day\"\n" + 
-        		"                        }\n" + 
-        		"                    ],\n" + 
-        		"                    \"reasonReference\": [\n" + 
-        		"                        {\n" + 
-        		"                            \"reference\": \"Condition/8518720\"\n" + 
-        		"                        }\n" + 
-        		"                    ],\n" + 
-        		"                    \"resourceType\": \"MedicationRequest\"\n" + 
-        		"                }\n" + 
-        		"            },\n" + 
-        		"            {\n" + 
-        		"                \"fullUrl\": \"Practitioner/8518720\",\n" + 
-        		"                \"resource\": {\n" + 
-        		"                    \"name\": [\n" + 
-        		"                        {\n" + 
-        		"                            \"text\": \"Dr.Dipesh Patel\"\n" + 
-        		"                        }\n" + 
-        		"                    ],\n" + 
-        		"                    \"identifier\": [\n" + 
-        		"                        {\n" + 
-        		"                            \"system\": \"eaarogya\",\n" + 
-        		"                            \"value\": \"-\",\n" + 
-        		"                            \"type\": {\n" + 
-        		"                                \"coding\": [\n" + 
-        		"                                    {\n" + 
-        		"                                        \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n" + 
-        		"                                        \"display\": \"Medical License number\",\n" + 
-        		"                                        \"code\": \"MD\"\n" + 
-        		"                                    }\n" + 
-        		"                                ]\n" + 
-        		"                            }\n" + 
-        		"                        }\n" + 
-        		"                    ],\n" + 
-        		"                    \"resourceType\": \"Practitioner\"\n" + 
-        		"                }\n" + 
-        		"            },\n" + 
-        		"            {\n" + 
-        		"                \"fullUrl\": \"Patient/8518720\",\n" + 
-        		"                \"resource\": {\n" + 
-        		"                    \"identifier\": [\n" + 
-        		"                        {\n" + 
-        		"                            \"system\": \"eAarogya\",\n" + 
-        		"                            \"value\": \"1735955\",\n" + 
-        		"                            \"type\": {\n" + 
-        		"                                \"coding\": [\n" + 
-        		"                                    {\n" + 
-        		"                                        \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n" + 
-        		"                                        \"display\": \"Medical record number\",\n" + 
-        		"                                        \"code\": \"MR\"\n" + 
-        		"                                    }\n" + 
-        		"                                ]\n" + 
-        		"                            }\n" + 
-        		"                        }\n" + 
-        		"                    ],\n" + 
-        		"                    \"resourceType\": \"Patient\"\n" + 
-        		"                }\n" + 
-        		"            },\n" + 
-        		"            {\n" + 
-        		"                \"fullUrl\": \"Condition/8518720\",\n" + 
-        		"                \"resource\": {\n" + 
-        		"                    \"subject\": {\n" + 
-        		"                        \"reference\": \"Patient/8518720\"\n" + 
-        		"                    },\n" + 
-        		"                    \"clinicalStatus\": {\n" + 
-        		"                        \"coding\": [\n" + 
-        		"                            {\n" + 
-        		"                                \"system\": \"http://terminology.hl7.org/CodeSystem/condition-clinical\",\n" + 
-        		"                                \"display\": \"Active\",\n" + 
-        		"                                \"code\": \"active\"\n" + 
-        		"                            }\n" + 
-        		"                        ]\n" + 
-        		"                    },\n" + 
-        		"                    \"code\": {\n" + 
-        		"                        \"text\": \"Cold and Cough 3 days\"\n" + 
-        		"                    },\n" + 
-        		"                    \"resourceType\": \"Condition\"\n" + 
-        		"                }\n" + 
-        		"            }\n" + 
-        		"        ],\n" + 
-        		"        \"type\": \"document\",\n" + 
-        		"        \"identifier\": {\n" + 
-        		"            \"system\": \"http://hip.in\",\n" + 
-        		"            \"value\": \"c1f656a7-ddb5-46f8-a9c6-afaba4bdc599\"\n" + 
-        		"        },\n" + 
-        		"        \"meta\": {\n" + 
-        		"            \"lastUpdated\": \"2021-01-06T16:02:10.010\",\n" + 
-        		"            \"versionId\": \"1\",\n" + 
-        		"            \"security\": [\n" + 
-        		"                {\n" + 
-        		"                    \"system\": \"http://terminology.hl7.org/CodeSystem/v3-Confidentiality\",\n" + 
-        		"                    \"display\": \"very restricted\",\n" + 
-        		"                    \"code\": \"V\"\n" + 
-        		"                }\n" + 
-        		"            ],\n" + 
-        		"            \"profile\": [\n" + 
-        		"                \"https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentBundle\"\n" + 
-        		"            ]\n" + 
-        		"        },\n" + 
-        		"        \"resourceType\": \"Bundle\"\n" + 
-        		"    }";
+   String     strToPerformActionOn1="{\n" + 
+   		"        \"id\": \"Prescrip-dbf18d24-9d81-4212-8225-f1dfee8fd76d\",\n" + 
+   		"        \"timestamp\": \"2021-01-06T16:02:10.010+05:30\",\n" + 
+   		"        \"entry\": [\n" + 
+   		"            {\n" + 
+   		"                \"fullUrl\": \"Composition/8518720\",\n" + 
+   		"                \"resource\": {\n" + 
+   		"                    \"author\": [\n" + 
+   		"                        {\n" + 
+   		"                            \"reference\": \"Practitioner/8518720\"\n" + 
+   		"                        }\n" + 
+   		"                    ],\n" + 
+   		"                    \"title\": \"Prescription Recordd\",\n" + 
+   		"                    \"status\": \"final\",\n" + 
+   		"                    \"subject\": {\n" + 
+   		"                        \"reference\": \"Patient/8518720\"\n" + 
+   		"                    },\n" + 
+   		"                    \"type\": {\n" + 
+   		"                        \"text\": \"Prescription record\",\n" + 
+   		"                        \"coding\": [\n" + 
+   		"                            {\n" + 
+   		"                                \"system\": \"http://snomed.info/sct\",\n" + 
+   		"                                \"display\": \"Prescription record\",\n" + 
+   		"                                \"code\": \"440545006\"\n" + 
+   		"                            }\n" + 
+   		"                        ]\n" + 
+   		"                    },\n" + 
+   		"                    \"date\": \"2021-01-09T16:02:10.010+05:30\",\n" + 
+   		"                    \"identifier\": {\n" + 
+   		"                        \"system\": \"https://ndhm.in/phr\",\n" + 
+   		"                        \"value\": \"63399db7-af19-4a58-a3d6-302b947e6709\"\n" + 
+   		"                    },\n" + 
+   		"                    \"section\": [\n" + 
+   		"                        {\n" + 
+   		"                            \"title\": \"Prescription recordd\",\n" + 
+   		"                            \"entry\": [\n" + 
+   		"                                {\n" + 
+   		"                                    \"reference\": \"MedicationRequest/16917053\"\n" + 
+   		"                                }\n" + 
+   		"                            ],\n" + 
+   		"                            \"code\": {\n" + 
+   		"                                \"coding\": [\n" + 
+   		"                                    {\n" + 
+   		"                                        \"system\": \"http://snomed.info/sct\",\n" + 
+   		"                                        \"display\": \"Prescription record\",\n" + 
+   		"                                        \"code\": \"440545006\"\n" + 
+   		"                                    }\n" + 
+   		"                                ]\n" + 
+   		"                            }\n" + 
+   		"                        }\n" + 
+   		"                    ],\n" + 
+   		"                    \"resourceType\": \"Composition\"\n" + 
+   		"                }\n" + 
+   		"            },\n" + 
+   		"            {\n" + 
+   		"                \"fullUrl\": \"MedicationRequest/16917053\",\n" + 
+   		"                \"resource\": {\n" + 
+   		"                    \"requester\": {\n" + 
+   		"                        \"reference\": \"Practitioner/8518720\"\n" + 
+   		"                    },\n" + 
+   		"                    \"status\": \"active\",\n" + 
+   		"                    \"subject\": {\n" + 
+   		"                        \"reference\": \"Patient/8518720\"\n" + 
+   		"                    },\n" + 
+   		"                    \"authoredOn\": \"2021-01-05\",\n" + 
+   		"                    \"medicationCodeableConcept\": {\n" + 
+   		"                        \"text\": \"TAB.AZITHROMYCIN 250MG\"\n" + 
+   		"                    },\n" + 
+   		"                    \"intent\": \"order\",\n" + 
+   		"                    \"dosageInstruction\": [\n" + 
+   		"                        {\n" + 
+   		"                            \"text\": \"Take two tablets orally with or after meal once a day\"\n" + 
+   		"                        }\n" + 
+   		"                    ],\n" + 
+   		"                    \"reasonReference\": [\n" + 
+   		"                        {\n" + 
+   		"                            \"reference\": \"Condition/8518720\"\n" + 
+   		"                        }\n" + 
+   		"                    ],\n" + 
+   		"                    \"resourceType\": \"MedicationRequest\"\n" + 
+   		"                }\n" + 
+   		"            },\n" + 
+   		"            {\n" + 
+   		"                \"fullUrl\": \"Practitioner/8518720\",\n" + 
+   		"                \"resource\": {\n" + 
+   		"                    \"name\": [\n" + 
+   		"                        {\n" + 
+   		"                            \"text\": \"Dr.Cello Pen\"\n" + 
+   		"                        }\n" + 
+   		"                    ],\n" + 
+   		"                    \"identifier\": [\n" + 
+   		"                        {\n" + 
+   		"                            \"system\": \"healthcoco\",\n" + 
+   		"                            \"value\": \"-\",\n" + 
+   		"                            \"type\": {\n" + 
+   		"                                \"coding\": [\n" + 
+   		"                                    {\n" + 
+   		"                                        \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n" + 
+   		"                                        \"display\": \"Medical License number\",\n" + 
+   		"                                        \"code\": \"MD\"\n" + 
+   		"                                    }\n" + 
+   		"                                ]\n" + 
+   		"                            }\n" + 
+   		"                        }\n" + 
+   		"                    ],\n" + 
+   		"                    \"resourceType\": \"Practitioner\"\n" + 
+   		"                }\n" + 
+   		"            },\n" + 
+   		"            {\n" + 
+   		"                \"fullUrl\": \"Patient/8518720\",\n" + 
+   		"                \"resource\": {\n" + 
+   		"                    \"identifier\": [\n" + 
+   		"                        {\n" + 
+   		"                            \"system\": \"healthcoco\",\n" + 
+   		"                            \"value\": \"1735955\",\n" + 
+   		"                            \"type\": {\n" + 
+   		"                                \"coding\": [\n" + 
+   		"                                    {\n" + 
+   		"                                        \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n" + 
+   		"                                        \"display\": \"Medical record number\",\n" + 
+   		"                                        \"code\": \"MR\"\n" + 
+   		"                                    }\n" + 
+   		"                                ]\n" + 
+   		"                            }\n" + 
+   		"                        }\n" + 
+   		"                    ],\n" + 
+   		"                    \"resourceType\": \"Patient\"\n" + 
+   		"                }\n" + 
+   		"            },\n" + 
+   		"            {\n" + 
+   		"                \"fullUrl\": \"Condition/8518720\",\n" + 
+   		"                \"resource\": {\n" + 
+   		"                    \"subject\": {\n" + 
+   		"                        \"reference\": \"Patient/8518720\"\n" + 
+   		"                    },\n" + 
+   		"                    \"clinicalStatus\": {\n" + 
+   		"                        \"coding\": [\n" + 
+   		"                            {\n" + 
+   		"                                \"system\": \"http://terminology.hl7.org/CodeSystem/condition-clinical\",\n" + 
+   		"                                \"display\": \"Active\",\n" + 
+   		"                                \"code\": \"active\"\n" + 
+   		"                            }\n" + 
+   		"                        ]\n" + 
+   		"                    },\n" + 
+   		"                    \"code\": {\n" + 
+   		"                        \"text\": \"Cold and Cough 3 days\"\n" + 
+   		"                    },\n" + 
+   		"                    \"resourceType\": \"Condition\"\n" + 
+   		"                }\n" + 
+   		"            }\n" + 
+   		"        ],\n" + 
+   		"        \"type\": \"document\",\n" + 
+   		"        \"identifier\": {\n" + 
+   		"            \"system\": \"http://hip.in\",\n" + 
+   		"            \"value\": \"c1f656a7-ddb5-46f8-a9c6-afaba4bdc599\"\n" + 
+   		"        },\n" + 
+   		"        \"meta\": {\n" + 
+   		"            \"lastUpdated\": \"2021-01-06T16:02:10.010\",\n" + 
+   		"            \"versionId\": \"1\",\n" + 
+   		"            \"security\": [\n" + 
+   		"                {\n" + 
+   		"                    \"system\": \"http://terminology.hl7.org/CodeSystem/v3-Confidentiality\",\n" + 
+   		"                    \"display\": \"very restricted\",\n" + 
+   		"                    \"code\": \"V\"\n" + 
+   		"                }\n" + 
+   		"            ],\n" + 
+   		"            \"profile\": [\n" + 
+   		"                \"https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentBundle\"\n" + 
+   		"            ]\n" + 
+   		"        },\n" + 
+   		"        \"resourceType\": \"Bundle\"\n" + 
+   		"    }";
         // Generate the DH keys for sender and receiver
         KeyPair receiverKeyPair = generateKeyPair();
         String receiverPrivateKey = getBase64String(getEncodedPrivateKey(receiverKeyPair.getPrivate()));
