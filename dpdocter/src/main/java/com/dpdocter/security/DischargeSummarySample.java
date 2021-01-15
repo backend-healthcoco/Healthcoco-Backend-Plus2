@@ -298,7 +298,7 @@ public class DischargeSummarySample {
 
 		BundleEntryComponent bundleEntry8 = new BundleEntryComponent();
 		bundleEntry8.setFullUrl("Condition/Condition-01");
-		bundleEntry8.setResource(ResourcePopulator.populateConditionResource());
+		bundleEntry8.setResource(ResourcePopulator.populateConditionResource(null));
 
 		BundleEntryComponent bundleEntry9 = new BundleEntryComponent();
 		bundleEntry9.setFullUrl("Condition/Condition-02");

@@ -4475,17 +4475,18 @@ public class NDHMserviceImpl implements NDHMservices {
 			JSONObject keymaterial = new JSONObject();
 			keymaterial.put("cryptoAlg", key.getCryptoAlg());
 			keymaterial.put("curve", key.getCurve());
-			keymaterial.put("nounce", hiu.getRandomSender());
+			keymaterial.put("nonce", hiu.getRandomSender());
 			JSONObject dhPublicKey = new JSONObject();
 			dhPublicKey.put("expiry",request.getHiRequest().getKeyMaterial().getDhPublicKey().getExpiry());
 			dhPublicKey.put("parameters",request.getHiRequest().getKeyMaterial().getDhPublicKey().getParameters());
 			dhPublicKey.put("keyValue",hiu.getRandomSender());
 			keymaterial.put("dhPublicKey", dhPublicKey);
-			hiRequestRequest.put("keymaterial", keymaterial);
+			hiRequestRequest.put("keyMaterial", keymaterial);
 			
-			System.out.println(hiRequestRequest);
+			//System.out.println("cmRequest"+hiRequestRequest);
 			orderRequest.put("hiRequest", hiRequestRequest);
 
+			System.out.println("Cm request"+orderRequest);
 		//	JSONObject errorRequest = new JSONObject();
 		//	errorRequest.put("code", request.getError().getCode());
 		//	errorRequest.put("message", request.getError().getMessage());

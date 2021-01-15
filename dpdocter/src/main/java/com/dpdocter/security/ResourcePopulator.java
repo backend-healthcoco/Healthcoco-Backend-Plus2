@@ -101,12 +101,13 @@ public class ResourcePopulator {
 	{
 		System.out.println("Patient Data");
 		Patient patient = new Patient();
+		patient.setId("Patient-01");
 		//patient.setId(patientCollection.getId().toString());
 		//patient.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType(patientCollection.getUpdatedTime())).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient");
 		//patientCollection.getDob().getAge().getYears()
 		//patient.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">"+patientCollection.getLocalPatientName()+"  15"+ patientCollection.getGender()+"</div>");
 		
-		patient.addIdentifier().setSystem("Healthcoco").setValue("-").setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "PID",patientCollection.getId().toString())));
+		patient.addIdentifier().setSystem("https://plus.healthcoco.com").setValue("12345").setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "MR", "Medical record number")));
 	//	patient.addName().setText(patientCollection.getLocalPatientName());
 	//	patient.addTelecom().setSystem(ContactPointSystem.PHONE).setValue("+91"+patientCollection.getSecMobile()).setUse(ContactPointUse.HOME);
 //		int d=patientCollection.getDob().getDays();
@@ -122,10 +123,10 @@ public class ResourcePopulator {
 	{
 		System.out.println("Practitioner Data");
 		Practitioner practitioner = new Practitioner();
-		//practitioner.setId("Practitioner-01");
+		practitioner.setId("Practitioner-01");
 		//practitioner.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType(userCollection.getUpdatedTime())).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner");
 		//practitioner.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Dr."+userCollection.getFirstName()+"</div>");
-		practitioner.addIdentifier().setSystem("healthcoco").setValue("-").setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "MD", "Medical License number")));
+		practitioner.addIdentifier().setSystem("https://plus.healthcoco.com").setValue("12345").setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "MD", "Medical License number")));
 		//.setText(userCollection.getId().toString())
 		//practitioner.addIdentifier().setUse(IdentifierUse.TEMP);
 		//practitioner.addIdentifier();
@@ -136,12 +137,12 @@ public class ResourcePopulator {
 	}
 	
 	// Populate Condition Resource
-	public static Condition populateConditionResource()
+	public static Condition populateConditionResource(PrescriptionItem item)
 	{
 		Condition condition = new Condition();
 		condition.setId("Condition-01");
-		condition.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Condition");
-		condition.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Abdominal pain on 09-July 2020</div>");
+	//	condition.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Condition");
+	//	condition.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Abdominal pain on 09-July 2020</div>");
 		condition.setSubject(new Reference().setReference("Patient/Patient-01"));
 		condition.getCode().addCoding(new Coding("http://snomed.info/sct", "21522001", "Abdominal pain")).setText("Abdominal pain");
 		return condition;
@@ -389,7 +390,7 @@ public class ResourcePopulator {
 	{
 		System.out.println("Medical Request");
 		MedicationRequest medicationRequest = new MedicationRequest();
-	//	medicationRequest.setId("MedicationRequest");
+		medicationRequest.setId("MedicationRequest-01");
 	//	medicationRequest.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/MedicationRequest");
 		medicationRequest.setStatus(MedicationRequestStatus.ACTIVE);
 		medicationRequest.setIntent(MedicationRequestIntent.ORDER);
@@ -405,7 +406,7 @@ public class ResourcePopulator {
 		//.setDisplay("Dr "+userCollection.getFirstName())
 	//	medicationRequest.getReasonCode().add(new CodeableConcept(new Coding("http://snomed.info/sct", item.getDrugId().toString(), item.getExplanation())));
 	//	medicationRequest.getReasonCode().add(new CodeableConcept().setText(item.getDrugId().toString()+","+ item.getExplanation()));
-		medicationRequest.getReasonReference().add(new Reference().setReference("Condition/8518720"));
+		medicationRequest.getReasonReference().add(new Reference().setReference("Condition/Condition-01"));
 		//item.getInstructions()
 		medicationRequest.addDosageInstruction(new Dosage().setText(item.getDosage()));
 		//.addAdditionalInstruction(new CodeableConcept().setText(item.getInstructions())).		

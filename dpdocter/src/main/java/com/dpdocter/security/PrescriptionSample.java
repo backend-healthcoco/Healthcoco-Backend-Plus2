@@ -117,7 +117,7 @@ public class PrescriptionSample {
 
 		// Validate it. Validate method return result of validation in boolean
 		// If validation result is true then parse, serialize operations are performed
-	//	if(validate(prescriptionBundle))	
+		if(validate(prescriptionBundle))	
 		{
 			System.out.println("Validated populated Prescripton bundle successfully");
 
@@ -168,17 +168,17 @@ public class PrescriptionSample {
 				
 
 			// Validate Parsed file
-//			if(validate(resource)){
-//				System.out.println("Validated parsed file successfully");
-//			}
-//			else{
-//				throw new BusinessException(ServiceError.Unknown, "Failed to validate parsed file");
-//			}
+			if(validate(resource)){
+				System.out.println("Validated parsed file successfully");
+			}
+			else{
+				throw new BusinessException(ServiceError.Unknown, "Failed to validate parsed file");
+			}
 		}
-//		else
-//		{
-//			throw new BusinessException(ServiceError.Unknown, "Failed to validate populate Prescription bundle : ");
-//			}
+		else
+		{
+			throw new BusinessException(ServiceError.Unknown, "Failed to validate populate Prescription bundle : ");
+			}
 		}
 		catch (BusinessException e) {
 			e.printStackTrace();
@@ -198,6 +198,7 @@ public class PrescriptionSample {
 	static Composition populatePrescriptionCompositionResource()
 	{
 		Composition composition = new Composition();	
+		composition.setId("Composition-01");
 		String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
 		// Set Timestamp 
@@ -266,7 +267,7 @@ public class PrescriptionSample {
 //		reference3.setType("Binary");
 
 		SectionComponent section = new SectionComponent();
-		section.setTitle("Prescription record-1").
+		section.setTitle("Prescription record").
 		setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "440545006", "Prescription record"))).
 		addEntry(reference1);
 	//	addEntry(reference2);
@@ -304,13 +305,17 @@ public class PrescriptionSample {
 		bundleEntry1.setResource(populatePrescriptionCompositionResource());
 		listBundleEntries.add(bundleEntry1);
 		
-		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
-		for(PrescriptionItem item:prescriptionCollection.getItems()) {
 		
+		//for(PrescriptionItem item:prescriptionCollection.getItems()) {
+		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
 		bundleEntry4.setFullUrl("MedicationRequest/MedicationRequest-01");
-		bundleEntry4.setResource(ResourcePopulator.populateMedicationRequestResource(item,userCollection,patientCollection,prescriptionCollection.getCreatedTime()));
+		bundleEntry4.setResource(ResourcePopulator.populateMedicationRequestResource(prescriptionCollection.getItems().get(0),userCollection,patientCollection,prescriptionCollection.getCreatedTime()));
 		listBundleEntries.add(bundleEntry4);
-		}
+		BundleEntryComponent bundleEntry6 = new BundleEntryComponent();
+		bundleEntry6.setFullUrl("Condition/Condition-01");
+		bundleEntry6.setResource(ResourcePopulator.populateConditionResource(prescriptionCollection.getItems().get(0)));
+		listBundleEntries.add(bundleEntry6);
+	//	}
 		
 		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
 		bundleEntry3.setFullUrl("Practitioner/Practitioner-01");
@@ -327,10 +332,7 @@ public class PrescriptionSample {
 //		bundleEntry5.setFullUrl("MedicationRequest/MedicationRequest-02");
 //		bundleEntry5.setResource(ResourcePopulator.populateSecondMedicationRequestResource());
 //
-//		BundleEntryComponent bundleEntry6 = new BundleEntryComponent();
-//		bundleEntry6.setFullUrl("Condition/Condition-01");
-//		bundleEntry6.setResource(ResourcePopulator.populateConditionResource());
-//
+		//
 //		BundleEntryComponent bundleEntry7 = new BundleEntryComponent();
 //		bundleEntry7.setFullUrl("Binary/Binary-01");
 //		bundleEntry7.setResource(ResourcePopulator.populateBinaryResource());
@@ -414,18 +416,18 @@ public class PrescriptionSample {
 	/**
 	 * This method validates the FHIR resources 
 	 */
-//	static boolean validate(IBaseResource resource)
-//	{
-//		// Validate
-//		ValidationResult result = validator.validateWithResult(resource);
-//
-//		// The result object now contains the validation results
-//		for (SingleValidationMessage next : result.getMessages()) {
-//			System.out.println(next.getSeverity().name() + " : " + next.getLocationString() + " " + next.getMessage());
-//		}
-//
-//		return result.isSuccessful();
-//	}
+	static boolean validate(IBaseResource resource)
+	{
+		// Validate
+		ValidationResult result = validator.validateWithResult(resource);
+
+		// The result object now contains the validation results
+		for (SingleValidationMessage next : result.getMessages()) {
+			System.out.println(next.getSeverity().name() + " : " + next.getLocationString() + " " + next.getMessage());
+		}
+
+		return result.isSuccessful();
+	}
 
 }
 
