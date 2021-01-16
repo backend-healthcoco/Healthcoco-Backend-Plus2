@@ -5592,12 +5592,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 		DoctorCalendarView response = null;
 
 		try {
-			DoctorCalendarViewCollection collection = doctorCalendarViewRepository
-					.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
-			response = new DoctorCalendarView();
-			BeanUtil.map(collection, response);
 
-		} catch (BusinessException e) {
+			DoctorCalendarViewCollection collection = doctorCalendarViewRepository.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+			response=new DoctorCalendarView();
+			if(collection !=null) {
+			BeanUtil.map(collection, response);
+			}
+		}catch (BusinessException e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Error while getting doctor calendar view");
