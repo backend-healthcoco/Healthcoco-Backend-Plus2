@@ -1584,6 +1584,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
 			}
 
+			System.out.println("parameters 1"+parameters);
+
 			patientVisitService.generatePatientDetails(
 					(printSettings != null && printSettings.getHeaderSetup() != null
 							? printSettings.getHeaderSetup().getPatientDetails()
@@ -1619,6 +1621,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							: 20)
 					: 20;
 
+							System.out.println("parameters"+parameters);
 			response = jasperReportService.createPDF(ComponentType.TREATMENT, parameters, null, layout, pageSize,
 					topMargin, bottonMargin, leftMargin, rightMargin,
 					Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
