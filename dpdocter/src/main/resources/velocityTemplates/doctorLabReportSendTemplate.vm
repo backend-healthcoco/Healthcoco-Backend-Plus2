@@ -11,7 +11,7 @@
     <div style="background-color:#ffffff;line-height:25px;margin-bottom:30px;font-family:'Open Sans',sans-serif;margin:0px auto;min-width:200px;max-width:600px">
 
       <div style="background-color: #1e2d75 !important; padding:25px 20px;">
-        <a href="https://plus.healthcoco.com" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/logo1598344039505.png" alt="healthcoco_logo" width="280px" style="display:block;" /></a>
+        <a href="https://plus.healthcoco.com" target="_blank"><img src="https://d1ayyk8caoqrgh.cloudfront.net/email-template/logo1598344039505.png" alt="healthcoco_logo" width="280px" style="display:block;" /></a>
       </div>
 
       <div style="padding: 0px 20px;">
@@ -22,7 +22,7 @@
 
       <div style="padding: 22px; background-color: #e6e6e3;">
         <div align="center">
-          <img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/image15-141598525926040.png" style="width:350px;">
+          <img src="https://d1ayyk8caoqrgh.cloudfront.net/email-template/image15-141598525926040.png" style="width:350px;">
         </div>
       </div>
 
@@ -36,7 +36,7 @@
 
       <div style="background-color: #e6e6e3;">
           <div style="overflow: hidden;">
-              <img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/HC_Mobile1598344617885.png" alt="healthcoco_pus_app" align="center" style="width:230px;float: left;">
+              <img src="https://d1ayyk8caoqrgh.cloudfront.net/email-template/HC_Mobile1598344617885.png" alt="healthcoco_pus_app" align="center" style="width:230px;float: left;">
               <div style="float: left;margin-top: 60px;">
                   <small style="margin-left: 25px;"><b>Get the Healthcoco+ app</b></small>
                   <ul>
@@ -70,15 +70,15 @@
                   Follow us at
               </h4>
               <div style="margin-top: 10px;">
-                  <a href="https://www.facebook.com/healthcoco/" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/facebook-21598343509134.png" alt="insert logo here" width="25">
+                  <a href="https://www.facebook.com/healthcoco/" target="_blank"><img src="https://d1ayyk8caoqrgh.cloudfront.net/email-template/facebook-21598343509134.png" alt="insert logo here" width="25">
                   </a>&nbsp;&nbsp;
                   <a href="https://www.linkedin.com/company/healthcoco/" target="_blank"><img
-                      src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/in1598343918208.png" alt="insert logo here" width="25">
+                      src="https://d1ayyk8caoqrgh.cloudfront.net/email-template/in1598343918208.png" alt="insert logo here" width="25">
                   </a>&nbsp;&nbsp;
                   <a href="https://www.instagram.com/healthcoco/" target="_blank"><img
-                      src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/instagram-sketched1598343944136.png" alt="insert logo here" width="25">
+                      src="https://d1ayyk8caoqrgh.cloudfront.net/instagram-sketched1598343944136.png" alt="insert logo here" width="25">
                   </a>&nbsp;&nbsp;
-                  <a href="https://twitter.com/healthcococom" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/twitter1598343981972.png" alt="insert logo here" width="25"></a>&nbsp;&nbsp;
+                  <a href="https://twitter.com/healthcococom" target="_blank"><img src="https://d1ayyk8caoqrgh.cloudfront.net/email-template/twitter1598343981972.png" alt="insert logo here" width="25"></a>&nbsp;&nbsp;
                   <a href="https://www.youtube.com/channel/UCAvIuW5nt0qBXvAfVeynQOg" target="_blank"><img src="https://s3.amazonaws.com/dev-img-healthcoco.in/email-template/youtube1598343999812.png" alt="insert logo here" width="25"></a>
               </div>
           </div>
