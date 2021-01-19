@@ -2451,13 +2451,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getBottomSignText())) {
 					parameters.put("bottomSignText", printSettings.getFooterSetup().getBottomSignText());
 				}
-				if (printSettings.getFooterSetup().getShowImageFooter()
-						&& printSettings.getFooterSetup().getShowImageFooter()) {
-					footerImageUrl = getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl());
-				}
-				if (printSettings.getFooterSetup().getShowSignatureBox()) {
-					signatureUrl = getFinalImageURL(printSettings.getFooterSetup().getSignatureUrl());
-				}
+//				if (printSettings.getFooterSetup().getShowImageFooter()
+//						&& printSettings.getFooterSetup().getShowImageFooter()) {
+//					footerImageUrl = getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl());
+//				}
+//				if (printSettings.getFooterSetup().getShowSignatureBox()) {
+//					signatureUrl = getFinalImageURL(printSettings.getFooterSetup().getSignatureUrl());
+//				}
 				if (printSettings.getFooterSetup().getShowImageFooter()
 						&& !DPDoctorUtils.anyStringEmpty(printSettings.getFooterSetup().getFooterImageUrl())) {
 					footerImageUrl = getFinalImageURL(printSettings.getFooterSetup().getFooterImageUrl());
