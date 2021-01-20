@@ -172,7 +172,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 				 response=new DoctorRegisterResponse();
 				 BeanUtil.map(doctorOtpSignUCollection, response);
 				 
-				 System.out.println(doctorOtpSignUCollection);
+		//		 System.out.println(doctorOtpSignUCollection);
 				 otpGenerator(request.getMobileNumber(),request.getCountryCode());
 				 
 			 
@@ -403,7 +403,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 					(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName(),
 					tokenCollection.getId(), "verifyDoctor.vm");
 	Boolean mail=	mailService.sendEmail(userCollection.getEmailAddress(),signupRequestSubject, body, null);
-			System.out.println(mail);
+		//	System.out.println(mail);
 			
 			response = new DoctorSignUp();
 			User user = new User();
@@ -481,7 +481,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 				Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 		
-		System.out.println("AdminAggregation"+aggregation);
+	//	System.out.println("AdminAggregation"+aggregation);
 		List<User> user=mongoTemplate.aggregate(aggregation, UserCollection.class, User.class).getMappedResults();
 		return user;
 
@@ -568,7 +568,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 							(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName(),
 							tokenCollection.getId(), "verifyDoctor.vm");
 			Boolean mail=	mailService.sendEmail(userCollection.getEmailAddress(),signupRequestSubject, body, null);
-					System.out.println(mail);
+			//		System.out.println(mail);
 					response = true;
 				}
 

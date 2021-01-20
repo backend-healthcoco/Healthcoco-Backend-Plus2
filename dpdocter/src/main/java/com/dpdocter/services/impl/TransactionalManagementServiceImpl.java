@@ -2659,7 +2659,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	
 	public Boolean addDataFromMongoToElasticSearch() {
 		try {
-			System.out.println("addDataFromMongoToElasticSearch");
+//			System.out.println("addDataFromMongoToElasticSearch");
 //			List<CityCollection> cityCollections = cityRepository.findAll();
 //			if (cityCollections != null && !cityCollections.isEmpty()) {
 //				for (CityCollection cityCollection : cityCollections) {

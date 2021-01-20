@@ -662,13 +662,13 @@ public class BillingServiceImpl implements BillingService {
 								Aggregation.skip((page) * size), Aggregation.limit(size));
 								responses = mongoTemplate.aggregate(aggregation,DoctorPatientInvoiceCollection.class, DoctorPatientInvoice.class).getMappedResults();
 			
-								System.out.println("aggregation"+aggregation);
+						//		System.out.println("aggregation"+aggregation);
 			} else {
 				
 						Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 								responses = mongoTemplate.aggregate(aggregation,DoctorPatientInvoiceCollection.class, DoctorPatientInvoice.class).getMappedResults();
-								System.out.println("aggregation"+aggregation);
+					//			System.out.println("aggregation"+aggregation);
 			}
 
 		} catch (BusinessException be) {
@@ -847,7 +847,7 @@ public class BillingServiceImpl implements BillingService {
 				
 				if(request.getAmountPaid() !=null)
 					doctorPatientReceiptCollection.setRefundAmount(request.getAmountPaid());
-			System.out.println("Refund"+doctorPatientReceiptCollection.getRefundAmount());
+		//	System.out.println("Refund"+doctorPatientReceiptCollection.getRefundAmount());
 
 				List<DoctorPatientReceiptCollection> doPatientReceiptCollections=null;
 				if(request.getInvoiceIds() !=null) {
@@ -969,7 +969,7 @@ public class BillingServiceImpl implements BillingService {
 					if (doctorPatientInvoiceCollection == null) {
 						throw new BusinessException(ServiceError.InvalidInput, "Invalid Invoice Id");
 					}
-					System.out.println("Invoice:"+doctorPatientInvoiceCollection);
+					//System.out.println("Invoice:"+doctorPatientInvoiceCollection);
 					doctorPatientReceiptCollection.setInvoiceId(new ObjectId(request.getInvoiceIds().get(0)));
 					doctorPatientReceiptCollection.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
 					doctorPatientInvoiceCollection.setRefundAmount(request.getAmountPaid());
@@ -981,7 +981,7 @@ public class BillingServiceImpl implements BillingService {
 				
 				
 				doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
-				System.out.println("REceipt:"+doctorPatientReceiptCollection);
+			//	System.out.println("REceipt:"+doctorPatientReceiptCollection);
 			}
 			
 			
@@ -1765,11 +1765,11 @@ public class BillingServiceImpl implements BillingService {
 								new BasicDBObject("path", "$receipt").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
-			System.out.println("aggregation"+aggregation); 
+		//	System.out.println("aggregation"+aggregation); 
 			List<DoctorPatientLedger> doctorPatientLedgers = mongoTemplate
 					.aggregate(aggregation, DoctorPatientLedgerCollection.class, DoctorPatientLedger.class)
 					.getMappedResults();
-			System.out.println("ledger"+doctorPatientLedgers);
+	//		System.out.println("ledger"+doctorPatientLedgers);
 			if (doctorPatientLedgers != null && !doctorPatientLedgers.isEmpty()) {
 				response = new DoctorPatientLedgerResponse();
 				response.setDoctorPatientLedgers(doctorPatientLedgers);
@@ -1828,7 +1828,7 @@ public class BillingServiceImpl implements BillingService {
 				DoctorPatientReceipt doctorPatientReceipt = mongoTemplate
 									.aggregate(	aggregation,			DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class)
 					.getUniqueMappedResult();
-System.out.println("Aggregation"+aggregation);
+//System.out.println("Aggregation"+aggregation);
 			response = new AmountResponse();
 			if (doctorPatientReceipt != null)
 				response.setTotalRemainingAdvanceAmount(doctorPatientReceipt.getRemainingAdvanceAmount());

@@ -557,7 +557,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			smsDetails.add(smsDetail);
 			smsTrackDetail.setSmsDetails(smsDetails);
 			Boolean ck = smsServices.sendSMS(smsTrackDetail, false);
-			System.out.println("sms send" + ck);
+		//	System.out.println("sms send" + ck);
 
 			// save sms in repository write code
 
@@ -577,7 +577,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			if (subscriptionCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "Error no such id");
 			}
-			System.out.println("Sub" + subscriptionCollection);
+		//	System.out.println("Sub" + subscriptionCollection);
 
 			if (packageName != null) {
 				PackageDetailObjectCollection packageBasic = packageDetailObjectRepository
@@ -893,7 +893,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				while ((inputLine = in.readLine()) != null) {
 
 					output.append(inputLine);
-					System.out.println("response:" + output.toString());
+				//	System.out.println("response:" + output.toString());
 				}
 
 				ObjectMapper mapper = new ObjectMapper();
@@ -951,7 +951,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			options.put("razorpay_payment_id", request.getPaymentId());
 			options.put("razorpay_signature", request.getSignature());
 			response = Utils.verifyPaymentSignature(options, secret);
-			System.out.println("paymn" + response);
+		//	System.out.println("paymn" + response);
 			if (response) {
 				Criteria criteria = new Criteria("orderId").is(request.getOrderId()).and("doctorId")
 						.is(new ObjectId(request.getDoctorId())).and("transactionStatus").is("PENDING");

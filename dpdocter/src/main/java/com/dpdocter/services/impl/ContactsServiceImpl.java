@@ -979,7 +979,7 @@ public class ContactsServiceImpl implements ContactsService {
 					}
 
 				}
-				System.out.println("GroupId User Mobile Number"+mobileNumbers);
+			//	System.out.println("GroupId User Mobile Number"+mobileNumbers);
 			} else if(request.getPatientIds()!=null && !request.getPatientIds().isEmpty()){
 				List<ObjectId> patientIds = new ArrayList<ObjectId>();
 				for(String id : request.getPatientIds())patientIds.add(new ObjectId(id));

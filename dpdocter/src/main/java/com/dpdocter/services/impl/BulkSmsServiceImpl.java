@@ -298,7 +298,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 
 				}
 			
-			System.out.println("aggregation:"+aggregation);
+		//	System.out.println("aggregation:"+aggregation);
 				response = mongoTemplate.aggregate(aggregation, BulkSmsCreditsCollection.class, BulkSmsCredits.class).getMappedResults();
 			
 			
@@ -548,7 +548,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				}
 			
-				System.out.println("Aggregation:"+aggregation);
+			//	System.out.println("Aggregation:"+aggregation);
 				response = mongoTemplate.aggregate(aggregation, MessageCollection.class, MessageResponse.class).getMappedResults();
 
 				
@@ -658,7 +658,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 	 			while ((inputLine = in.readLine()) != null) {
 
 	 				output.append(inputLine);
-	 				System.out.println("response:"+output.toString());
+	 		//		System.out.println("response:"+output.toString());
 	 			}
 	 			
 	 			  ObjectMapper mapper = new ObjectMapper();
@@ -752,7 +752,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							throw new BusinessException(ServiceError.InvalidInput, "Sms Package not found");
 						
 						
-						System.out.println("credits:"+packageCollection.getSmsCredit());
+					//	System.out.println("credits:"+packageCollection.getSmsCredit());
 						DoctorCollection doctorClinicProfileCollections = null;
 						doctorClinicProfileCollections = doctorRepository.findByUserId(
 								new ObjectId(request.getDoctorId()));
@@ -831,7 +831,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							smsTrackDetail.setSmsDetails(smsDetails);
 					Boolean res=sMSServices.sendSMS(smsTrackDetail, true);
 							
-						System.out.println("sms sent"+res);
+	//					System.out.println("sms sent"+res);
 						
 						String paymentDate =simpleDateFormat.format(onlinePaymentCollection.getCreatedTime());
 //						String body ="Hi " + doctor.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(onlinePaymentCollection.getCreatedTime())
@@ -1011,10 +1011,10 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 			  .setUri(url)
 			  .setHeader( "api-key", KEY)
 			  .build();
-			System.out.println("response"+client.execute(httprequest));
+		//	System.out.println("response"+client.execute(httprequest));
 			 org.apache.http.HttpResponse responses = client.execute(httprequest);
 			 responses.getEntity().writeTo(out);
-			System.out.println("response:"+out.toString());
+	//		System.out.println("response:"+out.toString());
 			 ObjectMapper mapper = new ObjectMapper();
 			response=mapper.readValue(out.toString(),MessageStatus.class);
 			

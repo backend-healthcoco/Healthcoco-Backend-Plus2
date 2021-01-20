@@ -229,12 +229,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			} else {
 				userDeviceCollections = userDevices;
 			}
-			System.out.println("userId"+userId);
-			System.out.println("userDeviceCollections"+userDeviceCollections);
-			System.out.println("componentType"+componentType);
-			System.out.println("userDevices"+userDevices);
-			System.out.println("message"+message);
-			System.out.println("componentTypeId"+componentTypeId);
+//			System.out.println("userId"+userId);
+//			System.out.println("userDeviceCollections"+userDeviceCollections);
+//			System.out.println("componentType"+componentType);
+//			System.out.println("userDevices"+userDevices);
+//			System.out.println("message"+message);
+//			System.out.println("componentTypeId"+componentTypeId);
 			
 			if (userDeviceCollections != null && !userDeviceCollections.isEmpty()) {
 				for (UserDeviceCollection userDeviceCollection : userDeviceCollections) {
@@ -825,14 +825,14 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				
 				
 	            
-	            System.out.println(data.toString());
+	     //       System.out.println(data.toString());
 	            OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
 	            wr.write(data.toString());
 	            wr.flush();
 	            wr.close();
 
 	            int responseCode = con.getResponseCode();
-	            System.out.println("Response Code : " + responseCode);
+	           // System.out.println("Response Code : " + responseCode);
 
 	            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 	            String inputLine;
@@ -842,11 +842,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 	                response.append(inputLine);
 	            }
 				
-	            System.out.println("Resonse: " + response);
+	            //System.out.println("Resonse: " + response);
 
 	            
-	            System.out.println("Response"+response);
-			System.out.println("pushToken"+pushToken);
+	          //  System.out.println("Response"+response);
+			//System.out.println("pushToken"+pushToken);
 
 		} 
 		
@@ -1403,14 +1403,14 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				
 				
 	            
-	            System.out.println(data.toString());
+	         //   System.out.println(data.toString());
 	            OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
 	            wr.write(data.toString());
 	            wr.flush();
 	            wr.close();
 
 	            int responseCode = con.getResponseCode();
-	            System.out.println("Response Code : " + responseCode);
+	          //  System.out.println("Response Code : " + responseCode);
 
 	            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 	            String inputLine;
@@ -1420,11 +1420,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 	                response.append(inputLine);
 	            }
 				
-	            System.out.println("Resonse: " + response);
+	  //          System.out.println("Resonse: " + response);
 
 	            
-	            System.out.println("Response"+response);
-			System.out.println("pushToken"+pushToken);
+	//            System.out.println("Response"+response);
+//			System.out.println("pushToken"+pushToken);
 
 		} 
 		
@@ -1582,7 +1582,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			PushNotificationCollection pushNotificationCollection = new PushNotificationCollection(null, deviceIds,
 					message, DeviceType.ANDROID, null, PushNotificationType.INDIVIDUAL);
 			pushNotificationRepository.save(pushNotificationCollection);
-			logger.info("Message Result: " + result.toString());
+			//logger.info("Message Result: " + result.toString());
 		} catch (JsonProcessingException jpe) {
 			jpe.printStackTrace();
 		} catch (IOException e) {
@@ -2431,14 +2431,14 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			}
 			
             
-            System.out.println(data.toString());
+      //      System.out.println(data.toString());
             OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
             wr.write(data.toString());
             wr.flush();
             wr.close();
 
             int responseCode = con.getResponseCode();
-            System.out.println("Response Code : " + responseCode);
+   //         System.out.println("Response Code : " + responseCode);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;

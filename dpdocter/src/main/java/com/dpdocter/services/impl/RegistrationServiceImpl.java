@@ -1239,7 +1239,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					i++;
 					response = true;
 				}
-				System.out.println(i);
+			//	System.out.println(i);
 			}
 
 		} catch (Exception e) {
@@ -1602,10 +1602,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 					LocalDate birthday = LocalDate.parse(registeredPatientDetails.getDob().getDays()+"/"+registeredPatientDetails.getDob().getMonths()
 							+"/"+registeredPatientDetails.getDob().getYears(), formatter);
 
-					System.out.println(birthday + " "+today);
+			//		System.out.println(birthday + " "+today);
 					Period p = Period.between(birthday, today);
-					System.out.println("You are " + p.getYears() + " years, " + p.getMonths() + " months and "
-							+ p.getDays() + " days old.");
+			//		System.out.println("You are " + p.getYears() + " years, " + p.getMonths() + " months and "
+			//				+ p.getDays() + " days old.");
 					
 					registeredPatientDetails.getDob().getAge().setDays(p.getDays());
 					registeredPatientDetails.getDob().getAge().setMonths(p.getMonths());

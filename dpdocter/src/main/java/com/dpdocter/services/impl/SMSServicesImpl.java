@@ -1065,7 +1065,7 @@ public class SMSServicesImpl implements SMSServices {
 				   
 				 responses.getEntity().writeTo(out);
 				 String responseString = out.toString();
-				System.out.println("responseString"+responseString);
+			//	System.out.println("responseString"+responseString);
 				  ObjectMapper mapper = new ObjectMapper();
 
 				MessageResponse list = mapper.readValue(out.toString(),MessageResponse.class);
@@ -1130,7 +1130,7 @@ public class SMSServicesImpl implements SMSServices {
 					userNumber = (UserMobileNumbers) in.readObject();
 					in.close();
 					fileIn.close();
-					System.out.println(userNumber);
+				//	System.out.println(userNumber);
 				}
 //				if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId())) {
 //					
@@ -1271,7 +1271,7 @@ public class SMSServicesImpl implements SMSServices {
 									  .setHeader( "api-key", KEY)
 									  .build();
 									//System.out.println("response"+client.execute(httprequest));
-									System.out.println("senderId"+senderId);
+								//	System.out.println("senderId"+senderId);
 									 org.apache.http.HttpResponse responses = client.execute(httprequest);
 									 responses.getEntity().writeTo(out);
 									 list = mapper.readValue(out.toString(),MessageResponse.class);
