@@ -3077,15 +3077,15 @@ public class NDHMserviceImpl implements NDHMservices {
 										PrescriptionCollection.class, PrescriptionCollection.class).getMappedResults();
 						System.out.println("aggregation"+aggregation);
 						//PrescriptionCollection prescriptionCollection=null;
-						if(prescriptionCollections!=null)
-						for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
-						{
-							
+						if(prescriptionCollections!=null) {
+					//	for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
+					//	{
+							PrescriptionCollection prescriptionCollection=prescriptionCollections.get(0);
 						DoctorCollection doctorCollection=doctorRepository.findByUserId(prescriptionCollection.getDoctorId());
 						System.out.println("Doctor "+doctorCollection);
 						UserCollection userCollection=userRepository.findById(doctorCollection.getUserId()).orElse(null);
 						System.out.println("User "+doctorCollection);
-						String bundle =	PrescriptionSample.prescriptionConvert(prescriptionCollection,patientCollection,userCollection);
+						String bundle =	PrescriptionSample.prescriptionConvert();
 						System.out.println("Fhir:"+null);
 						//	mapPrescriptionRecordData(prescriptionCollections, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
 						DataEncryptionResponse data=null;

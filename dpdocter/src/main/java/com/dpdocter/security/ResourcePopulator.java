@@ -2,8 +2,6 @@ package com.dpdocter.security;
 
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +42,6 @@ import org.hl7.fhir.r4.model.FamilyMemberHistory;
 import org.hl7.fhir.r4.model.FamilyMemberHistory.FamilyHistoryStatus;
 import org.hl7.fhir.r4.model.FamilyMemberHistory.FamilyMemberHistoryConditionComponent;
 import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.ImagingStudy;
 import org.hl7.fhir.r4.model.ImagingStudy.ImagingStudySeriesComponent;
 import org.hl7.fhir.r4.model.ImagingStudy.ImagingStudySeriesInstanceComponent;
@@ -83,21 +80,13 @@ import org.hl7.fhir.r4.model.Timing;
 import org.hl7.fhir.r4.model.Timing.TimingRepeatComponent;
 import org.hl7.fhir.r4.model.Timing.UnitsOfTime;
 
-import com.dpdocter.beans.PrescriptionItem;
-import com.dpdocter.collections.DoctorCollection;
-import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PrescriptionCollection;
-import com.dpdocter.collections.UserCollection;
-
-import io.grpc.netty.shaded.io.netty.handler.codec.AsciiHeadersEncoder.NewlineType;
-
 /**
  * The FhirResourcePopulator class populates all the FHIR resources 
  */
 public class ResourcePopulator {
 	
 	// Populate Patient Resource
-	public static Patient populatePatientResource(PatientCollection patientCollection)
+	public static Patient populatePatientResource()
 	{
 		System.out.println("Patient Data");
 		Patient patient = new Patient();
@@ -108,7 +97,7 @@ public class ResourcePopulator {
 		//patient.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">"+patientCollection.getLocalPatientName()+"  15"+ patientCollection.getGender()+"</div>");
 		
 		patient.addIdentifier().setSystem("https://plus.healthcoco.com").setValue("12345").setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "MR", "Medical record number")));
-	//	patient.addName().setText(patientCollection.getLocalPatientName());
+		patient.addName().setText("Amit");
 	//	patient.addTelecom().setSystem(ContactPointSystem.PHONE).setValue("+91"+patientCollection.getSecMobile()).setUse(ContactPointUse.HOME);
 //		int d=patientCollection.getDob().getDays();
 //		int m=patientCollection.getDob().getMonths();
@@ -119,7 +108,7 @@ public class ResourcePopulator {
 	}
 	
 	// Populate Practitioner Resource
-	public static Practitioner populatePractitionerResource(UserCollection userCollection)
+	public static Practitioner populatePractitionerResource()
 	{
 		System.out.println("Practitioner Data");
 		Practitioner practitioner = new Practitioner();
@@ -131,18 +120,18 @@ public class ResourcePopulator {
 		//practitioner.addIdentifier().setUse(IdentifierUse.TEMP);
 		//practitioner.addIdentifier();
 		//practitioner.addIdentifier().setAssigner(new Reference().setDisplay(null));
-		practitioner.addName().setText("Dr."+userCollection.getFirstName());
+		practitioner.addName().setText("Dr. Anand");
 		
 		return practitioner;
 	}
 	
 	// Populate Condition Resource
-	public static Condition populateConditionResource(PrescriptionItem item)
+	public static Condition populateConditionResource()
 	{
 		Condition condition = new Condition();
 		condition.setId("Condition-01");
-	//	condition.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Condition");
-	//	condition.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Abdominal pain on 09-July 2020</div>");
+		condition.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Condition");
+		condition.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Abdominal pain on 09-July 2020</div>");
 		condition.setSubject(new Reference().setReference("Patient/Patient-01"));
 		condition.getCode().addCoding(new Coding("http://snomed.info/sct", "21522001", "Abdominal pain")).setText("Abdominal pain");
 		return condition;
@@ -196,7 +185,7 @@ public class ResourcePopulator {
 	}
 	
 	// Populate Appointment Resource
-	public static Appointment populateAppointmentResource(Date date, Date date2)
+	public static Appointment populateAppointmentResource()
 	{
 		Appointment appointment = new Appointment();
 		appointment.setId("Appointment-01");
@@ -204,11 +193,6 @@ public class ResourcePopulator {
 		appointment.setStatus(AppointmentStatus.BOOKED);
 		appointment.getParticipant().add(new AppointmentParticipantComponent().setActor(new Reference().setReference("Patient/Patient-01")).
 				setStatus(ParticipationStatus.ACCEPTED).setActor(new Reference().setReference("Practitioner/Practitioner-01")).setStatus(ParticipationStatus.ACCEPTED));
-		String pattern = "yyyy-MM-dd";
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-//		String startdate=simpleDateFormat.format(date);
-//		String enddate=simpleDateFormat.format(date2);
-//		LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
 		appointment.setStartElement(new InstantType("2020-07-12T09:00:00Z"));
 		appointment.setEndElement(new InstantType("2020-07-12T09:30:00Z"));
 		appointment.addReasonReference(new Reference().setReference("Condition/Condition-01"));
@@ -386,20 +370,20 @@ public class ResourcePopulator {
 	}
 	
 	// Populate Medication Request Resource
-	public static MedicationRequest populateMedicationRequestResource(PrescriptionItem item, UserCollection userCollection, PatientCollection patientCollection, Date date2)
+	public static MedicationRequest populateMedicationRequestResource()
 	{
-		System.out.println("Medical Request");
 		MedicationRequest medicationRequest = new MedicationRequest();
 		medicationRequest.setId("MedicationRequest-01");
 	//	medicationRequest.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/MedicationRequest");
 		medicationRequest.setStatus(MedicationRequestStatus.ACTIVE);
 		medicationRequest.setIntent(MedicationRequestIntent.ORDER);
 	//	medicationRequest.setMedication(new CodeableConcept(new Coding("http://snomed.info/sct","324252006", item.getDrugName() +"(as "+item.getGenericNames() +")")));
-		medicationRequest.setMedication(new CodeableConcept().setText(item.getDrugName()));
+		medicationRequest.setMedication(new CodeableConcept().setText("Topisol 3%"));
 		medicationRequest.setSubject(new Reference().setReference("Patient/Patient-01"));
 		//.setDisplay(patientCollection.getFirstName())
 		String pattern = "yyyy-MM-dd";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		Date date2=new Date();
 		String date=simpleDateFormat.format(date2);
 		medicationRequest.setAuthoredOnElement(new DateTimeType(date));
 		medicationRequest.setRequester(new Reference().setReference("Practitioner/Practitioner-01"));
@@ -408,14 +392,13 @@ public class ResourcePopulator {
 	//	medicationRequest.getReasonCode().add(new CodeableConcept().setText(item.getDrugId().toString()+","+ item.getExplanation()));
 		medicationRequest.getReasonReference().add(new Reference().setReference("Condition/Condition-01"));
 		//item.getInstructions()
-		medicationRequest.addDosageInstruction(new Dosage().setText(item.getDosage()));
+		medicationRequest.addDosageInstruction(new Dosage().setText("Take 3 at day"));
 		//.addAdditionalInstruction(new CodeableConcept().setText(item.getInstructions())).		
 		//		setRoute(new CodeableConcept().setText("test")).
 		//		setMethod(new CodeableConcept().setText("test")));
 		return medicationRequest;
 	}
-	//item.getDirection().get(0).getDirection()
-	//item.getDirection().get(0).getDirection()
+	
 	// Populate Medication Request Resource
 	public static MedicationRequest populateSecondMedicationRequestResource()
 	{
@@ -435,26 +418,26 @@ public class ResourcePopulator {
 	}
 	
 	// Populate Medication Statement Resource
-	public static MedicationStatement populateMedicationStatementResource(String diagnosis)
+	public static MedicationStatement populateMedicationStatementResource()
 	{
 		MedicationStatement medicationStatement = new MedicationStatement();
-		medicationStatement.setId("Diagnosis");
+		medicationStatement.setId("MedicationStatement-01");
 		medicationStatement.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/MedicationStatement");
 		medicationStatement.setStatus(MedicationStatementStatus.COMPLETED);
-		medicationStatement.setMedication(new CodeableConcept(new Coding("http://snomed.info/sct", "134463001", diagnosis)));
+		medicationStatement.setMedication(new CodeableConcept(new Coding("http://snomed.info/sct", "134463001", "Telmisartan 20 mg oral tablet")));
 		medicationStatement.setSubject(new Reference().setReference("Patient/Patient-01"));
 		medicationStatement.setDateAssertedElement(new DateTimeType("2020-02-02T14:58:58.181+05:30"));
 		return medicationStatement;
 	}
 	
 	// Populate Observation Resource
-	public static Observation populateObservationResource(String observations)
+	public static Observation populateObservationResource()
 	{
 		Observation observation = new Observation();
 		observation.setId("Observation-01");
 		observation.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Observation");
 		observation.setStatus(ObservationStatus.FINAL);
-		observation.setCode(new CodeableConcept(new Coding("http://loinc.org", "35200-5", observations)).setText(observations));
+		observation.setCode(new CodeableConcept(new Coding("http://loinc.org", "35200-5", "Cholesterol [Moles/​volume] in Serum or Plasma")).setText("Cholesterol"));
 		observation.setValue(new Quantity().setValueElement(new DecimalType("6.3")).setCode("258813002").setUnit("mmol/L").setSystem("http://snomed.info/sct"));
 		observation.getReferenceRange().add(new ObservationReferenceRangeComponent().setHigh(new Quantity().setValueElement(new DecimalType("6.3")).setCode("258813002").setUnit("mmol/L").setSystem("http://snomed.info/sct")));
 		observation.setSubject(new Reference().setReference("Patient/Patient-01"));
@@ -554,18 +537,15 @@ public class ResourcePopulator {
 	}
 	
 	// Populate Procedure Resource
-	public static Procedure populateProcedureResource(String procedur, Date date)
+	public static Procedure populateProcedureResource()
 	{
 		Procedure procedure = new Procedure();
 		procedure.setId("Procedure-01");
 		procedure.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Procedure");
 		procedure.setStatus(ProcedureStatus.COMPLETED);
-		procedure.setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "36969009", procedur)).setText(procedur));
+		procedure.setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "36969009", "Placement of stent in coronary artery")).setText("Placement of stent in coronary artery"));
 		procedure.setSubject(new Reference().setReference("Patient/Patient-01"));
-		String pattern = "yyyy-MM-dd";
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-		String date2=simpleDateFormat.format(date);
-		procedure.setPerformed(new DateTimeType(date2));
+		procedure.setPerformed(new DateTimeType("2019-05-12"));
 		procedure.getComplication().add(new CodeableConcept(new Coding("http://snomed.info/sct", "131148009", "Bleeding")));
 		return procedure;
 	}

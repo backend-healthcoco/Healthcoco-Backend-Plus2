@@ -274,7 +274,7 @@ public class DischargeSummarySample {
 
 		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
 		bundleEntry2.setFullUrl("Practitioner/Practitioner-01");
-		bundleEntry2.setResource(ResourcePopulator.populatePractitionerResource(userCollection));
+	//	bundleEntry2.setResource(ResourcePopulator.populatePractitionerResource(userCollection));
 
 		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
 		bundleEntry3.setFullUrl("Organization/Organization-01");
@@ -286,7 +286,7 @@ public class DischargeSummarySample {
 
 		BundleEntryComponent bundleEntry5 = new BundleEntryComponent();
 		bundleEntry5.setFullUrl("Patient/Patient-01");
-		bundleEntry5.setResource(ResourcePopulator.populatePatientResource(patientCollection));
+	//	bundleEntry5.setResource(ResourcePopulator.populatePatientResource(patientCollection));
 
 		BundleEntryComponent bundleEntry6 = new BundleEntryComponent();
 		bundleEntry6.setFullUrl("Encounter/Encounter-01");
@@ -294,11 +294,11 @@ public class DischargeSummarySample {
 
 		BundleEntryComponent bundleEntry7 = new BundleEntryComponent();
 		bundleEntry7.setFullUrl("Appointment/Appointment-01");
-		bundleEntry7.setResource(ResourcePopulator.populateAppointmentResource(dischargeSummaryCollection.getAdmissionDate(),dischargeSummaryCollection.getDischargeDate()));
+	//	bundleEntry7.setResource(ResourcePopulator.populateAppointmentResource(dischargeSummaryCollection.getAdmissionDate(),dischargeSummaryCollection.getDischargeDate()));
 
 		BundleEntryComponent bundleEntry8 = new BundleEntryComponent();
 		bundleEntry8.setFullUrl("Condition/Condition-01");
-		bundleEntry8.setResource(ResourcePopulator.populateConditionResource(null));
+	//	bundleEntry8.setResource(ResourcePopulator.populateConditionResource(null));
 
 		BundleEntryComponent bundleEntry9 = new BundleEntryComponent();
 		bundleEntry9.setFullUrl("Condition/Condition-02");
@@ -310,7 +310,7 @@ public class DischargeSummarySample {
 
 		BundleEntryComponent bundleEntry11 = new BundleEntryComponent();
 		bundleEntry11.setFullUrl("Observation/Observation-1");
-		bundleEntry11.setResource(ResourcePopulator.populateObservationResource(dischargeSummaryCollection.getObservation()));
+	//	bundleEntry11.setResource(ResourcePopulator.populateObservationResource(dischargeSummaryCollection.getObservation()));
 
 //		BundleEntryComponent bundleEntry12 = new BundleEntryComponent();
 //		bundleEntry12.setFullUrl("Observation/Observation-triglyceride");
@@ -318,7 +318,7 @@ public class DischargeSummarySample {
 
 		BundleEntryComponent bundleEntry13 = new BundleEntryComponent();
 		bundleEntry13.setFullUrl("Procedure/Procedure-01");
-		bundleEntry13.setResource(ResourcePopulator.populateProcedureResource(dischargeSummaryCollection.getProcedureNote(),dischargeSummaryCollection.getCreatedTime()));
+	//	bundleEntry13.setResource(ResourcePopulator.populateProcedureResource(dischargeSummaryCollection.getProcedureNote(),dischargeSummaryCollection.getCreatedTime()));
 
 		BundleEntryComponent bundleEntry14 = new BundleEntryComponent();
 		bundleEntry14.setFullUrl("Procedure/Procedure-02");
@@ -327,7 +327,7 @@ public class DischargeSummarySample {
 		for(PrescriptionItem item:dischargeSummaryCollection.getPrescriptions().getItems()) {
 		BundleEntryComponent bundleEntry15 = new BundleEntryComponent();
 		bundleEntry15.setFullUrl("MedicationRequest/MedicationRequest-01");
-		bundleEntry15.setResource(ResourcePopulator.populateMedicationRequestResource(item, userCollection, patientCollection,dischargeSummaryCollection.getCreatedTime()));
+	//	bundleEntry15.setResource(ResourcePopulator.populateMedicationRequestResource(item, userCollection, patientCollection,dischargeSummaryCollection.getCreatedTime()));
 		listBundleEntries.add(bundleEntry15);
 		}
 		BundleEntryComponent bundleEntry16 = new BundleEntryComponent();

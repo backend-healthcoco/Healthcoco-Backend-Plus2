@@ -291,17 +291,17 @@ public class OPConsultNoteSample {
 		bundleEntry1.setFullUrl("Composition/Composition-01");
 		bundleEntry1.setResource(populateOPConsultNoteCompositionResource());
 
-		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
-		bundleEntry2.setFullUrl("Practitioner/Practitioner-01");
-		bundleEntry2.setResource(ResourcePopulator.populatePractitionerResource(userCollection));
-
-//		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
-//		bundleEntry3.setFullUrl("Organization/Organization-01");
-//		bundleEntry3.setResource(ResourcePopulator.populateOrganizationResource());
-
-		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
-		bundleEntry4.setFullUrl("Patient/Patient-01");
-		bundleEntry4.setResource(ResourcePopulator.populatePatientResource(patientCollection));
+//		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
+//		bundleEntry2.setFullUrl("Practitioner/Practitioner-01");
+//		bundleEntry2.setResource(ResourcePopulator.populatePractitionerResource(userCollection));
+//
+////		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
+////		bundleEntry3.setFullUrl("Organization/Organization-01");
+////		bundleEntry3.setResource(ResourcePopulator.populateOrganizationResource());
+//
+//		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
+//		bundleEntry4.setFullUrl("Patient/Patient-01");
+//		bundleEntry4.setResource(ResourcePopulator.populatePatientResource(patientCollection));
 
 		BundleEntryComponent bundleEntry5 = new BundleEntryComponent();
 		bundleEntry5.setFullUrl("Encounter/Encounter-01");
@@ -313,7 +313,7 @@ public class OPConsultNoteSample {
 
 		BundleEntryComponent bundleEntry7 = new BundleEntryComponent();
 		bundleEntry7.setFullUrl("Appointment/Appointment-01");
-		bundleEntry7.setResource(ResourcePopulator.populateAppointmentResource(otReportsCollection.getCreatedTime(),otReportsCollection.getOperationDate()));
+	//	bundleEntry7.setResource(ResourcePopulator.populateAppointmentResource(otReportsCollection.getCreatedTime(),otReportsCollection.getOperationDate()));
 
 //		BundleEntryComponent bundleEntry8 = new BundleEntryComponent();
 //		bundleEntry8.setFullUrl("Condition/Condition-01");
@@ -329,7 +329,7 @@ public class OPConsultNoteSample {
 
 		BundleEntryComponent bundleEntry11 = new BundleEntryComponent();
 		bundleEntry11.setFullUrl("Procedure/Procedure-01");
-		bundleEntry11.setResource(ResourcePopulator.populateProcedureResource(otReportsCollection.getRemarks(),otReportsCollection.getUpdatedTime()));
+//		bundleEntry11.setResource(ResourcePopulator.populateProcedureResource(otReportsCollection.getRemarks(),otReportsCollection.getUpdatedTime()));
 
 //		BundleEntryComponent bundleEntry12 = new BundleEntryComponent();
 //		bundleEntry12.setFullUrl("ServiceRequest/ServiceRequest-01");
@@ -337,7 +337,7 @@ public class OPConsultNoteSample {
 
 		BundleEntryComponent bundleEntry13 = new BundleEntryComponent();
 		bundleEntry13.setFullUrl("MedicationStatement/MedicationStatement-01");
-		bundleEntry13.setResource(ResourcePopulator.populateMedicationStatementResource(otReportsCollection.getFinalDiagnosis()));
+	//	bundleEntry13.setResource(ResourcePopulator.populateMedicationStatementResource(otReportsCollection.getFinalDiagnosis()));
 
 //		BundleEntryComponent bundleEntry14 = new BundleEntryComponent();
 //		bundleEntry14.setFullUrl("MedicationRequest/MedicationRequest-01");
@@ -348,9 +348,9 @@ public class OPConsultNoteSample {
 //		bundleEntry15.setResource(ResourcePopulator.populateDocumentReferenceResource());
 
 		listBundleEntries.add(bundleEntry1);
-		listBundleEntries.add(bundleEntry2);
+	//	listBundleEntries.add(bundleEntry2);
 	//	listBundleEntries.add(bundleEntry3);
-		listBundleEntries.add(bundleEntry4);
+	//	listBundleEntries.add(bundleEntry4);
 		listBundleEntries.add(bundleEntry5);
 		listBundleEntries.add(bundleEntry6);
 		listBundleEntries.add(bundleEntry7);
