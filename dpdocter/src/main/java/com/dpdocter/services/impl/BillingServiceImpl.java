@@ -80,6 +80,7 @@ import com.dpdocter.enums.BillingType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
 import com.dpdocter.enums.InvoiceItemType;
+import com.dpdocter.enums.PatientTreatmentStatus;
 import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.enums.ReceiptType;
 import com.dpdocter.enums.SMSStatus;
@@ -382,6 +383,11 @@ public class BillingServiceImpl implements BillingService {
 					drug = prescriptionServices.getDrugById(invoiceItemResponse.getItemId());
 				}
 				itemIds.remove(new ObjectId(invoiceItemResponse.getItemId()));
+				System.out.println("bal"+doctorPatientInvoiceCollection.getBalanceAmount());
+				if(doctorPatientInvoiceCollection.getBalanceAmount() == 0) {
+					invoiceItemResponse.setStatus(PatientTreatmentStatus.COMPLETED);
+				}
+				
 				if (DPDoctorUtils.anyStringEmpty(invoiceItemResponse.getDoctorId())) {
 					invoiceItemResponse.setDoctorId(request.getDoctorId());
 					invoiceItemResponse.setDoctorName(doctorPatientInvoiceCollection.getCreatedBy());

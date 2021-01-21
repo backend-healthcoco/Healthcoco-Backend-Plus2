@@ -119,22 +119,19 @@ public class ContactsApi {
 				//patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
 				patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 				if (patientCard.getDob() != null) {
+					if (patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0
+							&& patientCard.getDob().getYears() > 0) {
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+						LocalDate today = LocalDate.now();
+						LocalDate birthday = LocalDate.parse(patientCard.getDob().getDays() + "/"
+								+ patientCard.getDob().getMonths() + "/" + patientCard.getDob().getYears(), formatter);
 
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-                    LocalDate today = LocalDate.now();
-                    LocalDate birthday = LocalDate.parse(patientCard.getDob().getDays() + "/"
-                            + patientCard.getDob().getMonths() + "/" + patientCard.getDob().getYears(), formatter);
-
-                    System.out.println(birthday + " " + today);
-                    Period p = Period.between(birthday, today);
-                    System.out.println("You are " + p.getYears() + " years, " + p.getMonths() + " months and "
-                            + p.getDays() + " days old.");
-
-                    patientCard.getDob().getAge().setDays(p.getDays());
-                    patientCard.getDob().getAge().setMonths(p.getMonths());
-                    patientCard.getDob().getAge().setYears(p.getYears());
-
-                }
+                 		Period p = Period.between(birthday, today);
+						patientCard.getDob().getAge().setDays(p.getDays());
+						patientCard.getDob().getAge().setMonths(p.getMonths());
+						patientCard.getDob().getAge().setYears(p.getYears());
+					}
+				}
 			}
 		}
 
