@@ -2448,7 +2448,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
                 response.append(inputLine);
             }
 			
-            System.out.println("Resonse: " + response);
+          //  System.out.println("Resonse: " + response);
 			
 			//2nd
 //			  ApsAlert alert =
@@ -3582,14 +3582,14 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			}
 			
             
-            System.out.println(data.toString());
+            //System.out.println(data.toString());
             OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
             wr.write(data.toString());
             wr.flush();
             wr.close();
 
             int responseCode = con.getResponseCode();
-            System.out.println("Response Code : " + responseCode);
+       //     System.out.println("Response Code : " + responseCode);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
@@ -3599,7 +3599,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
                 response.append(inputLine);
             }
 			
-            System.out.println("Resonse: " + response);
+         //   System.out.println("Resonse: " + response);
 			
 			//2nd
 //			  ApsAlert alert =
