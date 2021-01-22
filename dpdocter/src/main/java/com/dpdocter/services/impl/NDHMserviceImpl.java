@@ -3078,9 +3078,9 @@ public class NDHMserviceImpl implements NDHMservices {
 						System.out.println("aggregation"+aggregation);
 						//PrescriptionCollection prescriptionCollection=null;
 						if(prescriptionCollections!=null) {
-					//	for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
-					//	{
-							PrescriptionCollection prescriptionCollection=prescriptionCollections.get(0);
+						for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
+					{
+							//PrescriptionCollection prescriptionCollection=prescriptionCollections.get(0);
 						DoctorCollection doctorCollection=doctorRepository.findByUserId(prescriptionCollection.getDoctorId());
 						System.out.println("Doctor "+doctorCollection);
 						UserCollection userCollection=userRepository.findById(doctorCollection.getUserId()).orElse(null);
@@ -3110,7 +3110,7 @@ public class NDHMserviceImpl implements NDHMservices {
 						
 						}
 							
-							
+						 }
 						}
 					}
 //						else if(hiTypes.contains("OPConsultation")) {

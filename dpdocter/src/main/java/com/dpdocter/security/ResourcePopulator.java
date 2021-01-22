@@ -136,9 +136,9 @@ public class ResourcePopulator {
 		Condition condition = new Condition();
 		condition.setId("Condition-01");
 		condition.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Condition");
-		condition.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Abdominal pain on 09-July 2020</div>");
+	//	condition.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Abdominal pain on 09-July 2020</div>");
 		condition.setSubject(new Reference().setReference("Patient/Patient-01"));
-		condition.getCode().addCoding(new Coding("http://snomed.info/sct", "21522001", "Abdominal pain")).setText("Abdominal pain");
+		condition.getCode().addCoding(new Coding()).setText(prescriptionItem.getInstructions());
 		return condition;
 	}
 	
