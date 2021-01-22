@@ -137,7 +137,7 @@ public class PrescriptionSample {
 	}
 
 	// Populate Composition for Prescription
-	static Composition populatePrescriptionCompositionResource()
+	static Composition populatePrescriptionCompositionResource(PrescriptionCollection prescriptionCollection)
 	{
 	Composition composition = new Composition();	
 	composition.setId("Composition-01");
@@ -149,10 +149,10 @@ public class PrescriptionSample {
 //	System.out.println("PrescriptionBundle Composition");
 	// Set logical id of this artifact
 //	composition.setId("Composition-01");
-	composition.addAuthor(new Reference().setReference("Practitioner/Practitioner-01"));
+	composition.addAuthor(new Reference().setReference("Practitioner-"+prescriptionCollection.getDoctorId().toString()));
 	composition.setTitle("Prescription record");
 	composition.setStatus(CompositionStatus.FINAL);
-	composition.setSubject(new Reference().setReference("Patient/Patient-01"));
+	composition.setSubject(new Reference().setReference("Patient-"+prescriptionCollection.getPatientId().toString()));
 	composition.setType(new CodeableConcept(new Coding("http://snomed.info/sct", "440545006", "Prescription record")).setText("Prescription record"));
 	composition.setDateElement(new DateTimeType(date+"+05:30"));
 	// Set metadata about the resource - Version Id, Lastupdated Date, Profile
@@ -197,7 +197,7 @@ public class PrescriptionSample {
 	// Composition is broken into sections / Prescription record contains single section to define the relevant medication requests
 	// Entry is a reference to data that supports this section
 	Reference reference1 = new Reference();
-	reference1.setReference("MedicationRequest/MedicationRequest-01");
+	reference1.setReference("MedicationRequest-"+prescriptionCollection.getPrescriptionCode());
 	reference1.setType("MedicationRequest");
 
 //	Reference reference2 = new Reference();
@@ -224,7 +224,7 @@ public class PrescriptionSample {
 		Bundle prescriptionBundle = new Bundle();
 
 		// Set logical id of this artifact
-		prescriptionBundle.setId("prescription-bundle-01");
+		prescriptionBundle.setId("prescription-"+prescriptionCollection.getId().toString());
 		String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 		// Set metadata about the resource
 		Meta meta = prescriptionBundle.getMeta();
@@ -260,18 +260,18 @@ public class PrescriptionSample {
 
 		BundleEntryComponent bundleEntry1 = new BundleEntryComponent();
 		bundleEntry1.setFullUrl("Composition/Composition-01");
-		bundleEntry1.setResource(populatePrescriptionCompositionResource());
+		bundleEntry1.setResource(populatePrescriptionCompositionResource(prescriptionCollection));
 
 		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
-		bundleEntry2.setFullUrl("Patient/Patient-01");
+		bundleEntry2.setFullUrl("Patient-"+prescriptionCollection.getPatientId().toString());
 		bundleEntry2.setResource(ResourcePopulator.populatePatientResource(patientCollection));
 
 		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
-		bundleEntry3.setFullUrl("Practitioner/Practitioner-01");
+		bundleEntry3.setFullUrl("Practitioner-"+prescriptionCollection.getDoctorId().toString());
 		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource(userCollection));
 
 		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
-		bundleEntry4.setFullUrl("MedicationRequest/MedicationRequest-01");
+		bundleEntry4.setFullUrl("MedicationRequest-"+prescriptionCollection.getPrescriptionCode());
 		bundleEntry4.setResource(ResourcePopulator.populateMedicationRequestResource(prescriptionCollection));
 
 //		BundleEntryComponent bundleEntry5 = new BundleEntryComponent();
@@ -280,7 +280,7 @@ public class PrescriptionSample {
 
 		BundleEntryComponent bundleEntry6 = new BundleEntryComponent();
 		bundleEntry6.setFullUrl("Condition/Condition-01");
-		bundleEntry6.setResource(ResourcePopulator.populateConditionResource(prescriptionCollection.getItems().get(0)));
+		bundleEntry6.setResource(ResourcePopulator.populateConditionResource(prescriptionCollection.getItems().get(0),prescriptionCollection.getPatientId().toString()));
 
 //		BundleEntryComponent bundleEntry7 = new BundleEntryComponent();
 //		bundleEntry7.setFullUrl("Binary/Binary-01");
