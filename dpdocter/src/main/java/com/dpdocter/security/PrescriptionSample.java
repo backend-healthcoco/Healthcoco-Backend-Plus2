@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -38,6 +39,10 @@ import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StructureDefinition;
 
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.UserCollection;
+
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
 import ca.uhn.fhir.parser.DataFormatException;
@@ -59,13 +64,13 @@ public class PrescriptionSample {
 	static FhirInstanceValidator instanceValidator;
 	static FhirValidator validator;
 
-	public static String prescriptionConvert() throws DataFormatException, IOException
+	public static String prescriptionConvert(PrescriptionCollection prescriptionCollection, PatientCollection patientCollection, UserCollection userCollection) throws DataFormatException, IOException
 	{
 		//Initialize validation support and loads all required profiles
 		init();
 
 		// Populate the resource
-		Bundle prescriptionBundle = populatePrescriptionBundle();
+		Bundle prescriptionBundle = populatePrescriptionBundle(prescriptionCollection,patientCollection,userCollection);
 		String serializeBundle=null;
 		// Validate it. Validate method return result of validation in boolean
 		// If validation result is true then parse, serialize operations are performed
@@ -193,7 +198,7 @@ public class PrescriptionSample {
 	// Entry is a reference to data that supports this section
 	Reference reference1 = new Reference();
 	reference1.setReference("MedicationRequest/MedicationRequest-01");
-	//reference1.setType("MedicationRequest");
+	reference1.setType("MedicationRequest");
 
 //	Reference reference2 = new Reference();
 //	reference2.setReference("MedicationRequest/MedicationRequest-02");
@@ -214,17 +219,19 @@ public class PrescriptionSample {
 }
 
 	// Populate Prescription Bundle
-	static Bundle populatePrescriptionBundle()
+	static Bundle populatePrescriptionBundle(PrescriptionCollection prescriptionCollection, PatientCollection patientCollection, UserCollection userCollection)
 	{
 		Bundle prescriptionBundle = new Bundle();
 
 		// Set logical id of this artifact
 		prescriptionBundle.setId("prescription-bundle-01");
-
+		String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 		// Set metadata about the resource
 		Meta meta = prescriptionBundle.getMeta();
 		meta.setVersionId("1");
-		meta.setLastUpdatedElement(new InstantType("2020-07-09T15:32:26.605+05:30"));
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		
+		meta.setLastUpdatedElement(new InstantType(simpleDateFormat.format(prescriptionCollection.getUpdatedTime())+"+05:30"));
 		meta.addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentBundle");
 
 		// Set Confidentiality as defined by affinity domain
@@ -240,7 +247,7 @@ public class PrescriptionSample {
 
 		// Set Timestamp 
 //		String pattern = "yyyy-MM-dd'T'H:mm:ssz";
-			String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+		//	String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
 			// Set Timestamp 
 			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
@@ -257,11 +264,11 @@ public class PrescriptionSample {
 
 		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
 		bundleEntry2.setFullUrl("Patient/Patient-01");
-		bundleEntry2.setResource(ResourcePopulator.populatePatientResource());
+		bundleEntry2.setResource(ResourcePopulator.populatePatientResource(patientCollection));
 
 		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
 		bundleEntry3.setFullUrl("Practitioner/Practitioner-01");
-		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource());
+		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource(userCollection));
 
 		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
 		bundleEntry4.setFullUrl("MedicationRequest/MedicationRequest-01");
@@ -356,4 +363,5 @@ public class PrescriptionSample {
 		return result.isSuccessful();
 	}
 
+	
 }

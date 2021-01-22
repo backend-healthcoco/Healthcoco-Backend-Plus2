@@ -80,13 +80,16 @@ import org.hl7.fhir.r4.model.Timing;
 import org.hl7.fhir.r4.model.Timing.TimingRepeatComponent;
 import org.hl7.fhir.r4.model.Timing.UnitsOfTime;
 
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.UserCollection;
+
 /**
  * The FhirResourcePopulator class populates all the FHIR resources 
  */
 public class ResourcePopulator {
 	
 	// Populate Patient Resource
-	public static Patient populatePatientResource()
+	public static Patient populatePatientResource(PatientCollection patientCollection)
 	{
 		System.out.println("Patient Data");
 		Patient patient = new Patient();
@@ -97,7 +100,7 @@ public class ResourcePopulator {
 		//patient.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">"+patientCollection.getLocalPatientName()+"  15"+ patientCollection.getGender()+"</div>");
 		
 		patient.addIdentifier().setSystem("https://plus.healthcoco.com").setValue("12345").setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "MR", "Medical record number")));
-		patient.addName().setText("Amit");
+		patient.addName().setText(patientCollection.getFirstName());
 	//	patient.addTelecom().setSystem(ContactPointSystem.PHONE).setValue("+91"+patientCollection.getSecMobile()).setUse(ContactPointUse.HOME);
 //		int d=patientCollection.getDob().getDays();
 //		int m=patientCollection.getDob().getMonths();
@@ -108,7 +111,7 @@ public class ResourcePopulator {
 	}
 	
 	// Populate Practitioner Resource
-	public static Practitioner populatePractitionerResource()
+	public static Practitioner populatePractitionerResource(UserCollection userCollection)
 	{
 		System.out.println("Practitioner Data");
 		Practitioner practitioner = new Practitioner();
@@ -120,7 +123,7 @@ public class ResourcePopulator {
 		//practitioner.addIdentifier().setUse(IdentifierUse.TEMP);
 		//practitioner.addIdentifier();
 		//practitioner.addIdentifier().setAssigner(new Reference().setDisplay(null));
-		practitioner.addName().setText("Dr. Anand");
+		practitioner.addName().setText("Dr."+userCollection.getFirstName());
 		
 		return practitioner;
 	}
@@ -378,7 +381,7 @@ public class ResourcePopulator {
 		medicationRequest.setStatus(MedicationRequestStatus.ACTIVE);
 		medicationRequest.setIntent(MedicationRequestIntent.ORDER);
 	//	medicationRequest.setMedication(new CodeableConcept(new Coding("http://snomed.info/sct","324252006", item.getDrugName() +"(as "+item.getGenericNames() +")")));
-		medicationRequest.setMedication(new CodeableConcept().setText("Topisol 3%"));
+		medicationRequest.setMedication(new CodeableConcept().setText("Topisol 35%"));
 		medicationRequest.setSubject(new Reference().setReference("Patient/Patient-01"));
 		//.setDisplay(patientCollection.getFirstName())
 		String pattern = "yyyy-MM-dd";
@@ -392,7 +395,7 @@ public class ResourcePopulator {
 	//	medicationRequest.getReasonCode().add(new CodeableConcept().setText(item.getDrugId().toString()+","+ item.getExplanation()));
 		medicationRequest.getReasonReference().add(new Reference().setReference("Condition/Condition-01"));
 		//item.getInstructions()
-		medicationRequest.addDosageInstruction(new Dosage().setText("Take 3 at day"));
+		medicationRequest.addDosageInstruction(new Dosage().setText("Take 31 at day"));
 		//.addAdditionalInstruction(new CodeableConcept().setText(item.getInstructions())).		
 		//		setRoute(new CodeableConcept().setText("test")).
 		//		setMethod(new CodeableConcept().setText("test")));
