@@ -272,7 +272,7 @@ public class PrescriptionSample {
 
 		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
 		bundleEntry4.setFullUrl("MedicationRequest/MedicationRequest-01");
-		bundleEntry4.setResource(ResourcePopulator.populateMedicationRequestResource());
+		bundleEntry4.setResource(ResourcePopulator.populateMedicationRequestResource(prescriptionCollection));
 
 //		BundleEntryComponent bundleEntry5 = new BundleEntryComponent();
 //		bundleEntry5.setFullUrl("MedicationRequest/MedicationRequest-02");
@@ -280,7 +280,7 @@ public class PrescriptionSample {
 
 		BundleEntryComponent bundleEntry6 = new BundleEntryComponent();
 		bundleEntry6.setFullUrl("Condition/Condition-01");
-		bundleEntry6.setResource(ResourcePopulator.populateConditionResource());
+		bundleEntry6.setResource(ResourcePopulator.populateConditionResource(prescriptionCollection.getItems().get(0)));
 
 //		BundleEntryComponent bundleEntry7 = new BundleEntryComponent();
 //		bundleEntry7.setFullUrl("Binary/Binary-01");

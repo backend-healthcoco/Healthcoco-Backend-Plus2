@@ -80,7 +80,9 @@ import org.hl7.fhir.r4.model.Timing;
 import org.hl7.fhir.r4.model.Timing.TimingRepeatComponent;
 import org.hl7.fhir.r4.model.Timing.UnitsOfTime;
 
+import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.UserCollection;
 
 /**
@@ -129,7 +131,7 @@ public class ResourcePopulator {
 	}
 	
 	// Populate Condition Resource
-	public static Condition populateConditionResource()
+	public static Condition populateConditionResource(PrescriptionItem prescriptionItem)
 	{
 		Condition condition = new Condition();
 		condition.setId("Condition-01");
@@ -373,7 +375,7 @@ public class ResourcePopulator {
 	}
 	
 	// Populate Medication Request Resource
-	public static MedicationRequest populateMedicationRequestResource()
+	public static MedicationRequest populateMedicationRequestResource(PrescriptionCollection prescriptionCollection)
 	{
 		MedicationRequest medicationRequest = new MedicationRequest();
 		medicationRequest.setId("MedicationRequest-01");
@@ -381,13 +383,13 @@ public class ResourcePopulator {
 		medicationRequest.setStatus(MedicationRequestStatus.ACTIVE);
 		medicationRequest.setIntent(MedicationRequestIntent.ORDER);
 	//	medicationRequest.setMedication(new CodeableConcept(new Coding("http://snomed.info/sct","324252006", item.getDrugName() +"(as "+item.getGenericNames() +")")));
-		medicationRequest.setMedication(new CodeableConcept().setText("Topisol 35%"));
+		medicationRequest.setMedication(new CodeableConcept().setText(prescriptionCollection.getItems().get(0).getDrugName()));
 		medicationRequest.setSubject(new Reference().setReference("Patient/Patient-01"));
 		//.setDisplay(patientCollection.getFirstName())
 		String pattern = "yyyy-MM-dd";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		Date date2=new Date();
-		String date=simpleDateFormat.format(date2);
+		String date=simpleDateFormat.format(prescriptionCollection.getCreatedTime());
 		medicationRequest.setAuthoredOnElement(new DateTimeType(date));
 		medicationRequest.setRequester(new Reference().setReference("Practitioner/Practitioner-01"));
 		//.setDisplay("Dr "+userCollection.getFirstName())
@@ -395,7 +397,7 @@ public class ResourcePopulator {
 	//	medicationRequest.getReasonCode().add(new CodeableConcept().setText(item.getDrugId().toString()+","+ item.getExplanation()));
 		medicationRequest.getReasonReference().add(new Reference().setReference("Condition/Condition-01"));
 		//item.getInstructions()
-		medicationRequest.addDosageInstruction(new Dosage().setText("Take 31 at day"));
+		medicationRequest.addDosageInstruction(new Dosage().setText(prescriptionCollection.getItems().get(0).getDosage()));
 		//.addAdditionalInstruction(new CodeableConcept().setText(item.getInstructions())).		
 		//		setRoute(new CodeableConcept().setText("test")).
 		//		setMethod(new CodeableConcept().setText("test")));
