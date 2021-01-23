@@ -382,8 +382,17 @@ public class ResourcePopulator {
 	//	medicationRequest.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/MedicationRequest");
 		medicationRequest.setStatus(MedicationRequestStatus.ACTIVE);
 		medicationRequest.setIntent(MedicationRequestIntent.ORDER);
+		
+		List<String>itemList=new ArrayList<String>();
+		List<String>dosageList=new ArrayList<String>();
+		for(PrescriptionItem item:prescriptionCollection.getItems())
+		{
+			itemList.add(item.getDrugName());
+			dosageList.add(item.getDosage());
+		}
 	//	medicationRequest.setMedication(new CodeableConcept(new Coding("http://snomed.info/sct","324252006", item.getDrugName() +"(as "+item.getGenericNames() +")")));
-		medicationRequest.setMedication(new CodeableConcept().setText(prescriptionCollection.getItems().get(0).getDrugName()));
+		//prescriptionCollection.getItems().get(0).getDrugName()
+		medicationRequest.setMedication(new CodeableConcept().setText(itemList.toString()));
 		medicationRequest.setSubject(new Reference().setReference("Patient-"+prescriptionCollection.getPatientId().toString()));
 		//.setDisplay(patientCollection.getFirstName())
 		String pattern = "yyyy-MM-dd";
@@ -397,7 +406,8 @@ public class ResourcePopulator {
 	//	medicationRequest.getReasonCode().add(new CodeableConcept().setText(item.getDrugId().toString()+","+ item.getExplanation()));
 		medicationRequest.getReasonReference().add(new Reference().setReference("Condition/Condition-01"));
 		//item.getInstructions()
-		medicationRequest.addDosageInstruction(new Dosage().setText(prescriptionCollection.getItems().get(0).getDosage()));
+		//prescriptionCollection.getItems().get(0).getDosage()
+		medicationRequest.addDosageInstruction(new Dosage().setText(dosageList.toString()));
 		//.addAdditionalInstruction(new CodeableConcept().setText(item.getInstructions())).		
 		//		setRoute(new CodeableConcept().setText("test")).
 		//		setMethod(new CodeableConcept().setText("test")));

@@ -39,6 +39,7 @@ import org.hl7.fhir.r4.model.Narrative.NarrativeStatus;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StructureDefinition;
 
+import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.UserCollection;
@@ -269,11 +270,16 @@ public class PrescriptionSample {
 		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
 		bundleEntry3.setFullUrl("Practitioner-"+prescriptionCollection.getDoctorId().toString());
 		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource(userCollection));
-
+		
+		listBundleEntries.add(bundleEntry1);
+		listBundleEntries.add(bundleEntry2);
+		listBundleEntries.add(bundleEntry3);
+		
 		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
 		bundleEntry4.setFullUrl("MedicationRequest-"+prescriptionCollection.getPrescriptionCode());
 		bundleEntry4.setResource(ResourcePopulator.populateMedicationRequestResource(prescriptionCollection));
-
+		listBundleEntries.add(bundleEntry4);
+		
 //		BundleEntryComponent bundleEntry5 = new BundleEntryComponent();
 //		bundleEntry5.setFullUrl("MedicationRequest/MedicationRequest-02");
 //		bundleEntry5.setResource(ResourcePopulator.populateSecondMedicationRequestResource());
@@ -286,10 +292,8 @@ public class PrescriptionSample {
 //		bundleEntry7.setFullUrl("Binary/Binary-01");
 //		bundleEntry7.setResource(ResourcePopulator.populateBinaryResource());
 
-		listBundleEntries.add(bundleEntry1);
-		listBundleEntries.add(bundleEntry2);
-		listBundleEntries.add(bundleEntry3);
-		listBundleEntries.add(bundleEntry4);
+		
+		
 		//listBundleEntries.add(bundleEntry5);
 		listBundleEntries.add(bundleEntry6);
 	//	listBundleEntries.add(bundleEntry7);
