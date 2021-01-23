@@ -62,6 +62,7 @@ import com.dpdocter.beans.SMSTrack;
 import com.dpdocter.beans.UserMobileNumbers;
 import com.dpdocter.beans.XMLMobile;
 import com.dpdocter.beans.XmlMessage;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MessageCollection;
 import com.dpdocter.collections.SMSDeliveryReportsCollection;
@@ -73,6 +74,7 @@ import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MessageRepository;
 import com.dpdocter.repository.SMSFormatRepository;
@@ -167,6 +169,9 @@ public class SMSServicesImpl implements SMSServices {
 	
 	@Autowired
 	private MessageRepository messageRepository;
+	
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
 
 	
@@ -1137,7 +1142,10 @@ public class SMSServicesImpl implements SMSServices {
 			//	for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
 					/*if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
 						isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(), subscriptionDetailCollection);*/
-					if (isSMSInAccount) {
+				//	if (isSMSInAccount) {
+				 DoctorClinicProfileCollection doctorClinicProfileCollection=doctorClinicProfileRepository.findByDoctorIdAndLocationId(smsTrackDetail.getDoctorId(),smsTrackDetail.getLocationId());
+
+					if (doctorClinicProfileCollection.getIsTransactionalSms() == true) {
 			//			if (!isEnvProduction) {
 						//	String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
 //							if (userNumber != null && smsDetails.getSms() != null

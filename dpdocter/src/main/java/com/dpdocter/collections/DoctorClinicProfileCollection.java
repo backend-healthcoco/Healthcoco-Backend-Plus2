@@ -168,6 +168,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private AppointmentSlot onlineConsultationSlot;
 	
+	@Field
+	private Boolean isTransactionalSms = true;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -554,6 +557,16 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setClinicOwnershipImageUrl(String clinicOwnershipImageUrl) {
 		this.clinicOwnershipImageUrl = clinicOwnershipImageUrl;
+	}
+	
+	
+
+	public Boolean getIsTransactionalSms() {
+		return isTransactionalSms;
+	}
+
+	public void setIsTransactionalSms(Boolean isTransactionalSms) {
+		this.isTransactionalSms = isTransactionalSms;
 	}
 
 	@Override

@@ -62,6 +62,7 @@ import com.dpdocter.beans.ConsentFormItemJasperdetails;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DefaultPrintSettings;
+import com.dpdocter.beans.DoctorCalendarView;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FileDetails;
@@ -108,6 +109,7 @@ import com.dpdocter.collections.DentalLabReportsCollection;
 import com.dpdocter.collections.DentalWorkInvoiceCollection;
 import com.dpdocter.collections.DietPlanCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
+import com.dpdocter.collections.DoctorCalendarViewCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorLabReportCollection;
@@ -201,6 +203,7 @@ import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.BirthAchievementRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.ConsentFormRepository;
+import com.dpdocter.repository.DoctorCalendarViewRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorLabReportRepository;
 import com.dpdocter.repository.DoctorRepository;
@@ -475,6 +478,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private AcadamicProfileRespository acadamicProfileRespository;
+	
+	
+	@Autowired
+	private DoctorCalendarViewRepository doctorCalendarViewRepository;
 
 	@Override
 	@Transactional
@@ -5527,5 +5534,98 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		return response;
 	}
+	
+	
+		@Override
+		@Transactional
+		public DoctorCalendarView updateCalendarView(DoctorCalendarView request)
+
+		{
+
+			DoctorCalendarView response = null;
+
+			try {
+
+			
+
+				DoctorCalendarViewCollection collection = null;
+
+				collection = doctorCalendarViewRepository.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()));
+
+			if(collection !=null)
+
+			{
+
+				collection.setType(request.getType());
+
+				collection.setUpdatedTime(new Date());
+
+			}
+
+			else {
+
+				collection=new DoctorCalendarViewCollection();
+
+				BeanUtil.map(request, collection);
+
+				collection.setCreatedTime(new Date());
+
+				collection.setUpdatedTime(new Date());		
+
+			}
+
+			doctorCalendarViewRepository.save(collection);
+
+			response=new DoctorCalendarView();
+
+			BeanUtil.map(collection, response);
+
+		
+
+		} catch (BusinessException e) {
+
+			e.printStackTrace();
+
+			logger.error(e);
+
+			throw new BusinessException(ServiceError.Unknown,"Error while updating doctor calendar view");
+
+		}
+
+		return response;
+
+		}
+
+	 
+
+		@Override
+
+		public DoctorCalendarView getDoctorCalendarView(String doctorId, String locationId) {
+
+			DoctorCalendarView response=null;
+
+			try {
+
+				DoctorCalendarViewCollection collection = doctorCalendarViewRepository.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
+
+				response=new DoctorCalendarView();
+				if(collection!=null)
+				BeanUtil.map(collection, response);
+
+				
+
+			}catch (BusinessException e) {
+
+				e.printStackTrace();
+
+				logger.error(e);
+
+				throw new BusinessException(ServiceError.Unknown,"Error while getting doctor calendar view");
+
+			}
+
+			return response;
+
+		}
 
 }

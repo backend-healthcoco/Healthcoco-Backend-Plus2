@@ -157,6 +157,8 @@ public class DoctorClinicProfile {
 	private String clinicOwnershipImageUrl;
 	
 	private AppointmentSlot onlineConsultationSlot;
+	
+	private Boolean isTransactionalSms = true;
 //=======
 //	private Map<DoctorConsultation, String> onlineConsultationFees;
 
@@ -760,6 +762,16 @@ public class DoctorClinicProfile {
 
 	public void setIsOnlineConsultationAvailable(Boolean isOnlineConsultationAvailable) {
 		this.isOnlineConsultationAvailable = isOnlineConsultationAvailable;
+	}
+	
+	
+
+	public Boolean getIsTransactionalSms() {
+		return isTransactionalSms;
+	}
+
+	public void setIsTransactionalSms(Boolean isTransactionalSms) {
+		this.isTransactionalSms = isTransactionalSms;
 	}
 
 	@Override

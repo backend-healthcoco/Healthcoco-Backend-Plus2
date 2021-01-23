@@ -38,7 +38,7 @@ import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.ConsentForm;
-
+import com.dpdocter.beans.DoctorCalendarView;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.FormContent;
@@ -1351,6 +1351,55 @@ public class RegistrationApi {
 		response.setData(registrationService.checkIfPNUMExist(locationId, hospitalId, PNUM));
 		return response;
 	}
+	
+		@Path(value = PathProxy.RegistrationUrls.UPDATE_CALENDAR_VIEW)
+		@POST
+		@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CALENDAR_VIEW, notes = PathProxy.RegistrationUrls.UPDATE_CALENDAR_VIEW)
+		public Response<DoctorCalendarView> updateDoctorCalendarView(@RequestBody DoctorCalendarView request) {
+
+			if (request == null) { 
+
+																																								// request.getHospitalId()) {
+
+				logger.warn(invalidInput);
+
+				throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+
+			}
+
+			DoctorCalendarView doctorCalendarView = registrationService.updateCalendarView(request);
+
+			Response<DoctorCalendarView> response = new Response<DoctorCalendarView>();
+
+			response.setData(doctorCalendarView);
+
+			return response;
+
+		}
+
+	
+
+	
+
+		@Path(value = PathProxy.RegistrationUrls.GET_DOCTOR_CALENDAR_VIEW)
+		@GET
+		@ApiOperation(value = PathProxy.RegistrationUrls.GET_DOCTOR_CALENDAR_VIEW, notes = PathProxy.RegistrationUrls.GET_DOCTOR_CALENDAR_VIEW)
+		public Response<DoctorCalendarView> getDoctorCalendarView(@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId) {
+
+			if (DPDoctorUtils.anyStringEmpty(doctorId,locationId)) {
+
+				throw new BusinessException(ServiceError.InvalidInput, "DoctorId,LocationId, could not null");
+
+			}
+
+	
+			Response<DoctorCalendarView> response = new Response<DoctorCalendarView>();
+
+			response.setData(registrationService.getDoctorCalendarView(doctorId, locationId));
+
+			return response;
+
+		}
 	
 	
 }
