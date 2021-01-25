@@ -1055,7 +1055,7 @@ public class PaediatricServiceImpl implements PaediatricService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while getting Vaccination PDF");
-			throw new BusinessException(ServiceError.Unknown, "Error while getting Vaccination PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Vaccination PDF patientId & docId"+patientId +" "+doctorId+e.getMessage());
 		}
 		return response;
 	}

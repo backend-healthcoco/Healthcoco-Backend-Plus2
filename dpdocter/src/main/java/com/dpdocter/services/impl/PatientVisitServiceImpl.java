@@ -778,13 +778,16 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						&& patientVisitCollection.getPrescriptionId() != null
 						&& patientVisitCollection.getPrescriptionId().size() > 0) {
 					throw new BusinessException(ServiceError.NotAcceptable,
-							"Trying to add multipl prescription in visit");
+							"Trying to add multipl prescription in visit"+request.getPrescription() +
+							request.getPrescription().getId() + patientVisitCollection.getPrescriptionId() + patientVisitCollection.getPrescriptionId().size());
 				}
 				if (request.getClinicalNote() != null && request.getClinicalNote().getId() == null
 						&& patientVisitCollection.getClinicalNotesId() != null
 						&& patientVisitCollection.getClinicalNotesId().size() > 0) {
 					throw new BusinessException(ServiceError.NotAcceptable,
-							"Trying to add multipl clinical notes in visit");
+							"Trying to add multipl clinical notes in visit"+request.getClinicalNote() +
+							request.getClinicalNote().getId() + patientVisitCollection.getClinicalNotesId()+
+							patientVisitCollection.getClinicalNotesId().size());
 				}
 			} else {
 				patientVisitCollection = new PatientVisitCollection();
@@ -3920,7 +3923,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while getting Patient Visits PDF");
-			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Visits PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Visits PDF visitid is "+visitId+ e.getMessage());
 		}
 		return response;
 	}

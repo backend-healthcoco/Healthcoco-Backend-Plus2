@@ -509,7 +509,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		} catch (Exception e) {
 			logger.error("Error while deleting treatment", e);
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while deleting treatment");
+			throw new BusinessException(ServiceError.Unknown, "Error while deleting treatment"+e.getMessage());
 		}
 		return response;
 	}

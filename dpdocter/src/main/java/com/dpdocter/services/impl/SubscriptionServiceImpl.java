@@ -236,7 +236,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 //			subscriptionCollection = new SubscriptionCollection();
 ////			RazorpayClient rayzorpayClient = new RazorpayClient(keyId, secret);
 //			JSONObject orderRequest = new JSONObject();
-//			System.out.println("step 2");
+//			 ("step 2");
 //
 //			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 //				subscriptionCollection = subscriptionRepository.findById(new ObjectId(request.getId())).orElse(null);
@@ -292,7 +292,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 //					while ((inputLine = in.readLine()) != null) {
 //
 //						output.append(inputLine);
-//						System.out.println("response:" + output.toString());
+//						 ("response:" + output.toString());
 //					}
 //
 //					ObjectMapper mapper = new ObjectMapper();
@@ -301,7 +301,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 //					// OrderReponse res=list.get(0);
 //
 ////					order = rayzorpayClient.Orders.create(orderRequest);
-//					System.out.println("order" + order);
+//					 ("order" + order);
 //
 //					if (userCollection != null) {
 //						DoctorSubscriptionPaymentCollection payment = new DoctorSubscriptionPaymentCollection();
@@ -361,7 +361,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 //				try {
 //					Boolean ck = mailService.sendEmail(userCollection.getEmailAddress(), "Update Packege Detail", body,
 //							null);
-//					System.out.println("main send" + ck);
+//					 ("main send" + ck);
 //				} catch (Exception e) {
 //					e.printStackTrace();
 //					logger.error(e);
@@ -423,7 +423,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 //					while ((inputLine = in.readLine()) != null) {
 //
 //						output.append(inputLine);
-//						System.out.println("response:" + output.toString());
+//						 ("response:" + output.toString());
 //					}
 //
 //					ObjectMapper mapper = new ObjectMapper();
@@ -432,7 +432,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 //					// OrderReponse res=list.get(0);
 ////					order = rayzorpayClient.Orders.create(orderRequest);
 //
-//					System.out.println("order" + order);
+//					 ("order" + order);
 //
 //					if (order != null) {
 //						BeanUtil.map(request, subscriptionCollection);
@@ -504,16 +504,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 //				smsDetails.add(smsDetail);
 //				smsTrackDetail.setSmsDetails(smsDetails);
 //				Boolean ck = smsServices.sendSMS(smsTrackDetail, false);
-//				System.out.println("sms send" + smsDetails);
+//				 ("sms send" + smsDetails);
 //
 //				String body = doctorName + " Your Subscription Plan Started with to " + newPackageName
 //						+ " For 1 year. Stay Healthy and Happy!";
 //				try {
 //					Boolean ckM = mailService.sendEmail(userCollection.getEmailAddress(), "Update Packege Detail", body,
 //							null);
-//					System.out.println("main send" + ckM);
+//					 ("main send" + ckM);
 //				} catch (MessagingException e) {
-//					System.out.println("main send err");
+//					 ("main send err");
 //					e.printStackTrace();
 //				}
 //			}
@@ -557,7 +557,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			smsDetails.add(smsDetail);
 			smsTrackDetail.setSmsDetails(smsDetails);
 			Boolean ck = smsServices.sendSMS(smsTrackDetail, false);
-			System.out.println("sms send" + ck);
 
 			// save sms in repository write code
 
@@ -577,8 +576,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			if (subscriptionCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "Error no such id");
 			}
-			System.out.println("Sub" + subscriptionCollection);
-
 			if (packageName != null) {
 				PackageDetailObjectCollection packageBasic = packageDetailObjectRepository
 						.findByPackageName(PackageType.BASIC);
@@ -605,7 +602,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					int fromDateConvertDay = fromDateConvert.get(Calendar.DATE);
 					int fromDateConvertMonth = fromDateConvert.get(Calendar.MONTH) + 1;
 					int fromDateConvertYear = fromDateConvert.get(Calendar.YEAR);
-					System.out.println("frm days" + fromDateConvertDay + fromDateConvertMonth + fromDateConvertYear);
 					// to date
 					Calendar toDateConvert = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 					toDateConvert.setTime(subscriptionCollection.getToDate());
@@ -626,21 +622,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					int currentYear = localCalendar.get(Calendar.YEAR);
 
 					LocalDate newDate = LocalDate.of(currentYear, currentMonth, currentDay);
-					System.out.println(newDate);
 					Period period = Period.between(currentDate, newDate);// get difference bet today & fromdate
-					System.out.println(period + "mon" + period.getMonths());
 					int usedMonths = -(period.getMonths());
-					System.out.println(usedMonths);
 					// pro to adv
 //					Cost = new amount - old amount + (per month cost of old amount * months used)
 					// find per month cost of packages
 					int getMonthsFromYear = diiff.getYears() * 12;// calculate number of months from old duration
 					int amountPerMonth = subscriptionCollection.getAmount() / getMonthsFromYear;// to get per month cost
 																								// of old package
-					System.out.println("amountPerMonth" + amountPerMonth);
 					int discountedAmount = newAmount - subscriptionCollection.getAmount() + amountPerMonth * usedMonths;
-					System.out.println(discountedAmount);
-
 					subscriptionCollection.setAmount(discountedAmount);
 					}
 
@@ -678,7 +668,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 		} catch (BusinessException e) {
 			logger.error("Error while searching the id " + e.getMessage());
-			throw new BusinessException(ServiceError.Unknown, "Error while searching the id");
+			throw new BusinessException(ServiceError.Unknown, "Error while searching the id"+e.getMessage());
 		}
 
 		return response;
@@ -893,7 +883,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				while ((inputLine = in.readLine()) != null) {
 
 					output.append(inputLine);
-					System.out.println("response:" + output.toString());
 				}
 
 				ObjectMapper mapper = new ObjectMapper();
@@ -951,13 +940,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			options.put("razorpay_payment_id", request.getPaymentId());
 			options.put("razorpay_signature", request.getSignature());
 			response = Utils.verifyPaymentSignature(options, secret);
-			System.out.println("paymn" + response);
 			if (response) {
 				Criteria criteria = new Criteria("orderId").is(request.getOrderId()).and("doctorId")
 						.is(new ObjectId(request.getDoctorId())).and("transactionStatus").is("PENDING");
 				DoctorSubscriptionPaymentCollection doctorSubscriptionPaymentCollection = mongoTemplate
 						.findOne(new Query(criteria), DoctorSubscriptionPaymentCollection.class);
-				System.out.println("doctorSubscriptionPaymentCollection" + doctorSubscriptionPaymentCollection);
 				doctorSubscriptionPaymentCollection.setTransactionId(request.getPaymentId());
 				doctorSubscriptionPaymentCollection.setTransactionStatus("SUCCESS");
 				doctorSubscriptionPaymentCollection.setCreatedTime(new Date());
@@ -995,7 +982,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					subscriptionHistoryCollection.setDoctorId(subscriptionCollection.getDoctorId());
 					subscriptionHistoryCollection.setCreatedTime(new Date());
 					subscriptionHistoryRepository.save(subscriptionHistoryCollection);
-					System.out.println(subscriptionHistoryCollection);
 					// clinic package change
 					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 							.findByDoctorId(new ObjectId(request.getDoctorId()));
@@ -1035,7 +1021,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12*request.getDuration()));
 
 					subscriptionRepository.save(subscriptionCollection);
-					System.out.println(subscriptionCollection);
 					// save to History
 					BeanUtil.map(subscriptionCollection, subscriptionHistoryCollection);
 					subscriptionHistoryCollection.setSubscriptionId(subscriptionCollection.getId());
@@ -1089,7 +1074,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						smsDetails.add(smsDetail);
 						smsTrackDetail.setSmsDetails(smsDetails);
 						smsServices.sendSMS(smsTrackDetail, false);
-						System.out.println("sms sent");
 
 						String body = mailBodyGenerator.subscriptionPaymentEmailBody(userCollection.getFirstName(),simpleDateFormat.format(doctorSubscriptionPaymentCollection.getCreatedTime()),
 								doctorSubscriptionPaymentCollection.getTransactionId(),doctorSubscriptionPaymentCollection.getReciept(),Integer.toString(doctorSubscriptionPaymentCollection.getAmount()),
@@ -1099,9 +1083,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 //						try {
 //							Boolean ckM = mailService.sendEmail(userCollection.getEmailAddress(), "About payment", body,
 //									null);
-							System.out.println("main send" + mail);
 //						} catch (MessagingException e) {
-//							System.out.println("main send err");
+//							 ("main send err");
 //							e.printStackTrace();
 //						}
 
