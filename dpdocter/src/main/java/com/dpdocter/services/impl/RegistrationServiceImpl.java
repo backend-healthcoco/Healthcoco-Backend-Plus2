@@ -5632,10 +5632,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				DoctorCalendarViewCollection collection = doctorCalendarViewRepository.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
 
-				response=new DoctorCalendarView();
+				System.out.println("view data"+collection);
 				if(collection!=null)
+				{
+				response=new DoctorCalendarView();
 				BeanUtil.map(collection, response);
-
+				}
 				
 
 			}catch (BusinessException e) {

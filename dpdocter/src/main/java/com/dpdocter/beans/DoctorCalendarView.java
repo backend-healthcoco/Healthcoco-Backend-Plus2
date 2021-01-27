@@ -44,6 +44,14 @@ public class DoctorCalendarView extends GenericCollection
 		public void setType(CalendarType type) {
 			this.type = type;
 		}
+
+		@Override
+		public String toString() {
+			return "DoctorCalendarView [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+					+ hospitalId + ", type=" + type + "]";
+		}
+		
+		
 		
 		
 
