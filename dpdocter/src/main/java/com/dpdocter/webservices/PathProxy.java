@@ -939,6 +939,9 @@ public interface PathProxy {
 		public static final String GET_PRINT_SETTING_TYPE = "/updateCollection";
 		
 		public static final String UPLOAD_SIGNATURE = "/upload/signature/";
+		
+		public static final String BLANK_PRINT = "/blank/print/{patientId}";
+
 
 	}
 
