@@ -245,4 +245,19 @@ public class PrintSettingsApi {
 		response.setData(file);
 		return response;
 	}
+	
+	@Path(value = PathProxy.PrintSettingsUrls.BLANK_PRINT)
+	@GET
+	@ApiOperation(value = PathProxy.PrintSettingsUrls.BLANK_PRINT, notes = PathProxy.PrintSettingsUrls.BLANK_PRINT)
+	public Response<String> createBlankPrint(@PathParam("patientId") String patientId,
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(patientId)) {
+			logger.error("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(printSettingsService.createBlankPrint(patientId, locationId, hospitalId, doctorId));
+		return response;
+	}
 }
