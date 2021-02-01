@@ -125,11 +125,8 @@ public class ContactsApi {
 					LocalDate birthday = LocalDate.parse(patientCard.getDob().getDays()+"/"+patientCard.getDob().getMonths()
 							+"/"+patientCard.getDob().getYears(), formatter);
 
-					System.out.println(birthday + " "+today);
 					Period p = Period.between(birthday, today);
-					System.out.println("You are " + p.getYears() + " years, " + p.getMonths() + " months and "
-							+ p.getDays() + " days old.");
-					
+									
 					patientCard.getDob().getAge().setDays(p.getDays());
 					patientCard.getDob().getAge().setMonths(p.getMonths());
 					patientCard.getDob().getAge().setYears(p.getYears());

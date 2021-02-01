@@ -1603,12 +1603,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 					LocalDate today = LocalDate.now();
 					LocalDate birthday = LocalDate.parse(registeredPatientDetails.getDob().getDays()+"/"+registeredPatientDetails.getDob().getMonths()
 							+"/"+registeredPatientDetails.getDob().getYears(), formatter);
-
-					System.out.println(birthday + " "+today);
 					Period p = Period.between(birthday, today);
-					System.out.println("You are " + p.getYears() + " years, " + p.getMonths() + " months and "
-							+ p.getDays() + " days old.");
-					
+										
 					registeredPatientDetails.getDob().getAge().setDays(p.getDays());
 					registeredPatientDetails.getDob().getAge().setMonths(p.getMonths());
 					registeredPatientDetails.getDob().getAge().setYears(p.getYears());
