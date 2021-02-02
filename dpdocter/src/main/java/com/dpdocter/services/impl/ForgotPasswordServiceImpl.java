@@ -519,6 +519,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setType("RESET_PASSWORD_SMS");
+				smsTrackDetail.setTemplateId("1307161191415913366");
 				SMSDetail smsDetail = new SMSDetail();
 				SMS sms = new SMS();
 				sms.setSmsText(message);

@@ -191,7 +191,7 @@ public class SignUpServiceImplV2 implements SignUpService{
 		try {
 		    OTP = LoginUtils.generateOTP();
 		    SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-			
+			smsTrackDetail.setTemplateId("1307161191067443701");
 			smsTrackDetail.setType(ComponentType.SIGNED_UP.getType());
 			SMSDetail smsDetail = new SMSDetail();
 			

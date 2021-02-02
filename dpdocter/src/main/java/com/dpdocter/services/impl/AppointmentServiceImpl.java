@@ -2143,6 +2143,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					+ " has been confirmed @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
+			smsTrackDetail.setTemplateId("1307161191156377476");
 		}
 			break;
 
@@ -2150,6 +2151,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			text = "Healthcoco! Your appointment with " + patientName + " has been scheduled @ " + dateTime
 					+ (clinicName != "" ? " at " + clinicName : "") + (branch != null ? ", " + branch : "") + ".";
 			smsDetail.setUserName(doctorName);
+			smsTrackDetail.setTemplateId("1307161191335595866");
 		}
 			break;
 
@@ -2214,6 +2216,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					+ " has been rescheduled @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
+			smsTrackDetail.setTemplateId("1307161191460900446");
 		}
 			break;
 

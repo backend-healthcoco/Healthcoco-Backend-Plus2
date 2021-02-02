@@ -104,6 +104,8 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 								.findById(new ObjectId(birthdaySMSDetailsForPatient.getPatient().getUserId())).orElse(null);
 						String message = birthdayWishSMStoPatient;
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+						String templateId="1307161191522457378";
+						smsTrackDetail.setTemplateId(templateId);
 						smsTrackDetail.setDoctorId(birthdaySMSDetailsForPatient.getDoctorId());
 						smsTrackDetail.setLocationId(birthdaySMSDetailsForPatient.getLocationId());
 						smsTrackDetail.setHospitalId(birthdaySMSDetailsForPatient.getHospitalId());
@@ -170,7 +172,9 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 				for (UserCollection userCollection : userCollections) {
 
 					String message = birthdayWishSMStoDoctor;
+					String templateId="1307161191432703411";
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+					smsTrackDetail.setTemplateId(templateId);
 					smsTrackDetail.setType("BIRTHDAY WISH TO DOCTOR");
 					SMSDetail smsDetail = new SMSDetail();
 					smsDetail.setUserId(userCollection.getId());

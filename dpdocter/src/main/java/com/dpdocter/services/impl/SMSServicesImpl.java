@@ -1159,6 +1159,7 @@ public class SMSServicesImpl implements SMSServices {
 										.addParameter("body", message)
 										.addParameter("sender",SENDER_ID)
 										.addParameter("unicode", "1")
+										.addParameter("template_id", smsTrackDetail.getTemplateId())
 								  .setUri(strUrl)
 								  .setHeader( "api-key", KEY)
 								  .build();
@@ -1267,6 +1268,7 @@ public class SMSServicesImpl implements SMSServices {
 											.addParameter("body", message)
 											.addParameter("sender",SENDER_ID)
 											.addParameter("unicode", "1")
+											.addParameter("template_id", smsTrackDetail.getTemplateId())
 									  .setUri(strUrl)
 									  .setHeader( "api-key", KEY)
 									  .build();
