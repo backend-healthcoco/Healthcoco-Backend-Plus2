@@ -231,6 +231,9 @@ public class LoginServiceImplV2 implements LoginService {
 									doctorClinicProfileLookupResponse.getIsVaccinationModuleOn());
 							locationAndAccessControl.setIsNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
 							locationAndAccessControl.setIsAdminNutritionist(doctorClinicProfileLookupResponse.getIsAdminNutritionist());
+							// new flag transaction sms added at clinic level
+							if(doctorClinicProfileLookupResponse.getIsTransactionalSms() != null)
+							locationAndAccessControl.setIsTransactionalSms(doctorClinicProfileLookupResponse.getIsTransactionalSms());
 							List<Role> roles = null;
 
 							Boolean isStaff = false;
