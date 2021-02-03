@@ -95,7 +95,7 @@ public class ResourcePopulator {
 	{
 		System.out.println("Patient Data");
 		Patient patient = new Patient();
-		patient.setId("Patient-"+patientCollection.getId().toString());
+		patient.setId(patientCollection.getUserId().toString());
 		//patient.setId(patientCollection.getId().toString());
 		//patient.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType(patientCollection.getUpdatedTime())).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient");
 		//patientCollection.getDob().getAge().getYears()
@@ -117,7 +117,7 @@ public class ResourcePopulator {
 	{
 		System.out.println("Practitioner Data");
 		Practitioner practitioner = new Practitioner();
-		practitioner.setId("Practitioner-"+userCollection.getId().toString());
+		practitioner.setId(userCollection.getId().toString());
 		//practitioner.getMeta().setVersionId("1").setLastUpdatedElement(new InstantType(userCollection.getUpdatedTime())).addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner");
 		//practitioner.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Dr."+userCollection.getFirstName()+"</div>");
 		practitioner.addIdentifier().setSystem("https://plus.healthcoco.com").setValue("12345").setType(new CodeableConcept(new Coding("http://terminology.hl7.org/CodeSystem/v2-0203", "MD", "Medical License number")));
@@ -134,10 +134,10 @@ public class ResourcePopulator {
 	public static Condition populateConditionResource(PrescriptionItem prescriptionItem, String patientId)
 	{
 		Condition condition = new Condition();
-		condition.setId("Condition-01");
+		condition.setId(prescriptionItem.getDrugId().toString());
 		condition.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/Condition");
 	//	condition.getText().setStatus(NarrativeStatus.GENERATED).setDivAsString("<div xmlns=\"http://www.w3.org/1999/xhtml\">Abdominal pain on 09-July 2020</div>");
-		condition.setSubject(new Reference().setReference("Patient-"+patientId));
+		condition.setSubject(new Reference().setReference("Patient/"+patientId));
 		condition.getCode().addCoding(new Coding()).setText(prescriptionItem.getInstructions());
 		return condition;
 	}
@@ -378,7 +378,7 @@ public class ResourcePopulator {
 	public static MedicationRequest populateMedicationRequestResource(PrescriptionCollection prescriptionCollection)
 	{
 		MedicationRequest medicationRequest = new MedicationRequest();
-		medicationRequest.setId("MedicationRequest-"+prescriptionCollection.getPrescriptionCode());
+		medicationRequest.setId(prescriptionCollection.getPrescriptionCode());
 	//	medicationRequest.getMeta().addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/MedicationRequest");
 		medicationRequest.setStatus(MedicationRequestStatus.ACTIVE);
 		medicationRequest.setIntent(MedicationRequestIntent.ORDER);
@@ -393,18 +393,18 @@ public class ResourcePopulator {
 	//	medicationRequest.setMedication(new CodeableConcept(new Coding("http://snomed.info/sct","324252006", item.getDrugName() +"(as "+item.getGenericNames() +")")));
 		//prescriptionCollection.getItems().get(0).getDrugName()
 		medicationRequest.setMedication(new CodeableConcept().setText(itemList.toString()));
-		medicationRequest.setSubject(new Reference().setReference("Patient-"+prescriptionCollection.getPatientId().toString()));
+		medicationRequest.setSubject(new Reference().setReference("Patient/"+prescriptionCollection.getPatientId().toString()));
 		//.setDisplay(patientCollection.getFirstName())
 		String pattern = "yyyy-MM-dd";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		Date date2=new Date();
 		String date=simpleDateFormat.format(prescriptionCollection.getCreatedTime());
 		medicationRequest.setAuthoredOnElement(new DateTimeType(date));
-		medicationRequest.setRequester(new Reference().setReference("Practitioner-"+prescriptionCollection.getDoctorId().toString()));
+		medicationRequest.setRequester(new Reference().setReference("Practitioner/"+prescriptionCollection.getDoctorId().toString()));
 		//.setDisplay("Dr "+userCollection.getFirstName())
 	//	medicationRequest.getReasonCode().add(new CodeableConcept(new Coding("http://snomed.info/sct", item.getDrugId().toString(), item.getExplanation())));
 	//	medicationRequest.getReasonCode().add(new CodeableConcept().setText(item.getDrugId().toString()+","+ item.getExplanation()));
-		medicationRequest.getReasonReference().add(new Reference().setReference("Condition/Condition-01"));
+//		medicationRequest.getReasonReference().add(new Reference().setReference("Condition/"+prescriptionCollection.getItems().get(0).getDrugId().toString()));
 		//item.getInstructions()
 		//prescriptionCollection.getItems().get(0).getDosage()
 		medicationRequest.addDosageInstruction(new Dosage().setText(dosageList.toString()));

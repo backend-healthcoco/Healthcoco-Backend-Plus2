@@ -2463,24 +2463,30 @@ public class NDHMserviceImpl implements NDHMservices {
 				System.out.println("Gender"+gender);
 				System.out.println("HealthId"+patientId);
 				System.out.println("PatientName "+patientName);
+				
 				List<PatientCollection> patientCollections=patientRepository.findByHealthIdAndLocalPatientNameAndGender(patientId,patientName,gender);
 				PatientCollection patientCollection=patientCollections.get(0);
 				if(patientCollection !=null)
 				{
 					UserCollection user=userRepository.findById(patientCollection.getUserId()).orElse(null);
-					otpGenerator(user.getMobileNumber(),null);
+				//	String mobileNumber=user.getMobileNumber().substring(0);
+				//	System.out.println("mobile"+mobileNumber);
+					//otpGenerator(user.getMobileNumber(),null);
 					DiscoverPatientResponse patient=new DiscoverPatientResponse();
-					patient.setReferenceNumber(patientCollection.getId().toString());
+					UUID uuid2=UUID.randomUUID();
+					//patient.setReferenceNumber(patientCollection.getId().toString());
+					patient.setReferenceNumber(uuid2.toString());
 					patient.setDisplay("Health-Information");
 					CareContext care=new CareContext();
 					care.setDisplay("Health-Information");
-					care.setReferenceNumber(NDHM_CLIENTID);
+					UUID uuid1=UUID.randomUUID();
+					care.setReferenceNumber(uuid1.toString());
 					List<CareContext>careContexts=new ArrayList<CareContext>();
 					careContexts.add(care);
 					patient.setCareContexts(careContexts);
 					List<String>matchedBy=new ArrayList<String>();
 					matchedBy.add("HEALTH_ID");
-				patient.setMatchedBy(matchedBy);
+				 patient.setMatchedBy(matchedBy);
 					discover.setPatient(patient);
 					FetchResponse resp=new FetchResponse();
 					resp.setRequestId(collection.getRequestId());
@@ -2522,7 +2528,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			sms.setSmsText(OTP+" is your Healthcoco OTP. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy! OTPVerification");
 
 				SMSAddress smsAddress = new SMSAddress();
-			mobileNumber=mobileNumber.replaceFirst("+91", "");
+			mobileNumber=mobileNumber.substring(0);
 			smsAddress.setRecipient(mobileNumber);
 			sms.setSmsAddress(smsAddress);
 			smsDetail.setSms(sms);
@@ -2860,9 +2866,10 @@ public class NDHMserviceImpl implements NDHMservices {
 				link.setDisplay("LinkConfirm");
 				link.setReferenceNumber(collection.getConfirmation().getLinkRefNumber());
 				List<CareContext>careContexts=new ArrayList<CareContext>();
+				UUID uuid1=UUID.randomUUID();
 				CareContext care=new CareContext();
 				care.setDisplay("Health-Information");
-				care.setReferenceNumber(NDHM_CLIENTID);
+				care.setReferenceNumber(uuid1.toString());
 				careContexts.add(care);
 				link.setCareContexts(careContexts);
 				FetchResponse resp=new FetchResponse();
@@ -3013,7 +3020,7 @@ public class NDHMserviceImpl implements NDHMservices {
 //
 //				output.append((char) c);
 //
-//			}
+//			}akshay test
 //			System.out.println("response:" + output.toString());
 //			int responseCode = con.getResponseCode();
 //			if (responseCode == 202)
@@ -3050,23 +3057,42 @@ public class NDHMserviceImpl implements NDHMservices {
 				if(hiTypes !=null)
 				{
 					//String hiType=hiTypes.get(0);
-					
-						List<PatientCollection> patientCollections=patientRepository.findByHealthId(notify.getNotification().getConsentDetail().getPatient().getId());
-						PatientCollection patientCollection =patientCollections.get(0);
-						UserCollection user=userRepository.findById(patientCollection.getUserId()).orElse(null);
-						patientCollection.setSecMobile(user.getMobileNumber());
-						//ResourcePopulator.populatePatientResource(patientCollection);
+					String healthId=notify.getNotification().getConsentDetail().getPatient().getId();
+					String locationId=notify.getNotification().getConsentDetail().getHip().getId();
+						PatientCollection patientCollection=patientRepository.findByHealthIdAndLocationId(healthId,new ObjectId(locationId));
+//						Criteria criteria1 = new Criteria();
+//						
+//						criteria1.and("healthId").is(healthId);
+//						criteria1.and("locationId").is(new ObjectId(locationId));
+						
+//						Aggregation aggregation1= Aggregation.newAggregation( Aggregation.match(criteria1),
+//								Aggregation.lookup("docter_cl", "doctorId","userId","doctorSpeciality"),
+//								Aggregation.unwind("doctorSpeciality"),
+//								Aggregation.unwind("doctorSpeciality.specialities"),
+//								Aggregation.lookup("user_cl", "doctorSpeciality.userId","_id","doctor"),
+//								Aggregation.unwind("doctor"),
+//								Aggregation.lookup("location_cl", "hospitalId", "hospitalId", "location"),
+//								Aggregation.unwind("location"));
+//						
+//						
+//						List<PatientCollection> patientCollection1=	mongoTemplate.aggregate(aggregation1,PatientCollection.class,PatientCollection.class).getMappedResults();
+//						//ResourcePopulator.populatePatientResource(patientCollection);
 						List<EntriesDataTransferRequest> entries=new ArrayList<EntriesDataTransferRequest>();
 						KeyMaterialRequestDataFlow key=new KeyMaterialRequestDataFlow();
 
 						if(hiTypes.contains("Prescription"))
 						{
+							
 						if(patientCollection !=null)
 						{
+						//	PatientCollection patientCollection =patientCollections.get(0);
+						//	for(PatientCollection patientCollection:patientCollections) {
+								UserCollection user=userRepository.findById(patientCollection.getUserId()).orElse(null);
+								patientCollection.setSecMobile(user.getMobileNumber());
 							Criteria criteria =new Criteria();
 							//criteria.and("createdTime").gte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getFrom())
 							//.lte(notify.getNotification().getConsentDetail().getPermission().getDateRange().getTo());
-
+							criteria.and("doctorId").is(patientCollection.getDoctorId());
 							criteria.and("patientId").is(patientCollection.getUserId());
 							Aggregation aggregation = null;
 							aggregation=Aggregation
@@ -3078,14 +3104,14 @@ public class NDHMserviceImpl implements NDHMservices {
 						System.out.println("aggregation"+aggregation);
 						//PrescriptionCollection prescriptionCollection=null;
 						if(prescriptionCollections!=null) {
-						for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
-					{
+					//	for(PrescriptionCollection prescriptionCollection:prescriptionCollections)
+				//	{
 							//PrescriptionCollection prescriptionCollection=prescriptionCollections.get(0);
-						DoctorCollection doctorCollection=doctorRepository.findByUserId(prescriptionCollection.getDoctorId());
+						DoctorCollection doctorCollection=doctorRepository.findByUserId(patientCollection.getDoctorId());
 						System.out.println("Doctor "+doctorCollection);
 						UserCollection userCollection=userRepository.findById(doctorCollection.getUserId()).orElse(null);
 						System.out.println("User "+doctorCollection);
-						String bundle =	PrescriptionSample.prescriptionConvert(prescriptionCollection,patientCollection,userCollection);
+						String bundle =	PrescriptionSample.prescriptionConvert(prescriptionCollections,patientCollection,userCollection);
 						System.out.println("Fhir:"+null);
 						//	mapPrescriptionRecordData(prescriptionCollections, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
 						DataEncryptionResponse data=null;
@@ -3108,9 +3134,10 @@ public class NDHMserviceImpl implements NDHMservices {
 						}		
 						
 						
-						}
+					//	}
 							
 						 }
+						//}
 						}
 					}
 //						else if(hiTypes.contains("OPConsultation")) {

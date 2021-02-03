@@ -10,8 +10,10 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.UUID;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
@@ -65,22 +67,26 @@ public class PrescriptionSample {
 	static FhirInstanceValidator instanceValidator;
 	static FhirValidator validator;
 
-	public static String prescriptionConvert(PrescriptionCollection prescriptionCollection, PatientCollection patientCollection, UserCollection userCollection) throws DataFormatException, IOException
+	public static String prescriptionConvert(List<PrescriptionCollection> prescriptionCollections, PatientCollection patientCollection, UserCollection userCollection) throws DataFormatException, IOException
 	{
 		//Initialize validation support and loads all required profiles
 		init();
 
 		// Populate the resource
-		Bundle prescriptionBundle = populatePrescriptionBundle(prescriptionCollection,patientCollection,userCollection);
+		Bundle prescriptionBundle = populatePrescriptionBundle(prescriptionCollections,patientCollection,userCollection);
 		String serializeBundle=null;
+		IParser parser;
+		parser = ctx.newJsonParser();
+		 serializeBundle = parser.encodeResourceToString(prescriptionBundle);
+			System.out.println(serializeBundle);
 		// Validate it. Validate method return result of validation in boolean
 		// If validation result is true then parse, serialize operations are performed
-//		if(validate(prescriptionBundle))	
-//		{
+		if(validate(prescriptionBundle))	
+		{
 			System.out.println("Validated populated Prescripton bundle successfully");
 
 			// Instantiate a new parser
-			IParser parser; 
+	//		IParser parser; 
 
 			// Enter file path (Eg: C://generatedexamples//bundle-prescriptionrecord.json)
 			// Depending on file type xml/json instantiate the parser
@@ -128,7 +134,7 @@ public class PrescriptionSample {
 //			else{
 //				System.out.println("Failed to validate parsed file");
 //			}
-	//	}
+		}
 //		else
 //		{
 //			System.out.println("Failed to validate populate Prescription bundle");
@@ -138,7 +144,7 @@ public class PrescriptionSample {
 	}
 
 	// Populate Composition for Prescription
-	static Composition populatePrescriptionCompositionResource(PrescriptionCollection prescriptionCollection)
+	static Composition populatePrescriptionCompositionResource(List<PrescriptionCollection> prescriptionCollections, String patientId, String doctorId)
 	{
 	Composition composition = new Composition();	
 	composition.setId("Composition-01");
@@ -150,10 +156,10 @@ public class PrescriptionSample {
 //	System.out.println("PrescriptionBundle Composition");
 	// Set logical id of this artifact
 //	composition.setId("Composition-01");
-	composition.addAuthor(new Reference().setReference("Practitioner-"+prescriptionCollection.getDoctorId().toString()));
+	composition.addAuthor(new Reference().setReference("Practitioner/"+doctorId));
 	composition.setTitle("Prescription record");
 	composition.setStatus(CompositionStatus.FINAL);
-	composition.setSubject(new Reference().setReference("Patient-"+prescriptionCollection.getPatientId().toString()));
+	composition.setSubject(new Reference().setReference("Patient/"+patientId));
 	composition.setType(new CodeableConcept(new Coding("http://snomed.info/sct", "440545006", "Prescription record")).setText("Prescription record"));
 	composition.setDateElement(new DateTimeType(date+"+05:30"));
 	// Set metadata about the resource - Version Id, Lastupdated Date, Profile
@@ -197,10 +203,13 @@ public class PrescriptionSample {
 
 	// Composition is broken into sections / Prescription record contains single section to define the relevant medication requests
 	// Entry is a reference to data that supports this section
+	List<Reference>references=new ArrayList<Reference>();
+	for(PrescriptionCollection prescriptionCollection:prescriptionCollections) {
 	Reference reference1 = new Reference();
-	reference1.setReference("MedicationRequest-"+prescriptionCollection.getPrescriptionCode());
+	reference1.setReference("MedicationRequest/"+prescriptionCollection.getPrescriptionCode());
 	reference1.setType("MedicationRequest");
-
+	references.add(reference1);
+	}
 //	Reference reference2 = new Reference();
 //	reference2.setReference("MedicationRequest/MedicationRequest-02");
 //	reference2.setType("MedicationRequest");
@@ -212,7 +221,8 @@ public class PrescriptionSample {
 	SectionComponent section = new SectionComponent();
 	section.setTitle("Prescription record").
 	setCode(new CodeableConcept(new Coding("http://snomed.info/sct", "440545006", "Prescription record"))).
-	addEntry(reference1);
+	
+	setEntry(references);
 //	addEntry(reference2);
 	composition.addSection(section);	
 
@@ -220,19 +230,20 @@ public class PrescriptionSample {
 }
 
 	// Populate Prescription Bundle
-	static Bundle populatePrescriptionBundle(PrescriptionCollection prescriptionCollection, PatientCollection patientCollection, UserCollection userCollection)
+	static Bundle populatePrescriptionBundle(List<PrescriptionCollection> prescriptionCollections, PatientCollection patientCollection, UserCollection userCollection)
 	{
 		Bundle prescriptionBundle = new Bundle();
 
 		// Set logical id of this artifact
-		prescriptionBundle.setId("prescription-"+prescriptionCollection.getId().toString());
+		UUID uuid=UUID.randomUUID();
+		prescriptionBundle.setId("Prescription/"+uuid.toString());
 		String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 		// Set metadata about the resource
 		Meta meta = prescriptionBundle.getMeta();
 		meta.setVersionId("1");
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		
-		meta.setLastUpdatedElement(new InstantType(simpleDateFormat.format(prescriptionCollection.getUpdatedTime())+"+05:30"));
+		meta.setLastUpdatedElement(new InstantType(simpleDateFormat.format(prescriptionCollections.get(0).getUpdatedTime())+"+05:30"));
 		meta.addProfile("https://nrces.in/ndhm/fhir/r4/StructureDefinition/DocumentBundle");
 
 		// Set Confidentiality as defined by affinity domain
@@ -261,33 +272,37 @@ public class PrescriptionSample {
 
 		BundleEntryComponent bundleEntry1 = new BundleEntryComponent();
 		bundleEntry1.setFullUrl("Composition/Composition-01");
-		bundleEntry1.setResource(populatePrescriptionCompositionResource(prescriptionCollection));
+		bundleEntry1.setResource(populatePrescriptionCompositionResource(prescriptionCollections,patientCollection.getUserId().toString(),userCollection.getId().toString()));
 
 		BundleEntryComponent bundleEntry2 = new BundleEntryComponent();
-		bundleEntry2.setFullUrl("Patient-"+prescriptionCollection.getPatientId().toString());
+		bundleEntry2.setFullUrl("Patient/"+patientCollection.getUserId().toString());
 		bundleEntry2.setResource(ResourcePopulator.populatePatientResource(patientCollection));
 
 		BundleEntryComponent bundleEntry3 = new BundleEntryComponent();
-		bundleEntry3.setFullUrl("Practitioner-"+prescriptionCollection.getDoctorId().toString());
+		bundleEntry3.setFullUrl("Practitioner/"+patientCollection.getDoctorId().toString());
 		bundleEntry3.setResource(ResourcePopulator.populatePractitionerResource(userCollection));
 		
 		listBundleEntries.add(bundleEntry1);
 		listBundleEntries.add(bundleEntry2);
 		listBundleEntries.add(bundleEntry3);
 		
+		
+		for(PrescriptionCollection prescriptionCollection:prescriptionCollections) {
 		BundleEntryComponent bundleEntry4 = new BundleEntryComponent();
-		bundleEntry4.setFullUrl("MedicationRequest-"+prescriptionCollection.getPrescriptionCode());
+		bundleEntry4.setFullUrl("MedicationRequest/"+prescriptionCollection.getPrescriptionCode());
 		bundleEntry4.setResource(ResourcePopulator.populateMedicationRequestResource(prescriptionCollection));
 		listBundleEntries.add(bundleEntry4);
-		
+		bundleEntry4=null;
+//		BundleEntryComponent bundleEntry6 = new BundleEntryComponent();
+//		bundleEntry6.setFullUrl("Condition/"+prescriptionCollection.getItems().get(0).getDrugId().toString());
+//		bundleEntry6.setResource(ResourcePopulator.populateConditionResource(prescriptionCollection.getItems().get(0),patientCollection.getUserId().toString()));
+//		listBundleEntries.add(bundleEntry6);
+		}
 //		BundleEntryComponent bundleEntry5 = new BundleEntryComponent();
 //		bundleEntry5.setFullUrl("MedicationRequest/MedicationRequest-02");
 //		bundleEntry5.setResource(ResourcePopulator.populateSecondMedicationRequestResource());
 
-		BundleEntryComponent bundleEntry6 = new BundleEntryComponent();
-		bundleEntry6.setFullUrl("Condition/Condition-01");
-		bundleEntry6.setResource(ResourcePopulator.populateConditionResource(prescriptionCollection.getItems().get(0),prescriptionCollection.getPatientId().toString()));
-
+		
 //		BundleEntryComponent bundleEntry7 = new BundleEntryComponent();
 //		bundleEntry7.setFullUrl("Binary/Binary-01");
 //		bundleEntry7.setResource(ResourcePopulator.populateBinaryResource());
@@ -295,7 +310,7 @@ public class PrescriptionSample {
 		
 		
 		//listBundleEntries.add(bundleEntry5);
-		listBundleEntries.add(bundleEntry6);
+		
 	//	listBundleEntries.add(bundleEntry7);
 
 		return prescriptionBundle;

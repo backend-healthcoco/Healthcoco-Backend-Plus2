@@ -8,7 +8,7 @@ public class NdhmAuthConfirm {
 	
 	private NdhmPatient patient;
 	
-	private List<AuthConfirmIdentifier> identifier;
+	
 
 	public String getAccessToken() {
 		return accessToken;
@@ -26,14 +26,6 @@ public class NdhmAuthConfirm {
 		this.patient = patient;
 	}
 
-	public List<AuthConfirmIdentifier> getIdentifier() {
-		return identifier;
-	}
-
-	public void setIdentifier(List<AuthConfirmIdentifier> identifier) {
-		this.identifier = identifier;
-	}
-	
 	
 	
 }

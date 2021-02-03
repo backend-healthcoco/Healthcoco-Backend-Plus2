@@ -59,4 +59,6 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 
 	List<PatientCollection> findByHealthId(String id);
 
+	PatientCollection findByHealthIdAndLocationId(String healthId, ObjectId objectId);
+
 }
