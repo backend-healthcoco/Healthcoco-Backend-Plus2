@@ -2470,8 +2470,8 @@ public class NDHMserviceImpl implements NDHMservices {
 				{
 					UserCollection user=userRepository.findById(patientCollection.getUserId()).orElse(null);
 				//	String mobileNumber=user.getMobileNumber().substring(0);
-				//	System.out.println("mobile"+mobileNumber);
-					//otpGenerator(user.getMobileNumber(),null);
+					System.out.println("mobile"+user.getMobileNumber().replace("+91-",""));
+					otpGenerator(user.getMobileNumber(),null);
 					DiscoverPatientResponse patient=new DiscoverPatientResponse();
 					UUID uuid2=UUID.randomUUID();
 					//patient.setReferenceNumber(patientCollection.getId().toString());
@@ -2492,6 +2492,7 @@ public class NDHMserviceImpl implements NDHMservices {
 					resp.setRequestId(collection.getRequestId());
 					discover.setResp(resp);
 					Boolean status=false;
+					System.out.println("discover request"+discover);
 					status=onDiscover( discover);
 					System.out.println("status"+status); 
 				}
@@ -2527,8 +2528,8 @@ public class NDHMserviceImpl implements NDHMservices {
 		//	String shortUrl = DPDoctorUtils.urlShortner(link);
 			sms.setSmsText(OTP+" is your Healthcoco OTP. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy! OTPVerification");
 
-				SMSAddress smsAddress = new SMSAddress();
-			mobileNumber=mobileNumber.substring(0);
+			SMSAddress smsAddress = new SMSAddress();
+			mobileNumber=mobileNumber.replace("+91-","");
 			smsAddress.setRecipient(mobileNumber);
 			sms.setSmsAddress(smsAddress);
 			smsDetail.setSms(sms);
