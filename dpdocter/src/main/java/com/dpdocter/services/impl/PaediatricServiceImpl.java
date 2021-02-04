@@ -1069,10 +1069,10 @@ public class PaediatricServiceImpl implements PaediatricService {
 
 		Boolean showTitle = false;
 		PrintSettingsCollection printSettings = null;
-		printSettings = printSettingsRepository
-				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(new ObjectId(doctorId),
-						new ObjectId(locationId), new ObjectId(hospitalId), ComponentType.ALL.getType(),
-						printSettingType);
+//		printSettings = printSettingsRepository
+//				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(new ObjectId(doctorId),
+//						new ObjectId(locationId), new ObjectId(hospitalId), ComponentType.ALL.getType(),
+//						printSettingType);
 		if (printSettings == null) {
 			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
 					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
