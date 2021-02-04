@@ -2852,19 +2852,22 @@ public class NDHMserviceImpl implements NDHMservices {
 			BeanUtil.map(request, collection);
 			collection.setCreatedTime(new Date());
 			linkConfirmRepository.save(collection);
-			response = true;
+			
 			
 			OTPCollection otpCollection=null;
 			if(request.getConfirmation()!=null)
 			{
 				otpCollection =	otpRepository.findByOtpNumber(request.getConfirmation().getToken());
-			if(otpCollection !=null)
+			if(otpCollection !=null && otpCollection.getState().equals(OTPState.NOTVERIFIED))
+			{
 				if (otpService.isOTPValid(otpCollection.getCreatedTime())) {
 				otpCollection.setState(OTPState.VERIFIED);
 				otpRepository.save(otpCollection);
+				response = true;
 				}
-				else
-					throw new BusinessException(ServiceError.InvalidInput,"invalid otp ");
+			}
+			else
+				throw new BusinessException(ServiceError.InvalidInput,"invalid otp ");
 			}
 			if(response==true)
 			{
