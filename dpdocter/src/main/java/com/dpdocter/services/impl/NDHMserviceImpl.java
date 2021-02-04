@@ -123,6 +123,7 @@ import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.NDHMRecordDataResourceType;
+import com.dpdocter.enums.OTPState;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -168,6 +169,7 @@ import com.dpdocter.security.OPConsultNoteSample;
 import com.dpdocter.security.PrescriptionSample;
 import com.dpdocter.security.ResourcePopulator;
 import com.dpdocter.services.NDHMservices;
+import com.dpdocter.services.OTPService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.webservices.GateWayHiOnRequest;
 import com.dpdocter.webservices.GateWayOnRequest;
@@ -252,6 +254,9 @@ public class NDHMserviceImpl implements NDHMservices {
 	
 	@Autowired
 	private OTPRepository otpRepository;
+	
+	@Autowired
+	private OTPService otpService;
 	
 	@Autowired
 	private NdhmPatientFindRepository ndhmPatientFindRepository;
@@ -2849,6 +2854,18 @@ public class NDHMserviceImpl implements NDHMservices {
 			linkConfirmRepository.save(collection);
 			response = true;
 			
+			OTPCollection otpCollection=null;
+			if(request.getConfirmation()!=null)
+			{
+				otpCollection =	otpRepository.findByOtpNumber(request.getConfirmation().getToken());
+			if(otpCollection !=null)
+				if (otpService.isOTPValid(otpCollection.getCreatedTime())) {
+				otpCollection.setState(OTPState.VERIFIED);
+				otpRepository.save(otpCollection);
+				}
+				else
+					throw new BusinessException(ServiceError.InvalidInput,"invalid otp ");
+			}
 			if(response==true)
 			{
 				OnLinkConfirm discover=new OnLinkConfirm();
