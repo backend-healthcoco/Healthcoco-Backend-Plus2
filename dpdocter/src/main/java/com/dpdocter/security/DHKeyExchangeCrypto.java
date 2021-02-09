@@ -385,7 +385,7 @@ public class DHKeyExchangeCrypto {
     {
         KeyAgreement ka = KeyAgreement.getInstance(ALGORITHM, PROVIDER);
         ka.init(loadPrivateKey(dataPrv));
-        ka.doPhase(loadPublicKey(dataPub), true);
+        ka.doPhase(loadPublicKeyForProjectEKAHIU(dataPub), true);
         byte [] secret = ka.generateSecret();
         return getBase64String(secret);
     }

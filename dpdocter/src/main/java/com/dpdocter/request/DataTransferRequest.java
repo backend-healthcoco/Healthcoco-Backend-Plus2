@@ -9,6 +9,7 @@ public class DataTransferRequest {
 	private String transactionId;
 	private List<EntriesDataTransferRequest> entries;
 	private KeyMaterialRequestDataFlow keyMaterial;
+	private String dataPushUrl;
 	
 	
 	
@@ -42,6 +43,13 @@ public class DataTransferRequest {
 	public void setKeyMaterial(KeyMaterialRequestDataFlow keyMaterial) {
 		this.keyMaterial = keyMaterial;
 	}
+	public String getDataPushUrl() {
+		return dataPushUrl;
+	}
+	public void setDataPushUrl(String dataPushUrl) {
+		this.dataPushUrl = dataPushUrl;
+	}
+	
 	
 	
 }

@@ -3247,6 +3247,7 @@ public class NDHMserviceImpl implements NDHMservices {
 						transfer.setPageNumber(0);
 						transfer.setEntries(entries);	
 						transfer.setTransactionId(collection.getTransactionId());
+						transfer.setDataPushUrl(request.getHiRequest().getDataPushUrl());
 					Boolean transferResponse=	onDataTransfer(transfer);
 					
 					Boolean info=false;
@@ -3404,8 +3405,8 @@ public class NDHMserviceImpl implements NDHMservices {
 			NdhmOauthResponse oauth = session();
 			System.out.println("token" + oauth.getAccessToken());
 
-			String url = "https://dev.ndhm.gov.in/patient-hiu/data/notification";
-
+		//	String url = "https://dev.ndhm.gov.in/patient-hiu/data/notification";
+			String url=request.getDataPushUrl();
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -4787,9 +4788,18 @@ public class NDHMserviceImpl implements NDHMservices {
 		DataTransferRequest response=new DataTransferRequest();
 		try {
 			HiuDataTransferCollection collection=hiuDataTransferRepository.findByTransactionId(transactionId);
-	
+			List<EntriesDataTransferRequest>entryList=new ArrayList<EntriesDataTransferRequest>();
 			if(collection!=null)
 			{
+				for(EntriesDataTransferRequest entry:collection.getEntries())
+				{
+					DataEncryptionResponse data=null;
+					
+					data=DHKeyExchangeCrypto.convert(entry.getContent(), collection.getKeyMaterial().getNonce(), collection.getKeyMaterial().getDhPublicKey().getKeyValue());
+					entry.setContent(data.getDecryptedData());
+					entryList.add(entry);
+				}
+				collection.setEntries(entryList);
 				BeanUtil.map(collection,response);
 			}
 			
