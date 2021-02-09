@@ -91,7 +91,7 @@ public class LocationAndAccessControl {
 
     private String googleMapShortUrl;
     
-	private Boolean isTransactionalSms = true;
+	//private Boolean isTransactionalSms = true;
    
     
 	public String getId() {
@@ -429,13 +429,6 @@ public class LocationAndAccessControl {
 		this.googleMapShortUrl = googleMapShortUrl;
 	}
 
-	public Boolean getIsTransactionalSms() {
-		return isTransactionalSms;
-	}
-
-	public void setIsTransactionalSms(Boolean isTransactionalSms) {
-		this.isTransactionalSms = isTransactionalSms;
-	}
 	
 	
 }

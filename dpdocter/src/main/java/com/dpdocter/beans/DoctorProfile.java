@@ -103,6 +103,8 @@ public class DoctorProfile extends GenericCollection {
 
 	private BulkSmsCredits bulkSmsCredit;
 	
+	private Boolean isTransactionalSms = true;
+	
 	//private Map<DoctorConsultation, String> onlineConsultationFees;
 	
 //	private List<DoctorConsultation> consultationType;
@@ -427,6 +429,14 @@ public class DoctorProfile extends GenericCollection {
 	
 	
 	
+	public Boolean getIsTransactionalSms() {
+		return isTransactionalSms;
+	}
+
+	public void setIsTransactionalSms(Boolean isTransactionalSms) {
+		this.isTransactionalSms = isTransactionalSms;
+	}
+
 	public String getRegistrationImageUrl() {
 		return RegistrationImageUrl;
 	}
