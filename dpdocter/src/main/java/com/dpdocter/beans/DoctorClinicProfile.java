@@ -158,7 +158,7 @@ public class DoctorClinicProfile {
 	
 	private AppointmentSlot onlineConsultationSlot;
 	
-	private Boolean isTransactionalSms = true;
+	
 //=======
 //	private Map<DoctorConsultation, String> onlineConsultationFees;
 
@@ -766,13 +766,7 @@ public class DoctorClinicProfile {
 	
 	
 
-	public Boolean getIsTransactionalSms() {
-		return isTransactionalSms;
-	}
 
-	public void setIsTransactionalSms(Boolean isTransactionalSms) {
-		this.isTransactionalSms = isTransactionalSms;
-	}
 
 	@Override
 	public String toString() {

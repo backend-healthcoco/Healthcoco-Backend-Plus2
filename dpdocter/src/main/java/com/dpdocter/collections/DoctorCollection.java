@@ -121,6 +121,9 @@ public class DoctorCollection extends GenericCollection {
 	
 	@Field
 	private Boolean isHealthcocoDoctor=false;
+	
+	@Field
+	private Boolean isTransactionalSms = true;
 
 	public Boolean getIsPrescriptionSMS() {
 		return isPrescriptionSMS;
@@ -412,6 +415,16 @@ public class DoctorCollection extends GenericCollection {
 
 	public void setIsHealthcocoDoctor(Boolean isHealthcocoDoctor) {
 		this.isHealthcocoDoctor = isHealthcocoDoctor;
+	}
+	
+	
+
+	public Boolean getIsTransactionalSms() {
+		return isTransactionalSms;
+	}
+
+	public void setIsTransactionalSms(Boolean isTransactionalSms) {
+		this.isTransactionalSms = isTransactionalSms;
 	}
 
 	@Override
