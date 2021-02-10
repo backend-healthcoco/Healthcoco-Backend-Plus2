@@ -26,6 +26,7 @@ public class DoctorCalendarViewCollection extends GenericCollection{
 		this.id = id;
 	}
 	
+
 	public ObjectId getDoctorId() {
 		return doctorId;
 	}
@@ -44,12 +45,8 @@ public class DoctorCalendarViewCollection extends GenericCollection{
 	public void setHospitalId(ObjectId hospitalId) {
 		this.hospitalId = hospitalId;
 	}
-	public CalendarType getType() {
-		return type;
-	}
-	public void setType(CalendarType type) {
-		this.type = type;
-	}
+	
+	
 	
 	
 }

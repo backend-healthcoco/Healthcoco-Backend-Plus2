@@ -46,6 +46,8 @@ public class MessageResponse extends GenericCollection{
 	private String hospitalId;
 	
 	private Long totalCreditsSpent=0L;
+	
+	private String template_id;
 
 	public String getBody() {
 		return body;
@@ -189,6 +191,14 @@ public class MessageResponse extends GenericCollection{
 
 	public void setUnicode(Integer unicode) {
 		this.unicode = unicode;
+	}
+
+	public String getTemplate_id() {
+		return template_id;
+	}
+
+	public void setTemplate_id(String template_id) {
+		this.template_id = template_id;
 	}
 
 	

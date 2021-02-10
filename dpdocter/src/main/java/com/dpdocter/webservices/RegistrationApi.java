@@ -1395,7 +1395,7 @@ public class RegistrationApi {
 	
 			Response<DoctorCalendarView> response = new Response<DoctorCalendarView>();
 			DoctorCalendarView view=registrationService.getDoctorCalendarView(doctorId, locationId);
-			System.out.println("view"+view);
+
 			response.setData(view);
 
 			return response;

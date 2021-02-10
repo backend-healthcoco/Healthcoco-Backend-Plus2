@@ -54,6 +54,9 @@ public class MessageCollection extends GenericCollection{
 	
 	@Field
 	private Long totalCreditsSpent=0L;
+	
+	@Field
+	private String template_id;
 
 	public String getBody() {
 		return body;
@@ -192,6 +195,14 @@ public class MessageCollection extends GenericCollection{
 
 	public void setUnicode(Integer unicode) {
 		this.unicode = unicode;
+	}
+
+	public String getTemplate_id() {
+		return template_id;
+	}
+
+	public void setTemplate_id(String template_id) {
+		this.template_id = template_id;
 	}
 
 	
