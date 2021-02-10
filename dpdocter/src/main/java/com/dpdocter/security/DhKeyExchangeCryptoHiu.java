@@ -53,11 +53,11 @@ public class DhKeyExchangeCryptoHiu {
         KeyPair receiverKeyPair = generateKeyPair();
         String receiverPrivateKey = getBase64String(getEncodedPrivateKey(receiverKeyPair.getPrivate()));
         //KeyMaterial.dhPublicKey.keyValue from POST
-        String receiverPublicKey =getBase64String(getEncodedPublicKey(receiverKeyPair.getPublic()));
+        String receiverPublicKey =getBase64String(getEncodedPublicKeyForProjectEKAHIU(receiverKeyPair.getPublic()));
         KeyPair senderKeyPair = generateKeyPair();
         String senderPrivateKey = getBase64String(getEncodedPrivateKey(senderKeyPair.getPrivate()));
         String senderPublicKey = getBase64String(getEncodedPublicKey(senderKeyPair.getPublic()));
-        String senderPublicKey1 = getBase64String(getEncodedPublicKey(senderKeyPair.getPublic()));
+        String senderPublicKey1 = getBase64String(getEncodedPublicKeyForProjectEKAHIU(senderKeyPair.getPublic()));
         String senderPrivateKey1 = getBase64String(getEncodedPrivateKey(senderKeyPair.getPrivate()));
         // Generate random key for sender and receiver
         String randomSender = generateRandomKey();
@@ -87,7 +87,7 @@ public class DhKeyExchangeCryptoHiu {
         System.out.println("<---------------- DONE ------------------->");
        // response.setEncryptedData(encryptedData);
         response.setRandomSender(randomSender);
-        response.setSenderPublicKey(senderPublicKey1);
+        response.setSenderPublicKey(receiverPublicKey);
         return response;
     }
 

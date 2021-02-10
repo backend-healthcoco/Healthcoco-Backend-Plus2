@@ -3138,7 +3138,7 @@ public class NDHMserviceImpl implements NDHMservices {
 						DataEncryptionResponse data=null;
 						if( collection.getHiRequest().getKeyMaterial() !=null)
 						{
-						data=DHKeyExchangeCrypto.convert(bundle, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue());
+						data=DHKeyExchangeCrypto.convert(bundle, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue(),false);
 						
 						System.out.println("encrypt"+data);
 						EntriesDataTransferRequest entry=new EntriesDataTransferRequest();
@@ -4528,7 +4528,7 @@ public class NDHMserviceImpl implements NDHMservices {
 			JSONObject dhPublicKey = new JSONObject();
 			dhPublicKey.put("expiry",request.getHiRequest().getKeyMaterial().getDhPublicKey().getExpiry());
 			dhPublicKey.put("parameters",request.getHiRequest().getKeyMaterial().getDhPublicKey().getParameters());
-			dhPublicKey.put("keyValue",hiu.getRandomSender());
+			dhPublicKey.put("keyValue",hiu.getSenderPublicKey());
 			keymaterial.put("dhPublicKey", dhPublicKey);
 			hiRequestRequest.put("keyMaterial", keymaterial);
 			
@@ -4795,7 +4795,7 @@ public class NDHMserviceImpl implements NDHMservices {
 				{
 					DataEncryptionResponse data=null;
 					
-					data=DHKeyExchangeCrypto.convert(entry.getContent(), collection.getKeyMaterial().getNonce(), collection.getKeyMaterial().getDhPublicKey().getKeyValue());
+					data=DHKeyExchangeCrypto.convert(entry.getContent(), collection.getKeyMaterial().getNonce(), collection.getKeyMaterial().getDhPublicKey().getKeyValue(),true);
 					entry.setContent(data.getDecryptedData());
 					entryList.add(entry);
 				}

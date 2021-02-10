@@ -39,7 +39,7 @@ public class DHKeyExchangeCrypto {
     public static final String PROVIDER = BouncyCastleProvider.PROVIDER_NAME;
    
     // Driver function
-    public static DataEncryptionResponse convert(String strToPerformActionOn,String nounce,String keypair) throws Exception {
+    public static DataEncryptionResponse convert(String strToPerformActionOn,String nounce,String keypair,boolean b) throws Exception {
     	DataEncryptionResponse response=new DataEncryptionResponse();
     	Security.addProvider(new BouncyCastleProvider());
 
@@ -239,13 +239,15 @@ public class DHKeyExchangeCrypto {
 
         // Generating Xor of random Keys
         byte[] xorOfRandom = xorOfRandom(randomSender, randomReceiver);
+        String encryptedData=null;
+        String decryptedData=null;
+        if(b==false) {
+        encryptedData = encrypt(xorOfRandom, senderPrivateKey1, receiverPublicKey, strToPerformActionOn);
+        }
+        else {
 
-        String encryptedData = encrypt(xorOfRandom, senderPrivateKey1, receiverPublicKey, strToPerformActionOn);
-
-        System.out.println("\n");
-
-        String decryptedData = decrypt(xorOfRandom, receiverPrivateKey, senderPublicKey, encryptedData);
-
+        decryptedData = decrypt(xorOfRandom, receiverPrivateKey, receiverPublicKey, encryptedData);
+        }
         System.out.println("\n");
         // POST in content
         System.out.println("encrypted Data: " + encryptedData);
@@ -259,6 +261,7 @@ public class DHKeyExchangeCrypto {
         System.out.println("\n");
         System.out.println("<---------------- DONE ------------------->");
         response.setEncryptedData(encryptedData);
+        response.setDecryptedData(decryptedData);
         response.setRandomSender(randomSender);
         response.setSenderPublicKey(senderPublicKey1);
         return response;
@@ -268,7 +271,7 @@ public class DHKeyExchangeCrypto {
     public static String encrypt(byte[] xorOfRandom, String senderPrivateKey, String receiverPublicKey, String stringToEncrypt) throws Exception {
         System.out.println("<------------------- ENCRYPTION -------------------->");
         // Generating shared secret
-        String sharedKey = doECDH(getBytesForBase64String(senderPrivateKey), getBytesForBase64String(receiverPublicKey));
+        String sharedKey = doECDH1(getBytesForBase64String(senderPrivateKey), getBytesForBase64String(receiverPublicKey));
         System.out.println("Shared key: " + sharedKey);
 
         // Generating iv and HKDF-AES key
@@ -305,7 +308,7 @@ public class DHKeyExchangeCrypto {
     public static String decrypt(byte[] xorOfRandom, String receiverPrivateKey, String senderPublicKey, String stringToDecrypt) throws Exception {
         System.out.println("<------------------- DECRYPTION -------------------->");
         // Generating shared secret
-        String sharedKey = doECDH(getBytesForBase64String(receiverPrivateKey),getBytesForBase64String(senderPublicKey));
+        String sharedKey = doECDH1(getBytesForBase64String(receiverPrivateKey),getBytesForBase64String(senderPublicKey));
         System.out.println("Shared key: " + sharedKey);
 
         // Generating iv and HKDF-AES key
@@ -382,6 +385,15 @@ public class DHKeyExchangeCrypto {
 
     // Method for generating shared secret
     private static String doECDH (byte[] dataPrv, byte[] dataPub) throws Exception
+    {
+        KeyAgreement ka = KeyAgreement.getInstance(ALGORITHM, PROVIDER);
+        ka.init(loadPrivateKey(dataPrv));
+        ka.doPhase(loadPublicKey(dataPub), true);
+        byte [] secret = ka.generateSecret();
+        return getBase64String(secret);
+    }
+    
+    private static String doECDH1 (byte[] dataPrv, byte[] dataPub) throws Exception
     {
         KeyAgreement ka = KeyAgreement.getInstance(ALGORITHM, PROVIDER);
         ka.init(loadPrivateKey(dataPrv));
