@@ -41,14 +41,12 @@ public class PaymentserviceImpl implements PaymentServices {
 			
 			BankDetailsCollection payment=null;
 			payment = bankDetailsRepository.findByRazorPayAccountId(settlements.getAccount_id());
-			System.out.println("payment"+payment);
 			if(payment!=null)
 				if(payment.getDoctorId()!=null)
 			{
 						settlements.setDoctorId(payment.getDoctorId());
 			}
 			settlementRepository.save(settlements);
-			System.out.println("settlements"+settlements);
 			
 			response="settlement report added successfully";
 		}catch (BusinessException e) {

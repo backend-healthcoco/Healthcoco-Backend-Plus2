@@ -356,7 +356,6 @@ public class OTPServiceImpl implements OTPService {
 		Boolean response = false;
 		try {
 			OTPCollection otpCollection = otpRepository.findByMobileNumberAndOtpNumberAndCountryCode(mobileNumber, otpNumber, countryCode);
-			System.out.println(otpCollection);
 			if (otpCollection != null) {
 				if (isOTPValid(otpCollection.getCreatedTime())) {
 					otpCollection.setState(OTPState.VERIFIED);

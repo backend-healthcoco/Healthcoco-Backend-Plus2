@@ -1241,7 +1241,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 					i++;
 					response = true;
 				}
-				System.out.println(i);
 			}
 
 		} catch (Exception e) {
@@ -5628,7 +5627,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				DoctorCalendarViewCollection collection = doctorCalendarViewRepository.findByDoctorIdAndLocationId(new ObjectId(doctorId), new ObjectId(locationId));
 
-				System.out.println("view data"+collection);
 				if(collection!=null)
 				{
 				response=new DoctorCalendarView();

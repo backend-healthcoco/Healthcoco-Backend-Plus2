@@ -1489,7 +1489,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				criteria.and("fromDate").gte(fromDateTime);
-				System.out.println(fromDateTime);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
 				localCalendar.setTime(new Date(Long.parseLong(toDate)));
@@ -1500,9 +1499,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 			//	DateTime 
 				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-				
-				System.out.println(toDateTime);
-
 				criteria.and("toDate").lte(toDateTime);
 			}
 			
@@ -1704,7 +1700,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 		//	}
-			System.out.println("aggregation:"+aggregation);
 					
 			response=mongoTemplate.aggregate(aggregation,PaymentTransferCollection.class,PaymentSummary.class).getUniqueMappedResult();
 			
@@ -1740,7 +1735,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 		
 			JSONObject orderRequest = new JSONObject();
 			
-		//	System.out.println("from"+from);
 		//	Integer fromTime = Integer.parseInt(from);
 			
 			
@@ -1786,7 +1780,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	 				output.append((char) c);
 	 				
 	 			}
-	 			System.out.println("response:"+output.toString());
 	 			
 	 			  ObjectMapper mapper = new ObjectMapper();
 	 			 PaymentSettlements payment=null;
@@ -1926,7 +1919,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			}
-			System.out.println("aggregation:"+aggregation);
 			response=mongoTemplate.aggregate(aggregation,SettlementCollection.class,OnlineConsultationSettlement.class).getMappedResults();
 
 			
@@ -2017,7 +2009,6 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			}
-			System.out.println("aggregation:"+aggregation);
 			response=mongoTemplate.aggregate(aggregation,PatientPaymentDetailsCollection.class,PatientPaymentDetails.class).getMappedResults();
 
 

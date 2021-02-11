@@ -487,7 +487,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 	private void createBlankPdfReport(JasperDesign jasperDesign, Map<String, Object> parameters,
 			Integer contentFontSize, int columnWidth, int pageWidth, int pageHeight, JRDesignStyle normalStyle) {
 		int fieldWidth = 118;
-		System.out.println("inre " + parameters);
 		band = new JRDesignBand();
 		band.setHeight(1);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
@@ -8577,7 +8576,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-		System.out.println("adding treatments in pdf");
 		band = new JRDesignBand();
 		band.setHeight(18);
 		band.setPrintWhenExpression(

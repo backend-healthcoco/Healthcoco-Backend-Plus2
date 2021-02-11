@@ -1574,7 +1574,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 					Fields.field("isSuperStar", "$isSuperStar"), Fields.field("createdTime", "$createdTime")));
 
 			Aggregation aggregation = null;
-			System.out.println(criteria);
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("acadamic_class_cl", "classId", "_id", "acadamicClass"),
@@ -1593,8 +1592,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 						Aggregation.unwind("acadamicSection", true), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "firstName")));
 			}
-			System.out.println(".......");
-			System.out.println(new Query(criteria).toString());
 			response = mongoTemplate.aggregate(aggregation, AcademicProfileCollection.class, AcademicProfile.class)
 					.getMappedResults();
 			if(response != null) {
@@ -2349,7 +2346,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 			}
 			response = mongoTemplate.aggregate(aggregation, DoctorSchoolAssociationCollection.class, DoctorSchoolAssociation.class)
 					.getMappedResults();
-System.out.println(response);
 		} catch (BusinessException be) {
 			logger.warn(be);
 			throw be;

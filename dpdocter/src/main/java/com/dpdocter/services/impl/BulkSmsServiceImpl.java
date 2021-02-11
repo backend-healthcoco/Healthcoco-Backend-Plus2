@@ -298,7 +298,6 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 
 				}
 			
-			System.out.println("aggregation:"+aggregation);
 				response = mongoTemplate.aggregate(aggregation, BulkSmsCreditsCollection.class, BulkSmsCredits.class).getMappedResults();
 			
 			
@@ -548,7 +547,6 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				}
 			
-				System.out.println("Aggregation:"+aggregation);
 				response = mongoTemplate.aggregate(aggregation, MessageCollection.class, MessageResponse.class).getMappedResults();
 
 				
@@ -658,7 +656,6 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 	 			while ((inputLine = in.readLine()) != null) {
 
 	 				output.append(inputLine);
-	 				System.out.println("response:"+output.toString());
 	 			}
 	 			
 	 			  ObjectMapper mapper = new ObjectMapper();
@@ -752,7 +749,6 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							throw new BusinessException(ServiceError.InvalidInput, "Sms Package not found");
 						
 						
-						System.out.println("credits:"+packageCollection.getSmsCredit());
 						DoctorCollection doctorClinicProfileCollections = null;
 						doctorClinicProfileCollections = doctorRepository.findByUserId(
 								new ObjectId(request.getDoctorId()));
@@ -831,28 +827,19 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							smsTrackDetail.setSmsDetails(smsDetails);
 					Boolean res=sMSServices.sendSMS(smsTrackDetail, true);
 							
-						System.out.println("sms sent"+res);
-						
+					
 						String paymentDate =simpleDateFormat.format(onlinePaymentCollection.getCreatedTime());
 //						String body ="Hi " + doctor.getFirstName() + ", your Payment has been done successfully on Date: "+simpleDateFormat.format(onlinePaymentCollection.getCreatedTime())
 //						+ " by "+onlinePaymentCollection.getMode()+" and your transactionId is"+onlinePaymentCollection.getTransactionId()+" for the bulk sms package "+bulkPackage.getPackageName()
 //						+" and the total cost is "+ onlinePaymentCollection.getDiscountAmount() + ".";
 					
-						System.out.println("name"+ doctor.getFirstName());
-						System.out.println("mode"+onlinePaymentCollection.getMode().getType());
-						System.out.println("receipt"+ onlinePaymentCollection.getReciept());
-						System.out.println("discount Amount"+ onlinePaymentCollection.getDiscountAmount());
-						System.out.println("Package Name"+  bulkPackage.getPackageName());
-						System.out.println("Payment Date"+ paymentDate);
-						
+											
 						String body	= mailBodyGenerator.generateBulkSmsPayment(
 								 doctor.getFirstName(),onlinePaymentCollection.getMode().getType(),onlinePaymentCollection.getReciept(),onlinePaymentCollection.getDiscountAmount(),
 								 bulkPackage.getPackageName(),paymentDate
 								, "bulkSmsTemplate.vm");
 				Boolean mail=	mailService.sendEmail(doctor.getEmailAddress(),"Buy Bulk SMS Plan on Healthcoco+", body, null);
-						System.out.println(mail);
 						
-						System.out.println("mail Status:"+mail); 
 						
 //							pushNotificationServices.notifyUser(doctor.getId().toString(),
 //									"You have received a payment from an", ComponentType.APPOINTMENT_REFRESH.getType(), null, null);
@@ -1011,10 +998,8 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 			  .setUri(url)
 			  .setHeader( "api-key", KEY)
 			  .build();
-			System.out.println("response"+client.execute(httprequest));
 			 org.apache.http.HttpResponse responses = client.execute(httprequest);
 			 responses.getEntity().writeTo(out);
-			System.out.println("response:"+out.toString());
 			 ObjectMapper mapper = new ObjectMapper();
 			response=mapper.readValue(out.toString(),MessageStatus.class);
 			

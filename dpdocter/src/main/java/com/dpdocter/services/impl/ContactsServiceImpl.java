@@ -971,7 +971,6 @@ public class ContactsServiceImpl implements ContactsService {
 								 mobile =patientGroupLookupResponse.getUser().getCountryCode() +patientGroupLookupResponse.getUser().getMobileNumber();
 							}
 							else {
-						//	System.out.println(userCollection.getMobileNumber());
 							 	mobile ="+91" +patientGroupLookupResponse.getUser().getMobileNumber();
 							}
 						mobileNumbers.add(mobile);
@@ -979,7 +978,6 @@ public class ContactsServiceImpl implements ContactsService {
 					}
 
 				}
-				System.out.println("GroupId User Mobile Number"+mobileNumbers);
 			} else if(request.getPatientIds()!=null && !request.getPatientIds().isEmpty()){
 				List<ObjectId> patientIds = new ArrayList<ObjectId>();
 				for(String id : request.getPatientIds())patientIds.add(new ObjectId(id));
@@ -992,7 +990,6 @@ public class ContactsServiceImpl implements ContactsService {
 			//	AggregationResults<User> aggregationResults = mongoTemplate.aggregate(aggregation, UserCollection.class,
 			//			User.class);
 				List<User>users=mongoTemplate.aggregate(aggregation, UserCollection.class, User.class).getMappedResults();
-				 System.out.println("Aggregation"+aggregation);
 				if (users != null) {
 					if(mobileNumbers == null)mobileNumbers = new ArrayList<>();
 					for(User userr:users)
@@ -1011,7 +1008,6 @@ public class ContactsServiceImpl implements ContactsService {
 					
 					}
 				}
-				System.out.println("PatientIds User Mobile Number"+mobileNumbers);
 			}else if (request.getPatientId() != null) {
 				Criteria criteria = new Criteria().and("_id").is(new ObjectId(request.getPatientId()));
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1019,7 +1015,6 @@ public class ContactsServiceImpl implements ContactsService {
 					//	Aggregation.unwind("user"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				User users = mongoTemplate.aggregate(aggregation,UserCollection.class, User.class).getUniqueMappedResult();
-				System.out.println("Aggregation"+aggregation);
 				
 				if (users != null) {
 					mobileNumbers = new ArrayList<>();
@@ -1036,7 +1031,6 @@ public class ContactsServiceImpl implements ContactsService {
 					
 					mobileNumbers.add(mobile);
 					}
-					System.out.println("PatientId User Mobile Number"+mobileNumbers);
 				}
 			} else {
 				Criteria criteria = new Criteria().and("doctorId").is(new ObjectId(request.getDoctorId()));
@@ -1092,27 +1086,17 @@ public class ContactsServiceImpl implements ContactsService {
 			
 			SmsParts sms=smsSpitterServices.splitSms(request.getMessage());
 			
-			 System.out.println("Sms Parts:"+sms);
 			Integer totalLength=sms.getEncoding().getMaxLengthSinglePart();
 			
-			  System.out.println("TotalLength:"+totalLength);
 			  Integer messageLength=request.getMessage().length();
-			  System.out.println("messageLength:"+messageLength);
 			  long credits=(messageLength/totalLength);
 			  
 			  long temp=messageLength%totalLength;
 			  if(credits==0 || temp!=0) 
 			  credits=credits+1;
-			  
-			 System.out.println("credits:"+credits);
-			 
-			 System.out.println("temp:"+temp);
-			 
-			  
-			  
+					  
 			  long subCredits=credits*(mobileNumbers.size());
 			  
-			  System.out.println("Subcredits:"+subCredits);
 			//  BulkSmsHistoryCollection bulkHistoryCollection=new BulkSmsHistoryCollection();
 				DoctorCollection doctorCollections = null;
 				doctorCollections = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
@@ -1126,10 +1110,7 @@ public class ContactsServiceImpl implements ContactsService {
 			  
 			  doctorRepository.save(doctorCollections);
 			  
-			  System.out.println("Credit Balance"+bulk.getCreditBalance());
-			  System.out.println("Credit Spent"+bulk.getCreditSpent());
-			  
-			  
+			
 //			  List<String> sublist=null;
 //			  Integer size=100;
 //				for(int start=0;start<mobileNumbers.size();start+=size)

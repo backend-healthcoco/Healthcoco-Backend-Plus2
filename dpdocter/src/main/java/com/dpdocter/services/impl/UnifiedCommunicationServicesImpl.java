@@ -110,7 +110,6 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 	            User.creator(SERVICE_SID,identity)
 	            .create();
 
-	        System.out.println(user.getSid());
 	        response=user.getSid();
 		} catch (Exception e) {
 			logger.error("Error : " + e.getMessage());
@@ -223,7 +222,6 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 	                "A New message in ${CHANNEL} from ${USER}: ${MESSAGE}")
 	            .update();
 
-	        System.out.println(service.getFriendlyName());
 			response=true;
 		}catch (Exception e) {
 			logger.error("Error : " + e.getMessage());

@@ -1066,7 +1066,6 @@ public class SMSServicesImpl implements SMSServices {
 				   
 				 responses.getEntity().writeTo(out);
 				 String responseString = out.toString();
-				System.out.println("responseString"+responseString);
 				  ObjectMapper mapper = new ObjectMapper();
 
 				MessageResponse list = mapper.readValue(out.toString(),MessageResponse.class);
