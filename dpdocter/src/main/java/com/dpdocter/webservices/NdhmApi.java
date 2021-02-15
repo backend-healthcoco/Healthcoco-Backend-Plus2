@@ -48,6 +48,7 @@ import com.dpdocter.beans.NdhmOtpStatus;
 import com.dpdocter.beans.NdhmPatientRequest;
 import com.dpdocter.beans.NdhmStatus;
 import com.dpdocter.beans.NotifyHiuRequest;
+import com.dpdocter.beans.NotifyPatientrequest;
 import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
@@ -59,6 +60,10 @@ import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.beans.OnLinkConfirm;
 import com.dpdocter.beans.OnLinkRequest;
 import com.dpdocter.beans.OnNotifyRequest;
+import com.dpdocter.beans.OnNotifySmsRequest;
+import com.dpdocter.beans.OnPatientShare;
+import com.dpdocter.beans.OnSharePatientrequest;
+import com.dpdocter.beans.PatientShareProfile;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ConsentOnInitRequest;
@@ -850,6 +855,56 @@ public class NdhmApi {
 		response.setData(mobile);
 		return response;
 	}
+	
+	@Path(value = PathProxy.NdhmUrls.SHARE_PATIENT)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.SHARE_PATIENT, notes = PathProxy.NdhmUrls.SHARE_PATIENT)
+	public Response<Boolean> sharePatientRequest(@RequestBody OnSharePatientrequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		Boolean mobile = ndhmService.onShareProfile(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_SHARE_PATIENT)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_SHARE_PATIENT, notes = PathProxy.NdhmUrls.GET_SHARE_PATIENT)
+	public Response<OnPatientShare> getPatientShare(@QueryParam("healthId")String healthId) {
+
+		OnPatientShare mobile = ndhmService.getPatientShare(healthId);
+		Response<OnPatientShare> response = new Response<OnPatientShare>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.PATIENT_NOTIFY_SMS)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmUrls.PATIENT_NOTIFY_SMS, notes = PathProxy.NdhmUrls.PATIENT_NOTIFY_SMS)
+	public Response<Boolean> sharePatientRequest(@RequestBody NotifyPatientrequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		Boolean mobile = ndhmService.notifyPatientSms(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	@Path(value = PathProxy.NdhmUrls.GET_PATIENT_NOTIFY_SMS)
+	@GET
+	@ApiOperation(value = PathProxy.NdhmUrls.GET_PATIENT_NOTIFY_SMS, notes = PathProxy.NdhmUrls.GET_PATIENT_NOTIFY_SMS)
+	public Response<OnNotifySmsRequest> getNotifySms(@QueryParam("requestId")String requestId) {
+
+		OnNotifySmsRequest mobile = ndhmService.getNotifySms(requestId);
+		Response<OnNotifySmsRequest> response = new Response<OnNotifySmsRequest>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
 	
 	
 }

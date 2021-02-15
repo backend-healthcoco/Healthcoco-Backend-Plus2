@@ -23,6 +23,7 @@ import com.dpdocter.beans.NdhmOtpStatus;
 import com.dpdocter.beans.NdhmPatientRequest;
 import com.dpdocter.beans.NdhmStatus;
 import com.dpdocter.beans.NotifyHiuRequest;
+import com.dpdocter.beans.NotifyPatientrequest;
 import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmRequest;
 import com.dpdocter.beans.OnAuthInitRequest;
@@ -34,6 +35,10 @@ import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.beans.OnLinkConfirm;
 import com.dpdocter.beans.OnLinkRequest;
 import com.dpdocter.beans.OnNotifyRequest;
+import com.dpdocter.beans.OnNotifySmsRequest;
+import com.dpdocter.beans.OnPatientShare;
+import com.dpdocter.beans.OnSharePatientrequest;
+import com.dpdocter.beans.PatientShareProfile;
 import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.HealthInfoNotify;
@@ -213,6 +218,19 @@ public interface NDHMservices {
 	Boolean onHiuDataTransferApi(DataTransferRequest request);
 	
 	DataTransferRequest getHiuData(String transactionId);
+
+	Boolean shareProfile(PatientShareProfile request);
+
+	Boolean onShareProfile(OnSharePatientrequest request);
+
+	OnPatientShare getPatientShare(String requestId);
+
+	Boolean notifyPatientSms(NotifyPatientrequest request);
+
+	
+	OnNotifySmsRequest getNotifySms(String requestId);
+
+	Boolean onNotifySms(OnNotifySmsRequest request);
 	
 
 }

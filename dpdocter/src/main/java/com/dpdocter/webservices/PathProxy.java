@@ -2565,6 +2565,14 @@ public interface PathProxy {
 		public static final String GET_HIU_DATA_REQUEST="/hiuDataRequest/get";
 		
 		public static final String GET_HIU_DATA="/hiuData/get";
+		
+		public static final String SHARE_PATIENT="/sharePatient";
+		
+		public static final String GET_SHARE_PATIENT="/sharePatient/get";
+		
+		public static final String PATIENT_NOTIFY_SMS="/patient/notifySms";
+		
+		public static final String GET_PATIENT_NOTIFY_SMS="/patient/notifySms/get";
 
 	}
 	
@@ -2603,7 +2611,9 @@ public interface PathProxy {
 		
 		public static final String ON_HIU_DATA_REQUEST = "/v0.5/health-information/hiu/on-request";
 		
+		public static final String ON_NOTIFY_SMS="/v0.5/patients/sms/on-notify";
 		
+		public static final String ON_PROFILE_SHARE="/v0.5/patients/profile/share";
 		
 		public static final String HIU_DATA_TRANSFER = "/hiu-data/transfer";
 

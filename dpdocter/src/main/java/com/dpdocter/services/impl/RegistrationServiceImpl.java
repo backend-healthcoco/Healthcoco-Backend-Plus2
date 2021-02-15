@@ -4,6 +4,8 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -15,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -69,8 +72,10 @@ import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
+import com.dpdocter.beans.HipConsent;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.NotifyPatientrequest;
 import com.dpdocter.beans.NutritionPlan;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
@@ -83,6 +88,7 @@ import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.SmsPatientNotify;
 import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.User;
@@ -257,6 +263,7 @@ import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.LoginService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.NDHMservices;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
@@ -475,7 +482,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private AcadamicProfileRespository acadamicProfileRespository;
-
+	
+	
+	
 	@Override
 	@Transactional
 	public User checkIfPatientExist(PatientRegistrationRequest request) {
@@ -742,6 +751,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 								referencesCollection.getMobileNumber());
 					}
 				}
+				
+				
 
 				/*
 				 * if (referencesCollection != null) { if

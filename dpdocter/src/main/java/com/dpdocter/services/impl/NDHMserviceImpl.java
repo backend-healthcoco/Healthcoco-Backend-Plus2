@@ -43,6 +43,7 @@ import com.dpdocter.beans.CareContext;
 import com.dpdocter.beans.CareContextDiscoverRequest;
 import com.dpdocter.beans.CareContextRequest;
 import com.dpdocter.beans.ConsentFetchRequest;
+import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DataEncryptionResponse;
 import com.dpdocter.beans.DiscoverPatientResponse;
 import com.dpdocter.beans.Districts;
@@ -78,6 +79,7 @@ import com.dpdocter.beans.NdhmOtpStatus;
 import com.dpdocter.beans.NdhmPatientRequest;
 import com.dpdocter.beans.NdhmStatus;
 import com.dpdocter.beans.NotifyHiuRequest;
+import com.dpdocter.beans.NotifyPatientrequest;
 import com.dpdocter.beans.NotifyRequest;
 import com.dpdocter.beans.OnAuthConfirmCollection;
 import com.dpdocter.beans.OnAuthConfirmRequest;
@@ -90,7 +92,12 @@ import com.dpdocter.beans.OnFetchModesRequest;
 import com.dpdocter.beans.OnLinkConfirm;
 import com.dpdocter.beans.OnLinkRequest;
 import com.dpdocter.beans.OnNotifyRequest;
+import com.dpdocter.beans.OnNotifySmsRequest;
+import com.dpdocter.beans.OnPatientShare;
+import com.dpdocter.beans.OnSharePatientrequest;
+import com.dpdocter.beans.PatientShareProfile;
 import com.dpdocter.beans.PatientVisitLookupBean;
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -101,12 +108,14 @@ import com.dpdocter.collections.ConsentFetchRequestCollection;
 import com.dpdocter.collections.ConsentInitCollection;
 import com.dpdocter.collections.ConsentOnInitRequestCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.HipDataFlowCollection;
 import com.dpdocter.collections.HiuDataRequestCollection;
 import com.dpdocter.collections.HiuDataTransferCollection;
 import com.dpdocter.collections.HiuNotifyCollection;
 import com.dpdocter.collections.LinkConfirmCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NdhmNotifyCollection;
 import com.dpdocter.collections.NdhmPatientFindCollection;
 import com.dpdocter.collections.OTPCollection;
@@ -115,15 +124,19 @@ import com.dpdocter.collections.OnAuthInitCollection;
 import com.dpdocter.collections.OnCareContextCollection;
 import com.dpdocter.collections.OnConsentRequestStatusCollection;
 import com.dpdocter.collections.OnFetchModeCollection;
+import com.dpdocter.collections.OnNotifySmsCollection;
 import com.dpdocter.collections.OperationNoteCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PatientShareProfileCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.NDHMRecordDataResourceType;
 import com.dpdocter.enums.OTPState;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -132,6 +145,7 @@ import com.dpdocter.repository.CareContextDiscoverRepository;
 import com.dpdocter.repository.ConsentFetchRepository;
 import com.dpdocter.repository.ConsentInitRepository;
 import com.dpdocter.repository.ConsentStatusRequestRepository;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HealthDataFlowRepository;
 import com.dpdocter.repository.HipDataFlowRepository;
@@ -141,14 +155,17 @@ import com.dpdocter.repository.HiuDataTransferRepository;
 import com.dpdocter.repository.HiuNotifyRepository;
 import com.dpdocter.repository.LinkConfirmRepository;
 import com.dpdocter.repository.LinkInitRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.NdhmNotifyRepository;
 import com.dpdocter.repository.NdhmPatientFindRepository;
+import com.dpdocter.repository.NotifySmsRepository;
 import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.OnAuthConfirmRepository;
 import com.dpdocter.repository.OnAuthInitRepository;
 import com.dpdocter.repository.OnCareContextRepository;
 import com.dpdocter.repository.OnFetchModeRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PatientShareRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ConsentOnInitRequest;
@@ -161,6 +178,7 @@ import com.dpdocter.request.EntriesDataTransferRequest;
 import com.dpdocter.request.GatewayConsentInitRequest;
 import com.dpdocter.request.GatewayConsentStatusRequest;
 import com.dpdocter.request.KeyMaterialRequestDataFlow;
+import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.GetCardProfileResponse;
 import com.dpdocter.security.DHKeyExchangeCrypto;
 import com.dpdocter.security.DhKeyExchangeCryptoHiu;
@@ -170,12 +188,16 @@ import com.dpdocter.security.PrescriptionSample;
 import com.dpdocter.security.ResourcePopulator;
 import com.dpdocter.services.NDHMservices;
 import com.dpdocter.services.OTPService;
+import com.dpdocter.services.PushNotificationServices;
+import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SMSServices;
+import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.webservices.GateWayHiOnRequest;
 import com.dpdocter.webservices.GateWayOnRequest;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import common.util.web.DPDoctorUtils;
 import common.util.web.LoginUtils;
 import common.util.web.Response;
 
@@ -276,7 +298,33 @@ public class NDHMserviceImpl implements NDHMservices {
 	
 	@Autowired
 	private HiuConsentRequestInitRepository hiuConsentRequestInitRepository;
+	
+	@Autowired
+	private PatientShareRepository patientShareRepository;
+	
+	@Autowired
+	private NotifySmsRepository notifySmsRepository;
+	
+	@Autowired
+	private PushNotificationServices pushNotificationServices;
+	
+	
+	@Autowired
+	private RegistrationService registrationService;
 
+	
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
+	
+	
+	@Autowired
+	private LocationRepository locationRepository;
+	
+	@Autowired
+	private ESRegistrationService esRegistrationService;
+
+	@Autowired
+	private TransactionalManagementService transnationalService;
 
 	public NdhmOauthResponse session() {
 		NdhmOauthResponse response = null;
@@ -4813,6 +4861,311 @@ public class NDHMserviceImpl implements NDHMservices {
 		}
 		return response;
 	
+	}
+	
+	
+	@Override
+	public Boolean shareProfile(PatientShareProfile request) {
+		Boolean response=false;
+		try {
+			
+			PatientShareProfileCollection collection=new PatientShareProfileCollection();
+			BeanUtil.map(request, collection);
+			collection.setCreatedTime(new Date());
+			collection.setUpdatedTime(new Date());
+			patientShareRepository.save(collection);
+			
+			OnSharePatientrequest request1=new OnSharePatientrequest();
+			UUID uuid=UUID.randomUUID();
+			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+			request1.setRequestId(uuid.toString());
+			request1.setTimestamp(time.toString());
+			AcknowledgementRequest ack=new AcknowledgementRequest();
+			ack.setStatus("SUCCESS");
+			ack.setConsentId(request.getPatient().getUserDemographics().getHealthId());
+			request1.setAcknowledgement(ack);
+			FetchResponse fetch=new FetchResponse();
+			fetch.setRequestId(request.getRequestId());
+			request1.setResp(fetch);
+			onShareProfile(request1);
+			
+			PatientRegistrationRequest request2=new PatientRegistrationRequest();
+			List<String>healthIds=new ArrayList<String>();
+			LocationCollection location=locationRepository.findByLocationName(request.getPatient().getHipCode());
+			DoctorClinicProfileCollection doctorClinicProfileCollections = doctorClinicProfileRepository
+					.findByLocationIdAndIsSuperAdmin(location.getId(),true);
+			request2.setDoctorId(doctorClinicProfileCollections.getDoctorId().toString());
+			request2.setLocationId(location.getId().toString());
+			request2.setHospitalId(location.getHospitalId().toString());
+			
+			healthIds.add(request.getPatient().getUserDemographics().getHealthId());
+			request2.setHealthId(healthIds);
+			request2.setLocalPatientName(request.getPatient().getUserDemographics().getName());
+			request2.setAge(request.getPatient().getUserDemographics().getYearOfBirth());
+			request2.setFirstName(request.getPatient().getUserDemographics().getName());
+			DOB dob=new DOB();
+			dob.setYears(request.getPatient().getUserDemographics().getYearOfBirth());
+			dob.setMonths(request.getPatient().getUserDemographics().getMonthOfBirth());
+			dob.setDays(request.getPatient().getUserDemographics().getDayOfBirth());
+			request2.setDob(dob);
+			request2.setMobileNumber(request.getPatient().getUserDemographics().getIdentifiers().get(0).getValue());
+			if(request.getPatient().getUserDemographics().getGender().getType().equals("M"))
+			{
+				request2.setGender("MALE");
+			}
+			else {
+				request2.setGender("FEMALE");
+			}
+			
+			
+			RegisteredPatientDetails registeredPatientDetails = registrationService.registerNewPatient(request2);
+			registrationService.checkPatientCount(request2.getMobileNumber());
+			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
+					false);
+			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
+
+			if(registeredPatientDetails !=null) {
+				
+				
+		//for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+			pushNotificationServices.notifyUser(doctorClinicProfileCollections.getDoctorId().toString(),
+					
+					"New Patient created using QR Code.", ComponentType.PATIENT.getType(),registeredPatientDetails.getUserId(),
+					null);
+		//}
+			}
+				response=true;
+			
+					
+		}
+		catch (Exception e) {
+			
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean onShareProfile(OnSharePatientrequest request) {
+		Boolean response=false;
+		try {
+		JSONObject orderRequest = new JSONObject();
+		orderRequest.put("requestId", request.getRequestId());
+		orderRequest.put("timestamp", request.getTimestamp());
+		JSONObject acknowledgementRequest = new JSONObject();
+		acknowledgementRequest.put("status", request.getAcknowledgement().getStatus());
+		acknowledgementRequest.put("healthId", request.getAcknowledgement().getConsentId());
+		orderRequest.put("acknowledgement", acknowledgementRequest);
+			
+		orderRequest.put("error",request.getError());
+		JSONObject resp = new JSONObject();
+		resp.put("requestId",request.getResp().getRequestId());
+		orderRequest.put("resp",resp);
+		
+		String url = "https://dev.ndhm.gov.in/gateway/v0.5/patients/profile/on-share";
+		NdhmOauthResponse oauth = session();
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+		con.setDoOutput(true);
+
+		System.out.println(con.getErrorStream());
+		con.setDoInput(true);
+		// optional default is POST
+		con.setRequestMethod("POST");
+		con.setRequestProperty("Accept-Language", "en-US");
+		con.setRequestProperty("Content-Type", "application/json");
+		con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+		con.setRequestProperty("X-CM-ID", "sbx");
+		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+		wr.writeBytes(orderRequest.toString());
+		wr.flush();
+		wr.close();
+		con.disconnect();
+		InputStream in = con.getInputStream();
+		// BufferedReader in = new BufferedReader(new
+		// InputStreamReader(con.getInputStream()));
+		String inputLine;
+		System.out.println(con.getErrorStream());
+		/* response = new StringBuffer(); */
+		StringBuffer output = new StringBuffer();
+		int c = 0;
+		while ((c = in.read()) != -1) {
+
+			output.append((char) c);
+
+		}
+		System.out.println("response:" + output.toString());
+		int responseCode = con.getResponseCode();
+		if (responseCode == 202)
+			response = true;
+		
+		
+		}
+		catch (Exception e) {
+			
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+		
+	}
+	
+	
+	@Override
+	public OnPatientShare getPatientShare(String requestId) {
+		OnPatientShare response=null;
+		try {
+			PatientShareProfileCollection collection=patientShareRepository.findByPatientUserDemographicsHealthId(requestId);
+			
+			if(collection !=null)
+			{
+				response=new OnPatientShare();
+				BeanUtil.map(collection, response);
+			}
+			
+		}
+		catch (Exception e) {
+			
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+
+	}
+	
+	
+	@Override
+	public Boolean notifyPatientSms(NotifyPatientrequest request) {
+		Boolean response=false;
+		try {
+		String link=	DPDoctorUtils.urlShortner("https://sandbox.ndhm.gov.in/docs/phr_app");
+		JSONObject orderRequest = new JSONObject();
+		orderRequest.put("requestId", request.getRequestId());
+		orderRequest.put("timestamp", request.getTimestamp());
+		JSONObject notificationRequest = new JSONObject();
+		notificationRequest.put("phoneNo", "+91-"+request.getNotification().getPhoneNo());
+		notificationRequest.put("receiverName", request.getNotification().getReceiverName());
+		notificationRequest.put("careContextInfo", request.getNotification().getCareContextInfo());
+		notificationRequest.put("deeplinkUrl", link);
+		JSONObject hipRequest = new JSONObject();
+		
+		hipRequest.put("name", request.getNotification().getHip().getName());
+		hipRequest.put("id",request.getNotification().getHip().getId());
+		notificationRequest.put("hip", hipRequest);
+		orderRequest.put("notification", notificationRequest);
+			
+		
+		System.out.println("Orderrequest:" + orderRequest.toString());
+		String url = "https://dev.ndhm.gov.in/gateway/v0.5/patients/sms/notify";
+		NdhmOauthResponse oauth = session();
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+		con.setDoOutput(true);
+
+		System.out.println(con.getErrorStream());
+		con.setDoInput(true);
+		// optional default is POST
+		con.setRequestMethod("POST");
+		con.setRequestProperty("Accept-Language", "en-US");
+		con.setRequestProperty("Content-Type", "application/json");
+		con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+		con.setRequestProperty("X-CM-ID","sbx");
+		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+		wr.writeBytes(orderRequest.toString());
+		wr.flush();
+		wr.close();
+		con.disconnect();
+		InputStream in = con.getInputStream();
+		// BufferedReader in = new BufferedReader(new
+		// InputStreamReader(con.getInputStream()));
+		String inputLine;
+		System.out.println(con.getErrorStream());
+		/* response = new StringBuffer(); */
+		StringBuffer output = new StringBuffer();
+		int c = 0;
+		while ((c = in.read()) != -1) {
+
+			output.append((char) c);
+
+		}
+		System.out.println("response:" + output.toString());
+		int responseCode = con.getResponseCode();
+		if (responseCode == 202)
+			response = true;
+//		OnNotifyRequest request1=new OnNotifyRequest();
+//		UUID uuid=UUID.randomUUID();
+//		LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+//		request1.setRequestId(uuid.toString());
+//		request1.setTimestamp(time.toString());
+//		FetchResponse fetch=new FetchResponse();
+//		fetch.setRequestId(request.getRequestId());
+//		request1.setResp(fetch);
+//		AcknowledgementRequest acknowledgementRequest=new AcknowledgementRequest();
+//		acknowledgementRequest.setConsentId(collection.getNotification().getConsentId());
+//		acknowledgementRequest.setStatus("OK");
+//		req.setAcknowledgement(acknowledgementRequest);
+//		onNotifySms();
+		}
+		
+		
+		catch (Exception e) {
+			
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+		
+	}
+	
+	@Override
+	public Boolean onNotifySms(OnNotifySmsRequest request) {
+		Boolean response=false;
+		try {
+			OnNotifySmsCollection collection=new OnNotifySmsCollection();
+			BeanUtil.map(request, collection);
+			collection.setCreatedTime(new Date());
+			collection.setUpdatedTime(new Date());
+			notifySmsRepository.save(collection);
+			response=true;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+
+
+	}
+	
+	
+	@Override
+	public OnNotifySmsRequest getNotifySms(String requestId) {
+		OnNotifySmsRequest response=null;
+		try {
+			OnNotifySmsCollection collection=notifySmsRepository.findByRespRequestId(requestId);
+			response=new OnNotifySmsRequest();
+			if(collection !=null)
+			{
+				BeanUtil.map(collection, response);
+			}
+			
+		}
+		catch (Exception e) {
+			
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+
 	}
 
 	

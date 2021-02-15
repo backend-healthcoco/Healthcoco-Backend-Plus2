@@ -31,6 +31,9 @@ import com.dpdocter.beans.OnCareContext;
 import com.dpdocter.beans.OnConsentFetchRequest;
 import com.dpdocter.beans.OnConsentRequestStatus;
 import com.dpdocter.beans.OnFetchModesRequest;
+import com.dpdocter.beans.OnNotifyRequest;
+import com.dpdocter.beans.OnNotifySmsRequest;
+import com.dpdocter.beans.PatientShareProfile;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.ConsentOnInitRequest;
@@ -329,6 +332,44 @@ public class NDHMPushBackApi {
 		DataTransferRequest request1= mapper.readValue(request,DataTransferRequest.class);
 
 		Boolean mobile = ndhmService.onHiuDataTransferApi(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	
+	
+	@Path(value = PathProxy.NdhmPushUrls.ON_PROFILE_SHARE)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmPushUrls.ON_PROFILE_SHARE, notes = PathProxy.NdhmPushUrls.ON_PROFILE_SHARE)
+	public Response<Boolean> onProfileShare(String request) throws JsonParseException, JsonMappingException, IOException {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		PatientShareProfile request1= mapper.readValue(request,PatientShareProfile.class);
+
+		Boolean mobile = ndhmService.shareProfile(request1);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(mobile);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.NdhmPushUrls.ON_NOTIFY_SMS)
+	@POST
+	@ApiOperation(value = PathProxy.NdhmPushUrls.ON_NOTIFY_SMS, notes = PathProxy.NdhmPushUrls.ON_NOTIFY_SMS)
+	public Response<Boolean> onNotifySms(String request) throws JsonParseException, JsonMappingException, IOException {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, " request Required");
+		}
+		System.out.println("request"+request); 
+		ObjectMapper mapper = new ObjectMapper();
+		OnNotifySmsRequest request1= mapper.readValue(request,OnNotifySmsRequest.class);
+
+		Boolean mobile = ndhmService.onNotifySms(request1);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(mobile);
 		return response;

@@ -21,5 +21,7 @@ public interface DoctorClinicProfileRepository extends MongoRepository<DoctorCli
 
 	DoctorClinicProfileCollection findByDoctorIdAndConsultationType(ObjectId doctorObjectId, String consultationType);
 
+	DoctorClinicProfileCollection findByLocationIdAndIsSuperAdmin(ObjectId id, boolean b);
+
 	//DoctorClinicProfileCollection findByDoctorId(ObjectId doctorId);
 	}
