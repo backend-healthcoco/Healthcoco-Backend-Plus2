@@ -53,7 +53,7 @@ public class DhKeyExchangeCryptoHiu {
         KeyPair receiverKeyPair = generateKeyPair();
         String receiverPrivateKey = getBase64String(getEncodedPrivateKey(receiverKeyPair.getPrivate()));
         //KeyMaterial.dhPublicKey.keyValue from POST
-        String receiverPublicKey =getBase64String(getEncodedPublicKeyForProjectEKAHIU(receiverKeyPair.getPublic()));
+        String receiverPublicKey =getBase64String(getEncodedPublicKeyHiu(receiverKeyPair.getPublic()));
         KeyPair senderKeyPair = generateKeyPair();
         String senderPrivateKey = getBase64String(getEncodedPrivateKey(senderKeyPair.getPrivate()));
         String senderPublicKey = getBase64String(getEncodedPublicKey(senderKeyPair.getPublic()));
@@ -86,8 +86,11 @@ public class DhKeyExchangeCryptoHiu {
         System.out.println("\n");
         System.out.println("<---------------- DONE ------------------->");
        // response.setEncryptedData(encryptedData);
+     //   response.setRandomSender(randomSender);
+        response.setReceiverPublicKey(receiverPublicKey);
+        response.setReceiverPrivateKey(receiverPrivateKey);
+        response.setRandomReceiver(randomReceiver);
         response.setRandomSender(randomSender);
-        response.setSenderPublicKey(receiverPublicKey);
         return response;
     }
 
@@ -261,6 +264,13 @@ public class DhKeyExchangeCryptoHiu {
         ECPrivateKey ecKey = (ECPrivateKey)key;
         return ecKey.getD().toByteArray();
     }
+    
+    public static byte [] getEncodedPublicKeyHiu(PublicKey key) throws Exception
+    {
+        ECPublicKey ecKey = (ECPublicKey)key;
+        return ecKey.getQ().getEncoded(false);
+    }
+
 
     /*
      If using ProjectEka HIU for the decryption then Please use below methods for converting public keys

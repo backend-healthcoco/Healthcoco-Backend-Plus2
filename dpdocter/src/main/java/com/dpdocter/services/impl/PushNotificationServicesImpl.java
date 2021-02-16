@@ -304,7 +304,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 	            Boolean isSilent = false;
 	            Map<String, Object> customValues = new HashMap<String, Object>();
 				if (!DPDoctorUtils.anyStringEmpty(componentType)) {
-					if (componentType.equalsIgnoreCase(ComponentType.PATIENT.getType())) {
+					if (componentType.equalsIgnoreCase(ComponentType.PRESCRIPTION_REFRESH.getType())) {
 					//	customValues.put("XI", componentTypeId);
 					//	customValues.put("T", "X");
 					//	customValues.put("PI", userId);
@@ -314,7 +314,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			            info.put("body", message);
 			            info.put("XI",componentTypeId);
 			            info.put("PI",userId);// Notification body
-			            info.put("sound","default");
+			         //   info.put("sound","default");
 			            info.put("priority","high");
 			            data.put("notification", info);
 						

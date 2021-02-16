@@ -39,7 +39,7 @@ public class DHKeyExchangeCrypto {
     public static final String PROVIDER = BouncyCastleProvider.PROVIDER_NAME;
    
     // Driver function
-    public static DataEncryptionResponse convert(String strToPerformActionOn,String nounce,String keypair,boolean b) throws Exception {
+    public static DataEncryptionResponse convert(String strToPerformActionOn,String nounce,String keypair,boolean b, String sharedNounce,String receiverPrivateKey1) throws Exception {
     	DataEncryptionResponse response=new DataEncryptionResponse();
     	Security.addProvider(new BouncyCastleProvider());
 
@@ -245,8 +245,8 @@ public class DHKeyExchangeCrypto {
         encryptedData = encrypt(xorOfRandom, senderPrivateKey1, receiverPublicKey, strToPerformActionOn);
         }
         else {
-
-        decryptedData = decrypt(xorOfRandom, receiverPrivateKey, receiverPublicKey, encryptedData);
+        	 byte[] xorOfRandom1 = xorOfRandom(randomReceiver, sharedNounce);
+        decryptedData = decrypt(xorOfRandom1,receiverPrivateKey1, receiverPublicKey, strToPerformActionOn);
         }
         System.out.println("\n");
         // POST in content
@@ -263,6 +263,7 @@ public class DHKeyExchangeCrypto {
         response.setEncryptedData(encryptedData);
         response.setDecryptedData(decryptedData);
         response.setRandomSender(randomSender);
+        response.setRandomReceiver(randomReceiver);
         response.setSenderPublicKey(senderPublicKey1);
         return response;
     }
@@ -271,7 +272,7 @@ public class DHKeyExchangeCrypto {
     public static String encrypt(byte[] xorOfRandom, String senderPrivateKey, String receiverPublicKey, String stringToEncrypt) throws Exception {
         System.out.println("<------------------- ENCRYPTION -------------------->");
         // Generating shared secret
-        String sharedKey = doECDH1(getBytesForBase64String(senderPrivateKey), getBytesForBase64String(receiverPublicKey));
+        String sharedKey = doECDH(getBytesForBase64String(senderPrivateKey), getBytesForBase64String(receiverPublicKey));
         System.out.println("Shared key: " + sharedKey);
 
         // Generating iv and HKDF-AES key
@@ -439,6 +440,12 @@ public class DHKeyExchangeCrypto {
     {
         ECPublicKey ecKey = (ECPublicKey)key;
         return ecKey.getQ().getEncoded(true);
+    }
+    
+    public byte [] getEncodedPublicKeyHiu(PublicKey key) throws Exception
+    {
+        ECPublicKey ecKey = (ECPublicKey)key;
+        return ecKey.getQ().getEncoded(false);
     }
 
     public static byte [] getEncodedPrivateKey(PrivateKey key) throws Exception

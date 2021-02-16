@@ -107,6 +107,7 @@ import com.dpdocter.collections.CareContextDiscoverCollection;
 import com.dpdocter.collections.ConsentFetchRequestCollection;
 import com.dpdocter.collections.ConsentInitCollection;
 import com.dpdocter.collections.ConsentOnInitRequestCollection;
+import com.dpdocter.collections.DataEncryptionCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -147,6 +148,7 @@ import com.dpdocter.repository.ConsentInitRepository;
 import com.dpdocter.repository.ConsentStatusRequestRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.EncryptionKeyRepository;
 import com.dpdocter.repository.HealthDataFlowRepository;
 import com.dpdocter.repository.HipDataFlowRepository;
 import com.dpdocter.repository.HiuConsentRequestInitRepository;
@@ -325,6 +327,10 @@ public class NDHMserviceImpl implements NDHMservices {
 
 	@Autowired
 	private TransactionalManagementService transnationalService;
+	
+	@Autowired
+	private EncryptionKeyRepository encryptionKeyRepository;
+	
 
 	public NdhmOauthResponse session() {
 		NdhmOauthResponse response = null;
@@ -3186,8 +3192,11 @@ public class NDHMserviceImpl implements NDHMservices {
 						DataEncryptionResponse data=null;
 						if( collection.getHiRequest().getKeyMaterial() !=null)
 						{
-						data=DHKeyExchangeCrypto.convert(bundle, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue(),false);
+						data=DHKeyExchangeCrypto.convert(bundle, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue(),false, null, null);
 						
+						DataEncryptionCollection encryption=encryptionKeyRepository.findByRandomReceiver(collection.getHiRequest().getKeyMaterial().getNonce());
+						encryption.setSharedSenderNonce(data.getRandomSender());
+						encryptionKeyRepository.save(encryption);
 						System.out.println("encrypt"+data);
 						EntriesDataTransferRequest entry=new EntriesDataTransferRequest();
 						entry.setCareContextReference("Prescription");
@@ -4555,6 +4564,11 @@ public class NDHMserviceImpl implements NDHMservices {
 			
 			KeyMaterialRequestDataFlow key=new KeyMaterialRequestDataFlow();
 			DataEncryptionResponse hiu=DhKeyExchangeCryptoHiu.convert();
+			DataEncryptionCollection encryption=new DataEncryptionCollection();
+			BeanUtil.map(hiu, encryption);
+			encryption.setCreatedTime(new Date());
+			encryption.setUpdatedTime(new Date());
+			encryptionKeyRepository.save(encryption);
 			JSONObject orderRequest = new JSONObject();
 			orderRequest.put("requestId", request.getRequestId());
 			orderRequest.put("timestamp", request.getTimestamp());
@@ -4572,11 +4586,11 @@ public class NDHMserviceImpl implements NDHMservices {
 			JSONObject keymaterial = new JSONObject();
 			keymaterial.put("cryptoAlg", key.getCryptoAlg());
 			keymaterial.put("curve", key.getCurve());
-			keymaterial.put("nonce", hiu.getRandomSender());
+			keymaterial.put("nonce", hiu.getRandomReceiver());
 			JSONObject dhPublicKey = new JSONObject();
 			dhPublicKey.put("expiry",request.getHiRequest().getKeyMaterial().getDhPublicKey().getExpiry());
 			dhPublicKey.put("parameters",request.getHiRequest().getKeyMaterial().getDhPublicKey().getParameters());
-			dhPublicKey.put("keyValue",hiu.getSenderPublicKey());
+			dhPublicKey.put("keyValue",hiu.getReceiverPublicKey());
 			keymaterial.put("dhPublicKey", dhPublicKey);
 			hiRequestRequest.put("keyMaterial", keymaterial);
 			
@@ -4836,14 +4850,15 @@ public class NDHMserviceImpl implements NDHMservices {
 		DataTransferRequest response=new DataTransferRequest();
 		try {
 			HiuDataTransferCollection collection=hiuDataTransferRepository.findByTransactionId(transactionId);
+			
 			List<EntriesDataTransferRequest>entryList=new ArrayList<EntriesDataTransferRequest>();
 			if(collection!=null)
 			{
 				for(EntriesDataTransferRequest entry:collection.getEntries())
 				{
 					DataEncryptionResponse data=null;
-					
-					data=DHKeyExchangeCrypto.convert(entry.getContent(), collection.getKeyMaterial().getNonce(), collection.getKeyMaterial().getDhPublicKey().getKeyValue(),true);
+					DataEncryptionCollection encryption=encryptionKeyRepository.findBySharedSenderNonce(collection.getKeyMaterial().getNonce());
+					data=DHKeyExchangeCrypto.convert(entry.getContent(), collection.getKeyMaterial().getNonce(), collection.getKeyMaterial().getDhPublicKey().getKeyValue(),true,encryption.getRandomReceiver(),encryption.getReceiverPrivateKey());
 					entry.setContent(data.getDecryptedData());
 					entryList.add(entry);
 				}
