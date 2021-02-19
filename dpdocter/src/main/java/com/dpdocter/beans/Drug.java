@@ -1,5 +1,6 @@
 package com.dpdocter.beans;
 
+import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -55,6 +56,8 @@ public class Drug extends GenericCollection {
 	private String drugTypePlacement = DrugTypePlacement.PREFIX.getPlacement();
 
 	private String drugCompanyId;
+	
+	
 
 	public String getId() {
 		return id;
@@ -239,6 +242,8 @@ public class Drug extends GenericCollection {
 	public void setDrugCompanyId(String drugCompanyId) {
 		this.drugCompanyId = drugCompanyId;
 	}
+	
+	
 
 	@Override
 	public String toString() {

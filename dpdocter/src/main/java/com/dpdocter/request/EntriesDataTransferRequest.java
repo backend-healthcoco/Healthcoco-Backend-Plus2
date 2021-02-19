@@ -1,5 +1,10 @@
 package com.dpdocter.request;
 
+import org.hl7.fhir.r4.model.Bundle;
+import org.json.JSONObject;
+
+import com.dpdocter.beans.ResponseBundle;
+
 public class EntriesDataTransferRequest {
 
 	private String link="https://data-from.net/sa2321afaf12e13";
@@ -7,6 +12,8 @@ public class EntriesDataTransferRequest {
 	private String media="application/fhir+json";
 	private String checksum;
 	private String careContextReference;
+	
+	private ResponseBundle bundle;
 	public String getLink() {
 		return link;
 	}
@@ -37,7 +44,13 @@ public class EntriesDataTransferRequest {
 	public void setCareContextReference(String careContextReference) {
 		this.careContextReference = careContextReference;
 	}
-
+	public ResponseBundle getBundle() {
+		return bundle;
+	}
+	public void setBundle(ResponseBundle bundle) {
+		this.bundle = bundle;
+	}
+	
 	
 }
 

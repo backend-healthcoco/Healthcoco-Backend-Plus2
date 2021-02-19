@@ -7,6 +7,12 @@ public class NDHMRecordDataResource {
 	private String id;
 	private NDHMRecordDataMeta meta;
 	
+	
+	private BundleEntryIdentifiers identifiers;
+	
+	private List<BundleEntryIdentifiers> identifier;
+	
+	private EntryType type;
     
     private NDHMRecordDataText text; 
     private String status;
@@ -14,6 +20,13 @@ public class NDHMRecordDataResource {
     private NDHMRecordDataCode medicationCodeableConcept;
     private NDHMRecordDataSubject subject;
     private String  authoredOn;
+    private String date;
+    private List<EntryAuthor> author;
+    private String title;
+    private List<EntrySection> section;
+    
+    private List<EntryName> name;
+    
     private NDHMRecordDataRequester requester;
     private NDHMRecordDataCode reasonCode; 
     private List<NDHMRecordDataReasonReference> reasonReference;
@@ -95,6 +108,57 @@ public class NDHMRecordDataResource {
 	}
 	public void setDosageInstruction(List<NDHMRecordDataDosageInstruction> dosageInstruction) {
 		this.dosageInstruction = dosageInstruction;
+	}
+	
+	
+	
+	public BundleEntryIdentifiers getIdentifiers() {
+		return identifiers;
+	}
+	public void setIdentifiers(BundleEntryIdentifiers identifiers) {
+		this.identifiers = identifiers;
+	}
+	public List<BundleEntryIdentifiers> getIdentifier() {
+		return identifier;
+	}
+	public void setIdentifier(List<BundleEntryIdentifiers> identifier) {
+		this.identifier = identifier;
+	}
+	public EntryType getType() {
+		return type;
+	}
+	public void setType(EntryType type) {
+		this.type = type;
+	}
+	public String getDate() {
+		return date;
+	}
+	public void setDate(String date) {
+		this.date = date;
+	}
+	public List<EntryAuthor> getAuthor() {
+		return author;
+	}
+	public void setAuthor(List<EntryAuthor> author) {
+		this.author = author;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public List<EntrySection> getSection() {
+		return section;
+	}
+	public void setSection(List<EntrySection> section) {
+		this.section = section;
+	}
+	public List<EntryName> getName() {
+		return name;
+	}
+	public void setName(List<EntryName> name) {
+		this.name = name;
 	}
 	@Override
 	public String toString() {

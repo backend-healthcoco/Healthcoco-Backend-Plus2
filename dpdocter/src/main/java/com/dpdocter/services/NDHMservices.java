@@ -43,6 +43,7 @@ import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.HealthInfoNotify;
 import com.dpdocter.beans.HiuDataRequest;
+import com.dpdocter.beans.HiuDataResponse;
 import com.dpdocter.beans.HiuOnNotify;
 import com.dpdocter.beans.LinkConfirm;
 import com.dpdocter.beans.LinkRequest;
@@ -217,13 +218,13 @@ public interface NDHMservices {
 
 	Boolean onHiuDataTransferApi(DataTransferRequest request);
 	
-	DataTransferRequest getHiuData(String transactionId);
+	HiuDataResponse getHiuData(String transactionId);
 
 	Boolean shareProfile(PatientShareProfile request);
 
 	Boolean onShareProfile(OnSharePatientrequest request);
 
-	OnPatientShare getPatientShare(String requestId);
+	PatientShareProfile getPatientShare(String requestId);
 
 	Boolean notifyPatientSms(NotifyPatientrequest request);
 

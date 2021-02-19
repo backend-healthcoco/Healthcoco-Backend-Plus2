@@ -8,7 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import java.util.ArrayList;
-
+import java.util.Arrays;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -18,12 +18,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.function.Function;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.HumanName;
+import org.hl7.fhir.r4.model.MedicationRequest;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -47,6 +57,7 @@ import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DataEncryptionResponse;
 import com.dpdocter.beans.DiscoverPatientResponse;
 import com.dpdocter.beans.Districts;
+import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.FetchModesRequest;
 import com.dpdocter.beans.FetchResponse;
 import com.dpdocter.beans.HealthIdRequest;
@@ -57,6 +68,7 @@ import com.dpdocter.beans.HealthInfoNotify;
 import com.dpdocter.beans.HipInfoNotify;
 import com.dpdocter.beans.HipNotifier;
 import com.dpdocter.beans.HiuDataRequest;
+import com.dpdocter.beans.HiuDataResponse;
 import com.dpdocter.beans.HiuOnNotify;
 import com.dpdocter.beans.LinkConfirm;
 import com.dpdocter.beans.LinkConfirmPatient;
@@ -72,11 +84,14 @@ import com.dpdocter.beans.NDHMRecordDataRequester;
 import com.dpdocter.beans.NDHMRecordDataResource;
 import com.dpdocter.beans.NDHMRecordDataSubject;
 import com.dpdocter.beans.NDHMStates;
+import com.dpdocter.beans.NdhmDoctorDetails;
 import com.dpdocter.beans.NdhmOauthResponse;
 import com.dpdocter.beans.NdhmOnPatientFindRequest;
 import com.dpdocter.beans.NdhmOtp;
 import com.dpdocter.beans.NdhmOtpStatus;
+import com.dpdocter.beans.NdhmPatientDetails;
 import com.dpdocter.beans.NdhmPatientRequest;
+import com.dpdocter.beans.NdhmPrescriptionDetails;
 import com.dpdocter.beans.NdhmStatus;
 import com.dpdocter.beans.NotifyHiuRequest;
 import com.dpdocter.beans.NotifyPatientrequest;
@@ -98,6 +113,7 @@ import com.dpdocter.beans.OnSharePatientrequest;
 import com.dpdocter.beans.PatientShareProfile;
 import com.dpdocter.beans.PatientVisitLookupBean;
 import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.beans.ResponseBundle;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -188,6 +204,7 @@ import com.dpdocter.security.DischargeSummarySample;
 import com.dpdocter.security.OPConsultNoteSample;
 import com.dpdocter.security.PrescriptionSample;
 import com.dpdocter.security.ResourcePopulator;
+import com.dpdocter.services.HITypeResourceProcessor;
 import com.dpdocter.services.NDHMservices;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PushNotificationServices;
@@ -199,6 +216,8 @@ import com.dpdocter.webservices.GateWayOnRequest;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 import common.util.web.DPDoctorUtils;
 import common.util.web.LoginUtils;
 import common.util.web.Response;
@@ -207,6 +226,8 @@ import common.util.web.Response;
 public class NDHMserviceImpl implements NDHMservices {
 
 	private static Logger logger = LogManager.getLogger(NDHMserviceImpl.class.getName());
+	
+	private final List<HITypeResourceProcessor> resourceProcessors = new ArrayList<>();
 
 	@Value(value = "${ndhm.clientId}")
 	private String NDHM_CLIENTID;
@@ -3134,8 +3155,9 @@ public class NDHMserviceImpl implements NDHMservices {
 					//String hiType=hiTypes.get(0);
 					String healthId=notify.getNotification().getConsentDetail().getPatient().getId();
 					String locationId=notify.getNotification().getConsentDetail().getHip().getId();
-						PatientCollection patientCollection=patientRepository.findByHealthIdAndLocationId(healthId,new ObjectId(locationId));
-//						Criteria criteria1 = new Criteria();
+						List<PatientCollection> patientCollections=patientRepository.findByHealthIdAndLocationId(healthId,new ObjectId(locationId));
+						PatientCollection	patientCollection=patientCollections.get(0);
+						//						Criteria criteria1 = new Criteria();
 //						
 //						criteria1.and("healthId").is(healthId);
 //						criteria1.and("locationId").is(new ObjectId(locationId));
@@ -3195,8 +3217,10 @@ public class NDHMserviceImpl implements NDHMservices {
 						data=DHKeyExchangeCrypto.convert(bundle, collection.getHiRequest().getKeyMaterial().getNonce(), collection.getHiRequest().getKeyMaterial().getDhPublicKey().getKeyValue(),false, null, null);
 						
 						DataEncryptionCollection encryption=encryptionKeyRepository.findByRandomReceiver(collection.getHiRequest().getKeyMaterial().getNonce());
+						if(encryption !=null) {
 						encryption.setSharedSenderNonce(data.getRandomSender());
 						encryptionKeyRepository.save(encryption);
+						}
 						System.out.println("encrypt"+data);
 						EntriesDataTransferRequest entry=new EntriesDataTransferRequest();
 						entry.setCareContextReference("Prescription");
@@ -4846,8 +4870,8 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 
 	@Override
-	public DataTransferRequest getHiuData(String transactionId) {
-		DataTransferRequest response=new DataTransferRequest();
+	public HiuDataResponse getHiuData(String transactionId) {
+		HiuDataResponse response=new HiuDataResponse();
 		try {
 			HiuDataTransferCollection collection=hiuDataTransferRepository.findByTransactionId(transactionId);
 			
@@ -4859,11 +4883,141 @@ public class NDHMserviceImpl implements NDHMservices {
 					DataEncryptionResponse data=null;
 					DataEncryptionCollection encryption=encryptionKeyRepository.findBySharedSenderNonce(collection.getKeyMaterial().getNonce());
 					data=DHKeyExchangeCrypto.convert(entry.getContent(), collection.getKeyMaterial().getNonce(), collection.getKeyMaterial().getDhPublicKey().getKeyValue(),true,encryption.getRandomReceiver(),encryption.getReceiverPrivateKey());
-					entry.setContent(data.getDecryptedData());
+			//		String tmp=data.getDecryptedData().replaceFirst("identifier", "identifiers");
+			//		String tmp2=tmp.replaceFirst("identifier", "identifiers");
+			//		System.out.println("temp2"+tmp2);
+//					
+//				    
+//				    JSONObject json = new JSONObject(data.getDecryptedData());  
+//					//obj.getJSONObject(data.getDecryptedData());
+//					//entry.setStr(json);
+					FhirContext ctx = FhirContext.forR4();
+					IParser parser=null;
+					Bundle bundle=new Bundle();
+					if(data.getDecryptedData().matches("(?s).*(<(\\w+)[^>]*>.*</\\2>|<(\\w+)[^>]*/>).*"))
+					{
+						 parser = ctx.newXmlParser();
+							//	IBaseResource prescriptionBundle=parser.parseResource(entry.getContent());
+							    bundle = parser.parseResource(Bundle.class, data.getDecryptedData());
+					}
+					else {
+						 parser = ctx.newJsonParser();
+						//	IBaseResource prescriptionBundle=parser.parseResource(entry.getContent());
+						    bundle = parser.parseResource(Bundle.class, data.getDecryptedData());
+					}
+						
+					
+				    
+				    if (!isValidBundleType(bundle)) {
+				    	throw new BusinessException(ServiceError.Unknown, " Response data Bundle validation failed " );
+		}
+				    
+				    System.out.println("Entry1"+bundle.getEntry().toString());
+				    for(BundleEntryComponent entry1: bundle.getEntry())
+				    {
+				    	NDHMPrecriptionRecordData data1=new NDHMPrecriptionRecordData();
+				    	data1.setFullUrl(entry1.getFullUrl());
+				    	NDHMRecordDataResource resource=new NDHMRecordDataResource();
+				    	resource.setResourceType(entry1.getResource().getResourceType().toString());
+				    	System.out.println("Entry1"+entry1.getFullUrl());
+				    	if(entry1.getFullUrl().contains("Patient"))
+				    	{
+				    		Patient pat= (Patient) entry1.getResource();
+				    		System.out.println("Patient"+pat.getName().get(0).getText());
+				    		NdhmPatientDetails patient=new NdhmPatientDetails();
+				    		patient.setName(pat.getName().get(0).getText());
+				    		response.setPatient(patient);
+				    	//	System.out.println("Patient="+patient.getFirstName());
+				    	}
+				    	else if(entry1.getFullUrl().contains("Practitioner"))
+				    	{
+				    		Practitioner pat= (Practitioner) entry1.getResource();
+				    		System.out.println("Patient"+pat.getName().get(0).getText());
+				    		NdhmDoctorDetails doctor=new NdhmDoctorDetails();
+				    		doctor.setName(pat.getName().get(0).getText());
+				    		
+				    		response.setDoctor(doctor);
+				    	}
+				    	else if(entry1.getFullUrl().contains("MedicationRequest"))
+				    	{
+				    		MedicationRequest pat= (MedicationRequest) entry1.getResource();
+				    		NdhmPrescriptionDetails prescription=new NdhmPrescriptionDetails();
+				    		String drugName=pat.getMedicationCodeableConcept().getText().replace("[","");
+				    		String drugId=pat.getIdBase();
+				    		drugName=drugName.replace("]", "");
+				    		String[]drug1=drugName.split(",");
+				    		List<String>drugs= Arrays.asList(drug1);
+				    		prescription.setAuthoredOn(pat.getAuthoredOn());
+				    		String drugid=drugId.substring(drugId.indexOf('/') + 1);
+				    		prescription.setId(drugid);
+				    		
+				    		String dose = pat.getDosageInstruction().get(0).getText().replace("[","");
+				    		dose=dose.replace("]", "");
+				    		String dose1[]=dose.split(",");
+				    		List<String>dosage=Arrays.asList(dose1);
+				    		
+				    		List<Drug>d1=new ArrayList<Drug>();
+				    		for(int i=0;i<drugs.size();i++)
+				    		{
+				    		Drug d2=new Drug();
+				    		
+				    		
+				    		
+				    		d2.setDrugName(drugs.get(i));
+				    		if(dosage.get(i)!=null)
+				    		d2.setDosage(dosage.get(i));
+				    		d1.add(d2);
+				    		d2=null;
+				    		}
+				    		
+				    		
+				    		//dosage.add(pat.getDosageInstruction().get(0).getText());
+				    		
+				    		
+				    		
+				    		prescription.setDrug(d1);
+				    		List<NdhmPrescriptionDetails>prescriptions=new ArrayList<NdhmPrescriptionDetails>();
+				    		prescriptions.add(prescription);
+				    		response.setPrescription(prescriptions);
+				    		response.setTransactionId(collection.getTransactionId());
+				    		response.setCreatedTime(collection.getCreatedTime());
+				    		response.setUpdatedTime(collection.getUpdatedTime());
+				    	}
+				    	
+				    	
+				    	
+				    }
+//				   // entry.setStr(bundle);
+				 //   ObjectMapper mapper = new ObjectMapper();
+				  //  ResponseBundle bundl=mapper.readValue(tmp2,ResponseBundle.class);
+				 //   entry.setBundle(bundl);
+				    //				    bundle.getEntry().forEach(bundleEntry -> {
+//	                    ResourceType resourceType = bundleEntry.getResource().getResourceType();
+//	                    logger.info("bundle entry resource type:  {}", resourceType);
+//	                    HITypeResourceProcessor processor = identifyResourceProcessor(resourceType);
+//	                    if(resourceType.name()=="Patient" && bundleEntry.getFullUrl().contains("Patient"))
+//	                    {
+//	                    	Patient parsed = parser.parseResource(Patient.class,bundleEntry.getResource());
+//	                    }
+//	                    
+//	});
+				    
+				    
+				    
+				    
+				    
+				    
+				    
+				    
+				    
+				    
+				    
+				    
+				    
 					entryList.add(entry);
 				}
 				collection.setEntries(entryList);
-				BeanUtil.map(collection,response);
+			//	BeanUtil.map(collection,response);
 			}
 			
 		}
@@ -4890,19 +5044,19 @@ public class NDHMserviceImpl implements NDHMservices {
 			collection.setUpdatedTime(new Date());
 			patientShareRepository.save(collection);
 			
-			OnSharePatientrequest request1=new OnSharePatientrequest();
-			UUID uuid=UUID.randomUUID();
-			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
-			request1.setRequestId(uuid.toString());
-			request1.setTimestamp(time.toString());
-			AcknowledgementRequest ack=new AcknowledgementRequest();
-			ack.setStatus("SUCCESS");
-			ack.setConsentId(request.getPatient().getUserDemographics().getHealthId());
-			request1.setAcknowledgement(ack);
-			FetchResponse fetch=new FetchResponse();
-			fetch.setRequestId(request.getRequestId());
-			request1.setResp(fetch);
-			onShareProfile(request1);
+//			OnSharePatientrequest request1=new OnSharePatientrequest();
+//			UUID uuid=UUID.randomUUID();
+//			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+//			request1.setRequestId(uuid.toString());
+//			request1.setTimestamp(time.toString());
+//			AcknowledgementRequest ack=new AcknowledgementRequest();
+//			ack.setStatus("SUCCESS");
+//			ack.setConsentId(request.getPatient().getUserDemographics().getHealthId());
+//			request1.setAcknowledgement(ack);
+//			FetchResponse fetch=new FetchResponse();
+//			fetch.setRequestId(request.getRequestId());
+//			request1.setResp(fetch);
+//			onShareProfile(request1);
 			
 			PatientRegistrationRequest request2=new PatientRegistrationRequest();
 			List<String>healthIds=new ArrayList<String>();
@@ -4932,23 +5086,23 @@ public class NDHMserviceImpl implements NDHMservices {
 				request2.setGender("FEMALE");
 			}
 			
-			
-			RegisteredPatientDetails registeredPatientDetails = registrationService.registerNewPatient(request2);
-			registrationService.checkPatientCount(request2.getMobileNumber());
-			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
-					false);
-			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
-
-			if(registeredPatientDetails !=null) {
-				
-				
-		//for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-			pushNotificationServices.notifyUser(doctorClinicProfileCollections.getDoctorId().toString(),
+pushNotificationServices.notifyUser(doctorClinicProfileCollections.getDoctorId().toString(),
 					
-					"New Patient created using QR Code.", ComponentType.PATIENT.getType(),registeredPatientDetails.getUserId(),
+					"New Patient created using QR Code.", ComponentType.HEALTH_ID.getType(),request2.getHealthId().get(0),
 					null);
-		//}
-			}
+//			RegisteredPatientDetails registeredPatientDetails = registrationService.registerNewPatient(request2);
+//			registrationService.checkPatientCount(request2.getMobileNumber());
+//			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
+//					false);
+//			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
+//
+//			if(registeredPatientDetails !=null) {
+//				
+//				
+//		//for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+//			
+//		//}
+//			}
 				response=true;
 			
 					
@@ -5031,14 +5185,15 @@ public class NDHMserviceImpl implements NDHMservices {
 	
 	
 	@Override
-	public OnPatientShare getPatientShare(String requestId) {
-		OnPatientShare response=null;
+	public PatientShareProfile getPatientShare(String healthId) {
+		PatientShareProfile response=null;
 		try {
-			PatientShareProfileCollection collection=patientShareRepository.findByPatientUserDemographicsHealthId(requestId);
+			List<PatientShareProfileCollection> collections=patientShareRepository.findByPatientUserDemographicsHealthId(healthId);
 			
-			if(collection !=null)
+			if(collections !=null)
 			{
-				response=new OnPatientShare();
+				PatientShareProfileCollection collection=collections.get(0);
+				response=new PatientShareProfile();
 				BeanUtil.map(collection, response);
 			}
 			
@@ -5182,7 +5337,19 @@ public class NDHMserviceImpl implements NDHMservices {
 		return response;
 
 	}
-
 	
-
+	  private boolean isValidBundleType(Bundle bundle) {
+	        Bundle.BundleType bundleType = bundle.getType();
+	        if (bundleType.equals(Bundle.BundleType.COLLECTION)) {
+	            return true;
+	        }
+	        if (!bundleType.equals(Bundle.BundleType.DOCUMENT)) {
+	            return false;
+	        }
+	        if (bundle.getEntry().isEmpty()) {
+	            return false;
+	        }
+	        Bundle.BundleEntryComponent firstEntry = bundle.getEntry().get(0);
+	        return firstEntry.getResource().getResourceType().equals(ResourceType.Composition);
+	}
 }

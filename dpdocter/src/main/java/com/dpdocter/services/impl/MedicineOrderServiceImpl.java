@@ -634,6 +634,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 				//medicineOrderCollection.setUniqueOrderId(UniqueIdInitial.MEDICINE_ORDER.getInitial() + DPDoctorUtils.generateRandomId());
 			}
 
+			userCartCollection.setItems(null);
 			BeanUtil.map(request, userCartCollection);
 			/*List<MedicineOrderItems> orderItems = new ArrayList<>();
 			for(MedicineOrderAddEditItems items : request.getItems()) {
@@ -690,18 +691,29 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 	@Transactional
 	public UserCart getUserCartByuserId(String id ) {
 		UserCart userCart = null;
-		UserCartCollection userCartCollection = null;
+	//	UserCartCollection userCartCollection = null;
 
 		try {
 
-			userCartCollection = userCartRepository.findByUserId(new ObjectId(id));
+//			userCartCollection = userCartRepository.findByUserId(new ObjectId(id));
+//
+//			if (userCartCollection == null) {
+//				throw new BusinessException(ServiceError.NoRecord, "Record not found");
+//			}
+			
+			Aggregation aggregation = null;
+			
+				Criteria criteria = new Criteria("userId").is(new ObjectId(id));
 
-			if (userCartCollection == null) {
-				throw new BusinessException(ServiceError.NoRecord, "Record not found");
-			}
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 
-			userCartCollection = userCartRepository.save(userCartCollection);
-			if (userCartCollection != null) {
+				List<UserCartCollection>		userCartCollections = mongoTemplate.aggregate(aggregation, UserCartCollection.class, UserCartCollection.class)
+						.getMappedResults();
+
+		//	userCartCollection = userCartRepository.save(userCartCollection);
+			if (userCartCollections != null) {
+				UserCartCollection userCartCollection=userCartCollections.get(0);
 				userCart = new UserCart();
 				BeanUtil.map(userCartCollection, userCart);
 			}

@@ -4,7 +4,11 @@ import java.util.List;
 
 public class NDHMRecordDataMeta {
 
-	List<String> profile;
+	
+	private String versionId;
+	private List<String> profile;
+	private String lastUpdated;
+	private List<BundleSecurity> security;
 
 	public List<String> getProfile() {
 		return profile;
@@ -12,6 +16,32 @@ public class NDHMRecordDataMeta {
 
 	public void setProfile(List<String> profile) {
 		this.profile = profile;
+	}
+	
+	
+
+	public String getVersionId() {
+		return versionId;
+	}
+
+	public void setVersionId(String versionId) {
+		this.versionId = versionId;
+	}
+
+	public String getLastUpdated() {
+		return lastUpdated;
+	}
+
+	public void setLastUpdated(String lastUpdated) {
+		this.lastUpdated = lastUpdated;
+	}
+
+	public List<BundleSecurity> getSecurity() {
+		return security;
+	}
+
+	public void setSecurity(List<BundleSecurity> security) {
+		this.security = security;
 	}
 
 	@Override

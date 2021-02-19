@@ -37,6 +37,7 @@ import com.dpdocter.beans.HealthIdSearch;
 import com.dpdocter.beans.HealthIdSearchRequest;
 import com.dpdocter.beans.HealthInfoNotify;
 import com.dpdocter.beans.HiuDataRequest;
+import com.dpdocter.beans.HiuDataResponse;
 import com.dpdocter.beans.HiuOnNotify;
 import com.dpdocter.beans.LinkConfirm;
 import com.dpdocter.beans.LinkRequest;
@@ -848,10 +849,10 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_HIU_DATA)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_HIU_DATA, notes = PathProxy.NdhmUrls.GET_HIU_DATA)
-	public Response<DataTransferRequest> getHiuData(@QueryParam("transactionId")String transactionId) {
+	public Response<HiuDataResponse> getHiuData(@QueryParam("transactionId")String transactionId) {
 
-		DataTransferRequest mobile = ndhmService.getHiuData(transactionId);
-		Response<DataTransferRequest> response = new Response<DataTransferRequest>();
+		HiuDataResponse mobile = ndhmService.getHiuData(transactionId);
+		Response<HiuDataResponse> response = new Response<HiuDataResponse>();
 		response.setData(mobile);
 		return response;
 	}
@@ -872,10 +873,10 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_SHARE_PATIENT)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_SHARE_PATIENT, notes = PathProxy.NdhmUrls.GET_SHARE_PATIENT)
-	public Response<OnPatientShare> getPatientShare(@QueryParam("healthId")String healthId) {
+	public Response<PatientShareProfile> getPatientShare(@QueryParam("healthId")String healthId) {
 
-		OnPatientShare mobile = ndhmService.getPatientShare(healthId);
-		Response<OnPatientShare> response = new Response<OnPatientShare>();
+		PatientShareProfile mobile = ndhmService.getPatientShare(healthId);
+		Response<PatientShareProfile> response = new Response<PatientShareProfile>();
 		response.setData(mobile);
 		return response;
 	}
