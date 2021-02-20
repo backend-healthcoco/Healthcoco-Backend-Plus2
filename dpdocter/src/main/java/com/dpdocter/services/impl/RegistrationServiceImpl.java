@@ -270,6 +270,11 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
+import java.text.DateFormat; 
+import java.time.Period;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 
@@ -1583,6 +1588,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 				registeredPatientDetails.setPatient(patient);
 				registeredPatientDetails.setAddress(patientCard.getAddress());
 				registeredPatientDetails.setBackendPatientId(patientCard.getId());
+				//calculate age of patient upto today
+				if (registeredPatientDetails.getDob() != null) {
+					if(registeredPatientDetails.getDob().getDays() > 0 && registeredPatientDetails.getDob().getMonths() > 0 && registeredPatientDetails.getDob().getYears() > 0) {
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+					LocalDate today = LocalDate.now();
+					LocalDate birthday = LocalDate.parse(registeredPatientDetails.getDob().getDays()+"/"+registeredPatientDetails.getDob().getMonths()
+							+"/"+registeredPatientDetails.getDob().getYears(), formatter);
+
+					Period p = Period.between(birthday, today);
+									
+					registeredPatientDetails.getDob().getAge().setDays(p.getDays());
+					registeredPatientDetails.getDob().getAge().setMonths(p.getMonths());
+					registeredPatientDetails.getDob().getAge().setYears(p.getYears());
+					}
+				}
+				
 				@SuppressWarnings("unchecked")
 				Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
 						new BeanToPropertyValueTransformer("groupId"));
