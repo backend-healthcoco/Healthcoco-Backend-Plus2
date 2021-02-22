@@ -837,9 +837,10 @@ public class NdhmApi {
 	@Path(value = PathProxy.NdhmUrls.GET_HIU_DATA_REQUEST)
 	@GET
 	@ApiOperation(value = PathProxy.NdhmUrls.GET_HIU_DATA_REQUEST, notes = PathProxy.NdhmUrls.GET_HIU_DATA_REQUEST)
-	public Response<GateWayOnRequest> getHiuDataRequest(@QueryParam("requestId")String requestId) {
+	public Response<GateWayOnRequest> getHiuDataRequest(@QueryParam("requestId")String requestId,
+			@QueryParam("doctorId")String doctorId,@QueryParam("healthId")String healthId) {
 
-		GateWayOnRequest mobile = ndhmService.getHiuDataRequest(requestId);
+		GateWayOnRequest mobile = ndhmService.getHiuDataRequest(requestId,doctorId,healthId);
 		Response<GateWayOnRequest> response = new Response<GateWayOnRequest>();
 		response.setData(mobile);
 		return response;

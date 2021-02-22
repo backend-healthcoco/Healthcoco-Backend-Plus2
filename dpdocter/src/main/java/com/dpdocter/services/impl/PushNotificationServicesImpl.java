@@ -319,6 +319,21 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			            data.put("notification", info);
 						
 					} 
+					else if (componentType.equalsIgnoreCase(ComponentType.NDHM_PATIENT_DATA.getType())) {
+						//	customValues.put("XI", componentTypeId);
+						//	customValues.put("T", "X");
+						//	customValues.put("PI", userId);
+							
+							data.put("to",pushToken.trim());
+				            info.put("title",componentType ); // Notification title
+				            info.put("body", message);
+				            info.put("XI",componentTypeId);
+				            info.put("PI",userId);// Notification body
+				         //   info.put("sound","default");
+				            info.put("priority","high");
+				            data.put("notification", info);
+							
+						} 
 //					else if (componentType.equalsIgnoreCase(ComponentType.REPORTS.getType())) {
 ////						customValues.put("RI", componentTypeId);
 ////						customValues.put("T", "R");

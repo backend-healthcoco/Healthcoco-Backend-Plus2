@@ -25,6 +25,9 @@ public class HiuDataTransferCollection extends GenericCollection{
 	private List<EntriesDataTransferRequest> entries;
 	@Field
 	private KeyMaterialRequestDataFlow keyMaterial;
+	@Field
+	private String healthId;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -60,6 +63,12 @@ public class HiuDataTransferCollection extends GenericCollection{
 	}
 	public void setKeyMaterial(KeyMaterialRequestDataFlow keyMaterial) {
 		this.keyMaterial = keyMaterial;
+	}
+	public String getHealthId() {
+		return healthId;
+	}
+	public void setHealthId(String healthId) {
+		this.healthId = healthId;
 	}
 	
 	

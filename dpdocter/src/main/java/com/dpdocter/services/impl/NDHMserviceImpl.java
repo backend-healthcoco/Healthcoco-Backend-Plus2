@@ -4765,16 +4765,20 @@ public class NDHMserviceImpl implements NDHMservices {
 	}
 	
 	@Override
-	public GateWayOnRequest getHiuDataRequest(String requestId) {
+	public GateWayOnRequest getHiuDataRequest(String requestId,String doctorId,String healthId) {
 		GateWayOnRequest response=null;
 		try {
 			HiuDataRequestCollection collection=hiuDataRequestRepository.findByRespRequestId(requestId);
-			response=new GateWayOnRequest();
-			if(collection !=null)
+			if(healthId!=null)
 			{
-				BeanUtil.map(collection, response);
+			collection.setHealthId(healthId);
+			collection.setDoctorId(new ObjectId(doctorId));
+			hiuDataRequestRepository.save(collection);
 			}
-			
+			response=new GateWayOnRequest();
+			BeanUtil.map(collection, response);
+
+//			
 		}
 		catch (Exception e) {
 			
@@ -4797,7 +4801,23 @@ public class NDHMserviceImpl implements NDHMservices {
 			collection.setCreatedTime(new Date());
 			collection.setUpdatedTime(new Date());
 			hiuDataTransferRepository.save(collection);
+			
+			
+			if(collection.getTransactionId() !=null)
+			{
+				HiuDataRequestCollection hiuDataRequest=hiuDataRequestRepository.findByHiRequestTransactionId(collection.getTransactionId());		
+pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
+					
+					"Ndhm Patient Data Request.", ComponentType.NDHM_PATIENT_DATA.getType(),null,
+					null);
+			
+			}
+			
+			
 			response=true;
+			
+			
+			
 //			JSONObject orderRequest = new JSONObject();
 //			orderRequest.put("pageNumber", request.getPageNumber());
 //			orderRequest.put("pageCount", request.getPageCount());
@@ -4875,6 +4895,19 @@ public class NDHMserviceImpl implements NDHMservices {
 		try {
 			HiuDataTransferCollection collection=hiuDataTransferRepository.findByTransactionId(transactionId);
 			
+//			HiuDataRequestCollection dataRequest=hiuDataRequestRepository.findByHiRequestTransactionId(transactionId);
+//			
+//			
+//			List<ConsentFetchRequestCollection fetchRequest=null;
+//			if(healthId!=null)
+//			 fetchRequest=consentFetchRepository.findByConsentConsentDetailPatientId(healthId);
+//			
+//			if(dataRequest!=null && fetchRequest!=null)
+//			{
+//				collection.setHealthId(healthId);
+//				hiuDataTransferRepository.save(collection);
+//			}
+			
 			List<EntriesDataTransferRequest>entryList=new ArrayList<EntriesDataTransferRequest>();
 			if(collection!=null)
 			{
@@ -4911,7 +4944,7 @@ public class NDHMserviceImpl implements NDHMservices {
 				    if (!isValidBundleType(bundle)) {
 				    	throw new BusinessException(ServiceError.Unknown, " Response data Bundle validation failed " );
 		}
-				    
+				    List<NdhmPrescriptionDetails>prescriptions=new ArrayList<NdhmPrescriptionDetails>();
 				    System.out.println("Entry1"+bundle.getEntry().toString());
 				    for(BundleEntryComponent entry1: bundle.getEntry())
 				    {
@@ -4965,7 +4998,7 @@ public class NDHMserviceImpl implements NDHMservices {
 				    		
 				    		d2.setDrugName(drugs.get(i));
 				    		if(dosage.get(i)!=null)
-				    		d2.setDosage(dosage.get(i));
+				    		d2.setDosage(dosage.get(i).contains("null")?null:dosage.get(i));
 				    		d1.add(d2);
 				    		d2=null;
 				    		}
@@ -4976,15 +5009,16 @@ public class NDHMserviceImpl implements NDHMservices {
 				    		
 				    		
 				    		prescription.setDrug(d1);
-				    		List<NdhmPrescriptionDetails>prescriptions=new ArrayList<NdhmPrescriptionDetails>();
+				    		
 				    		prescriptions.add(prescription);
-				    		response.setPrescription(prescriptions);
-				    		response.setTransactionId(collection.getTransactionId());
-				    		response.setCreatedTime(collection.getCreatedTime());
-				    		response.setUpdatedTime(collection.getUpdatedTime());
+				    		prescription=null;
+				    		
 				    	}
 				    	
-				    	
+				    	response.setPrescription(prescriptions);
+			    		response.setTransactionId(collection.getTransactionId());
+			    		response.setCreatedTime(collection.getCreatedTime());
+			    		response.setUpdatedTime(collection.getUpdatedTime());
 				    	
 				    }
 //				   // entry.setStr(bundle);
@@ -5044,19 +5078,19 @@ public class NDHMserviceImpl implements NDHMservices {
 			collection.setUpdatedTime(new Date());
 			patientShareRepository.save(collection);
 			
-//			OnSharePatientrequest request1=new OnSharePatientrequest();
-//			UUID uuid=UUID.randomUUID();
-//			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
-//			request1.setRequestId(uuid.toString());
-//			request1.setTimestamp(time.toString());
-//			AcknowledgementRequest ack=new AcknowledgementRequest();
-//			ack.setStatus("SUCCESS");
-//			ack.setConsentId(request.getPatient().getUserDemographics().getHealthId());
-//			request1.setAcknowledgement(ack);
-//			FetchResponse fetch=new FetchResponse();
-//			fetch.setRequestId(request.getRequestId());
-//			request1.setResp(fetch);
-//			onShareProfile(request1);
+			OnSharePatientrequest request1=new OnSharePatientrequest();
+			UUID uuid=UUID.randomUUID();
+			LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+			request1.setRequestId(uuid.toString());
+			request1.setTimestamp(time.toString());
+			AcknowledgementRequest ack=new AcknowledgementRequest();
+			ack.setStatus("SUCCESS");
+			ack.setConsentId(request.getPatient().getUserDemographics().getHealthId());
+			request1.setAcknowledgement(ack);
+			FetchResponse fetch=new FetchResponse();
+			fetch.setRequestId(request.getRequestId());
+			request1.setResp(fetch);
+			onShareProfile(request1);
 			
 			PatientRegistrationRequest request2=new PatientRegistrationRequest();
 			List<String>healthIds=new ArrayList<String>();

@@ -10,4 +10,6 @@ public interface HiuDataRequestRepository extends MongoRepository<HiuDataRequest
 
 	HiuDataRequestCollection findByRespRequestId(String requestId);
 
+	HiuDataRequestCollection findByHiRequestTransactionId(String transactionId);
+
 }

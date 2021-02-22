@@ -214,7 +214,7 @@ public interface NDHMservices {
 
 	Boolean onHiuDatarequest(GateWayOnRequest request);
 
-	GateWayOnRequest getHiuDataRequest(String requestId);
+	GateWayOnRequest getHiuDataRequest(String requestId,String doctorId,String healthId);
 
 	Boolean onHiuDataTransferApi(DataTransferRequest request);
 	
@@ -232,6 +232,8 @@ public interface NDHMservices {
 	OnNotifySmsRequest getNotifySms(String requestId);
 
 	Boolean onNotifySms(OnNotifySmsRequest request);
+
+
 	
 
 }

@@ -9,4 +9,6 @@ public interface ConsentFetchRepository extends MongoRepository<ConsentFetchRequ
 
 	ConsentFetchRequestCollection findByRespRequestId(String requestId);
 
+	ConsentFetchRequestCollection findByConsentConsentDetailPatientId(String healthId);
+
 }
