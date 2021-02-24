@@ -17,7 +17,7 @@ public class PatientShareProfileCollection extends GenericCollection{
 	@Field
 	private String timeStamp;
 	@Field
-	private PatientQRCode patient;
+	private PatientQRCode profile;
 
 	public ObjectId getId() {
 		return id;
@@ -43,13 +43,15 @@ public class PatientShareProfileCollection extends GenericCollection{
 		this.timeStamp = timeStamp;
 	}
 
-	public PatientQRCode getPatient() {
-		return patient;
+	public PatientQRCode getProfile() {
+		return profile;
 	}
 
-	public void setPatient(PatientQRCode patient) {
-		this.patient = patient;
+	public void setProfile(PatientQRCode profile) {
+		this.profile = profile;
 	}
+
+	
 	
 	
 }

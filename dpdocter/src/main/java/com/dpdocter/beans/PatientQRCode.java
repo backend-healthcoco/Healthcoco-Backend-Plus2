@@ -4,7 +4,7 @@ public class PatientQRCode {
 
 	private String hipCode;
 	
-	private UserDemographics userDemographics;
+	private UserDemographics patient;
 
 	public String getHipCode() {
 		return hipCode;
@@ -14,13 +14,15 @@ public class PatientQRCode {
 		this.hipCode = hipCode;
 	}
 
-	public UserDemographics getUserDemographics() {
-		return userDemographics;
+	public UserDemographics getPatient() {
+		return patient;
 	}
 
-	public void setUserDemographics(UserDemographics userDemographics) {
-		this.userDemographics = userDemographics;
+	public void setPatient(UserDemographics patient) {
+		this.patient = patient;
 	}
+
+	
 	
 	
 }

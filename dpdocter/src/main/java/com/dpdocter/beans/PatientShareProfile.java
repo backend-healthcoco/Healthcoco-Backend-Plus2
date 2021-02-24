@@ -8,7 +8,7 @@ public class PatientShareProfile {
 	
 	private String timestamp;
 
-	private PatientQRCode patient;
+	private PatientQRCode profile;
 
 	public String getRequestId() {
 		return requestId;
@@ -28,13 +28,15 @@ public class PatientShareProfile {
 		this.timestamp = timestamp;
 	}
 
-	public PatientQRCode getPatient() {
-		return patient;
+	public PatientQRCode getProfile() {
+		return profile;
 	}
 
-	public void setPatient(PatientQRCode patient) {
-		this.patient = patient;
+	public void setProfile(PatientQRCode profile) {
+		this.profile = profile;
 	}
+
+	
 
 	
 

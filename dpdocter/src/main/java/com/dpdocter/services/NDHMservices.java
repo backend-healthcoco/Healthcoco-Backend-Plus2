@@ -233,6 +233,8 @@ public interface NDHMservices {
 
 	Boolean onNotifySms(OnNotifySmsRequest request);
 
+	Boolean healthInformationHIUNotify(HealthInfoNotify request);
+
 
 	
 

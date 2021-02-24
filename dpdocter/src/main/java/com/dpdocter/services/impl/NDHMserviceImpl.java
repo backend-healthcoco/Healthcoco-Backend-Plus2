@@ -4802,10 +4802,10 @@ public class NDHMserviceImpl implements NDHMservices {
 			collection.setUpdatedTime(new Date());
 			hiuDataTransferRepository.save(collection);
 			
-			
+			HiuDataRequestCollection hiuDataRequest=null;
 			if(collection.getTransactionId() !=null)
 			{
-				HiuDataRequestCollection hiuDataRequest=hiuDataRequestRepository.findByHiRequestTransactionId(collection.getTransactionId());		
+				hiuDataRequest=hiuDataRequestRepository.findByHiRequestTransactionId(collection.getTransactionId());		
 pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 					
 					"Ndhm Patient Data Request.", ComponentType.NDHM_PATIENT_DATA.getType(),null,
@@ -4814,8 +4814,42 @@ pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 			}
 			
 			
+			
+			
 			response=true;
 			
+//			if(response==true)
+//			{
+//				ConsentFetchRequestCollection fetch=consentFetchRepository.findByConsentConsentDetailPatientId(healthId)
+//				
+//				HealthInfoNotify dataFlow=new HealthInfoNotify();
+//				UUID uuid=UUID.randomUUID();
+//				
+//				LocalDateTime time= LocalDateTime.now(ZoneOffset.UTC);
+//				dataFlow.setRequestId(uuid.toString());
+//				dataFlow.setTimestamp(time.toString());
+//				
+//				HipInfoNotify hipNotify=new HipInfoNotify();
+//				hipNotify.setTransactionId(collection.getTransactionId());
+//				hipNotify.setConsentId(hiuDataRequest.getHiRequest().);
+//				hipNotify.setDoneAt(time.toString());
+//				HipNotifier notifier=new HipNotifier();
+//				notifier.setId(NDHM_CLIENTID);
+//				notifier.setType("HIU");
+//				StatusNotify statusNotify=new StatusNotify();
+//				statusNotify.setSessionStatus("TRANSFERRED");
+//				statusNotify.setHipId(NDHM_CLIENTID);
+//				StatusResponse statusResponse=new StatusResponse();
+//				statusResponse.setHiStatus("DELIVERED");
+//				statusResponse.setCareContextReference("Healthcoco");
+//				statusNotify.setStatusResponses(statusResponse);
+//				hipNotify.setStatusNotification(statusNotify);
+//				dataFlow.setNotification(hipNotify);
+//				info=healthInformationNotify(dataFlow);	
+//				
+//			}
+			
+	//		System.out.println("transferReponse"+transferResponse);
 			
 			
 //			JSONObject orderRequest = new JSONObject();
@@ -4888,6 +4922,89 @@ pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 		}
 		return response;
 	}
+	
+	@Override
+	public Boolean healthInformationHIUNotify(HealthInfoNotify request) {
+		Boolean response = false;
+		try {
+			JSONObject orderRequest = new JSONObject();
+			orderRequest.put("requestId", request.getRequestId());
+			orderRequest.put("timestamp", request.getTimestamp());
+
+			JSONObject hiRequestRequest = new JSONObject();
+			hiRequestRequest.put("consentId", request.getNotification().getTransactionId());
+			hiRequestRequest.put("transactionId", request.getNotification().getTransactionId());
+			hiRequestRequest.put("doneAt", request.getNotification().getDoneAt());
+			JSONObject notifierRequest = new JSONObject();
+			notifierRequest.put("type", "HIU");
+			notifierRequest.put("id",request.getNotification().getNotifier().getId());
+			hiRequestRequest.put("doneAt", request.getNotification().getDoneAt());
+			hiRequestRequest.put("notifier", request.getNotification().getNotifier());
+			hiRequestRequest.put("statusNotification", request.getNotification().getStatusNotification());
+			System.out.println(hiRequestRequest);
+			orderRequest.put("notification", hiRequestRequest);
+
+//			JSONObject errorRequest = new JSONObject();
+//			errorRequest.put("code", request.getError().getCode());
+//			errorRequest.put("message", request.getError().getMessage());
+//			System.out.println(errorRequest);
+//			orderRequest.put("error", errorRequest);
+//			
+//			JSONObject requestId = new JSONObject();
+//			requestId.put("requestId", request.getResp().getRequestId());
+//			orderRequest.put("resp",requestId);
+			
+			NdhmOauthResponse oauth = session();
+			System.out.println("token" + oauth.getAccessToken());
+
+			String url = "https://dev.ndhm.gov.in/gateway/v0.5/health-information/notify";
+
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setDoOutput(true);
+
+			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Accept-Language", "en-US");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", "Bearer " + oauth.getAccessToken());
+			con.setRequestProperty("X-CM-ID", "sbx");
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(orderRequest.toString());
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			InputStream in = con.getInputStream();
+			// BufferedReader in = new BufferedReader(new
+			// InputStreamReader(con.getInputStream()));
+			String inputLine;
+			System.out.println(con.getErrorStream());
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			int c = 0;
+			while ((c = in.read()) != -1) {
+
+				output.append((char) c);
+
+			}
+			System.out.println("response:" + output.toString());
+			int responseCode = con.getResponseCode();
+			if (responseCode == 202)
+				response = true;
+			
+		}
+		catch (Exception e) {
+			
+			e.printStackTrace();
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
 
 	@Override
 	public HiuDataResponse getHiuData(String transactionId) {
@@ -5085,7 +5202,7 @@ pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 			request1.setTimestamp(time.toString());
 			AcknowledgementRequest ack=new AcknowledgementRequest();
 			ack.setStatus("SUCCESS");
-			ack.setConsentId(request.getPatient().getUserDemographics().getHealthId());
+			ack.setConsentId(request.getProfile().getPatient().getHealthId());
 			request1.setAcknowledgement(ack);
 			FetchResponse fetch=new FetchResponse();
 			fetch.setRequestId(request.getRequestId());
@@ -5094,25 +5211,25 @@ pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 			
 			PatientRegistrationRequest request2=new PatientRegistrationRequest();
 			List<String>healthIds=new ArrayList<String>();
-			LocationCollection location=locationRepository.findByLocationName(request.getPatient().getHipCode());
+			LocationCollection location=locationRepository.findByLocationName(request.getProfile().getHipCode());
 			DoctorClinicProfileCollection doctorClinicProfileCollections = doctorClinicProfileRepository
 					.findByLocationIdAndIsSuperAdmin(location.getId(),true);
 			request2.setDoctorId(doctorClinicProfileCollections.getDoctorId().toString());
 			request2.setLocationId(location.getId().toString());
 			request2.setHospitalId(location.getHospitalId().toString());
 			
-			healthIds.add(request.getPatient().getUserDemographics().getHealthId());
+			healthIds.add(request.getProfile().getPatient().getHealthId());
 			request2.setHealthId(healthIds);
-			request2.setLocalPatientName(request.getPatient().getUserDemographics().getName());
-			request2.setAge(request.getPatient().getUserDemographics().getYearOfBirth());
-			request2.setFirstName(request.getPatient().getUserDemographics().getName());
+			request2.setLocalPatientName(request.getProfile().getPatient().getName());
+			request2.setAge(request.getProfile().getPatient().getYearOfBirth());
+			request2.setFirstName(request.getProfile().getPatient().getName());
 			DOB dob=new DOB();
-			dob.setYears(request.getPatient().getUserDemographics().getYearOfBirth());
-			dob.setMonths(request.getPatient().getUserDemographics().getMonthOfBirth());
-			dob.setDays(request.getPatient().getUserDemographics().getDayOfBirth());
+			dob.setYears(request.getProfile().getPatient().getYearOfBirth());
+			dob.setMonths(request.getProfile().getPatient().getMonthOfBirth());
+			dob.setDays(request.getProfile().getPatient().getDayOfBirth());
 			request2.setDob(dob);
-			request2.setMobileNumber(request.getPatient().getUserDemographics().getIdentifiers().get(0).getValue());
-			if(request.getPatient().getUserDemographics().getGender().getType().equals("M"))
+			request2.setMobileNumber(request.getProfile().getPatient().getIdentifiers().get(0).getValue());
+			if(request.getProfile().getPatient().getGender().getType().equals("M"))
 			{
 				request2.setGender("MALE");
 			}
@@ -5222,7 +5339,7 @@ pushNotificationServices.notifyUser(doctorClinicProfileCollections.getDoctorId()
 	public PatientShareProfile getPatientShare(String healthId) {
 		PatientShareProfile response=null;
 		try {
-			List<PatientShareProfileCollection> collections=patientShareRepository.findByPatientUserDemographicsHealthId(healthId);
+			List<PatientShareProfileCollection> collections=patientShareRepository.findByProfilePatientHealthId(healthId);
 			
 			if(collections !=null)
 			{

@@ -9,7 +9,9 @@ import com.dpdocter.collections.PatientShareProfileCollection;
 
 public interface PatientShareRepository extends MongoRepository<PatientShareProfileCollection,ObjectId>{
 
-	List<PatientShareProfileCollection> findByPatientUserDemographicsHealthId(String healthId);
+	//List<PatientShareProfileCollection> findByPatientUserDemographicsHealthId(String healthId);
+
+	List<PatientShareProfileCollection> findByProfilePatientHealthId(String healthId);
 
 
 }
