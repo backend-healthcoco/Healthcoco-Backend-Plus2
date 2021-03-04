@@ -4,6 +4,9 @@ import static com.dpdocter.enums.VisitedFor.CLINICAL_NOTES;
 import static com.dpdocter.enums.VisitedFor.PRESCRIPTION;
 import static com.dpdocter.enums.VisitedFor.REPORTS;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -271,6 +274,22 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					patientCard.setDoctorSepecificPatientId(patientCard.getUserId().toString());
 					patientCard.setId(patientCard.getUserId());
 					patientCard.setUser(null);
+					
+					//calculate age of patient upto today
+					if (patientCard.getDob() != null) {
+						if(patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0 && patientCard.getDob().getYears() > 0) {
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+						LocalDate today = LocalDate.now();
+						LocalDate birthday = LocalDate.parse(patientCard.getDob().getDays()+"/"+patientCard.getDob().getMonths()
+								+"/"+patientCard.getDob().getYears(), formatter);
+
+						Period p = Period.between(birthday, today);
+										
+						patientCard.getDob().getAge().setDays(p.getDays());
+						patientCard.getDob().getAge().setMonths(p.getMonths());
+						patientCard.getDob().getAge().setYears(p.getYears());
+						}
+					}
 				}
 				response = new DoctorContactsResponse();
 				response.setPatientCards(patientCards);
@@ -437,6 +456,22 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					patientCard.setDoctorSepecificPatientId(patientCard.getUserId().toString());
 					patientCard.setId(patientCard.getUserId());
 					patientCard.setUser(null);
+					
+					//calculate age of patient upto today
+					if (patientCard.getDob() != null) {
+						if(patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0 && patientCard.getDob().getYears() > 0) {
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+						LocalDate today = LocalDate.now();
+						LocalDate birthday = LocalDate.parse(patientCard.getDob().getDays()+"/"+patientCard.getDob().getMonths()
+								+"/"+patientCard.getDob().getYears(), formatter);
+
+						Period p = Period.between(birthday, today);
+										
+						patientCard.getDob().getAge().setDays(p.getDays());
+						patientCard.getDob().getAge().setMonths(p.getMonths());
+						patientCard.getDob().getAge().setYears(p.getYears());
+						}
+					}
 				}
 				response = new DoctorContactsResponse();
 				response.setPatientCards(patientCards);
