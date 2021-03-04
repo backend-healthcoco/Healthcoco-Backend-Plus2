@@ -143,8 +143,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			}
 			return response;
 		} catch (BusinessException be) {
-			logger.error(be + "No account present with email address, please sign up");
-			throw new BusinessException(ServiceError.Unknown, "No account present with email address, please sign up");
+			logger.error(be + "No account present with email address, please sign up"+request.getEmailAddress());
+			throw new BusinessException(ServiceError.Unknown, "No account present with email address, please sign up"+request.getEmailAddress());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
