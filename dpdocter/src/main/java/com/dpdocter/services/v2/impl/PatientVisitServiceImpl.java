@@ -657,6 +657,330 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		return response;
 	}
+	
+//	@Override
+	@Transactional
+	public List<PatientVisitResponse> getVisitNewOne(String doctorId, String locationId, String hospitalId, String patientId,
+			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor,String from,String to, Boolean discarded) {
+		List<PatientVisitResponse> response = null;
+		try {
+			List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
+			if (visitFor == VisitedFor.ALL.toString() || visitFor == null) {
+				visitedFors.add(CLINICAL_NOTES);
+				visitedFors.add(PRESCRIPTION);
+				visitedFors.add(REPORTS);
+			} else if (visitFor.equalsIgnoreCase(VisitedFor.TREATMENT.getVisitedFor())) {
+				visitedFors.add(CLINICAL_NOTES);
+				visitedFors.add(PRESCRIPTION);
+				visitedFors.add(REPORTS);
+				visitedFors.add(VisitedFor.TREATMENT);
+			} else if (visitFor.equalsIgnoreCase("WEB")) {
+				visitedFors.add(CLINICAL_NOTES);
+				visitedFors.add(PRESCRIPTION);
+				visitedFors.add(VisitedFor.TREATMENT);
+				visitedFors.add(VisitedFor.EYE_PRESCRIPTION);
+			} else {
+				visitedFors.add(VisitedFor.valueOf(visitFor.toUpperCase()));
+			}
+
+			long createdTimestamp = Long.parseLong(updatedTime);
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				patientObjectId = new ObjectId(patientId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			
+			
+			
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp)).and("patientId")
+					.is(patientObjectId).and("visitedFor").in(visitedFors).and("isPatientDiscarded").ne(true);
+
+			if (discarded !=null)
+				criteria.and("discarded").is(discarded);
+			
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			DateTime fromDateTime = null, toDateTime= null;
+			if (!DPDoctorUtils.anyStringEmpty(from)) {
+				localCalendar.setTime(new Date(Long.parseLong(from)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				 fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));				
+			}
+			if (!DPDoctorUtils.anyStringEmpty(to)) {
+				localCalendar.setTime(new Date(Long.parseLong(to)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				 toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));			
+			}
+			if(fromDateTime!= null && toDateTime != null) {
+				criteria.and("createdTime").gte(fromDateTime).lte(toDateTime);
+			}else if(fromDateTime!= null) {
+				criteria.and("createdTime").gte(fromDateTime);
+			}else if(toDateTime != null) {
+				criteria.and("createdTime").lte(toDateTime);
+			}
+
+
+			
+			if (!isOTPVerified) {
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(doctorId))
+					criteria.and("doctorId").is(doctorObjectId);
+			}
+			Aggregation aggregation = null;
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
+										true))),
+						// RX
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$prescriptionId").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescriptions"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$prescriptions").append("preserveNullAndEmptyArrays",
+										true))),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$prescriptions.items")
+										.append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex1"))),
+						Aggregation.lookup("drug_cl", "prescriptions.items.drugId", "_id", "drug"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex2"))),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$prescriptions.diagnosticTests")
+										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
+												"arrayIndex3"))),
+						Aggregation.lookup("diagnostic_test_cl", "prescriptions.diagnosticTests.testId", "_id",
+								"diagnosticTests"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$diagnosticTests").append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex4"))),
+						prescriptionFirstProjectAggregationOperation(), prescriptionFirstGroupAggregationOperation(),
+						prescriptionSecondProjectAggregationOperation(), prescriptionSecondGroupAggregationOperation(),
+
+						// CN
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$clinicalNotesId").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.lookup("clinical_notes_cl", "clinicalNotesId", "_id", "clinicalNotes"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$clinicalNotes").append("preserveNullAndEmptyArrays",
+										true))),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$clinicalNotes.diagrams")
+										.append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex5"))),
+						Aggregation.lookup("diagrams_cl", "clinicalNotes.diagrams", "_id", "diagrams"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$diagrams").append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex6"))),
+						clinicalNotesFirstProjectAggregationOperation(), clinicalNotesFirstGroupAggregationOperation(),
+						clinicalNotesSecondProjectAggregationOperation(), clinicalNotesSecondGroupAggregationOperation(),
+
+						// Treatment
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$treatmentId").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("patient_treatment_cl", "treatmentId", "_id", "patientTreatment"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$patientTreatment").append("preserveNullAndEmptyArrays",
+										true))),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$patientTreatment.treatments")
+										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
+												"arrayIndex7"))),
+						Aggregation.lookup("treatment_services_cl", "patientTreatment.treatments.treatmentServiceId",
+								"_id", "treatmentService"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$treatmentService")
+										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
+												"arrayIndex8"))),
+						patientTreatmentFirstProjectAggregationOperation(),
+						patientTreatmentFirstGroupAggregationOperation(),
+						patientTreatmentSecondProjectAggregationOperation(),
+						patientTreatmentSecondGroupAggregationOperation(),
+
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$recordId").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("records_cl", "recordId", "_id", "records"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$records").append("preserveNullAndEmptyArrays", true))),
+						recordsProjectAggregationOperation(), recordsGroupAggregationOperation(),
+
+						Aggregation.lookup("eyePrescriptionCollection", "eyePrescriptionId", "_id", "eyePrescription"),
+						new CustomAggregationOperation(
+								new Document("$unwind", new Document("path", "$eyePrescription")
+										.append("preserveNullAndEmptyArrays", true))),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime"))
+						);
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
+										true))),
+
+						// RX
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$prescriptionId").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescriptions"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$prescriptions").append("preserveNullAndEmptyArrays",
+										true))),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$prescriptions.items")
+										.append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex1"))),
+						Aggregation.lookup("drug_cl", "prescriptions.items.drugId", "_id", "drug"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex2"))),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$prescriptions.diagnosticTests")
+										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
+												"arrayIndex3"))),
+						Aggregation.lookup("diagnostic_test_cl", "prescriptions.diagnosticTests.testId", "_id",
+								"diagnosticTests"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$diagnosticTests").append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex4"))),
+						prescriptionFirstProjectAggregationOperation(), prescriptionFirstGroupAggregationOperation(),
+						prescriptionSecondProjectAggregationOperation(), prescriptionSecondGroupAggregationOperation(),
+
+						// CN
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$clinicalNotesId").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.lookup("clinical_notes_cl", "clinicalNotesId", "_id", "clinicalNotes"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$clinicalNotes").append("preserveNullAndEmptyArrays",
+										true))),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$clinicalNotes.diagrams")
+										.append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex5"))),
+						Aggregation.lookup("diagrams_cl", "clinicalNotes.diagrams", "_id", "diagrams"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$diagrams").append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex6"))),
+						clinicalNotesFirstProjectAggregationOperation(), clinicalNotesFirstGroupAggregationOperation(),
+						clinicalNotesSecondProjectAggregationOperation(), clinicalNotesSecondGroupAggregationOperation(),
+
+						// Treatment
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$treatmentId").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("patient_treatment_cl", "treatmentId", "_id", "patientTreatment"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$patientTreatment").append("preserveNullAndEmptyArrays",
+										true))),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$patientTreatment.treatments")
+										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
+												"arrayIndex7"))),
+						Aggregation.lookup("treatment_services_cl", "patientTreatment.treatments.treatmentServiceId",
+								"_id", "treatmentService"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$treatmentService")
+										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
+												"arrayIndex8"))),
+						patientTreatmentFirstProjectAggregationOperation(),
+						patientTreatmentFirstGroupAggregationOperation(),
+						patientTreatmentSecondProjectAggregationOperation(),
+						patientTreatmentSecondGroupAggregationOperation(),
+
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$recordId").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("records_cl", "recordId", "_id", "records"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$records").append("preserveNullAndEmptyArrays", true))),
+						recordsProjectAggregationOperation(), recordsGroupAggregationOperation(),
+
+						Aggregation.lookup("eyePrescriptionCollection", "eyePrescriptionId", "_id", "eyePrescription"),
+						new CustomAggregationOperation(
+								new Document("$unwind", new BasicDBObject("path", "$eyePrescription")
+										.append("preserveNullAndEmptyArrays", true))),
+
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			response = mongoTemplate.aggregate(aggregation, PatientVisitCollection.class, PatientVisitResponse.class)
+					.getMappedResults();
+			if (response != null) {
+				for (PatientVisitResponse patientVisitResponse : response) {
+					if (!patientVisitResponse.getVisitedFor().contains(VisitedFor.PRESCRIPTION)) {
+						patientVisitResponse.setPrescriptions(null);
+					}
+					if (!patientVisitResponse.getVisitedFor().contains(VisitedFor.TREATMENT)) {
+						patientVisitResponse.setPatientTreatment(null);
+					}
+					if (patientVisitResponse.getPatientTreatment() != null && !patientVisitResponse.getPatientTreatment().isEmpty()) {
+						for(PatientTreatment patientTreatment : patientVisitResponse.getPatientTreatment()) {
+							if(!DPDoctorUtils.anyStringEmpty(patientTreatment.getId())) {
+								patientTreatment.setVisitId(patientVisitResponse.getId());
+							}
+						}
+					}
+					
+					if (!patientVisitResponse.getVisitedFor().contains(VisitedFor.CLINICAL_NOTES)) {
+						patientVisitResponse.setClinicalNotes(null);
+					}
+					if (patientVisitResponse.getClinicalNotes() != null && !patientVisitResponse.getClinicalNotes().isEmpty()) {
+						for (ClinicalNotes clinicalNote : patientVisitResponse.getClinicalNotes()) {
+							
+							if(patientVisitResponse.getClinicalNotesDiagrams() != null && !patientVisitResponse.getClinicalNotesDiagrams().isEmpty()) {
+								List<Diagram> diagrams = null;
+								for (Diagram diagram : patientVisitResponse.getClinicalNotesDiagrams()) {
+//									if (diagram.getId() != null
+//											&& diagram.getClinicalNotesId().equalsIgnoreCase(clinicalNote.getId())) {
+										if (diagrams == null)
+											diagrams = new ArrayList<Diagram>();
+										diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
+										diagrams.add(diagram);
+//									}
+								}
+								clinicalNote.setDiagrams(diagrams);
+							}
+							clinicalNote.setVisitId(patientVisitResponse.getId());
+						}
+					}
+					patientVisitResponse.setClinicalNotesDiagrams(null);
+					if (!patientVisitResponse.getVisitedFor().contains(VisitedFor.REPORTS)) {
+						patientVisitResponse.setRecords(null);
+					}
+					if (patientVisitResponse.getRecords() != null && !patientVisitResponse.getRecords().isEmpty()) {
+						for(Records records : patientVisitResponse.getRecords()) {
+							if(!DPDoctorUtils.anyStringEmpty(records.getId())) {
+								records.setVisitId(patientVisitResponse.getId());
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while geting patient Visit : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while geting patient Visit : " + e.getCause().getMessage());
+		}
+		return response;
+	}
 
 	private AggregationOperation prescriptionFirstProjectAggregationOperation() {
 		return new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
@@ -668,6 +992,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("appointmentId", "$appointmentId").append("time", "$time").append("fromDate", "$fromDate")
 				.append("discarded", "$discarded").append("appointmentRequest", "$appointmentRequest")
 				.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")
+				.append("adminCreatedTime", "$adminCreatedTime")
 				.append("createdBy", "$createdBy").append("prescriptionsid", "$prescriptions._id")
 				.append("prescriptionsname", "$prescriptions.name")
 				.append("prescriptionsuniqueEmrId", "$prescriptions.uniqueEmrId")
@@ -809,7 +1134,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("prescriptionscreatedBy", new BasicDBObject("$first", "$prescriptionscreatedBy"))
 						.append("prescriptionsupdatedTime", new BasicDBObject("$first", "$prescriptionsupdatedTime"))
 
-						.append("prescriptionItems", new BasicDBObject("$first", "$prescriptionsitems"))
+						.append("prescriptionItems", new BasicDBObject("$push", "$prescriptionsitems"))
 						.append("prescriptionsdiagnosticTests",
 								new BasicDBObject("$push", "$prescriptionsdiagnosticTests"))
 						.append("clinicalNotesId", new BasicDBObject("$first", "$clinicalNotesId"))
@@ -819,6 +1144,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
@@ -833,6 +1159,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("eyePrescriptionId", "$eyePrescriptionId").append("appointmentId", "$appointmentId")
 						.append("time", "$time").append("fromDate", "$fromDate").append("discarded", "$discarded")
 						.append("appointmentRequest", "$appointmentRequest").append("createdTime", "$createdTime")
+						.append("adminCreatedTime", "$adminCreatedTime")
 						.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
 						.append("prescriptions._id", "$prescriptionsid")
 						.append("prescriptions.name", "$prescriptionsname")
@@ -873,6 +1200,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("eyePrescriptionId", new BasicDBObject("$first", "$eyePrescriptionId"))
 						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
+						.append("adminCreatedTime", "$adminCreatedTime")
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
@@ -888,6 +1216,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("time", "$time").append("fromDate", "$fromDate").append("discarded", "$discarded")
 				.append("appointmentRequest", "$appointmentRequest").append("createdTime", "$createdTime")
 				.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
+				.append("adminCreatedTime", "$adminCreatedTime")
 				.append("prescriptions", "$prescriptions").append("clinicalNotes", "$clinicalNotes")
 				.append("clinicalNotesid", "$clinicalNotes._id").append("clinicalNotesDiagrams._id", "$diagrams._id")
 				.append("clinicalNotesDiagrams.diagramUrl", "$diagrams.diagramUrl")
@@ -921,6 +1250,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+						.append("adminCreatedTime", "$adminCreatedTime")
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
 
@@ -958,6 +1288,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+						.append("adminCreatedTime", "$adminCreatedTime")
 						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
@@ -972,7 +1303,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("clinicalNotesDiagrams", "$clinicalNotesDiagrams").append("recordId", "$recordId")
 						.append("eyePrescriptionId", "$eyePrescriptionId").append("appointmentId", "$appointmentId")
 						.append("time", "$time").append("fromDate", "$fromDate").append("discarded", "$discarded")
+						.append("adminCreatedTime", "$adminCreatedTime")
 						.append("appointmentRequest", "$appointmentRequest").append("createdTime", "$createdTime")
+						.append("adminCreatedTime", "$adminCreatedTime")
 						.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
 						.append("patientTreatmentid", "$patientTreatment._id")
 						.append("patientTreatmentuniqueEmrId", "$patientTreatment.uniqueEmrId")
@@ -1043,6 +1376,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 				.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 				.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+				.append("adminCreatedTime", "$adminCreatedTime")
 				.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
 
@@ -1074,6 +1408,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("patientTreatment.totalgrandTotal", "$patientTreatmentgrandTotal")
 						.append("patientTreatment.appointmentId", "$patientTreatmentappointmentId")
 						.append("patientTreatment.visitId", "$patientTreatmentvisitId")
+						.append("adminCreatedTime", "$adminCreatedTime")
 						.append("patientTreatment.createdTime", "$patientTreatmentcreatedTime")
 						.append("patientTreatment.createdBy", "$patientTreatmentcreatedBy")
 						.append("patientTreatment.updatedTime", "$patientTreatmentupdatedTime")
@@ -1100,6 +1435,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+						.append("adminCreatedTime", "$adminCreatedTime")
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
 
@@ -1130,6 +1466,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("time", "$time").append("fromDate", "$fromDate").append("discarded", "$discarded")
 				.append("appointmentRequest", "$appointmentRequest").append("createdTime", "$createdTime")
 				.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
+				.append("adminCreatedTime", "$adminCreatedTime")
 				.append("prescriptions", "$prescriptions").append("clinicalNotes", "$clinicalNotes")
 				.append("clinicalNotesDiagrams", "$clinicalNotesDiagrams")));
 	}
@@ -1153,6 +1490,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+						.append("adminCreatedTime", "$adminCreatedTime")
 						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
