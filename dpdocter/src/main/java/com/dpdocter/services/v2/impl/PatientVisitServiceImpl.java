@@ -495,9 +495,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	
 
-	@Override
+//	@Override
 	@Transactional
-	public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
+	public List<PatientVisitResponse> getVisitOld(String doctorId, String locationId, String hospitalId, String patientId,
 			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor,String from,String to, Boolean discarded) {
 		List<PatientVisitResponse> response = null;
 		List<PatientVisitLookupBean> patientVisitlookupbeans = null;
@@ -658,9 +658,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		return response;
 	}
 	
-//	@Override
+	@Override
 	@Transactional
-	public List<PatientVisitResponse> getVisitNewOne(String doctorId, String locationId, String hospitalId, String patientId,
+	public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
 			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor,String from,String to, Boolean discarded) {
 		List<PatientVisitResponse> response = null;
 		try {
@@ -1200,7 +1200,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("eyePrescriptionId", new BasicDBObject("$first", "$eyePrescriptionId"))
 						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
-						.append("adminCreatedTime", "$adminCreatedTime")
+						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
@@ -1250,7 +1250,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-						.append("adminCreatedTime", "$adminCreatedTime")
+						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
 
@@ -1288,7 +1288,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-						.append("adminCreatedTime", "$adminCreatedTime")
+						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
@@ -1435,7 +1435,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-						.append("adminCreatedTime", "$adminCreatedTime")
+						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
 
@@ -1490,7 +1490,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
 						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-						.append("adminCreatedTime", "$adminCreatedTime")
+						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
