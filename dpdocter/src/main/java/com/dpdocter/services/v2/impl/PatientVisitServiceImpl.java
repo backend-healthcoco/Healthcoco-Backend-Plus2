@@ -1376,7 +1376,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 				.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 				.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-				.append("adminCreatedTime", "$adminCreatedTime")
+				.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
 				.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 	}
 
