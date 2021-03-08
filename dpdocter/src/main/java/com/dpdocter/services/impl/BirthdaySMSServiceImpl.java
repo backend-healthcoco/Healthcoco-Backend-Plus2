@@ -125,6 +125,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 						smsDetails.add(smsDetail);
 						smsTrackDetail.setSmsDetails(smsDetails);
+						smsTrackDetail.setTemplateId("1307161191522457378");
 						sMSServices.sendSMS(smsTrackDetail, true);
 
 					}
@@ -187,6 +188,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 					smsDetails.add(smsDetail);
 					smsTrackDetail.setSmsDetails(smsDetails);
+					smsTrackDetail.setTemplateId("1307161191432703411");
 					sMSServices.sendSMS(smsTrackDetail, true);
 
 				}

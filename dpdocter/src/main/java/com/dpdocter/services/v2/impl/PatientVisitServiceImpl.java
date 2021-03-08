@@ -495,9 +495,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	
 
-//	@Override
+	@Override
 	@Transactional
-	public List<PatientVisitResponse> getVisitOld(String doctorId, String locationId, String hospitalId, String patientId,
+	public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
 			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor,String from,String to, Boolean discarded) {
 		List<PatientVisitResponse> response = null;
 		List<PatientVisitLookupBean> patientVisitlookupbeans = null;
@@ -658,9 +658,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		return response;
 	}
 	
-	@Override
+//	@Override
 	@Transactional
-	public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
+	public List<PatientVisitResponse> getVisitNew(String doctorId, String locationId, String hospitalId, String patientId,
 			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor,String from,String to, Boolean discarded) {
 		List<PatientVisitResponse> response = null;
 		try {
