@@ -623,6 +623,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		return response;
 	}
 
+
 	private AggregationOperation prescriptionFirstProjectAggregationOperation() {
 		return new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 				.append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId").append("doctorId", "$doctorId")

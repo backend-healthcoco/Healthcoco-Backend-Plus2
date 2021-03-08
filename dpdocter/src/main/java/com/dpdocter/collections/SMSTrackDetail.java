@@ -40,6 +40,10 @@ public class SMSTrackDetail extends GenericCollection {
     
     @Field
     private Long totalCreditsSpent=0L; 
+    
+    @Field
+    private String templateId;
+
 
     public ObjectId getId() {
 	return id;
@@ -103,6 +107,14 @@ public class SMSTrackDetail extends GenericCollection {
 	
 
 	
+
+	public String getTemplateId() {
+		return templateId;
+	}
+
+	public void setTemplateId(String templateId) {
+		this.templateId = templateId;
+	}
 
 	public Long getTotalCreditsSpent() {
 		return totalCreditsSpent;
