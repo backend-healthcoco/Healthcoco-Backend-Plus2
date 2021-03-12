@@ -267,6 +267,10 @@ public interface PathProxy {
 		public static final String GET_CLINICS = "/get/{locationId}/{hospitalId}/clinic";
 
 		public static final String UPDATE_AGE = "/patientAge";
+		
+		public static final String UPDATE_CALENDAR_VIEW = "/setting/calenderView/update";
+
+		public static final String GET_DOCTOR_CALENDAR_VIEW = "/setting/calenderView/get";
 
 	}
 
