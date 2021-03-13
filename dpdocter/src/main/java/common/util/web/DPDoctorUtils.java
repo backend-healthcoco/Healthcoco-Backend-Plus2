@@ -403,7 +403,7 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.PC_THROAT) || resource.equals(Resource.NECK_EXAM)
 				|| resource.equals(Resource.NOSE_EXAM) || resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM)
 				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)
-				|| resource.equals(Resource.DENTAL_WORKS)) {
+				|| resource.equals(Resource.DENTAL_WORKS) || resource.equals(Resource.NURSING_CAREEXAM)) {
 			if (specialities != null && !specialities.isEmpty()) {
 				BoolQueryBuilder specialityQueryBuilder = boolQuery()
 						.should(boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
