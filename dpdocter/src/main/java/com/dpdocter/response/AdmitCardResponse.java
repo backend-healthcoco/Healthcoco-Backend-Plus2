@@ -3,6 +3,7 @@ package com.dpdocter.response;
 import java.util.Date;
 
 import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.collections.GenericCollection;
 
 public class AdmitCardResponse extends GenericCollection {
@@ -33,6 +34,10 @@ public class AdmitCardResponse extends GenericCollection {
 	private String timeOfOperation;
 	private String ip;
 	private String address;
+	
+	private VitalSigns vitalSigns;
+	private String preOprationalOrders;
+	private String nursingCare;
 	public String getIp() {
 		return ip;
 	}
@@ -240,6 +245,31 @@ public class AdmitCardResponse extends GenericCollection {
 
 	public void setTimeOfOperation(String timeOfOperation) {
 		this.timeOfOperation = timeOfOperation;
+	}
+
+	
+	public VitalSigns getVitalSigns() {
+		return vitalSigns;
+	}
+
+	public void setVitalSigns(VitalSigns vitalSigns) {
+		this.vitalSigns = vitalSigns;
+	}
+
+	public String getPreOprationalOrders() {
+		return preOprationalOrders;
+	}
+
+	public void setPreOprationalOrders(String preOprationalOrders) {
+		this.preOprationalOrders = preOprationalOrders;
+	}
+
+	public String getNursingCare() {
+		return nursingCare;
+	}
+
+	public void setNursingCare(String nursingCare) {
+		this.nursingCare = nursingCare;
 	}
 
 	@Override
