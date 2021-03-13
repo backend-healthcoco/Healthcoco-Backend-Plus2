@@ -28,6 +28,7 @@ import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNeckExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNoseExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
+import com.dpdocter.elasticsearch.document.ESNursingCareExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESOralCavityAndThroatExaminationDocument;
@@ -630,4 +631,20 @@ public class ESClinicalNotesApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_NURSINGCARE)
+	@GET
+	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_NURSINGCARE, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_NURSINGCARE)
+	public Response<ESNursingCareExaminationDocument> searchNursingCareExam(@PathParam("range") String range, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<ESNursingCareExaminationDocument> response = esClinicalNotesService.searchNursingCareExam(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		return response;
+	}
 }

@@ -41,6 +41,7 @@ import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNeckExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNoseExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
+import com.dpdocter.elasticsearch.document.ESNursingCareExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESOralCavityAndThroatExaminationDocument;
@@ -74,6 +75,7 @@ import com.dpdocter.elasticsearch.repository.ESMenstrualHistoryRepository;
 import com.dpdocter.elasticsearch.repository.ESNeckExaminationRepository;
 import com.dpdocter.elasticsearch.repository.ESNoseExaminationRepository;
 import com.dpdocter.elasticsearch.repository.ESNotesRepository;
+import com.dpdocter.elasticsearch.repository.ESNursingCareRepository;
 import com.dpdocter.elasticsearch.repository.ESObservationsRepository;
 import com.dpdocter.elasticsearch.repository.ESObstetricHistoryRepository;
 import com.dpdocter.elasticsearch.repository.ESOralCavityThroatExaminationRepository;
@@ -209,6 +211,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 	@Value(value = "${image.path}")
 	private String imagePath;
+	
+	@Autowired
+	private ESNursingCareRepository nursingCareRepository;
 	
 	@Override
 	public boolean addComplaints(ESComplaintsDocument request) {
@@ -5487,6 +5492,173 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			return imagePath + imageURL;
 		} else
 			return null;
+	}
+
+	@Override
+	public boolean addNursingCareExam(ESNursingCareExaminationDocument nursingCareExaminationDocument) {
+		boolean response = false;
+		try {
+			nursingCareRepository.save(nursingCareExaminationDocument);
+			response = true;
+			transnationalService.addResource(new ObjectId(nursingCareExaminationDocument.getId()), Resource.NURSING_CAREEXAM, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving Notes");
+		}
+		return response;		
+	}
+
+	
+
+	@Override
+	public Response<ESNursingCareExaminationDocument> searchNursingCareExam(String range, int page, int size,
+			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+			String searchTerm) {
+		Response<ESNursingCareExaminationDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalNursingCareExam(page, size, doctorId, updatedTime, discarded, searchTerm);
+			break;
+		case CUSTOM:
+			response = getCustomNursingCareExam(page, size, doctorId, locationId, hospitalId, updatedTime,
+					discarded, searchTerm);
+			break;
+		case BOTH:
+			response = getCustomGlobalNursingCareExam(page, size, doctorId, locationId, hospitalId, updatedTime,
+					discarded, searchTerm);
+			break;
+		default:
+			break;
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Response<ESNursingCareExaminationDocument> getGlobalNursingCareExam(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded, String searchTerm) {
+		
+		Response<ESNursingCareExaminationDocument> response = new Response<ESNursingCareExaminationDocument>();
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(PageRequest.of(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.NURSING_CAREEXAM, page, size, updatedTime,
+					discarded, null, searchTerm, specialities, null, null, "nursingCare");
+			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNursingCareExaminationDocument.class);
+
+			if(count > 0) {
+				response.setCount(count);
+				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNursingCareExaminationDocument.class));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting PC Note");
+		}
+		return response;
+	}
+
+	private Response<ESNursingCareExaminationDocument> getCustomNursingCareExam(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		Response<ESNursingCareExaminationDocument> response = new Response<ESNursingCareExaminationDocument>();
+		try {
+			if (doctorId == null)
+				response.setDataList(new ArrayList<ESNursingCareExaminationDocument>());
+			else {
+				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
+						updatedTime, discarded, null, searchTerm, null, null, "nursingCare");
+				Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNursingCareExaminationDocument.class);
+
+				if(count > 0) {
+					response.setCount(count);
+					response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNursingCareExaminationDocument.class));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting PC Note");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Response<ESNursingCareExaminationDocument> getCustomGlobalNursingCareExam(int page, int size,
+			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+			String searchTerm) {
+		Response<ESNursingCareExaminationDocument> response = new Response<ESNursingCareExaminationDocument>();
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, PageRequest.of(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(PageRequest.of(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.NURSING_CAREEXAM, page, size, doctorId,
+					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
+					"nursingCare");
+			Integer count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(searchQuery.getQuery()).build(), ESNursingCareExaminationDocument.class);
+
+			if(count > 0) {
+				response.setCount(count);
+				response.setDataList(elasticsearchTemplate.queryForList(searchQuery, ESNursingCareExaminationDocument.class));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting X Ray details");
+		}
+		return response;
 	}
 
 }
