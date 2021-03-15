@@ -44,6 +44,10 @@ public class NursesAdmissionCollection extends GenericCollection{
 	private List<RiskScore> riskFactor;
 	@Field
 	private int totalRiskScore;
+	
+	@Field
+	private boolean discarded = false;
+
 
 	public ObjectId getId() {
 		return id;
@@ -151,6 +155,14 @@ public class NursesAdmissionCollection extends GenericCollection{
 
 	public void setTotalRiskScore(int totalRiskScore) {
 		this.totalRiskScore = totalRiskScore;
+	}
+
+	public boolean isDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(boolean discarded) {
+		this.discarded = discarded;
 	}
 	
 	

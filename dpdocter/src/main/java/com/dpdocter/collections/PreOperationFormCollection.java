@@ -40,6 +40,10 @@ public class PreOperationFormCollection extends GenericCollection {
 	
 	@Field
 	private String treatmentsPlan;
+	
+	@Field
+	private boolean discarded = false;
+
 
 	public ObjectId getId() {
 		return id;
@@ -129,6 +133,15 @@ public class PreOperationFormCollection extends GenericCollection {
 		this.treatmentsPlan = treatmentsPlan;
 	}
 
+	public boolean isDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	
 	
 	
 	

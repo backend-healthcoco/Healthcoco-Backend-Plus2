@@ -37,6 +37,9 @@ private String id;
 	private String pastHistory;
 
 	private String psychologicalAssessment;
+	
+	private boolean discarded = false;
+
 
 	public String getId() {
 		return id;
@@ -165,6 +168,14 @@ private String id;
 
 	public void setPsychologicalAssessment(String psychologicalAssessment) {
 		this.psychologicalAssessment = psychologicalAssessment;
+	}
+
+	public boolean isDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(boolean discarded) {
+		this.discarded = discarded;
 	}
 	
 	

@@ -36,6 +36,9 @@ public class InitialAssessmentRequest extends GenericCollection {
 	private String pastHistory;
 
 	private String psychologicalAssessment;
+	
+	private boolean discarded = false;
+
 
 	public String getId() {
 		return id;
@@ -164,12 +167,16 @@ public class InitialAssessmentRequest extends GenericCollection {
 	public void setPsychologicalAssessment(String psychologicalAssessment) {
 		this.psychologicalAssessment = psychologicalAssessment;
 	}
-	
-	
 
+	public boolean isDiscarded() {
+		return discarded;
+	}
 
+	public void setDiscarded(boolean discarded) {
+		this.discarded = discarded;
+	}
 	
-	
+		
 	
 	
 }

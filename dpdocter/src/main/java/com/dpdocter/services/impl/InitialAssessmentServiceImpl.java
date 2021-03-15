@@ -16,9 +16,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.NursingCareExam;
+import com.dpdocter.beans.Patient;
+import com.dpdocter.collections.AdmitCardCollection;
 import com.dpdocter.collections.InitialAssessmentCollection;
 import com.dpdocter.collections.NursesAdmissionCollection;
 import com.dpdocter.collections.NursingCareExamCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PreOperationFormCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
@@ -32,6 +35,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.InitialAdmissionRequest;
 import com.dpdocter.request.InitialAssessmentRequest;
 import com.dpdocter.request.PreOperationAssessmentRequest;
+import com.dpdocter.response.AdmitCardResponse;
 import com.dpdocter.response.InitialAdmissionResponse;
 import com.dpdocter.response.InitialAssessmentResponse;
 import com.dpdocter.response.PreOperationAssessmentResponse;
@@ -102,7 +106,7 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService{
 
 	@Override
 	public List<InitialAssessmentResponse> getInitialAssessmentForm(String doctorId, String locationId,
-			String hospitalId, String patientId, int page, int size) {
+			String hospitalId, String patientId, int page, int size,Boolean discarded) {
 		List<InitialAssessmentResponse> response = null;
 		try {
 			
@@ -118,7 +122,8 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService{
 			
 			Criteria criteria = new Criteria("patientId").is(patientObjectId).and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
 					.and("doctorId").is(doctorObjectId);
-			
+			criteria = criteria.and("discarded").is(discarded);
+
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -180,7 +185,7 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService{
 
 	@Override
 	public List<InitialAdmissionResponse> getAdmissionAssessmentForms(String doctorId, String locationId,
-			String hospitalId, String patientId, int page, int size) {
+			String hospitalId, String patientId, int page, int size,Boolean discarded) {
 		List<InitialAdmissionResponse> response = null;
 		try {
 			
@@ -196,6 +201,8 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService{
 			
 			Criteria criteria = new Criteria("patientId").is(patientObjectId).and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
 					.and("doctorId").is(doctorObjectId);
+			criteria = criteria.and("discarded").is(discarded);
+
 			
 			Aggregation aggregation = null;
 			if (size > 0) {
@@ -256,7 +263,7 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService{
 
 	@Override
 	public List<PreOperationAssessmentResponse> getPreOperationAssessmentForms(String doctorId, String locationId,
-			String hospitalId, String patientId, int page, int size) {
+			String hospitalId, String patientId, int page, int size,Boolean discarded) {
 		List<PreOperationAssessmentResponse> response = null;
 		try {
 			
@@ -272,7 +279,8 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService{
 			
 			Criteria criteria = new Criteria("patientId").is(patientObjectId).and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
 					.and("doctorId").is(doctorObjectId);
-			
+			criteria = criteria.and("discarded").is(discarded);
+
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -366,6 +374,168 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService{
 			} else {
 				logger.warn(" not found!");
 				throw new BusinessException(ServiceError.NoRecord, " not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public InitialAdmissionResponse getAdmissionFormById(String id) {
+		InitialAdmissionResponse response = null;
+		try {
+			NursesAdmissionCollection nursesAdmissionCollection = nursesAdmissionFormRepository.findById(new ObjectId(id)).orElse(null);
+			if (nursesAdmissionCollection == null) {
+				throw new BusinessException(ServiceError.NotFound, "Error no such id");
+			}
+			response = new InitialAdmissionResponse();
+			BeanUtil.map(nursesAdmissionCollection, response);
+
+		} catch (BusinessException e) {
+			logger.error("Error while searching the id " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while searching the id");
+		}
+
+		return response;
+	}
+
+	@Override
+	public PreOperationAssessmentResponse getPreOprationFormById(String id) {
+		PreOperationAssessmentResponse response = null;
+		try {
+			PreOperationFormCollection preOperationFormCollection = preOperationFormRepository.findById(new ObjectId(id)).orElse(null);
+			if (preOperationFormCollection == null) {
+				throw new BusinessException(ServiceError.NotFound, "Error no such id");
+			}
+			response = new PreOperationAssessmentResponse();
+			BeanUtil.map(preOperationFormCollection, response);
+
+		} catch (BusinessException e) {
+			logger.error("Error while searching the id " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while searching the id");
+		}
+
+		return response;
+	}
+
+	@Override
+	public InitialAssessmentResponse getInitialAssessmentFormById(String id) {
+		InitialAssessmentResponse response = null;
+		try {
+			InitialAssessmentCollection initialAssessmentCollection = initialAssessmentFormRepository.findById(new ObjectId(id)).orElse(null);
+			if (initialAssessmentCollection == null) {
+				throw new BusinessException(ServiceError.NotFound, "Error no such id");
+			}
+			response = new InitialAssessmentResponse();
+			BeanUtil.map(initialAssessmentCollection, response);
+
+		} catch (BusinessException e) {
+			logger.error("Error while searching the id " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while searching the id");
+		}
+
+		return response;
+	}
+
+	@Override
+	public Boolean deleteAdmissionAssessment(String nurseAdmissionFormId, String doctorId, String hospitalId,
+			String locationId, Boolean discarded) {
+		Boolean response = false;
+		try {
+			NursesAdmissionCollection nursesAdmissionCollection = nursesAdmissionFormRepository.findById(new ObjectId(nurseAdmissionFormId)).orElse(null);
+			if (nursesAdmissionCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(nursesAdmissionCollection.getDoctorId(),
+						nursesAdmissionCollection.getHospitalId(), nursesAdmissionCollection.getLocationId())) {
+					if (nursesAdmissionCollection.getDoctorId().toString().equals(doctorId)
+							&& nursesAdmissionCollection.getHospitalId().toString().equals(hospitalId)
+							&& nursesAdmissionCollection.getLocationId().toString().equals(locationId)) {
+						nursesAdmissionCollection.setDiscarded(discarded);
+						nursesAdmissionCollection.setUpdatedTime(new Date());
+						nursesAdmissionFormRepository.save(nursesAdmissionCollection);
+						response = true;					
+
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				}
+			} else {
+				logger.warn("data not found!");
+				throw new BusinessException(ServiceError.NoRecord, "form  not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean deletePreOperationForm(String preOperationFormId, String doctorId, String hospitalId,
+			String locationId, Boolean discarded) {
+		Boolean response = false;
+		try {
+			PreOperationFormCollection preOperationFormCollection = preOperationFormRepository.findById(new ObjectId(preOperationFormId)).orElse(null);
+			if (preOperationFormCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(preOperationFormCollection.getDoctorId(),
+						preOperationFormCollection.getHospitalId(), preOperationFormCollection.getLocationId())) {
+					if (preOperationFormCollection.getDoctorId().toString().equals(doctorId)
+							&& preOperationFormCollection.getHospitalId().toString().equals(hospitalId)
+							&& preOperationFormCollection.getLocationId().toString().equals(locationId)) {
+						preOperationFormCollection.setDiscarded(discarded);
+						preOperationFormCollection.setUpdatedTime(new Date());
+						preOperationFormRepository.save(preOperationFormCollection);
+						response = true;					
+
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				}
+			} else {
+				logger.warn("data not found!");
+				throw new BusinessException(ServiceError.NoRecord, "form  not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean deleteInitialAssessment(String initialAssessmentId, String doctorId, String hospitalId,
+			String locationId, Boolean discarded) {
+		Boolean response = false;
+		try {
+			InitialAssessmentCollection initialAssessmentCollection = initialAssessmentFormRepository.findById(new ObjectId(initialAssessmentId)).orElse(null);
+			if (initialAssessmentCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(initialAssessmentCollection.getDoctorId(),
+						initialAssessmentCollection.getHospitalId(), initialAssessmentCollection.getLocationId())) {
+					if (initialAssessmentCollection.getDoctorId().toString().equals(doctorId)
+							&& initialAssessmentCollection.getHospitalId().toString().equals(hospitalId)
+							&& initialAssessmentCollection.getLocationId().toString().equals(locationId)) {
+						initialAssessmentCollection.setDiscarded(discarded);
+						initialAssessmentCollection.setUpdatedTime(new Date());
+						initialAssessmentFormRepository.save(initialAssessmentCollection);
+						response = true;					
+
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				}
+			} else {
+				logger.warn("data not found!");
+				throw new BusinessException(ServiceError.NoRecord, "form  not found!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

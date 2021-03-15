@@ -2465,15 +2465,18 @@ public interface PathProxy {
 	public interface InitialAssessmentsUrls {
 		public static final String ADD_EDIT_ASSESSMENT_FORM ="/addEdit";
 		public static final String GET_ASSESSMENT_FORM ="/get/{patientId}";
-
+		public static final String GET_ASSESSMENT_FORM_BY_ID ="/getById/{initialAssessmentId}";
+		public static final String DELETE_ASSESSMENT_FORM = "/{initialAssessmentId}/{doctorId}/{locationId}/{hospitalId}/delete";
 	}
 	public static final String ADMISSION_ASSESSMENT_BASE_URL = BASE_URL + "/admissionAssessment";
 
 	public interface AdmissionAssessmentsUrls {
 		public static final String ADD_EDIT_ADMISSION_FORM ="/addEdit";
 		public static final String GET_ADMISSION_FORM ="/get/{patientId}";
+		public static final String GET_ADMISSION_FORM_BY_ID ="/getById/{nurseAdmissionFormId}";
 		public static final String ADD_NURSING_CARE ="/add/nursingCare";
 		public static final String DELETE_NURSING_CARE = "/nursingCare/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_ADMISSION_FORM = "/{nurseAdmissionFormId}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 	}
 	
@@ -2482,7 +2485,8 @@ public interface PathProxy {
 	public interface PreOprationAssessmentsUrls {
 		public static final String ADD_EDIT_PREOPERATION_FORM ="/addEdit";
 		public static final String GET_PREOPERATION_FORM ="/get/{patientId}";
-
+		public static final String GET_PREOPERATION_FORM_BY_ID ="/getById/{preOperationFormId}";
+		public static final String DELETE_PREOPERATION_FORM = "/{preOperationFormId}/{doctorId}/{locationId}/{hospitalId}/delete";
 	}
 	
 	public static final String VISIT_FIELDWISE_BASE_URL = BASE_URL + "/visit/getField";
