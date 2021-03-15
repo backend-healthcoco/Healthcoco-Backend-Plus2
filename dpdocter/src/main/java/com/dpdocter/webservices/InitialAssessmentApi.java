@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.InitialAssessmentRequest;
 import com.dpdocter.response.InitialAssessmentResponse;
+import com.dpdocter.response.PreOperationAssessmentResponse;
 import com.dpdocter.services.InitialAssessmentService;
 
 import common.util.web.DPDoctorUtils;
@@ -65,18 +68,51 @@ public class InitialAssessmentApi {
 	public Response<InitialAssessmentResponse> getInitialAssessmentForms(@PathParam(value = "patientId") String patientId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@QueryParam(value = "doctorId") String doctorId,@DefaultValue("0") @QueryParam(value = "page") int page,
-			@DefaultValue("0") @QueryParam(value = "size") int size){
+			@DefaultValue("0") @QueryParam(value = "size") int size,
+			@DefaultValue("false") @QueryParam("discarded") Boolean discarded){
 		if (DPDoctorUtils.anyStringEmpty(patientId, hospitalId, locationId,doctorId)) {
 			logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		List<InitialAssessmentResponse> initialAssessmentResponse = initialAssessmentService.getInitialAssessmentForm(doctorId,locationId,hospitalId,patientId,page,size);
+		List<InitialAssessmentResponse> initialAssessmentResponse = initialAssessmentService.getInitialAssessmentForm(doctorId,locationId,hospitalId,patientId,page,size,discarded);
 		Response<InitialAssessmentResponse> response = new Response<InitialAssessmentResponse>();
 		response.setDataList(initialAssessmentResponse);
 		return response;
-
 		
 	}
 	
+	@Path(value = PathProxy.InitialAssessmentsUrls.GET_ASSESSMENT_FORM_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.InitialAssessmentsUrls.GET_ASSESSMENT_FORM_BY_ID, notes = PathProxy.InitialAssessmentsUrls.GET_ASSESSMENT_FORM_BY_ID)
+	public Response<InitialAssessmentResponse> getById(@PathParam("initialAssessmentId") String initialAssessmentId) {
+		if (initialAssessmentId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<InitialAssessmentResponse> response = new Response<InitialAssessmentResponse>();
+		response.setData(initialAssessmentService.getInitialAssessmentFormById(initialAssessmentId));
+		return response;
+
+	}
+	@Path(value = PathProxy.AdmissionAssessmentsUrls.DELETE_ADMISSION_FORM)
+	@DELETE
+	@ApiOperation(value = PathProxy.AdmissionAssessmentsUrls.DELETE_ADMISSION_FORM, notes = PathProxy.AdmissionAssessmentsUrls.DELETE_ADMISSION_FORM)
+	public Response<Boolean> deleteInitialAssessment(@PathParam(value = "initialAssessmentId") String initialAssessmentId,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (StringUtils.isEmpty(initialAssessmentId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId)
+				|| StringUtils.isEmpty(locationId)) {
+			logger.warn("initialAssessmentId, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"initialAssessmentId, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		Boolean formResponse = initialAssessmentService.deleteInitialAssessment(initialAssessmentId, doctorId, hospitalId,
+				locationId, discarded);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(formResponse);
+		return response;
+	}
 }

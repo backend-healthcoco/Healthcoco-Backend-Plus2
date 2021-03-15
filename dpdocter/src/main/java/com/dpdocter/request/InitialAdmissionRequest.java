@@ -35,6 +35,9 @@ private String id;
 	private int totalRiskScore;
 
 	private String coMorbidities;//more than one illness or disease
+	
+	private boolean discarded = false;
+
 
 	public String getId() {
 		return id;
@@ -141,6 +144,15 @@ private String id;
 		this.totalRiskScore = totalRiskScore;
 	}
 
+	public boolean isDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	
 	
 
 

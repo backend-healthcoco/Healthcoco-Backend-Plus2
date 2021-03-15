@@ -16,13 +16,13 @@ public interface InitialAssessmentService {
 	InitialAssessmentResponse addEditInitialAssessmentForm(InitialAssessmentRequest request);
 
 	List<InitialAssessmentResponse> getInitialAssessmentForm(String doctorId, String locationId, String hospitalId,
-			String patientId, int page, int size);
+			String patientId, int page, int size,Boolean discarded);
 
 	// for nurses
 	InitialAdmissionResponse addEditAdmissionAssessmentForm(InitialAdmissionRequest request);
 
 	List<InitialAdmissionResponse> getAdmissionAssessmentForms(String doctorId, String locationId, String hospitalId,
-			String patientId, int page, int size);
+			String patientId, int page, int size,Boolean discarded);
 	NursingCareExam addEditNursingCareExam(NursingCareExam request);
 	
 	Boolean deleteNursingCareExam(String id, String doctorId, String locationId, String hospitalId,
@@ -32,7 +32,22 @@ public interface InitialAssessmentService {
 	PreOperationAssessmentResponse addEditPreOperationAssessmentForm(PreOperationAssessmentRequest request);
 
 	List<PreOperationAssessmentResponse> getPreOperationAssessmentForms(String doctorId, String locationId,
-			String hospitalId, String patientId, int page, int size);
+			String hospitalId, String patientId, int page, int size,Boolean discarded );
+
+	InitialAdmissionResponse getAdmissionFormById(String id);
+
+	PreOperationAssessmentResponse getPreOprationFormById(String id);
+
+	InitialAssessmentResponse getInitialAssessmentFormById(String id);
+
+	Boolean deleteAdmissionAssessment(String nurseAdmissionFormId, String doctorId, String hospitalId,
+			String locationId, Boolean discarded);
+
+	Boolean deletePreOperationForm(String preOperationFormId, String doctorId, String hospitalId, String locationId,
+			Boolean discarded);
+
+	Boolean deleteInitialAssessment(String initialAssessmentId, String doctorId, String hospitalId, String locationId,
+			Boolean discarded);
 
 	
 

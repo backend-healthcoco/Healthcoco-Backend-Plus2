@@ -25,6 +25,8 @@ private String id;
 	private String patientId;
 	
 	private Date admissionDate;
+	private String timeOfAdmission;
+
 
 	private VitalSigns vitalSigns;
 	
@@ -37,6 +39,9 @@ private String id;
     private String advice;
 	private List<RiskScore> riskFactor;
 	private int totalRiskScore;
+	
+	private boolean discarded = false;
+
 	
 	@Field
 
@@ -151,6 +156,23 @@ private String id;
 	public void setTotalRiskScore(int totalRiskScore) {
 		this.totalRiskScore = totalRiskScore;
 	}
+
+	public String getTimeOfAdmission() {
+		return timeOfAdmission;
+	}
+
+	public void setTimeOfAdmission(String timeOfAdmission) {
+		this.timeOfAdmission = timeOfAdmission;
+	}
+
+	public boolean isDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(boolean discarded) {
+		this.discarded = discarded;
+	}
+	
 	
 	
 

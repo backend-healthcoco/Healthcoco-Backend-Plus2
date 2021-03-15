@@ -58,6 +58,10 @@ public class InitialAssessmentCollection extends GenericCollection {
 
 	@Field
 	private String psychologicalAssessment;
+	
+	@Field
+	private boolean discarded = false;
+
 
 	public ObjectId getId() {
 		return id;
@@ -186,6 +190,14 @@ public class InitialAssessmentCollection extends GenericCollection {
 
 	public void setPsychologicalAssessment(String psychologicalAssessment) {
 		this.psychologicalAssessment = psychologicalAssessment;
+	}
+
+	public boolean isDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(boolean discarded) {
+		this.discarded = discarded;
 	}
 	
 	
