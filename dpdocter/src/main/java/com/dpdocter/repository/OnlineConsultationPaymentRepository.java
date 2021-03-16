@@ -11,7 +11,4 @@ public interface OnlineConsultationPaymentRepository extends MongoRepository<Onl
 	OnlineConsultionPaymentCollection findByOrderId(String order_id);
 
 
-
-
-
 }
