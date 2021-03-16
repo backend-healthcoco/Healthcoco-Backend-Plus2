@@ -14,7 +14,7 @@ public class DoctorPatientLedger {
 	
 	private String invoiceId;   
 	
-	private Double dueAmount;
+//	private Double dueAmount;
 
 	private Double creditAmount;
 	
@@ -25,6 +25,8 @@ public class DoctorPatientLedger {
 	private DoctorPatientReceipt receipt;
 
 	private Boolean discarded = false;
+	
+	private String type;
 
 	public String getId() {
 		return id;
@@ -74,13 +76,13 @@ public class DoctorPatientLedger {
 		this.invoiceId = invoiceId;
 	}
 
-	public Double getDueAmount() {
-		return dueAmount;
-	}
-
-	public void setDueAmount(Double dueAmount) {
-		this.dueAmount = dueAmount;
-	}
+//	public Double getDueAmount() {
+//		return dueAmount;
+//	}
+//
+//	public void setDueAmount(Double dueAmount) {
+//		this.dueAmount = dueAmount;
+//	}
 
 	public Double getCreditAmount() {
 		return creditAmount;
@@ -121,13 +123,25 @@ public class DoctorPatientLedger {
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
+	
+	
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 
 	@Override
 	public String toString() {
 		return "DoctorPatientLedger [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + ", receiptId=" + receiptId + ", invoiceId=" + invoiceId + ", dueAmount="
-				+ dueAmount + ", creditAmount=" + creditAmount + ", debitAmount=" + debitAmount + ", invoice=" + invoice
-				+ ", receipt=" + receipt + ", discarded=" + discarded + "]";
+				+ ", patientId=" + patientId + ", receiptId=" + receiptId + ", invoiceId=" + invoiceId
+				+ ", creditAmount=" + creditAmount + ", debitAmount=" + debitAmount + ", invoice=" + invoice
+				+ ", receipt=" + receipt + ", discarded=" + discarded + ", type=" + type + "]";
 	}
+
+	
 }
 

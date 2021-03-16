@@ -116,10 +116,10 @@ public class RecordsApi {
 	@POST
 	@ApiOperation(value = PathProxy.RecordsUrls.SEARCH_RECORD, notes = PathProxy.RecordsUrls.SEARCH_RECORD)
 	public Response<Records> searchRecords(RecordsSearchRequest request) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
+//		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+//			logger.warn("Invalid Input");
+//			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+//		}
 		request.setIsOTPVerified(otpService.checkOTPVerified(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPatientId()));
 		List<Records> records = recordsService.searchRecords(request);

@@ -879,6 +879,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					smsTrackDetail.setDoctorId(userCollection.getId());
 					smsTrackDetail.setLocationId(response.getLocationId());
 					smsTrackDetail.setType("APPOINTMENT");
+					smsTrackDetail.setTemplateId("1307161526784855576");
 					SMSDetail smsDetail = new SMSDetail();
 					smsDetail.setUserId(userCollection.getId());
 					SMS sms = new SMS();
@@ -1533,8 +1534,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		appLinkDetailsRepository.saveAll(appLinkDetailsCollections);
 	}
 
-	@SuppressWarnings("incomplete-switch")
-	@Scheduled(cron = "0 0/30 12 * * SUN", zone = "IST")
+//	@SuppressWarnings("incomplete-switch")
+//	@Scheduled(cron = "0 0/30 12 * * SUN", zone = "IST")
 	@Override
 	@Transactional
 	public void updateActivePrescription() {

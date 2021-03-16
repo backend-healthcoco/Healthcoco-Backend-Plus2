@@ -113,6 +113,18 @@ public class DoctorCollection extends GenericCollection {
 	
 	@Field
 	private BulkSmsCredits bulkSmsCredit;
+	
+	@Field
+    private Boolean isRegistrationDetailsVerified =false;
+	@Field
+	private Boolean isPhotoIdVerified =false;
+	
+	@Field
+	private Boolean isHealthcocoDoctor=false;
+	
+	@Field
+	private Boolean isTransactionalSms=true;
+
 
 	public Boolean getIsPrescriptionSMS() {
 		return isPrescriptionSMS;
@@ -375,6 +387,45 @@ public class DoctorCollection extends GenericCollection {
 
 	public void setBulkSmsCredit(BulkSmsCredits bulkSmsCredit) {
 		this.bulkSmsCredit = bulkSmsCredit;
+	}
+	
+	
+
+	public Boolean getIsRegistrationDetailsVerified() {
+		return isRegistrationDetailsVerified;
+	}
+
+	public void setIsRegistrationDetailsVerified(Boolean isRegistrationDetailsVerified) {
+		this.isRegistrationDetailsVerified = isRegistrationDetailsVerified;
+	}
+
+	public Boolean getIsPhotoIdVerified() {
+		return isPhotoIdVerified;
+	}
+
+	public void setIsPhotoIdVerified(Boolean isPhotoIdVerified) {
+		this.isPhotoIdVerified = isPhotoIdVerified;
+	}
+	
+	
+	
+
+	public Boolean getIsHealthcocoDoctor() {
+		return isHealthcocoDoctor;
+	}
+
+	public void setIsHealthcocoDoctor(Boolean isHealthcocoDoctor) {
+		this.isHealthcocoDoctor = isHealthcocoDoctor;
+	}
+	
+	
+
+	public Boolean getIsTransactionalSms() {
+		return isTransactionalSms;
+	}
+
+	public void setIsTransactionalSms(Boolean isTransactionalSms) {
+		this.isTransactionalSms = isTransactionalSms;
 	}
 
 	@Override

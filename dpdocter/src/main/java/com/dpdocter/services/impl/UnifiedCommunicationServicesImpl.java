@@ -21,6 +21,7 @@ import com.twilio.jwt.accesstoken.AccessToken;
 import com.twilio.jwt.accesstoken.ChatGrant;
 import com.twilio.jwt.accesstoken.VideoGrant;
 import com.twilio.rest.chat.v2.Service;
+import com.twilio.rest.chat.v2.service.User;
 
 
 @org.springframework.stereotype.Service
@@ -90,6 +91,27 @@ public class UnifiedCommunicationServicesImpl implements UnifiedCommunicationSer
 					.save(unifiedCommunicationDetailsCollection);
 			response = unifiedCommunicationDetailsCollection.getToken();
 //		    }
+		} catch (Exception e) {
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+
+	
+	@Override
+	public String createUser(String identity) {
+		String response = null;
+	//	UnifiedCommunicationDetailsCollection unifiedCommunicationDetailsCollection = null;
+		try {
+
+			Twilio.init(TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN);
+	        User user =
+	            User.creator(SERVICE_SID,identity)
+	            .create();
+
+	        System.out.println(user.getSid());
+	        response=user.getSid();
 		} catch (Exception e) {
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());

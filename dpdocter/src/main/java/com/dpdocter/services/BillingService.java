@@ -10,6 +10,7 @@ import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.ExpenseType;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.beans.VendorExpense;
+import com.dpdocter.request.DoctorAmountRequest;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
 import com.dpdocter.request.InvoiceItemChangeStatusRequest;
@@ -114,5 +115,7 @@ public interface BillingService {
 
 	List<VendorExpense> getVendors(int size, int page, String searchTerm, Boolean discarded, String doctorId,
 			String locationId, String hospitalId);
+
+	Boolean updateTotalDueAmount(DoctorAmountRequest request);
 
 }

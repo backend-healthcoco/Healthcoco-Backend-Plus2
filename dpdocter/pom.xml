@@ -876,6 +876,13 @@
 			<version>1.0.2</version>
 		</dependency>
 
+<!-- For IOS push notification services Fcm -->
+<dependency>
+  <groupId>com.google.firebase</groupId>
+  <artifactId>firebase-admin</artifactId>
+  <version>6.16.0</version>
+</dependency>
+
 		<!-- For IOS push notification services -->
 		<dependency>
 			<groupId>com.notnoop.apns</groupId>

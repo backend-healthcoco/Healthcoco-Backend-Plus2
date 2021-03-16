@@ -8,7 +8,7 @@ public class DoctorPatientLedgerResponse {
 
 	private List<DoctorPatientLedger> doctorPatientLedgers;
 	
-	private Double totalDueAmount;
+	//private Double totalDueAmount;
 
 	public List<DoctorPatientLedger> getDoctorPatientLedgers() {
 		return doctorPatientLedgers;
@@ -18,18 +18,18 @@ public class DoctorPatientLedgerResponse {
 		this.doctorPatientLedgers = doctorPatientLedgers;
 	}
 
-	public Double getTotalDueAmount() {
-		return totalDueAmount;
-	}
-
-	public void setTotalDueAmount(Double totalDueAmount) {
-		this.totalDueAmount = totalDueAmount;
-	}
-
 	@Override
 	public String toString() {
-		return "DoctorPatientLedgerResponse [doctorPatientLedgers=" + doctorPatientLedgers + ", totalDueAmount="
-				+ totalDueAmount + "]";
+		return "DoctorPatientLedgerResponse [doctorPatientLedgers=" + doctorPatientLedgers + "]";
 	}
+
+//	public Double getTotalDueAmount() {
+//		return totalDueAmount;
+//	}
+//
+//	public void setTotalDueAmount(Double totalDueAmount) {
+//		this.totalDueAmount = totalDueAmount;
+//	}
+
 	
 }

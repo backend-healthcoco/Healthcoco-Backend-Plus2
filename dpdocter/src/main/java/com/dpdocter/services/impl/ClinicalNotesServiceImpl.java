@@ -43,6 +43,8 @@ import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.ECGDetails;
 import com.dpdocter.beans.EarsExamination;
 import com.dpdocter.beans.Echo;
+import com.dpdocter.beans.EyeExamination;
+import com.dpdocter.beans.EyeSpecialityObservation;
 import com.dpdocter.beans.GeneralExam;
 import com.dpdocter.beans.Holter;
 import com.dpdocter.beans.IndicationOfUSG;
@@ -68,6 +70,7 @@ import com.dpdocter.beans.PresentingComplaintThroat;
 import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
+import com.dpdocter.beans.TreatmentObservation;
 import com.dpdocter.beans.XRayDetails;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
@@ -112,9 +115,13 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.XRayDetailsCollection;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.LineStyle;
+import com.dpdocter.enums.PainType;
+import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.UniqueIdInitial;
+import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.enums.VitalSignsUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -163,9 +170,13 @@ import com.dpdocter.repository.XRayDetailsRepository;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
+import com.dpdocter.request.PatientTreatmentAddEditRequest;
+import com.dpdocter.response.EyeTestJasperResponse;
+import com.dpdocter.response.EyeVisualAcuitiesJasperResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
+import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
@@ -173,6 +184,7 @@ import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
 import com.mongodb.BasicDBObject;
@@ -353,6 +365,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	@Value(value = "${jasper.print.visit.diagrams.a4.fileName}")
 	private String visitDiagramsA4FileName;
 
+	@Autowired
+	private PatientTreatmentServices patientTreatmentServices;
+
+	@Autowired
+	private PatientVisitService patientTrackService;
+
 	@Override
 	@Transactional
 	public ClinicalNotes addNotes(ClinicalNotesAddRequest request, Boolean isAppointmentAdd, String createdBy,
@@ -375,7 +393,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 			BeanUtil.map(request, clinicalNotesCollection);
 			if (DPDoctorUtils.anyStringEmpty(createdBy)) {
-				UserCollection userCollection = userRepository.findById(clinicalNotesCollection.getDoctorId()).orElse(null);
+				UserCollection userCollection = userRepository.findById(clinicalNotesCollection.getDoctorId())
+						.orElse(null);
 				if (userCollection != null) {
 					createdBy = (userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 							+ userCollection.getFirstName();
@@ -389,6 +408,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNotesCollection.setAdminCreatedTime(new Date());
 
 			clinicalNotesCollection.setCreatedBy(createdBy);
+
+//			if (request.getTreatmentObservation() != null) {
+//				clinicalNotesCollection.setTreatmentObservation(request.getTreatmentObservation().getObservations());
+//			} 
+
 			/*
 			 * if(request.getPresentComplaint() != null ||
 			 * !request.getPresentComplaint().isEmpty()) { ArrayList<String>
@@ -1374,9 +1398,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
 
+//			PatientTreatmentResponse treatment=addPatientTreatmentsThroughClinicalNotes(clinicalNotesCollection,
+//					request.getTreatmentObservation().getTreatments());
+
 			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
-
+			TreatmentObservation treatmentObservation = new TreatmentObservation();
+//			treatmentObservation.setTreatments(treatment.getTreatments());
+//			treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
+			clinicalNotes.setTreatmentObservation(treatmentObservation);
 			// if(complaintIds != null &&
 			// !complaintIds.isEmpty())clinicalNotes.setComplaints(sortComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new
 			// Criteria("id").in(complaintIds))), ComplaintCollection.class,
@@ -1432,7 +1462,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	public ClinicalNotes getNotesById(String id, ObjectId visitId) {
 		ClinicalNotes clinicalNote = null;
 		try {
-			ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findById(new ObjectId(id)).orElse(null);
+			ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (clinicalNotesCollection != null) {
 				clinicalNote = new ClinicalNotes();
 				BeanUtil.map(clinicalNotesCollection, clinicalNote);
@@ -1561,6 +1592,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			} else {
 				clinicalNotesCollection.setCreatedTime(oldClinicalNotesCollection.getCreatedTime());
 			}
+
+//			if (request.getTreatmentObservation() != null) {
+//				clinicalNotesCollection.setTreatmentObservation(request.getTreatmentObservation().getObservations());
+//			} else {
+//				clinicalNotesCollection.setTreatmentObservation(oldClinicalNotesCollection.getTreatmentObservation());
+//
+//			}
 			clinicalNotesCollection.setAdminCreatedTime(oldClinicalNotesCollection.getAdminCreatedTime());
 			clinicalNotesCollection.setCreatedBy(oldClinicalNotesCollection.getCreatedBy());
 			clinicalNotesCollection.setDiscarded(oldClinicalNotesCollection.getDiscarded());
@@ -1568,10 +1606,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNotesCollection.setUpdatedTime(new Date());
 			clinicalNotesCollection.setUniqueEmrId(oldClinicalNotesCollection.getUniqueEmrId());
 			clinicalNotesCollection.setIsPatientDiscarded(oldClinicalNotesCollection.getIsPatientDiscarded());
+
 			clinicalNotesCollection = clinicalNotesRepository.save(clinicalNotesCollection);
+
+//			PatientTreatmentResponse treatment=addPatientTreatmentsThroughClinicalNotes(clinicalNotesCollection,
+//					request.getTreatmentObservation().getTreatments());
+//			
 
 			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
+			TreatmentObservation treatmentObservation = new TreatmentObservation();
+			// treatmentObservation.setTreatments(treatment.getTreatments());
+			// treatmentObservation.setObservations(clinicalNotesCollection.getTreatmentObservation());
+			clinicalNotes.setTreatmentObservation(treatmentObservation);
 
 			if (diagramIds != null && !diagramIds.isEmpty())
 				clinicalNotes
@@ -1769,7 +1816,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(complaintCollection.getId())) {
 				complaintCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(complaintCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(complaintCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(complaintCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						complaintCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -1779,7 +1827,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					complaintCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				ComplaintCollection oldComplaintCollection = complaintRepository.findById(complaintCollection.getId()).orElse(null);
+				ComplaintCollection oldComplaintCollection = complaintRepository.findById(complaintCollection.getId())
+						.orElse(null);
 				complaintCollection.setCreatedBy(oldComplaintCollection.getCreatedBy());
 				complaintCollection.setCreatedTime(oldComplaintCollection.getCreatedTime());
 				complaintCollection.setDiscarded(oldComplaintCollection.getDiscarded());
@@ -1810,7 +1859,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(observationCollection.getId())) {
 				observationCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(observationCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(observationCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(observationCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						observationCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -1895,7 +1945,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(generalExamCollection.getId())) {
 				generalExamCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(generalExamCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(generalExamCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(generalExamCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						generalExamCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -1937,7 +1988,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(systemExamCollection.getId())) {
 				systemExamCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(systemExamCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(systemExamCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(systemExamCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						systemExamCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -1979,7 +2031,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(menstrualHistoryCollection.getId())) {
 				menstrualHistoryCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(menstrualHistoryCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(menstrualHistoryCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(menstrualHistoryCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						menstrualHistoryCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2021,7 +2074,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(presentComplaintCollection.getId())) {
 				presentComplaintCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(presentComplaintCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(presentComplaintCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(presentComplaintCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						presentComplaintCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2107,7 +2161,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(obstetricHistoryCollection.getId())) {
 				obstetricHistoryCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(obstetricHistoryCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(obstetricHistoryCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(obstetricHistoryCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						obstetricHistoryCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2149,7 +2204,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(investigationCollection.getId())) {
 				investigationCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(investigationCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(investigationCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(investigationCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						investigationCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2192,7 +2248,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(diagnosisCollection.getId())) {
 				diagnosisCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(diagnosisCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(diagnosisCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(diagnosisCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						diagnosisCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2202,7 +2259,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					diagnosisCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				DiagnosisCollection oldDiagnosisCollection = diagnosisRepository.findById(diagnosisCollection.getId()).orElse(null);
+				DiagnosisCollection oldDiagnosisCollection = diagnosisRepository.findById(diagnosisCollection.getId())
+						.orElse(null);
 				diagnosisCollection.setCreatedBy(oldDiagnosisCollection.getCreatedBy());
 				diagnosisCollection.setCreatedTime(oldDiagnosisCollection.getCreatedTime());
 				diagnosisCollection.setDiscarded(oldDiagnosisCollection.getDiscarded());
@@ -2289,7 +2347,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(diagramsCollection.getId())) {
 				diagramsCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(diagramsCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(diagramsCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(diagramsCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						diagramsCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -2299,7 +2358,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					diagramsCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				DiagramsCollection oldDiagramsCollection = diagramsRepository.findById(diagramsCollection.getId()).orElse(null);
+				DiagramsCollection oldDiagramsCollection = diagramsRepository.findById(diagramsCollection.getId())
+						.orElse(null);
 				diagramsCollection.setCreatedBy(oldDiagramsCollection.getCreatedBy());
 				diagramsCollection.setCreatedTime(oldDiagramsCollection.getCreatedTime());
 				diagramsCollection.setDiscarded(oldDiagramsCollection.getDiscarded());
@@ -2428,7 +2488,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean discarded) {
 		Investigation response = null;
 		try {
-			InvestigationCollection investigationCollection = investigationRepository.findById(new ObjectId(id)).orElse(null);
+			InvestigationCollection investigationCollection = investigationRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (investigationCollection != null) {
 				if (investigationCollection.getDoctorId() != null && investigationCollection.getHospitalId() != null
 						&& investigationCollection.getLocationId() != null) {
@@ -3834,12 +3895,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 							emailTrackCollection.setPatientId(user.getId());
 						}
 						JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
-								null, false, false, false, false, false, false, false, false, false);
+								null, false, false, false, false, false, false, false, false, false,
+								PrintSettingType.EMAIL.getType());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
 						UserCollection doctorUser = userRepository.findById(new ObjectId(doctorId)).orElse(null);
-						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
+						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
+								.orElse(null);
 
 						response = new MailResponse();
 						response.setMailAttachment(mailAttachment);
@@ -3997,13 +4060,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						clinicalNotesCollection.getHospitalId());
 				UserCollection user = userRepository.findById(clinicalNotesCollection.getPatientId()).orElse(null);
 				if (showPH || showPLH || showFH || showDA) {
-					List<HistoryCollection> historyCollections = historyRepository.findByLocationIdAndHospitalIdAndPatientId(clinicalNotesCollection.getLocationId(),
-							clinicalNotesCollection.getHospitalId(), clinicalNotesCollection.getPatientId());
-					if(historyCollections!=null)historyCollection=historyCollections.get(0);
+					List<HistoryCollection> historyCollections = historyRepository
+							.findByLocationIdAndHospitalIdAndPatientId(clinicalNotesCollection.getLocationId(),
+									clinicalNotesCollection.getHospitalId(), clinicalNotesCollection.getPatientId());
+					if (historyCollections != null)
+						historyCollection = historyCollections.get(0);
 				}
 				JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
 						historyCollection, showPH, showPLH, showFH, showDA, showUSG, isCustomPDF, showLMP, showEDD,
-						showNoOfChildren);
+						showNoOfChildren, PrintSettingType.EMR.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -4024,16 +4089,26 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	private JasperReportResponse createJasper(ClinicalNotesCollection clinicalNotesCollection,
 			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
 			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP,
-			Boolean showEDD, Boolean showNoOfChildren) throws IOException, ParseException {
+			Boolean showEDD, Boolean showNoOfChildren, String printSettingType) throws IOException, ParseException {
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 
 		Boolean showTitle = false;
-		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
-				clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
-				clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
-
+		PrintSettingsCollection printSettings = null;
+		printSettings = printSettingsRepository
+				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+						clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
+						clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType(), printSettingType);
+		if (printSettings == null) {
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+							clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
+							clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType(),
+							PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+			if (!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -4046,8 +4121,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 		parameters.put("diagnosis", clinicalNotesCollection.getDiagnosis());
 
-		//parameters.put("eyeObservation",clinicalNotesCollection.getEyeObservation());
-		
+		// parameters.put("eyeObservation",clinicalNotesCollection.getEyeObservation());
+
 		parameters.put("complaints", clinicalNotesCollection.getComplaint());
 		parameters.put("presentComplaint", clinicalNotesCollection.getPresentComplaint());
 		parameters.put("presentComplaintHistory", clinicalNotesCollection.getPresentComplaintHistory());
@@ -4084,7 +4159,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			showTitle = true;
 		}
 		parameters.put("showExamTitle", showTitle);
-		showTitle = false;
 		if (!isCustomPDF || showUSG) {
 			parameters.put("indicationOfUSG", clinicalNotesCollection.getIndicationOfUSG());
 		}
@@ -4109,7 +4183,306 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("familyHistory", clinicalNotesCollection.getFamilyHistory());
 		parameters.put("priorConsultations", clinicalNotesCollection.getPriorConsultations());
 		parameters.put("painScale", clinicalNotesCollection.getPainScale());
-		parameters.put("priorConsultations", clinicalNotesCollection.getPriorConsultations());
+
+		if (clinicalNotesCollection.getPhysioExamination() != null) {
+			parameters.put("historyOfPresentIllness",
+					clinicalNotesCollection.getPhysioExamination().getHistoryOfPresentIllness());
+			parameters.put("manualMuscleTesting",
+					clinicalNotesCollection.getPhysioExamination().getManualMuscleTesting());
+			parameters.put("treatment", clinicalNotesCollection.getPhysioExamination().getTreatment());
+			parameters.put("physioExaminationPastHistory",
+					clinicalNotesCollection.getPhysioExamination().getPastHistory());
+			parameters.put("otNotes", clinicalNotesCollection.getPhysioExamination().getOtNotes());
+//			if (clinicalNotesCollection.getPhysioExamination().getSpecialTest() != null) {
+//				if (clinicalNotesCollection.getPhysioExamination().getSpecialTest().getShoulder() != null) {
+//					parameters.put("emptyCanTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getEmptyCanTest());
+//					parameters.put("fullCanTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getFullCanTest());
+//					parameters.put("hornBlowerTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getHornBlowerTest());
+//					parameters.put("infrasplnatureTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getInfrasplnatureTest());
+//					parameters.put("speedTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getSpeedTest());
+//					parameters.put("yergasonsTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getYergasonsTest());
+//					parameters.put("impingmentTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getImpingmentTest());
+//					parameters.put("oBrionsTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getShoulder().getOBrionsTest());
+//
+//				}
+//				if (clinicalNotesCollection.getPhysioExamination().getSpecialTest().getHipJoint() != null) {
+//					parameters.put("thomasTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getHipJoint().getThomasTest());
+//					parameters.put("obersTest", clinicalNotesCollection.getPhysioExamination().getSpecialTest()
+//							.getHipJoint().getObersTest());
+//				}
+//			}
+			if (clinicalNotesCollection.getPhysioExamination().getHistoryOfPain() != null) {
+				parameters.put("site", clinicalNotesCollection.getPhysioExamination().getHistoryOfPain().getSite());
+				parameters.put("nature",
+						clinicalNotesCollection.getPhysioExamination().getHistoryOfPain().getNature().getType());
+				String type = "";
+				if (clinicalNotesCollection.getPhysioExamination().getHistoryOfPain().getType() != null)
+					for (PainType painType : clinicalNotesCollection.getPhysioExamination().getHistoryOfPain()
+							.getType()) {
+						if (!DPDoctorUtils.anyStringEmpty(type))
+							type = type + ",  " + painType;
+						else
+							type = type + painType;
+					}
+				parameters.put("painType", type);
+			}
+			if (clinicalNotesCollection.getPhysioExamination().getPainRatingScale() != null) {
+				parameters.put("onRest",
+						clinicalNotesCollection.getPhysioExamination().getPainRatingScale().getOnRest());
+				parameters.put("onActivity",
+						clinicalNotesCollection.getPhysioExamination().getPainRatingScale().getOnActivity());
+				parameters.put("nprs",
+						String.valueOf(clinicalNotesCollection.getPhysioExamination().getPainRatingScale().getNPRS()));
+				String painAggrevatingFactor = "";
+				if (clinicalNotesCollection.getPhysioExamination().getPainRatingScale()
+						.getPainAggrevatingFactor() != null)
+					for (String string : clinicalNotesCollection.getPhysioExamination().getPainRatingScale()
+							.getPainAggrevatingFactor()) {
+						if (!DPDoctorUtils.anyStringEmpty(painAggrevatingFactor))
+							painAggrevatingFactor = painAggrevatingFactor + ",  " + string;
+						else
+							painAggrevatingFactor = painAggrevatingFactor + string;
+					}
+				parameters.put("painAggrevatingFactor", painAggrevatingFactor);
+
+				String painReleavingFactor = "";
+				if (clinicalNotesCollection.getPhysioExamination().getPainRatingScale()
+						.getPainReleavingFactor() != null)
+					for (String string : clinicalNotesCollection.getPhysioExamination().getPainRatingScale()
+							.getPainReleavingFactor()) {
+						if (!DPDoctorUtils.anyStringEmpty(painReleavingFactor))
+							painReleavingFactor = painReleavingFactor + ",  " + string;
+						else
+							painReleavingFactor = painReleavingFactor + string;
+					}
+				parameters.put("painReleavingFactor", painReleavingFactor);
+			}
+			if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination() != null) {
+				if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getPalpation() != null) {
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getPalpation()
+							.getSpasm() != null) {
+						parameters.put("spasm", clinicalNotesCollection.getPhysioExamination().getGeneralExamination()
+								.getPalpation().getSpasm().getSpasm());
+//						parameters.put("spasmValue", clinicalNotesCollection.getPhysioExamination()
+//								.getGeneralExamination().getPalpation().getSpasm().getValue());
+					}
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getPalpation()
+							.getSwell() != null) {
+						parameters.put("swell", clinicalNotesCollection.getPhysioExamination().getGeneralExamination()
+								.getPalpation().getSwell().getSwell());
+//						parameters.put("swellValue", clinicalNotesCollection.getPhysioExamination()
+//								.getGeneralExamination().getPalpation().getSwell().getValue());
+					}
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getPalpation()
+							.getTenderness() != null) {
+						parameters.put("tenderness", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getPalpation().getTenderness().getTenderness());
+//						parameters.put("tendernessValue", clinicalNotesCollection.getPhysioExamination()
+//								.getGeneralExamination().getPalpation().getTenderness().getValue());
+					}
+				}
+				parameters.put("inspectionOfPartPosture", clinicalNotesCollection.getPhysioExamination()
+						.getGeneralExamination().getInspectionOfPart_Posture());
+
+				if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getRangeOfMotion() != null) {
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getRangeOfMotion()
+							.getShoulder() != null) {
+						parameters.put("shoulderFlexion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getShoulder().getFlexion());
+						parameters.put("shoulderExtension", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getShoulder().getExtension());
+						parameters.put("shoulderAbduction", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getShoulder().getAbduction());
+						parameters.put("shoulderIntegerRotation", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getShoulder().getIntegerRotation());
+						parameters.put("shoulderExternalRotation", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getShoulder().getExternalRotation());
+					}
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getRangeOfMotion()
+							.getAnkle() != null) {
+						parameters.put("anklePlantarlexion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getAnkle().getPlantarflexion());
+						parameters.put("ankleDorsiflexion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getAnkle().getDorsiflexion());
+					}
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getRangeOfMotion()
+							.getElbow() != null) {
+						parameters.put("elbowHexion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getElbow().getHexion());
+						parameters.put("elbowExtension", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getElbow().getExtension());
+						parameters.put("elbowSupination", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getElbow().getSupination());
+						parameters.put("elbowPronotion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getElbow().getPronotion());
+					}
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getRangeOfMotion()
+							.getHipJoint() != null) {
+						parameters.put("hipJointHexion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getHipJoint().getHexion());
+						parameters.put("hipJointExtension", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getHipJoint().getExtension());
+						parameters.put("hipJointAbduction", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getHipJoint().getAbduction());
+					}
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getRangeOfMotion()
+							.getKneeJoint() != null) {
+						parameters.put("kneeJointsHexion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getKneeJoint().getHexion());
+						parameters.put("kneeJointsExtension", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getKneeJoint().getExtension());
+					}
+					if (clinicalNotesCollection.getPhysioExamination().getGeneralExamination().getRangeOfMotion()
+							.getWrist() != null) {
+						parameters.put("wristHexion", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getWrist().getHexion());
+						parameters.put("wristExtension", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getWrist().getExtension());
+						parameters.put("wristRadial_UlnarDeviation", clinicalNotesCollection.getPhysioExamination()
+								.getGeneralExamination().getRangeOfMotion().getWrist().getRadial_UlnarDeviation());
+					}
+				}
+			}
+
+			showTitle = true;
+		}
+		EyeSpecialityObservation eyeObservation = clinicalNotesCollection.getEyeObservation();
+		EyeTestJasperResponse eyResponse = new EyeTestJasperResponse();
+		if (eyeObservation != null) {
+			parameters.put("eyeObservation", "eyeObservation");
+			if (eyeObservation.getEyeExamination() != null) {
+				parameters.put("showEyeExamination", "showEyeExamination");
+				showTitle = true;
+				parameters.put("EyeExaminationTitle", "Eye Examination :");
+
+				List<DBObject> dbObjects = new ArrayList<DBObject>();
+				List<EyeExamination> examinations = eyeObservation.getEyeExamination();
+
+				for (EyeExamination eyeExamination : examinations) {
+					DBObject dbObject = new BasicDBObject();
+					if (!DPDoctorUtils.anyStringEmpty(eyeExamination.getLeftEye())
+							|| !DPDoctorUtils.anyStringEmpty(eyeExamination.getRightEye())) {
+						dbObject.put("system", eyeExamination.getSystem());
+						dbObject.put("rightEye", eyeExamination.getRightEye());
+						dbObject.put("leftEye", eyeExamination.getLeftEye());
+						dbObjects.add(dbObject);
+					}
+				}
+				parameters.put("eyeExamination", dbObjects);
+			}
+			showTitle = false;
+			if (eyeObservation.getInvestigation() != null) {
+				showTitle = true;
+				parameters.put("EyeInvestigationTitle", "Eye Investigation :");
+				List<DBObject> dbObjects = new ArrayList<DBObject>();
+				List<EyeExamination> investigations = eyeObservation.getInvestigation();
+				for (EyeExamination investigation : investigations) {
+					DBObject dbObject = new BasicDBObject();
+					if (!DPDoctorUtils.anyStringEmpty(investigation.getLeftEye())
+							|| !DPDoctorUtils.anyStringEmpty(investigation.getRightEye())) {	dbObject.put("system", investigation.getSystem());
+					dbObject.put("rightEye", investigation.getRightEye());
+					dbObject.put("leftEye", investigation.getLeftEye());
+					dbObjects.add(dbObject);
+					}
+				}
+				parameters.put("eyeInvestigation", dbObjects);
+			}
+			showTitle = false;
+			if (eyeObservation.getVision_IOP() != null) {
+				parameters.put("leftVisionPR", eyeObservation.getVision_IOP().getLeftVisionPR());
+				parameters.put("rightVisionPR", eyeObservation.getVision_IOP().getRightVisionPR());
+			}
+			if (eyeObservation.getVision_PR() != null) {
+				parameters.put("leftEyeVisionPR", eyeObservation.getVision_PR().getLeftEye());
+				parameters.put("rightEyeVisionPR", eyeObservation.getVision_PR().getRightEye());
+			}
+			if (eyeObservation.getLeftEyeTest() != null) {
+
+				BeanUtil.map(eyeObservation.getLeftEyeTest(), eyResponse);
+				if (!DPDoctorUtils.anyStringEmpty(eyeObservation.getLeftEyeTest().getDistanceSPH())) {
+					if (eyeObservation.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
+							|| eyeObservation.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase(" plain"))
+						eyResponse.setDistanceSPH(eyeObservation.getLeftEyeTest().getDistanceSPH());
+				}
+				if (!DPDoctorUtils.anyStringEmpty(eyeObservation.getLeftEyeTest().getNearSPH())) {
+					if (eyeObservation.getLeftEyeTest().getNearSPH().equalsIgnoreCase("plain")
+							|| eyeObservation.getLeftEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
+						eyResponse.setNearSPH(eyeObservation.getLeftEyeTest().getNearSPH());
+				}
+				eyResponse.setDistanceCylinder(eyeObservation.getLeftEyeTest().getDistanceCylinder());
+				eyResponse.setDistanceBaseCurve(eyeObservation.getLeftEyeTest().getDistanceBaseCurve());
+				eyResponse.setDistanceDiameter(eyeObservation.getLeftEyeTest().getDistanceDiameter());
+				eyResponse.setNearCylinder(eyeObservation.getLeftEyeTest().getNearCylinder());
+				eyResponse.setNearBaseCurve(eyeObservation.getLeftEyeTest().getNearBaseCurve());
+				eyResponse.setNearDiameter(eyeObservation.getLeftEyeTest().getNearDiameter());
+			}
+			parameters.put("leftEyeTest", eyResponse);
+			eyResponse = new EyeTestJasperResponse();
+			if (eyeObservation.getRightEyeTest() != null) {
+				BeanUtil.map(eyeObservation.getRightEyeTest(), eyResponse);
+				if (!DPDoctorUtils.anyStringEmpty(eyeObservation.getRightEyeTest().getDistanceSPH())) {
+					if (eyeObservation.getRightEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
+							|| eyeObservation.getRightEyeTest().getDistanceSPH().equalsIgnoreCase(" plain"))
+						eyResponse.setDistanceSPH(eyeObservation.getRightEyeTest().getDistanceSPH());
+				}
+				if (!DPDoctorUtils.anyStringEmpty(eyeObservation.getRightEyeTest().getNearSPH())) {
+					if (eyeObservation.getRightEyeTest().getNearSPH().equalsIgnoreCase("plain")
+							|| eyeObservation.getRightEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
+						eyResponse.setNearSPH(eyeObservation.getRightEyeTest().getNearSPH());
+				}
+				eyResponse.setDistanceCylinder(eyeObservation.getRightEyeTest().getDistanceCylinder());
+				eyResponse.setDistanceBaseCurve(eyeObservation.getRightEyeTest().getDistanceBaseCurve());
+				eyResponse.setDistanceDiameter(eyeObservation.getRightEyeTest().getDistanceDiameter());
+				eyResponse.setNearCylinder(eyeObservation.getRightEyeTest().getNearCylinder());
+				eyResponse.setNearBaseCurve(eyeObservation.getRightEyeTest().getNearBaseCurve());
+				eyResponse.setNearDiameter(eyeObservation.getRightEyeTest().getNearDiameter());
+			}
+			parameters.put("rightEyeTest", eyResponse);
+			EyeVisualAcuitiesJasperResponse visualAcuitiesJasperResponse = new EyeVisualAcuitiesJasperResponse();
+			if (eyeObservation.getLeftVisualAcuities() != null) {
+
+				BeanUtil.map(eyeObservation.getLeftVisualAcuities(), visualAcuitiesJasperResponse);
+
+				visualAcuitiesJasperResponse.setUnaided(eyeObservation.getLeftVisualAcuities().getUnaided());
+				visualAcuitiesJasperResponse.setPresentLens(eyeObservation.getLeftVisualAcuities().getPresentLens());
+				if (eyeObservation.getLeftVisualAcuities().getPresentLensUnit() != null)
+					visualAcuitiesJasperResponse
+							.setPresentLensUnit(eyeObservation.getLeftVisualAcuities().getPresentLensUnit().getType());
+				if (eyeObservation.getLeftVisualAcuities().getEyeType() != null)
+					visualAcuitiesJasperResponse
+							.setEyeType(eyeObservation.getLeftVisualAcuities().getEyeType().getType());
+				visualAcuitiesJasperResponse.setPinHole(eyeObservation.getLeftVisualAcuities().getPinHole());
+			}
+			parameters.put("leftVisualAcuities", visualAcuitiesJasperResponse);
+
+			visualAcuitiesJasperResponse = new EyeVisualAcuitiesJasperResponse();
+			if (eyeObservation.getRightVisualAcuities() != null) {
+
+				BeanUtil.map(eyeObservation.getRightVisualAcuities(), visualAcuitiesJasperResponse);
+
+				visualAcuitiesJasperResponse.setUnaided(eyeObservation.getRightVisualAcuities().getUnaided());
+				visualAcuitiesJasperResponse.setPresentLens(eyeObservation.getRightVisualAcuities().getPresentLens());
+				if (eyeObservation.getRightVisualAcuities().getPresentLensUnit() != null)
+					visualAcuitiesJasperResponse
+							.setPresentLensUnit(eyeObservation.getRightVisualAcuities().getPresentLensUnit().getType());
+				if (eyeObservation.getRightVisualAcuities().getEyeType() != null)
+					visualAcuitiesJasperResponse
+							.setEyeType(eyeObservation.getRightVisualAcuities().getEyeType().getType());
+				visualAcuitiesJasperResponse.setPinHole(eyeObservation.getRightVisualAcuities().getPinHole());
+			}
+			parameters.put("rightVisualAcuities", visualAcuitiesJasperResponse);
+		}
+		showTitle = false;
+
 		if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
 			parameters.put("lmp", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
 		if (clinicalNotesCollection.getEdd() != null && (!isCustomPDF || showEDD))
@@ -4142,14 +4515,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String vitalSigns = null;
 
 			String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
-			pulse = (pulse != null && !pulse.isEmpty() ? "Pulse: " + pulse.trim() + " " + VitalSignsUnit.PULSE.getUnit()
+			pulse = (pulse != null && !pulse.isEmpty()
+					? "Pulse: " + pulse + " " + VitalSignsUnit.PULSE.getUnit()
 					: "");
 			if (!DPDoctorUtils.allStringsEmpty(pulse))
 				vitalSigns = pulse;
 
 			String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
 			temp = (temp != null && !temp.isEmpty()
-					? "Temperature: " + temp.trim() + " " + VitalSignsUnit.TEMPERATURE.getUnit()
+					? "Temperature: " + temp + " " + VitalSignsUnit.TEMPERATURE.getUnit()
 					: "");
 			if (!DPDoctorUtils.allStringsEmpty(temp)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
@@ -4160,7 +4534,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
 			breathing = (breathing != null && !breathing.isEmpty()
-					? "Breathing: " + breathing.trim() + " " + VitalSignsUnit.BREATHING.getUnit()
+					? "Breathing: " + breathing + " " + VitalSignsUnit.BREATHING.getUnit()
 					: "");
 			if (!DPDoctorUtils.allStringsEmpty(breathing)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
@@ -4171,9 +4545,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			String weight = clinicalNotesCollection.getVitalSigns().getWeight();
 			weight = (weight != null && !weight.isEmpty()
-					? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit()
+					? "Weight: " + weight + " " + VitalSignsUnit.WEIGHT.getUnit()
 					: "");
-			if (!DPDoctorUtils.allStringsEmpty(temp)) {
+			if (!DPDoctorUtils.allStringsEmpty(weight)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + weight;
 				else
@@ -4182,14 +4556,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			String bloodPressure = "";
 			if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
-				String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getSystolic();
-				systolic = systolic != null && !systolic.isEmpty() ? systolic.trim() : "";
+				String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure()
+						.getSystolic();
+				systolic = systolic != null && !systolic.isEmpty() ? systolic : "";
 
-				String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic();
-				diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic.trim() : "";
+				String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure()
+						.getDiastolic();
+				diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
 
 				if (!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
-					bloodPressure = "B.P: " + systolic + "/" + diastolic + " " + VitalSignsUnit.BLOODPRESSURE.getUnit();
+					bloodPressure = "B.P: " + systolic + "/" + diastolic + " "
+							+ VitalSignsUnit.BLOODPRESSURE.getUnit();
 				if (!DPDoctorUtils.allStringsEmpty(bloodPressure)) {
 					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 						vitalSigns = vitalSigns + ",  " + bloodPressure;
@@ -4197,8 +4574,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						vitalSigns = bloodPressure;
 				}
 			}
+
 			String spo2 = clinicalNotesCollection.getVitalSigns().getSpo2();
-			spo2 = (spo2 != null && !spo2.isEmpty() ? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit() : "");
+			spo2 = (spo2 != null && !spo2.isEmpty()
+					? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit()
+					: "");
 			if (!DPDoctorUtils.allStringsEmpty(spo2)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + spo2;
@@ -4206,7 +4586,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					vitalSigns = spo2;
 			}
 			String height = clinicalNotesCollection.getVitalSigns().getHeight();
-			height = (height != null && !height.isEmpty() ? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
+			height = (height != null && !height.isEmpty()
+					? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
 					: "");
 			if (!DPDoctorUtils.allStringsEmpty(height)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
@@ -4217,8 +4598,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
 			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-				if (bmi.equalsIgnoreCase("nan"))
+				if (bmi.equalsIgnoreCase("nan")) {
 					bmi = "";
+				}
 
 			} else {
 				bmi = "";
@@ -4226,10 +4608,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
 				bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
-				if (!DPDoctorUtils.allStringsEmpty(bmi))
+				if (!DPDoctorUtils.allStringsEmpty(bmi)) {
 					vitalSigns = vitalSigns + ",  " + bmi;
-				else
+				} else {
 					vitalSigns = bmi;
+				}
 			}
 
 			String bsa = clinicalNotesCollection.getVitalSigns().getBsa();
@@ -4267,7 +4650,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String dateTime = _12HourSDF.format(_24HourDt) + ", " + sdf.format(clinicalNotesCollection.getFromDate());
 			parameters.put("followUpAppointment", "Next Review on " + dateTime);
 		}
-
+		parameters.put("contentLineSpace",
+				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
+						? printSettings.getContentLineSpace()
+						: LineSpace.SMALL.name());
 		if (historyCollection != null) {
 			parameters.put("showHistory", true);
 			patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
@@ -5313,7 +5699,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(indicationOfUSGCollection.getId())) {
 				indicationOfUSGCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(indicationOfUSGCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(indicationOfUSGCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(indicationOfUSGCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						indicationOfUSGCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -5345,7 +5732,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean discarded) {
 		IndicationOfUSG response = null;
 		try {
-			IndicationOfUSGCollection indicationOfUSGCollection = indicationOfUSGRepository.findById(new ObjectId(id)).orElse(null);
+			IndicationOfUSGCollection indicationOfUSGCollection = indicationOfUSGRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (indicationOfUSGCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(indicationOfUSGCollection.getDoctorId(),
 						indicationOfUSGCollection.getHospitalId(), indicationOfUSGCollection.getLocationId())) {
@@ -5383,8 +5771,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<IndicationOfUSG> getCustomGlobalIndicationOfUSG(long page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded) {
+	private List<IndicationOfUSG> getCustomGlobalIndicationOfUSG(long page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<IndicationOfUSG> response = new ArrayList<IndicationOfUSG>();
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -5743,7 +6131,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(ecgDetailsCollection.getId())) {
 				ecgDetailsCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(ecgDetailsCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(ecgDetailsCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(ecgDetailsCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						ecgDetailsCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -5779,7 +6168,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(xRayDetailsCollection.getId())) {
 				xRayDetailsCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(xRayDetailsCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(xRayDetailsCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(xRayDetailsCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						xRayDetailsCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -5850,7 +6240,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(holterCollection.getId())) {
 				holterCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(holterCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(holterCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(holterCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						holterCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -5885,7 +6276,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(procedureNoteCollection.getId())) {
 				procedureNoteCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(procedureNoteCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(procedureNoteCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(procedureNoteCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						procedureNoteCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -5960,7 +6352,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(earsExaminationCollection.getId())) {
 				earsExaminationCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(earsExaminationCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(earsExaminationCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(earsExaminationCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						earsExaminationCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -5996,7 +6389,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(neckExaminationCollection.getId())) {
 				neckExaminationCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(neckExaminationCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(neckExaminationCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(neckExaminationCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						neckExaminationCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -6032,7 +6426,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(noseExaminationCollection.getId())) {
 				noseExaminationCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(noseExaminationCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(noseExaminationCollection.getDoctorId()).orElse(null);
+					UserCollection userCollection = userRepository.findById(noseExaminationCollection.getDoctorId())
+							.orElse(null);
 					if (userCollection != null) {
 						noseExaminationCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -6644,7 +7039,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean discarded) {
 		ProcedureNote response = null;
 		try {
-			ProcedureNoteCollection procedureNoteCollection = procedureNoteRepository.findById(new ObjectId(id)).orElse(null);
+			ProcedureNoteCollection procedureNoteCollection = procedureNoteRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (procedureNoteCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(procedureNoteCollection.getDoctorId(),
 						procedureNoteCollection.getHospitalId(), procedureNoteCollection.getLocationId())) {
@@ -6867,7 +7263,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean discarded) {
 		NeckExamination response = null;
 		try {
-			NeckExaminationCollection neckExaminationCollection = neckExaminationRepository.findById(new ObjectId(id)).orElse(null);
+			NeckExaminationCollection neckExaminationCollection = neckExaminationRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (neckExaminationCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(neckExaminationCollection.getDoctorId(),
 						neckExaminationCollection.getHospitalId(), neckExaminationCollection.getLocationId())) {
@@ -6910,7 +7307,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean discarded) {
 		NoseExamination response = null;
 		try {
-			NoseExaminationCollection noseExaminationCollection = noseExaminationRepository.findById(new ObjectId(id)).orElse(null);
+			NoseExaminationCollection noseExaminationCollection = noseExaminationRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (noseExaminationCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(noseExaminationCollection.getDoctorId(),
 						noseExaminationCollection.getHospitalId(), noseExaminationCollection.getLocationId())) {
@@ -6998,7 +7396,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean discarded) {
 		EarsExamination response = null;
 		try {
-			EarsExaminationCollection earsExaminationCollection = earsExaminationRepository.findById(new ObjectId(id)).orElse(null);
+			EarsExaminationCollection earsExaminationCollection = earsExaminationRepository.findById(new ObjectId(id))
+					.orElse(null);
 			if (earsExaminationCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(earsExaminationCollection.getDoctorId(),
 						earsExaminationCollection.getHospitalId(), earsExaminationCollection.getLocationId())) {
@@ -8298,8 +8697,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNotesCollection = clinicalNotesRepository.findById(new ObjectId(clinicalNotesId)).orElse(null);
 			if (clinicalNotesCollection != null) {
 				user = userRepository.findById(clinicalNotesCollection.getPatientId()).orElse(null);
-				patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(clinicalNotesCollection.getPatientId(),
-						clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId());
+				patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
+						clinicalNotesCollection.getPatientId(), clinicalNotesCollection.getLocationId(),
+						clinicalNotesCollection.getHospitalId());
 
 				emailTrackCollection.setDoctorId(clinicalNotesCollection.getDoctorId());
 				emailTrackCollection.setHospitalId(clinicalNotesCollection.getHospitalId());
@@ -8311,7 +8711,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					emailTrackCollection.setPatientId(user.getId());
 				}
 				JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user, null,
-						false, false, false, false, false, false, false, false, false);
+						false, false, false, false, false, false, false, false, false,
+						PrintSettingType.EMAIL.getType());
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -8384,17 +8785,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository
-					.findByIdIn(objectIds);
+			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository.findByIdIn(objectIds);
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				PatientCollection patient = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
 						clinicalNotesCollections.get(0).getPatientId(), clinicalNotesCollections.get(0).getDoctorId(),
 						clinicalNotesCollections.get(0).getLocationId(),
 						clinicalNotesCollections.get(0).getHospitalId());
-				UserCollection user = userRepository.findById(clinicalNotesCollections.get(0).getPatientId()).orElse(null);
+				UserCollection user = userRepository.findById(clinicalNotesCollections.get(0).getPatientId())
+						.orElse(null);
 
 				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(
-						clinicalNotesCollections, patient, user);
+						clinicalNotesCollections, patient, user, PrintSettingType.EMR.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -8413,8 +8814,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	private JasperReportResponse createJasperForMultipleClinicalNotes(
-			List<ClinicalNotesCollection> clinicalNotesCollections, PatientCollection patient, UserCollection user)
-			throws NumberFormatException, IOException {
+			List<ClinicalNotesCollection> clinicalNotesCollections, PatientCollection patient, UserCollection user,
+			String printSettingType) throws NumberFormatException, IOException {
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
@@ -8422,11 +8823,21 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
-
-		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
-				clinicalNotesCollections.get(0).getDoctorId(), clinicalNotesCollections.get(0).getLocationId(),
-				clinicalNotesCollections.get(0).getHospitalId(), ComponentType.ALL.getType());
-
+		PrintSettingsCollection printSettings = null;
+		printSettings = printSettingsRepository
+				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+						clinicalNotesCollections.get(0).getDoctorId(), clinicalNotesCollections.get(0).getLocationId(),
+						clinicalNotesCollections.get(0).getHospitalId(), ComponentType.ALL.getType(), printSettingType);
+		if (printSettings == null) {
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+							clinicalNotesCollections.get(0).getDoctorId(),
+							clinicalNotesCollections.get(0).getLocationId(),
+							clinicalNotesCollections.get(0).getHospitalId(), ComponentType.ALL.getType(),
+							PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+			if (!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -8504,14 +8915,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository
-					.findByIdIn(objectIds);
+			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository.findByIdIn(objectIds);
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				PatientCollection patient = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(
 						clinicalNotesCollections.get(0).getPatientId(), clinicalNotesCollections.get(0).getDoctorId(),
 						clinicalNotesCollections.get(0).getLocationId(),
 						clinicalNotesCollections.get(0).getHospitalId());
-				UserCollection user = userRepository.findById(clinicalNotesCollections.get(0).getPatientId()).orElse(null);
+				UserCollection user = userRepository.findById(clinicalNotesCollections.get(0).getPatientId())
+						.orElse(null);
 				emailTrackCollection.setDoctorId(clinicalNotesCollections.get(0).getDoctorId());
 				emailTrackCollection.setHospitalId(clinicalNotesCollections.get(0).getHospitalId());
 				emailTrackCollection.setLocationId(clinicalNotesCollections.get(0).getLocationId());
@@ -8522,12 +8933,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					emailTrackCollection.setPatientId(user.getId());
 				}
 				JasperReportResponse jasperReportResponse = createJasperForMultipleClinicalNotes(
-						clinicalNotesCollections, patient, user);
+						clinicalNotesCollections, patient, user, PrintSettingType.EMAIL.getType());
 
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-				UserCollection doctorUser = userRepository.findById(clinicalNotesCollections.get(0).getDoctorId()).orElse(null);
+				UserCollection doctorUser = userRepository.findById(clinicalNotesCollections.get(0).getDoctorId())
+						.orElse(null);
 				LocationCollection locationCollection = locationRepository
 						.findById(clinicalNotesCollections.get(0).getLocationId()).orElse(null);
 
@@ -8587,4 +8999,38 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			throw new BusinessException(ServiceError.Unknown, "Error while emailing Clinical Notes PDF");
 		}
 	}
+
+	public PatientTreatmentResponse addPatientTreatmentsThroughClinicalNotes(ClinicalNotesCollection request,
+			PatientTreatmentAddEditRequest patientAddEditRequest)
+
+	{
+		PatientTreatmentResponse addEditPatientTreatmentResponse = null;
+		if (patientAddEditRequest != null && patientAddEditRequest.getTreatments() != null) {
+			// PatientTreatmentAddEditRequest patientAddEditRequest =new
+			// PatientTreatmentAddEditRequest();
+			patientAddEditRequest.setPatientId(request.getPatientId().toString());
+			patientAddEditRequest.setLocationId(request.getLocationId().toString());
+			patientAddEditRequest.setHospitalId(request.getHospitalId().toString());
+			patientAddEditRequest.setDoctorId(request.getDoctorId().toString());
+			// patientAddEditRequest.setAppointmentId(request.getAppointmentId());
+
+			patientAddEditRequest.setTime(request.getTime());
+			patientAddEditRequest.setFromDate(request.getFromDate());
+			// patientAddEditRequest.setVisitId(request.getVisitId() != null ?
+			// request.getVisitId().toString() : null);
+			addEditPatientTreatmentResponse = patientTreatmentServices.addEditPatientTreatment(patientAddEditRequest,
+					false, null, null);
+
+//			if (addEditPatientTreatmentResponse != null) {
+//				String visitId = patientTrackService.addRecord(addEditPatientTreatmentResponse, VisitedFor.TREATMENT,
+//						addEditPatientTreatmentResponse.getVisitId());
+//				//request.setVisitId(new ObjectId(visitId));
+//				request = clinicalNotesRepository.save(request);
+//
+//			}
+
+		}
+		return addEditPatientTreatmentResponse;
+	}
+
 }

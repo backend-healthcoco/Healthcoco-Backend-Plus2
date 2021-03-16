@@ -4,42 +4,90 @@
   <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,400italic' rel='stylesheet' type='text/css'>
   </head>
 
-  <body cz-shortcut-listen="true" style="font-family: 'Roboto Condensed', sans-serif">
+  <body cz-shortcut-listen="true" style="font-family: 'Roboto Condensed', sans-serif;background-color: #f2f2f2;">
     <div style="background-color:#ffffff;line-height:25px;margin-bottom:30px;font-family:'Open Sans',sans-serif;margin:0px auto;min-width:200px;max-width:600px">
 
-      <div align="center">
-        <img src="${imageURL}/logo1.png" style="width:280px; display:block; margin-left:auto; margin-right:auto;">
+      <div style="background-color: #1e2d75 !important; padding:25px 20px;">
+        <a href="https://plus.healthcoco.com" target="_blank"><img src="https://d1ayyk8caoqrgh.cloudfront.net/email-template/logo1598344039505.png" alt="healthcoco_logo" width="280px" style="display:block;" /></a>
       </div>
 
-      <div style="background-color: #faf8f8; padding:20px;">
+      <div style="padding: 0px 20px;">
+        <h3>
+          Appointment confirmed with ${patientName} on ${dateTime} at ${clinicName}
+        </h3>
+      </div>
 
-        <div align="center" style="margin-top: 10px">
-          <img src="${imageURL}/cn_icn.png" style="margin-top: 5px">
-        </div>
-
-        <div>
-         <p style="color:#2c3335;font-size:15px;">Hello ${doctorName},<br><br>
-         This is to inform you that you have a confirmed appointment scheduled with ${patientName} on ${dateTime} at ${clinicName}${branch}.<br><br>
-         For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >${contactUsEmail}</a>
-            <br><br>Stay Healthy and Happy,<br>Team Healthcoco.
-         </p>
+      <div style="padding: 22px; background-color: #e6e6e3;">
+        <div align="center">
+          <img src="https://d1ayyk8caoqrgh.cloudfront.net/email-template/image91598526380196.png" style="width:350px;">
         </div>
       </div>
 
-        <div style="padding:20px;">
-          <p style="font-size:14px; display:inline;">
-             <span>This message was sent to you by Healthcoco.</span>
-          </p>
-          <p style="display:inline;float: right; margin-top: -5px;">
-             #*         <a style="color: #0077b5;text-decoration:none;"href="${fbLink}" target="_blank"><img src="${imageURL}/f_icn.png" style=""></a> *#
-              <a style="color: #0077b5;text-decoration:none;"href="${twitterLink}" target="_blank"><img src="${imageURL}/t_icn.png" style=""></a>
-              <a style="color: #0077b5;text-decoration:none;"href="${linkedInLink}" target="_blank"><img src="${imageURL}/l_icn.png" style=""></a>
-              <a style="color: #0077b5;text-decoration:none;"href="${googlePlusLink}" target="_blank"><img src="${imageURL}/g_icn.png" style=""></a>
-   
-          </p>
-        </div> 
 
-    </div>  
+      <div style="padding: 22px">
+        <p>Hello ${doctorName},</p>
+        <p style="margin: 0;"> This is to inform you that your appointment has been confirmed with ${patientName} on ${dateTime} at ${clinicName} ${branch}.</p>
+        <p style="margin: 20px 0 0 0;">Warm regards,</p>
+        <p style="margin: 0;">Team Healthcoco</p>
+      </div>
+
+      <div style="background-color: #e6e6e3;">
+        <div style="overflow: hidden;">
+          <img src="https://d1ayyk8caoqrgh.cloudfront.net/email-template/HC_Mobile1598344617885.png" alt="healthcoco_pus_app" align="center" style="width:230px;float: left;">
+          <div style="float: left;margin-top: 60px;">
+            <small style="margin-left: 25px;"><b>Get the Healthcoco+ app</b></small>
+            <ul>
+              <li><small><b>Intelligent Prescription and Medical Records</b></small></li>
+              <li><small><b>Manage your profile digitally</b></small></li>
+              <li><small><b>Schedule appointment on the go</b></small></li>
+              <li><small><b>Maintain Invoices and Receipts</b></small></li>
+            </ul>
+
+            <p align="center">
+              <a style="text-decoration:none;" href="https://play.google.com/store/apps/details?id=com.healthcoco.healthcocoplus" target="_blank"><img alt="Healthcoco" 
+                  src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/Google_play_1x.png"
+              style="width: 117px;"></a>
+
+              <a style="text-decoration:none;" href="https://itunes.apple.com/bs/app/healthcoco+/id1013626399?mt=8"
+              target="_blank"><img src="https://d12gvn78jkew5f.cloudfront.net/MailTemplate/app-store-badge.png"
+                  style="width: 117px;margin-left: 22px"></a>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div style="background-color: #f5f5fa !important;padding: 25px 20px;overflow: hidden;">
+          <div style="float: left;width: 350px;">
+              <small>Powered By</small>
+              <strong>HEALTHCOCO</strong>
+
+              <p style="margin-bottom: 0;"><small style="font-size: 11px;"><b>Call: +91 8459802223 &nbsp;&nbsp;Email: support@healthcoco.com</b></small></p>
+          </div>
+          <div style="float: left;">
+              <h4 style="color: #5c5b5b;margin:0;">
+                  Follow us at
+              </h4>
+              <div style="margin-top: 10px;">
+                  <a href="https://www.facebook.com/healthcoco/" target="_blank"><img src="https://d1ayyk8caoqrgh.cloudfront.net/email-template/facebook-21598343509134.png" alt="insert logo here" width="25">
+                  </a>&nbsp;&nbsp;
+                  <a href="https://www.linkedin.com/company/healthcoco/" target="_blank"><img
+                      src="https://d1ayyk8caoqrgh.cloudfront.net/email-template/in1598343918208.png" alt="insert logo here" width="25">
+                  </a>&nbsp;&nbsp;
+                  <a href="https://www.instagram.com/healthcoco/" target="_blank"><img
+                      src="https://d1ayyk8caoqrgh.cloudfront.net/email-template/instagram-sketched1598343944136.png" alt="insert logo here" width="25">
+                  </a>&nbsp;&nbsp;
+                  <a href="https://twitter.com/healthcococom" target="_blank"><img src="https://d1ayyk8caoqrgh.cloudfront.net/email-template/twitter1598343981972.png" alt="insert logo here" width="25"></a>&nbsp;&nbsp;
+                  <a href="https://www.youtube.com/channel/UCAvIuW5nt0qBXvAfVeynQOg" target="_blank"><img src="https://d1ayyk8caoqrgh.cloudfront.net/email-template/youtube1598343999812.png" alt="insert logo here" width="25"></a>
+              </div>
+          </div>
+      </div>
+      <small>
+          <a href="https://www.healthcoco.com/company/privacy-policy" target="_blank" style="color: #2d2c2c;">Privacy Policy</a>
+      </small>
+      <small style="float: right;">
+          &copy; 2015-2020, All Rights Reserved.
+      </small>
+
+    </div>
           
    </body>
 </html>

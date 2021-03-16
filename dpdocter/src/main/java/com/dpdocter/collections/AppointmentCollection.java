@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.FieldsCollection;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentState;
@@ -133,17 +134,9 @@ public class AppointmentCollection extends GenericCollection {
 	@Field
 	private Boolean isCreatedByPatient = false;
 	
-//	@Field
-//	private PatientTreatmentResponse patientTreatmentResponse;
-//
-//	public PatientTreatmentResponse getPatientTreatmentResponse() {
-//		return patientTreatmentResponse;
-//	}
-////
-//	public void setPatientTreatmentResponse(PatientTreatmentResponse patientTreatmentResponse) {
-//		this.patientTreatmentResponse = patientTreatmentResponse;
-//	}
-
+	@Field
+	private AppointmentSlot onlineConsultationSlot;
+	
 	@Field
 	private ConsultationType consultationType;
 	
@@ -152,6 +145,15 @@ public class AppointmentCollection extends GenericCollection {
 	
 	@Field
 	private ObjectId problemDetailsId;
+	
+	@Field
+	private Long callDurationInMinutes=0L;
+	
+	@Field
+	private Boolean isAnonymousAppointment = false;
+	@Field
+	private ObjectId specialityId;
+	
 
 	public String getCancelledByProfile() {
 		return cancelledByProfile;
@@ -440,6 +442,24 @@ public class AppointmentCollection extends GenericCollection {
 	public void setIsCreatedByPatient(Boolean isCreatedByPatient) {
 		this.isCreatedByPatient = isCreatedByPatient;
 	}
+	
+	
+
+	public Boolean getIsAnonymousAppointment() {
+		return isAnonymousAppointment;
+	}
+
+	public void setIsAnonymousAppointment(Boolean isAnonymousAppointment) {
+		this.isAnonymousAppointment = isAnonymousAppointment;
+	}
+
+	public ObjectId getSpecialityId() {
+		return specialityId;
+	}
+
+	public void setSpecialityId(ObjectId specialityId) {
+		this.specialityId = specialityId;
+	}
 
 	public String getBranch() {
 		return branch;
@@ -466,6 +486,21 @@ public class AppointmentCollection extends GenericCollection {
 	}
 	
 	
+	public Long getCallDurationInMinutes() {
+		return callDurationInMinutes;
+	}
+
+	public void setCallDurationInMinutes(Long callDurationInMinutes) {
+		this.callDurationInMinutes = callDurationInMinutes;
+	}
+
+	public AppointmentSlot getOnlineConsultationSlot() {
+		return onlineConsultationSlot;
+	}
+
+	public void setOnlineConsultationSlot(AppointmentSlot onlineConsultationSlot) {
+		this.onlineConsultationSlot = onlineConsultationSlot;
+	}
 
 	public ObjectId getProblemDetailsId() {
 		return problemDetailsId;

@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.response.TreatmentResponse;
 
 public class ClinicalnoteLookupBean extends GenericCollection {
 
@@ -134,6 +135,10 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 	private EyeSpecialityObservation eyeObservation;
 	
 	private PhysioExamination physioExamination;
+	
+	private List<TreatmentResponse> treatments;
+	
+	private List<Observation> treatmentObservation;
 
 	public ObjectId getId() {
 		return id;
@@ -673,6 +678,26 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 
 	public void setPhysioExamination(PhysioExamination physioExamination) {
 		this.physioExamination = physioExamination;
+	}
+	
+	
+
+	public List<TreatmentResponse> getTreatments() {
+		return treatments;
+	}
+
+	public void setTreatments(List<TreatmentResponse> treatments) {
+		this.treatments = treatments;
+	}
+	
+	
+
+	public List<Observation> getTreatmentObservation() {
+		return treatmentObservation;
+	}
+
+	public void setTreatmentObservation(List<Observation> treatmentObservation) {
+		this.treatmentObservation = treatmentObservation;
 	}
 
 	@Override

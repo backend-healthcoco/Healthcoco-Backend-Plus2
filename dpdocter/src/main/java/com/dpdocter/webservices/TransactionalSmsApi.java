@@ -17,6 +17,7 @@ import com.dpdocter.beans.BulkSmsReport;
 import com.dpdocter.beans.TransactionalSmsReport;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.MessageResponse;
 import com.dpdocter.services.TransactionSmsServices;
 
 import common.util.web.Response;
@@ -40,13 +41,13 @@ public class TransactionalSmsApi {
 	@Path(value = PathProxy.TransactionSmsUrls.GET_TRANSACTION_SMS_REPORT)
 	@ApiOperation(value = PathProxy.TransactionSmsUrls.GET_TRANSACTION_SMS_REPORT, notes = PathProxy.TransactionSmsUrls.GET_TRANSACTION_SMS_REPORT)
 	@GET
-	public Response<TransactionalSmsReport> getTransactionSmsReport(@DefaultValue("0")@QueryParam(value ="size") int size, 
+	public Response<MessageResponse> getTransactionSmsReport(@DefaultValue("0")@QueryParam(value ="size") int size, 
 			@DefaultValue("0")	@QueryParam(value ="page") int page,
 			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
 			@QueryParam(value ="doctorId") String doctorId,
 			@QueryParam(value ="locationIdId") String locationId) {
 
-		Response<TransactionalSmsReport> response = new Response<TransactionalSmsReport>();
+		Response<MessageResponse> response = new Response<MessageResponse>();
 		if (doctorId == null && locationId==null) {
 			logger.warn("doctorId or locationid  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId send  is NULL");

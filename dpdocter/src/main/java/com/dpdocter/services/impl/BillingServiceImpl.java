@@ -80,6 +80,8 @@ import com.dpdocter.enums.BillingType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
 import com.dpdocter.enums.InvoiceItemType;
+import com.dpdocter.enums.PatientTreatmentStatus;
+import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.enums.ReceiptType;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -99,9 +101,11 @@ import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.VendorExpenseRepository;
+import com.dpdocter.request.DoctorAmountRequest;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
 import com.dpdocter.request.InvoiceItemChangeStatusRequest;
+import com.dpdocter.request.PaymentDetails;
 import com.dpdocter.response.AmountResponse;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
 import com.dpdocter.response.DoctorPatientLedgerResponse;
@@ -161,10 +165,9 @@ public class BillingServiceImpl implements BillingService {
 
 	@Autowired
 	private InventoryService inventoryService;
-	
+
 	@Autowired
 	private ReferenceRepository referenceRepository;
-
 
 	@Autowired
 	private MailService mailService;
@@ -219,7 +222,7 @@ public class BillingServiceImpl implements BillingService {
 
 	@Autowired
 	private ESExpenseTypeService esExpenseTypeService;
-	
+
 	@Autowired
 	private VendorExpenseRepository vendorExpenseRepository;
 
@@ -250,7 +253,8 @@ public class BillingServiceImpl implements BillingService {
 	public InvoiceAndReceiptInitials updateInitials(InvoiceAndReceiptInitials request) {
 		InvoiceAndReceiptInitials response = null;
 		try {
-			LocationCollection locationCollection = locationRepository.findById(new ObjectId(request.getLocationId())).orElse(null);
+			LocationCollection locationCollection = locationRepository.findById(new ObjectId(request.getLocationId()))
+					.orElse(null);
 			if (locationCollection != null) {
 				locationCollection.setInvoiceInitial(request.getInvoiceInitial());
 				locationCollection.setReceiptInitial(request.getReceiptInitial());
@@ -312,7 +316,8 @@ public class BillingServiceImpl implements BillingService {
 				}
 				doctorPatientInvoiceCollection.setAdminCreatedTime(new Date());
 			} else {
-				doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findById(new ObjectId(request.getId())).orElse(null);
+				doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findById(new ObjectId(request.getId()))
+						.orElse(null);
 				Double paidAmount = doctorPatientInvoiceCollection.getGrandTotal()
 						- doctorPatientInvoiceCollection.getBalanceAmount();
 
@@ -328,7 +333,7 @@ public class BillingServiceImpl implements BillingService {
 							"Invoice cannot be edited as old invoice's total is less than paid amount.");
 				}
 				if (request.getCreatedTime() != null) {
-					doctorPatientInvoiceCollection.setCreatedTime(new Date());
+					doctorPatientInvoiceCollection.setCreatedTime(request.getCreatedTime());
 				}
 
 				if (!doctorPatientInvoiceCollection.getDoctorId().toString().equalsIgnoreCase(request.toString())) {
@@ -350,13 +355,12 @@ public class BillingServiceImpl implements BillingService {
 						.setBalanceAmount((request.getGrandTotal() - doctorPatientInvoiceCollection.getGrandTotal())
 								+ doctorPatientInvoiceCollection.getBalanceAmount());
 				doctorPatientInvoiceCollection.setGrandTotal(request.getGrandTotal());
-				
+
 				doctorPatientInvoiceCollection.setAdmissionDate(request.getAdmissionDate());
 				doctorPatientInvoiceCollection.setDischargeDate(request.getDischargeDate());
 				doctorPatientInvoiceCollection.setTimeOfAdmission(request.getTimeOfAdmission());
 				doctorPatientInvoiceCollection.setTimeOfDischarge(request.getTimeOfDischarge());
-				
-				
+
 				if (doctorPatientInvoiceCollection.getBalanceAmount() < 0) {
 					doctorPatientInvoiceCollection
 							.setRefundAmount(doctorPatientInvoiceCollection.getBalanceAmount() * (-1));
@@ -379,6 +383,9 @@ public class BillingServiceImpl implements BillingService {
 					drug = prescriptionServices.getDrugById(invoiceItemResponse.getItemId());
 				}
 				itemIds.remove(new ObjectId(invoiceItemResponse.getItemId()));
+				if(doctorPatientInvoiceCollection.getBalanceAmount() == 0) {
+					invoiceItemResponse.setStatus(PatientTreatmentStatus.COMPLETED);
+			   }
 				if (DPDoctorUtils.anyStringEmpty(invoiceItemResponse.getDoctorId())) {
 					invoiceItemResponse.setDoctorId(request.getDoctorId());
 					invoiceItemResponse.setDoctorName(doctorPatientInvoiceCollection.getCreatedBy());
@@ -388,7 +395,8 @@ public class BillingServiceImpl implements BillingService {
 					else {
 						UserCollection doctor = doctorsMap.get(invoiceItemResponse.getDoctorId().toString());
 						if (doctor == null) {
-							doctor = userRepository.findById(new ObjectId(invoiceItemResponse.getDoctorId())).orElse(null);
+							doctor = userRepository.findById(new ObjectId(invoiceItemResponse.getDoctorId()))
+									.orElse(null);
 							doctorsMap.put(invoiceItemResponse.getDoctorId(), doctor);
 						}
 						invoiceItemResponse.setDoctorName(
@@ -594,13 +602,14 @@ public class BillingServiceImpl implements BillingService {
 
 	@Override
 	public List<DoctorPatientInvoice> getInvoices(String type, long page, int size, String doctorId, String locationId,
-			String hospitalId, String patientId, String updatedTime,String from,String to, Boolean discarded) {
+			String hospitalId, String patientId, String updatedTime, String from, String to, Boolean discarded) {
 		List<DoctorPatientInvoice> responses = null;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded")
-					.ne(true);
+			Criteria criteria = new Criteria();
+//			("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded")
+//					.ne(true);
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
@@ -608,19 +617,20 @@ public class BillingServiceImpl implements BillingService {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
 				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
-			if (!discarded)
+			if (discarded !=null)
 				criteria.and("discarded").is(discarded);
-			
+
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
-			DateTime fromDateTime = null, toDateTime= null;
+			DateTime fromDateTime = null, toDateTime = null;
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
 				localCalendar.setTime(new Date(Long.parseLong(from)));
 				int currentDay = localCalendar.get(Calendar.DATE);
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
 
-				 fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));				
+				fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(to)) {
 				localCalendar.setTime(new Date(Long.parseLong(to)));
@@ -628,16 +638,16 @@ public class BillingServiceImpl implements BillingService {
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
 
-				 toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));			
+				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			}
-			if(fromDateTime!= null && toDateTime != null) {
+			if (fromDateTime != null && toDateTime != null) {
 				criteria.and("createdTime").gte(fromDateTime).lte(toDateTime);
-			}else if(fromDateTime!= null) {
+			} else if (fromDateTime != null) {
 				criteria.and("createdTime").gte(fromDateTime);
-			}else if(toDateTime != null) {
+			} else if (toDateTime != null) {
 				criteria.and("createdTime").lte(toDateTime);
 			}
-
 
 			switch (BillingType.valueOf(type.toUpperCase())) {
 			case SETTLE:
@@ -650,16 +660,19 @@ public class BillingServiceImpl implements BillingService {
 				break;
 			}
 			if (size > 0) {
-				responses = mongoTemplate.aggregate(
-						Aggregation.newAggregation(Aggregation.match(criteria),
+				
+				Aggregation aggregation =	Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-								Aggregation.skip((page) * size), Aggregation.limit(size)),
-						DoctorPatientInvoiceCollection.class, DoctorPatientInvoice.class).getMappedResults();
+								Aggregation.skip((page) * size), Aggregation.limit(size));
+								responses = mongoTemplate.aggregate(aggregation,DoctorPatientInvoiceCollection.class, DoctorPatientInvoice.class).getMappedResults();
+			
+								System.out.println("aggregation"+aggregation);
 			} else {
-				responses = mongoTemplate.aggregate(
-						Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime"))),
-						DoctorPatientInvoiceCollection.class, DoctorPatientInvoice.class).getMappedResults();
+				
+						Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+								responses = mongoTemplate.aggregate(aggregation,DoctorPatientInvoiceCollection.class, DoctorPatientInvoice.class).getMappedResults();
+								System.out.println("aggregation"+aggregation);
 			}
 
 		} catch (BusinessException be) {
@@ -792,10 +805,13 @@ public class BillingServiceImpl implements BillingService {
 		DoctorPatientInvoice invoice = null;
 		try {
 			Double dueAmount = 0.0;
+			Double advanceAmount = 0.0;
 			DoctorPatientReceiptCollection doctorPatientReceiptCollection = new DoctorPatientReceiptCollection();
-			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+			
+			 if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 				BeanUtil.map(request, doctorPatientReceiptCollection);
-				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
+						.orElse(null);
 				if (userCollection != null) {
 					doctorPatientReceiptCollection.setCreatedBy(
 							(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() + " "
@@ -815,15 +831,165 @@ public class BillingServiceImpl implements BillingService {
 				if (doctorPatientReceiptCollection.getReceivedDate() == null)
 					doctorPatientReceiptCollection.setReceivedDate(new Date());
 			} else {
-				doctorPatientReceiptCollection = doctorPatientReceiptRepository.findById(new ObjectId(request.getId())).orElse(null);
+				doctorPatientReceiptCollection = doctorPatientReceiptRepository.findById(new ObjectId(request.getId()))
+						.orElse(null);
 				dueAmount = (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0)
 						- doctorPatientReceiptCollection.getAmountPaid();
+				
+				
+				
 			}
 			if (doctorPatientReceiptCollection.getReceiptType().name().equalsIgnoreCase(ReceiptType.ADVANCE.name())) {
 				doctorPatientReceiptCollection.setRemainingAdvanceAmount(request.getAmountPaid());
 				doctorPatientReceiptCollection.setBalanceAmount(0.0);
 				doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
-			} else if (doctorPatientReceiptCollection.getReceiptType().name()
+			}
+			else if(doctorPatientReceiptCollection.getReceiptType().name().equalsIgnoreCase(ReceiptType.REFUND.name())) {
+				
+				if(request.getUsedAdvanceAmount() !=null)
+					doctorPatientReceiptCollection.setRefundAmount(request.getUsedAdvanceAmount());
+				
+				if(request.getAmountPaid() !=null)
+					doctorPatientReceiptCollection.setRefundAmount(request.getAmountPaid());
+			System.out.println("Refund"+doctorPatientReceiptCollection.getRefundAmount());
+
+				List<DoctorPatientReceiptCollection> doPatientReceiptCollections=null;
+				if(request.getInvoiceIds() !=null) {
+					doPatientReceiptCollections = doctorPatientReceiptRepository
+						.findByInvoiceIdAndReceiptType(new ObjectId(request.getInvoiceIds().get(0)),ReceiptType.INVOICE.toString());
+				if (doPatientReceiptCollections != null ) {
+					
+							for(DoctorPatientReceiptCollection doPatientReceiptCollection:doPatientReceiptCollections) {
+						if (doPatientReceiptCollection.getAdvanceReceiptIdWithAmounts() != null
+								&& !doPatientReceiptCollection.getAdvanceReceiptIdWithAmounts().isEmpty()) {
+							advanceAmount = advanceAmount + doPatientReceiptCollection.getUsedAdvanceAmount();
+							for (AdvanceReceiptIdWithAmount receiptIdWithAmount : doPatientReceiptCollection
+									.getAdvanceReceiptIdWithAmounts()) {
+								DoctorPatientReceiptCollection patientReceiptCollection = doctorPatientReceiptRepository
+										.findById(receiptIdWithAmount.getReceiptId()).orElse(null);
+								patientReceiptCollection
+										.setRemainingAdvanceAmount(patientReceiptCollection.getRemainingAdvanceAmount()-request.getUsedAdvanceAmount());
+							//	patientReceiptCollection.setRefundAmount(request.getAmountPaid());
+								patientReceiptCollection.setUpdatedTime(new Date());
+								doctorPatientReceiptRepository.save(patientReceiptCollection);
+							}
+						}
+					//	doctorPatientReceiptCollection.setRefundAmount(request.getAmountPaid());
+
+						doPatientReceiptCollection.setUpdatedTime(new Date());
+						// receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
+			
+					
+
+					// for(DoctorPatientReceiptCollection receiptCollection :
+					// doPatientReceiptCollections){
+					// receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
+					// receiptCollection.setUpdatedTime(new Date());
+					// }
+
+					doctorPatientReceiptRepository.save(doPatientReceiptCollection);
+					}
+				}
+				}
+				else {
+					List<AdvanceReceiptIdWithAmount> receiptIdWithAmounts = doctorPatientReceiptCollection
+							.getAdvanceReceiptIdWithAmounts();
+					List<DoctorPatientReceiptCollection> receiptsOfAdvancePayment = doctorPatientReceiptRepository
+							.findByReceiptTypeAndDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndDiscarded(
+									ReceiptType.ADVANCE.name(),new ObjectId(request.getDoctorId()),
+									new ObjectId(request.getLocationId()),
+									new ObjectId(request.getHospitalId()),
+									new ObjectId(request.getPatientId()), false,
+									new Sort(Direction.ASC, "createdTime"));
+					if (receiptsOfAdvancePayment == null || receiptsOfAdvancePayment.isEmpty())
+						throw new BusinessException(ServiceError.InvalidInput, "Advance Amount is not available");
+					
+					doctorPatientReceiptCollection.setRefundAmount(request.getUsedAdvanceAmount());
+					
+					Double advanceAmountToBeUsed = request.getUsedAdvanceAmount() != null
+							? request.getUsedAdvanceAmount()
+							: 0.0;
+
+					for (DoctorPatientReceiptCollection receiptCollection : receiptsOfAdvancePayment) {
+						
+						AdvanceReceiptIdWithAmount invoiceIdWithAmount = new AdvanceReceiptIdWithAmount();
+						invoiceIdWithAmount.setUniqueReceiptId(receiptCollection.getUniqueReceiptId());
+						invoiceIdWithAmount.setReceiptId(receiptCollection.getId());
+						if (advanceAmountToBeUsed > 0.0) {
+							if (receiptCollection.getRemainingAdvanceAmount() > advanceAmountToBeUsed) {
+								receiptCollection.setRemainingAdvanceAmount(
+										receiptCollection.getRemainingAdvanceAmount() - advanceAmountToBeUsed);
+								//receiptCollection.setRefundAmount(advanceAmountToBeUsed);
+								invoiceIdWithAmount.setUsedAdvanceAmount(advanceAmountToBeUsed);
+								advanceAmountToBeUsed = 0.0;
+							} else {
+								receiptCollection.setRemainingAdvanceAmount(0.0);
+								invoiceIdWithAmount
+										.setUsedAdvanceAmount(receiptCollection.getRemainingAdvanceAmount());
+								advanceAmountToBeUsed = advanceAmountToBeUsed
+										- receiptCollection.getRemainingAdvanceAmount();
+								//receiptCollection.setRefundAmount(advanceAmountToBeUsed);
+							}
+
+							if (receiptIdWithAmounts == null || receiptIdWithAmounts.isEmpty()) {
+								receiptIdWithAmounts = new ArrayList<AdvanceReceiptIdWithAmount>();
+							}
+
+							receiptIdWithAmounts.add(invoiceIdWithAmount);
+							receiptCollection.setCreatedTime(new Date());
+							receiptCollection.setUpdatedTime(new Date());
+							doctorPatientReceiptCollection.setAdvanceReceiptIdWithAmounts(receiptIdWithAmounts);
+							//receiptCollection.setRefundAmount(request.getUsedAdvanceAmount());
+							doctorPatientReceiptRepository.save(receiptCollection);
+						}
+					}				}
+				
+				if(doctorPatientReceiptCollection !=null)
+				{
+					if(request.getPaymentDetails() !=null)
+					{
+						PaymentDetails paymentDetails=new PaymentDetails();
+						paymentDetails.setAmount(request.getPaymentDetails().getAmount());
+						paymentDetails.setBankName(request.getPaymentDetails().getBankName());
+						paymentDetails.setBranchName(request.getPaymentDetails().getBranchName());
+						paymentDetails.setCardNumber(request.getPaymentDetails().getCardNumber());
+						paymentDetails.setCheckNumber(request.getPaymentDetails().getCheckNumber());
+						paymentDetails.setPaymentMode(request.getPaymentDetails().getPaymentMode());
+						
+						doctorPatientReceiptCollection.setPaymentDetails(paymentDetails);
+						//doctorPatientReceiptCollection.setRefundAmount(request.getUsedAdvanceAmount());
+					}
+				}
+			//	advanceAmount = advanceAmount + doctorPatientReceiptCollection.getUsedAdvanceAmount();
+				
+				doctorPatientReceiptCollection.setModeOfPayment(request.getModeOfPayment());
+				
+				
+				doctorPatientReceiptCollection.setBalanceAmount(0.0);
+				doctorPatientReceiptCollection.setRemainingAdvanceAmount(0.0);
+				if (request.getInvoiceIds() != null && !request.getInvoiceIds().isEmpty()) {
+					DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository
+							.findById(new ObjectId(request.getInvoiceIds().get(0))).orElse(null);
+					if (doctorPatientInvoiceCollection == null) {
+						throw new BusinessException(ServiceError.InvalidInput, "Invalid Invoice Id");
+					}
+					System.out.println("Invoice:"+doctorPatientInvoiceCollection);
+					doctorPatientReceiptCollection.setInvoiceId(new ObjectId(request.getInvoiceIds().get(0)));
+					doctorPatientReceiptCollection.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
+					doctorPatientInvoiceCollection.setRefundAmount(request.getAmountPaid());
+					doctorPatientInvoiceCollection.setUpdatedTime(new Date());
+					doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+					invoice = new DoctorPatientInvoice();
+					BeanUtil.map(doctorPatientInvoiceCollection, invoice);
+				}
+				
+				
+				doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
+				System.out.println("REceipt:"+doctorPatientReceiptCollection);
+			}
+			
+			
+			else if (doctorPatientReceiptCollection.getReceiptType().name()
 					.equalsIgnoreCase(ReceiptType.INVOICE.name())) {
 
 				if (request.getInvoiceIds() != null && !request.getInvoiceIds().isEmpty()) {
@@ -838,8 +1004,8 @@ public class BillingServiceImpl implements BillingService {
 					if (request.getUsedAdvanceAmount() != null && request.getUsedAdvanceAmount() > 0) {
 
 						List<DoctorPatientReceiptCollection> receiptsOfAdvancePayment = doctorPatientReceiptRepository
-								.findByReceiptTypeAndDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndDiscarded(ReceiptType.ADVANCE.name(),
-										doctorPatientInvoiceCollection.getDoctorId(),
+								.findByReceiptTypeAndDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndDiscarded(
+										ReceiptType.ADVANCE.name(), doctorPatientInvoiceCollection.getDoctorId(),
 										doctorPatientInvoiceCollection.getLocationId(),
 										doctorPatientInvoiceCollection.getHospitalId(),
 										doctorPatientInvoiceCollection.getPatientId(), false,
@@ -897,6 +1063,7 @@ public class BillingServiceImpl implements BillingService {
 								.getUsedAdvanceAmount()
 								+ (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
 						doctorPatientReceiptCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
+			
 						doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection
 								.getBalanceAmount() - (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0)
 								- (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
@@ -941,11 +1108,22 @@ public class BillingServiceImpl implements BillingService {
 					// doctorPatientLedgerCollection
 					// .setDueAmount(balanceAmount -
 					// doctorPatientReceiptCollection.getAmountPaid());
-					doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
+					if(doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.REFUND))
+					{
+						doctorPatientLedgerCollection.setDebitAmount(doctorPatientReceiptCollection.getRefundAmount());
+					}else {
+						doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());	
+					}
+					
 					doctorPatientLedgerCollection.setCreatedTime(new Date());
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				} else {
-					doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
+					if(doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.REFUND))
+					{
+						doctorPatientLedgerCollection.setDebitAmount(doctorPatientReceiptCollection.getRefundAmount());
+					}else {
+						doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());	
+					}
 					// doctorPatientLedgerCollection
 					// .setDueAmount(balanceAmount -
 					// doctorPatientReceiptCollection.getAmountPaid());
@@ -965,10 +1143,64 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientDueAmountCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
 					doctorPatientDueAmountCollection.setPatientId(doctorPatientReceiptCollection.getPatientId());
 				}
-				doctorPatientDueAmountCollection
+				if(doctorPatientDueAmountCollection.getDueAmount() !=null && doctorPatientDueAmountCollection.getDueAmount() >0) {
+					if(doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.REFUND))
+							if(request.getInvoiceIds() !=null)
+							doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - dueAmount);
+						else
+							doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() + dueAmount);
+
+					else 
+						doctorPatientDueAmountCollection
 						.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - dueAmount);
+//					if(request.getReceiptType().equals(ReceiptType.INVOICE) && doctorPatientDueAmountCollection.getDueAmount() < 0.0) {
+//						
+//						System.out.println("due amount"+doctorPatientDueAmountCollection.getDueAmount()); 
+//						//doctorPatientReceiptCollection.setRemainingAdvanceAmount(0.0); -working
+//					//	doctorPatientReceiptCollection.setRemainingAdvanceAmount(doctorPatientReceiptCollection.getRemainingAdvanceAmount()-doctorPatientDueAmountCollection.getDueAmount());
+//						//doctorPatientReceiptCollection.setReceiptType(ReceiptType.REFUND); -working
+//						// doctorPatientReceiptRepository .save(doctorPatientReceiptCollection);
+//						DoctorPatientReceiptCollection reciptCollection=new DoctorPatientReceiptCollection();
+//		
+//					reciptCollection.setDoctorId(doctorPatientReceiptCollection.getDoctorId());
+//					reciptCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
+//					reciptCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
+//					reciptCollection.setPatientId(doctorPatientReceiptCollection.getPatientId());
+//					
+//					reciptCollection.setReceiptType(ReceiptType.ADVANCE);
+//					System.out.println("advance amount Patient recipt"+doctorPatientReceiptCollection.getRemainingAdvanceAmount()); 
+//	
+//					reciptCollection.setRemainingAdvanceAmount(-doctorPatientDueAmountCollection.getDueAmount());
+//					System.out.println("advance amount "+reciptCollection.getRemainingAdvanceAmount()); 
+//					doctorPatientReceiptRepository.save(reciptCollection);
+//					}
+					
+				}
+				else {
+					if(doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.REFUND)) { 
+						if(request.getInvoiceIds() !=null)
+						doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount()
+								//+request.getAmountPaid());
+								- invoice.getBalanceAmount() - advanceAmount);
+						else
+							doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount()+request.getUsedAdvanceAmount());
+									// - advanceAmount);
+						
+					}
+					
+					else
+					doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount()-dueAmount);
+				//	doctorPatientReceiptCollection.setRemainingAdvanceAmount(-doctorPatientDueAmountCollection.getDueAmount());
+				//	doctorPatientReceiptCollection = doctorPatientReceiptRepository
+				//			.save(doctorPatientReceiptCollection);
+				}
+				
+				
+				
 				doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
 
+				
+				
 				AmountResponse amountResponse = getTotalDueAndAdvanceAmount(request.getDoctorId(),
 						request.getLocationId(), request.getHospitalId(), request.getPatientId());
 
@@ -995,15 +1227,13 @@ public class BillingServiceImpl implements BillingService {
 
 	@Override
 	public List<DoctorPatientReceipt> getReceipts(long page, int size, String doctorId, String locationId,
-			String hospitalId, String patientId, String updatedTime, String from,String to,Boolean discarded) {
+			String hospitalId, String patientId, String updatedTime, String from, String to, Boolean discarded) {
 		List<DoctorPatientReceipt> responses = null;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("isPatientDiscarded")
 					.ne(true);
-			
-			
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
@@ -1011,19 +1241,20 @@ public class BillingServiceImpl implements BillingService {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
 				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
-			if (!discarded)
+			if (discarded !=null)
 				criteria.and("discarded").is(discarded);
-			
+
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
-			DateTime fromDateTime = null, toDateTime= null;
+			DateTime fromDateTime = null, toDateTime = null;
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
 				localCalendar.setTime(new Date(Long.parseLong(from)));
 				int currentDay = localCalendar.get(Calendar.DATE);
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
 
-				 fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));				
+				fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(to)) {
 				localCalendar.setTime(new Date(Long.parseLong(to)));
@@ -1031,17 +1262,16 @@ public class BillingServiceImpl implements BillingService {
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
 
-				 toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));			
+				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			}
-			if(fromDateTime!= null && toDateTime != null) {
+			if (fromDateTime != null && toDateTime != null) {
 				criteria.and("receivedDate").gte(fromDateTime).lte(toDateTime);
-			}else if(fromDateTime!= null) {
+			} else if (fromDateTime != null) {
 				criteria.and("receivedDate").gte(fromDateTime);
-			}else if(toDateTime != null) {
+			} else if (toDateTime != null) {
 				criteria.and("receivedDate").lte(toDateTime);
 			}
-
-
 
 			if (size > 0) {
 				responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1165,6 +1395,7 @@ public class BillingServiceImpl implements BillingService {
 
 						DoctorPatientInvoiceCollection receiptInvoiceCollection = doctorPatientInvoiceRepository
 								.findById(receiptCollection.getInvoiceId()).orElse(null);
+					
 						receiptInvoiceCollection
 								.setBalanceAmount(receiptInvoiceCollection.getBalanceAmount() + usedAdvanceAmt);
 						receiptInvoiceCollection.setUpdatedTime(new Date());
@@ -1185,6 +1416,17 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientReceiptCollection.getPatientId(), doctorPatientReceiptCollection.getDoctorId(),
 					doctorPatientReceiptCollection.getLocationId(), doctorPatientReceiptCollection.getHospitalId());
 			amountCollection.setUpdatedTime(new Date());
+			if(doctorPatientReceiptCollection.getReceiptType().equals(ReceiptType.ADVANCE))
+			{
+				if(amountCollection.getDueAmount() >0.0)
+				amountCollection.setDueAmount(amountCollection.getDueAmount() + doctorPatientReceiptCollection.getAmountPaid());
+				//.setDueAmount(amountCollection.getDueAmount());
+				else
+					amountCollection.setDueAmount(doctorPatientReceiptCollection.getRemainingAdvanceAmount()+amountCollection.getDueAmount());
+					
+				
+			}
+			else
 			amountCollection
 					.setDueAmount(amountCollection.getDueAmount() + doctorPatientReceiptCollection.getAmountPaid());
 			doctorPatientDueAmountRepository.save(amountCollection);
@@ -1254,7 +1496,8 @@ public class BillingServiceImpl implements BillingService {
 			doctorPatientInvoiceCollection.setCreatedTime(new Date());
 			if (doctorPatientInvoiceCollection.getInvoiceDate() == null)
 				doctorPatientInvoiceCollection.setInvoiceDate(new Date());
-			LocationCollection locationCollection = locationRepository.findById(new ObjectId(request.getLocationId())).orElse(null);
+			LocationCollection locationCollection = locationRepository.findById(new ObjectId(request.getLocationId()))
+					.orElse(null);
 			if (locationCollection == null)
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid Location Id");
 			doctorPatientInvoiceCollection
@@ -1273,7 +1516,8 @@ public class BillingServiceImpl implements BillingService {
 					else {
 						UserCollection doctor = doctorsMap.get(invoiceItemResponse.getDoctorId().toString());
 						if (doctor == null) {
-							doctor = userRepository.findById(new ObjectId(invoiceItemResponse.getDoctorId())).orElse(null);
+							doctor = userRepository.findById(new ObjectId(invoiceItemResponse.getDoctorId()))
+									.orElse(null);
 							doctorsMap.put(invoiceItemResponse.getDoctorId(), doctor);
 						}
 						invoiceItemResponse.setDoctorName(
@@ -1312,11 +1556,12 @@ public class BillingServiceImpl implements BillingService {
 			if (request.getUsedAdvanceAmount() != null && request.getUsedAdvanceAmount() > 0) {
 
 				List<DoctorPatientReceiptCollection> receiptsOfAdvancePayment = doctorPatientReceiptRepository
-						.findByReceiptTypeAndDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndRemainingAdvanceAmountAndDiscarded(ReceiptType.ADVANCE.name(),
-								doctorPatientInvoiceCollection.getDoctorId(),
+						.findByReceiptTypeAndDoctorIdAndLocationIdAndHospitalIdAndPatientIdAndRemainingAdvanceAmountAndDiscarded(
+								ReceiptType.ADVANCE.name(), doctorPatientInvoiceCollection.getDoctorId(),
 								doctorPatientInvoiceCollection.getLocationId(),
 								doctorPatientInvoiceCollection.getHospitalId(),
-								doctorPatientInvoiceCollection.getPatientId(),  0.0, false, new Sort(Direction.ASC, "createdTime"));
+								doctorPatientInvoiceCollection.getPatientId(), 0.0, false,
+								new Sort(Direction.ASC, "createdTime"));
 				if (receiptsOfAdvancePayment == null || receiptsOfAdvancePayment.isEmpty())
 					throw new BusinessException(ServiceError.InvalidInput, "Advance Amount is not available");
 
@@ -1487,12 +1732,14 @@ public class BillingServiceImpl implements BillingService {
 		DoctorPatientLedgerResponse response = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp)).and("patientId")
+			Criteria criteria = new Criteria
+					//("updatedTime").gte(new Date(updatedTimeStamp)).and
+					("patientId")
 					.is(new ObjectId(patientId)).and("locationId").is(new ObjectId(locationId)).and("hospitalId")
 					.is(new ObjectId(hospitalId)).and("isPatientDiscarded").ne(true);
 
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				criteria.and("doctorId").is(new ObjectId(doctorId));
+//			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+//				criteria.and("doctorId").is(new ObjectId(doctorId));
 
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
 				criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(Long.parseLong(from))));
@@ -1522,27 +1769,29 @@ public class BillingServiceImpl implements BillingService {
 								new BasicDBObject("path", "$receipt").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime")));
 			}
-
+			System.out.println("aggregation"+aggregation); 
 			List<DoctorPatientLedger> doctorPatientLedgers = mongoTemplate
 					.aggregate(aggregation, DoctorPatientLedgerCollection.class, DoctorPatientLedger.class)
 					.getMappedResults();
+			System.out.println("ledger"+doctorPatientLedgers);
 			if (doctorPatientLedgers != null && !doctorPatientLedgers.isEmpty()) {
 				response = new DoctorPatientLedgerResponse();
 				response.setDoctorPatientLedgers(doctorPatientLedgers);
 				AmountResponse dueAmount = null;
-				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-					dueAmount = mongoTemplate.aggregate(
-							Aggregation.newAggregation(Aggregation.match(criteria),
-									Aggregation.group("doctorId").sum("dueAmount").as("totalDueAmount")),
-							DoctorPatientLedgerCollection.class, AmountResponse.class).getUniqueMappedResult();
-				} else {
-					dueAmount = mongoTemplate.aggregate(
-							Aggregation.newAggregation(Aggregation.match(criteria),
-									Aggregation.group("locationId").sum("dueAmount").as("totalDueAmount")),
-							DoctorPatientLedgerCollection.class, AmountResponse.class).getUniqueMappedResult();
-				}
-				if (dueAmount != null)
-					response.setTotalDueAmount(dueAmount.getTotalDueAmount());
+//				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+//					dueAmount = mongoTemplate.aggregate(
+//							Aggregation.newAggregation(Aggregation.match(criteria),
+//									Aggregation.group("doctorId").sum("dueAmount").as("totalDueAmount")),
+//							DoctorPatientLedgerCollection.class, AmountResponse.class).getUniqueMappedResult();
+//				}
+//				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+//					dueAmount = mongoTemplate.aggregate(
+//							Aggregation.newAggregation(Aggregation.match(criteria),
+//									Aggregation.group("locationId").sum("dueAmount").as("totalDueAmount")),
+//							DoctorPatientLedgerCollection.class, AmountResponse.class).getUniqueMappedResult();
+//				}
+//				if (dueAmount != null)
+//					response.setTotalDueAmount(dueAmount.getTotalDueAmount());
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting ledger" + e);
@@ -1575,14 +1824,15 @@ public class BillingServiceImpl implements BillingService {
 						DoctorPatientDueAmountCollection.class, AmountResponse.class).getUniqueMappedResult();
 			}
 
-			DoctorPatientReceipt doctorPatientReceipt = mongoTemplate
-					.aggregate(
-							Aggregation.newAggregation(Aggregation.match(criteria.and("discarded").is(false)),
+		//	DoctorPatientReceipt doctorPatientReceipt = mongoTemplate
+		//			.aggregate(
+				Aggregation aggregation=			Aggregation.newAggregation(Aggregation.match(criteria.and("discarded").is(false)),
 									Aggregation.group("patientId").sum("remainingAdvanceAmount")
-											.as("remainingAdvanceAmount")),
-							DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class)
+											.as("remainingAdvanceAmount"));//,
+				DoctorPatientReceipt doctorPatientReceipt = mongoTemplate
+									.aggregate(	aggregation,			DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class)
 					.getUniqueMappedResult();
-
+System.out.println("Aggregation"+aggregation);
 			response = new AmountResponse();
 			if (doctorPatientReceipt != null)
 				response.setTotalRemainingAdvanceAmount(doctorPatientReceipt.getRemainingAdvanceAmount());
@@ -1605,8 +1855,10 @@ public class BillingServiceImpl implements BillingService {
 				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						doctorPatientInvoiceCollection.getPatientId(), doctorPatientInvoiceCollection.getLocationId(),
 						doctorPatientInvoiceCollection.getHospitalId());
-				UserCollection user = userRepository.findById(doctorPatientInvoiceCollection.getPatientId()).orElse(null);
-				JasperReportResponse jasperReportResponse = createJasper(doctorPatientInvoiceCollection, patient, user);
+				UserCollection user = userRepository.findById(doctorPatientInvoiceCollection.getPatientId())
+						.orElse(null);
+				JasperReportResponse jasperReportResponse = createJasper(doctorPatientInvoiceCollection, patient, user,
+						PrintSettingType.BILLING.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -1633,7 +1885,8 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	private JasperReportResponse createJasper(DoctorPatientInvoiceCollection doctorPatientInvoiceCollection,
-			PatientCollection patient, UserCollection user) throws IOException, ParseException {
+			PatientCollection patient, UserCollection user, String printSettingType)
+			throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		List<InvoiceItemJasperDetails> invoiceItemJasperDetails = null;
@@ -1644,7 +1897,7 @@ public class BillingServiceImpl implements BillingService {
 			Boolean showDiscount = false;
 			Boolean showStatus = false;
 			Boolean showTax = false;
-			Boolean show=false;
+			Boolean show = false;
 			String pattern = "dd/MM/yyyy";
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 			simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
@@ -1749,18 +2002,20 @@ public class BillingServiceImpl implements BillingService {
 
 			total = "<b>Balance:</b>  ₹" + doctorPatientInvoiceCollection.getBalanceAmount() + "  &nbsp;";
 			parameters.put("balance", total);
-			
+
 			if (doctorPatientInvoiceCollection.getAdmissionDate() != null) {
 				show = true;
-				String admission="<b>Admission Date</b>" +simpleDateFormat.format(doctorPatientInvoiceCollection.getAdmissionDate());
-				parameters.put("Admission Date",admission);
+				String admission = "<b>Admission Date</b>"
+						+ simpleDateFormat.format(doctorPatientInvoiceCollection.getAdmissionDate());
+				parameters.put("Admission Date", admission);
 			}
 			parameters.put("showDOA", show);
 			show = false;
 			if (doctorPatientInvoiceCollection.getDischargeDate() != null) {
 				show = true;
-				String discharge="<b>Discharge Date</b>"+simpleDateFormat.format(doctorPatientInvoiceCollection.getDischargeDate());
-				parameters.put("Discharge Date",discharge );
+				String discharge = "<b>Discharge Date</b>"
+						+ simpleDateFormat.format(doctorPatientInvoiceCollection.getDischargeDate());
+				parameters.put("Discharge Date", discharge);
 			}
 			parameters.put("showDOD", show);
 			show = false;
@@ -1769,7 +2024,7 @@ public class BillingServiceImpl implements BillingService {
 				SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
 				Date dt = sdfForMins.parse(doctorPatientInvoiceCollection.getTimeOfAdmission());
 				sdfForMins = new SimpleDateFormat("hh:mm a");
-				String admissionTime="<b>Time of Admission: </b>"+sdfForMins.format(dt);
+				String admissionTime = "<b>Time of Admission: </b>" + sdfForMins.format(dt);
 				parameters.put("Time of Admission", admissionTime);
 			}
 			parameters.put("showTOA", show);
@@ -1779,22 +2034,33 @@ public class BillingServiceImpl implements BillingService {
 				SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
 				Date dt = sdfForMins.parse(doctorPatientInvoiceCollection.getTimeOfDischarge());
 				sdfForMins = new SimpleDateFormat("hh:mm a");
-				String dischargeTime="<b>Time of Discharge: </b>"+sdfForMins.format(dt);
-				
-				parameters.put("Time of Discharge",dischargeTime );
+				String dischargeTime = "<b>Time of Discharge: </b>" + sdfForMins.format(dt);
+
+				parameters.put("Time of Discharge", dischargeTime);
 			}
 			parameters.put("showTOD", show);
-
-			PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
-					doctorPatientInvoiceCollection.getDoctorId(), doctorPatientInvoiceCollection.getLocationId(),
-					doctorPatientInvoiceCollection.getHospitalId(), ComponentType.ALL.getType());
-
+			PrintSettingsCollection printSettings = null;
+			printSettings = printSettingsRepository
+					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+							doctorPatientInvoiceCollection.getDoctorId(),
+							doctorPatientInvoiceCollection.getLocationId(),
+							doctorPatientInvoiceCollection.getHospitalId(), ComponentType.ALL.getType(),
+							printSettingType);
+			if (printSettings == null) {
+				List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+						.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+								doctorPatientInvoiceCollection.getDoctorId(),
+								doctorPatientInvoiceCollection.getLocationId(),
+								doctorPatientInvoiceCollection.getHospitalId(), ComponentType.ALL.getType(),
+								PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+				if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+					printSettings = printSettingsCollections.get(0);
+			}
 			if (printSettings == null) {
 				printSettings = new PrintSettingsCollection();
 				DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 				BeanUtil.map(defaultPrintSettings, printSettings);
 			}
-
 			generatePatientDetails(
 					(printSettings != null && printSettings.getHeaderSetup() != null
 							? printSettings.getHeaderSetup().getPatientDetails()
@@ -1802,10 +2068,12 @@ public class BillingServiceImpl implements BillingService {
 					patient,
 					"<b>INVID: </b>" + (doctorPatientInvoiceCollection.getUniqueInvoiceId() != null
 							? doctorPatientInvoiceCollection.getUniqueInvoiceId()
-							: "--"),doctorPatientInvoiceCollection.getAdmissionDate(),
+							: "--"),
+					doctorPatientInvoiceCollection.getAdmissionDate(),
 					doctorPatientInvoiceCollection.getDischargeDate(),
-					doctorPatientInvoiceCollection.getTimeOfAdmission(),doctorPatientInvoiceCollection.getTimeOfDischarge(),
-					patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+					doctorPatientInvoiceCollection.getTimeOfAdmission(),
+					doctorPatientInvoiceCollection.getTimeOfDischarge(), patient.getLocalPatientName(),
+					user.getMobileNumber(), parameters,
 					doctorPatientInvoiceCollection.getCreatedTime() != null
 							? doctorPatientInvoiceCollection.getCreatedTime()
 							: new Date(),
@@ -1844,10 +2112,11 @@ public class BillingServiceImpl implements BillingService {
 		return response;
 
 	}
-	
-	public void generatePatientDetails(PatientDetails patientDetails, PatientCollection patientCard, String uniqueEMRId,Date admissionDate,Date dischargeDate,String timeOfAdmission,String timeOfDischarge,
-			String firstName, String mobileNumber, Map<String, Object> parameters, Date date, String hospitalUId,
-			Boolean isPidHasDate) throws ParseException {
+
+	public void generatePatientDetails(PatientDetails patientDetails, PatientCollection patientCard, String uniqueEMRId,
+			Date admissionDate, Date dischargeDate, String timeOfAdmission, String timeOfDischarge, String firstName,
+			String mobileNumber, Map<String, Object> parameters, Date date, String hospitalUId, Boolean isPidHasDate)
+			throws ParseException {
 		String age = null,
 				gender = (patientCard != null && patientCard.getGender() != null ? patientCard.getGender() : null),
 				patientLeftText = "", patientRightText = "";
@@ -1935,28 +2204,28 @@ public class BillingServiceImpl implements BillingService {
 					patientDetailList.add("<b>Date: </b>" + sdf.format(date));
 			}
 
-			if (admissionDate !=null)
-				patientDetailList.add("<b>Admission Date: </b>"+sdf.format(admissionDate));
+			if (admissionDate != null)
+				patientDetailList.add("<b>Admission Date: </b>" + sdf.format(admissionDate));
 
-			if (dischargeDate !=null)
-				patientDetailList.add("<b>Discharge Date: </b>"+sdf.format(dischargeDate));
+			if (dischargeDate != null)
+				patientDetailList.add("<b>Discharge Date: </b>" + sdf.format(dischargeDate));
 
 			if (!DPDoctorUtils.anyStringEmpty(timeOfAdmission)) {
 				SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
 				Date dt = sdfForMins.parse(timeOfAdmission);
 				sdfForMins = new SimpleDateFormat("hh:mm a");
-			    
-				patientDetailList.add("<b>Time Of Admission: </b>"+sdfForMins.format(dt));
+
+				patientDetailList.add("<b>Time Of Admission: </b>" + sdfForMins.format(dt));
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(timeOfDischarge)) {
 				SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
 				Date dt = sdfForMins.parse(timeOfDischarge);
 				sdfForMins = new SimpleDateFormat("hh:mm a");
-			    
-				patientDetailList.add("<b>Time Of Discharge: </b>"+sdfForMins.format(dt));
+
+				patientDetailList.add("<b>Time Of Discharge: </b>" + sdfForMins.format(dt));
 			}
-			
+
 			if (patientDetails.getShowBloodGroup() && patientCard != null
 					&& !DPDoctorUtils.anyStringEmpty(patientCard.getBloodGroup())) {
 				patientDetailList.add("<b>Blood Group: </b>" + patientCard.getBloodGroup());
@@ -1966,7 +2235,8 @@ public class BillingServiceImpl implements BillingService {
 				patientDetailList.add("<b>City: </b>" + patientCard.getAddress().getCity());
 			}
 			if (patientDetails.getShowReferedBy() && patientCard != null && patientCard.getReferredBy() != null) {
-				ReferencesCollection referencesCollection = referenceRepository.findById(patientCard.getReferredBy()).orElse(null);
+				ReferencesCollection referencesCollection = referenceRepository.findById(patientCard.getReferredBy())
+						.orElse(null);
 				if (referencesCollection != null && !DPDoctorUtils.allStringsEmpty(referencesCollection.getReference()))
 					patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
 
@@ -2014,7 +2284,7 @@ public class BillingServiceImpl implements BillingService {
 			parameters.put("patientRightText", patientRightText);
 		}
 	}
-	
+
 	public boolean containsIgnoreCase(String str, List<String> list) {
 		if (list != null && !list.isEmpty())
 			for (String i : list) {
@@ -2023,7 +2293,6 @@ public class BillingServiceImpl implements BillingService {
 			}
 		return false;
 	}
-
 
 	@Override
 	public String downloadReceipt(String receiptId) {
@@ -2035,9 +2304,10 @@ public class BillingServiceImpl implements BillingService {
 				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
 						doctorPatientReceiptCollection.getPatientId(), doctorPatientReceiptCollection.getLocationId(),
 						doctorPatientReceiptCollection.getHospitalId());
-				UserCollection user = userRepository.findById(doctorPatientReceiptCollection.getPatientId()).orElse(null);
+				UserCollection user = userRepository.findById(doctorPatientReceiptCollection.getPatientId())
+						.orElse(null);
 				JasperReportResponse jasperReportResponse = createJasperForReceipt(doctorPatientReceiptCollection,
-						patient, user);
+						patient, user, PrintSettingType.BILLING.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -2058,7 +2328,7 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	private JasperReportResponse createJasperForReceipt(DoctorPatientReceiptCollection doctorPatientReceiptCollection,
-			PatientCollection patient, UserCollection user) throws IOException {
+			PatientCollection patient, UserCollection user, String printSettingType) throws IOException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		String pattern = "dd/MM/yyyy";
@@ -2069,18 +2339,29 @@ public class BillingServiceImpl implements BillingService {
 		}
 		String content = "<br>Received with thanks from &nbsp;&nbsp; " + userName + user.getFirstName()
 				+ "<br>The sum of Rupees:- " + doctorPatientReceiptCollection.getAmountPaid() + "<br> By "
-				+ doctorPatientReceiptCollection.getModeOfPayment()+
-				"<br>Cheque no:- "+(doctorPatientReceiptCollection.getTransactionId()!= null
+				+ doctorPatientReceiptCollection.getModeOfPayment() + "<br>Cheque no:- "
+				+ (doctorPatientReceiptCollection.getTransactionId() != null
 						? doctorPatientReceiptCollection.getTransactionId()
 						: "--")
 				+ "&nbsp;&nbsp;&nbsp;On Date:-"
 				+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate());
 		parameters.put("content", content);
 		parameters.put("paid", "Rs.&nbsp;" + doctorPatientReceiptCollection.getAmountPaid());
-		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
-				doctorPatientReceiptCollection.getDoctorId(), doctorPatientReceiptCollection.getLocationId(),
-				doctorPatientReceiptCollection.getHospitalId(), ComponentType.ALL.getType());
-
+		PrintSettingsCollection printSettings = null;
+		printSettings = printSettingsRepository
+				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+						doctorPatientReceiptCollection.getDoctorId(), doctorPatientReceiptCollection.getLocationId(),
+						doctorPatientReceiptCollection.getHospitalId(), ComponentType.ALL.getType(), printSettingType);
+		if (printSettings == null) {
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+							doctorPatientReceiptCollection.getDoctorId(),
+							doctorPatientReceiptCollection.getLocationId(),
+							doctorPatientReceiptCollection.getHospitalId(), ComponentType.ALL.getType(),
+							PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -2141,7 +2422,8 @@ public class BillingServiceImpl implements BillingService {
 		UserCollection user = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
-			doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findById(new ObjectId(invoiceId)).orElse(null);
+			doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findById(new ObjectId(invoiceId))
+					.orElse(null);
 			if (doctorPatientInvoiceCollection != null) {
 				if (doctorPatientInvoiceCollection.getDoctorId() != null
 						&& doctorPatientInvoiceCollection.getHospitalId() != null
@@ -2167,12 +2449,13 @@ public class BillingServiceImpl implements BillingService {
 						}
 
 						JasperReportResponse jasperReportResponse = createJasper(doctorPatientInvoiceCollection,
-								patient, user);
+								patient, user, PrintSettingType.EMAIL.getType());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
 						UserCollection doctorUser = userRepository.findById(new ObjectId(doctorId)).orElse(null);
-						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
+						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
+								.orElse(null);
 
 						mailResponse = new MailResponse();
 						mailResponse.setMailAttachment(mailAttachment);
@@ -2247,7 +2530,8 @@ public class BillingServiceImpl implements BillingService {
 		UserCollection user = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
-			doctorPatientReceiptCollection = doctorPatientReceiptRepository.findById(new ObjectId(receiptId)).orElse(null);
+			doctorPatientReceiptCollection = doctorPatientReceiptRepository.findById(new ObjectId(receiptId))
+					.orElse(null);
 			if (doctorPatientReceiptCollection != null) {
 				if (doctorPatientReceiptCollection.getDoctorId() != null
 						&& doctorPatientReceiptCollection.getHospitalId() != null
@@ -2273,12 +2557,13 @@ public class BillingServiceImpl implements BillingService {
 						}
 
 						JasperReportResponse jasperReportResponse = createJasperForReceipt(
-								doctorPatientReceiptCollection, patient, user);
+								doctorPatientReceiptCollection, patient, user, PrintSettingType.EMAIL.getType());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
 						UserCollection doctorUser = userRepository.findById(new ObjectId(doctorId)).orElse(null);
-						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
+						LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
+								.orElse(null);
 
 						mailResponse = new MailResponse();
 						mailResponse.setMailAttachment(mailAttachment);
@@ -2356,7 +2641,8 @@ public class BillingServiceImpl implements BillingService {
 			if (doctorPatientDueAmountCollection != null) {
 				UserCollection patient = userRepository.findById(new ObjectId(patientId)).orElse(null);
 
-				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
+				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
+						.orElse(null);
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
 				smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
@@ -2396,20 +2682,17 @@ public class BillingServiceImpl implements BillingService {
 
 	/*
 	 * <<<<<<< HEAD private void updateInventoryItem(String itemId, String
-	 * locationId , String hospitalId , Quantity quantity) {
-<<<<<<< HEAD
+	 * locationId , String hospitalId , Quantity quantity) { <<<<<<< HEAD
 	 * InventoryStockCollection ======= private void updateInventoryItem(String
 	 * itemId, String locationId , String hospitalId , Quantity quantity) {
 	 * InventoryStockCollection >>>>>>> e5408604ee47a0585cf6f3af38163a2902fe3750
-=======
-	 * InventoryStockCollection ======= <<<<<<< HEAD private void
+	 * ======= InventoryStockCollection ======= <<<<<<< HEAD private void
 	 * updateInventoryItem(String itemId, String locationId , String hospitalId ,
 	 * Quantity quantity) { InventoryStockCollection ======= private void
 	 * updateInventoryItem(String itemId, String locationId , String hospitalId ,
 	 * Quantity quantity) { InventoryStockCollection >>>>>>>
 	 * e5408604ee47a0585cf6f3af38163a2902fe3750 >>>>>>> 19bad9e10... HAPPY-3936
->>>>>>> 859f587ad012a6633070292f861b84f2a650c4e5
-	 * inventoryStockCollection =
+	 * >>>>>>> 859f587ad012a6633070292f861b84f2a650c4e5 inventoryStockCollection =
 	 * inventoryStockRepository.getByResourceIdLocationIdHospitalId(itemId,
 	 * locationId, hospitalId); if(inventoryStockCollection != null) { Long
 	 * stockCount = inventoryStockCollection.g } }
@@ -2458,7 +2741,7 @@ public class BillingServiceImpl implements BillingService {
 			if (doctorPatientReceiptLookupResponses != null && !doctorPatientReceiptLookupResponses.isEmpty()) {
 
 				JasperReportResponse jasperReportResponse = createJasperForMultipleReceipt(
-						doctorPatientReceiptLookupResponses);
+						doctorPatientReceiptLookupResponses, PrintSettingType.BILLING.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -2478,7 +2761,7 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	private JasperReportResponse createJasperForMultipleReceipt(
-			List<DoctorPatientReceiptLookupResponse> doctorPatientReceiptLookupResponses)
+			List<DoctorPatientReceiptLookupResponse> doctorPatientReceiptLookupResponses, String printSettingType)
 			throws NumberFormatException, IOException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
@@ -2486,12 +2769,24 @@ public class BillingServiceImpl implements BillingService {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
 		List<ReceiptJasperDetails> receiptJasperDetails = new ArrayList<ReceiptJasperDetails>();
-
-		PrintSettingsCollection printSettings = printSettingsRepository.findByDoctorIdAndLocationIdAndHospitalIdAndComponentType(
-				new ObjectId(doctorPatientReceiptLookupResponses.get(0).getDoctorId()),
-				new ObjectId(doctorPatientReceiptLookupResponses.get(0).getLocationId()),
-				new ObjectId(doctorPatientReceiptLookupResponses.get(0).getHospitalId()), ComponentType.ALL.getType());
-
+		PrintSettingsCollection printSettings = null;
+		printSettings = printSettingsRepository
+				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+						new ObjectId(doctorPatientReceiptLookupResponses.get(0).getDoctorId()),
+						new ObjectId(doctorPatientReceiptLookupResponses.get(0).getLocationId()),
+						new ObjectId(doctorPatientReceiptLookupResponses.get(0).getHospitalId()),
+						ComponentType.ALL.getType(), printSettingType);
+		if (printSettings == null) {
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+							new ObjectId(doctorPatientReceiptLookupResponses.get(0).getDoctorId()),
+							new ObjectId(doctorPatientReceiptLookupResponses.get(0).getLocationId()),
+							new ObjectId(doctorPatientReceiptLookupResponses.get(0).getHospitalId()),
+							ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
+							new Sort(Sort.Direction.DESC, "updatedTime"));
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
+		}
 		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
@@ -2646,7 +2941,7 @@ public class BillingServiceImpl implements BillingService {
 				}
 
 				JasperReportResponse jasperReportResponse = createJasperForMultipleReceipt(
-						doctorPatientReceiptLookupResponses);
+						doctorPatientReceiptLookupResponses, PrintSettingType.EMAIL.getType());
 
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
@@ -2779,7 +3074,8 @@ public class BillingServiceImpl implements BillingService {
 
 	@Override
 	public List<DoctorExpense> getDoctorExpenses(String expenseType, int page, int size, String doctorId,
-			String locationId, String hospitalId, String updatedTime,String from,String to,String searchTerm, Boolean discarded, String paymentMode) {
+			String locationId, String hospitalId, String updatedTime, String from, String to, String searchTerm,
+			Boolean discarded, String paymentMode) {
 		List<DoctorExpense> response = null;
 		try {
 			long createdTimestamp = Long.parseLong(updatedTime);
@@ -2792,29 +3088,30 @@ public class BillingServiceImpl implements BillingService {
 				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
 				criteria.and("expenseType").is(expenseType.toUpperCase());
 			}
 			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
 				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria.orOperator(new Criteria("expenseType").regex("^" + searchTerm, "i"),
 						new Criteria("expenseType").regex("^" + searchTerm));
 			}
-			
+
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
-			DateTime fromDateTime = null, toDateTime= null;
+			DateTime fromDateTime = null, toDateTime = null;
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
 				localCalendar.setTime(new Date(Long.parseLong(from)));
 				int currentDay = localCalendar.get(Calendar.DATE);
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
 
-				 fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));				
+				fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(to)) {
 				localCalendar.setTime(new Date(Long.parseLong(to)));
@@ -2822,16 +3119,16 @@ public class BillingServiceImpl implements BillingService {
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
 
-				 toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));			
+				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			}
-			if(fromDateTime!= null && toDateTime != null) {
+			if (fromDateTime != null && toDateTime != null) {
 				criteria.and("toDate").gte(fromDateTime).lte(toDateTime);
-			}else if(fromDateTime!= null) {
+			} else if (fromDateTime != null) {
 				criteria.and("toDate").gte(fromDateTime);
-			}else if(toDateTime != null) {
+			} else if (toDateTime != null) {
 				criteria.and("toDate").lte(toDateTime);
 			}
-
 
 			if (size > 0) {
 				response = mongoTemplate.aggregate(
@@ -2874,14 +3171,16 @@ public class BillingServiceImpl implements BillingService {
 			if (!DPDoctorUtils.anyStringEmpty(expenseType)) {
 				criteria.and("modeOfPayment").is(paymentMode.toUpperCase());
 			}
-			DoctorExpense doctorExpense = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(criteria),
-							new CustomAggregationOperation(new Document("$group",
-									new BasicDBObject("_id",
-											new BasicDBObject("locationId", "$locationId").append("hospitalId",
-													"hospitalId")).append("cost",
-															new BasicDBObject("$sum", "$cost"))))),
-					DoctorExpenseCollection.class, DoctorExpense.class).getUniqueMappedResult();
+			DoctorExpense doctorExpense = mongoTemplate
+					.aggregate(
+							Aggregation.newAggregation(Aggregation.match(criteria),
+									new CustomAggregationOperation(new Document("$group",
+											new BasicDBObject("_id",
+													new BasicDBObject("locationId", "$locationId").append("hospitalId",
+															"hospitalId")).append("cost",
+																	new BasicDBObject("$sum", "$cost"))))),
+							DoctorExpenseCollection.class, DoctorExpense.class)
+					.getUniqueMappedResult();
 			if (doctorExpense != null) {
 				response = doctorExpense.getCost();
 			}
@@ -2898,7 +3197,8 @@ public class BillingServiceImpl implements BillingService {
 		DoctorExpense response = null;
 		try {
 
-			DoctorExpenseCollection expenseCollection = doctorExpenseRepository.findById(new ObjectId(expenseId)).orElse(null);
+			DoctorExpenseCollection expenseCollection = doctorExpenseRepository.findById(new ObjectId(expenseId))
+					.orElse(null);
 			if (expenseCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Doctor Expense not found with Id");
 			}
@@ -2920,7 +3220,8 @@ public class BillingServiceImpl implements BillingService {
 		DoctorExpense response = null;
 		try {
 
-			DoctorExpenseCollection expenseCollection = doctorExpenseRepository.findById(new ObjectId(expenseId)).orElse(null);
+			DoctorExpenseCollection expenseCollection = doctorExpenseRepository.findById(new ObjectId(expenseId))
+					.orElse(null);
 			response = new DoctorExpense();
 			BeanUtil.map(expenseCollection, response);
 
@@ -2977,7 +3278,8 @@ public class BillingServiceImpl implements BillingService {
 		ExpenseType response = null;
 		try {
 
-			ExpenseTypeCollection expenseTypeCollection = expenseTypeRepository.findById(new ObjectId(expenseTypeId)).orElse(null);
+			ExpenseTypeCollection expenseTypeCollection = expenseTypeRepository.findById(new ObjectId(expenseTypeId))
+					.orElse(null);
 			response = new ExpenseType();
 			BeanUtil.map(expenseTypeCollection, response);
 
@@ -3001,17 +3303,17 @@ public class BillingServiceImpl implements BillingService {
 				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
 						new Criteria("name").regex("^" + searchTerm));
 			}
-			
+
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((long)(page) * size),
-						Aggregation.limit(size));
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+						Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
@@ -3031,7 +3333,8 @@ public class BillingServiceImpl implements BillingService {
 	public Boolean deleteExpenseType(String expenseTypeId, Boolean discarded) {
 		Boolean response = false;
 		try {
-			ExpenseTypeCollection expenseTypeCollection = expenseTypeRepository.findById(new ObjectId(expenseTypeId)).orElse(null);
+			ExpenseTypeCollection expenseTypeCollection = expenseTypeRepository.findById(new ObjectId(expenseTypeId))
+					.orElse(null);
 			if (expenseTypeCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Expense Type Not Found with Id");
 			}
@@ -3051,84 +3354,85 @@ public class BillingServiceImpl implements BillingService {
 	@Override
 	public Boolean sendInvoiceToPatient(String doctorId, String locationId, String hospitalId, String invoiceId,
 			String mobileNumber) {
-		
-	
-	 		// TODO Auto-generated method stub
-		
-			
-	
-			Boolean response = false;
-			try {
-	
-				DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findByIdAndDoctorIdAndLocationIdAndHospitalId(
-						new ObjectId(invoiceId), new ObjectId(doctorId), new ObjectId(locationId),
-						new ObjectId(hospitalId));
-				if (doctorPatientInvoiceCollection != null) {
-					UserCollection patient = userRepository.findById(doctorPatientInvoiceCollection.getPatientId()).orElse(null);
-	
-					LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
-					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-					smsTrackDetail.setDoctorId(new ObjectId(doctorId));
-					smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
-					smsTrackDetail.setLocationId(new ObjectId(locationId));
-					smsTrackDetail.setType(ComponentType.INVOICE.getType());
-					SMSDetail smsDetail = new SMSDetail();
-					smsDetail.setUserId(doctorPatientInvoiceCollection.getPatientId());
-					smsDetail.setUserName(patient.getFirstName());
-					SMS sms = new SMS();
-					//String message = invoiceRemainderSMS;
-					String invoiceDetails="";
-					int i=0;
-					if(doctorPatientInvoiceCollection.getInvoiceItems()!=null && !doctorPatientInvoiceCollection.getInvoiceItems().isEmpty())
-					for (InvoiceItem doctorPatientCollection : doctorPatientInvoiceCollection.getInvoiceItems()) {
-					 i++;
-					String serviceName=	doctorPatientCollection.getName() !=null
-							?(!DPDoctorUtils.anyStringEmpty(doctorPatientCollection.getName())
-									? doctorPatientCollection.getName()
-									: "")
-							: "";
-									String cost =	doctorPatientCollection.getCost() !=null
-											?(!DPDoctorUtils.anyStringEmpty(doctorPatientCollection.getCost().toString())
-													? doctorPatientCollection.getCost().toString()
-													: "")
-													:"";
-							
-									invoiceDetails = invoiceDetails + " " + i + ")" + serviceName + " "
-											+ cost;
-					}
-	
 
-					String clinicNumber=locationCollection.getClinicNumber() !=null
-							?(!DPDoctorUtils.anyStringEmpty(locationCollection.getClinicNumber())
-									? locationCollection.getClinicNumber()
-									: "")
-							: "";
-									
-					sms.setSmsText("Hi " + patient.getFirstName() + ", your invoice "
-							+ doctorPatientInvoiceCollection.getUniqueInvoiceId() + " by " + locationCollection.getLocationName() + ". "
-							+ invoiceDetails+" and the total cost is "+doctorPatientInvoiceCollection.getGrandTotal() + ". For queries,contact clinic" + clinicNumber + ".");
-	
-						SMSAddress smsAddress = new SMSAddress();
-					smsAddress.setRecipient(mobileNumber);
-					sms.setSmsAddress(smsAddress);
-					smsDetail.setSms(sms);
-					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-					smsDetails.add(smsDetail);
-					smsTrackDetail.setSmsDetails(smsDetails);
-					smsServices.sendSMS(smsTrackDetail, true);
-					response = true;
-				}
-			} catch (BusinessException be) {
-				logger.error(be);
-				throw be;
-			} catch (Exception e) {
-				logger.error("Error while sending sms invoices" + e);
-				throw new BusinessException(ServiceError.Unknown, "Error while sending sms invoices" + e);
+		// TODO Auto-generated method stub
+
+		Boolean response = false;
+		try {
+
+			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository
+					.findByIdAndDoctorIdAndLocationIdAndHospitalId(new ObjectId(invoiceId), new ObjectId(doctorId),
+							new ObjectId(locationId), new ObjectId(hospitalId));
+			if (doctorPatientInvoiceCollection != null) {
+				UserCollection patient = userRepository.findById(doctorPatientInvoiceCollection.getPatientId())
+						.orElse(null);
+
+				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
+						.orElse(null);
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
+				smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
+				smsTrackDetail.setLocationId(new ObjectId(locationId));
+				smsTrackDetail.setType(ComponentType.INVOICE.getType());
+				SMSDetail smsDetail = new SMSDetail();
+				smsDetail.setUserId(doctorPatientInvoiceCollection.getPatientId());
+				smsDetail.setUserName(patient.getFirstName());
+				SMS sms = new SMS();
+				// String message = invoiceRemainderSMS;
+				String invoiceDetails = "";
+				int i = 0;
+				if (doctorPatientInvoiceCollection.getInvoiceItems() != null
+						&& !doctorPatientInvoiceCollection.getInvoiceItems().isEmpty())
+					for (InvoiceItem doctorPatientCollection : doctorPatientInvoiceCollection.getInvoiceItems()) {
+						i++;
+						String serviceName = doctorPatientCollection.getName() != null
+								? (!DPDoctorUtils.anyStringEmpty(doctorPatientCollection.getName())
+										? doctorPatientCollection.getName()
+										: "")
+								: "";
+						String cost = doctorPatientCollection.getCost() != null
+								? (!DPDoctorUtils.anyStringEmpty(doctorPatientCollection.getCost().toString())
+										? doctorPatientCollection.getCost().toString()
+										: "")
+								: "";
+
+						invoiceDetails = invoiceDetails + " " + i + ")" + serviceName + " " + cost;
+					}
+
+				String clinicNumber = locationCollection.getClinicNumber() != null
+						? (!DPDoctorUtils.anyStringEmpty(locationCollection.getClinicNumber())
+								? locationCollection.getClinicNumber()
+								: "")
+						: "";
+
+				sms.setSmsText("Hi " + patient.getFirstName() + ", your invoice "
+						+ doctorPatientInvoiceCollection.getUniqueInvoiceId() + " by "
+						+ locationCollection.getLocationName() + ". " + invoiceDetails + " and the total cost is "
+						+ doctorPatientInvoiceCollection.getGrandTotal() + ". For queries,contact clinic" + clinicNumber
+						+ ".");
+
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(mobileNumber);
+				sms.setSmsAddress(smsAddress);
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				smsTrackDetail.setTemplateId("1307161526753699375");
+				smsServices.sendSMS(smsTrackDetail, true);
+				response = true;
 			}
-			return response;
-	
-	 	}
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			logger.error("Error while sending sms invoices" + e);
+			throw new BusinessException(ServiceError.Unknown, "Error while sending sms invoices" + e);
+		}
+		return response;
+
+	}
 
 	@Override
 	public Boolean sendReceiptToPatient(String doctorId, String locationId, String hospitalId, String receiptId,
@@ -3137,14 +3441,15 @@ public class BillingServiceImpl implements BillingService {
 		try {
 			String pattern = "dd/MM/yyyy";
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-			DoctorPatientReceiptCollection doctorPatientReceiptCollection = doctorPatientReceiptRepository.findByIdAndDoctorIdAndLocationIdAndHospitalId(
-					new ObjectId(receiptId), new ObjectId(doctorId), new ObjectId(locationId),
-					new ObjectId(hospitalId));
+			DoctorPatientReceiptCollection doctorPatientReceiptCollection = doctorPatientReceiptRepository
+					.findByIdAndDoctorIdAndLocationIdAndHospitalId(new ObjectId(receiptId), new ObjectId(doctorId),
+							new ObjectId(locationId), new ObjectId(hospitalId));
 			if (doctorPatientReceiptCollection != null) {
-				UserCollection patient = userRepository.findById(doctorPatientReceiptCollection.getPatientId()).orElse(null);
+				UserCollection patient = userRepository.findById(doctorPatientReceiptCollection.getPatientId())
+						.orElse(null);
 
-			
-				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
+				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId))
+						.orElse(null);
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
 				smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
@@ -3154,23 +3459,22 @@ public class BillingServiceImpl implements BillingService {
 				smsDetail.setUserId(doctorPatientReceiptCollection.getPatientId());
 				smsDetail.setUserName(patient.getFirstName());
 				SMS sms = new SMS();
-				//String message = invoiceRemainderSMS;
-				
-				
-				
+				// String message = invoiceRemainderSMS;
 
-
-				String clinicNumber=locationCollection.getClinicNumber() !=null
-						?(!DPDoctorUtils.anyStringEmpty(locationCollection.getClinicNumber())
+				String clinicNumber = locationCollection.getClinicNumber() != null
+						? (!DPDoctorUtils.anyStringEmpty(locationCollection.getClinicNumber())
 								? locationCollection.getClinicNumber()
 								: "")
 						: "";
-								
-				sms.setSmsText("Hi " + patient.getFirstName() + ", your receipt for the invoice "
-						+ doctorPatientReceiptCollection.getUniqueInvoiceId() + " by " + locationCollection.getLocationName() + ". "
-						+ " and the total amount paid is "+doctorPatientReceiptCollection.getAmountPaid() +" on Date:"+simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate()) +". For queries,contact clinic " + clinicNumber + ".");
 
-					SMSAddress smsAddress = new SMSAddress();
+				sms.setSmsText("Hi " + patient.getFirstName() + ", your receipt for the invoice "
+						+ doctorPatientReceiptCollection.getUniqueInvoiceId() + " by "
+						+ locationCollection.getLocationName() + ". " + " and the total amount paid is "
+						+ doctorPatientReceiptCollection.getAmountPaid() + " on Date:"
+						+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate())
+						+ ". For queries,contact clinic " + clinicNumber + ".");
+
+				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(mobileNumber);
 				sms.setSmsAddress(smsAddress);
 				smsDetail.setSms(sms);
@@ -3181,17 +3485,6 @@ public class BillingServiceImpl implements BillingService {
 				smsServices.sendSMS(smsTrackDetail, true);
 				response = true;
 
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
 //				LocationCollection locationCollection = locationRepository.findById(new ObjectId(locationId)).orElse(null);
 //				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 //				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
@@ -3246,54 +3539,50 @@ public class BillingServiceImpl implements BillingService {
 	@Transactional
 	@Override
 	public VendorExpense addEditVendor(VendorExpense request) {
-		
-			VendorExpense response = null;
-			try {
-				VendorExpenseCollection vendorExpenseCollection = null;
-				UserCollection userCollection=null;
-				if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-					vendorExpenseCollection = vendorExpenseRepository.findById(new ObjectId(request.getId())).orElse(null);
-					if (vendorExpenseCollection == null) {
-						throw new BusinessException(ServiceError.NotFound, "Id Not found");
-					}
-					request.setUpdatedTime(new Date());
-					request.setCreatedBy(vendorExpenseCollection.getCreatedBy());
-					request.setCreatedTime(vendorExpenseCollection.getCreatedTime());
-					BeanUtil.map(request, vendorExpenseCollection);
 
-				} else {
-					userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
-					if (userCollection == null) {
-						throw new BusinessException(ServiceError.NoRecord, "Doctor found with DoctorId");
-					}
-					vendorExpenseCollection = new VendorExpenseCollection();
-					BeanUtil.map(request, vendorExpenseCollection);
-					vendorExpenseCollection.setUpdatedTime(new Date());
-					vendorExpenseCollection.setCreatedTime(new Date());
+		VendorExpense response = null;
+		try {
+			VendorExpenseCollection vendorExpenseCollection = null;
+			UserCollection userCollection = null;
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				vendorExpenseCollection = vendorExpenseRepository.findById(new ObjectId(request.getId())).orElse(null);
+				if (vendorExpenseCollection == null) {
+					throw new BusinessException(ServiceError.NotFound, "Id Not found");
 				}
-				vendorExpenseCollection = vendorExpenseRepository.save(vendorExpenseCollection);
-				response = new VendorExpense();
-				BeanUtil.map(vendorExpenseCollection, response);
+				request.setUpdatedTime(new Date());
+				request.setCreatedBy(vendorExpenseCollection.getCreatedBy());
+				request.setCreatedTime(vendorExpenseCollection.getCreatedTime());
+				BeanUtil.map(request, vendorExpenseCollection);
 
-			} catch (BusinessException e) {
-				logger.error("Error while add/edit Vendor Expense  " + e.getMessage());
-				e.printStackTrace();
-				throw new BusinessException(ServiceError.Unknown, "Error while add/edit Vendor Expense " + e.getMessage());
-
+			} else {
+				userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Doctor found with DoctorId");
+				}
+				vendorExpenseCollection = new VendorExpenseCollection();
+				BeanUtil.map(request, vendorExpenseCollection);
+				vendorExpenseCollection.setUpdatedTime(new Date());
+				vendorExpenseCollection.setCreatedTime(new Date());
 			}
-		
-			
-			return response;
+			vendorExpenseCollection = vendorExpenseRepository.save(vendorExpenseCollection);
+			response = new VendorExpense();
+			BeanUtil.map(vendorExpenseCollection, response);
+
+		} catch (BusinessException e) {
+			logger.error("Error while add/edit Vendor Expense  " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while add/edit Vendor Expense " + e.getMessage());
+
 		}
 
-	
+		return response;
+	}
 
 	@Override
 	public List<VendorExpense> getVendors(int size, int page, String searchTerm, Boolean discarded, String doctorId,
 			String locationId, String hospitalId) {
 		List<VendorExpense> response = null;
 		try {
-		
 
 			Criteria criteria = new Criteria();
 
@@ -3303,26 +3592,22 @@ public class BillingServiceImpl implements BillingService {
 				criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
-			
-		
+
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria.orOperator(new Criteria("vendorName").regex("^" + searchTerm, "i"),
 						new Criteria("vendorName").regex("^" + searchTerm));
 			}
-			
-			
 
 			if (size > 0) {
-				response = mongoTemplate.aggregate(
-						Aggregation.newAggregation(Aggregation.match(criteria),
-								
-								Aggregation.skip((page) * size), Aggregation.limit(size)),
-						VendorExpenseCollection.class, VendorExpense.class).getMappedResults();
+				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+
+						Aggregation.skip((page) * size), Aggregation.limit(size)), VendorExpenseCollection.class,
+						VendorExpense.class).getMappedResults();
 			} else {
 				response = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime"))),
-						VendorExpenseCollection.class,VendorExpense.class).getMappedResults();
+						VendorExpenseCollection.class, VendorExpense.class).getMappedResults();
 			}
 
 		} catch (BusinessException e) {
@@ -3336,65 +3621,106 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	@Override
-	public VendorExpense discardVendor(String id,Boolean discarded) {
-		VendorExpense response=null;
+	public VendorExpense discardVendor(String id, Boolean discarded) {
+		VendorExpense response = null;
 		try {
-			VendorExpenseCollection vendorExpenseCollection=vendorExpenseRepository.findById(new ObjectId(id)).orElse(null);
-		if(vendorExpenseCollection==null)
-		{
-			throw new BusinessException(ServiceError.NotFound,"Error no such id to delete");
-		}
-		vendorExpenseCollection.setDiscarded(discarded);
-		vendorExpenseCollection.setUpdatedTime(new Date());
-		vendorExpenseCollection = vendorExpenseRepository.save(vendorExpenseCollection);
-		response=new VendorExpense();
-		BeanUtil.map(vendorExpenseCollection, response);
-		}
-		catch (BusinessException e) {
-			logger.error("Error while deleting the vendor Expense  "+e.getMessage());
-			throw new BusinessException(ServiceError.Unknown,"Error while deleting the vendor Expense");
+			VendorExpenseCollection vendorExpenseCollection = vendorExpenseRepository.findById(new ObjectId(id))
+					.orElse(null);
+			if (vendorExpenseCollection == null) {
+				throw new BusinessException(ServiceError.NotFound, "Error no such id to delete");
+			}
+			vendorExpenseCollection.setDiscarded(discarded);
+			vendorExpenseCollection.setUpdatedTime(new Date());
+			vendorExpenseCollection = vendorExpenseRepository.save(vendorExpenseCollection);
+			response = new VendorExpense();
+			BeanUtil.map(vendorExpenseCollection, response);
+		} catch (BusinessException e) {
+			logger.error("Error while deleting the vendor Expense  " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while deleting the vendor Expense");
 		}
 		return response;
 	}
 
 	@Override
 	public Integer countVendorExpense(Boolean discarded, String searchTerm) {
-		Integer response=null;
+		Integer response = null;
 		try {
 			Criteria criteria = new Criteria("discarded").is(discarded);
-		    criteria = criteria.orOperator(new Criteria("vendorName").regex("^" + searchTerm, "i"),
-				new Criteria("vendorName").regex("^" + searchTerm));
-	
-	response = (int) mongoTemplate.count(new Query(criteria), VendorExpenseCollection.class);
-} catch (BusinessException e) {
-	logger.error("Error while counting Vendor Expense " + e.getMessage());
-	e.printStackTrace();
-	throw new BusinessException(ServiceError.Unknown, "Error while Vendor Expense " + e.getMessage());
+			criteria = criteria.orOperator(new Criteria("vendorName").regex("^" + searchTerm, "i"),
+					new Criteria("vendorName").regex("^" + searchTerm));
 
-}
+			response = (int) mongoTemplate.count(new Query(criteria), VendorExpenseCollection.class);
+		} catch (BusinessException e) {
+			logger.error("Error while counting Vendor Expense " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while Vendor Expense " + e.getMessage());
+
+		}
 		return response;
-	
+
+	}
+
+	@Override
+	public VendorExpense getVendorExpenseById(String id) {
+		VendorExpense response = null;
+		try {
+			VendorExpenseCollection vendorExpenseCollection = vendorExpenseRepository.findById(new ObjectId(id))
+					.orElse(null);
+			if (vendorExpenseCollection == null) {
+				throw new BusinessException(ServiceError.NotFound, "Error no such id");
+			}
+
+			BeanUtil.map(vendorExpenseCollection, response);
+
+		} catch (BusinessException e) {
+			logger.error("Error while searching the id " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while searching the id");
+		}
+
+		return response;
 	}
 	
 	
 	@Override
-	public VendorExpense getVendorExpenseById(String id) {
-		VendorExpense response=null;
+	public Boolean updateTotalDueAmount(DoctorAmountRequest request)
+	{
+		Boolean response=false;
 		try {
-			VendorExpenseCollection vendorExpenseCollection=vendorExpenseRepository.findById(new ObjectId(id)).orElse(null);
-		    if(vendorExpenseCollection==null)
-		    {
-		    	throw new BusinessException(ServiceError.NotFound,"Error no such id");
-		    }
+			DoctorPatientDueAmountCollection dueAmount=doctorPatientDueAmountRepository.find(new ObjectId(request.getPatientId()),new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()),new ObjectId(request.getHospitalId()));
+			if(dueAmount !=null)
+			{
+				dueAmount.setDueAmount(request.getDueAmount());
+				doctorPatientDueAmountRepository.save(dueAmount);
+				response=true;
+			}
+			DoctorPatientReceiptCollection doctorPatientReceiptCollection=doctorPatientReceiptRepository.findByPatientIdAndDoctorIdAndLocationIdAndHospitalId(new ObjectId(request.getPatientId()),new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()),new ObjectId(request.getHospitalId()));
+			if(doctorPatientReceiptCollection !=null)
+			{
+				doctorPatientReceiptCollection.setRemainingAdvanceAmount(request.getRemainingAdvanceAmount());
+				doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
+				
+				DoctorPatientLedgerCollection doctorPatientLedgerCollection = new DoctorPatientLedgerCollection();
+				
+					doctorPatientLedgerCollection.setReceiptId(doctorPatientReceiptCollection.getId());
+					doctorPatientLedgerCollection.setDebitAmount(request.getRemainingAdvanceAmount());
+					doctorPatientLedgerCollection.setType("REFUND");
+					// doctorPatientLedgerCollection
+					// .setDueAmount(balanceAmount -
+					// doctorPatientReceiptCollection.getAmountPaid());
+					doctorPatientLedgerCollection.setUpdatedTime(new Date());
+				
+				doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
+
+				response=true;
+			}
 			
-			BeanUtil.map(vendorExpenseCollection, response);
-		
+			
+		} catch (BusinessException e) {
+			logger.error("Error while updating the due amount " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while updating the due amount");
 		}
-		catch (BusinessException e) {
-			logger.error("Error while searching the id "+e.getMessage());
-			throw new BusinessException(ServiceError.Unknown,"Error while searching the id");
-		}
-		
+
 		return response;
+		
 	}
 }

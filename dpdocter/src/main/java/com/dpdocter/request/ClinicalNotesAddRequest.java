@@ -272,6 +272,8 @@ public class ClinicalNotesAddRequest {
 	private EyeSpecialityObservation eyeObservation;
 	
 	private PhysioExamination physioExamination;	
+	
+//	private TreatmentObservationRequest treatmentObservation;
 
 
 	public Date getCreatedTime() {
@@ -1256,6 +1258,22 @@ public class ClinicalNotesAddRequest {
 	public void setPhysioExamination(PhysioExamination physioExamination) {
 		this.physioExamination = physioExamination;
 	}
+	
+	
+
+	
+
+	
+
+	
+
+//	public TreatmentObservationRequest getTreatmentObservation() {
+//		return treatmentObservation;
+//	}
+//
+//	public void setTreatmentObservation(TreatmentObservationRequest treatmentObservation) {
+//		this.treatmentObservation = treatmentObservation;
+//	}
 
 	@Override
 	public String toString() {

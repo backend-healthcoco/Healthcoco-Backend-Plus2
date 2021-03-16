@@ -239,4 +239,6 @@ public interface PrescriptionServices {
 	Drug getDrugByDrugCode(String drugCode);
 
 	Boolean updatePrescriptionDrugType();
+
+	Boolean transferGenericDrugs();
 }

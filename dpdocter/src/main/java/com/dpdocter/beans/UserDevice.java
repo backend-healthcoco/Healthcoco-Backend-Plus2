@@ -21,6 +21,7 @@ public class UserDevice extends GenericCollection {
 	private String pushToken;
 
 	private RoleEnum role;
+	
 	private String countryCode;
 
 	private String mobileNumber;

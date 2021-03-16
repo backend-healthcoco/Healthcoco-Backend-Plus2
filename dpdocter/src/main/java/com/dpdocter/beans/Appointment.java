@@ -112,6 +112,14 @@ public class Appointment extends GenericCollection {
 	
 	private String problemDetailsId;
 	
+	private AppointmentSlot onlineConsultationSlot;
+	
+	private Long callDurationInMinutes=0L;
+	
+private Boolean isAnonymousAppointment = false;
+	
+	private String specialityId;
+	
 	public PatientTreatmentResponse getPatientTreatmentResponse() {
 		return patientTreatmentResponse;
 	}
@@ -476,6 +484,14 @@ public class Appointment extends GenericCollection {
 
 	
 
+	public AppointmentSlot getOnlineConsultationSlot() {
+		return onlineConsultationSlot;
+	}
+
+	public void setOnlineConsultationSlot(AppointmentSlot onlineConsultationSlot) {
+		this.onlineConsultationSlot = onlineConsultationSlot;
+	}
+
 	public String getProblemDetailsId() {
 		return problemDetailsId;
 	}
@@ -498,6 +514,33 @@ public class Appointment extends GenericCollection {
 
 	public void setConsultationStartedOn(Date consultationStartedOn) {
 		this.consultationStartedOn = consultationStartedOn;
+	}
+	
+	
+
+	
+	public Boolean getIsAnonymousAppointment() {
+		return isAnonymousAppointment;
+	}
+
+	public void setIsAnonymousAppointment(Boolean isAnonymousAppointment) {
+		this.isAnonymousAppointment = isAnonymousAppointment;
+	}
+
+	public String getSpecialityId() {
+		return specialityId;
+	}
+
+	public void setSpecialityId(String specialityId) {
+		this.specialityId = specialityId;
+	}
+
+	public Long getCallDurationInMinutes() {
+		return callDurationInMinutes;
+	}
+
+	public void setCallDurationInMinutes(Long callDurationInMinutes) {
+		this.callDurationInMinutes = callDurationInMinutes;
 	}
 
 	@Override

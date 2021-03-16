@@ -923,12 +923,16 @@ public interface PathProxy {
 		public static final String DELETE_PRINT_SETTINGS = "/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String GET_PRINT_SETTINGS = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}";
+		
+		public static final String GET_PRINT_SETTING_BY_TYPE = "/{printFilter}/{doctorId}/{locationId}/{hospitalId}/{printSettingType}";
 
 		public static final String GET_LAB_PRINT_SETTING = "/{printFilter}/{locationId}/{hospitalId}";
 
 		public static final String GET_GENERAL_NOTES = "/getGeneralNotes/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String UPLOAD_FILE = "/upload/file/";
+		
+		public static final String GET_PRINT_SETTING_TYPE = "/updateCollection";
 		
 		public static final String UPLOAD_SIGNATURE = "/upload/signature/";
 
@@ -1492,6 +1496,8 @@ public interface PathProxy {
 
 		public static final String GET_VENDOR_EXPENSE_BY_ID = "/vendorExpense/{vendorExpenseId}/get";
 
+		public static final String EDIT_TOTAL_DUE_AMOUNT = "/totalDueAmount/edit";
+
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";
@@ -1716,6 +1722,8 @@ public interface PathProxy {
 		public static final String GET_ONLINE_CONSULTATION_ANALYTICS="onlineConsultation/analytics";
 		public static final String GET_PAYMENT_SUMMARY="onlineConsultation/paymentSummary";
 		public static final String FETCH_SETTLEMENT="onlineConsultation/settlements";
+		public static final String GET_PAYMENT_SETTLEMENT="payment/settlements";
+		public static final String GET_PATIENT_PAYMENT_SETTLEMENTS="patients/payment/settlements";
 	}
 
 	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";
@@ -2208,6 +2216,7 @@ public interface PathProxy {
 		public static final String GET_ACHIEVEMENTS = "achievement/getList/{patientId}";
 		public static final String UPDATE_VACCINATION_CHART = "vaccine/updateChart/{patientId}/{vaccineStartDate}";
 		public static final String GET_GROWTH_CHARTS_GRAPH = "growthChartGraph/getList";
+		public static final String DOWNLOAD_VACCINE_BY_ID = "/download/{periodTime}";
 	}
 
 	public static final String SOLR_BILLING_BASE_URL = BASE_URL + "/solr/billing";
@@ -2375,6 +2384,8 @@ public interface PathProxy {
 	public interface ChatUrls {
 
 		public static final String CREATE_CHAT_ACCESS_TOKEN = "/chat/accessToken/create/{userId}";
+		
+		public static final String CREATE_USER = "/create/user/{identity}";
 
 		public static final String CREATE_CHAT_ACCESS_TOKEN_ANDROID = "/chat/accessTokenAndroid/create/{userId}";
 
@@ -2397,6 +2408,8 @@ public interface PathProxy {
 		public static final String GENERATE_ID = "/payment/generateId";
 		public static final String CREATE_PAYMENT = "/payment/create";
 		public static final String VERIFY_SIGNATURE = "/payment/verify/signature";
+		
+		public static final String GET_SMS_STATUS = "/status/get";
 
 	}
 
@@ -2429,4 +2442,12 @@ public interface PathProxy {
 		public static final String GET_TRANSACTION_SMS_REPORT = "/transaction/report/get";
 
 	}
+	
+	public static final String NMC_HCM_BASE_URL = BASE_URL + "/nmcHcm";
+	public interface NmcHcmUrls{
+		
+		public static final String GET_NMC_HCM_DETAILS = "/get";
+		
+	}
+
 }

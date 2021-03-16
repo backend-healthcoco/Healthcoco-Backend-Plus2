@@ -588,7 +588,7 @@ public class RecordsServiceImpl implements RecordsService {
 				if (!request.getDiscarded())
 					criteria.and("discarded").is(request.getDiscarded());
 
-				if (!isOTPVerified) {
+			//	if (!isOTPVerified) {
 					Criteria ownCriteria = new Criteria(), prescribedByCriteria = new Criteria();
 					if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId)) {
 						ownCriteria = new Criteria("locationId").is(locationObjectId).and("hospitalId")
@@ -597,11 +597,11 @@ public class RecordsServiceImpl implements RecordsService {
 								.and("prescribedByHospitalId").is(hospitalObjectId);
 					}
 					if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
-						ownCriteria = new Criteria("doctorId").is(doctorObjectId);
+					    ownCriteria = new Criteria("doctorId").is(doctorObjectId);
 						prescribedByCriteria = new Criteria("prescribedByDoctorId").is(doctorObjectId);
 					}
 					criteria.orOperator(ownCriteria, prescribedByCriteria);
-				}
+			//	}
 
 				Aggregation aggregation = null;
 

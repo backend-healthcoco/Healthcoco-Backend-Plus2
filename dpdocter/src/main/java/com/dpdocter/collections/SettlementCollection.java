@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -26,6 +27,11 @@ public class SettlementCollection extends GenericCollection {
 	private PayLoad payload;
 	@Field
 	private Long created_at;
+	@Field
+	private Date date;
+	
+	@Field
+	private ObjectId doctorId;
 
 	public ObjectId getId() {
 		return id;
@@ -81,6 +87,22 @@ public class SettlementCollection extends GenericCollection {
 
 	public void setCreated_at(Long created_at) {
 		this.created_at = created_at;
+	}
+
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 	
 	

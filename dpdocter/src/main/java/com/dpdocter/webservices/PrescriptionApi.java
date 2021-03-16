@@ -999,7 +999,8 @@ public class PrescriptionApi {
 	public Response<Boolean> addGenericsWithReaction() {
 
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(prescriptionServices.addGenericsWithReaction());
+		//response.setData(prescriptionServices.addGenericsWithReaction());
+		response.setData(prescriptionServices.transferGenericDrugs());
 		return response;
 	}
 	

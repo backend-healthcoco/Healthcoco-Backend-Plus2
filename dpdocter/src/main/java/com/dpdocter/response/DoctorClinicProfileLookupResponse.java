@@ -1,3 +1,4 @@
+
 package com.dpdocter.response;
 
 import java.util.List;
@@ -97,6 +98,9 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	//private List<ConsultationType> onlineConsultationType;
 
 	private Boolean isOnlineConsultationAvailable = false;
+	
+	private AppointmentSlot onlineConsultationSlot;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -405,6 +409,14 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection {
 	
 
 	
+
+	public AppointmentSlot getOnlineConsultationSlot() {
+		return onlineConsultationSlot;
+	}
+
+	public void setOnlineConsultationSlot(AppointmentSlot onlineConsultationSlot) {
+		this.onlineConsultationSlot = onlineConsultationSlot;
+	}
 
 	public String getClinicOwnershipImageUrl() {
 		return clinicOwnershipImageUrl;

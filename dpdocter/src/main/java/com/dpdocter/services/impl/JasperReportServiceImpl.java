@@ -206,6 +206,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-doctor-lab-A4.jrxml");
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.DIET_PLAN.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-nutrition-diet-plan-A4.jrxml");
+		} else if (componentType.getType().equalsIgnoreCase(ComponentType.VACCINATION.getType())) {
+			jasperDesign = JRXmlLoader
+					.load(JASPER_TEMPLATES_RESOURCE + "new/" + "mongo-vaccinations_subreport-A4.jrxml");
 		} else {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-multiple-data-A4.jrxml");
 		}
@@ -311,7 +314,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.CLINICAL_NOTES.getType()))
-			createClinicalNotes(parameters, jasperDesign, columnWidth, contentFontSize);
+			createClinicalNotes(parameters, jasperDesign, columnWidth, contentFontSize, pageWidth, pageHeight,
+					normalStyle);
 
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType()))
 			createPrescription(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
@@ -395,6 +399,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 					normalStyle);
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DIET_PLAN.getType()))
 			createDietPlan(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight, normalStyle);
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.VACCINATION.getType()))
+			createVaccinationReport(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight,
+					normalStyle);
 
 		if (parameters.get("followUpAppointment") != null
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())
@@ -474,6 +481,241 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	}
 
+	private void createVaccinationReport(JasperDesign jasperDesign, Map<String, Object> parameters,
+			Integer contentFontSize, int columnWidth, int pageWidth, int pageHeight, JRDesignStyle normalStyle) {
+		int fieldWidth = 118;
+		if (contentFontSize > 13)
+			fieldWidth = 145;
+		else if (contentFontSize > 11)
+			fieldWidth = 128;
+		if (parameters.get("VaccinationTitle") != null) {
+
+			band = new JRDesignBand();
+			band.setHeight(1);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(18);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{VaccinationTitle}"));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(columnWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+			((JRDesignSection) jasperDesign.getDetailSection())
+					.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+
+			band = new JRDesignBand();
+			band.setHeight(1);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(18);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{duration}"));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(220);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addVaccinationItem(parameters, contentFontSize,
+					columnWidth, pageWidth, pageHeight, "$P{vaccination}", normalStyle));
+
+		}
+	}
+
+	private JRBand addVaccinationItem(Map<String, Object> parameters, Integer contentFontSize, int columnWidth,
+			int pageWidth, int pageHeight, String string, JRDesignStyle normalStyle) {
+		try {
+			JasperDesign jasperDesign;
+			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-vaccinations_subreport-A4.jrxml");
+
+			jasperDesign.setPageWidth(pageWidth);
+			jasperDesign.setPageHeight(pageHeight);
+			jasperDesign.setColumnWidth(columnWidth);
+			jasperDesign.setColumnSpacing(0);
+			jasperDesign.setBottomMargin(0);
+			jasperDesign.setLeftMargin(0);
+			jasperDesign.setRightMargin(0);
+			jasperDesign.setTopMargin(0);
+
+			jasperDesign.addStyle(normalStyle);
+
+			band = new JRDesignBand();
+			band.setHeight(26);
+
+			int dataWidth = (25 * (columnWidth - 30)) / 100;
+
+			Integer titleFontSize = contentFontSize;
+			if (contentFontSize > 13)
+				titleFontSize = 13;
+
+			jrDesignLine = new JRDesignLine();
+			jrDesignLine.setX(0);
+			jrDesignLine.setY(0);
+			jrDesignLine.setHeight(1);
+			jrDesignLine.setWidth(columnWidth);
+			jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+			band.addElement(jrDesignLine);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{Name}"));
+			jrDesignTextField.setX(10);
+			jrDesignTextField.setY(4);
+			jrDesignTextField.setHeight(15);
+			jrDesignTextField.setWidth(100);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{Status}"));
+			jrDesignTextField.setX(50 + dataWidth);
+			jrDesignTextField.setY(4);
+			jrDesignTextField.setHeight(15);
+			jrDesignTextField.setWidth(dataWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{GivenDate}"));
+			jrDesignTextField.setX(50 + dataWidth + dataWidth);
+			jrDesignTextField.setY(4);
+			jrDesignTextField.setHeight(15);
+			jrDesignTextField.setWidth(dataWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{Note}"));
+			jrDesignTextField.setX(50 + dataWidth + dataWidth + dataWidth);
+			jrDesignTextField.setY(4);
+			jrDesignTextField.setHeight(15);
+			jrDesignTextField.setWidth(dataWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+			band.addElement(jrDesignTextField);
+
+			jrDesignLine = new JRDesignLine();
+			jrDesignLine.setX(0);
+			jrDesignLine.setY(22);
+			jrDesignLine.setHeight(1);
+			jrDesignLine.setWidth(columnWidth);
+			jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+			band.addElement(jrDesignLine);
+			jasperDesign.setColumnHeader(band);
+
+			band = new JRDesignBand();
+			band.setSplitType(SplitTypeEnum.STRETCH);
+			if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.SMALL.name()))
+				band.setHeight(22);
+			else if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.MEDIUM.name()))
+				band.setHeight(27);
+			else if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.LARGE.name()))
+				band.setHeight(32);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{name}"));
+			jrDesignTextField.setX(12);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(100);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{status}"));
+			jrDesignTextField.setX(50 + dataWidth);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(dataWidth - 3);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{givenDate}"));
+			jrDesignTextField.setX(50 + dataWidth + dataWidth);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(dataWidth - 3);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{note}"));
+			jrDesignTextField.setX(50 + dataWidth + dataWidth + dataWidth);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(dataWidth - 3);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(13);
+			jrDesignLine = new JRDesignLine();
+			jrDesignLine.setX(0);
+			jrDesignLine.setY(0);
+			jrDesignLine.setHeight(1);
+			jrDesignLine.setWidth(columnWidth);
+			band.addElement(jrDesignLine);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(12);
+			jrDesignTextField.setWidth(columnWidth);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setBlankWhenNull(true);
+			band.addElement(jrDesignTextField);
+			jasperDesign.setColumnFooter(band);
+			JasperCompileManager.compileReportToFile(jasperDesign,
+					JASPER_TEMPLATES_RESOURCE + "new/mongo-vaccinations_subreport-A4.jasper");
+			JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign);
+			jSubreport.setUsingCache(false);
+			jSubreport.setRemoveLineWhenBlank(true);
+			jSubreport.setPrintRepeatedValues(false);
+			jSubreport.setWidth(columnWidth);
+			jSubreport.setHeight(0);
+			jSubreport.setX(0);
+			jSubreport.setY(0);
+
+			jSubreport.setDataSourceExpression(new JRDesignExpression(
+					"new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(" + string + ")"));
+
+			jSubreport.setExpression(new JRDesignExpression(
+					"\"" + JASPER_TEMPLATES_RESOURCE + "new/mongo-vaccinations_subreport-A4.jasper\""));
+			JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();
+			designSubreportParameter.setName("REPORT_CONNECTION");
+			designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
+			band = new JRDesignBand();
+			band.setHeight(0);
+			band.addElement(jSubreport);
+		} catch (JRException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return band;
+	}
+
 	private void createHistory(JasperDesign jasperDesign, Map<String, Object> parameters, Integer contentFontSize,
 			JRDesignStyle normalStyle, int columnWidth) {
 		int fieldWidth = 118;
@@ -517,7 +759,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 	}
 
 	private void createClinicalNotes(Map<String, Object> parameters, JasperDesign jasperDesign, int columnWidth,
-			Integer contentFontSize) {
+			Integer contentFontSize, int pageWidth, int pageHeight, JRDesignStyle normalStyle) {
 		int fieldWidth = 118;
 		if (contentFontSize > 13)
 			fieldWidth = 145;
@@ -776,6 +1018,647 @@ public class JasperReportServiceImpl implements JasperReportService {
 				0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$P{notes}", fieldWidth, false, 0, false);
+		if (parameters.get("eyeObservation") != null) {
+			band = new JRDesignBand();
+			band.setHeight(20);
+			// Eye Observation
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{EyeObservationTitle}"));
+			jrDesignTextField.setX(1);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setWidth(columnWidth);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+			jrDesignTextField.setBold(true);
+			// jrDesignTextField.setUnderline(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
+			band.addElement(jrDesignTextField);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+
+			JRDesignRectangle jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(0);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(61);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+//		band.addElement(jrDesignTextField);
+
+			int noOfFields = 4;
+			int dataWidth = (columnWidth - 60) / (2 * noOfFields);
+
+			int titleWidth = dataWidth * noOfFields;
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{RightEye}"));
+			jrDesignTextField.setX(61);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setWidth(titleWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+
+			jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(61);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(titleWidth);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{LeftEye}"));
+			jrDesignTextField.setX(titleWidth + 61);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setWidth(titleWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+
+			jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(titleWidth + 61);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(titleWidth);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+			band.addElement(jrDesignTextField);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+
+			int fieldXPoint = 61;
+
+			jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(0);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(100);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+
+			addEyePrescriptionItem("$P{SPH}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+			addEyePrescriptionItem("$P{CYL}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$P{Axis}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			if (noOfFields == 4 || noOfFields == 6) {
+				addEyePrescriptionItem("$P{VA}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+						VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+			if (noOfFields > 4) {
+				addEyePrescriptionItem("$P{BC}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+						VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+
+				addEyePrescriptionItem("$P{DIA}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+						VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+
+			addEyePrescriptionItem("$P{SPH}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$P{CYL}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$P{Axis}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			if (noOfFields == 4 || noOfFields == 6) {
+				addEyePrescriptionItem("$P{VA}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+						VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+			if (noOfFields > 4) {
+				addEyePrescriptionItem("$P{BC}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+						VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+
+				addEyePrescriptionItem("$P{DIA}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+						VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			}
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{Distance}", 2, 61, true, HorizontalTextAlignEnum.LEFT,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, 0, 61);
+
+			fieldXPoint = 61;
+			addEyePrescriptionItem("$P{rightEyeTest}.getDistanceSPH()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+			addEyePrescriptionItem("$P{rightEyeTest}.getDistanceCylinder()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$P{rightEyeTest}.getDistanceAxis()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			if (noOfFields == 4 || noOfFields == 6) {
+				addEyePrescriptionItem("$P{rightEyeTest}.getDistanceVA()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+			if (noOfFields > 4) {
+				addEyePrescriptionItem("$P{rightEyeTest}.getDistanceBaseCurve()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+
+				addEyePrescriptionItem("$P{rightEyeTest}.getDistanceDiameter()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+
+			addEyePrescriptionItem("$P{leftEyeTest}.getDistanceSPH()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+			addEyePrescriptionItem("$P{leftEyeTest}.getDistanceCylinder()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$P{leftEyeTest}.getDistanceAxis()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			if (noOfFields == 4 || noOfFields == 6) {
+				addEyePrescriptionItem("$P{leftEyeTest}.getDistanceVA()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+			if (noOfFields > 4) {
+				addEyePrescriptionItem("$P{leftEyeTest}.getDistanceBaseCurve()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+
+				addEyePrescriptionItem("$P{leftEyeTest}.getDistanceDiameter()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+			}
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			fieldXPoint = 61;
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{Near}", 2, fieldXPoint, true, HorizontalTextAlignEnum.LEFT,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, 0, fieldXPoint);
+
+			addEyePrescriptionItem("$P{rightEyeTest}.getNearSPH()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$P{rightEyeTest}.getNearCylinder()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$P{rightEyeTest}.getNearAxis()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			if (noOfFields == 4 || noOfFields == 6) {
+				addEyePrescriptionItem("$P{rightEyeTest}.getNearVA()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+			if (noOfFields > 4) {
+				addEyePrescriptionItem("$P{rightEyeTest}.getNearBaseCurve()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+
+				addEyePrescriptionItem("$P{rightEyeTest}.getNearDiameter()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+
+			addEyePrescriptionItem("$P{leftEyeTest}.getNearSPH()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$P{leftEyeTest}.getNearCylinder()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$P{leftEyeTest}.getNearAxis()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			if (noOfFields == 4 || noOfFields == 6) {
+				addEyePrescriptionItem("$P{leftEyeTest}.getNearVA()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+			if (noOfFields > 4) {
+				addEyePrescriptionItem("$P{leftEyeTest}.getNearBaseCurve()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+
+				addEyePrescriptionItem("$P{leftEyeTest}.getNearDiameter()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+			}
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			// for VisualAcuities
+
+			band = new JRDesignBand();
+			band.setHeight(10);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			noOfFields = 1;
+			dataWidth = (columnWidth - 60) / (2 * noOfFields);
+
+			titleWidth = dataWidth * noOfFields;
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+
+			jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(0);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(61);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+//		band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{RightEye}"));
+			jrDesignTextField.setX(61);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setWidth(titleWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+
+			jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(61);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(titleWidth);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{LeftEye}"));
+			jrDesignTextField.setX(titleWidth + 61);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setWidth(titleWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+
+			jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(titleWidth + 61);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(titleWidth);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+			band.addElement(jrDesignTextField);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+
+			jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(0);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(100);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{Unaided}", 2, 61, true, HorizontalTextAlignEnum.LEFT,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, 0, 61);
+
+			fieldXPoint = 61;
+			addEyePrescriptionItem("$P{rightVisualAcuities}.getUnaided()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$P{leftVisualAcuities}.getUnaided()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{PresentLens}", 2, fieldXPoint, true, HorizontalTextAlignEnum.LEFT,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, 0, fieldXPoint);
+
+			fieldXPoint = 61;
+
+			addEyePrescriptionItem("$P{rightVisualAcuities}.getPresentLens()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+			addEyePrescriptionItem("$P{leftVisualAcuities}.getPresentLens()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{PinHole}", 2, fieldXPoint, true, HorizontalTextAlignEnum.LEFT,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, 0, fieldXPoint);
+
+			fieldXPoint = 61;
+
+			addEyePrescriptionItem("$P{rightVisualAcuities}.getPinHole()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+			addEyePrescriptionItem("$P{leftVisualAcuities}.getPinHole()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{IOP}", 2, fieldXPoint, true, HorizontalTextAlignEnum.LEFT,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, 0, fieldXPoint);
+
+			fieldXPoint = 61;
+
+			addEyePrescriptionItem("$P{rightVisionPR}", fieldXPoint, dataWidth, false, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+			addEyePrescriptionItem("$P{leftVisionPR}", fieldXPoint, dataWidth, false, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{PR}", 2, fieldXPoint, true, HorizontalTextAlignEnum.LEFT,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, 0, fieldXPoint);
+
+			fieldXPoint = 61;
+
+			addEyePrescriptionItem("$P{rightEyeVisionPR}", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+			addEyePrescriptionItem("$P{leftEyeVisionPR}", fieldXPoint, dataWidth, false, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			// For Eye Examination
+			if (parameters.get("showEyeExamination") != null) {
+
+				band = new JRDesignBand();
+				band.setHeight(1);
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+				JRDesignBand band = new JRDesignBand();
+				band.setHeight(18);
+
+				jrDesignTextField = new JRDesignTextField();
+				jrDesignTextField.setExpression(new JRDesignExpression("$P{EyeExaminationTitle}"));
+				jrDesignTextField.setX(0);
+				jrDesignTextField.setY(0);
+				jrDesignTextField.setHeight(18);
+				jrDesignTextField.setWidth(220);
+				jrDesignTextField.setBold(true);
+				jrDesignTextField.setStretchWithOverflow(true);
+				band.addElement(jrDesignTextField);
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+				try {
+					((JRDesignSection) jasperDesign.getDetailSection()).addBand(addExaminationItem(parameters,
+							contentFontSize, columnWidth, pageWidth, pageHeight, "$P{eyeExamination}", normalStyle));
+				} catch (JRException e) {
+					e.printStackTrace();
+					logger.error(e);
+					e.printStackTrace();
+				}
+			}
+			// For Eye Investigation
+			if (parameters.get("showEyeInvestigation") != null) {
+
+				band = new JRDesignBand();
+				band.setHeight(1);
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+				band = new JRDesignBand();
+				band.setHeight(18);
+
+				jrDesignTextField = new JRDesignTextField();
+				jrDesignTextField.setExpression(new JRDesignExpression("$P{EyeInvestigationTitle}"));
+				jrDesignTextField.setX(0);
+				jrDesignTextField.setY(0);
+				jrDesignTextField.setHeight(18);
+				jrDesignTextField.setWidth(220);
+				jrDesignTextField.setBold(true);
+				jrDesignTextField.setStretchWithOverflow(true);
+				band.addElement(jrDesignTextField);
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+				try {
+					((JRDesignSection) jasperDesign.getDetailSection()).addBand(addExaminationItem(parameters,
+							contentFontSize, columnWidth, pageWidth, pageHeight, "$P{eyeInvestigation}", normalStyle));
+				} catch (JRException e) {
+					e.printStackTrace();
+					logger.error(e);
+					e.printStackTrace();
+				}
+			}
+		}
+
+		// for physio examination
+		band = new JRDesignBand();
+		band.setHeight(20);
+		band.setPrintWhenExpression(new JRDesignExpression(
+				" (!$P{historyOfPresentIllness}.equals( null ) && ! $P{historyOfPresentIllness}.isEmpty())"
+						+ " ||(!$P{manualMuscleTesting}.equals( null ) && ! $P{manualMuscleTesting}.isEmpty())"
+						+ " ||(!$P{treatment}.equals( null ) && ! $P{treatment}.isEmpty())"
+						+ " ||(!$P{physioExaminationPastHistory}.equals( null ) && ! $P{physioExaminationPastHistory}.isEmpty())"
+						+ " ||(!$P{otNotes}.equals( null ) && ! $P{otNotes}.isEmpty())"
+						+ " ||(!$P{site}.equals( null ) && ! $P{site}.isEmpty())"
+						+ " ||(!$P{nature}.equals( null ) && ! $P{nature}.isEmpty())"
+						+ " ||(!$P{nprs}.equals( null ) && ! $P{nprs}.isEmpty())"
+						+ " ||(!$P{onRest}.equals( null ) && ! $P{onRest}.isEmpty())"
+						+ " ||(!$P{onActivity}.equals( null ) && ! $P{onActivity}.isEmpty())"
+						+ " ||(!$P{swell}.equals( null ) && ! $P{swell}.isEmpty())"
+						+ " ||(!$P{spasm}.equals( null ) && ! $P{spasm}.isEmpty())"
+						+ " ||(!$P{tenderness}.equals( null ) && ! $P{tenderness}.isEmpty())"
+						+ " ||(!$P{inspectionOfPartPosture}.equals( null ) && ! $P{inspectionOfPartPosture}.isEmpty())"
+						+ " ||(!$P{shoulderFlexion}.equals( null ) && ! $P{shoulderFlexion}.isEmpty())"
+						+ " ||(!$P{shoulderExtension}.equals( null ) && ! $P{shoulderExtension}.isEmpty())"
+						+ " ||(!$P{shoulderAbduction}.equals( null ) && ! $P{shoulderAbduction}.isEmpty())"
+						+ " ||(!$P{shoulderIntegerRotation}.equals( null ) && ! $P{shoulderIntegerRotation}.isEmpty())"
+						+ " ||(!$P{anklePlantarlexion}.equals( null ) && ! $P{anklePlantarlexion}.isEmpty())"
+						+ " ||(!$P{ankleDorsiflexion}.equals( null ) && ! $P{ankleDorsiflexion}.isEmpty())"
+						+ " ||(!$P{elbowHexion}.equals( null ) && ! $P{elbowHexion}.isEmpty())"
+						+ " ||(!$P{elbowExtension}.equals( null ) && ! $P{elbowExtension}.isEmpty())"
+						+ " ||(!$P{elbowSupination}.equals( null ) && ! $P{elbowSupination}.isEmpty())"
+						+ " ||(!$P{elbowPronotion}.equals( null ) && ! $P{elbowPronotion}.isEmpty())"
+						+ " ||(!$P{hipJointHexion}.equals( null ) && ! $P{hipJointHexion}.isEmpty())"
+						+ " ||(!$P{hipJointExtension}.equals( null ) && ! $P{hipJointExtension}.isEmpty())"
+						+ " ||(!$P{hipJointAbduction}.equals( null ) && ! $P{hipJointAbduction}.isEmpty())"
+						+ " ||(!$P{kneeJointsHexion}.equals( null ) && ! $P{kneeJointsHexion}.isEmpty())"
+						+ " ||(!$P{kneeJointsExtension}.equals( null ) && ! $P{kneeJointsExtension}.isEmpty())"
+						+ " ||(!$P{wristHexion}.equals( null ) && ! $P{wristHexion}.isEmpty())"
+						+ " ||(!$P{wristExtension}.equals( null ) && ! $P{wristExtension}.isEmpty())"
+						+ " ||(!$P{wristRadial_UlnarDeviation}.equals( null ) && ! $P{wristRadial_UlnarDeviation}.isEmpty())"
+
+		));
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{PhysioExaminationTitle}"));
+		jrDesignTextField.setX(1);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(20);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setBold(true);
+		// jrDesignTextField.setUnderline(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
+		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		addItems(jasperDesign, columnWidth, "$P{HistoryOfPresentIllness}", "$P{historyOfPresentIllness}", fieldWidth,
+				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{ManualMuscleTesting}", "$P{manualMuscleTesting}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{Treatment}", "$P{treatment}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PhysioExaminationPastHistory}", "$P{physioExaminationPastHistory}",
+				fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{OtNotes}", "$P{otNotes}", fieldWidth, false, 0, false);
+//		addItems(jasperDesign, columnWidth, "$P{EmptyCanTest}", "$P{emptyCanTest}", fieldWidth,
+//				false, 0, false);
+//		addItems(jasperDesign, columnWidth, "$P{FullCanTest}", "$P{fullCanTest}", fieldWidth,
+//				false, 0, false);
+//		addItems(jasperDesign, columnWidth, "$P{HornBlowerTest}", "$P{hornBlowerTest}", fieldWidth,
+//				false, 0, false);
+//		addItems(jasperDesign, columnWidth, "$P{InfrasplnatureTest}", "$P{infrasplnatureTest}", fieldWidth,
+//				false, 0, false);
+//		addItems(jasperDesign, columnWidth, "$P{SpeedTest}", "$P{speedTest}", fieldWidth,
+//				false, 0, false);
+//		addItems(jasperDesign, columnWidth, "$P{YergasonsTest}", "$P{yergasonsTest}", fieldWidth,
+//				false, 0, false);
+//		addItems(jasperDesign, columnWidth, "$P{ImpingmentTest}", "$P{impingmentTest}", fieldWidth,
+//				false, 0, false);
+//		addItems(jasperDesign, columnWidth, "$P{OBrionsTest}", "$P{oBrionsTest}", fieldWidth,
+//				false, 0, false);
+//		addItems(jasperDesign, columnWidth, "$P{ThomasTest}", "$P{thomasTest}", fieldWidth,
+//				false, 0, false);
+//		addItems(jasperDesign, columnWidth, "$P{ObersTest}", "$P{obersTest}", fieldWidth,
+//				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{Site}", "$P{site}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{Nature}", "$P{nature}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PainType}", "$P{painType}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{PainAggrevatingFactor}", "$P{painAggrevatingFactor}", fieldWidth, false,
+				0, false);
+		addItems(jasperDesign, columnWidth, "$P{PainReleavingFactor}", "$P{painReleavingFactor}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{NPRS}", "$P{nprs}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{OnRest}", "$P{onRest}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{OnActivity}", "$P{onActivity}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{Swell}", "$P{swell}", fieldWidth, false, 0, false);
+//		addItems(jasperDesign, columnWidth, "$P{SwellValue}", "$P{swellValue}", fieldWidth,
+//				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{Spasm}", "$P{spasm}", fieldWidth, false, 0, false);
+//		addItems(jasperDesign, columnWidth, "$P{SpasmValue}", "$P{spasmValue}", fieldWidth,
+//				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{Tenderness}", "$P{tenderness}", fieldWidth, false, 0, false);
+//		addItems(jasperDesign, columnWidth, "$P{TendernessValue}", "$P{tendernessValue}", fieldWidth,
+//				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{InspectionOfPart_Posture}", "$P{inspectionOfPartPosture}", fieldWidth,
+				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{ShoulderFlexion}", "$P{shoulderFlexion}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{ShoulderExtension}", "$P{shoulderExtension}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{ShoulderAbduction}", "$P{shoulderAbduction}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{ShoulderIntegerRotation}", "$P{shoulderIntegerRotation}", fieldWidth,
+				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{ShoulderExternalRotation}", "$P{shoulderExternalRotation}", fieldWidth,
+				false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{AnklePlantarlexion}", "$P{anklePlantarlexion}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{AnkleDorsiflexion}", "$P{ankleDorsiflexion}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{ElbowHexion}", "$P{elbowHexion}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{ElbowExtension}", "$P{elbowExtension}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{ElbowSupination}", "$P{elbowSupination}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{ElbowPronotion}", "$P{elbowPronotion}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{HipJointHexion}", "$P{hipJointHexion}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{HipJointExtension}", "$P{hipJointExtension}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{HipJointAbduction}", "$P{hipJointAbduction}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{KneeJointsHexion}", "$P{kneeJointsHexion}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{KneeJointsExtension}", "$P{kneeJointsExtension}", fieldWidth, false, 0,
+				false);
+		addItems(jasperDesign, columnWidth, "$P{WristHexion}", "$P{wristHexion}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{WristExtension}", "$P{wristExtension}", fieldWidth, false, 0, false);
+		addItems(jasperDesign, columnWidth, "$P{WristRadial_UlnarDeviation}", "$P{wristRadial_UlnarDeviation}",
+				fieldWidth, false, 0, false);
 
 		JRDesignDatasetRun dsr = new JRDesignDatasetRun();
 		dsr.setDatasetName("dataset1");
@@ -1313,6 +2196,620 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 
 		addItems(jasperDesign, columnWidth, "$P{FamilyHistory}", "$F{familyHistory}", fieldWidth, false, 0, false);
+		// Eye Observation
+		if ((Boolean) parameters.get("showEyeObservationTitle")) {
+			band = new JRDesignBand();
+			band.setHeight(5);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(18);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{EyeObservationTitle}"));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(220);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+
+			JRDesignRectangle jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(0);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(61);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+//			band.addElement(jrDesignTextField);
+
+			int noOfFields = 4;
+			int dataWidth = (columnWidth - 60) / (2 * noOfFields);
+
+			int titleWidth = dataWidth * noOfFields;
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{RightEye}"));
+			jrDesignTextField.setX(61);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setWidth(titleWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+
+			jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(61);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(titleWidth);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{LeftEye}"));
+			jrDesignTextField.setX(titleWidth + 61);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setWidth(titleWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+
+			jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(titleWidth + 61);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(titleWidth);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+			band.addElement(jrDesignTextField);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+
+			int fieldXPoint = 61;
+
+			jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(0);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(100);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+
+			addEyePrescriptionItem("$P{SPH}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+			addEyePrescriptionItem("$P{CYL}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$P{Axis}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			if (noOfFields == 4 || noOfFields == 6) {
+				addEyePrescriptionItem("$P{VA}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+						VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+			if (noOfFields > 4) {
+				addEyePrescriptionItem("$P{BC}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+						VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+
+				addEyePrescriptionItem("$P{DIA}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+						VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+
+			addEyePrescriptionItem("$P{SPH}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$P{CYL}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$P{Axis}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			if (noOfFields == 4 || noOfFields == 6) {
+				addEyePrescriptionItem("$P{VA}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+						VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+			if (noOfFields > 4) {
+				addEyePrescriptionItem("$P{BC}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+						VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+
+				addEyePrescriptionItem("$P{DIA}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
+						VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			}
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{Distance}", 2, 61, true, HorizontalTextAlignEnum.LEFT,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, 0, 61);
+
+			fieldXPoint = 61;
+			addEyePrescriptionItem("$F{rightEyeTest}.getDistanceSPH()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+			addEyePrescriptionItem("$F{rightEyeTest}.getDistanceCylinder()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$F{rightEyeTest}.getDistanceAxis()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			if (noOfFields == 4 || noOfFields == 6) {
+				addEyePrescriptionItem("$F{rightEyeTest}.getDistanceVA()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+			if (noOfFields > 4) {
+				addEyePrescriptionItem("$F{rightEyeTest}.getDistanceBaseCurve()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+
+				addEyePrescriptionItem("$F{rightEyeTest}.getDistanceDiameter()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+
+			addEyePrescriptionItem("$F{leftEyeTest}.getDistanceSPH()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+			addEyePrescriptionItem("$F{leftEyeTest}.getDistanceCylinder()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$F{leftEyeTest}.getDistanceAxis()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			if (noOfFields == 4 || noOfFields == 6) {
+				addEyePrescriptionItem("$F{leftEyeTest}.getDistanceVA()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+			if (noOfFields > 4) {
+				addEyePrescriptionItem("$F{leftEyeTest}.getDistanceBaseCurve()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+
+				addEyePrescriptionItem("$F{leftEyeTest}.getDistanceDiameter()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+			}
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			fieldXPoint = 61;
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{Near}", 2, fieldXPoint, true, HorizontalTextAlignEnum.LEFT,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, 0, fieldXPoint);
+
+			addEyePrescriptionItem("$F{rightEyeTest}.getNearSPH()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$F{rightEyeTest}.getNearCylinder()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$F{rightEyeTest}.getNearAxis()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			if (noOfFields == 4 || noOfFields == 6) {
+				addEyePrescriptionItem("$F{rightEyeTest}.getNearVA()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+			if (noOfFields > 4) {
+				addEyePrescriptionItem("$F{rightEyeTest}.getNearBaseCurve()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+
+				addEyePrescriptionItem("$F{rightEyeTest}.getNearDiameter()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+
+			addEyePrescriptionItem("$F{leftEyeTest}.getNearSPH()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$F{leftEyeTest}.getNearCylinder()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$F{leftEyeTest}.getNearAxis()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			if (noOfFields == 4 || noOfFields == 6) {
+				addEyePrescriptionItem("$F{leftEyeTest}.getNearVA()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+			}
+			if (noOfFields > 4) {
+				addEyePrescriptionItem("$F{leftEyeTest}.getNearBaseCurve()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+				fieldXPoint = fieldXPoint + dataWidth;
+
+				addEyePrescriptionItem("$F{leftEyeTest}.getNearDiameter()", fieldXPoint, dataWidth, false,
+						HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+						fieldXPoint, dataWidth);
+			}
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			// for VisualAcuities
+
+			band = new JRDesignBand();
+			band.setHeight(10);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			noOfFields = 1;
+			dataWidth = (columnWidth - 60) / (2 * noOfFields);
+
+			titleWidth = dataWidth * noOfFields;
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+
+			jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(0);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(61);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+//			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{RightEye}"));
+			jrDesignTextField.setX(61);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setWidth(titleWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+
+			jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(61);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(titleWidth);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+			band.addElement(jrDesignTextField);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{LeftEye}"));
+			jrDesignTextField.setX(titleWidth + 61);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setWidth(titleWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+
+			jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(titleWidth + 61);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(titleWidth);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+			band.addElement(jrDesignTextField);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+
+			jrRectangle = new JRDesignRectangle();
+			jrRectangle.setX(0);
+			jrRectangle.setY(0);
+			jrRectangle.setHeight(20);
+			jrRectangle.setWidth(100);
+			jrRectangle.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
+			band.addElement(jrRectangle);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{Unaided}", 2, 61, true, HorizontalTextAlignEnum.LEFT,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, 0, 61);
+
+			fieldXPoint = 61;
+			addEyePrescriptionItem("$F{rightVisualAcuities}.getUnaided()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+
+			addEyePrescriptionItem("$F{leftVisualAcuities}.getUnaided()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{PresentLens}", 2, fieldXPoint, true, HorizontalTextAlignEnum.LEFT,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, 0, fieldXPoint);
+
+			fieldXPoint = 61;
+
+			addEyePrescriptionItem("$F{rightVisualAcuities}.getPresentLens()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+			addEyePrescriptionItem("$F{leftVisualAcuities}.getPresentLens()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{PinHole}", 2, fieldXPoint, true, HorizontalTextAlignEnum.LEFT,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, 0, fieldXPoint);
+
+			fieldXPoint = 61;
+
+			addEyePrescriptionItem("$F{rightVisualAcuities}.getPinHole()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+			addEyePrescriptionItem("$F{leftVisualAcuities}.getPinHole()", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{IOP}", 2, fieldXPoint, true, HorizontalTextAlignEnum.LEFT,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, 0, fieldXPoint);
+
+			fieldXPoint = 61;
+
+			addEyePrescriptionItem("$F{rightVisionPR}", fieldXPoint, dataWidth, false, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+			addEyePrescriptionItem("$F{leftVisionPR}", fieldXPoint, dataWidth, false, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{PR}", 2, fieldXPoint, true, HorizontalTextAlignEnum.LEFT,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, 0, fieldXPoint);
+
+			fieldXPoint = 61;
+
+			addEyePrescriptionItem("$F{rightEyeVisionPR}", fieldXPoint, dataWidth, false,
+					HorizontalTextAlignEnum.CENTER, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth,
+					fieldXPoint, dataWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
+			addEyePrescriptionItem("$F{leftEyeVisionPR}", fieldXPoint, dataWidth, false, HorizontalTextAlignEnum.CENTER,
+					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, titleWidth, fieldXPoint, dataWidth);
+
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			// For Eye Examination
+			if (parameters.get("showEyeExamination") != null) {
+				band = new JRDesignBand();
+				band.setHeight(1);
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+				JRDesignBand band = new JRDesignBand();
+				band.setHeight(18);
+
+				jrDesignTextField = new JRDesignTextField();
+				jrDesignTextField.setExpression(new JRDesignExpression("$P{EyeExaminationTitle}"));
+				jrDesignTextField.setX(0);
+				jrDesignTextField.setY(0);
+				jrDesignTextField.setHeight(18);
+				jrDesignTextField.setWidth(220);
+				jrDesignTextField.setBold(true);
+				jrDesignTextField.setStretchWithOverflow(true);
+				band.addElement(jrDesignTextField);
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(addExaminationItem(parameters,
+						contentFontSize, columnWidth, pageWidth, pageHeight, "$F{eyeExamination}", normalStyle));
+			}
+			// For Eye Investigation
+			if (parameters.get("showEyeInvestigation") != null) {
+
+				band = new JRDesignBand();
+				band.setHeight(1);
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+				band = new JRDesignBand();
+				band.setHeight(18);
+
+				jrDesignTextField = new JRDesignTextField();
+				jrDesignTextField.setExpression(new JRDesignExpression("$P{EyeInvestigationTitle}"));
+				jrDesignTextField.setX(0);
+				jrDesignTextField.setY(0);
+				jrDesignTextField.setHeight(18);
+				jrDesignTextField.setWidth(220);
+				jrDesignTextField.setBold(true);
+				jrDesignTextField.setStretchWithOverflow(true);
+				band.addElement(jrDesignTextField);
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(addExaminationItem(parameters,
+						contentFontSize, columnWidth, pageWidth, pageHeight, "$F{eyeInvestigation}", normalStyle));
+			}
+		}
+
+		if ((Boolean) parameters.get("showPhysioExaminationTitle")) {
+			band = new JRDesignBand();
+			band.setHeight(20);
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{PhysioExaminationTitle}"));
+			jrDesignTextField.setX(1);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setWidth(columnWidth);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+			jrDesignTextField.setBold(true);
+//			jrDesignTextField.setUnderline(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
+			band.addElement(jrDesignTextField);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+			addItems(jasperDesign, columnWidth, "$P{HistoryOfPresentIllness}", "$F{historyOfPresentIllness}",
+					fieldWidth, false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{ManualMuscleTesting}", "$F{manualMuscleTesting}", fieldWidth, false,
+					0, false);
+			addItems(jasperDesign, columnWidth, "$P{Treatment}", "$F{treatment}", fieldWidth, false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{PhysioExaminationPastHistory}", "$F{physioExaminationPastHistory}",
+					fieldWidth, false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{OtNotes}", "$F{otNotes}", fieldWidth, false, 0, false);
+//			addItems(jasperDesign, columnWidth, "$P{EmptyCanTest}", "$F{emptyCanTest}", fieldWidth,
+//					false, 0, false);
+//			addItems(jasperDesign, columnWidth, "$P{FullCanTest}", "$F{fullCanTest}", fieldWidth,
+//					false, 0, false);
+//			addItems(jasperDesign, columnWidth, "$P{HornBlowerTest}", "$F{hornBlowerTest}", fieldWidth,
+//					false, 0, false);
+//			addItems(jasperDesign, columnWidth, "$P{InfrasplnatureTest}", "$F{infrasplnatureTest}", fieldWidth,
+//					false, 0, false);
+//			addItems(jasperDesign, columnWidth, "$P{SpeedTest}", "$F{speedTest}", fieldWidth,
+//					false, 0, false);
+//			addItems(jasperDesign, columnWidth, "$P{YergasonsTest}", "$F{yergasonsTest}", fieldWidth,
+//					false, 0, false);
+//			addItems(jasperDesign, columnWidth, "$P{ImpingmentTest}", "$F{impingmentTest}", fieldWidth,
+//					false, 0, false);
+//			addItems(jasperDesign, columnWidth, "$P{OBrionsTest}", "$F{oBrionsTest}", fieldWidth,
+//					false, 0, false);
+//			addItems(jasperDesign, columnWidth, "$P{ThomasTest}", "$F{thomasTest}", fieldWidth,
+//					false, 0, false);
+//			addItems(jasperDesign, columnWidth, "$P{ObersTest}", "$F{obersTest}", fieldWidth,
+//					false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{Site}", "$F{site}", fieldWidth, false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{Nature}", "$F{nature}", fieldWidth, false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{PainType}", "$F{painType}", fieldWidth, false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{NPRS}", "$F{nprs}", fieldWidth, false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{OnRest}", "$F{onRest}", fieldWidth, false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{OnActivity}", "$F{onActivity}", fieldWidth, false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{PainAggrevatingFactor}", "$F{painAggrevatingFactor}", fieldWidth,
+					false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{PainReleavingFactor}", "$F{painReleavingFactor}", fieldWidth, false,
+					0, false);
+			addItems(jasperDesign, columnWidth, "$P{Swell}", "$F{swell}", fieldWidth, false, 0, false);
+//			addItems(jasperDesign, columnWidth, "$P{SwellValue}", "$F{swellValue}", fieldWidth,
+//					false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{Spasm}", "$F{spasm}", fieldWidth, false, 0, false);
+//			addItems(jasperDesign, columnWidth, "$P{SpasmValue}", "$F{spasmValue}", fieldWidth,
+//					false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{Tenderness}", "$F{tenderness}", fieldWidth, false, 0, false);
+//			addItems(jasperDesign, columnWidth, "$P{TendernessValue}", "$F{tendernessValue}", fieldWidth,
+//					false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{InspectionOfPart_Posture}", "$F{inspectionOfPartPosture}",
+					fieldWidth, false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{ShoulderFlexion}", "$F{shoulderFlexion}", fieldWidth, false, 0,
+					false);
+			addItems(jasperDesign, columnWidth, "$P{ShoulderExtension}", "$F{shoulderExtension}", fieldWidth, false, 0,
+					false);
+			addItems(jasperDesign, columnWidth, "$P{ShoulderAbduction}", "$F{shoulderAbduction}", fieldWidth, false, 0,
+					false);
+			addItems(jasperDesign, columnWidth, "$P{ShoulderIntegerRotation}", "$F{shoulderIntegerRotation}",
+					fieldWidth, false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{ShoulderExternalRotation}", "$F{shoulderExternalRotation}",
+					fieldWidth, false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{AnklePlantarlexion}", "$F{anklePlantarlexion}", fieldWidth, false,
+					0, false);
+			addItems(jasperDesign, columnWidth, "$P{AnkleDorsiflexion}", "$F{ankleDorsiflexion}", fieldWidth, false, 0,
+					false);
+			addItems(jasperDesign, columnWidth, "$P{ElbowHexion}", "$F{elbowHexion}", fieldWidth, false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{ElbowExtension}", "$F{elbowExtension}", fieldWidth, false, 0,
+					false);
+			addItems(jasperDesign, columnWidth, "$P{ElbowSupination}", "$F{elbowSupination}", fieldWidth, false, 0,
+					false);
+			addItems(jasperDesign, columnWidth, "$P{ElbowPronotion}", "$F{elbowPronotion}", fieldWidth, false, 0,
+					false);
+			addItems(jasperDesign, columnWidth, "$P{HipJointHexion}", "$F{hipJointHexion}", fieldWidth, false, 0,
+					false);
+			addItems(jasperDesign, columnWidth, "$P{HipJointExtension}", "$F{hipJointExtension}", fieldWidth, false, 0,
+					false);
+			addItems(jasperDesign, columnWidth, "$P{HipJointAbduction}", "$F{hipJointAbduction}", fieldWidth, false, 0,
+					false);
+			addItems(jasperDesign, columnWidth, "$P{KneeJointsHexion}", "$F{kneeJointsHexion}", fieldWidth, false, 0,
+					false);
+			addItems(jasperDesign, columnWidth, "$P{KneeJointsExtension}", "$F{kneeJointsExtension}", fieldWidth, false,
+					0, false);
+			addItems(jasperDesign, columnWidth, "$P{WristHexion}", "$F{wristHexion}", fieldWidth, false, 0, false);
+			addItems(jasperDesign, columnWidth, "$P{WristExtension}", "$F{wristExtension}", fieldWidth, false, 0,
+					false);
+			addItems(jasperDesign, columnWidth, "$P{WristRadial_UlnarDeviation}", "$F{wristRadial_UlnarDeviation}",
+					fieldWidth, false, 0, false);
+			band = new JRDesignBand();
+			band.setHeight(2);
+
+			jrDesignLine = new JRDesignLine();
+			jrDesignLine.setX(0);
+			jrDesignLine.setY(0);
+			jrDesignLine.setHeight(1);
+			jrDesignLine.setWidth(columnWidth);
+			jrDesignLine.setForecolor(Color.LIGHT_GRAY);
+			band.addElement(jrDesignLine);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		}
 
 		if ((Boolean) parameters.get("showGeneralHistoryTitle")) {
 			band = new JRDesignBand();
@@ -1478,6 +2975,163 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(0);
 		band.addElement(jSubreport);
+		return band;
+	}
+
+	private JRBand addExaminationItem(Map<String, Object> parameters, Integer contentFontSize, int columnWidth,
+			int pageWidth, int pageHeight, String eyeExamination, JRDesignStyle normalStyle) throws JRException {
+		JasperDesign jasperDesign = JRXmlLoader
+				.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-clinical-notes_eye_items_subreport-A4.jrxml");
+		jasperDesign.setPageWidth(pageWidth);
+		jasperDesign.setPageHeight(pageHeight);
+		jasperDesign.setColumnWidth(columnWidth);
+		jasperDesign.setColumnSpacing(0);
+		jasperDesign.setBottomMargin(0);
+		jasperDesign.setLeftMargin(0);
+		jasperDesign.setRightMargin(0);
+		jasperDesign.setTopMargin(0);
+
+		jasperDesign.addStyle(normalStyle);
+
+		band = new JRDesignBand();
+		band.setHeight(26);
+
+		int dataWidth = (50 * (columnWidth - 41)) / 100;
+
+		Integer titleFontSize = contentFontSize;
+		if (contentFontSize > 13)
+			titleFontSize = 13;
+
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(0);
+		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth);
+		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+		band.addElement(jrDesignLine);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{System}"));
+		jrDesignTextField.setX(10);
+		jrDesignTextField.setY(4);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setWidth(150);
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+		band.addElement(jrDesignTextField);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{RightEye}"));
+		jrDesignTextField.setX(125 + 35);
+		jrDesignTextField.setY(4);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setWidth(35 + dataWidth);
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+		band.addElement(jrDesignTextField);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{LeftEye}"));
+		jrDesignTextField.setX(117 + dataWidth);
+		jrDesignTextField.setY(4);
+		jrDesignTextField.setHeight(15);
+		jrDesignTextField.setWidth(dataWidth);
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(Float.valueOf(titleFontSize));
+		band.addElement(jrDesignTextField);
+
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(0);
+		jrDesignLine.setY(22);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth);
+		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+		band.addElement(jrDesignLine);
+		jasperDesign.setColumnHeader(band);
+
+		band = new JRDesignBand();
+		band.setSplitType(SplitTypeEnum.STRETCH);
+		if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.SMALL.name()))
+			band.setHeight(22);
+		else if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.MEDIUM.name()))
+			band.setHeight(27);
+		else if (parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.LARGE.name()))
+			band.setHeight(32);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{system}"));
+		jrDesignTextField.setX(12);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setWidth(150);
+		jrDesignTextField.setStretchWithOverflow(true);
+		band.addElement(jrDesignTextField);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{rightEye}"));
+		jrDesignTextField.setX(127 + 35);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setWidth(dataWidth - 3);
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setStretchWithOverflow(true);
+		band.addElement(jrDesignTextField);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$F{leftEye}"));
+		jrDesignTextField.setX(117 + dataWidth);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setWidth(dataWidth - 3);
+		jrDesignTextField.setStretchWithOverflow(true);
+		band.addElement(jrDesignTextField);
+
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		band = new JRDesignBand();
+		band.setHeight(13);
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setX(0);
+		jrDesignLine.setY(0);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth);
+		band.addElement(jrDesignLine);
+
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setX(0);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(12);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setBlankWhenNull(true);
+		band.addElement(jrDesignTextField);
+		jasperDesign.setColumnFooter(band);
+		JasperCompileManager.compileReportToFile(jasperDesign,
+				JASPER_TEMPLATES_RESOURCE + "new/mongo-clinical-notes_eye_items_subreport-A4.jasper");
+		JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign);
+		jSubreport.setUsingCache(false);
+		jSubreport.setRemoveLineWhenBlank(true);
+		jSubreport.setPrintRepeatedValues(false);
+		jSubreport.setWidth(columnWidth);
+		jSubreport.setHeight(0);
+		jSubreport.setX(0);
+		jSubreport.setY(0);
+
+		jSubreport.setDataSourceExpression(new JRDesignExpression(
+				"new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource(" + eyeExamination + ")"));
+
+		jSubreport.setExpression(new JRDesignExpression(
+				"\"" + JASPER_TEMPLATES_RESOURCE + "new/mongo-clinical-notes_eye_items_subreport-A4.jasper\""));
+		JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();
+		designSubreportParameter.setName("REPORT_CONNECTION");
+		designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
+		band = new JRDesignBand();
+		band.setHeight(0);
+		band.addElement(jSubreport);
+
 		return band;
 	}
 
@@ -2174,27 +3828,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band.setSplitType(SplitTypeEnum.IMMEDIATE);
 
-		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
-			jrDesignTextField.setFontSize(Float.valueOf(12));
-			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(Startwith);
-			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(175);
-			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
-			jrDesignTextField.setMarkup("html");
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-			jrDesignTextField.setStretchWithOverflow(true);
-			band.addElement(jrDesignTextField);
-		}
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("signatureImage").toString())) {
 			JRDesignImage jrDesignImage = new JRDesignImage(null);
 			jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
 			jrDesignImage.setPrintWhenExpression(
 					new JRDesignExpression("!$P{signatureImage}.equals(null) && !$P{signatureImage}.isEmpty()"));
-			jrDesignImage.setExpression(new JRDesignExpression("$P{signatureImage}"));		
+			jrDesignImage.setExpression(new JRDesignExpression("$P{signatureImage}"));
 			jrDesignImage.setX(0);
 			jrDesignImage.setY((Startwith));
 			jrDesignImage.setHeight(30);
@@ -2218,6 +3857,23 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
+
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
+			jrDesignTextField.setFontSize(Float.valueOf(12));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(Startwith);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(175);
+			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+		}
+
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())
 				|| !DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
 			Startwith = Startwith + 25;
@@ -2268,28 +3924,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 		int Startwith = 2;
 		band.setSplitType(SplitTypeEnum.STRETCH);
 
-		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
-			jrDesignTextField.setFontSize(Float.valueOf(9));
-			jrDesignTextField.setX(0);
-			jrDesignTextField.setY(Startwith);
-			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(175);
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
-			jrDesignTextField.setMarkup("html");
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-			jrDesignTextField.setStretchWithOverflow(true);
-			band.addElement(jrDesignTextField);
-		}
-		
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("signatureImage").toString())) {
 			JRDesignImage jrDesignImage = new JRDesignImage(null);
 			jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
 			jrDesignImage.setPrintWhenExpression(
 					new JRDesignExpression("!$P{signatureImage}.equals(null) && !$P{signatureImage}.isEmpty()"));
-			jrDesignImage.setExpression(new JRDesignExpression("$P{signatureImage}"));		
+			jrDesignImage.setExpression(new JRDesignExpression("$P{signatureImage}"));
 			jrDesignImage.setX(0);
 			jrDesignImage.setY((Startwith));
 			jrDesignImage.setHeight(30);
@@ -2314,7 +3954,23 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 		}
-	
+
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
+			jrDesignTextField.setFontSize(Float.valueOf(9));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(Startwith);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(175);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+		}
+
 		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())
 				|| !DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
 			Startwith = Startwith + 25;

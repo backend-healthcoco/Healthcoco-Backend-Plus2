@@ -6,6 +6,7 @@ import java.util.List;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.ReceiptType;
+import com.dpdocter.request.PaymentDetails;
 import com.dpdocter.response.AdvanceReceiptIdWithAmountResponse;
 
 public class DoctorPatientReceipt extends GenericCollection{
@@ -40,11 +41,15 @@ public class DoctorPatientReceipt extends GenericCollection{
 	
 	private Double balanceAmount = 0.0;
 	
+	private Double refundAmount = 0.0;
+
 	private Date receivedDate;
 
 	private Boolean discarded = false;
 
 	private Double usedAdvanceAmount = 0.0;
+	
+	private PaymentDetails paymentDetails;
 	
 	public String getId() {
 		return id;
@@ -182,6 +187,24 @@ public class DoctorPatientReceipt extends GenericCollection{
 	}
 	
 	
+	
+	
+
+	public Double getRefundAmount() {
+		return refundAmount;
+	}
+
+	public void setRefundAmount(Double refundAmount) {
+		this.refundAmount = refundAmount;
+	}
+
+	public PaymentDetails getPaymentDetails() {
+		return paymentDetails;
+	}
+
+	public void setPaymentDetails(PaymentDetails paymentDetails) {
+		this.paymentDetails = paymentDetails;
+	}
 
 	public String getTransactionId() {
 		return transactionId;

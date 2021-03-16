@@ -3,6 +3,7 @@ package com.dpdocter.response.v2;
 import java.util.Date;
 import java.util.List;
 
+import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.User;
@@ -102,6 +103,10 @@ public class AppointmentLookupResponse extends GenericCollection {
 	private ConsultationType consultationType;
 	
 	private Date consultationStartedOn;
+	
+	private AppointmentSlot onlineConsultationSlot;
+	
+	private Long callDurationInMinutes=0L;
 
 	public PatientTreatmentResponse getPatientTreatmentResponse() {
 		return patientTreatmentResponse;
@@ -446,6 +451,26 @@ public class AppointmentLookupResponse extends GenericCollection {
 
 	public void setConsultationStartedOn(Date consultationStartedOn) {
 		this.consultationStartedOn = consultationStartedOn;
+	}
+	
+	
+
+	
+
+	public Long getCallDurationInMinutes() {
+		return callDurationInMinutes;
+	}
+
+	public void setCallDurationInMinutes(Long callDurationInMinutes) {
+		this.callDurationInMinutes = callDurationInMinutes;
+	}
+
+	public AppointmentSlot getOnlineConsultationSlot() {
+		return onlineConsultationSlot;
+	}
+
+	public void setOnlineConsultationSlot(AppointmentSlot onlineConsultationSlot) {
+		this.onlineConsultationSlot = onlineConsultationSlot;
 	}
 
 	@Override

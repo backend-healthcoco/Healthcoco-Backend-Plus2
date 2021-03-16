@@ -7,4 +7,12 @@ import com.dpdocter.beans.OnlineConsultionPaymentCollection;
 
 public interface OnlineConsultationPaymentRepository extends MongoRepository<OnlineConsultionPaymentCollection, ObjectId>{
 
+<<<<<<< HEAD
+=======
+	OnlineConsultionPaymentCollection findByOrderId(String order_id);
+
+
+
+
+>>>>>>> nikitaChanges
 }

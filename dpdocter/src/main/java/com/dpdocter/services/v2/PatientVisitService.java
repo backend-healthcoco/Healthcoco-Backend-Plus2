@@ -25,6 +25,10 @@ public interface PatientVisitService {
 	List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
 			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor, String from,String to,Boolean discarded);
 
+	List<PatientVisitResponse> getVisitNew(String doctorId, String locationId, String hospitalId, String patientId,
+			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor, String from, String to,
+			Boolean discarded);
+
 	/*Boolean email(String visitId, String emailAddress);
 
 	PatientVisitResponse deleteVisit(String visitId, Boolean discarded);
