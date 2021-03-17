@@ -35,6 +35,7 @@ import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.enums.UniqueIdInitial;
+import com.dpdocter.enums.VitalSignsUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -525,6 +526,148 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		}
 		parameters.put("showAddress", show);
 		show = false;
+		
+		// new fields
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getPreOprationalOrders())) {
+			show = true;
+			parameters.put("preOprationalOrders", admitCardCollection.getPreOprationalOrders());
+		}
+		parameters.put("showOrd", show);
+		
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getNursingCare())) {
+			show = true;
+			parameters.put("nursingCare", admitCardCollection.getNursingCare());
+		}
+		parameters.put("showNCare", show);
+		
+		if (admitCardCollection.getVitalSigns() != null) {
+			String vitalSigns = null;
+
+			String pulse = admitCardCollection.getVitalSigns().getPulse();
+			pulse = (pulse != null && !pulse.isEmpty()
+					? "Pulse: " + pulse + " " + VitalSignsUnit.PULSE.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(pulse))
+				vitalSigns = pulse;
+
+			String temp = admitCardCollection.getVitalSigns().getTemperature();
+			temp = (temp != null && !temp.isEmpty()
+					? "Temperature: " + temp + " " + VitalSignsUnit.TEMPERATURE.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(temp)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + temp;
+				else
+					vitalSigns = temp;
+			}
+
+			String breathing = admitCardCollection.getVitalSigns().getBreathing();
+			breathing = (breathing != null && !breathing.isEmpty()
+					? "Breathing: " + breathing + " " + VitalSignsUnit.BREATHING.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(breathing)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + breathing;
+				else
+					vitalSigns = breathing;
+			}
+
+			String weight = admitCardCollection.getVitalSigns().getWeight();
+			weight = (weight != null && !weight.isEmpty()
+					? "Weight: " + weight + " " + VitalSignsUnit.WEIGHT.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(weight)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + weight;
+				else
+					vitalSigns = weight;
+			}
+
+			String bloodPressure = "";
+			if (admitCardCollection.getVitalSigns().getBloodPressure() != null) {
+				String systolic = admitCardCollection.getVitalSigns().getBloodPressure()
+						.getSystolic();
+				systolic = systolic != null && !systolic.isEmpty() ? systolic : "";
+
+				String diastolic = admitCardCollection.getVitalSigns().getBloodPressure()
+						.getDiastolic();
+				diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
+
+				if (!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
+					bloodPressure = "B.P: " + systolic + "/" + diastolic + " "
+							+ VitalSignsUnit.BLOODPRESSURE.getUnit();
+				if (!DPDoctorUtils.allStringsEmpty(bloodPressure)) {
+					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+						vitalSigns = vitalSigns + ",  " + bloodPressure;
+					else
+						vitalSigns = bloodPressure;
+				}
+			}
+
+			String spo2 = admitCardCollection.getVitalSigns().getSpo2();
+			spo2 = (spo2 != null && !spo2.isEmpty()
+					? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(spo2)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + spo2;
+				else
+					vitalSigns = spo2;
+			}
+			String height = admitCardCollection.getVitalSigns().getHeight();
+			height = (height != null && !height.isEmpty()
+					? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(height)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + height;
+				else
+					vitalSigns = spo2;
+			}
+
+			String bmi = admitCardCollection.getVitalSigns().getBmi();
+			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+				if (bmi.equalsIgnoreCase("nan")) {
+					bmi = "";
+				}
+
+			} else {
+				bmi = "";
+			}
+
+			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+				bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
+				if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+					vitalSigns = vitalSigns + ",  " + bmi;
+				} else {
+					vitalSigns = bmi;
+				}
+			}
+
+			String bsa = admitCardCollection.getVitalSigns().getBsa();
+			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+				if (bsa.equalsIgnoreCase("nan"))
+					bsa = "";
+
+			} else {
+				bsa = "";
+			}
+			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+				bsa = "Bsa: " + String.format("%.3f", Double.parseDouble(bsa));
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + bsa;
+				else
+					vitalSigns = bsa;
+			}
+			parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
+		} else {
+			parameters.put("vitalSigns", null);
+		}	
+		
+		
+		
 
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
