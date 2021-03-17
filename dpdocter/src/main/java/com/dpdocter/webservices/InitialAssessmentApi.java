@@ -96,9 +96,9 @@ public class InitialAssessmentApi {
 		return response;
 
 	}
-	@Path(value = PathProxy.AdmissionAssessmentsUrls.DELETE_ADMISSION_FORM)
+	@Path(value = PathProxy.InitialAssessmentsUrls.DELETE_ASSESSMENT_FORM)
 	@DELETE
-	@ApiOperation(value = PathProxy.AdmissionAssessmentsUrls.DELETE_ADMISSION_FORM, notes = PathProxy.AdmissionAssessmentsUrls.DELETE_ADMISSION_FORM)
+	@ApiOperation(value = PathProxy.InitialAssessmentsUrls.DELETE_ASSESSMENT_FORM, notes = PathProxy.InitialAssessmentsUrls.DELETE_ASSESSMENT_FORM)
 	public Response<Boolean> deleteInitialAssessment(@PathParam(value = "initialAssessmentId") String initialAssessmentId,
 			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 			@PathParam(value = "hospitalId") String hospitalId,
