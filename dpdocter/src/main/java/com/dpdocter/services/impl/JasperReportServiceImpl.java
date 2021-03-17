@@ -6578,6 +6578,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addItems(jasperDesign, columnWidth, "$P{NatureOfOperation}", "$P{natureOfOperation}", fieldWidth, false, 0,
 					false);
 		}
+		
+		
+		//new fields		
+		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$P{vitalSigns}", fieldWidth, false, 0, false);
 
 		show = (Boolean) parameters.get("showPH");
 		if (show) {
@@ -6633,6 +6637,15 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addItems(jasperDesign, columnWidth, "$P{Address}", "$P{address}", fieldWidth, false, 0, false);
 		}
 
+		//new field
+		show = (Boolean) parameters.get("showOrd");
+		if (show) {
+			addItems(jasperDesign, columnWidth, "$P{PreOprationalOrders}", "$P{preOprationalOrders}", fieldWidth, false, 0, false);
+		}
+		show = (Boolean) parameters.get("showNCare");
+		if (show) {
+			addItems(jasperDesign, columnWidth, "$P{NursingCare}", "$P{nursingCare}", fieldWidth, false, 0,false);
+		}
 	}
 
 	private void addDischargeitems(JasperDesign jasperDesign, int columnWidth, String value, int height,
