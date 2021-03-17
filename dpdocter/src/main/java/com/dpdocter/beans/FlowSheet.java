@@ -47,7 +47,14 @@ public class FlowSheet {
 	
 	private String otherVitals;
 	
-	
+	private String rylesTubeOralIntake;
+	private String tracheostomySuction;
+	private String bloodSugar;
+
+	private List<Medication> medication;
+	private String diagnosis;	
+	private String referTo;	
+
 
 	public Long getDate() {
 		return date;
@@ -215,6 +222,55 @@ public class FlowSheet {
 	}
 
 	
+
+	public List<Medication> getMedication() {
+		return medication;
+	}
+
+	public void setMedication(List<Medication> medication) {
+		this.medication = medication;
+	}
+
+	public String getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public String getReferTo() {
+		return referTo;
+	}
+
+	public void setReferTo(String referTo) {
+		this.referTo = referTo;
+	}
+
+	
+	public String getRylesTubeOralIntake() {
+		return rylesTubeOralIntake;
+	}
+
+	public void setRylesTubeOralIntake(String rylesTubeOralIntake) {
+		this.rylesTubeOralIntake = rylesTubeOralIntake;
+	}
+
+	public String getTracheostomySuction() {
+		return tracheostomySuction;
+	}
+
+	public void setTracheostomySuction(String tracheostomySuction) {
+		this.tracheostomySuction = tracheostomySuction;
+	}
+
+	public String getBloodSugar() {
+		return bloodSugar;
+	}
+
+	public void setBloodSugar(String bloodSugar) {
+		this.bloodSugar = bloodSugar;
+	}
 
 	@Override
 	public String toString() {
