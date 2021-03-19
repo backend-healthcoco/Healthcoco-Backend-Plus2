@@ -42,6 +42,7 @@ import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.Medication;
 import com.dpdocter.beans.MonitoringChart;
 import com.dpdocter.beans.MonitoringChartJasperBean;
 import com.dpdocter.beans.OperationNote;
@@ -2963,6 +2964,20 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				if (!DPDoctorUtils.anyStringEmpty(flowsheet.getComplaint())) {
 					jasperBean.setComplaint("<b>Complaint :- </b>" + flowsheet.getComplaint());
 				}
+				
+				if (!DPDoctorUtils.anyStringEmpty(flowsheet.getDiagnosis())) {
+					jasperBean.setDiagnosis("<b>Diagnosis :- </b>" + flowsheet.getDiagnosis());
+				}
+				if (!DPDoctorUtils.anyStringEmpty(flowsheet.getReferTo())) {
+					jasperBean.setReferTo("<b>Refer To :- </b>" + flowsheet.getReferTo());
+				}
+//				if (flowsheet.getMedication() != null) {
+//					List<Medication> temp = null;
+//					for(Medication rx : flowsheet.getMedication()) {
+//						ja ("<b>RX :- </b>" + rx.getDrugName() + " "+ rx.getFrequency() +" Times");
+//				 }
+//					 jasperBean.setMedication
+//				}
 				if (flowsheet.getDate() != null) {
 					if (flowsheet.getDate() != 0) {
 						jasperBean.setDate(simpleDateFormat.format(new Date(flowsheet.getDate())));
@@ -3048,6 +3063,21 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getOtherVitals(), field) ? ", " : "")
 						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getOtherVitals())
 								? "OtherVitals (" + VitalSignsUnit.SPO2.getUnit() + ") : " + flowsheet.getOtherVitals()
+								: "");
+				
+				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getRylesTubeOralIntake(), field) ? ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getRylesTubeOralIntake())
+								? "Ryles Tube Oral Intake : " + flowsheet.getRylesTubeOralIntake()
+								: "");
+				
+				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getTracheostomySuction(), field) ? ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getTracheostomySuction())
+								? "Tracheostomy Suction : " + flowsheet.getTracheostomySuction()
+								: "");
+				
+				field = field + (!DPDoctorUtils.anyStringEmpty(flowsheet.getBloodSugar(), field) ? ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(flowsheet.getBloodSugar())
+								? "Blood Sugar (" + VitalSignsUnit.BLOODSUGAR.getUnit() + ") : " + flowsheet.getBloodSugar()
 								: "");
 
 				jasperBean.setExamination(field);

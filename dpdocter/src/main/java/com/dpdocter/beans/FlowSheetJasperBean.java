@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 public class FlowSheetJasperBean {
 	
 	private Integer no = 0;
@@ -12,6 +14,9 @@ public class FlowSheetJasperBean {
 
 	private String advice;
 	
+	private List<Medication> medication;
+	private String diagnosis;	
+	private String referTo;
 	
 
 	public Integer getNo() {
@@ -52,6 +57,31 @@ public class FlowSheetJasperBean {
 
 	public void setAdvice(String advice) {
 		this.advice = advice;
+	}
+
+	
+	public List<Medication> getMedication() {
+		return medication;
+	}
+
+	public void setMedication(List<Medication> medication) {
+		this.medication = medication;
+	}
+
+	public String getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public String getReferTo() {
+		return referTo;
+	}
+
+	public void setReferTo(String referTo) {
+		this.referTo = referTo;
 	}
 
 	
