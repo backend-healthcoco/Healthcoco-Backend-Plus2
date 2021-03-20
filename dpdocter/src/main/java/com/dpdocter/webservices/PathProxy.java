@@ -2485,6 +2485,15 @@ public interface PathProxy {
 		public static final String DELETE_PREOPERATION_FORM = "/{preOperationFormId}/{doctorId}/{locationId}/{hospitalId}/delete";
 	}
 	
+	public static final String MEDICINE_SHEET_BASE_URL = BASE_URL + "/medicineTreatmentSheet";
+
+	public interface MedicineTreatmentUrls {
+		public static final String ADD_EDIT_MEDICINE_SHEET ="/addEdit";
+		public static final String GET_MEDICINE_SHEET ="/get/{patientId}";
+		public static final String GET_MEDICINE_SHEET_BY_ID ="/getById/{medicineSheetId}";
+		public static final String DELETE_MEDICINE_SHEET = "/{medicineSheetId}/{doctorId}/{locationId}/{hospitalId}/delete";
+	}
+	
 	public static final String VISIT_FIELDWISE_BASE_URL = BASE_URL + "/visit/getField";
 
 	public interface VisitFieldWiseUrls {

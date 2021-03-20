@@ -22,7 +22,6 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.InitialAssessmentRequest;
 import com.dpdocter.response.InitialAssessmentResponse;
-import com.dpdocter.response.PreOperationAssessmentResponse;
 import com.dpdocter.services.InitialAssessmentService;
 
 import common.util.web.DPDoctorUtils;
@@ -30,7 +29,7 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 /**
- * This api used for Initial assessment done by Doctor after admission  of patient
+ * This api used for Initial assessment done by Doctor after admission  of patient(NABH)
  * 
  * @author Nikita
  *
