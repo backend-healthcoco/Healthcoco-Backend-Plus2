@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +30,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class TrendingServiceImpl implements TrendingService {
 
-	private static Logger logger = Logger.getLogger(TrendingServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(TrendingServiceImpl.class.getName());
 
 	@Autowired
 	private OfferRepository offerRepository;

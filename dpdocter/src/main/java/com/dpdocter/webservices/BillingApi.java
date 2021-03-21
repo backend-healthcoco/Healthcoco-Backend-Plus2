@@ -13,7 +13,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +49,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.BILLING_BASE_URL, description = "")
 public class BillingApi {
 
-	private static Logger logger = Logger.getLogger(BillingApi.class.getName());
+	private static Logger logger = LogManager.getLogger(BillingApi.class.getName());
 
 	@Autowired
 	private BillingService billingService;

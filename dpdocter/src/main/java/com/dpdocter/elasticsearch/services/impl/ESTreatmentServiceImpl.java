@@ -9,7 +9,8 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -47,7 +48,7 @@ import common.util.web.Response;
 @Service
 public class ESTreatmentServiceImpl implements ESTreatmentService {
 
-	private static Logger logger = Logger.getLogger(ESTreatmentServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(ESTreatmentServiceImpl.class.getName());
 
 	@Autowired
 	private ESTreatmentServiceRepository esTreatmentServiceRepository;

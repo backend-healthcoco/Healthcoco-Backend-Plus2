@@ -10,7 +10,8 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -103,7 +104,7 @@ import common.util.web.Response;
 @Service
 public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
-	private static Logger logger = Logger.getLogger(ESClinicalNotesServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(ESClinicalNotesServiceImpl.class.getName());
 
 	@Autowired
 	private ESComplaintsRepository esComplaintsRepository;

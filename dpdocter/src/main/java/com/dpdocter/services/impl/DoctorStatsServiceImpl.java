@@ -5,7 +5,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -31,7 +32,7 @@ public class DoctorStatsServiceImpl implements DoctorStatsService{
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
-	Logger logger = Logger.getLogger(DoctorStatsServiceImpl.class);
+	Logger logger = LogManager.getLogger(DoctorStatsServiceImpl.class);
 
 	@Override
 	@Transactional

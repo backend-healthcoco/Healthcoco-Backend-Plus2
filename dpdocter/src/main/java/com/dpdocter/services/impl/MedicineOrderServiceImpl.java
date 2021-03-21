@@ -6,7 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,15 +30,11 @@ import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.TrackingOrder;
 import com.dpdocter.beans.UserCart;
-import com.dpdocter.beans.v2.Drug;
-import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.DrugInfoCollection;
 import com.dpdocter.collections.MedicineOrderCollection;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TrackingOrderCollection;
 import com.dpdocter.collections.UserCartCollection;
-import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.OrderStatus;
 import com.dpdocter.enums.SMSStatus;
@@ -70,7 +67,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class MedicineOrderServiceImpl implements MedicineOrderService{
 
-	private static Logger logger = Logger.getLogger(RecordsServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(RecordsServiceImpl.class.getName());
 	
 	@Autowired
 	FileManager fileManager;

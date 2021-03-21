@@ -1,6 +1,5 @@
 package com.dpdocter.beans.v2;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.dpdocter.beans.DOB;

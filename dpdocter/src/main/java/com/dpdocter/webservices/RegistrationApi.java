@@ -17,17 +17,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
@@ -40,9 +36,7 @@ import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.DoctorCalendarView;
 import com.dpdocter.beans.Feedback;
-import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.FormContent;
-import com.dpdocter.beans.Language;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.Profession;
@@ -91,7 +85,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.REGISTRATION_BASE_URL, description = "Endpoint for register")
 public class RegistrationApi {
 
-	private static Logger logger = Logger.getLogger(RegistrationApi.class.getName());
+	private static Logger logger = LogManager.getLogger(RegistrationApi.class.getName());
 
 	@Autowired
 	private RegistrationService registrationService;

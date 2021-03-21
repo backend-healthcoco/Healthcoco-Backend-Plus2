@@ -26,7 +26,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.RANKING_BASE_URL, description = "Endpoint for ranking")
 public class RankingApi {
 
-//private static Logger logger = Logger.getLogger(RankingApi.class.getName());
+//private static Logger logger = LogManager.getLogger(RankingApi.class.getName());
 	
 	@Autowired
 	RankingAlgorithmsServices rankingAlgorithmsServices;

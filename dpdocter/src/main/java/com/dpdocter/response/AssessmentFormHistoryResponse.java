@@ -2,8 +2,6 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
-
 import com.dpdocter.beans.Addiction;
 import com.dpdocter.beans.DrugsAndAllergies;
 import com.dpdocter.beans.GeneralData;

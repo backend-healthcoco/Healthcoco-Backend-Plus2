@@ -1,8 +1,6 @@
 package com.dpdocter.beans;
 
 
-import java.util.List;
-
 import common.util.web.JacksonUtil;
 
 public class FlowSheet {

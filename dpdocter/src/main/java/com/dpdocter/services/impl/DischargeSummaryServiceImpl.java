@@ -17,7 +17,8 @@ import javax.mail.MessagingException;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,10 +51,8 @@ import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
-import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.collections.BabyNoteCollection;
 import com.dpdocter.collections.CementCollection;
-import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -120,8 +119,6 @@ import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.PushNotificationServices;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -130,7 +127,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
-	private static Logger logger = Logger.getLogger(DischargeSummaryServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(DischargeSummaryServiceImpl.class.getName());
 
 	@Autowired
 	private DischargeSummaryRepository dischargeSummaryRepository;

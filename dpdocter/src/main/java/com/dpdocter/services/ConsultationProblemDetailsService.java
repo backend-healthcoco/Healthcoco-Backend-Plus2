@@ -1,7 +1,5 @@
 package com.dpdocter.services;
 
-import java.util.List;
-
 import com.dpdocter.beans.ConsultationProblemDetails;
 import com.dpdocter.request.ConsultationProblemDetailsRequest;
 

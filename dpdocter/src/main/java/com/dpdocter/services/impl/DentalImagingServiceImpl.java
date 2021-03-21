@@ -13,7 +13,8 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -210,7 +211,7 @@ public class DentalImagingServiceImpl implements DentalImagingService {
 	@Value(value = "${jasper.print.imaging.works.invoice.fileName}")
 	private String dentalInvoiceA4FileName;
 
-	private static Logger logger = Logger.getLogger(DentalImagingServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(DentalImagingServiceImpl.class.getName());
 
 	@Value(value = "${image.path}")
 	private String imagePath;

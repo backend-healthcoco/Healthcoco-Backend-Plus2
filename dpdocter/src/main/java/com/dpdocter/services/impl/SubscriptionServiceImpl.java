@@ -17,10 +17,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
@@ -74,7 +73,6 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.SubscriptionPaymentSignatureRequest;
 import com.dpdocter.request.SubscriptionRequest;
-import com.dpdocter.response.BulkSmsPaymentResponse;
 import com.dpdocter.response.OrderReponse;
 import com.dpdocter.response.SubscriptionResponse;
 import com.dpdocter.services.MailBodyGenerator;
@@ -82,8 +80,6 @@ import com.dpdocter.services.MailService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.SubscriptionService;
-import com.razorpay.Order;
-import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.razorpay.Utils;
 
@@ -92,7 +88,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
 
-	private static Logger logger = Logger.getLogger(SubscriptionServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(SubscriptionServiceImpl.class.getName());
 
 	@Autowired
 	private MongoTemplate mongoTemplate;

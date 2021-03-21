@@ -33,7 +33,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.BLOGS_BASE_URL, description = "Endpoint for blog")
 
 public class BlogApi {
-//	private static Logger logger = Logger.getLogger(BlogApi.class.getName());
+//	private static Logger logger = LogManager.getLogger(BlogApi.class.getName());
 
 	@Autowired
 	BlogService blogService;

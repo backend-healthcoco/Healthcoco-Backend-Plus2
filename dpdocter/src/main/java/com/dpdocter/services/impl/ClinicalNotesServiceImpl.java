@@ -17,7 +17,8 @@ import javax.mail.MessagingException;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +122,6 @@ import com.dpdocter.enums.PainType;
 import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.UniqueIdInitial;
-import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.enums.VitalSignsUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -195,7 +195,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
-	private static Logger logger = Logger.getLogger(ClinicalNotesServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(ClinicalNotesServiceImpl.class.getName());
 
 	@Autowired
 	private ClinicalNotesRepository clinicalNotesRepository;

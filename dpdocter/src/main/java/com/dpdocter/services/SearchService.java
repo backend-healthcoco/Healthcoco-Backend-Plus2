@@ -5,7 +5,6 @@ import java.util.List;
 import com.dpdocter.response.DoctorProfileBySlugUrlResponse;
 import com.dpdocter.response.ResourcesCountResponse;
 import com.dpdocter.response.SearchDoctorResponse;
-import com.dpdocter.response.SearchLandmarkLocalityResponse;
 
 public interface SearchService {
 

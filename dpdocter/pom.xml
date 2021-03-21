@@ -15,10 +15,6 @@
 				<finalName>dpdocter</finalName>
 				<resources>
 					<resource>
-						<directory>src/main/resources/spring-context</directory>
-						<filtering>true</filtering>
-					</resource>
-					<resource>
 						<directory>src/main/resources/spring-properties/local</directory>
 						<filtering>true</filtering>
 					</resource>
@@ -27,25 +23,14 @@
 						<filtering>true</filtering>
 					</resource>
 				</resources>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.tomcat.embed</groupId>
-						<artifactId>tomcat-embed-core</artifactId>
-						<version>9.0.16</version>
-					</plugin>
-				</plugins>
 			</build>
 		</profile>
 		<profile>
 			<id>dev</id>	
-<!-- 			<activation><activeByDefault>true</activeByDefault></activation> -->
+			<activation><activeByDefault>true</activeByDefault></activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
-					<resource>
-						<directory>src/main/resources/spring-context</directory>
-						<filtering>true</filtering>
-					</resource>
 					<resource>
 						<directory>src/main/resources/spring-properties/dev</directory>
 						<filtering>true</filtering>
@@ -62,10 +47,6 @@
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
-					<resource>
-						<directory>src/main/resources/spring-context</directory>
-						<filtering>true</filtering>
-					</resource>
 					<resource>
 						<directory>src/main/resources/spring-properties/qa</directory>
 						<filtering>true</filtering>
@@ -84,10 +65,6 @@
 				<finalName>dpdocter</finalName>
 				<resources>
 					<resource>
-						<directory>src/main/resources/spring-context</directory>
-						<filtering>true</filtering>
-					</resource>
-					<resource>
 						<directory>src/main/resources/spring-properties/production</directory>
 						<filtering>true</filtering>
 					</resource>
@@ -99,7 +76,108 @@
 			</build>
 		</profile>
 	</profiles>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.1.3.RELEASE</version>
+	</parent>
 	<dependencies>
+		<dependency>
+		    <groupId>com.nimbusds</groupId>
+		    <artifactId>nimbus-jose-jwt</artifactId>
+		    <version>8.7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- Add Log4j2 Dependency -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<!-- OAuth2 Client -->
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+			<version>2.3.4.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-client</artifactId>
+			<!-- <version>5.1.4.RELEASE</version> -->
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+		        <groupId>org.springframework.boot</groupId>
+		        <artifactId>spring-boot-starter-tomcat</artifactId>
+		        <scope>provided</scope>
+		</dependency>
+		<!-- Spring Data MongoDB -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+		</dependency>
+
+
+		<!-- Spring Data Elasticsearch -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- Jackson Fasterxml -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-kotlin</artifactId>
+			<version>2.9.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
 		<!-- Integration test dependency -->
 		<dependency>
 			<groupId>de.flapdoodle.embedmongo</groupId>
@@ -122,7 +200,6 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>5.0.8.RELEASE</version>
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -130,7 +207,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -138,154 +214,12 @@
 			<groupId>com.sun.jersey.contribs</groupId>
 			<artifactId>jersey-multipart</artifactId>
 			<version>1.19.4</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.ws.rs</groupId>
-					<artifactId>jsr311-api</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-json</artifactId>
-			<version>1.19.4</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-server -->
-		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-server</artifactId>
-			<version>2.27</version>
-		</dependency>
-
-		<!-- Spring 4 dependencies -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>5.1.7.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>5.0.7.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>5.0.7.RELEASE</version>
-		</dependency>
-		<!-- Various Application Context utilities, including EhCache, JavaMail, 
-			Quartz, and Freemarker integration Define this if you need any of these integrations -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-			<version>5.0.8.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aop</artifactId>
-			<version>5.0.8.RELEASE</version>
-		</dependency>
-		<!-- Jersey + Spring -->
-		<dependency>
-			<groupId>com.sun.jersey.contribs</groupId>
-			<artifactId>jersey-spring</artifactId>
-			<version>1.19.4</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-web</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-beans</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-context</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-asm</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-aop</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- Spring Integration -->
-		<dependency>
-			<groupId>org.springframework.integration</groupId>
-			<artifactId>spring-integration-core</artifactId>
-			<version>5.0.7.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.integration</groupId>
-			<artifactId>spring-integration-jmx</artifactId>
-			<version>5.0.7.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.integration</groupId>
-			<artifactId>spring-integration-jms</artifactId>
-			<version>5.0.7.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.integration</groupId>
-			<artifactId>spring-integration-ip</artifactId>
-			<version>5.0.7.RELEASE</version>
-		</dependency>
-
-		<!-- for OAuth 2.0 -->
-		<dependency>
-			<groupId>org.springframework.security.oauth</groupId>
-			<artifactId>spring-security-oauth2</artifactId>
-			<version>2.0.7.RELEASE</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-beans</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-context</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework.security</groupId>
-					<artifactId>spring-security-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework.security</groupId>
-					<artifactId>spring-security-config</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework.security</groupId>
-					<artifactId>spring-security-web</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		
-		<!-- Servlet -->
-		<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+		<!-- Javax Servlet -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>4.0.1</version>
+			<!-- <version>4.0.1</version> -->
 			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.servlet.jsp/jsp-api -->
@@ -295,25 +229,9 @@
 			<version>2.2.1-b03</version>
 			<scope>provided</scope>
 		</dependency>
-
-
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-		</dependency>
-		<!-- Spring data mongodb 2.0.9, 3.5.0-->
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-mongodb</artifactId>
-			<version>2.1.1.RELEASE</version>
-	</dependency>
-
-		
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-			<version>3.8.2</version>
 		</dependency>
 		<dependency>
 			<groupId>cglib</groupId>
@@ -326,11 +244,12 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		
 		<!-- APACHE HTTP CLIENT -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.5.2</version>
+			<!-- <version>4.5.2</version> -->
 		</dependency>
 		<!-- APACHE-COMMONS_COLLECTIONS -->
 		<dependency>
@@ -341,7 +260,6 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.3.2</version>
 		</dependency>
 		<!-- APACHE IO UTILITY -->
 		<dependency>
@@ -359,13 +277,19 @@
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			<version>1.9</version>
+			<!-- <version>1.9</version> -->
 		</dependency>
 		<!-- DOZER -->
 		<dependency>
 			<groupId>net.sf.dozer</groupId>
 			<artifactId>dozer</artifactId>
 			<version>5.4.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- JAVA MAIL -->
 		<dependency>
@@ -377,29 +301,8 @@
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
-			<version>2.3</version>
+			<!-- <version>2.3</version> -->
 		</dependency>
-		<!-- Log4j -->
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-log4j12</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-core</artifactId>
-    <version>2.12.0</version>
-</dependency>
 		<!-- Jasper -->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
@@ -438,17 +341,13 @@
 					<artifactId>lucene-sandbox</artifactId>
 					<groupId>org.apache.lucene</groupId>
 				</exclusion>
-				<exclusion>
-					<groupId>bouncycastle</groupId>
-					<artifactId>bcprov-jdk14</artifactId>
-				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
-            <groupId>com.jaspersoft.connectors.mongodb</groupId>
-            <artifactId>js-mongodb-datasource</artifactId>
-            <version>0.9.3</version>
-        </dependency>
+			<groupId>com.jaspersoft.connectors.mongodb</groupId>
+			<artifactId>js-mongodb-datasource</artifactId>
+			<version>0.9.3</version>
+		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
@@ -457,7 +356,6 @@
 		<dependency>
 			<groupId>xml-apis</groupId>
 			<artifactId>xml-apis</artifactId>
-			<version>1.4.01</version>
 		</dependency>
 		<dependency>
 			<groupId>ar.com.fdvs</groupId>
@@ -470,16 +368,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.4</version>
-		</dependency>
 		<!-- velocity -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
@@ -490,12 +378,6 @@
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-tools</artifactId>
 			<version>2.0</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-digester</artifactId>
-					<groupId>commons-digester</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
@@ -721,110 +603,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.9.8</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-			<version>2.9.8</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.9.8</version>
 		</dependency>
-		<!-- Spring security Dependencies -->
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-core</artifactId>
-			<version>3.2.5.RELEASE</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-beans</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-context</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-aop</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-expression</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-			<version>3.2.5.RELEASE</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-beans</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-context</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-aop</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-web</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework.security</groupId>
-					<artifactId>spring-security-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-expression</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-config</artifactId>
-			<version>3.2.5.RELEASE</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-beans</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-context</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-aop</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework.security</groupId>
-					<artifactId>spring-security-core</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>core</artifactId>
@@ -859,14 +639,14 @@
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
-			<version>1.9.4</version>
+			<!-- <version>1.9.4</version> -->
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjtools -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjtools</artifactId>
-			<version>1.9.4</version>
+			<!-- <version>1.9.4</version> -->
 		</dependency>
 
 		<!-- For android GCM push notification services -->
@@ -875,13 +655,6 @@
 			<artifactId>gcm-server</artifactId>
 			<version>1.0.2</version>
 		</dependency>
-
-<!-- For IOS push notification services Fcm -->
-<dependency>
-  <groupId>com.google.firebase</groupId>
-  <artifactId>firebase-admin</artifactId>
-  <version>6.16.0</version>
-</dependency>
 
 		<!-- For IOS push notification services -->
 		<dependency>
@@ -898,97 +671,29 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>18.0</version>
+			<version>20.0</version>
 		</dependency>
 		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-jaxrs</artifactId>
-			<version>1.5.0</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>jackson-databind</artifactId>
-					<groupId>com.fasterxml.jackson.core</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jackson-core</artifactId>
-					<groupId>com.fasterxml.jackson.core</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jackson-annotations</artifactId>
-					<groupId>com.fasterxml.jackson.core</groupId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.ws.rs</groupId>
-					<artifactId>jsr311-api</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.9.2</version>
 		</dependency>
 		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-core</artifactId>
-			<version>1.5.0</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>jackson-databind</artifactId>
-					<groupId>com.fasterxml.jackson.core</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jackson-core</artifactId>
-					<groupId>com.fasterxml.jackson.core</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jackson-annotations</artifactId>
-					<groupId>com.fasterxml.jackson.core</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-annotations</artifactId>
-			<version>1.5.0</version>
-		</dependency>
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-models</artifactId>
-			<version>1.5.0</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>jackson-annotations</artifactId>
-					<groupId>com.fasterxml.jackson.core</groupId>
-				</exclusion>
-			</exclusions>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.9.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
 			<version>0.9.10</version>
 		</dependency>
-		<!-- Elastic Search -->
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-elasticsearch</artifactId>
-			<version>3.2.0.M2</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.data</groupId>
-					<artifactId>spring-data-commons</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-orm -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
-			<version>5.0.8.RELEASE</version>
 		</dependency>
 
-
-<!-- https://mvnrepository.com/artifact/com.razorpay/razorpay-java -->
-		<dependency>
-			<groupId>com.razorpay</groupId>
-			<artifactId>razorpay-java</artifactId>
-			<version>1.3.8</version>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.twilio.sdk/twilio-java-sdk -->
 		<dependency>
 		  <groupId>com.twilio.sdk</groupId>
@@ -1001,7 +706,6 @@
   				<artifactId>sms-util</artifactId>
   				<version>1.0</version>
 		</dependency>
-		
 		<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-fonts -->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
@@ -1020,12 +724,6 @@
 			<groupId>org.xhtmlrenderer</groupId>
 			<artifactId>flying-saucer-pdf</artifactId>
 			<version>9.1.12</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bouncycastle</groupId>
-					<artifactId>bcprov-jdk14</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
 		<dependency>
@@ -1045,12 +743,12 @@
 			<artifactId>unirest-java</artifactId>
 			<version>1.4.9</version>
 		</dependency>
-		<dependency> 
-			<groupId>com.opencsv</groupId> 
-			<artifactId>opencsv</artifactId> 
-			<version>4.1</version> 
-		</dependency> 
-		
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>4.1</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.ow2.asm/asm -->
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
@@ -1069,34 +767,61 @@
 			<version>0.1.2</version>
 		</dependency>
 		<dependency>
-			    <groupId>javax.xml.parsers</groupId>
-			    <artifactId>jaxp-api</artifactId>
-			    <version>1.4.5</version>
-			</dependency>
-			<dependency>
-		        <groupId>sax</groupId>
-			    <artifactId>sax</artifactId>
-			    <version>2.0.1</version>
-			</dependency>
+			<groupId>javax.xml.parsers</groupId>
+			<artifactId>jaxp-api</artifactId>
+			<version>1.4.5</version>
+		</dependency>
+		<dependency>
+			<groupId>sax</groupId>
+			<artifactId>sax</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.razorpay/razorpay-java -->
+		<dependency>
+			<groupId>com.razorpay</groupId>
+			<artifactId>razorpay-java</artifactId>
+			<version>1.3.8</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.squareup.okio</groupId>
+			<artifactId>okio</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<!-- <version>2.4.0-b180830.0359</version> -->
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>2.3.0</version>
+		</dependency>
 	</dependencies>
 	<build>
-		<testResources>
-			<testResource>
-				<directory>src/test/resources/spring-context</directory>
-				<filtering>true</filtering>
-			</testResource>
-			<testResource>
-				<directory>src/test/resources/spring-properties</directory>
-				<filtering>true</filtering>
-			</testResource>
-
-		</testResources>
 		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<executable>true</executable>
+					<fork>false</fork>
+					<profiles>
+						<profile>dev</profile>
+					</profiles>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
 				<configuration>
+					<forceJavacCompilerUse>true</forceJavacCompilerUse>
 					<source>11</source>
 					<target>11</target>
 				</configuration>
@@ -1104,8 +829,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M1</version>
 			</plugin>
+
 		</plugins>
 	</build>
 	<repositories>
@@ -1127,11 +852,11 @@
 			<url>http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/</url>
 		</repository>
 		<repository>
-            <id>MongoJasperRepo</id>
-            <url>http://jaspersoft.artifactoryonline.com/jaspersoft/jaspersoft-repo</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
+			<id>MongoJasperRepo</id>
+			<url>http://jaspersoft.artifactoryonline.com/jaspersoft/jaspersoft-repo</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
 	</repositories>
 </project>

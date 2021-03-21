@@ -3,7 +3,8 @@ package com.dpdocter.services.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
@@ -41,7 +42,7 @@ import common.util.web.LoginUtils;
 @Service
 public class OTPServiceImpl implements OTPService {
 
-	private static Logger logger = Logger.getLogger(OTPServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(OTPServiceImpl.class.getName());
 
 	@Autowired
 	private UserRepository userRepository;

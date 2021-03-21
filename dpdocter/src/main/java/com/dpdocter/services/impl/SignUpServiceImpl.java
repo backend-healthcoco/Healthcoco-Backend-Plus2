@@ -12,7 +12,8 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +24,6 @@ import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.beans.DoctorSignUp;
-import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.Patient;
@@ -104,7 +104,7 @@ import common.util.web.LoginUtils;
 @Service
 public class SignUpServiceImpl implements SignUpService {
 
-	private static Logger logger = Logger.getLogger(SignUpServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(SignUpServiceImpl.class.getName());
 
 	@Autowired
 	private RoleRepository roleRepository;

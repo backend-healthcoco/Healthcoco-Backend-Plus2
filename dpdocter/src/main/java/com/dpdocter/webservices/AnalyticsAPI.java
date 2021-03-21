@@ -11,7 +11,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -66,7 +67,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.ANALYTICS_BASE_URL, description = "")
 public class AnalyticsAPI {
 
-	private static Logger logger = Logger.getLogger(AnalyticsAPI.class.getName());
+	private static Logger logger = LogManager.getLogger(AnalyticsAPI.class.getName());
 
 	@Autowired
 	private AnalyticsService analyticsService;

@@ -15,9 +15,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.NmcHcm;
-import com.dpdocter.beans.UserSymptom;
 import com.dpdocter.collections.NmcHcmCollection;
-import com.dpdocter.collections.UserSymptomCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;

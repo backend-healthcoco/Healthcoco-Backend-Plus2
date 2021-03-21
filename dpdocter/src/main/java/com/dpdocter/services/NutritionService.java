@@ -1,6 +1,5 @@
 package com.dpdocter.services;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.bson.types.ObjectId;

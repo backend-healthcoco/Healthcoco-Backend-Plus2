@@ -15,16 +15,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import com.dpdocter.beans.Language;
 import com.dpdocter.beans.UserSymptom;
-import com.dpdocter.collections.LanguageCollection;
 import com.dpdocter.collections.UserSymptomCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.UserSymptomRepository;
 import com.dpdocter.services.UserSymptomService;
-
 
 import common.util.web.DPDoctorUtils;
 

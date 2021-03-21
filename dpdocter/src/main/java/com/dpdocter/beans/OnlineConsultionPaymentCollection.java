@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.PaymentMode;
-import com.dpdocter.beans.UserResponse;
 
 	@Document(collection = "online_consultation_payment_cl")
 	public class OnlineConsultionPaymentCollection extends GenericCollection {

@@ -6,15 +6,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CustomPasswordEncoder implements PasswordEncoder {
-
 	@Override
 	public String encode(CharSequence rawPassword) {
-		String hashed = BCrypt.hashpw((String) rawPassword, BCrypt.gensalt(12));
+		String hashed = BCrypt.hashpw(rawPassword.toString(), BCrypt.gensalt(12));
 		return hashed;
 	}
 
 	@Override
 	public boolean matches(CharSequence rawPassword, String encodedPassword) {
-		return BCrypt.checkpw((String) rawPassword, encodedPassword);
+		System.out.println(encode(rawPassword));
+		System.out.println(encodedPassword);
+		return BCrypt.checkpw(rawPassword.toString(), encodedPassword);
 	}
 }

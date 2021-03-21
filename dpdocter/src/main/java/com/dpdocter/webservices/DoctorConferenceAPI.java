@@ -14,7 +14,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -42,7 +43,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.CONFERENCE_URL, description = "Endpoint for Conference")
 public class DoctorConferenceAPI {
 
-	private static Logger logger = Logger.getLogger(DoctorConferenceAPI.class.getName());
+	private static Logger logger = LogManager.getLogger(DoctorConferenceAPI.class.getName());
 
 	@Autowired
 	private ConferenceService conferenceService;

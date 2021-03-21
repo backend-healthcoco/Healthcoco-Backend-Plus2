@@ -13,8 +13,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.BulkSmsReport;
-import com.dpdocter.beans.TransactionalSmsReport;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.MessageResponse;

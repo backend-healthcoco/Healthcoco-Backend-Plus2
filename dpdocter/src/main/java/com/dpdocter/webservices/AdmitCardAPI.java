@@ -14,7 +14,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,7 +36,7 @@ import io.swagger.annotations.ApiOperation;
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.ADMIT_CARD_URL, description = "")
 public class AdmitCardAPI {
-	private Logger logger = Logger.getLogger(AdmitCardAPI.class);
+	private Logger logger = LogManager.getLogger(AdmitCardAPI.class);
 
 	@Autowired
 	private AdmitCardService admitCardService;

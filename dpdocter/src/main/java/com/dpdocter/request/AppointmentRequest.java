@@ -5,10 +5,8 @@ import java.util.List;
 
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.DOB;
-import com.dpdocter.beans.DoctorConsultation;
 import com.dpdocter.beans.Fields;
 import com.dpdocter.beans.WorkingHours;
-import com.dpdocter.beans.v2.PatientTreatment;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;

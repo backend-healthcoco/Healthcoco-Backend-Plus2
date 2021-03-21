@@ -16,7 +16,8 @@ import java.util.TimeZone;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -50,7 +51,6 @@ import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.InvoiceItemJasperDetails;
-import com.dpdocter.beans.Language;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.ReceiptJasperDetails;
@@ -66,7 +66,6 @@ import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.ExpenseTypeCollection;
-import com.dpdocter.collections.LanguageCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
@@ -131,7 +130,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class BillingServiceImpl implements BillingService {
 
-	private static Logger logger = Logger.getLogger(BillingServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(BillingServiceImpl.class.getName());
 
 	@Autowired
 	private LocationRepository locationRepository;

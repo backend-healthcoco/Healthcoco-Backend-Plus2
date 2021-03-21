@@ -1,7 +1,5 @@
 package com.dpdocter.beans;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class MessageStatusData {

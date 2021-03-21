@@ -14,7 +14,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -39,7 +40,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.PATIENT_VISIT_BASE_URL, description = "Endpoint for patient visit")
 public class PatientVisitApi {
 
-	private static Logger logger = Logger.getLogger(PatientVisitApi.class.getName());
+	private static Logger logger = LogManager.getLogger(PatientVisitApi.class.getName());
 
 	@Autowired
 	private PatientVisitService patientVisitService;

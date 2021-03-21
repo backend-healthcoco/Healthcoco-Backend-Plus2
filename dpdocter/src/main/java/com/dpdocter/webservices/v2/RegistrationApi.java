@@ -13,7 +13,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -38,7 +39,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.REGISTRATION_BASE_URL, description = "Endpoint for register")
 public class RegistrationApi {
 
-	private static Logger logger = Logger.getLogger(RegistrationApi.class.getName());
+	private static Logger logger = LogManager.getLogger(RegistrationApi.class.getName());
 
 	@Autowired
 	private RegistrationService registrationService;

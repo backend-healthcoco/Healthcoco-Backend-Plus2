@@ -8,7 +8,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +30,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.FORGOT_PASSWORD_BASE_URL, description = "Endpoint for forgot password")
 public class ForgotPasswordApi {
 
-	private static Logger logger = Logger.getLogger(ForgotPasswordApi.class.getName());
+	private static Logger logger = LogManager.getLogger(ForgotPasswordApi.class.getName());
 
 	@Autowired
 	private ForgotPasswordService forgotPasswordService;

@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +37,6 @@ import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
-import com.dpdocter.beans.SMS;
-import com.dpdocter.beans.SMSAddress;
-import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.SmsParts;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.BranchCollection;
@@ -51,12 +48,9 @@ import com.dpdocter.collections.ImportContactsRequestCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.ReferencesCollection;
-import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.RoleEnum;
-import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -94,7 +88,7 @@ import common.util.web.Response;
 @Service
 public class ContactsServiceImpl implements ContactsService {
 
-	private static Logger logger = Logger.getLogger(ContactsServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(ContactsServiceImpl.class.getName());
 
 	@Autowired
 	private PatientRepository patientRepository;

@@ -3,7 +3,8 @@ package com.dpdocter.services.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -50,7 +51,7 @@ public class PrescriptionAnalyticsServiceImpl implements PrescriptionAnalyticsSe
 	@Autowired
 	private DiagnosticTestRepository diagnosticTestRepository;
 
-	Logger logger = Logger.getLogger(PrescriptionAnalyticsServiceImpl.class);
+	Logger logger = LogManager.getLogger(PrescriptionAnalyticsServiceImpl.class);
 
 	private Criteria getCriteria(String doctorId, String locationId, String hospitalId) {
 		Criteria criteria = new Criteria();

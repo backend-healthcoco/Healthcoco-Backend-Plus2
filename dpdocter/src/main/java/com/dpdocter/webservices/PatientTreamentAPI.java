@@ -13,7 +13,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,7 +50,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.PATIENT_TREATMENT_BASE_URL, description = "Endpoint for patient treatment")
 public class PatientTreamentAPI {
 
-	private static Logger logger = Logger.getLogger(PatientTreamentAPI.class.getName());
+	private static Logger logger = LogManager.getLogger(PatientTreamentAPI.class.getName());
 
 	@Value(value = "${invalid.input}")
 	private String invalidInput;

@@ -7,7 +7,8 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.search.join.ScoreMode;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -63,7 +64,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class ESRegistrationServiceImpl implements ESRegistrationService {
 
-	private static Logger logger = Logger.getLogger(ESRegistrationServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(ESRegistrationServiceImpl.class.getName());
 
 	@Autowired
 	private ESDoctorRepository esDoctorRepository;

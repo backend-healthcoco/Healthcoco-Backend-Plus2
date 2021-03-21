@@ -12,12 +12,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dpdocter.beans.AddEditSEORequest;
@@ -36,14 +36,11 @@ import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Services;
 import com.dpdocter.beans.Speciality;
-import com.dpdocter.beans.UserSymptom;
-import com.dpdocter.elasticsearch.document.ESServicesDocument;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorAddEditFacilityRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
@@ -85,7 +82,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.DOCTOR_PROFILE_URL, description = "Endpoint for doctor profile")
 public class DoctorProfileApi {
 
-	private static Logger logger = Logger.getLogger(DoctorProfileApi.class.getName());
+	private static Logger logger = LogManager.getLogger(DoctorProfileApi.class.getName());
 
 	@Autowired
 	private DoctorProfileService doctorProfileService;

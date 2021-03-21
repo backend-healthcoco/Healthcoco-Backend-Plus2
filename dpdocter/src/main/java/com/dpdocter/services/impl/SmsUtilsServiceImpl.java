@@ -2,13 +2,12 @@ package com.dpdocter.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.dpdocter.beans.GSM0338Charset;
+import com.dpdocter.beans.Parts;
+import com.dpdocter.beans.SmsParts;
 import com.dpdocter.enums.Encoding;
 import com.dpdocter.services.SmsSpitterServices;
 import com.dpdocter.services.SmsUtilService;
-import com.dpdocter.services.impl.SmsSplitterServiceImpl;
-import com.dpdocter.beans.SmsParts;
-import com.dpdocter.beans.GSM0338Charset;
-import com.dpdocter.beans.Parts;
 
 public class SmsUtilsServiceImpl implements SmsUtilService {
 	

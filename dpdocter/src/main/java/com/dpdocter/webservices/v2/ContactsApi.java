@@ -12,7 +12,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,11 +33,6 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import java.text.DateFormat; 
-import java.time.Period;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 @Component(value = "ContactsApiV2")
 @Path(PathProxy.CONTACTS_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
@@ -44,7 +40,7 @@ import java.time.format.DateTimeFormatter;
 @Api(value = PathProxy.CONTACTS_BASE_URL, description = "Endpoint for version 2 contacts")
 public class ContactsApi {
 
-	private static Logger logger = Logger.getLogger(ContactsApi.class.getName());
+	private static Logger logger = LogManager.getLogger(ContactsApi.class.getName());
 
 	@Autowired
 	private ContactsService contactsService;

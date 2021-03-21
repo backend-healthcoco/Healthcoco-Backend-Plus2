@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class NutritionEngineServiceImpl implements NutritionEngineService {
 
-	private static Logger logger = Logger.getLogger(NutritionEngineServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(NutritionEngineServiceImpl.class.getName());
 	
 	@Autowired
 	private NutritionService nutritionService;

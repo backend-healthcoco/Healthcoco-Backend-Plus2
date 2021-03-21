@@ -14,7 +14,8 @@ import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -261,7 +262,7 @@ public class DentalLabServiceImpl implements DentalLabService {
 	@Autowired
 	private PatientVisitService patientVisitService;
 
-	private static Logger logger = Logger.getLogger(DentalLabServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(DentalLabServiceImpl.class.getName());
 
 	@Override
 	@Transactional

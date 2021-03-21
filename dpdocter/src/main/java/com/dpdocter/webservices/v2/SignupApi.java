@@ -6,27 +6,25 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.DoctorSignUp;
+import com.dpdocter.beans.v2.DoctorSignupRequest;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorOtpRequest;
 import com.dpdocter.response.DoctorRegisterResponse;
-import com.dpdocter.beans.v2.DoctorSignupRequest;
-import com.dpdocter.services.v2.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
-import com.dpdocter.webservices.v2.PathProxy;
+import com.dpdocter.services.v2.SignUpService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -56,7 +54,7 @@ public class SignupApi {
 
 
 	
-	private Logger logger = Logger.getLogger(SignupApi.class);
+	private Logger logger = LogManager.getLogger(SignupApi.class);
 	
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)

@@ -8,7 +8,8 @@ import java.util.TimeZone;
 
 import javax.mail.MessagingException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -49,7 +50,7 @@ import common.util.web.DPDoctorUtils;
 @Service(value = "ClinicalNotesServiceImplV2")
 public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
-	private static Logger logger = Logger.getLogger(ClinicalNotesServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(ClinicalNotesServiceImpl.class.getName());
 
 	@Autowired
 	private MailService mailService;

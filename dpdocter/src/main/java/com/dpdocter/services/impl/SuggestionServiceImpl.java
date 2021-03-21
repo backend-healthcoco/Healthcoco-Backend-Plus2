@@ -3,7 +3,8 @@ package com.dpdocter.services.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -27,7 +28,7 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 public class SuggestionServiceImpl implements SuggestionService {
-	private static Logger logger = Logger.getLogger(SuggestionServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(SuggestionServiceImpl.class.getName());
 
 	@Autowired
 	private SuggestionRepository suggestionRepository;

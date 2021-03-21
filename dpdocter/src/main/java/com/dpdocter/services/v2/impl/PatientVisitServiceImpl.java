@@ -14,7 +14,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -62,7 +63,7 @@ import common.util.web.DPDoctorUtils;
 @Service(value = "PatientVisitServiceImplV2")
 public class PatientVisitServiceImpl implements PatientVisitService {
 
-	private static Logger logger = Logger.getLogger(PatientVisitServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(PatientVisitServiceImpl.class.getName());
 
 	@Value(value = "${pdf.footer.text}")
 	private String footerText;

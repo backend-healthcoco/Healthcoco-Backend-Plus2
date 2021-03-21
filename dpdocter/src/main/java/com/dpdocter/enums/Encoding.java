@@ -1,5 +1,7 @@
 package com.dpdocter.enums;
 
+import com.dpdocter.beans.GSM0338Charset;
+
 public enum Encoding {
 
 	 GSM_7BIT(160, 153),

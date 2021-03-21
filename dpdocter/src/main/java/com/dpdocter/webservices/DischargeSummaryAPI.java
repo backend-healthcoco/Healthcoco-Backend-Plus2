@@ -15,7 +15,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,7 +60,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.DISCHARGE_SUMMARY_BASE_URL)
 public class DischargeSummaryAPI {
 
-	private Logger logger = Logger.getLogger(DischargeSummaryAPI.class);
+	private Logger logger = LogManager.getLogger(DischargeSummaryAPI.class);
 
 	@Autowired
 	DischargeSummaryService dischargeSummaryService;

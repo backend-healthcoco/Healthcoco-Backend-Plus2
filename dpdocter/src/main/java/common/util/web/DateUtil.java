@@ -6,7 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 
@@ -15,7 +16,7 @@ import com.dpdocter.response.StartEndTimeinDate;
 import com.dpdocter.response.StartEndTimeinMillis;
 
 public class DateUtil {
-	private static final Logger LOGGER = Logger.getLogger(DateUtil.class);
+	private static final Logger LOGGER = LogManager.getLogger(DateUtil.class);
 	private static final String TIMEZONE = "IST";
 	private static final TimeZone DEFAULT_TIMEZONE = TimeZone.getTimeZone(TIMEZONE);
 	private static SimpleDateFormat sdf;

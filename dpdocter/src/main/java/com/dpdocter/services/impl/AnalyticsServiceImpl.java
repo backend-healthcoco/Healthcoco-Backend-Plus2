@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -55,7 +56,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
-	Logger logger = Logger.getLogger(AnalyticsServiceImpl.class);
+	Logger logger = LogManager.getLogger(AnalyticsServiceImpl.class);
 
 	private Criteria getCriteria(String doctorId, String locationId, String hospitalId) {
 		Criteria criteria = new Criteria();

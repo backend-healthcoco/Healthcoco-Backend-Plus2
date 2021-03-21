@@ -14,7 +14,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -54,7 +55,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.WEB_APPOINTMENT_BASE_URL, description = "Endpoint for appointment")
 public class WebAppointmentApi {
 
-	private static Logger logger = Logger.getLogger(WebAppointmentApi.class.getName());
+	private static Logger logger = LogManager.getLogger(WebAppointmentApi.class.getName());
 
 	@Autowired
 	private WebAppointmentService webAppointmentService;

@@ -6,22 +6,20 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
+
+import com.dpdocter.beans.OAuth2AccessTokenCustom;
+import com.dpdocter.beans.OAuth2AuthenticationCustom;
 
 @Document(collection = "oauth_access_token_cl")
 public class OAuth2AuthenticationAccessTokenCollection extends GenericCollection implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	@Id
 	private ObjectId id;
 	@Field
 	private String tokenId;
 	@Field
-	private OAuth2AccessToken oAuth2AccessToken;
+	private OAuth2AccessTokenCustom oAuth2AccessToken;
 	@Field
 	private String authenticationId;
 	@Field
@@ -29,20 +27,20 @@ public class OAuth2AuthenticationAccessTokenCollection extends GenericCollection
 	@Field
 	private String clientId;
 	@Field
-	private OAuth2Authentication authentication;
+	private OAuth2AuthenticationCustom authentication;
 	@Field
 	private String refreshToken;
 
 	OAuth2AuthenticationAccessTokenCollection() {
 	}
 
-	public OAuth2AuthenticationAccessTokenCollection(final OAuth2AccessToken oAuth2AccessToken,
-			final OAuth2Authentication authentication, final String authenticationId) {
+	public OAuth2AuthenticationAccessTokenCollection(final OAuth2AccessTokenCustom oAuth2AccessToken,
+			final OAuth2AuthenticationCustom authentication, final String authenticationId) {
 		this.tokenId = oAuth2AccessToken.getValue();
 		this.oAuth2AccessToken = oAuth2AccessToken;
 		this.authenticationId = authenticationId;
-		this.userName = authentication.getName();
-		this.clientId = authentication.getOAuth2Request().getClientId();
+		this.userName = authentication.getUserAuthentication().getPrincipal().getUsername();
+		this.clientId = authentication.getStoredRequest().getClientId();
 		this.authentication = authentication;
 		this.refreshToken = oAuth2AccessToken.getRefreshToken().getValue();
 	}
@@ -51,7 +49,7 @@ public class OAuth2AuthenticationAccessTokenCollection extends GenericCollection
 		return tokenId;
 	}
 
-	public OAuth2AccessToken getoAuth2AccessToken() {
+	public OAuth2AccessTokenCustom getoAuth2AccessToken() {
 		return oAuth2AccessToken;
 	}
 
@@ -67,7 +65,7 @@ public class OAuth2AuthenticationAccessTokenCollection extends GenericCollection
 		return clientId;
 	}
 
-	public OAuth2Authentication getAuthentication() {
+	public OAuth2AuthenticationCustom getAuthentication() {
 		return authentication;
 	}
 

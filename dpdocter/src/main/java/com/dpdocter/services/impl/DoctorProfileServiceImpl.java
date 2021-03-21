@@ -9,12 +9,12 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.AddEditSEORequest;
-import com.dpdocter.beans.BankDetails;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.DoctorExperience;
@@ -46,8 +45,6 @@ import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.Subscription;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.beans.UIPermissions;
-import com.dpdocter.beans.UserSymptom;
-import com.dpdocter.collections.BankDetailsCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorProfileViewCollection;
@@ -67,7 +64,6 @@ import com.dpdocter.collections.SubscriptionCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
-import com.dpdocter.collections.UserSymptomCollection;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.enums.CardioPermissionEnum;
@@ -128,7 +124,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class DoctorProfileServiceImpl implements DoctorProfileService {
 
-	private static Logger logger = Logger.getLogger(DoctorProfileServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(DoctorProfileServiceImpl.class.getName());
 
 	@Autowired
 	private UserRepository userRepository;

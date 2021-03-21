@@ -1,7 +1,6 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -14,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 import com.dpdocter.beans.ConsultationProblemDetails;
 import com.dpdocter.exceptions.BusinessException;

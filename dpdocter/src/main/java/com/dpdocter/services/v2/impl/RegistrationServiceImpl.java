@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ import common.util.web.DPDoctorUtils;
 @Service(value = "RegistrationServiceImplV2")
 public class RegistrationServiceImpl implements RegistrationService {
 
-	private static Logger logger = Logger.getLogger(RegistrationServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(RegistrationServiceImpl.class.getName());
 
 	// @Autowired
 	// private GroupRepository groupRepository;

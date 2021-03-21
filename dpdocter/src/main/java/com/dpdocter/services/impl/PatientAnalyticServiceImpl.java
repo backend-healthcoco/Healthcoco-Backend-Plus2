@@ -3,7 +3,8 @@ package com.dpdocter.services.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class PatientAnalyticServiceImpl implements PatientAnalyticService {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
-	Logger logger = Logger.getLogger(PatientAnalyticServiceImpl.class);
+	Logger logger = LogManager.getLogger(PatientAnalyticServiceImpl.class);
 
 	private Criteria getCriteria(String doctorId, String locationId, String hospitalId) {
 		Criteria criteria = new Criteria();

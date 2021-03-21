@@ -4,7 +4,8 @@ package com.dpdocter.services.impl;
 import java.awt.Color;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
@@ -68,7 +69,7 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
 @Service
 public class JasperReportServiceImpl implements JasperReportService {
 
-	private static Logger logger = Logger.getLogger(JasperReportServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(JasperReportServiceImpl.class.getName());
 
 	@Value(value = "${mongo.host.uri}")
 	private String MONGO_HOST_URI;

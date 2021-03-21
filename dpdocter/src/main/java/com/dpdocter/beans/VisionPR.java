@@ -1,7 +1,5 @@
 package com.dpdocter.beans;
 
-import com.dpdocter.enums.EyeType;
-
 public class VisionPR {
 
 	private String entityPr;

@@ -32,7 +32,6 @@ import com.dpdocter.beans.UserTreatment;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.AcadamicClassResponse;
-import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.NutritionSchoolAssociationResponse;
 import com.dpdocter.response.UserAssessment;
 import com.dpdocter.services.CampVisitService;

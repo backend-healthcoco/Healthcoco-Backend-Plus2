@@ -8,7 +8,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +31,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.BANK_DETAILS_BASE_URL, description = "Endpoint for records")
 public class BankDetailsApi {
 
-	private static Logger logger = Logger.getLogger(BankDetailsApi.class.getName());
+	private static Logger logger = LogManager.getLogger(BankDetailsApi.class.getName());
 	
 	@Autowired
 	private BankDetailsService bankDetailsService;

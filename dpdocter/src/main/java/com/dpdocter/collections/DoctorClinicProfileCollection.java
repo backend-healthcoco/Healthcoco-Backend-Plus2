@@ -1,7 +1,6 @@
 package com.dpdocter.collections;
 
 import java.util.List;
-import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -13,7 +12,6 @@ import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DoctorConsultation;
 import com.dpdocter.beans.WorkingSchedule;
-import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.enums.LabType;
 import com.dpdocter.enums.PackageType;

@@ -14,7 +14,8 @@ import java.util.Set;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -173,7 +174,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	@Value(value = "${jasper.print.doctor.lab.fileName}")
 	private String doctorLabA4FileName;
 
-	private static Logger logger = Logger.getLogger(DoctorLabServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(DoctorLabServiceImpl.class.getName());
 
 	@Override
 	public DoctorLabReport addDoctorLabReport(DoctorLabReport request) {

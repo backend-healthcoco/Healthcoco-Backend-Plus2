@@ -7,7 +7,8 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +41,7 @@ import com.dpdocter.services.SMSServices;
 @Service
 @Transactional
 public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
-	private static Logger logger = Logger.getLogger(BirthdaySMSServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(BirthdaySMSServiceImpl.class.getName());
 
 	@Autowired
 	private UserRepository userRepository;

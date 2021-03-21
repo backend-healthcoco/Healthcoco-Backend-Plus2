@@ -1,8 +1,6 @@
 package com.dpdocter.services.impl;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -13,7 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -37,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.AppointmentAnalyticData;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.OnlineConsultationAnalytics;
+import com.dpdocter.beans.OnlineConsultationSettlement;
 import com.dpdocter.beans.OnlineConsultionPaymentCollection;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientPaymentDetails;
@@ -45,31 +45,24 @@ import com.dpdocter.beans.PaymentSettlements;
 import com.dpdocter.beans.PaymentSummary;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
-import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
-
 import com.dpdocter.collections.PatientPaymentDetailsCollection;
 import com.dpdocter.collections.PaymentSettlementCollection;
 import com.dpdocter.collections.PaymentTransferCollection;
 import com.dpdocter.collections.SettlementCollection;
-
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ConsultationType;
-import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-
 import com.dpdocter.repository.DoctorClinicProfileRepository;
-import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.OnlineConsultationPaymentRepository;
 import com.dpdocter.repository.PatientPaymentSettlementRepository;
-
 import com.dpdocter.repository.PaymentSettlementRepository;
 import com.dpdocter.response.AnalyticResponse;
 import com.dpdocter.response.AppointmentAnalyticGroupWiseResponse;
@@ -82,8 +75,6 @@ import com.dpdocter.response.DoctorAnalyticPieChartResponse;
 import com.dpdocter.response.DoctorAppointmentAnalyticResponse;
 import com.dpdocter.response.ScheduleAndCheckoutCount;
 import com.dpdocter.services.AppointmentAnalyticsService;
-import com.dpdocter.beans.OnlineConsultationSettlement;
-import com.dpdocter.services.SMSServices;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 
@@ -118,7 +109,7 @@ public class AppointmentAnalyticServiceImpl implements AppointmentAnalyticsServi
 	
 
 
-	Logger logger = Logger.getLogger(AppointmentAnalyticServiceImpl.class);
+	Logger logger = LogManager.getLogger(AppointmentAnalyticServiceImpl.class);
 
 	private Criteria getCriteria(String doctorId, String locationId, String hospitalId) {
 		Criteria criteria = new Criteria();

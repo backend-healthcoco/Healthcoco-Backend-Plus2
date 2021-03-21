@@ -9,7 +9,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +30,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.SOLR_PATIENT_TREATMENT_BASE_URL, description = "Endpoint for es clinical notes")
 public class ESTreatmentAPI {
 
-	private static Logger logger = Logger.getLogger(ESTreatmentAPI.class.getName());
+	private static Logger logger = LogManager.getLogger(ESTreatmentAPI.class.getName());
 	
     @Autowired
     private ESTreatmentService esTreatmentService;

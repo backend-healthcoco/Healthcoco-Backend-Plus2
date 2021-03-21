@@ -2,7 +2,8 @@ package com.dpdocter.elasticsearch.services.impl;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -27,7 +28,7 @@ import com.dpdocter.services.TransactionalManagementService;
 
 @Service
 public class ESLocaleServiceImpl implements ESLocaleService {
-	private static Logger logger = Logger.getLogger(ESLocaleServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(ESLocaleServiceImpl.class.getName());
 
 	@Autowired
 	private ESUserLocaleRepository esUserLocaleRepository;

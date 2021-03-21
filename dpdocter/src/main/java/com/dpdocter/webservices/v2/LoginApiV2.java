@@ -1,35 +1,26 @@
 package com.dpdocter.webservices.v2;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.DoctorLoginPin;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LoginResponse;
-import com.dpdocter.beans.RegisteredPatientDetails;
-import com.dpdocter.beans.UserAddress;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
-import com.dpdocter.response.DoctorLoginPinRequest;
-import com.dpdocter.response.UserAddressResponse;
-import com.dpdocter.services.v2.LoginService;
 import com.dpdocter.services.RegistrationService;
+import com.dpdocter.services.v2.LoginService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -43,7 +34,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.LOGIN_BASE_URL, description = "Endpoint for login")
 public class LoginApiV2 {
 
-	private static Logger logger = Logger.getLogger(LoginApiV2.class.getName());
+	private static Logger logger = LogManager.getLogger(LoginApiV2.class.getName());
 
 	@Autowired
 	private LoginService loginService;

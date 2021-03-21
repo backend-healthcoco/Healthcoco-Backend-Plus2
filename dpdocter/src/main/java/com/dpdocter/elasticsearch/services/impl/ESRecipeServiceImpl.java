@@ -3,7 +3,8 @@ package com.dpdocter.elasticsearch.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -41,7 +42,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class ESRecipeServiceImpl implements ESRecipeService {
 
-	private static Logger logger = Logger.getLogger(ESPrescriptionServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(ESPrescriptionServiceImpl.class.getName());
 
 	@Autowired
 	private ESNutrientRepository esNutrientRepository;

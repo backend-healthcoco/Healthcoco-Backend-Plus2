@@ -4,7 +4,8 @@ import java.io.File;
 import java.util.Date;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,7 +65,7 @@ public class LocaleServiceImpl implements LocaleService {
 	@Autowired
 	private UserResourceFavouriteRepository userResourceFavouriteRepository;
 
-	private static Logger logger = Logger.getLogger(LoginServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(LoginServiceImpl.class.getName());
 
 	@Override
 	@Transactional

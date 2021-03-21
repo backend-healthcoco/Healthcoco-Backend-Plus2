@@ -13,7 +13,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -39,7 +40,7 @@ import io.swagger.annotations.ApiOperation;
 @Path(PathProxy.SMS_BASE_URL)
 @Api(value = PathProxy.SMS_BASE_URL, description = "Endpoint for sms")
 public class SMSServicesAPI {
-    private static Logger logger = Logger.getLogger(SMSServicesAPI.class);
+    private static Logger logger = LogManager.getLogger(SMSServicesAPI.class);
 
     @Autowired
     private SMSServices smsServices;

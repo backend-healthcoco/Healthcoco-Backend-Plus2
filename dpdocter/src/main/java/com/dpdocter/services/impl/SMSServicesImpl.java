@@ -18,9 +18,7 @@ import java.nio.charset.CharsetEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -34,7 +32,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +50,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriUtils;
 
 import com.dpdocter.beans.Message;
-import com.dpdocter.beans.MessageXmlbean;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDeliveryReports;
@@ -60,8 +58,6 @@ import com.dpdocter.beans.SMSFormat;
 import com.dpdocter.beans.SMSReport;
 import com.dpdocter.beans.SMSTrack;
 import com.dpdocter.beans.UserMobileNumbers;
-import com.dpdocter.beans.XMLMobile;
-import com.dpdocter.beans.XmlMessage;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MessageCollection;
@@ -92,7 +88,7 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 public class SMSServicesImpl implements SMSServices {
-	private static Logger logger = Logger.getLogger(SMSServicesImpl.class);
+	private static Logger logger = LogManager.getLogger(SMSServicesImpl.class);
 
 	@Autowired
 	private SMSTrackRepository smsTrackRepository;

@@ -1,7 +1,5 @@
 package com.dpdocter.request;
 
-import java.util.Date;
-
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.PaymentMode;

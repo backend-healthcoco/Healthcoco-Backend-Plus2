@@ -9,7 +9,8 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +38,6 @@ import com.dpdocter.beans.User;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorLoginPinCollection;
-import com.dpdocter.collections.DoctorSchoolAssociationCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -75,7 +75,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class LoginServiceImpl implements LoginService {
 
-	private static Logger logger = Logger.getLogger(LoginServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(LoginServiceImpl.class.getName());
 
 	@Autowired
 	private UserRepository userRepository;

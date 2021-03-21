@@ -10,7 +10,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class DownloadDataServiceImpl implements DownloadDataService{
 
-	private static Logger logger = Logger.getLogger(DownloadDataServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(DownloadDataServiceImpl.class.getName());
 	
 	@Autowired
 	DownloadDataRequestRepository downloadDataRequestRepository;

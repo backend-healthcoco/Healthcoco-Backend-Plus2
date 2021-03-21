@@ -7,7 +7,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class CertificateServicesImpl implements CertificatesServices {
 
-	private static Logger logger = Logger.getLogger(CertificateServicesImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(CertificateServicesImpl.class.getName());
 
 	@Autowired
 	UserRepository userRepository;

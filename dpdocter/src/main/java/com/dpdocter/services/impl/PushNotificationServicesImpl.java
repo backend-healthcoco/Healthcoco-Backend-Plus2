@@ -1,16 +1,12 @@
 package com.dpdocter.services.impl;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,7 +15,8 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,21 +54,9 @@ import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.MulticastResult;
 import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.core.Context;
-import com.google.firebase.messaging.ApnsConfig;
-import com.google.firebase.messaging.Aps;
-import com.google.firebase.messaging.ApsAlert;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
 //import com.google.firebase.messaging.Message;
 import com.notnoop.apns.APNS;
 import com.notnoop.apns.ApnsService;
-import com.notnoop.apns.ApnsServiceBuilder;
-import com.notnoop.apns.EnhancedApnsNotification;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.FCMSender;
@@ -79,7 +64,7 @@ import common.util.web.FCMSender;
 @Service
 public class PushNotificationServicesImpl implements PushNotificationServices {
 
-	private static Logger logger = Logger.getLogger(PushNotificationServicesImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(PushNotificationServicesImpl.class.getName());
 
 	@Value("${doctor.android.google.services.api.key}")
 	private String DOCTOR_GEOCODING_SERVICES_API_KEY;

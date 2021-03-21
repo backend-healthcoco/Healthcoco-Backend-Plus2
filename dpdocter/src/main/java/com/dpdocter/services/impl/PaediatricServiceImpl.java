@@ -10,7 +10,8 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -94,7 +95,7 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 public class PaediatricServiceImpl implements PaediatricService {
-	private static Logger logger = Logger.getLogger(PaediatricServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(PaediatricServiceImpl.class.getName());
 
 	@Autowired
 	private GrowthChartRepository growthChartRepository;

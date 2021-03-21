@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.transport.TransportClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
@@ -31,7 +32,7 @@ import common.util.web.Response;
 @Service(value = "ESPrescriptionServiceImplV2")
 public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
-	private static Logger logger = Logger.getLogger(ESPrescriptionServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(ESPrescriptionServiceImpl.class.getName());
 
 	@Autowired
 	ElasticsearchTemplate elasticsearchTemplate;

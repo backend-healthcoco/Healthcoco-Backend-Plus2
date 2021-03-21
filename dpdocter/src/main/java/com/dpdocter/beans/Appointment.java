@@ -9,7 +9,6 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ConsultationType;
-
 import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.response.PatientTreatmentResponse;
 

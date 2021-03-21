@@ -2,8 +2,6 @@ package com.dpdocter.response.v2;
 
 import java.util.Date;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.beans.v2.PatientCard;
 import com.dpdocter.collections.GenericCollection;
 

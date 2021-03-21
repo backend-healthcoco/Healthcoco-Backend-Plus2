@@ -6,7 +6,8 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.search.join.ScoreMode;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -39,7 +40,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class ESTrendingServicesImpl implements ESTrendingServices {
 
-	private static Logger logger = Logger.getLogger(ESTrendingServicesImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(ESTrendingServicesImpl.class.getName());
 
 	@Autowired
 	private ESOfferRepository esOfferRepository;

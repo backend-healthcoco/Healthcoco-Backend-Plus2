@@ -11,7 +11,8 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +73,7 @@ import common.util.web.DPDoctorUtils;
 @Service(value = "ContactsServiceImplV2")
 public class ContactsServiceImpl implements ContactsService {
 
-	private static Logger logger = Logger.getLogger(ContactsServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(ContactsServiceImpl.class.getName());
 
 	@Autowired
 	private PatientRepository patientRepository;

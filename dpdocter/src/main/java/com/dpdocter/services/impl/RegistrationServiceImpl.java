@@ -4,6 +4,9 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -22,7 +25,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -63,10 +67,8 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DoctorCalendarView;
-import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FileDetails;
-import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
@@ -125,7 +127,6 @@ import com.dpdocter.collections.EyePrescriptionCollection;
 import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.collections.FeedbackRecommendationCollection;
 import com.dpdocter.collections.FlowsheetCollection;
-import com.dpdocter.collections.FoodCommunityCollection;
 import com.dpdocter.collections.FormContentCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.GrowthChartCollection;
@@ -208,8 +209,6 @@ import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorLabReportRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DynamicUIRepository;
-import com.dpdocter.repository.EyeAssessmentRepository;
-
 import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.FormContentRepository;
 import com.dpdocter.repository.GroupRepository;
@@ -273,15 +272,10 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 
-import java.text.DateFormat;
-import java.time.Period;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 
-	private static Logger logger = Logger.getLogger(RegistrationServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(RegistrationServiceImpl.class.getName());
 
 	@Autowired
 	private UserRepository userRepository;

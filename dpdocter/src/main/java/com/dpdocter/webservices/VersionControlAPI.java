@@ -6,7 +6,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +27,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.VERSION_CONTROL_BASE_URL, description = "Endpoint for version controliing")
 public class VersionControlAPI {
 	
-	 private static Logger logger = Logger.getLogger(SignUpApi.class.getName());
+	 private static Logger logger = LogManager.getLogger(SignUpApi.class.getName());
 
 	 
 	 @Autowired

@@ -21,7 +21,8 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -112,7 +113,6 @@ import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.SMSContent;
 import com.dpdocter.enums.SMSFormatType;
 import com.dpdocter.enums.SMSStatus;
-import com.dpdocter.enums.TimeUnit;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
@@ -179,7 +179,7 @@ import common.util.web.Response;
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
 
-	private static Logger logger = Logger.getLogger(AppointmentServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(AppointmentServiceImpl.class.getName());
 
 	@Value(value = "${pdf.footer.text}")
 	private String footerText;

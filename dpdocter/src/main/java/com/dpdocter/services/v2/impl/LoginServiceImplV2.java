@@ -1,7 +1,6 @@
 package com.dpdocter.services.v2.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -9,14 +8,12 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
-import org.bson.types.ObjectId;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -24,27 +21,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.ClinicImage;
-import com.dpdocter.beans.DoctorLoginPin;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.LoginResponse;
-import com.dpdocter.beans.NutritionPlan;
-import com.dpdocter.beans.Patient;
-import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
-import com.dpdocter.beans.SubscriptionNutritionPlan;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
-import com.dpdocter.collections.DoctorLoginPinCollection;
-import com.dpdocter.collections.DoctorSchoolAssociationCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.collections.UserNutritionSubscriptionCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UserState;
@@ -57,25 +45,20 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
-import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
-import com.dpdocter.response.DoctorLoginPinRequest;
 import com.dpdocter.response.ForgotPasswordResponse;
-import com.dpdocter.response.UserNutritionSubscriptionResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.ForgotPasswordService;
-import com.dpdocter.services.v2.LoginService;
 import com.dpdocter.services.OTPService;
+import com.dpdocter.services.v2.LoginService;
 import com.dpdocter.tokenstore.CustomPasswordEncoder;
-
-import common.util.web.DPDoctorUtils;
 
 @Service
 public class LoginServiceImplV2 implements LoginService {
 
-	private static Logger logger = Logger.getLogger(LoginServiceImplV2.class.getName());
+	private static Logger logger = LogManager.getLogger(LoginServiceImplV2.class.getName());
 
 	@Autowired
 	private UserRepository userRepository;

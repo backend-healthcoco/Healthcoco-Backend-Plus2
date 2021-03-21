@@ -4,8 +4,9 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.security.oauth2.common.OAuth2RefreshToken;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
+
+import com.dpdocter.beans.OAuth2AuthenticationCustom;
+import com.dpdocter.beans.OAuth2RefreshTokenCustom;
 
 @Document(collection = "oauth_refresh_token_cl")
 public class OAuth2AuthenticationRefreshTokenCollection extends GenericCollection {
@@ -15,11 +16,11 @@ public class OAuth2AuthenticationRefreshTokenCollection extends GenericCollectio
 	@Field
 	private String tokenId;
 	@Field
-	private OAuth2RefreshToken oAuth2RefreshToken;
+	private OAuth2RefreshTokenCustom oAuth2RefreshToken;
 	@Field
-	private OAuth2Authentication authentication;
+	private OAuth2AuthenticationCustom authentication;
 
-	public OAuth2AuthenticationRefreshTokenCollection(OAuth2RefreshToken oAuth2RefreshToken, OAuth2Authentication authentication) {
+	public OAuth2AuthenticationRefreshTokenCollection(OAuth2RefreshTokenCustom oAuth2RefreshToken, OAuth2AuthenticationCustom authentication) {
 	        this.oAuth2RefreshToken = oAuth2RefreshToken;
 	        this.authentication = authentication;
 	        this.tokenId = oAuth2RefreshToken.getValue();
@@ -41,19 +42,19 @@ public class OAuth2AuthenticationRefreshTokenCollection extends GenericCollectio
 		this.tokenId = tokenId;
 	}
 
-	public OAuth2RefreshToken getoAuth2RefreshToken() {
+	public OAuth2RefreshTokenCustom getoAuth2RefreshToken() {
 		return oAuth2RefreshToken;
 	}
 
-	public void setoAuth2RefreshToken(OAuth2RefreshToken oAuth2RefreshToken) {
+	public void setoAuth2RefreshToken(OAuth2RefreshTokenCustom oAuth2RefreshToken) {
 		this.oAuth2RefreshToken = oAuth2RefreshToken;
 	}
 
-	public OAuth2Authentication getAuthentication() {
+	public OAuth2AuthenticationCustom getAuthentication() {
 		return authentication;
 	}
 
-	public void setAuthentication(OAuth2Authentication authentication) {
+	public void setAuthentication(OAuth2AuthenticationCustom authentication) {
 		this.authentication = authentication;
 	}
 

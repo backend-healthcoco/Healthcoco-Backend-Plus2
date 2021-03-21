@@ -3,7 +3,8 @@ package com.dpdocter.elasticsearch.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
@@ -24,7 +25,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class ESExpenseTypeServiceImpl implements ESExpenseTypeService {
 
-	private static Logger logger = Logger.getLogger(ESTreatmentServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(ESTreatmentServiceImpl.class.getName());
 
 	@Autowired
 	private ESExpenseTypeRepository esExpenseRepository;

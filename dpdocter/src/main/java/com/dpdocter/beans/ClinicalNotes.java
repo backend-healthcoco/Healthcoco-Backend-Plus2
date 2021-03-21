@@ -7,7 +7,6 @@ import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.response.PatientTreatmentResponse;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class ClinicalNotes extends GenericCollection {

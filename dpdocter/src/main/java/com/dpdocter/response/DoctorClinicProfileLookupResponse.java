@@ -14,7 +14,6 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.enums.ConsultationType;
 import com.dpdocter.enums.DoctorFacility;
 
 public class DoctorClinicProfileLookupResponse extends GenericCollection {

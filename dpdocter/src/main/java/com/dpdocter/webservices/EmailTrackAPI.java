@@ -26,7 +26,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.EMAIL_TRACK_BASE_URL, description = "Endpoint for email track")
 public class EmailTrackAPI {
 
-//    private static Logger logger = Logger.getLogger(EmailTrackAPI.class.getName());
+//    private static Logger logger = LogManager.getLogger(EmailTrackAPI.class.getName());
 
     @Autowired
     private EmailTackService emailTackService;

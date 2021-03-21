@@ -8,7 +8,8 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.DoctorSignUp;
-import com.dpdocter.beans.v2.DoctorSignupRequest;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LocationAndAccessControl;
 import com.dpdocter.beans.Role;
@@ -30,9 +30,9 @@ import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.User;
+import com.dpdocter.beans.v2.DoctorSignupRequest;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
-import com.dpdocter.collections.DoctorContactUsCollection;
 import com.dpdocter.collections.DoctorOtpSignUpCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -45,17 +45,16 @@ import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.ColorCode;
+import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.UserState;
-import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
-import com.dpdocter.repository.DoctorContactUsRepository;
 import com.dpdocter.repository.DoctorOtpSignUpRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HospitalRepository;
@@ -85,7 +84,7 @@ import common.util.web.LoginUtils;
 @Service
 public class SignUpServiceImplV2 implements SignUpService{
 	
-	private static Logger logger = Logger.getLogger(SignUpServiceImplV2.class.getName());
+	private static Logger logger = LogManager.getLogger(SignUpServiceImplV2.class.getName());
 	
 	@Autowired
 	private RoleRepository roleRepository;

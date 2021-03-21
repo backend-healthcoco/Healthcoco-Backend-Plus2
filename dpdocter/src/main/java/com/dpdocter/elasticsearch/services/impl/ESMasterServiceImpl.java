@@ -3,7 +3,8 @@ package com.dpdocter.elasticsearch.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -74,7 +75,7 @@ import common.util.web.Response;
 @Service
 public class ESMasterServiceImpl implements ESMasterService {
 
-    private static Logger logger = Logger.getLogger(ESMasterServiceImpl.class.getName());
+    private static Logger logger = LogManager.getLogger(ESMasterServiceImpl.class.getName());
 
     @Autowired
     private DrugRepository drugRepository;

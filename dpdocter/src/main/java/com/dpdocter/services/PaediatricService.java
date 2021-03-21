@@ -1,16 +1,9 @@
 package com.dpdocter.services;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.BirthAchievement;
 import com.dpdocter.beans.GrowthChart;
-import com.dpdocter.beans.PatientDetails;
-import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.elasticsearch.response.GrowthChartGraphResponse;
 import com.dpdocter.request.MultipleVaccineEditRequest;
 import com.dpdocter.request.VaccineRequest;

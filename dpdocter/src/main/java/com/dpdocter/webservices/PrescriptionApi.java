@@ -15,7 +15,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -72,7 +73,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.PRESCRIPTION_BASE_URL, description = "Endpoint for prescription")
 public class PrescriptionApi {
 
-	private static Logger logger = Logger.getLogger(PrescriptionApi.class.getName());
+	private static Logger logger = LogManager.getLogger(PrescriptionApi.class.getName());
 	
 	@Autowired
 	private PrescriptionServices prescriptionServices;

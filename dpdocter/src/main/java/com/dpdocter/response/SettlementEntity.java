@@ -1,7 +1,5 @@
 package com.dpdocter.response;
 
-import com.dpdocter.collections.GenericCollection;
-
 public class SettlementEntity {
 
 	private String id;

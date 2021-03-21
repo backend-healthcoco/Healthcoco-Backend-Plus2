@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.bson.Document;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,14 +20,12 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.ExerciseAndMovement;
 import com.dpdocter.beans.FitnessAssessment;
 import com.dpdocter.beans.PhysicalActivityAndMedicalHistory;
 import com.dpdocter.beans.StructuredCardiorespiratoryProgram;
 import com.dpdocter.beans.TreatmentAndDiagnosis;
 import com.dpdocter.collections.FitnessAssessmentCollection;
-import com.dpdocter.enums.StressAreaOfLife;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -35,13 +33,12 @@ import com.dpdocter.repository.FitnessAssessmentRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.services.FitnessAssessmentService;
 import com.dpdocter.services.JasperReportService;
-import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
 @Service
 public class FitnessAssessmentServiceImpl implements FitnessAssessmentService {
-	private static Logger logger = Logger.getLogger(RecipeServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(RecipeServiceImpl.class.getName());
 	@Autowired
 	private FitnessAssessmentRepository fitnessAssessmentRepository;
 

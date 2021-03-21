@@ -1,9 +1,5 @@
 package com.dpdocter.beans;
 
-import java.util.List;
-
-import com.dpdocter.enums.ConsultationType;
-
 public class DoctorConsultationResponse {
 
 	private String consultationType;

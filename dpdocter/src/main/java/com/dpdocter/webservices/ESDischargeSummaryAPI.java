@@ -11,7 +11,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +37,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.SOLR_DISCHARGE_SUMMARY_BASE_URL)
 public class ESDischargeSummaryAPI {
 
-	private Logger logger = Logger.getLogger(ESDischargeSummaryAPI.class);
+	private Logger logger = LogManager.getLogger(ESDischargeSummaryAPI.class);
 
 	@Autowired
 	private ESDischargeSummaryService esDischargeSummaryService;

@@ -1,7 +1,5 @@
 package com.dpdocter.webservices;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -13,8 +11,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
-import org.apache.log4j.Logger;
-
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.dpdocter.beans.Country;
 import com.dpdocter.beans.PackageDetailObject;
 import com.dpdocter.beans.Subscription;
-import com.dpdocter.collections.SubscriptionCollection;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -30,7 +26,6 @@ import com.dpdocter.request.SubscriptionPaymentSignatureRequest;
 import com.dpdocter.request.SubscriptionRequest;
 import com.dpdocter.response.SubscriptionResponse;
 import com.dpdocter.services.SubscriptionService;
-import com.dpdocter.webservices.PathProxy;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -47,7 +42,7 @@ import io.swagger.annotations.ApiOperation;
 public class SubscriptionApi {
 
 
-	private Logger logger = Logger.getLogger(SubscriptionApi.class);
+	private Logger logger = LogManager.getLogger(SubscriptionApi.class);
 
 	@Autowired
 	private SubscriptionService subscriptionService;

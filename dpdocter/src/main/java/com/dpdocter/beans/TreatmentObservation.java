@@ -2,7 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.dpdocter.request.TreatmentRequest;
 import com.dpdocter.response.TreatmentResponse;
 
 public class TreatmentObservation {

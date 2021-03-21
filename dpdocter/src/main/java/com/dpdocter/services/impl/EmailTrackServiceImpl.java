@@ -2,7 +2,8 @@ package com.dpdocter.services.impl;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -26,7 +27,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class EmailTrackServiceImpl implements EmailTackService {
 
-    private static Logger logger = Logger.getLogger(EmailTrackServiceImpl.class.getName());
+    private static Logger logger = LogManager.getLogger(EmailTrackServiceImpl.class.getName());
 
     @Autowired
     private EmailTrackRepository emailTrackRepository;

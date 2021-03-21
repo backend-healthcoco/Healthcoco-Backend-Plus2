@@ -11,7 +11,8 @@ import java.util.concurrent.Executors;
 
 import javax.mail.MessagingException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -120,7 +121,7 @@ import common.util.web.Response;
 @Service(value = "AppointmentServiceImplV2")
 public class AppointmentServiceImpl implements AppointmentService {
 
-	private static Logger logger = Logger.getLogger(AppointmentServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(AppointmentServiceImpl.class.getName());
 
 	@Value(value = "${pdf.footer.text}")
 	private String footerText;

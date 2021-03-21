@@ -2,9 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;

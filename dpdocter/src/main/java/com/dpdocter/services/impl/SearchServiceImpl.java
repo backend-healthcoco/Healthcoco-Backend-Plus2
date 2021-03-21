@@ -1,7 +1,6 @@
 package com.dpdocter.services.impl;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.ArrayList;
 import java.util.Arrays;

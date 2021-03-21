@@ -1,6 +1,7 @@
 package com.dpdocter.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -28,5 +29,6 @@ public interface UserRepository extends MongoRepository<UserCollection, ObjectId
     
     public UserCollection findByIdAndSignedUpNot(ObjectId userId, Boolean signedUp);
     
+    public Optional<UserCollection> findByEmailAddress(String userName);
 
 }

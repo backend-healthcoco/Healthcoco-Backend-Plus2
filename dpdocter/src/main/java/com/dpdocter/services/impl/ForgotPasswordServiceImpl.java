@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
@@ -49,7 +50,7 @@ import common.util.web.LoginUtils;
 @Service
 public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
-	private static Logger logger = Logger.getLogger(ForgotPasswordServiceImpl.class.getName());
+	private static Logger logger = LogManager.getLogger(ForgotPasswordServiceImpl.class.getName());
 
 	@Autowired
 	private UserRepository userRepository;
@@ -407,7 +408,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 					return "User is not verified";
 				}
 				List<OAuth2AuthenticationRefreshTokenCollection> refreshTokenCollections = oAuth2RefreshTokenRepository
-						.findByclientIdAndUserName("healthco2business", userCollection.getMobileNumber());
+						.findByAuthenticationUserAuthenticationDetailsClient_IdAndAuthenticationUserAuthenticationDetailsUsername("healthco2business", userCollection.getMobileNumber());
 				if (!refreshTokenCollections.isEmpty() && refreshTokenCollections != null) {
 					oAuth2RefreshTokenRepository.deleteAll(refreshTokenCollections);
 				}
@@ -480,7 +481,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				}
 
 				List<OAuth2AuthenticationRefreshTokenCollection> refreshTokenCollections = oAuth2RefreshTokenRepository
-						.findByclientIdAndUserName("healthco2conference", userCollection.getUserName());
+						.findByAuthenticationUserAuthenticationDetailsClient_IdAndAuthenticationUserAuthenticationDetailsUsername("healthco2conference", userCollection.getUserName());
 				if (!refreshTokenCollections.isEmpty() && refreshTokenCollections != null) {
 					oAuth2RefreshTokenRepository.deleteAll(refreshTokenCollections);
 				}

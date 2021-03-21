@@ -1,7 +1,6 @@
 package com.dpdocter.response;
 
 import java.util.List;
-import java.util.Map;
 
 public class OrderReponse {
 

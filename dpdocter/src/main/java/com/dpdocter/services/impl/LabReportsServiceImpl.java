@@ -13,7 +13,8 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -74,7 +75,7 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class LabReportsServiceImpl implements LabReportsService {
 
-	public static final Logger LOGGER = Logger.getLogger(LabReportsServiceImpl.class);
+	public static final Logger LOGGER = LogManager.getLogger(LabReportsServiceImpl.class);
 
 	@Autowired
 	private LocationServices locationServices;

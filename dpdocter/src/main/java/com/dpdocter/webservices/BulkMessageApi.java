@@ -6,7 +6,8 @@ import java.util.List;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -18,7 +19,6 @@ import com.dpdocter.beans.SMSDeliveryReports;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.SMSServices;
-import com.dpdocter.services.TransactionalManagementService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,7 +28,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.BULK_SMS_BASE_URL, description = "Endpoint for bulk sms")
 public class BulkMessageApi {
 
-	 private static Logger logger = Logger.getLogger(BulkMessageApi.class);
+	 private static Logger logger = LogManager.getLogger(BulkMessageApi.class);
 	
 	  @Autowired
 	    private SMSServices smsServices;
