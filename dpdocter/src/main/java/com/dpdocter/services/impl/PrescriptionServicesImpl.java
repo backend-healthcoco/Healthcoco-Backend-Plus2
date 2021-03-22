@@ -6713,6 +6713,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 						smsDetails.add(smsDetail);
 						smsTrackDetail.setSmsDetails(smsDetails);
+						smsTrackDetail.setTemplateId("1307161526775042485");
 						response = sMSServices.sendSMS(smsTrackDetail, true);
 					}
 				}
