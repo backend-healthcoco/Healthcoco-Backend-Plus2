@@ -2237,6 +2237,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					+ " has been confirmed @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
+			smsTrackDetail.setTemplateId("1307161562814636124");
 		}
 			break;
 

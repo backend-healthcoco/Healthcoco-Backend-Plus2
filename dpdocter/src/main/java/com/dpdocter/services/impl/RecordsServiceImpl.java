@@ -429,6 +429,7 @@ public class RecordsServiceImpl implements RecordsService {
 		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 		smsDetails.add(smsDetail);
 		smsTrackDetail.setSmsDetails(smsDetails);
+		smsTrackDetail.setTemplateId("1307161564192612012");
 		smsServices.sendSMS(smsTrackDetail, true);
 	}
 

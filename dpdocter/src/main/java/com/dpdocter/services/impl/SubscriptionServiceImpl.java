@@ -1078,7 +1078,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						+ ", ReceiptId: "+doctorSubscriptionPaymentCollection.getReciept()
 						+ ", Total cost Rs.: "+ doctorSubscriptionPaymentCollection.getAmount() 
 						+ ", Plan: "+  doctorSubscriptionPaymentCollection.getPackageName()
-						+ ", Duration: "+request.getDuration()+" year.");
+						+ ", Duration: "+request.getDuration()+" year.-Healthcoco");
 
 						SMSAddress smsAddress = new SMSAddress();
 						smsAddress.setRecipient(userCollection.getMobileNumber());
@@ -1088,6 +1088,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 						smsDetails.add(smsDetail);
 						smsTrackDetail.setSmsDetails(smsDetails);
+						smsTrackDetail.setTemplateId("1307161561866511824");
 						smsServices.sendSMS(smsTrackDetail, false);
 						System.out.println("sms sent");
 

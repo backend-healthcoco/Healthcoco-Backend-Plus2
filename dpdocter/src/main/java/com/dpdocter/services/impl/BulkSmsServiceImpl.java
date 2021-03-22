@@ -829,6 +829,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 							List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 							smsDetails.add(smsDetail);
 							smsTrackDetail.setSmsDetails(smsDetails);
+							smsTrackDetail.setTemplateId("1307161561939795948");
 					Boolean res=sMSServices.sendSMS(smsTrackDetail, true);
 							
 						System.out.println("sms sent"+res);
