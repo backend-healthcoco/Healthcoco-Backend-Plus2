@@ -1012,7 +1012,7 @@ public interface PathProxy {
 
 		public static final String SEARCH_INDIRECT_LARYGOSCOPY_EXAM = "indirectLarygoscopyExam/{range}";
 
-		public static final String SEARCH_NURSINGCARE = "nursingCarenursingCare/{range}";
+		public static final String SEARCH_NURSINGCARE = "nursingCare/{range}";
 
 	}
 
@@ -2460,7 +2460,7 @@ public interface PathProxy {
 	}
 
 	//IPD Module NEW API
-	public static final String INITIAL_ASSESSMENT_BASE_URL = BASE_URL + "/initalAssessment";
+	public static final String INITIAL_ASSESSMENT_BASE_URL = BASE_URL + "/initialAssessment";
 
 	public interface InitialAssessmentsUrls {
 		public static final String ADD_EDIT_ASSESSMENT_FORM ="/addEdit";
