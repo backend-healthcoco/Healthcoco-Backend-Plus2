@@ -267,6 +267,10 @@ public interface PathProxy {
 		public static final String GET_CLINICS = "/get/{locationId}/{hospitalId}/clinic";
 
 		public static final String UPDATE_AGE = "/patientAge";
+		
+		public static final String UPDATE_CALENDAR_VIEW = "/setting/calenderView/update";
+
+		public static final String GET_DOCTOR_CALENDAR_VIEW = "/setting/calenderView/get";
 
 	}
 
@@ -2493,7 +2497,7 @@ public interface PathProxy {
 		public static final String GET_MEDICINE_SHEET_BY_ID ="/getById/{medicineSheetId}";
 		public static final String DELETE_MEDICINE_SHEET = "/{medicineSheetId}/{doctorId}/{locationId}/{hospitalId}/delete";
 	}
-	
+
 	public static final String VISIT_FIELDWISE_BASE_URL = BASE_URL + "/visit/getField";
 
 	public interface VisitFieldWiseUrls {

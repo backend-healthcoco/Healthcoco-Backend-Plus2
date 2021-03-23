@@ -29,7 +29,11 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 /**
+<<<<<<< HEAD
  * This api used for Initial assessment done by Doctor after admission  of patient(NABH)
+=======
+ * This api used for Initial assessment done by Doctor after admission  of patient
+>>>>>>> f7852ab834d95ffaf379923fd546d7157fec6a12
  * 
  * @author Nikita
  *

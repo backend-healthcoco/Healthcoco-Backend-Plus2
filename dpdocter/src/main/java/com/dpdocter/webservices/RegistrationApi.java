@@ -38,7 +38,7 @@ import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.ConsentForm;
-
+import com.dpdocter.beans.DoctorCalendarView;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FoodCommunity;
 import com.dpdocter.beans.FormContent;
@@ -714,7 +714,7 @@ public class RegistrationApi {
 		response.setData(professionResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_STAFF_ROLE)
 	@PUT
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_STAFF_ROLE, notes = PathProxy.RegistrationUrls.UPDATE_STAFF_ROLE)
@@ -734,7 +734,7 @@ public class RegistrationApi {
 		response.setData(doctorResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RegistrationUrls.GET_ROLE)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_ROLE, notes = PathProxy.RegistrationUrls.GET_ROLE)
@@ -762,14 +762,15 @@ public class RegistrationApi {
 			@QueryParam(value = "size") int size,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "role") String role,
-			@DefaultValue("false") @QueryParam(value = "active") Boolean active,@DefaultValue("false") @QueryParam(value = "access") Boolean access,
+			@DefaultValue("false") @QueryParam(value = "active") Boolean active,
+			@DefaultValue("false") @QueryParam(value = "access") Boolean access,
 			@QueryParam(value = "userState") String userState) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
 		List<ClinicDoctorResponse> professionResponse = registrationService.getUsers(page, size, locationId, hospitalId,
-				updatedTime, role, active,access, userState);
+				updatedTime, role, active, access, userState);
 		Response<ClinicDoctorResponse> response = new Response<ClinicDoctorResponse>();
 		response.setDataList(professionResponse);
 		return response;
@@ -806,7 +807,7 @@ public class RegistrationApi {
 		response.setData(true);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RegistrationUrls.ACCESS_USER)
 	@DELETE
 	@ApiOperation(value = PathProxy.RegistrationUrls.ACCESS_USER, notes = PathProxy.RegistrationUrls.ACCESS_USER)
@@ -1221,15 +1222,15 @@ public class RegistrationApi {
 	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_PATIENT, notes = PathProxy.RegistrationUrls.DELETE_PATIENT)
 	public Response<Object> deletePatient(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@PathParam("patientId") String patientId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
+			@PathParam("patientId") String patientId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded,
 			@DefaultValue("false") @QueryParam("isMobileApp") Boolean isMobileApp) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Doctor Id, locationId, hospitalId & patientId could not null");
 
 		}
-		Response<Object> response = registrationService.deletePatient(doctorId, locationId, hospitalId, patientId, discarded, isMobileApp);
+		Response<Object> response = registrationService.deletePatient(doctorId, locationId, hospitalId, patientId,
+				discarded, isMobileApp);
 		return response;
 	}
 
@@ -1245,7 +1246,8 @@ public class RegistrationApi {
 
 		}
 		Response<PatientShortCard> response = new Response<PatientShortCard>();
-		response.setDataList(registrationService.getDeletedPatient(doctorId, locationId, hospitalId, page, size, searchTerm, sortBy));
+		response.setDataList(registrationService.getDeletedPatient(doctorId, locationId, hospitalId, page, size,
+				searchTerm, sortBy));
 		return response;
 	}
 
@@ -1288,14 +1290,13 @@ public class RegistrationApi {
 		response.setData(registrationService.setDefaultDocter(doctorId, locationId, hospitalId, defaultDoctorId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RegistrationUrls.SET_DEFAULT_CLINIC_IN_LIST)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.SET_DEFAULT_CLINIC_IN_LIST, notes = PathProxy.RegistrationUrls.SET_DEFAULT_CLINIC_IN_LIST)
-	public Response<Boolean> setDefaultDoctor(
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@QueryParam("defaultLocationId") String defaultLocationId) {
-		if (DPDoctorUtils.anyStringEmpty( locationId, hospitalId)) {
+	public Response<Boolean> setDefaultDoctor(@PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId, @QueryParam("defaultLocationId") String defaultLocationId) {
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
@@ -1304,13 +1305,12 @@ public class RegistrationApi {
 		response.setData(registrationService.setDefaultClinic(locationId, hospitalId, defaultLocationId));
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.RegistrationUrls.GET_CLINICS)
 	@GET
-	@ApiOperation(value = PathProxy.RegistrationUrls.GET_CLINICS, notes = PathProxy.RegistrationUrls.GET_CLINICS)	
-	public Response<Location> getUsers(
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+	@ApiOperation(value = PathProxy.RegistrationUrls.GET_CLINICS, notes = PathProxy.RegistrationUrls.GET_CLINICS)
+	public Response<Location> getUsers(@PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -1322,22 +1322,21 @@ public class RegistrationApi {
 	}
 //	
 //	
-	
+
 	@Path(value = "update")
 	@GET
 	public Response<Boolean> update() {
-		
 
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(registrationService.update());
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.RegistrationUrls.CHECK_IF_PNUM_EXIST)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.CHECK_IF_PNUM_EXIST, notes = PathProxy.RegistrationUrls.CHECK_IF_PNUM_EXIST)
-	public Response<Boolean> checkIfPNUMExist(@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@PathParam("PNUM") String PNUM) {
+	public Response<Boolean> checkIfPNUMExist(@PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId, @PathParam("PNUM") String PNUM) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "LocationId, hospitalId could not null");
 
@@ -1351,6 +1350,50 @@ public class RegistrationApi {
 		response.setData(registrationService.checkIfPNUMExist(locationId, hospitalId, PNUM));
 		return response;
 	}
-	
-	
+
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_CALENDAR_VIEW)
+	@POST
+	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CALENDAR_VIEW, notes = PathProxy.RegistrationUrls.UPDATE_CALENDAR_VIEW)
+	public Response<DoctorCalendarView> updateDoctorCalendarView(@RequestBody DoctorCalendarView request) {
+
+		if (request == null) {
+
+			// request.getHospitalId()) {
+
+			logger.warn(invalidInput);
+
+			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+
+		}
+
+		DoctorCalendarView doctorCalendarView = registrationService.updateCalendarView(request);
+
+		Response<DoctorCalendarView> response = new Response<DoctorCalendarView>();
+
+		response.setData(doctorCalendarView);
+
+		return response;
+
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.GET_DOCTOR_CALENDAR_VIEW)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.GET_DOCTOR_CALENDAR_VIEW, notes = PathProxy.RegistrationUrls.GET_DOCTOR_CALENDAR_VIEW)
+	public Response<DoctorCalendarView> getDoctorCalendarView(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId) {
+
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
+
+			throw new BusinessException(ServiceError.InvalidInput, "DoctorId,LocationId, could not null");
+
+		}
+
+		Response<DoctorCalendarView> response = new Response<DoctorCalendarView>();
+
+		response.setData(registrationService.getDoctorCalendarView(doctorId, locationId));
+
+		return response;
+
+	}
+
 }
