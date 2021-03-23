@@ -3482,6 +3482,7 @@ System.out.println("Aggregation"+aggregation);
 				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 				smsDetails.add(smsDetail);
 				smsTrackDetail.setSmsDetails(smsDetails);
+				smsTrackDetail.setTemplateId("1307161641234614877");
 				smsServices.sendSMS(smsTrackDetail, true);
 				response = true;
 
