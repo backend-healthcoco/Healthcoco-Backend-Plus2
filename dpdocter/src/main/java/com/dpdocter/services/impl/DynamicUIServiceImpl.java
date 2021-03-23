@@ -425,7 +425,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			initialAssessmentFormPermissions = new ArrayList<String>(Arrays.asList(initialAssessmentCardPermission()));
 			
 			initialAssessmentFormPermissions.add("NOSE_EXAM");
-			initialAssessmentFormPermissions.add("ORALCAVITYTHROTEXAM");
+			initialAssessmentFormPermissions.add("ORAL_CAVITY_THROAT_EXAM");
 			initialAssessmentFormPermissions.add("NECK_EXAM");
 			initialAssessmentFormPermissions.add("EAR_EXAM");
 
