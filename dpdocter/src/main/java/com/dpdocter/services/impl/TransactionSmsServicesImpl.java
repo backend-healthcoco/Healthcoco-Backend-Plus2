@@ -190,7 +190,6 @@ public class TransactionSmsServicesImpl implements TransactionSmsServices {
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				}
 			
-				System.out.println("Aggregation:"+aggregation);
 				response = mongoTemplate.aggregate(aggregation, MessageCollection.class, MessageResponse.class).getMappedResults();
 
 				
