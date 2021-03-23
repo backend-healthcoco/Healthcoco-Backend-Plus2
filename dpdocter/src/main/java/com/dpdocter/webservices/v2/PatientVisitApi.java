@@ -86,7 +86,7 @@ public class PatientVisitApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Patient Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisitNew(doctorId, locationId, hospitalId,
+		List<PatientVisitResponse> patienVisitResponse = patientVisitService.getVisit(doctorId, locationId, hospitalId,
 				patientId, page, size, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId),
 				updatedTime, visitFor, from,to,discarded);
 
