@@ -411,7 +411,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions = new UIPermissions();
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
 			List<String> entPermissions = new ArrayList<String>(Arrays.asList(entPermission()));
-			clinicalNotesPermission.addAll(entPermissions);
+		   clinicalNotesPermission.addAll(entPermissions);
 			
 			prescriptionPermission = new ArrayList<String>(Arrays.asList(prescriptionPermission()));
 			profilePermission = new ArrayList<String>(Arrays.asList(historyPermission()));
@@ -423,7 +423,12 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			patientCertificatePermissions = new ArrayList<String>(Arrays.asList(patientCertificatePermission()));
 			nursingAdmissionFormPermissions = new ArrayList<String>(Arrays.asList(nurssingAdmissionCardPermission()));
 			initialAssessmentFormPermissions = new ArrayList<String>(Arrays.asList(initialAssessmentCardPermission()));
-			initialAssessmentFormPermissions.addAll(entPermissions);
+			
+			initialAssessmentFormPermissions.add("NOSE_EXAM");
+			initialAssessmentFormPermissions.add("ORALCAVITYTHROTEXAM");
+			initialAssessmentFormPermissions.add("NECK_EXAM");
+			initialAssessmentFormPermissions.add("EAR_EXAM");
+
 			preOperationAssessmentFormPerimissions = new ArrayList<String>(Arrays.asList(preOperationCardPermission()));
 
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
