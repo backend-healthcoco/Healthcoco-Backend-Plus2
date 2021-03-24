@@ -152,20 +152,18 @@ public class ContactsServiceImpl implements ContactsService {
 
 	@Value(value = "${Contacts.BranchNotFound}")
 	private String branchNotFound;
-	
+
 	@Autowired
 	private SMSTrackRepository smsTrackRepository;
-	
+
 	@Autowired
 	private BulkMessageRepository bulkMessageRepository;
-	
+
 	@Autowired
 	private DoctorRepository doctorRepository;
-	
-	
+
 	@Autowired
 	private SmsSpitterServices smsSpitterServices;
-
 
 	/**
 	 * This method returns all unblocked or blocked patients (based on param
@@ -540,7 +538,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Transactional
 	public Response<Object> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, boolean discarded) {
-		Response<Object> response =  new Response<Object>();
+		Response<Object> response = new Response<Object>();
 		List<Group> groups = null;
 
 		try {
@@ -575,7 +573,6 @@ public class ContactsServiceImpl implements ContactsService {
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy")));
 
-
 			Integer count = (int) mongoTemplate.count(new Query(criteriafirst), GroupCollection.class);
 			if (count > 0) {
 				response = new Response<Object>();
@@ -585,7 +582,7 @@ public class ContactsServiceImpl implements ContactsService {
 							Aggregation.lookup("doctor_clinic_profile_cl", "doctorId", "doctorId", "doctorClinic"),
 							Aggregation.unwind("doctorClinic"), Aggregation.match(criteriasecond), projectList,
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
-							Aggregation.skip((long)(page) * size), Aggregation.limit(size));
+							Aggregation.skip((long) (page) * size), Aggregation.limit(size));
 
 				} else {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteriafirst),
@@ -812,7 +809,8 @@ public class ContactsServiceImpl implements ContactsService {
 
 					Reference reference = new Reference();
 					if (referredBy != null) {
-						ReferencesCollection referencesCollection = referenceRepository.findById(referredBy).orElse(null);
+						ReferencesCollection referencesCollection = referenceRepository.findById(referredBy)
+								.orElse(null);
 						if (referencesCollection != null)
 							BeanUtil.map(referencesCollection, reference);
 					}
@@ -898,8 +896,8 @@ public class ContactsServiceImpl implements ContactsService {
 				locationObjectId = new ObjectId(request.getLocationId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
-			PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(patientObjecId,
-					locationObjectId, hospitalObjectId);
+			PatientCollection patientCollection = patientRepository
+					.findByUserIdAndLocationIdAndHospitalId(patientObjecId, locationObjectId, hospitalObjectId);
 			;
 			List<String> groupIds = new ArrayList<String>();
 			List<PatientGroupCollection> patientGroupCollections = patientGroupRepository
@@ -949,9 +947,8 @@ public class ContactsServiceImpl implements ContactsService {
 		List<String> mobileNumbers = null;
 		try {
 
-			//String message = request.getMessage() + "-Powered by Healthcoco";
+			// String message = request.getMessage() + "-Powered by Healthcoco";
 			String message = request.getMessage();
-			
 
 			if (request.getGroupId() != null) {
 				Criteria criteria = new Criteria().and("groupId").is(new ObjectId(request.getGroupId()));
@@ -966,77 +963,74 @@ public class ContactsServiceImpl implements ContactsService {
 					for (PatientGroupLookupResponse patientGroupLookupResponse : patientGroupLookupResponses) {
 
 						if (!DPDoctorUtils.anyStringEmpty(patientGroupLookupResponse.getUser().getMobileNumber())) {
-						String mobile=null;
+							String mobile = null;
 							if (!DPDoctorUtils.anyStringEmpty(patientGroupLookupResponse.getUser().getCountryCode())) {
-								 mobile =patientGroupLookupResponse.getUser().getCountryCode() +patientGroupLookupResponse.getUser().getMobileNumber();
+								mobile = patientGroupLookupResponse.getUser().getCountryCode()
+										+ patientGroupLookupResponse.getUser().getMobileNumber();
+							} else {
+								mobile = "+91" + patientGroupLookupResponse.getUser().getMobileNumber();
 							}
-							else {
-						//	System.out.println(userCollection.getMobileNumber());
-							 	mobile ="+91" +patientGroupLookupResponse.getUser().getMobileNumber();
-							}
-						mobileNumbers.add(mobile);
+							mobileNumbers.add(mobile);
 						}
 					}
 
 				}
-				System.out.println("GroupId User Mobile Number"+mobileNumbers);
-			} else if(request.getPatientIds()!=null && !request.getPatientIds().isEmpty()){
+			} else if (request.getPatientIds() != null && !request.getPatientIds().isEmpty()) {
 				List<ObjectId> patientIds = new ArrayList<ObjectId>();
-				for(String id : request.getPatientIds())patientIds.add(new ObjectId(id));
-				
+				for (String id : request.getPatientIds())
+					patientIds.add(new ObjectId(id));
+
 				Criteria criteria = new Criteria().and("_id").in(patientIds);
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					//	Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-				//		Aggregation.unwind("user"),
+						// Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+						// Aggregation.unwind("user"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			//	AggregationResults<User> aggregationResults = mongoTemplate.aggregate(aggregation, UserCollection.class,
-			//			User.class);
-				List<User>users=mongoTemplate.aggregate(aggregation, UserCollection.class, User.class).getMappedResults();
-				 System.out.println("Aggregation"+aggregation);
+				// AggregationResults<User> aggregationResults =
+				// mongoTemplate.aggregate(aggregation, UserCollection.class,
+				// User.class);
+				List<User> users = mongoTemplate.aggregate(aggregation, UserCollection.class, User.class)
+						.getMappedResults();
 				if (users != null) {
-					if(mobileNumbers == null)mobileNumbers = new ArrayList<>();
-					for(User userr:users)
-					{
+					if (mobileNumbers == null)
+						mobileNumbers = new ArrayList<>();
+					for (User userr : users) {
 						if (!DPDoctorUtils.anyStringEmpty(userr.getMobileNumber())) {
-							String mobile=null;
-								if (!DPDoctorUtils.anyStringEmpty(userr.getCountryCode())) {
-									 mobile =userr.getCountryCode() +userr.getMobileNumber();
-								}
-								else {
-							//	System.out.println(userCollection.getMobileNumber());
-								 	mobile ="+91" +userr.getMobileNumber();
-								}
-						mobileNumbers.add(mobile);
-					}
-					
+							String mobile = null;
+							if (!DPDoctorUtils.anyStringEmpty(userr.getCountryCode())) {
+								mobile = userr.getCountryCode() + userr.getMobileNumber();
+							} else {
+								// System.out.println(userCollection.getMobileNumber());
+								mobile = "+91" + userr.getMobileNumber();
+							}
+							mobileNumbers.add(mobile);
+						}
+
 					}
 				}
-				System.out.println("PatientIds User Mobile Number"+mobileNumbers);
-			}else if (request.getPatientId() != null) {
+			} else if (request.getPatientId() != null) {
 				Criteria criteria = new Criteria().and("_id").is(new ObjectId(request.getPatientId()));
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					//	Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-					//	Aggregation.unwind("user"),
+						// Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+						// Aggregation.unwind("user"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-				User users = mongoTemplate.aggregate(aggregation,UserCollection.class, User.class).getUniqueMappedResult();
-				System.out.println("Aggregation"+aggregation);
-				
+				User users = mongoTemplate.aggregate(aggregation, UserCollection.class, User.class)
+						.getUniqueMappedResult();
+
 				if (users != null) {
 					mobileNumbers = new ArrayList<>();
 
 					if (!DPDoctorUtils.anyStringEmpty(users.getMobileNumber())) {
-						String mobile=null;
-							if (!DPDoctorUtils.anyStringEmpty(users.getCountryCode())) {
-								 mobile =users.getCountryCode() +users.getMobileNumber();
-							}
-							else {
-						//	System.out.println(userCollection.getMobileNumber());
-							 	mobile ="+91" +users.getMobileNumber();
-							}
-					
-					mobileNumbers.add(mobile);
+						String mobile = null;
+						if (!DPDoctorUtils.anyStringEmpty(users.getCountryCode())) {
+							mobile = users.getCountryCode() + users.getMobileNumber();
+						} else {
+							// System.out.println(userCollection.getMobileNumber());
+							mobile = "+91" + users.getMobileNumber();
+						}
+
+						mobileNumbers.add(mobile);
 					}
-					System.out.println("PatientId User Mobile Number"+mobileNumbers);
+					System.out.println("PatientId User Mobile Number" + mobileNumbers);
 				}
 			} else {
 				Criteria criteria = new Criteria().and("doctorId").is(new ObjectId(request.getDoctorId()));
@@ -1052,16 +1046,16 @@ public class ContactsServiceImpl implements ContactsService {
 					mobileNumbers = new ArrayList<>();
 					for (PatientCard patientCard : patientCards) {
 						if (!DPDoctorUtils.anyStringEmpty(patientCard.getUser().getMobileNumber())) {
-							String mobile=null;
-								if (!DPDoctorUtils.anyStringEmpty(patientCard.getUser().getCountryCode())) {
-									 mobile =patientCard.getUser().getCountryCode() +patientCard.getUser().getMobileNumber();
-								}
-								else {
-							//	System.out.println(userCollection.getMobileNumber());
-								 	mobile ="+91" +patientCard.getUser().getMobileNumber();
-								}
-							mobileNumbers.add(mobile);
+							String mobile = null;
+							if (!DPDoctorUtils.anyStringEmpty(patientCard.getUser().getCountryCode())) {
+								mobile = patientCard.getUser().getCountryCode()
+										+ patientCard.getUser().getMobileNumber();
+							} else {
+								// System.out.println(userCollection.getMobileNumber());
+								mobile = "+91" + patientCard.getUser().getMobileNumber();
 							}
+							mobileNumbers.add(mobile);
+						}
 					}
 				}
 			}
@@ -1087,49 +1081,33 @@ public class ContactsServiceImpl implements ContactsService {
 //				
 //				smsTrackDetail.setSmsDetails(smsDetails);
 //------------------------------------------------------------------------
-			
-			//  Integer totalLength=160;
-			
-			SmsParts sms=smsSpitterServices.splitSms(request.getMessage());
-			
-			 System.out.println("Sms Parts:"+sms);
-			Integer totalLength=sms.getEncoding().getMaxLengthSinglePart();
-			
-			  System.out.println("TotalLength:"+totalLength);
-			  Integer messageLength=request.getMessage().length();
-			  System.out.println("messageLength:"+messageLength);
-			  long credits=(messageLength/totalLength);
-			  
-			  long temp=messageLength%totalLength;
-			  if(credits==0 || temp!=0) 
-			  credits=credits+1;
-			  
-			 System.out.println("credits:"+credits);
-			 
-			 System.out.println("temp:"+temp);
-			 
-			  
-			  
-			  long subCredits=credits*(mobileNumbers.size());
-			  
-			  System.out.println("Subcredits:"+subCredits);
-			//  BulkSmsHistoryCollection bulkHistoryCollection=new BulkSmsHistoryCollection();
-				DoctorCollection doctorCollections = null;
-				doctorCollections = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
-				BulkSmsCredits bulk=doctorCollections.getBulkSmsCredit();
-			  if(doctorCollections!=null && bulk!=null) { 
-				  
-				  if(bulk.getCreditBalance() > subCredits || bulk.getCreditBalance() == subCredits) {
-			  bulk.setCreditBalance(bulk.getCreditBalance()-subCredits);
-			  bulk.setCreditSpent(bulk.getCreditSpent()+subCredits);
-			  doctorCollections.setBulkSmsCredit(bulk);
-			  
-			  doctorRepository.save(doctorCollections);
-			  
-			  System.out.println("Credit Balance"+bulk.getCreditBalance());
-			  System.out.println("Credit Spent"+bulk.getCreditSpent());
-			  
-			  
+
+			// Integer totalLength=160;
+
+			SmsParts sms = smsSpitterServices.splitSms(request.getMessage());
+			Integer totalLength = sms.getEncoding().getMaxLengthSinglePart();
+			Integer messageLength = request.getMessage().length();
+			long credits = (messageLength / totalLength);
+
+			long temp = messageLength % totalLength;
+			if (credits == 0 || temp != 0)
+				credits = credits + 1;
+
+			long subCredits = credits * (mobileNumbers.size());
+			// BulkSmsHistoryCollection bulkHistoryCollection=new
+			// BulkSmsHistoryCollection();
+			DoctorCollection doctorCollections = null;
+			doctorCollections = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
+			BulkSmsCredits bulk = doctorCollections.getBulkSmsCredit();
+			if (doctorCollections != null && bulk != null) {
+
+				if (bulk.getCreditBalance() > subCredits || bulk.getCreditBalance() == subCredits) {
+					bulk.setCreditBalance(bulk.getCreditBalance() - subCredits);
+					bulk.setCreditSpent(bulk.getCreditSpent() + subCredits);
+					doctorCollections.setBulkSmsCredit(bulk);
+
+					doctorRepository.save(doctorCollections);
+
 //			  List<String> sublist=null;
 //			  Integer size=100;
 //				for(int start=0;start<mobileNumbers.size();start+=size)
@@ -1144,22 +1122,17 @@ public class ContactsServiceImpl implements ContactsService {
 //					status = "bulk sms sent successfully";
 //				}
 //					}
-			Boolean bulkResponse=  bulkSmsAsync(mobileNumbers, message, request.getDoctorId(), request.getLocationId(), subCredits);
-			   if(bulkResponse ==true)
-				   status = "bulk sms sent successfully";
-				  } 
-				  else { 
-					  return "You have Unsufficient Balance"; 
-			  }
-			//  BeanUtil.map(bulk, bulkHistoryCollection);
-			//  bulkSmsHistoryRepository.save(bulkHistoryCollection);
-			  }
-			 
-			  
-			 
-			
-			
-			
+					Boolean bulkResponse = bulkSmsAsync(mobileNumbers, message, request.getDoctorId(),
+							request.getLocationId(), subCredits);
+					if (bulkResponse == true)
+						status = "bulk sms sent successfully";
+				} else {
+					return "You have Unsufficient Balance";
+				}
+				// BeanUtil.map(bulk, bulkHistoryCollection);
+				// bulkSmsHistoryRepository.save(bulkHistoryCollection);
+			}
+
 //			Integer size=100;
 //			String responseId=null;
 //			List<String>messageResponse=new ArrayList<String>();
@@ -1191,40 +1164,34 @@ public class ContactsServiceImpl implements ContactsService {
 //				result.get(result.size() - 1).add(number); 
 //				}  
 //			System.out.println(result);
-			
-			
-
-		
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return status;
 	}
-	
+
 	@Async
-	Boolean bulkSmsAsync(List<String>mobileNumbers,String message,String doctorId,String locationId,long subCredits)
-	{
-		Boolean response=false;
-		List<String> sublist=null;
-		  Integer size=100;
-			for(int start=0;start<mobileNumbers.size();start+=size)
-				{
-					int end=Math.min(start+size,mobileNumbers.size());
-					 sublist=mobileNumbers.subList(start, end);
-			//		 System.out.println("sublist"+sublist);
-		
-			
-		  
-			if (!smsServices.getBulkSMSResponse(sublist, message,doctorId,locationId,subCredits).equalsIgnoreCase("FAILED")) {
-			response=true;
+	Boolean bulkSmsAsync(List<String> mobileNumbers, String message, String doctorId, String locationId,
+			long subCredits) {
+		Boolean response = false;
+		List<String> sublist = null;
+		Integer size = 100;
+		for (int start = 0; start < mobileNumbers.size(); start += size) {
+			int end = Math.min(start + size, mobileNumbers.size());
+			sublist = mobileNumbers.subList(start, end);
+			// System.out.println("sublist"+sublist);
+
+			if (!smsServices.getBulkSMSResponse(sublist, message, doctorId, locationId, subCredits)
+					.equalsIgnoreCase("FAILED")) {
+				response = true;
 			}
-		
-		
+
+		}
+		return response;
+
 	}
-			return response;
-	
-	}
+
 	@Override
 	public Branch addEditBranch(Branch branch) {
 		try {
@@ -1373,7 +1340,8 @@ public class ContactsServiceImpl implements ContactsService {
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 				}
-				branches = mongoTemplate.aggregate(aggregation, BranchCollection.class, Branch.class).getMappedResults();
+				branches = mongoTemplate.aggregate(aggregation, BranchCollection.class, Branch.class)
+						.getMappedResults();
 				response.setDataList(branches);
 			}
 
@@ -1387,39 +1355,37 @@ public class ContactsServiceImpl implements ContactsService {
 
 	@Override
 	public BulKMessage generateDeliveryReport(BulKMessage request) {
-		BulKMessage response=null;
+		BulKMessage response = null;
 		try {
-			BulKMessageCollection bulkCollection=null;
+			BulKMessageCollection bulkCollection = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				bulkCollection=bulkMessageRepository.findById(new ObjectId(request.getId())).orElse(null);
-				if(bulkCollection == null)
-					throw new BusinessException(ServiceError.Unknown,"Id not found");
+				bulkCollection = bulkMessageRepository.findById(new ObjectId(request.getId())).orElse(null);
+				if (bulkCollection == null)
+					throw new BusinessException(ServiceError.Unknown, "Id not found");
 				BeanUtil.map(request, bulkCollection);
 				bulkCollection.setUpdatedTime(new Date());
-			}
-			else {	
-			bulkCollection=new BulKMessageCollection();
-			BeanUtil.map(request, bulkCollection);
-			bulkCollection.setCreatedTime(new Date());
-			bulkCollection.setUpdatedTime(new Date());
+			} else {
+				bulkCollection = new BulKMessageCollection();
+				BeanUtil.map(request, bulkCollection);
+				bulkCollection.setCreatedTime(new Date());
+				bulkCollection.setUpdatedTime(new Date());
 			}
 			bulkMessageRepository.save(bulkCollection);
-			
+
 			BeanUtil.map(bulkCollection, response);
-			
-		}
-		catch (Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown,"Error while generating delivery report");
+			throw new BusinessException(ServiceError.Unknown, "Error while generating delivery report");
 		}
 		return response;
 	}
 
 	@Override
-	public Response<Object> getDeliveryReport(int page, int size, String doctorId,String updatedTime) {
+	public Response<Object> getDeliveryReport(int page, int size, String doctorId, String updatedTime) {
 		Response<Object> response = new Response<Object>();
-		List<BulKMessage>bulkMessages=null;
+		List<BulKMessage> bulkMessages = null;
 		try {
 			Aggregation aggregation = null;
 			long createdTimeStamp = Long.parseLong(updatedTime);
@@ -1444,16 +1410,16 @@ public class ContactsServiceImpl implements ContactsService {
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 				}
-				bulkMessages = mongoTemplate.aggregate(aggregation, BulKMessageCollection.class, BulKMessage.class).getMappedResults();
+				bulkMessages = mongoTemplate.aggregate(aggregation, BulKMessageCollection.class, BulKMessage.class)
+						.getMappedResults();
 				response.setDataList(bulkMessages);
 			}
-		
-			
-		}catch (Exception e) {
-				e.printStackTrace();
-				logger.error(e);
-				throw new BusinessException(ServiceError.Unknown,"Error while generating delivery report");
-			}
-			return response;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while generating delivery report");
+		}
+		return response;
 	}
 }

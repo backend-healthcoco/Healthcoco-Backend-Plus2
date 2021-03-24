@@ -102,28 +102,28 @@ public class CampVisitServiceImpl implements CampVisitService {
 
 	@Autowired
 	private NutritionAssessmentRepository nutritionAssessmentRepository;
-	
+
 	@Autowired
 	private AcadamicProfileRespository acadamicProfileRespository;
-	
+
 	@Autowired
 	private AcadamicClassRepository acadamicClassRepository;
-	
+
 	@Autowired
 	private AcadamicClassSectionRepository acadamicClassSectionRepository;
-	
+
 	@Autowired
 	private FileManager fileManager;
 
 	@Autowired
 	private PatientLifeStyleRepository patientLifeStyleRepository;
-	
+
 	@Autowired
 	private UserTreatmentRepository userTreatmentRepository;
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Override
 	@Transactional
 	public GrowthAssessmentAndGeneralBioMetrics addEditGrowthAssessmentAndGeneralBioMetrics(
@@ -708,7 +708,8 @@ public class CampVisitServiceImpl implements CampVisitService {
 				request.setCreatedTime(new Date());
 
 			} else {
-				dentalAssessmentCollection = dentalAssessmentRepository.findById(new ObjectId(request.getId())).orElse(null);
+				dentalAssessmentCollection = dentalAssessmentRepository.findById(new ObjectId(request.getId()))
+						.orElse(null);
 			}
 			BeanUtil.map(request, dentalAssessmentCollection);
 			dentalAssessmentCollection.setChiefComplaints(request.getChiefComplaints());
@@ -1074,7 +1075,8 @@ public class CampVisitServiceImpl implements CampVisitService {
 				request.setCreatedTime(new Date());
 
 			} else {
-				nutritionAssessmentCollection = nutritionAssessmentRepository.findById(new ObjectId(request.getId())).orElse(null);
+				nutritionAssessmentCollection = nutritionAssessmentRepository.findById(new ObjectId(request.getId()))
+						.orElse(null);
 			}
 			BeanUtil.map(request, nutritionAssessmentCollection);
 			nutritionAssessmentCollection.setMealTimings(request.getMealTimings());
@@ -1156,7 +1158,8 @@ public class CampVisitServiceImpl implements CampVisitService {
 	@Override
 	@Transactional
 	public List<NutritionAssessment> getNutritionAssessmentList(String academicProfileId, String schoolId,
-			String branchId, String doctorId, String updatedTime, int page, int size, Boolean isDiscarded, String recipe) {
+			String branchId, String doctorId, String updatedTime, int page, int size, Boolean isDiscarded,
+			String recipe) {
 		List<NutritionAssessment> nutritionAssessments = null;
 		Aggregation aggregation = null;
 		try {
@@ -1185,9 +1188,9 @@ public class CampVisitServiceImpl implements CampVisitService {
 			if (isDiscarded != null) {
 				criteria.and("discarded").is(isDiscarded);
 			}
-			if(!DPDoctorUtils.anyStringEmpty(recipe)) {
+			if (!DPDoctorUtils.anyStringEmpty(recipe)) {
 				criteria = criteria.orOperator(new Criteria("foodPatterns.recipeName").regex("^" + recipe, "i"),
-							new Criteria("foodPatterns.recipeName").regex(recipe));
+						new Criteria("foodPatterns.recipeName").regex(recipe));
 			}
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1241,9 +1244,9 @@ public class CampVisitServiceImpl implements CampVisitService {
 			if (isDiscarded != null) {
 				criteria.and("discarded").is(isDiscarded);
 			}
-			if(!DPDoctorUtils.anyStringEmpty(recipe)) {
+			if (!DPDoctorUtils.anyStringEmpty(recipe)) {
 				criteria = criteria.orOperator(new Criteria("foodPatterns.recipeName").regex("^" + recipe, "i"),
-							new Criteria("foodPatterns.recipeName").regex(recipe));
+						new Criteria("foodPatterns.recipeName").regex(recipe));
 			}
 			count = (int) mongoTemplate.count(new Query(criteria), NutritionAssessmentCollection.class);
 
@@ -1326,7 +1329,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 		}
 		return count;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<AcademicProfile> getStudentProfile(int page, int size, String branchId, String schoolId, String classId,
@@ -1336,206 +1339,308 @@ public class CampVisitServiceImpl implements CampVisitService {
 		try {
 			Criteria criteria = new Criteria("branchId").is(new ObjectId(branchId)).and("schoolId")
 					.is(new ObjectId(schoolId));
-			
+
 			List<ObjectId> ids = null;
-			if(!DPDoctorUtils.anyStringEmpty(assesmentType, department)) {
-				Criteria criteriaForAssement = new Criteria("branchId").is(new ObjectId(branchId)).and("schoolId").is(new ObjectId(schoolId));
-				switch(assesmentType.toUpperCase()) {
-					case "GROWTH": 
-						if(department.equalsIgnoreCase("underweight")) criteriaForAssement.and("bmi").gt(0).lte(18.4);
-						else if(department.equalsIgnoreCase("healthy")) criteriaForAssement.and("bmi").gte(18.5).lte(24.9);
-						else if(department.equalsIgnoreCase("overweight"))criteriaForAssement.and("bmi").gte(25.0).lte(29.9);
-						else if(department.equalsIgnoreCase("obese"))criteriaForAssement.and("bmi").gte(30.0);
-						
-						List<GrowthAssessmentAndGeneralBioMetricsCollection> growthAssesment = mongoTemplate.aggregate(
-								Aggregation.newAggregation(Aggregation.match(criteriaForAssement), 
-										new CustomAggregationOperation(new Document("_id", "academicProfileId"))), GrowthAssessmentAndGeneralBioMetricsCollection.class, GrowthAssessmentAndGeneralBioMetricsCollection.class).getMappedResults();
-						if(growthAssesment != null) {
-							ids = (List<ObjectId>) CollectionUtils.collect(growthAssesment, new BeanToPropertyValueTransformer("id")) ;
-							if(ids == null || ids.isEmpty())return null;
-						}else return null;
-						
-						break;
-					case "PHYSICAL":
-						if(department.equalsIgnoreCase("handAndNailHygiene")) criteriaForAssement.and("handAndNailHygiene").is(true);
-						else if(department.equalsIgnoreCase("hairHygiene")) criteriaForAssement.and("hairHygiene").is(true);
-						
-						else if(department.equalsIgnoreCase("Pallor")) criteriaForAssement.and("generalSigns").is("Pallor");
-						else if(department.equalsIgnoreCase("Cyanosis")) criteriaForAssement.and("generalSigns").is("Cyanosis");
-						else if(department.equalsIgnoreCase("Anaemia")) criteriaForAssement.and("generalSigns").is("Anaemia");
-						else if(department.equalsIgnoreCase("Clubbing")) criteriaForAssement.and("generalSigns").is("Clubbing");
-						else if(department.equalsIgnoreCase("Edema")) criteriaForAssement.and("generalSigns").is("Edema");
-						
-						else if(department.equalsIgnoreCase("Abnormal Shape")) criteriaForAssement.and("head").is("Abnormal Shape");
-						else if(department.equalsIgnoreCase("Abnormal Hair Pigmentation")) criteriaForAssement.and("head").is("Abnormal Hair Pigmentation");
-						else if(department.equalsIgnoreCase("Scalp Swelling")) criteriaForAssement.and("head").is("Scalp Swelling");
-						else if(department.equalsIgnoreCase("Scalp Bruising")) criteriaForAssement.and("head").is("Scalp Bruising");
-						else if(department.equalsIgnoreCase("Bony Swelling")) criteriaForAssement.and("head").is("Bony Swelling");
-						
-						else if(department.equalsIgnoreCase("Itching")) criteriaForAssement.and("skin").is("Itching");
-						else if(department.equalsIgnoreCase("Scabies")) criteriaForAssement.and("skin").is("Scabies");
-						else if(department.equalsIgnoreCase("Tinea")) criteriaForAssement.and("skin").is("Tinea");
-						else if(department.equalsIgnoreCase("Herpes")) criteriaForAssement.and("skin").is("Herpes");
-						else if(department.equalsIgnoreCase("Acne")) criteriaForAssement.and("skin").is("Acne");
-						else if(department.equalsIgnoreCase("Contact Dermatitis")) criteriaForAssement.and("skin").is("Contact Dermatitis");
-						else if(department.equalsIgnoreCase("Petechiae")) criteriaForAssement.and("skin").is("Petechiae");
-						else if(department.equalsIgnoreCase("Purpura")) criteriaForAssement.and("skin").is("Purpura");
-						else if(department.equalsIgnoreCase("Icterus")) criteriaForAssement.and("skin").is("Icterus");
-						else if(department.equalsIgnoreCase("Impetigo")) criteriaForAssement.and("skin").is("Impetigo");
-						else if(department.equalsIgnoreCase("Pigmentation")) criteriaForAssement.and("skin").is("Pigmentation");
-						
-						else if(department.equalsIgnoreCase("Abnormal Heart Sounds")) criteriaForAssement.and("cardiovascular").is("Abnormal Heart Sounds");
-						else if(department.equalsIgnoreCase("Murmur")) criteriaForAssement.and("cardiovascular").is("Murmur");
-						
-						else if(department.equalsIgnoreCase("Barky Cough")) criteriaForAssement.and("respiratory").is("Barky Cough");
-						else if(department.equalsIgnoreCase("Hoarse Voice")) criteriaForAssement.and("respiratory").is("Hoarse Voice");
-						else if(department.equalsIgnoreCase("Auscultation")) criteriaForAssement.and("respiratory").is("Auscultation");
-						
-						else if(department.equalsIgnoreCase("Cervical")) criteriaForAssement.and("lymphatic").is("Cervical");
-						else if(department.equalsIgnoreCase("Submandibular")) criteriaForAssement.and("lymphatic").is("Submandibular");
-						
-						else if(department.equalsIgnoreCase("Distented")) criteriaForAssement.and("abdomen").is("Distented");
-						else if(department.equalsIgnoreCase("Tense")) criteriaForAssement.and("abdomen").is("Tense");
-						else if(department.equalsIgnoreCase("Tender")) criteriaForAssement.and("abdomen").is("Tender");
-						else if(department.equalsIgnoreCase("Intestinal sound")) criteriaForAssement.and("abdomen").is("Intestinal sound");
-						
-						else if(department.equalsIgnoreCase("Spinal Abnormalities")) criteriaForAssement.and("orthopedics").is("Spinal Abnormalities");
-						
-						else if(department.equalsIgnoreCase("Vitamin - C")) criteriaForAssement.and("deficienciesSuspected").is("Vitamin - C");
-						else if(department.equalsIgnoreCase("Vitamin - D")) criteriaForAssement.and("deficienciesSuspected").is("Vitamin - D");
-						else if(department.equalsIgnoreCase("Vitamin - B12")) criteriaForAssement.and("deficienciesSuspected").is("Vitamin - B12");
-						else if(department.equalsIgnoreCase("Vitamin - A")) criteriaForAssement.and("deficienciesSuspected").is("Vitamin - A");
-						else if(department.equalsIgnoreCase("Vitamin B Complex")) criteriaForAssement.and("deficienciesSuspected").is("Vitamin B Complex");
-						else if(department.equalsIgnoreCase("Iron")) criteriaForAssement.and("deficienciesSuspected").is("Iron");
-						else if(department.equalsIgnoreCase("Calcium")) criteriaForAssement.and("deficienciesSuspected").is("Calcium");
-						
-						else if(department.equalsIgnoreCase("Deep Tendon Reflex")) criteriaForAssement.and("nervousSystem").is("Deep Tendon Reflex");
-						else if(department.equalsIgnoreCase("Pupillary Reflex")) criteriaForAssement.and("nervousSystem").is("Pupillary Reflex");
-						else if(department.equalsIgnoreCase("Corneal Reflex")) criteriaForAssement.and("nervousSystem").is("Corneal Reflex");
-						else if(department.equalsIgnoreCase("Muscular tone")) criteriaForAssement.and("nervousSystem").is("Muscular tone");
-						
-						else if(department.equalsIgnoreCase("nutritionConsultation")) criteriaForAssement.and("nutritionConsultation").is(true);
-						else if(department.equalsIgnoreCase("xRay")) criteriaForAssement.and("xRay").is(true);
-						else if(department.equalsIgnoreCase("ctMRIScanRegion")) criteriaForAssement.and("ctMRIScanRegion").exists(true);
-						else if(department.equalsIgnoreCase("bloodTest"))criteriaForAssement.and("bloodTest").is(departmentValue);
-						else if(department.equalsIgnoreCase("stoolTest"))criteriaForAssement.and("stoolTest").is(departmentValue);
-						else if(department.equalsIgnoreCase("urineTest"))criteriaForAssement.and("urineTest").is(departmentValue);
-						
-						List<PhysicalAssessmentCollection> phyAssesment = mongoTemplate.aggregate(
-								Aggregation.newAggregation(Aggregation.match(criteriaForAssement), 
-										new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$academicProfileId")))), PhysicalAssessmentCollection.class, PhysicalAssessmentCollection.class).getMappedResults();
-						if(phyAssesment != null) {
-							ids = (List<ObjectId>) CollectionUtils.collect(phyAssesment, new BeanToPropertyValueTransformer("id")) ;
-							if(ids == null || ids.isEmpty())return null;
-						}else return null;
-						
-						break;
-					case "DENTAL":
-						
-						if(department.equalsIgnoreCase("habits"))criteriaForAssement.and("habits").is(departmentValue);
-						else if(department.equalsIgnoreCase("chiefComplaints"))criteriaForAssement.and("chiefComplaints").is(departmentValue);
-						else if(department.equalsIgnoreCase("gingivaStains"))criteriaForAssement.and("gingivaStains").is(departmentValue);
-						else if(department.equalsIgnoreCase("gingivaCalculus"))criteriaForAssement.and("gingivaCalculus").is(departmentValue);
-						
-						else if(department.equalsIgnoreCase("teethExamination")) {
-							if (departmentValue.equalsIgnoreCase("Decayed")) {
-								criteriaForAssement.and("teethExamination.decayedDMFTIndex").exists(true);
-							} else if (departmentValue.equalsIgnoreCase("Missing")) {
-								criteriaForAssement.and("teethExamination.missingDMFTIndex").exists(true);
-							} else if (departmentValue.equalsIgnoreCase("Filled")) {
-								criteriaForAssement.and("teethExamination.filledDMFTIndex").exists(true);
-							}else if (departmentValue.equalsIgnoreCase("malocclusion")) {
-								criteriaForAssement.and("teethExamination.malocclusion").exists(true);
-							}
-						}else if(department.equalsIgnoreCase("doctorConsultations")) {
-							criteriaForAssement.and("doctorConsultations").is(departmentValue);
-						}else if(department.equalsIgnoreCase("oralHygiene"))criteriaForAssement.and("oralHygiene").is(departmentValue);
-						
-						else if(department.equalsIgnoreCase("suggestedInvestigation")) {
-							criteriaForAssement.and("suggestedInvestigation").is(departmentValue);
+			if (!DPDoctorUtils.anyStringEmpty(assesmentType, department)) {
+				Criteria criteriaForAssement = new Criteria("branchId").is(new ObjectId(branchId)).and("schoolId")
+						.is(new ObjectId(schoolId));
+				switch (assesmentType.toUpperCase()) {
+				case "GROWTH":
+					if (department.equalsIgnoreCase("underweight"))
+						criteriaForAssement.and("bmi").gt(0).lte(18.4);
+					else if (department.equalsIgnoreCase("healthy"))
+						criteriaForAssement.and("bmi").gte(18.5).lte(24.9);
+					else if (department.equalsIgnoreCase("overweight"))
+						criteriaForAssement.and("bmi").gte(25.0).lte(29.9);
+					else if (department.equalsIgnoreCase("obese"))
+						criteriaForAssement.and("bmi").gte(30.0);
+
+					List<GrowthAssessmentAndGeneralBioMetricsCollection> growthAssesment = mongoTemplate.aggregate(
+							Aggregation.newAggregation(Aggregation.match(criteriaForAssement),
+									new CustomAggregationOperation(new Document("_id", "academicProfileId"))),
+							GrowthAssessmentAndGeneralBioMetricsCollection.class,
+							GrowthAssessmentAndGeneralBioMetricsCollection.class).getMappedResults();
+					if (growthAssesment != null) {
+						ids = (List<ObjectId>) CollectionUtils.collect(growthAssesment,
+								new BeanToPropertyValueTransformer("id"));
+						if (ids == null || ids.isEmpty())
+							return null;
+					} else
+						return null;
+
+					break;
+				case "PHYSICAL":
+					if (department.equalsIgnoreCase("handAndNailHygiene"))
+						criteriaForAssement.and("handAndNailHygiene").is(true);
+					else if (department.equalsIgnoreCase("hairHygiene"))
+						criteriaForAssement.and("hairHygiene").is(true);
+
+					else if (department.equalsIgnoreCase("Pallor"))
+						criteriaForAssement.and("generalSigns").is("Pallor");
+					else if (department.equalsIgnoreCase("Cyanosis"))
+						criteriaForAssement.and("generalSigns").is("Cyanosis");
+					else if (department.equalsIgnoreCase("Anaemia"))
+						criteriaForAssement.and("generalSigns").is("Anaemia");
+					else if (department.equalsIgnoreCase("Clubbing"))
+						criteriaForAssement.and("generalSigns").is("Clubbing");
+					else if (department.equalsIgnoreCase("Edema"))
+						criteriaForAssement.and("generalSigns").is("Edema");
+
+					else if (department.equalsIgnoreCase("Abnormal Shape"))
+						criteriaForAssement.and("head").is("Abnormal Shape");
+					else if (department.equalsIgnoreCase("Abnormal Hair Pigmentation"))
+						criteriaForAssement.and("head").is("Abnormal Hair Pigmentation");
+					else if (department.equalsIgnoreCase("Scalp Swelling"))
+						criteriaForAssement.and("head").is("Scalp Swelling");
+					else if (department.equalsIgnoreCase("Scalp Bruising"))
+						criteriaForAssement.and("head").is("Scalp Bruising");
+					else if (department.equalsIgnoreCase("Bony Swelling"))
+						criteriaForAssement.and("head").is("Bony Swelling");
+
+					else if (department.equalsIgnoreCase("Itching"))
+						criteriaForAssement.and("skin").is("Itching");
+					else if (department.equalsIgnoreCase("Scabies"))
+						criteriaForAssement.and("skin").is("Scabies");
+					else if (department.equalsIgnoreCase("Tinea"))
+						criteriaForAssement.and("skin").is("Tinea");
+					else if (department.equalsIgnoreCase("Herpes"))
+						criteriaForAssement.and("skin").is("Herpes");
+					else if (department.equalsIgnoreCase("Acne"))
+						criteriaForAssement.and("skin").is("Acne");
+					else if (department.equalsIgnoreCase("Contact Dermatitis"))
+						criteriaForAssement.and("skin").is("Contact Dermatitis");
+					else if (department.equalsIgnoreCase("Petechiae"))
+						criteriaForAssement.and("skin").is("Petechiae");
+					else if (department.equalsIgnoreCase("Purpura"))
+						criteriaForAssement.and("skin").is("Purpura");
+					else if (department.equalsIgnoreCase("Icterus"))
+						criteriaForAssement.and("skin").is("Icterus");
+					else if (department.equalsIgnoreCase("Impetigo"))
+						criteriaForAssement.and("skin").is("Impetigo");
+					else if (department.equalsIgnoreCase("Pigmentation"))
+						criteriaForAssement.and("skin").is("Pigmentation");
+
+					else if (department.equalsIgnoreCase("Abnormal Heart Sounds"))
+						criteriaForAssement.and("cardiovascular").is("Abnormal Heart Sounds");
+					else if (department.equalsIgnoreCase("Murmur"))
+						criteriaForAssement.and("cardiovascular").is("Murmur");
+
+					else if (department.equalsIgnoreCase("Barky Cough"))
+						criteriaForAssement.and("respiratory").is("Barky Cough");
+					else if (department.equalsIgnoreCase("Hoarse Voice"))
+						criteriaForAssement.and("respiratory").is("Hoarse Voice");
+					else if (department.equalsIgnoreCase("Auscultation"))
+						criteriaForAssement.and("respiratory").is("Auscultation");
+
+					else if (department.equalsIgnoreCase("Cervical"))
+						criteriaForAssement.and("lymphatic").is("Cervical");
+					else if (department.equalsIgnoreCase("Submandibular"))
+						criteriaForAssement.and("lymphatic").is("Submandibular");
+
+					else if (department.equalsIgnoreCase("Distented"))
+						criteriaForAssement.and("abdomen").is("Distented");
+					else if (department.equalsIgnoreCase("Tense"))
+						criteriaForAssement.and("abdomen").is("Tense");
+					else if (department.equalsIgnoreCase("Tender"))
+						criteriaForAssement.and("abdomen").is("Tender");
+					else if (department.equalsIgnoreCase("Intestinal sound"))
+						criteriaForAssement.and("abdomen").is("Intestinal sound");
+
+					else if (department.equalsIgnoreCase("Spinal Abnormalities"))
+						criteriaForAssement.and("orthopedics").is("Spinal Abnormalities");
+
+					else if (department.equalsIgnoreCase("Vitamin - C"))
+						criteriaForAssement.and("deficienciesSuspected").is("Vitamin - C");
+					else if (department.equalsIgnoreCase("Vitamin - D"))
+						criteriaForAssement.and("deficienciesSuspected").is("Vitamin - D");
+					else if (department.equalsIgnoreCase("Vitamin - B12"))
+						criteriaForAssement.and("deficienciesSuspected").is("Vitamin - B12");
+					else if (department.equalsIgnoreCase("Vitamin - A"))
+						criteriaForAssement.and("deficienciesSuspected").is("Vitamin - A");
+					else if (department.equalsIgnoreCase("Vitamin B Complex"))
+						criteriaForAssement.and("deficienciesSuspected").is("Vitamin B Complex");
+					else if (department.equalsIgnoreCase("Iron"))
+						criteriaForAssement.and("deficienciesSuspected").is("Iron");
+					else if (department.equalsIgnoreCase("Calcium"))
+						criteriaForAssement.and("deficienciesSuspected").is("Calcium");
+
+					else if (department.equalsIgnoreCase("Deep Tendon Reflex"))
+						criteriaForAssement.and("nervousSystem").is("Deep Tendon Reflex");
+					else if (department.equalsIgnoreCase("Pupillary Reflex"))
+						criteriaForAssement.and("nervousSystem").is("Pupillary Reflex");
+					else if (department.equalsIgnoreCase("Corneal Reflex"))
+						criteriaForAssement.and("nervousSystem").is("Corneal Reflex");
+					else if (department.equalsIgnoreCase("Muscular tone"))
+						criteriaForAssement.and("nervousSystem").is("Muscular tone");
+
+					else if (department.equalsIgnoreCase("nutritionConsultation"))
+						criteriaForAssement.and("nutritionConsultation").is(true);
+					else if (department.equalsIgnoreCase("xRay"))
+						criteriaForAssement.and("xRay").is(true);
+					else if (department.equalsIgnoreCase("ctMRIScanRegion"))
+						criteriaForAssement.and("ctMRIScanRegion").exists(true);
+					else if (department.equalsIgnoreCase("bloodTest"))
+						criteriaForAssement.and("bloodTest").is(departmentValue);
+					else if (department.equalsIgnoreCase("stoolTest"))
+						criteriaForAssement.and("stoolTest").is(departmentValue);
+					else if (department.equalsIgnoreCase("urineTest"))
+						criteriaForAssement.and("urineTest").is(departmentValue);
+
+					List<PhysicalAssessmentCollection> phyAssesment = mongoTemplate
+							.aggregate(
+									Aggregation.newAggregation(Aggregation.match(criteriaForAssement),
+											new CustomAggregationOperation(new Document("$group",
+													new BasicDBObject("_id", "$academicProfileId")))),
+									PhysicalAssessmentCollection.class, PhysicalAssessmentCollection.class)
+							.getMappedResults();
+					if (phyAssesment != null) {
+						ids = (List<ObjectId>) CollectionUtils.collect(phyAssesment,
+								new BeanToPropertyValueTransformer("id"));
+						if (ids == null || ids.isEmpty())
+							return null;
+					} else
+						return null;
+
+					break;
+				case "DENTAL":
+
+					if (department.equalsIgnoreCase("habits"))
+						criteriaForAssement.and("habits").is(departmentValue);
+					else if (department.equalsIgnoreCase("chiefComplaints"))
+						criteriaForAssement.and("chiefComplaints").is(departmentValue);
+					else if (department.equalsIgnoreCase("gingivaStains"))
+						criteriaForAssement.and("gingivaStains").is(departmentValue);
+					else if (department.equalsIgnoreCase("gingivaCalculus"))
+						criteriaForAssement.and("gingivaCalculus").is(departmentValue);
+
+					else if (department.equalsIgnoreCase("teethExamination")) {
+						if (departmentValue.equalsIgnoreCase("Decayed")) {
+							criteriaForAssement.and("teethExamination.decayedDMFTIndex").exists(true);
+						} else if (departmentValue.equalsIgnoreCase("Missing")) {
+							criteriaForAssement.and("teethExamination.missingDMFTIndex").exists(true);
+						} else if (departmentValue.equalsIgnoreCase("Filled")) {
+							criteriaForAssement.and("teethExamination.filledDMFTIndex").exists(true);
+						} else if (departmentValue.equalsIgnoreCase("malocclusion")) {
+							criteriaForAssement.and("teethExamination.malocclusion").exists(true);
 						}
-						
-						List<DentalAssessmentCollection> dentalAssesment = mongoTemplate.aggregate(
-								Aggregation.newAggregation(Aggregation.match(criteriaForAssement), 
-										new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$academicProfileId")))), DentalAssessmentCollection.class, DentalAssessmentCollection.class).getMappedResults();
-						if(dentalAssesment != null) {
-							ids = (List<ObjectId>) CollectionUtils.collect(dentalAssesment, new BeanToPropertyValueTransformer("id")) ;
-							if(ids == null || ids.isEmpty())return null;
-						}else return null;
-						
-						break;
-					case "ENT":
-						
-						if(department.equalsIgnoreCase("leftEar")) {
-							criteriaForAssement.and("leftEar").is(departmentValue);
-						}else if(department.equalsIgnoreCase("nose")) {
-							criteriaForAssement.and("nose").is(departmentValue);
-						}else if(department.equalsIgnoreCase("rightEar")) {
-							criteriaForAssement.and("rightEar").is(departmentValue);
-						}else if(department.equalsIgnoreCase("oralCavityAndThroat")) {
-							criteriaForAssement.and("oralCavityAndThroat").is(departmentValue);
-						}else if(department.equalsIgnoreCase("doctorConsultations")) {
-							criteriaForAssement.and("doctorConsultations").is(true);
-						}
-						
-						List<ENTAssessmentCollection> entAssesment = mongoTemplate.aggregate(
-								Aggregation.newAggregation(Aggregation.match(criteriaForAssement), 
-										new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$academicProfileId")))), ENTAssessmentCollection.class, ENTAssessmentCollection.class).getMappedResults();
-						if(entAssesment != null) {
-							ids = (List<ObjectId>) CollectionUtils.collect(entAssesment, new BeanToPropertyValueTransformer("id")) ;
-							if(ids == null || ids.isEmpty())return null;
-						}else return null;
-						break;
-					case "EYE":
-						if(department.equalsIgnoreCase("optometryLeftEye")) {
-							criteriaForAssement.and("optometryLeftEye").is(departmentValue);
-						}else if(department.equalsIgnoreCase("optometryRightEye")) {
-							criteriaForAssement.and("optometryRightEye").is(departmentValue);
-						}else if(department.equalsIgnoreCase("clinicalRightEye")) {
-							criteriaForAssement.and("clinicalRightEye").is(departmentValue);
-						}else if(department.equalsIgnoreCase("clinicalLeftEye")) {
-							criteriaForAssement.and("clinicalLeftEye").is(departmentValue);
-						}else if(department.equalsIgnoreCase("wearGlasses")) {
-							criteriaForAssement.and("wearGlasses").is(true);
-						}else if(department.equalsIgnoreCase("suggesstedInvestigation")) {
-							criteriaForAssement.and("suggesstedInvestigation").is(departmentValue);
-						}else if(department.equalsIgnoreCase("doctorConsultation")) {
-							criteriaForAssement.and("doctorConsultation").is(true);
-						}
-						
-						List<ENTAssessmentCollection> entAassesment = mongoTemplate.aggregate(
-								Aggregation.newAggregation(Aggregation.match(criteriaForAssement), 
-										new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$academicProfileId")))), ENTAssessmentCollection.class, ENTAssessmentCollection.class).getMappedResults();
-						if(entAassesment != null) {
-							ids = (List<ObjectId>) CollectionUtils.collect(entAassesment, new BeanToPropertyValueTransformer("id")) ;
-							if(ids == null || ids.isEmpty())return null;
-						}else return null;
-						break;
-					case "NUTRITION":
-						if(department.equalsIgnoreCase("foodPreference")) {
-							criteriaForAssement.and("foodPreference").is(departmentValue);
-						}else if(department.equalsIgnoreCase("waterIntakePerDay")) {
-							criteriaForAssement.and("waterIntakePerDay").gte(0);
-						}else if(department.equalsIgnoreCase("sleepingHours")) {
-							criteriaForAssement.and("sleepingHours").exists(true);
-						}else if(department.equalsIgnoreCase("drinkingWaterType")) {
-							criteriaForAssement.and("drinkingWaterType").is(departmentValue);
-						}else if(department.equalsIgnoreCase("exerciseType")) {
-							criteriaForAssement.and("exerciseType").is(departmentValue);
-						}
-						
-						List<ENTAssessmentCollection> nutritionAssesment = mongoTemplate.aggregate(
-								Aggregation.newAggregation(Aggregation.match(criteriaForAssement), 
-										new CustomAggregationOperation(new Document("$group", new BasicDBObject("_id", "$academicProfileId")))), ENTAssessmentCollection.class, ENTAssessmentCollection.class).getMappedResults();
-						if(nutritionAssesment != null) {
-							ids = (List<ObjectId>) CollectionUtils.collect(nutritionAssesment, new BeanToPropertyValueTransformer("id")) ;
-							if(ids == null || ids.isEmpty())return null;
-						}else return null;
-						break;
+					} else if (department.equalsIgnoreCase("doctorConsultations")) {
+						criteriaForAssement.and("doctorConsultations").is(departmentValue);
+					} else if (department.equalsIgnoreCase("oralHygiene"))
+						criteriaForAssement.and("oralHygiene").is(departmentValue);
+
+					else if (department.equalsIgnoreCase("suggestedInvestigation")) {
+						criteriaForAssement.and("suggestedInvestigation").is(departmentValue);
+					}
+
+					List<DentalAssessmentCollection> dentalAssesment = mongoTemplate
+							.aggregate(
+									Aggregation.newAggregation(Aggregation.match(criteriaForAssement),
+											new CustomAggregationOperation(new Document("$group",
+													new BasicDBObject("_id", "$academicProfileId")))),
+									DentalAssessmentCollection.class, DentalAssessmentCollection.class)
+							.getMappedResults();
+					if (dentalAssesment != null) {
+						ids = (List<ObjectId>) CollectionUtils.collect(dentalAssesment,
+								new BeanToPropertyValueTransformer("id"));
+						if (ids == null || ids.isEmpty())
+							return null;
+					} else
+						return null;
+
+					break;
+				case "ENT":
+
+					if (department.equalsIgnoreCase("leftEar")) {
+						criteriaForAssement.and("leftEar").is(departmentValue);
+					} else if (department.equalsIgnoreCase("nose")) {
+						criteriaForAssement.and("nose").is(departmentValue);
+					} else if (department.equalsIgnoreCase("rightEar")) {
+						criteriaForAssement.and("rightEar").is(departmentValue);
+					} else if (department.equalsIgnoreCase("oralCavityAndThroat")) {
+						criteriaForAssement.and("oralCavityAndThroat").is(departmentValue);
+					} else if (department.equalsIgnoreCase("doctorConsultations")) {
+						criteriaForAssement.and("doctorConsultations").is(true);
+					}
+
+					List<ENTAssessmentCollection> entAssesment = mongoTemplate
+							.aggregate(
+									Aggregation.newAggregation(Aggregation.match(criteriaForAssement),
+											new CustomAggregationOperation(new Document("$group",
+													new BasicDBObject("_id", "$academicProfileId")))),
+									ENTAssessmentCollection.class, ENTAssessmentCollection.class)
+							.getMappedResults();
+					if (entAssesment != null) {
+						ids = (List<ObjectId>) CollectionUtils.collect(entAssesment,
+								new BeanToPropertyValueTransformer("id"));
+						if (ids == null || ids.isEmpty())
+							return null;
+					} else
+						return null;
+					break;
+				case "EYE":
+					if (department.equalsIgnoreCase("optometryLeftEye")) {
+						criteriaForAssement.and("optometryLeftEye").is(departmentValue);
+					} else if (department.equalsIgnoreCase("optometryRightEye")) {
+						criteriaForAssement.and("optometryRightEye").is(departmentValue);
+					} else if (department.equalsIgnoreCase("clinicalRightEye")) {
+						criteriaForAssement.and("clinicalRightEye").is(departmentValue);
+					} else if (department.equalsIgnoreCase("clinicalLeftEye")) {
+						criteriaForAssement.and("clinicalLeftEye").is(departmentValue);
+					} else if (department.equalsIgnoreCase("wearGlasses")) {
+						criteriaForAssement.and("wearGlasses").is(true);
+					} else if (department.equalsIgnoreCase("suggesstedInvestigation")) {
+						criteriaForAssement.and("suggesstedInvestigation").is(departmentValue);
+					} else if (department.equalsIgnoreCase("doctorConsultation")) {
+						criteriaForAssement.and("doctorConsultation").is(true);
+					}
+
+					List<ENTAssessmentCollection> entAassesment = mongoTemplate
+							.aggregate(
+									Aggregation.newAggregation(Aggregation.match(criteriaForAssement),
+											new CustomAggregationOperation(new Document("$group",
+													new BasicDBObject("_id", "$academicProfileId")))),
+									ENTAssessmentCollection.class, ENTAssessmentCollection.class)
+							.getMappedResults();
+					if (entAassesment != null) {
+						ids = (List<ObjectId>) CollectionUtils.collect(entAassesment,
+								new BeanToPropertyValueTransformer("id"));
+						if (ids == null || ids.isEmpty())
+							return null;
+					} else
+						return null;
+					break;
+				case "NUTRITION":
+					if (department.equalsIgnoreCase("foodPreference")) {
+						criteriaForAssement.and("foodPreference").is(departmentValue);
+					} else if (department.equalsIgnoreCase("waterIntakePerDay")) {
+						criteriaForAssement.and("waterIntakePerDay").gte(0);
+					} else if (department.equalsIgnoreCase("sleepingHours")) {
+						criteriaForAssement.and("sleepingHours").exists(true);
+					} else if (department.equalsIgnoreCase("drinkingWaterType")) {
+						criteriaForAssement.and("drinkingWaterType").is(departmentValue);
+					} else if (department.equalsIgnoreCase("exerciseType")) {
+						criteriaForAssement.and("exerciseType").is(departmentValue);
+					}
+
+					List<ENTAssessmentCollection> nutritionAssesment = mongoTemplate
+							.aggregate(
+									Aggregation.newAggregation(Aggregation.match(criteriaForAssement),
+											new CustomAggregationOperation(new Document("$group",
+													new BasicDBObject("_id", "$academicProfileId")))),
+									ENTAssessmentCollection.class, ENTAssessmentCollection.class)
+							.getMappedResults();
+					if (nutritionAssesment != null) {
+						ids = (List<ObjectId>) CollectionUtils.collect(nutritionAssesment,
+								new BeanToPropertyValueTransformer("id"));
+						if (ids == null || ids.isEmpty())
+							return null;
+					} else
+						return null;
+					break;
 				}
 				criteria.and("id").in(ids);
 			}
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(classId)) {
 				criteria.and("classId").is(new ObjectId(classId));
 			}
@@ -1574,7 +1679,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 					Fields.field("isSuperStar", "$isSuperStar"), Fields.field("createdTime", "$createdTime")));
 
 			Aggregation aggregation = null;
-			System.out.println(criteria);
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("acadamic_class_cl", "classId", "_id", "acadamicClass"),
@@ -1593,15 +1697,14 @@ public class CampVisitServiceImpl implements CampVisitService {
 						Aggregation.unwind("acadamicSection", true), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "firstName")));
 			}
-			System.out.println(".......");
-			System.out.println(new Query(criteria).toString());
+
 			response = mongoTemplate.aggregate(aggregation, AcademicProfileCollection.class, AcademicProfile.class)
 					.getMappedResults();
-			if(response != null) {
-				for(AcademicProfile acadamicProfile : response) {
-					
+			if (response != null) {
+				for (AcademicProfile acadamicProfile : response) {
+
 					Criteria assessmentCriteria = new Criteria("schoolId").is(new ObjectId(schoolId));
-					
+
 					if (!DPDoctorUtils.anyStringEmpty(branchId)) {
 						assessmentCriteria.and("branchId").is(new ObjectId(branchId));
 					}
@@ -1617,28 +1720,43 @@ public class CampVisitServiceImpl implements CampVisitService {
 //					}else if(toDateTime != null) {
 //						assessmentCriteria.and("createdTime").lte(toDateTime);
 //					}
-					
+
 					assessmentCriteria.and("academicProfileId").is(new ObjectId(acadamicProfile.getId()));
-					Integer growthAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), GrowthAssessmentAndGeneralBioMetricsCollection.class);
-					if(growthAssessmentCount > 0)acadamicProfile.setIsGrowthAssessmentPresent(true);
-					
-					Integer physicalAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), PhysicalAssessmentCollection.class);
-					if(physicalAssessmentCount > 0)acadamicProfile.setIsPhysicalAssessmentPresent(true);
-					
-					Integer eyeAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), EyeAssessmentCollection.class);
-					if(eyeAssessmentCount > 0)acadamicProfile.setIsEyeAssessmentPresent(true);
-					
-					Integer entAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), ENTAssessmentCollection.class);
-					if(entAssessmentCount > 0)acadamicProfile.setIsENTAssessmentPresent(true);
-					
-					Integer dentalAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), DentalAssessmentCollection.class);
-					if(dentalAssessmentCount > 0)acadamicProfile.setIsDentalAssessmentPresent(true);
-					
-					Integer nutritionAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), NutritionAssessmentCollection.class);
-					if(nutritionAssessmentCount > 0)acadamicProfile.setIsNutritionalAssessmentPresent(true);
-					
-					Integer dietPlanCount = (int) mongoTemplate.count(new Query(new Criteria("patientId").is(new ObjectId(acadamicProfile.getId()))), DietPlanCollection.class);
-					if(dietPlanCount > 0)acadamicProfile.setIsDietPlanPresent(true);
+					Integer growthAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria),
+							GrowthAssessmentAndGeneralBioMetricsCollection.class);
+					if (growthAssessmentCount > 0)
+						acadamicProfile.setIsGrowthAssessmentPresent(true);
+
+					Integer physicalAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria),
+							PhysicalAssessmentCollection.class);
+					if (physicalAssessmentCount > 0)
+						acadamicProfile.setIsPhysicalAssessmentPresent(true);
+
+					Integer eyeAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria),
+							EyeAssessmentCollection.class);
+					if (eyeAssessmentCount > 0)
+						acadamicProfile.setIsEyeAssessmentPresent(true);
+
+					Integer entAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria),
+							ENTAssessmentCollection.class);
+					if (entAssessmentCount > 0)
+						acadamicProfile.setIsENTAssessmentPresent(true);
+
+					Integer dentalAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria),
+							DentalAssessmentCollection.class);
+					if (dentalAssessmentCount > 0)
+						acadamicProfile.setIsDentalAssessmentPresent(true);
+
+					Integer nutritionAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria),
+							NutritionAssessmentCollection.class);
+					if (nutritionAssessmentCount > 0)
+						acadamicProfile.setIsNutritionalAssessmentPresent(true);
+
+					Integer dietPlanCount = (int) mongoTemplate.count(
+							new Query(new Criteria("patientId").is(new ObjectId(acadamicProfile.getId()))),
+							DietPlanCollection.class);
+					if (dietPlanCount > 0)
+						acadamicProfile.setIsDietPlanPresent(true);
 				}
 			}
 			/*
@@ -1660,7 +1778,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public List<AcademicProfile> getTeacherProfile(int page, int size, String branchId, String schoolId,
 			String searchTerm, Boolean discarded, String profileType, String userId, String updatedTime) {
@@ -1731,7 +1849,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 		return response;
 	}
 
-	
 	@Override
 	public Integer countStudentProfile(String branchId, String schoolId, String classId, String sectionId,
 			String searchTerm, Boolean discarded, String profileType, String userId, String updatedTime) {
@@ -1863,13 +1980,13 @@ public class CampVisitServiceImpl implements CampVisitService {
 						response.setAcadamicSection(acadamicClassSeection.getSection());
 					}
 				}
-				if(response != null) {
-						
-						Criteria assessmentCriteria = new Criteria("schoolId").is(new ObjectId(response.getSchoolId()));
-						
-						if (!DPDoctorUtils.anyStringEmpty(response.getBranchId())) {
-							assessmentCriteria.and("branchId").is(new ObjectId(response.getBranchId()));
-						}
+				if (response != null) {
+
+					Criteria assessmentCriteria = new Criteria("schoolId").is(new ObjectId(response.getSchoolId()));
+
+					if (!DPDoctorUtils.anyStringEmpty(response.getBranchId())) {
+						assessmentCriteria.and("branchId").is(new ObjectId(response.getBranchId()));
+					}
 
 //						if (!DPDoctorUtils.anyStringEmpty(campId)) {
 //							assessmentCriteria.and("campId").is(new ObjectId(campId));
@@ -1882,28 +1999,43 @@ public class CampVisitServiceImpl implements CampVisitService {
 //						}else if(toDateTime != null) {
 //							assessmentCriteria.and("createdTime").lte(toDateTime);
 //						}
-						
-						assessmentCriteria.and("academicProfileId").is(new ObjectId(profileId));
-						Integer growthAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), GrowthAssessmentAndGeneralBioMetricsCollection.class);
-						if(growthAssessmentCount > 0)response.setIsGrowthAssessmentPresent(true);
-						
-						Integer physicalAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), PhysicalAssessmentCollection.class);
-						if(physicalAssessmentCount > 0)response.setIsPhysicalAssessmentPresent(true);
-						
-						Integer eyeAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), EyeAssessmentCollection.class);
-						if(eyeAssessmentCount > 0)response.setIsEyeAssessmentPresent(true);
-						
-						Integer entAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), ENTAssessmentCollection.class);
-						if(entAssessmentCount > 0)response.setIsENTAssessmentPresent(true);
-						
-						Integer dentalAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), DentalAssessmentCollection.class);
-						if(dentalAssessmentCount > 0)response.setIsDentalAssessmentPresent(true);
-						
-						Integer nutritionAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria), NutritionAssessmentCollection.class);
-						if(nutritionAssessmentCount > 0)response.setIsNutritionalAssessmentPresent(true);
-						
-						Integer dietPlanCount = (int) mongoTemplate.count(new Query(new Criteria("academicProfileId").is(new ObjectId(profileId))), DietPlanCollection.class);
-						if(dietPlanCount > 0)response.setIsDietPlanPresent(true);
+
+					assessmentCriteria.and("academicProfileId").is(new ObjectId(profileId));
+					Integer growthAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria),
+							GrowthAssessmentAndGeneralBioMetricsCollection.class);
+					if (growthAssessmentCount > 0)
+						response.setIsGrowthAssessmentPresent(true);
+
+					Integer physicalAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria),
+							PhysicalAssessmentCollection.class);
+					if (physicalAssessmentCount > 0)
+						response.setIsPhysicalAssessmentPresent(true);
+
+					Integer eyeAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria),
+							EyeAssessmentCollection.class);
+					if (eyeAssessmentCount > 0)
+						response.setIsEyeAssessmentPresent(true);
+
+					Integer entAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria),
+							ENTAssessmentCollection.class);
+					if (entAssessmentCount > 0)
+						response.setIsENTAssessmentPresent(true);
+
+					Integer dentalAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria),
+							DentalAssessmentCollection.class);
+					if (dentalAssessmentCount > 0)
+						response.setIsDentalAssessmentPresent(true);
+
+					Integer nutritionAssessmentCount = (int) mongoTemplate.count(new Query(assessmentCriteria),
+							NutritionAssessmentCollection.class);
+					if (nutritionAssessmentCount > 0)
+						response.setIsNutritionalAssessmentPresent(true);
+
+					Integer dietPlanCount = (int) mongoTemplate.count(
+							new Query(new Criteria("academicProfileId").is(new ObjectId(profileId))),
+							DietPlanCollection.class);
+					if (dietPlanCount > 0)
+						response.setIsDietPlanPresent(true);
 				}
 				/*
 				 * if (!DPDoctorUtils.anyStringEmpty(response.getImageUrl())) {
@@ -1922,18 +2054,17 @@ public class CampVisitServiceImpl implements CampVisitService {
 		}
 		return response;
 	}
-	
-	
+
 	@Override
 	public List<NutritionSchoolAssociationResponse> getNutritionAssociations(int page, int size, String doctorId,
 			String searchTerm, String updatedTime) {
 		List<NutritionSchoolAssociationResponse> response = null;
 		try {
-			
+
 			ArrayList<ObjectId> objectIds = new ArrayList<>();
 			objectIds.add(new ObjectId(doctorId));
 			Criteria criteria = new Criteria("doctorId").in(objectIds);
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(updatedTime)) {
 				criteria.and("createdTime").gte(new Date(Long.parseLong(updatedTime)));
 			}
@@ -1954,8 +2085,8 @@ public class CampVisitServiceImpl implements CampVisitService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "branch.branchName")));
 			}
-			response = mongoTemplate.aggregate(aggregation, NutritionSchoolAssociationCollection.class, NutritionSchoolAssociationResponse.class)
-					.getMappedResults();
+			response = mongoTemplate.aggregate(aggregation, NutritionSchoolAssociationCollection.class,
+					NutritionSchoolAssociationResponse.class).getMappedResults();
 
 		} catch (BusinessException be) {
 			logger.warn(be);
@@ -1967,7 +2098,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public List<AcadamicClassResponse> getAcadamicClass(int page, int size, String branchId, String schoolId,
 			String searchTerm, Boolean discarded) {
@@ -1996,7 +2127,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 
-
 						Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "section"),
 						Aggregation.unwind("section", true),
 						Aggregation.lookup("acadamic_profile_cl", "teacherId", "_id", "teacher"),
@@ -2019,7 +2149,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 			response = mongoTemplate.aggregate(aggregation, AcadamicClassCollection.class, AcadamicClassResponse.class)
 					.getMappedResults();
 
-
 		} catch (BusinessException e) {
 			logger.error("Error while get Acadamic class" + e.getMessage());
 			e.printStackTrace();
@@ -2029,7 +2158,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 
 		return response;
 	}
-	
+
 	@Override
 	public Integer countAcadamicClass(String branchId, String schoolId, String searchTerm, Boolean discarded) {
 		Integer response = 0;
@@ -2059,7 +2188,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 			response = mongoTemplate.aggregate(aggregation, AcadamicClassCollection.class, AcadamicClassResponse.class)
 					.getMappedResults().size();
 
-
 		} catch (BusinessException e) {
 			logger.error("Error while counting Acadamic class" + e.getMessage());
 			e.printStackTrace();
@@ -2069,8 +2197,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 
 		return response;
 	}
-	
-	
+
 	@Override
 	public List<AcademicProfile> getProfile(int page, int size, String userId, Boolean discarded, String searchTerm) {
 		List<AcademicProfile> response = null;
@@ -2129,7 +2256,7 @@ public class CampVisitServiceImpl implements CampVisitService {
 						Aggregation.lookup("acadamic_section_cl", "sectionId", "_id", "acadamicSection"),
 						Aggregation.unwind("acadamicSection", true),
 						Aggregation.lookup("school_branch_cl", "branchId", "_id", "branch"),
-						Aggregation.unwind("branch"),Aggregation.match(new Criteria("branch.isActivated").is(true)),
+						Aggregation.unwind("branch"), Aggregation.match(new Criteria("branch.isActivated").is(true)),
 						Aggregation.lookup("school_cl", "schoolId", "_id", "school"), Aggregation.unwind("school"),
 						Aggregation.match(new Criteria("school.isActivated").is(true)), projectList,
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "firstName")));
@@ -2156,7 +2283,6 @@ public class CampVisitServiceImpl implements CampVisitService {
 		return response;
 	}
 
-
 	@Override
 	public Integer countProfile(String userId, Boolean discarded, String searchTerm) {
 		Integer response = 0;
@@ -2181,20 +2307,18 @@ public class CampVisitServiceImpl implements CampVisitService {
 						new Criteria("emailAddress").regex("^" + searchTerm, "i"),
 						new Criteria("mobileNumber").regex("^" + searchTerm, "i"));
 			}
-			
+
 			Aggregation aggregation = null;
 
-			
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("school_branch_cl", "branchId", "_id", "branch"), Aggregation.unwind("branch"),
+					Aggregation.match(new Criteria("branch.isActivated").is(true)),
+					Aggregation.lookup("school_cl", "schoolId", "_id", "school"), Aggregation.unwind("school"),
+					Aggregation.match(new Criteria("school.isActivated").is(true)));
 
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),					
-						Aggregation.lookup("school_branch_cl", "branchId", "_id", "branch"),
-						Aggregation.unwind("branch"),Aggregation.match(new Criteria("branch.isActivated").is(true)),
-						Aggregation.lookup("school_cl", "schoolId", "_id", "school"), Aggregation.unwind("school"),
-						Aggregation.match(new Criteria("school.isActivated").is(true)));
-			
 			response = mongoTemplate.aggregate(aggregation, AcademicProfileCollection.class, AcademicProfile.class)
 					.getMappedResults().size();
-			
+
 		} catch (BusinessException be) {
 			logger.warn(be);
 			throw be;
@@ -2210,50 +2334,57 @@ public class CampVisitServiceImpl implements CampVisitService {
 	public NutritionRDA getRDAForUser(String academicProfileId, String doctorId, String locationId, String hospitalId) {
 		NutritionRDA response = null;
 		try {
-			AcademicProfileCollection acadamicProfileCollection = acadamicProfileRespository.findById(new ObjectId(academicProfileId)).orElse(null);
-			if(acadamicProfileCollection == null) {
+			AcademicProfileCollection acadamicProfileCollection = acadamicProfileRespository
+					.findById(new ObjectId(academicProfileId)).orElse(null);
+			if (acadamicProfileCollection == null) {
 				logger.warn("No academic profile found with this Id");
 				throw new BusinessException(ServiceError.InvalidInput, "No academic profile found with this Id");
 			}
-			
-			if(acadamicProfileCollection.getAddress() == null || DPDoctorUtils.allStringsEmpty(acadamicProfileCollection.getAddress().getCountry())) {
+
+			if (acadamicProfileCollection.getAddress() == null
+					|| DPDoctorUtils.allStringsEmpty(acadamicProfileCollection.getAddress().getCountry())) {
 				logger.warn("Patient country is null or empty");
 				throw new BusinessException(ServiceError.InvalidInput, "Patient country is null or empty");
 			}
-			
-			if(DPDoctorUtils.allStringsEmpty(acadamicProfileCollection.getGender())) {
+
+			if (DPDoctorUtils.allStringsEmpty(acadamicProfileCollection.getGender())) {
 				logger.warn("Patient gender is null or empty");
 				throw new BusinessException(ServiceError.InvalidInput, "Patient gender is null or empty");
 			}
-			
-			if(acadamicProfileCollection.getDob() == null) {
+
+			if (acadamicProfileCollection.getDob() == null) {
 				logger.warn("Patient date of birth is null or empty");
 				throw new BusinessException(ServiceError.InvalidInput, "Patient date of birth is null or empty");
 			}
-			
+
 			NutritionAssessmentCollection nutritionAssessment = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(new Criteria("academicProfileId").is(new ObjectId(academicProfileId)).and("discarded").is(false)), Aggregation.sort(Direction.DESC, "createdTime"),
-							Aggregation.limit(1)), NutritionAssessmentCollection.class, NutritionAssessmentCollection.class).getUniqueMappedResult();
-			
-			if(nutritionAssessment == null) {
+					Aggregation.newAggregation(
+							Aggregation.match(new Criteria("academicProfileId").is(new ObjectId(academicProfileId))
+									.and("discarded").is(false)),
+							Aggregation.sort(Direction.DESC, "createdTime"), Aggregation.limit(1)),
+					NutritionAssessmentCollection.class, NutritionAssessmentCollection.class).getUniqueMappedResult();
+
+			if (nutritionAssessment == null) {
 				logger.warn("No assessment is set for this patient");
 				throw new BusinessException(ServiceError.InvalidInput, "No assessment is set for this patient");
 			}
 			Criteria criteria = new Criteria("country").is(acadamicProfileCollection.getAddress().getCountry())
-					.and("gender").is(acadamicProfileCollection.getGender())
-					.and("type").is(nutritionAssessment.getType());
-			
-			double ageInYears = acadamicProfileCollection.getDob().getAge().getYears() 
-					+ (double)acadamicProfileCollection.getDob().getAge().getMonths()/12
-					+ (double)acadamicProfileCollection.getDob().getAge().getDays()/365; 
+					.and("gender").is(acadamicProfileCollection.getGender()).and("type")
+					.is(nutritionAssessment.getType());
+
+			double ageInYears = acadamicProfileCollection.getDob().getAge().getYears()
+					+ (double) acadamicProfileCollection.getDob().getAge().getMonths() / 12
+					+ (double) acadamicProfileCollection.getDob().getAge().getDays() / 365;
 
 			criteria.and("fromAgeInYears").lte(ageInYears).and("toAgeInYears").gte(ageInYears);
-					
+
 			List<String> emptyArr = new ArrayList<String>();
-				criteria.orOperator(new Criteria("pregnancyCategory").is(null), new Criteria("pregnancyCategory").is(emptyArr));
-			
-			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), NutritionRDACollection.class ,NutritionRDA.class).getUniqueMappedResult(); 
-		}catch(BusinessException e) {
+			criteria.orOperator(new Criteria("pregnancyCategory").is(null),
+					new Criteria("pregnancyCategory").is(emptyArr));
+
+			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)),
+					NutritionRDACollection.class, NutritionRDA.class).getUniqueMappedResult();
+		} catch (BusinessException e) {
 			logger.error("Error while getting RDA for user " + e.getMessage());
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting RDA for user " + e.getMessage());
@@ -2267,42 +2398,51 @@ public class CampVisitServiceImpl implements CampVisitService {
 		UserAssessment response = new UserAssessment();
 		try {
 			response.setRegistrationDetails(getAcadamicProfile(academicProfileId));
-			Criteria criteria = new Criteria("academicProfileId").is(new ObjectId(academicProfileId)).and("discarded").is(false);
-			
+			Criteria criteria = new Criteria("academicProfileId").is(new ObjectId(academicProfileId)).and("discarded")
+					.is(false);
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
-			GrowthAssessmentAndGeneralBioMetrics growthAssessmentAndGeneralBioMetrics = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(Direction.DESC, "createdTime"),
-							Aggregation.limit(1)), GrowthAssessmentAndGeneralBioMetricsCollection.class, GrowthAssessmentAndGeneralBioMetrics.class).getUniqueMappedResult();
+			GrowthAssessmentAndGeneralBioMetrics growthAssessmentAndGeneralBioMetrics = mongoTemplate
+					.aggregate(
+							Aggregation.newAggregation(Aggregation.match(criteria),
+									Aggregation.sort(Direction.DESC, "createdTime"), Aggregation.limit(1)),
+							GrowthAssessmentAndGeneralBioMetricsCollection.class,
+							GrowthAssessmentAndGeneralBioMetrics.class)
+					.getUniqueMappedResult();
 			response.setGrowthAssessmentAndGeneralBioMetrics(growthAssessmentAndGeneralBioMetrics);
-			
+
 			PhysicalAssessment physicalAssessment = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(Direction.DESC, "createdTime"),
-							Aggregation.limit(1)), PhysicalAssessmentCollection.class, PhysicalAssessment.class).getUniqueMappedResult();
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(Direction.DESC, "createdTime"), Aggregation.limit(1)),
+					PhysicalAssessmentCollection.class, PhysicalAssessment.class).getUniqueMappedResult();
 			response.setPhysicalAssessment(physicalAssessment);
-			
-			
+
 			ENTAssessment entAssessment = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(Direction.DESC, "createdTime"),
-							Aggregation.limit(1)), ENTAssessmentCollection.class, ENTAssessment.class).getUniqueMappedResult();
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(Direction.DESC, "createdTime"), Aggregation.limit(1)),
+					ENTAssessmentCollection.class, ENTAssessment.class).getUniqueMappedResult();
 			response.setEntAssessment(entAssessment);
-			
+
 			DentalAssessment dentalAssessment = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(Direction.DESC, "createdTime"),
-							Aggregation.limit(1)), DentalAssessmentCollection.class, DentalAssessment.class).getUniqueMappedResult();
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(Direction.DESC, "createdTime"), Aggregation.limit(1)),
+					DentalAssessmentCollection.class, DentalAssessment.class).getUniqueMappedResult();
 			response.setDentalAssessment(dentalAssessment);
-			
+
 			EyeAssessment eyeAssessment = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(Direction.DESC, "createdTime"),
-							Aggregation.limit(1)), EyeAssessmentCollection.class, EyeAssessment.class).getUniqueMappedResult();
-			
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(Direction.DESC, "createdTime"), Aggregation.limit(1)),
+					EyeAssessmentCollection.class, EyeAssessment.class).getUniqueMappedResult();
+
 			response.setEyeAssessment(eyeAssessment);
-			
+
 			NutritionAssessment nutritionAssessment = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(Direction.DESC, "createdTime"),
-							Aggregation.limit(1)), NutritionAssessmentCollection.class, NutritionAssessment.class).getUniqueMappedResult();
-			
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(Direction.DESC, "createdTime"), Aggregation.limit(1)),
+					NutritionAssessmentCollection.class, NutritionAssessment.class).getUniqueMappedResult();
+
 			response.setNutritionAssessment(nutritionAssessment);
 
 		} catch (Exception e) {
@@ -2316,11 +2456,11 @@ public class CampVisitServiceImpl implements CampVisitService {
 			String updatedTime, String branchId, String department) {
 		List<DoctorSchoolAssociation> response = null;
 		try {
-			
+
 			ArrayList<ObjectId> objectIds = new ArrayList<>();
 			objectIds.add(new ObjectId(doctorId));
 			Criteria criteria = new Criteria("doctorId").in(objectIds);
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(branchId)) {
 				criteria.and("branchId").is(new ObjectId(branchId));
 			}
@@ -2347,9 +2487,9 @@ public class CampVisitServiceImpl implements CampVisitService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.ASC, "branch.branchName")));
 			}
-			response = mongoTemplate.aggregate(aggregation, DoctorSchoolAssociationCollection.class, DoctorSchoolAssociation.class)
+			response = mongoTemplate
+					.aggregate(aggregation, DoctorSchoolAssociationCollection.class, DoctorSchoolAssociation.class)
 					.getMappedResults();
-System.out.println(response);
 		} catch (BusinessException be) {
 			logger.warn(be);
 			throw be;
@@ -2365,31 +2505,33 @@ System.out.println(response);
 	public UserTreatment addUserTreatment(UserTreatment request) {
 		UserTreatment response = null;
 		try {
-			
+
 			UserTreatmentCollection userTreatmentCollection = null;
-			if(!DPDoctorUtils.anyStringEmpty(request.getId())) {
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				userTreatmentCollection = userTreatmentRepository.findById(new ObjectId(request.getId())).orElse(null);
-				if(userTreatmentCollection == null) {
+				if (userTreatmentCollection == null) {
 					throw new BusinessException(ServiceError.Unknown, "Invalid Id. No user treatment found");
 				}
 				request.setUpdatedTime(new Date());
 				request.setAdminCreatedTime(userTreatmentCollection.getAdminCreatedTime());
 				request.setCreatedTime(userTreatmentCollection.getCreatedTime());
 				request.setCreatedBy(userTreatmentCollection.getCreatedBy());
-				
+
 				BeanUtil.map(request, userTreatmentCollection);
-			}else {
+			} else {
 				userTreatmentCollection = new UserTreatmentCollection();
 				BeanUtil.map(request, userTreatmentCollection);
-				
+
 				userTreatmentCollection.setUpdatedTime(new Date());
 				userTreatmentCollection.setCreatedTime(new Date());
 				userTreatmentCollection.setAdminCreatedTime(new Date());
-				
+
 				if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
-					UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
+					UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
+							.orElse(null);
 					if (userCollection != null) {
-						userTreatmentCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+						userTreatmentCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 										+ userCollection.getFirstName());
 					}
 				}
@@ -2409,8 +2551,9 @@ System.out.println(response);
 	public UserTreatment getUserTreatmentById(String id) {
 		UserTreatment response = null;
 		try {
-			UserTreatmentCollection userTreatmentCollection = userTreatmentRepository.findById(new ObjectId(id)).orElse(null);
-			if(userTreatmentCollection == null) {
+			UserTreatmentCollection userTreatmentCollection = userTreatmentRepository.findById(new ObjectId(id))
+					.orElse(null);
+			if (userTreatmentCollection == null) {
 				throw new BusinessException(ServiceError.Unknown, "Invalid Id. No user treatment found");
 			}
 			response = new UserTreatment();
@@ -2432,31 +2575,35 @@ System.out.println(response);
 			if (!DPDoctorUtils.anyStringEmpty(updatedTime)) {
 				criteria.and("createdTime").gte(new Date(Long.parseLong(updatedTime)));
 			}
-			if(!DPDoctorUtils.anyStringEmpty(userId))
+			if (!DPDoctorUtils.anyStringEmpty(userId))
 				criteria.and("userId").is(new ObjectId(userId));
-			
-			if(!DPDoctorUtils.anyStringEmpty(doctorId))
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
-			if(!DPDoctorUtils.anyStringEmpty(locationId))
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
-			if(!DPDoctorUtils.anyStringEmpty(hospitalId))
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 
-			if(discarded != null)
+			if (discarded != null)
 				criteria.and("discarded").is(discarded);
 
-			if(!DPDoctorUtils.anyStringEmpty(department))
+			if (!DPDoctorUtils.anyStringEmpty(department))
 				criteria.and("department").is(department);
-			
-			if(size > 0) {
-				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
-						Aggregation.skip((long) (page) * size), Aggregation.limit(size)), UserTreatmentCollection.class, UserTreatment.class).getMappedResults();
-			}else {
-				response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), UserTreatmentCollection.class, UserTreatment.class).getMappedResults();
+
+			if (size > 0) {
+				response = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+								Aggregation.skip((long) (page) * size), Aggregation.limit(size)),
+						UserTreatmentCollection.class, UserTreatment.class).getMappedResults();
+			} else {
+				response = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+						UserTreatmentCollection.class, UserTreatment.class).getMappedResults();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2470,14 +2617,15 @@ System.out.println(response);
 	public UserTreatment deleteUserTreatment(String id, Boolean discarded) {
 		UserTreatment response = null;
 		try {
-			UserTreatmentCollection userTreatmentCollection = userTreatmentRepository.findById(new ObjectId(id)).orElse(null);
-			if(userTreatmentCollection == null) {
+			UserTreatmentCollection userTreatmentCollection = userTreatmentRepository.findById(new ObjectId(id))
+					.orElse(null);
+			if (userTreatmentCollection == null) {
 				throw new BusinessException(ServiceError.Unknown, "Invalid Id. No user treatment found");
 			}
 			userTreatmentCollection.setDiscarded(discarded);
 			userTreatmentCollection.setUpdatedTime(new Date());
 			userTreatmentCollection = userTreatmentRepository.save(userTreatmentCollection);
-			
+
 			response = new UserTreatment();
 			BeanUtil.map(userTreatmentCollection, response);
 		} catch (Exception e) {
@@ -2494,22 +2642,22 @@ System.out.println(response);
 		List<Object> response = null;
 		try {
 			Criteria criteria = new Criteria();
-			
-			if(!DPDoctorUtils.anyStringEmpty(doctorId))
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
-			if(!DPDoctorUtils.anyStringEmpty(locationId))
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
-			if(!DPDoctorUtils.anyStringEmpty(hospitalId))
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 
-			if(discarded != null)
+			if (discarded != null)
 				criteria.and("discarded").is(discarded);
 
-			if(!DPDoctorUtils.anyStringEmpty(department))
+			if (!DPDoctorUtils.anyStringEmpty(department))
 				criteria.and("department").is(department);
-			
+
 			if (fromDate > 0 && toDate > 0) {
 				criteria.and("createdTime").gte(new Date(fromDate)).lte(new Date(toDate));
 			} else if (fromDate > 0) {
@@ -2518,17 +2666,19 @@ System.out.println(response);
 				criteria.and("createdTime").lte(new Date(toDate));
 			}
 
-			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.unwind("department"),
-					new CustomAggregationOperation(new Document("$group", 
-							new BasicDBObject("department", new BasicDBObject("$first", "$department")
-									.append("count", new BasicDBObject("$sum", 1)))))), UserTreatmentCollection.class, Object.class).getMappedResults();
-		}catch (Exception e) {
+			response = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.unwind("department"),
+							new CustomAggregationOperation(new Document("$group",
+									new BasicDBObject("department",
+											new BasicDBObject("$first", "$department").append("count",
+													new BasicDBObject("$sum", 1)))))),
+					UserTreatmentCollection.class, Object.class).getMappedResults();
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error occured while getting User Treatment analytics");
 			throw new BusinessException(ServiceError.Unknown, "Error occured while getting User Treatment analytics");
 		}
 		return response;
 	}
-	
+
 }

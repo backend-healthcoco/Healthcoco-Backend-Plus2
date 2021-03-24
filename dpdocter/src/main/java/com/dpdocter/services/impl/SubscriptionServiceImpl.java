@@ -569,7 +569,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	}
 
 	@Override
-	public Subscription getSubscriptionByDoctorId(String doctorId, PackageType packageName,int duration,int newAmount) {
+	public Subscription getSubscriptionByDoctorId(String doctorId, PackageType packageName, int duration,
+			int newAmount) {
 		Subscription response = null;
 		try {
 			SubscriptionCollection subscriptionCollection = subscriptionRepository
@@ -577,7 +578,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			if (subscriptionCollection == null) {
 				throw new BusinessException(ServiceError.NotFound, "Error no such id");
 			}
-			System.out.println("Sub" + subscriptionCollection);
 
 			if (packageName != null) {
 				PackageDetailObjectCollection packageBasic = packageDetailObjectRepository
@@ -592,61 +592,61 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				List<PackageAmountObject> BASIC = packageBasic.getPackageAmount();
 				List<PackageAmountObject> PRO = packagePro.getPackageAmount();
 				List<PackageAmountObject> ADVANCE = packageAdvance.getPackageAmount();
-				
+
 				if (subscriptionCollection.getPackageName() != PackageType.FREE) {
-					
+
 					// for trial period condition
-					if (subscriptionCollection.getPackageName() == PackageType.BASIC && subscriptionCollection.getAmount() == 0) {
+					if (subscriptionCollection.getPackageName() == PackageType.BASIC
+							&& subscriptionCollection.getAmount() == 0) {
 						subscriptionCollection.setAmount(newAmount);
 					} else {
-					// from date toDate difference
-					Calendar fromDateConvert = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-					fromDateConvert.setTime(subscriptionCollection.getFromDate());
-					int fromDateConvertDay = fromDateConvert.get(Calendar.DATE);
-					int fromDateConvertMonth = fromDateConvert.get(Calendar.MONTH) + 1;
-					int fromDateConvertYear = fromDateConvert.get(Calendar.YEAR);
-					System.out.println("frm days" + fromDateConvertDay + fromDateConvertMonth + fromDateConvertYear);
-					// to date
-					Calendar toDateConvert = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-					toDateConvert.setTime(subscriptionCollection.getToDate());
-					int toDateConvertDay = toDateConvert.get(Calendar.DATE);
-					int toDateConvertMonth = toDateConvert.get(Calendar.MONTH) + 1;
-					int toDateConvertYear = toDateConvert.get(Calendar.YEAR);
-					LocalDate fromDate = LocalDate.of(fromDateConvertYear, fromDateConvertMonth, fromDateConvertDay);
-					LocalDate toDate = LocalDate.of(toDateConvertYear, toDateConvertMonth, toDateConvertDay);
+						// from date toDate difference
+						Calendar fromDateConvert = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+						fromDateConvert.setTime(subscriptionCollection.getFromDate());
+						int fromDateConvertDay = fromDateConvert.get(Calendar.DATE);
+						int fromDateConvertMonth = fromDateConvert.get(Calendar.MONTH) + 1;
+						int fromDateConvertYear = fromDateConvert.get(Calendar.YEAR);
+						System.out
+								.println("frm days" + fromDateConvertDay + fromDateConvertMonth + fromDateConvertYear);
+						// to date
+						Calendar toDateConvert = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+						toDateConvert.setTime(subscriptionCollection.getToDate());
+						int toDateConvertDay = toDateConvert.get(Calendar.DATE);
+						int toDateConvertMonth = toDateConvert.get(Calendar.MONTH) + 1;
+						int toDateConvertYear = toDateConvert.get(Calendar.YEAR);
+						LocalDate fromDate = LocalDate.of(fromDateConvertYear, fromDateConvertMonth,
+								fromDateConvertDay);
+						LocalDate toDate = LocalDate.of(toDateConvertYear, toDateConvertMonth, toDateConvertDay);
 
-					Period diiff = Period.between(fromDate, toDate);// get difference bet today & fromdate
+						Period diiff = Period.between(fromDate, toDate);// get difference bet today & fromdate
 
-					// for 10th point
-					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-					LocalDate currentDate = LocalDate.now();
-					localCalendar.setTime(subscriptionCollection.getFromDate());
-					int currentDay = localCalendar.get(Calendar.DATE);
-					int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-					int currentYear = localCalendar.get(Calendar.YEAR);
+						// for 10th point
+						Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+						LocalDate currentDate = LocalDate.now();
+						localCalendar.setTime(subscriptionCollection.getFromDate());
+						int currentDay = localCalendar.get(Calendar.DATE);
+						int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+						int currentYear = localCalendar.get(Calendar.YEAR);
 
-					LocalDate newDate = LocalDate.of(currentYear, currentMonth, currentDay);
-					System.out.println(newDate);
-					Period period = Period.between(currentDate, newDate);// get difference bet today & fromdate
-					System.out.println(period + "mon" + period.getMonths());
-					int usedMonths = -(period.getMonths());
-					System.out.println(usedMonths);
-					// pro to adv
+						LocalDate newDate = LocalDate.of(currentYear, currentMonth, currentDay);
+						Period period = Period.between(currentDate, newDate);// get difference bet today & fromdate
+						int usedMonths = -(period.getMonths());
+						// pro to adv
 //					Cost = new amount - old amount + (per month cost of old amount * months used)
-					// find per month cost of packages
-					int getMonthsFromYear = diiff.getYears() * 12;// calculate number of months from old duration
-					int amountPerMonth = subscriptionCollection.getAmount() / getMonthsFromYear;// to get per month cost
-																								// of old package
-					System.out.println("amountPerMonth" + amountPerMonth);
-					int discountedAmount = newAmount - subscriptionCollection.getAmount() + amountPerMonth * usedMonths;
-					System.out.println(discountedAmount);
+						// find per month cost of packages
+						int getMonthsFromYear = diiff.getYears() * 12;// calculate number of months from old duration
+						int amountPerMonth = subscriptionCollection.getAmount() / getMonthsFromYear;// to get per month
+																									// cost
+																									// of old package
+						int discountedAmount = newAmount - subscriptionCollection.getAmount()
+								+ amountPerMonth * usedMonths;
 
-					subscriptionCollection.setAmount(discountedAmount);
+						subscriptionCollection.setAmount(discountedAmount);
 					}
 
 				} // if close of amt
 				else {
-					//send request amount directly 
+					// send request amount directly
 					subscriptionCollection.setAmount(newAmount);
 
 					// pro to adv
@@ -893,7 +893,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 				while ((inputLine = in.readLine()) != null) {
 
 					output.append(inputLine);
-					System.out.println("response:" + output.toString());
 				}
 
 				ObjectMapper mapper = new ObjectMapper();
@@ -951,13 +950,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 			options.put("razorpay_payment_id", request.getPaymentId());
 			options.put("razorpay_signature", request.getSignature());
 			response = Utils.verifyPaymentSignature(options, secret);
-			System.out.println("paymn" + response);
 			if (response) {
 				Criteria criteria = new Criteria("orderId").is(request.getOrderId()).and("doctorId")
 						.is(new ObjectId(request.getDoctorId())).and("transactionStatus").is("PENDING");
 				DoctorSubscriptionPaymentCollection doctorSubscriptionPaymentCollection = mongoTemplate
 						.findOne(new Query(criteria), DoctorSubscriptionPaymentCollection.class);
-				System.out.println("doctorSubscriptionPaymentCollection" + doctorSubscriptionPaymentCollection);
 				doctorSubscriptionPaymentCollection.setTransactionId(request.getPaymentId());
 				doctorSubscriptionPaymentCollection.setTransactionStatus("SUCCESS");
 				doctorSubscriptionPaymentCollection.setCreatedTime(new Date());
@@ -973,7 +970,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					}
 					BeanUtil.map(request, subscriptionCollection);
 					subscriptionCollection.setUpdatedTime(new Date());
-					subscriptionCollection.setCreatedBy(userCollection.getTitle() +""+userCollection.getFirstName());
+					subscriptionCollection.setCreatedBy(userCollection.getTitle() + "" + userCollection.getFirstName());
 					subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
 					subscriptionCollection.setEmailAddress(userCollection.getEmailAddress());
 					subscriptionCollection.setPackageName(doctorSubscriptionPaymentCollection.getPackageName());
@@ -985,27 +982,27 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 							.setTransactionStatus(doctorSubscriptionPaymentCollection.getTransactionStatus());
 					subscriptionCollection.setFromDate(new Date());
 //					subscriptionCollection.setToDate(dateAfter2Days);
-					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12*request.getDuration()));
+					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12 * request.getDuration()));
 					subscriptionRepository.save(subscriptionCollection);
-							 
+
 					// save to History
 					BeanUtil.map(subscriptionCollection, subscriptionHistoryCollection);
 					subscriptionHistoryCollection.setSubscriptionId(subscriptionCollection.getId());
-					subscriptionHistoryCollection.setCreatedBy(userCollection.getTitle() +""+userCollection.getFirstName());
+					subscriptionHistoryCollection
+							.setCreatedBy(userCollection.getTitle() + "" + userCollection.getFirstName());
 					subscriptionHistoryCollection.setDoctorId(subscriptionCollection.getDoctorId());
 					subscriptionHistoryCollection.setCreatedTime(new Date());
 					subscriptionHistoryRepository.save(subscriptionHistoryCollection);
-					System.out.println(subscriptionHistoryCollection);
 					// clinic package change
 					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 							.findByDoctorId(new ObjectId(request.getDoctorId()));
-	
+
 					if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 							doctorClinicProfileCollection.setUpdatedTime(new Date());
 							doctorClinicProfileCollection
 									.setPackageType(subscriptionCollection.getPackageName().toString());
-	
+
 							doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 						}
 					}
@@ -1020,7 +1017,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					BeanUtil.map(request, subscriptionCollection);
 					subscriptionCollection.setCreatedTime(new Date());
 					subscriptionCollection.setUpdatedTime(new Date());
-					subscriptionCollection.setCreatedBy(userCollection.getTitle() +""+userCollection.getFirstName());
+					subscriptionCollection.setCreatedBy(userCollection.getTitle() + "" + userCollection.getFirstName());
 					subscriptionCollection.setMobileNumber(userCollection.getMobileNumber());
 					subscriptionCollection.setEmailAddress(userCollection.getEmailAddress());
 					subscriptionCollection.setPackageName(doctorSubscriptionPaymentCollection.getPackageName());
@@ -1032,27 +1029,26 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 							.setTransactionStatus(doctorSubscriptionPaymentCollection.getTransactionStatus());
 					subscriptionCollection.setFromDate(new Date());
 //					subscriptionCollection.setToDate(dateAfter2Days);
-					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12*request.getDuration()));
+					subscriptionCollection.setToDate(DPDoctorUtils.addmonth(new Date(), 12 * request.getDuration()));
 
 					subscriptionRepository.save(subscriptionCollection);
-					System.out.println(subscriptionCollection);
 					// save to History
 					BeanUtil.map(subscriptionCollection, subscriptionHistoryCollection);
 					subscriptionHistoryCollection.setSubscriptionId(subscriptionCollection.getId());
 					subscriptionHistoryCollection.setDoctorId(subscriptionCollection.getDoctorId());
 					subscriptionHistoryCollection.setCreatedTime(new Date());
 					subscriptionHistoryRepository.save(subscriptionHistoryCollection);
-					
+
 					// clinic package change
 					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository
 							.findByDoctorId(new ObjectId(request.getDoctorId()));
-	
+
 					if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
 						for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 							doctorClinicProfileCollection.setUpdatedTime(new Date());
 							doctorClinicProfileCollection
 									.setPackageType(subscriptionCollection.getPackageName().toString());
-	
+
 							doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 						}
 					}
@@ -1063,7 +1059,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						String message = "";
 						message = StringEscapeUtils.unescapeJava(message);
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-		        
+
 						smsTrackDetail.setType("Subscription online Payment");
 						smsTrackDetail.setDoctorId(userCollection.getId());
 						SMSDetail smsDetail = new SMSDetail();
@@ -1072,13 +1068,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						smsDetail.setUserName(userCollection.getFirstName());
 						String pattern = "dd/MM/yyyy";
 						SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-						sms.setSmsText("Hello " + userCollection.getFirstName() + ", your Payment has been done successfully on Date: "
-						+simpleDateFormat.format(doctorSubscriptionPaymentCollection.getCreatedTime())
-						+ ", Mode of Payment:  "+doctorSubscriptionPaymentCollection.getMode()
-						+ ", ReceiptId: "+doctorSubscriptionPaymentCollection.getReciept()
-						+ ", Total cost Rs.: "+ doctorSubscriptionPaymentCollection.getAmount() 
-						+ ", Plan: "+  doctorSubscriptionPaymentCollection.getPackageName()
-						+ ", Duration: "+request.getDuration()+" year.-Healthcoco");
+
+						sms.setSmsText("Hello " + userCollection.getFirstName()
+								+ ", your Payment has been done successfully on Date: "
+								+ simpleDateFormat.format(doctorSubscriptionPaymentCollection.getCreatedTime())
+								+ ", Mode of Payment:  " + doctorSubscriptionPaymentCollection.getMode()
+								+ ", ReceiptId: " + doctorSubscriptionPaymentCollection.getReciept()
+								+ ", Total cost Rs.: " + doctorSubscriptionPaymentCollection.getAmount() + ", Plan: "
+								+ doctorSubscriptionPaymentCollection.getPackageName() + ", Duration: "
+								+ request.getDuration() + " year.-Healthcoco");
 
 						SMSAddress smsAddress = new SMSAddress();
 						smsAddress.setRecipient(userCollection.getMobileNumber());
@@ -1090,17 +1088,21 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 						smsTrackDetail.setSmsDetails(smsDetails);
 						smsTrackDetail.setTemplateId("1307161561866511824");
 						smsServices.sendSMS(smsTrackDetail, false);
-						System.out.println("sms sent");
 
-						String body = mailBodyGenerator.subscriptionPaymentEmailBody(userCollection.getFirstName(),simpleDateFormat.format(doctorSubscriptionPaymentCollection.getCreatedTime()),
-								doctorSubscriptionPaymentCollection.getTransactionId(),doctorSubscriptionPaymentCollection.getReciept(),Integer.toString(doctorSubscriptionPaymentCollection.getAmount()),
-								doctorSubscriptionPaymentCollection.getPackageName().toString(),doctorSubscriptionPaymentCollection.getMode().toString(),request.getDuration(),"subscriptionPayment.vm");
-				Boolean mail=	mailService.sendEmail(userCollection.getEmailAddress(),"Subscription Plan Updated on Healthcoco+", body, null);
+						String body = mailBodyGenerator.subscriptionPaymentEmailBody(userCollection.getFirstName(),
+								simpleDateFormat.format(doctorSubscriptionPaymentCollection.getCreatedTime()),
+								doctorSubscriptionPaymentCollection.getTransactionId(),
+								doctorSubscriptionPaymentCollection.getReciept(),
+								Integer.toString(doctorSubscriptionPaymentCollection.getAmount()),
+								doctorSubscriptionPaymentCollection.getPackageName().toString(),
+								doctorSubscriptionPaymentCollection.getMode().toString(), request.getDuration(),
+								"subscriptionPayment.vm");
+						Boolean mail = mailService.sendEmail(userCollection.getEmailAddress(),
+								"Subscription Plan Updated on Healthcoco+", body, null);
 //
 //						try {
 //							Boolean ckM = mailService.sendEmail(userCollection.getEmailAddress(), "About payment", body,
 //									null);
-							System.out.println("main send" + mail);
 //						} catch (MessagingException e) {
 //							System.out.println("main send err");
 //							e.printStackTrace();

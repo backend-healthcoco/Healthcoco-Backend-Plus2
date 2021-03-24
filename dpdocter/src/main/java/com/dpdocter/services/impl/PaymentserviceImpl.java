@@ -18,40 +18,35 @@ import com.dpdocter.repository.SettlementRepository;
 import com.dpdocter.response.SettlementResponse;
 import com.dpdocter.services.PaymentServices;
 
-
 @Service
 public class PaymentserviceImpl implements PaymentServices {
 
-	 private static Logger logger = Logger.getLogger(PaymentserviceImpl.class);
-	 
-	 @Autowired
-		private BankDetailsRepository bankDetailsRepository;
-	
-	 @Autowired
-	 private SettlementRepository settlementRepository;
-	
+	private static Logger logger = Logger.getLogger(PaymentserviceImpl.class);
+
+	@Autowired
+	private BankDetailsRepository bankDetailsRepository;
+
+	@Autowired
+	private SettlementRepository settlementRepository;
+
 	@Override
 	public String updateSettlementReport(SettlementResponse request) {
-		String response=null;
+		String response = null;
 		try {
-			SettlementCollection settlements=new SettlementCollection();
+			SettlementCollection settlements = new SettlementCollection();
 			BeanUtil.map(request, settlements);
 			settlements.setCreatedTime(new Date());
 			settlements.setUpdatedTime(new Date());
-			
-			BankDetailsCollection payment=null;
+
+			BankDetailsCollection payment = null;
 			payment = bankDetailsRepository.findByRazorPayAccountId(settlements.getAccount_id());
-			System.out.println("payment"+payment);
-			if(payment!=null)
-				if(payment.getDoctorId()!=null)
-			{
-						settlements.setDoctorId(payment.getDoctorId());
-			}
+			if (payment != null)
+				if (payment.getDoctorId() != null) {
+					settlements.setDoctorId(payment.getDoctorId());
+				}
 			settlementRepository.save(settlements);
-			System.out.println("settlements"+settlements);
-			
-			response="settlement report added successfully";
-		}catch (BusinessException e) {
+			response = "settlement report added successfully";
+		} catch (BusinessException e) {
 			logger.error("Error while getting settlements " + e.getMessage());
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting settlements " + e.getMessage());
