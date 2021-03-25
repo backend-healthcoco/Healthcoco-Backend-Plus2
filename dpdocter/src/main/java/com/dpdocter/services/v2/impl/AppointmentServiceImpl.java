@@ -1431,7 +1431,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				criteria.and("fromDate").gte(fromDateTime);
-				System.out.println(fromDateTime);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(to)) {
 				localCalendar.setTime(new Date(Long.parseLong(to)));
@@ -1443,8 +1442,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 				
-				System.out.println(toDateTime);
-
 				criteria.and("toDate").lte(toDateTime);
 			}
 

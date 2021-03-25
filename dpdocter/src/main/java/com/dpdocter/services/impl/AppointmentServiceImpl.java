@@ -2311,7 +2311,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				criteria.and("fromDate").gte(fromDateTime);
-				System.out.println("fromDate" + fromDateTime);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(to)) {
 				localCalendar.setTime(new Date(Long.parseLong(to)));
@@ -2323,7 +2322,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				criteria.and("toDate").lte(toDateTime);
-				System.out.println("toDateTime" + toDateTime);
 			}
 
 			if (!DPDoctorUtils.anyStringEmpty(fromTime))
@@ -2353,7 +2351,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				response = getAppointmentsForWeb(criteria, sortOperation, page, size, appointmentLookupResponses);
 			else {
 				Integer count = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
-				System.out.println("criteria " + criteria);
 				if (count > 0) {
 					if (size > 0) {
 						appointmentLookupResponses = mongoTemplate.aggregate(

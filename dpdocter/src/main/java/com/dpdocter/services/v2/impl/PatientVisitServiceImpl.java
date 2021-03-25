@@ -1011,6 +1011,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("prescriptionscreatedBy", "$prescriptions.createdBy")
 				.append("prescriptionsupdatedTime", "$prescriptions.updatedTime")
 				.append("prescriptionsitems.drug", "$drug")
+				
+				.append("prescriptionsitems.drugName", "$prescriptions.items.drugName")
+				.append("prescriptionsitems.drugType", "$prescriptions.items.drugType")
+				.append("prescriptionsitems.genericNames", "$prescriptions.items.genericNames")
+
+				
 				.append("prescriptionsitems.duration", "$prescriptions.items.duration")
 				.append("prescriptionsitems.durationValue", "$prescriptions.items.duration.value")
 				.append("prescriptionsitems.durationUnit", "$prescriptions.items.duration.durationUnit.unit")
