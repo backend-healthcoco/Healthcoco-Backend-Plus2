@@ -209,9 +209,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				BeanUtil.map(treatmentServicesCollection, response);
 			}
 		} catch (Exception e) {
-			logger.error("Error occurred while adding or editing services", e);
+			logger.error("Error occurred while adding or editing services"+treatmentService);
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error occurred while adding or editing services");
+			throw new BusinessException(ServiceError.Unknown, "Error occurred while adding or editing services"+treatmentService);
 		}
 		return response;
 	}
