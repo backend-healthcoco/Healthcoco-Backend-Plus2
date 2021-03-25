@@ -756,6 +756,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	@Transactional
 	public PatientVisitResponse addMultipleData(AddMultipleDataRequest request) {
+		//System.out.println("Request"+request);
 		PatientVisitResponse response = new PatientVisitResponse();
 		String visitId = request.getVisitId();
 		Appointment appointment = null;
@@ -840,7 +841,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				addRecords(request, response, patientVisitCollection, visitId, appointment,
 						patientVisitCollection.getCreatedBy());
 			}
-			if (request.getTreatmentRequest() != null) {
+			System.out.println("Treatment"+request.getTreatmentRequest());
+			
+			if (request.getTreatmentRequest() != null)
+			if(request.getTreatmentRequest().getTreatments()!=null && !request.getTreatmentRequest().getTreatments().isEmpty())
+			 {
 				request.getTreatmentRequest().setCreatedTime(request.getCreatedTime());
 				addTreatments(request, response, patientVisitCollection, visitId, appointment,
 						patientVisitCollection.getCreatedBy());

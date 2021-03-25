@@ -1098,7 +1098,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				appointmentCollection = appointmentRepository.save(appointmentCollection);
 
-				PatientTreatmentResponse patientTreatmentResponse = addPatientTreatmentsThroughAppointments(
+				PatientTreatmentResponse patientTreatmentResponse=null;
+				if(request.getPatientTreatments()!=null)
+				 patientTreatmentResponse = addPatientTreatmentsThroughAppointments(
 						appointmentCollection, request.getPatientTreatments());
 
 				AppointmentBookedSlotCollection bookedSlotCollection = new AppointmentBookedSlotCollection();
@@ -2245,6 +2247,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			text = "Healthcoco! Your online "+ consultationType +" consultation with " + patientName + " has been scheduled @ " + dateTime
 					+ (clinicName != "" ? " at " + clinicName : "") + (branch != null ? ", " + branch : "") + ".";
 			smsDetail.setUserName(doctorName);
+			smsTrackDetail.setTemplateId("1307161649367351507");
 		}
 			break;	
 
