@@ -229,12 +229,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			} else {
 				userDeviceCollections = userDevices;
 			}
-			System.out.println("userId"+userId);
-			System.out.println("userDeviceCollections"+userDeviceCollections);
-			System.out.println("componentType"+componentType);
-			System.out.println("userDevices"+userDevices);
-			System.out.println("message"+message);
-			System.out.println("componentTypeId"+componentTypeId);
+//			System.out.println("userId"+userId);
+//			System.out.println("userDeviceCollections"+userDeviceCollections);
+//			System.out.println("componentType"+componentType);
+//			System.out.println("userDevices"+userDevices);
+//			System.out.println("message"+message);
+//			System.out.println("componentTypeId"+componentTypeId);
 			
 			if (userDeviceCollections != null && !userDeviceCollections.isEmpty()) {
 				for (UserDeviceCollection userDeviceCollection : userDeviceCollections) {
