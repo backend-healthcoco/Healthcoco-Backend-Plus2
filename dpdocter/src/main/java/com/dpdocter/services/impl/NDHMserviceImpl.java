@@ -2609,7 +2609,8 @@ public class NDHMserviceImpl implements NDHMservices {
 			sms.setSmsText(OTP+" is your Healthcoco OTP. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy! OTPVerification");
 
 			SMSAddress smsAddress = new SMSAddress();
-			mobileNumber=mobileNumber.replace("+91-","");
+			mobileNumber=mobileNumber.replace("+91","");
+			System.out.println("mobile"+mobileNumber);
 			smsAddress.setRecipient(mobileNumber);
 			sms.setSmsAddress(smsAddress);
 			smsDetail.setSms(sms);
@@ -5221,11 +5222,13 @@ pushNotificationServices.notifyUser(hiuDataRequest.getDoctorId().toString(),
 			healthIds.add(request.getProfile().getPatient().getHealthId());
 			request2.setHealthId(healthIds);
 			request2.setLocalPatientName(request.getProfile().getPatient().getName());
-			request2.setAge(request.getProfile().getPatient().getYearOfBirth());
+			//request2.setAge(request.getProfile().getPatient().getYearOfBirth());
 			request2.setFirstName(request.getProfile().getPatient().getName());
 			DOB dob=new DOB();
 			dob.setYears(request.getProfile().getPatient().getYearOfBirth());
+			if(request.getProfile().getPatient().getMonthOfBirth()!=null)
 			dob.setMonths(request.getProfile().getPatient().getMonthOfBirth());
+			if(request.getProfile().getPatient().getDayOfBirth()!=null)
 			dob.setDays(request.getProfile().getPatient().getDayOfBirth());
 			request2.setDob(dob);
 			request2.setMobileNumber(request.getProfile().getPatient().getIdentifiers().get(0).getValue());
