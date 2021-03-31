@@ -3,14 +3,8 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +12,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.exceptions.BusinessException;
@@ -33,8 +32,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.PATIENT_VISIT_BASE_URL)
+@RestController
+(PathProxy.PATIENT_VISIT_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.PATIENT_VISIT_BASE_URL, description = "Endpoint for patient visit")
@@ -51,8 +50,8 @@ public class PatientVisitApi {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	@Path(value = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA)
-	@POST
+	
+	@PostMapping(value = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA)
 	@ApiOperation(value = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA, notes = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA)
 	public Response<PatientVisitResponse> addMultipleData(AddMultipleDataRequest request) {
 
@@ -67,11 +66,11 @@ public class PatientVisitApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PatientVisitUrls.EMAIL)
-	@GET
+	
+	@GetMapping(value = PathProxy.PatientVisitUrls.EMAIL)
 	@ApiOperation(value = PathProxy.PatientVisitUrls.EMAIL, notes = PathProxy.PatientVisitUrls.EMAIL)
-	public Response<Boolean> email(@PathParam(value = "visitId") String visitId,
-			@PathParam(value = "emailAddress") String emailAddress) {
+	public Response<Boolean> email(@PathVariable(value = "visitId") String visitId,
+			@PathVariable(value = "emailAddress") String emailAddress) {
 
 		if (DPDoctorUtils.anyStringEmpty(visitId, emailAddress)) {
 			logger.warn("Visit Id Or Email AddressIs NULL");
@@ -83,10 +82,10 @@ public class PatientVisitApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PatientVisitUrls.GET_VISIT)
-	@GET
+	
+	@GetMapping(value = PathProxy.PatientVisitUrls.GET_VISIT)
 	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_VISIT, notes = PathProxy.PatientVisitUrls.GET_VISIT)
-	public Response<PatientVisitResponse> getVisit(@PathParam("visitId") String visitId) {
+	public Response<PatientVisitResponse> getVisit(@PathVariable("visitId") String visitId) {
 		if (DPDoctorUtils.anyStringEmpty(visitId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Patient Visit Id Cannot Be Empty!");
 		}
@@ -98,14 +97,14 @@ public class PatientVisitApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PatientVisitUrls.GET_VISITS)
-	@GET
+	
+	@GetMapping(value = PathProxy.PatientVisitUrls.GET_VISITS)
 	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_VISITS, notes = PathProxy.PatientVisitUrls.GET_VISITS)
-	public Response<PatientVisitResponse> getVisit(@PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "patientId") String patientId, @QueryParam(value = "page") long page,
-			@QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@QueryParam("visitFor") String visitFor) {
+	public Response<PatientVisitResponse> getVisit(@PathVariable(value = "doctorId") String doctorId,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "patientId") String patientId, @RequestParam(value = "page") long page,
+			@RequestParam(value = "size") int size, @DefaultValue("0") @RequestParam("updatedTime") String updatedTime,
+			@RequestParam("visitFor") String visitFor) {
 
 		if (DPDoctorUtils.anyStringEmpty(patientId, hospitalId, locationId)) {
 			logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
@@ -124,14 +123,14 @@ public class PatientVisitApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PatientVisitUrls.GET_VISITS_FOR_WEB)
-	@GET
+	
+	@GetMapping(value = PathProxy.PatientVisitUrls.GET_VISITS_FOR_WEB)
 	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_VISITS_FOR_WEB, notes = PathProxy.PatientVisitUrls.GET_VISITS_FOR_WEB)
-	public Response<PatientVisitResponse> getVisitForWEB(@QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "patientId") String patientId, @QueryParam(value = "page") long page,
-			@QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@QueryParam("visitFor") String visitFor) {
+	public Response<PatientVisitResponse> getVisitForWEB(@RequestParam(value = "doctorId") String doctorId,
+			@RequestParam(value = "locationId") String locationId, @RequestParam(value = "hospitalId") String hospitalId,
+			@RequestParam(value = "patientId") String patientId, @RequestParam(value = "page") long page,
+			@RequestParam(value = "size") int size, @DefaultValue("0") @RequestParam("updatedTime") String updatedTime,
+			@RequestParam("visitFor") String visitFor) {
 
 		if (DPDoctorUtils.anyStringEmpty(patientId, hospitalId, locationId)) {
 			logger.warn("Patient Id, Hospital Id, Location Id Cannot Be Empty");
@@ -147,13 +146,13 @@ public class PatientVisitApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PatientVisitUrls.GET_VISITS_HANDHELD)
-	@GET
+	
+	@GetMapping(value = PathProxy.PatientVisitUrls.GET_VISITS_HANDHELD)
 	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_VISITS_HANDHELD, notes = PathProxy.PatientVisitUrls.GET_VISITS_HANDHELD)
-	public Response<PatientVisit> getVisitsHandheld(@PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "patientId") String patientId, @QueryParam(value = "page") long page,
-			@QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+	public Response<PatientVisit> getVisitsHandheld(@PathVariable(value = "doctorId") String doctorId,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "patientId") String patientId, @RequestParam(value = "page") long page,
+			@RequestParam(value = "size") int size, @DefaultValue("0") @RequestParam("updatedTime") String updatedTime) {
 
 		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, hospitalId, locationId)) {
 			logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
@@ -169,11 +168,11 @@ public class PatientVisitApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PatientVisitUrls.DELETE_VISITS)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.PatientVisitUrls.DELETE_VISITS)
 	@ApiOperation(value = PathProxy.PatientVisitUrls.DELETE_VISITS, notes = PathProxy.PatientVisitUrls.DELETE_VISITS)
-	public Response<PatientVisitResponse> deleteVisit(@PathParam(value = "visitId") String visitId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<PatientVisitResponse> deleteVisit(@PathVariable(value = "visitId") String visitId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 
 		if (StringUtils.isEmpty(visitId)) {
 			logger.warn("Visit Id Cannot Be Empty");
@@ -186,13 +185,13 @@ public class PatientVisitApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PatientVisitUrls.SMS_VISITS)
-	@GET
+	
+	@GetMapping(value = PathProxy.PatientVisitUrls.SMS_VISITS)
 	@ApiOperation(value = PathProxy.PatientVisitUrls.SMS_VISITS, notes = PathProxy.PatientVisitUrls.SMS_VISITS)
-	public Response<Boolean> smsPrescription(@PathParam(value = "visitId") String visitId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "mobileNumber") String mobileNumber) {
+	public Response<Boolean> smsPrescription(@PathVariable(value = "visitId") String visitId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "mobileNumber") String mobileNumber) {
 
 		if (DPDoctorUtils.anyStringEmpty(visitId, doctorId, locationId, hospitalId, mobileNumber)) {
 			logger.warn("Invalid Input. Visit Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
@@ -205,13 +204,13 @@ public class PatientVisitApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PatientVisitUrls.SMS_VISITS_WEB)
-	@GET
+	
+	@GetMapping(value = PathProxy.PatientVisitUrls.SMS_VISITS_WEB)
 	@ApiOperation(value = PathProxy.PatientVisitUrls.SMS_VISITS_WEB, notes = PathProxy.PatientVisitUrls.SMS_VISITS_WEB)
-	public Response<Boolean> smsPrescriptionForWeb(@PathParam(value = "visitId") String visitId,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "mobileNumber") String mobileNumber) {
+	public Response<Boolean> smsPrescriptionForWeb(@PathVariable(value = "visitId") String visitId,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "mobileNumber") String mobileNumber) {
 
 		if (DPDoctorUtils.anyStringEmpty(visitId, mobileNumber)) {
 			logger.warn("Invalid Input. Visit Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
@@ -224,24 +223,24 @@ public class PatientVisitApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PatientVisitUrls.DOWNLOAD_PATIENT_VISIT)
-	@GET
+	
+	@GetMapping(value = PathProxy.PatientVisitUrls.DOWNLOAD_PATIENT_VISIT)
 	@ApiOperation(value = PathProxy.PatientVisitUrls.DOWNLOAD_PATIENT_VISIT, notes = PathProxy.PatientVisitUrls.DOWNLOAD_PATIENT_VISIT)
-	public Response<String> downloadPatientVisit(@PathParam("visitId") String visitId,
-			@DefaultValue("false") @QueryParam("showPH") Boolean showPH,
-			@DefaultValue("false") @QueryParam("showPLH") Boolean showPLH,
-			@DefaultValue("false") @QueryParam("showFH") Boolean showFH,
-			@DefaultValue("false") @QueryParam("showDA") Boolean showDA,
-			@DefaultValue("false") @QueryParam("isLabPrint") Boolean isLabPrint,
-			@DefaultValue("false") @QueryParam("showUSG") Boolean showUSG,
-			@DefaultValue("false") @QueryParam("isCustomPDF") Boolean isCustomPDF,
-			@DefaultValue("false") @QueryParam("showLMP") Boolean showLMP,
-			@DefaultValue("false") @QueryParam("showEDD") Boolean showEDD,
-			@DefaultValue("false") @QueryParam("showNoOfChildren") Boolean showNoOfChildren,
-			@DefaultValue("true") @QueryParam("showPrescription") Boolean showPrescription,
-			@DefaultValue("true") @QueryParam("showTreatment") Boolean showTreatment,
-			@DefaultValue("true") @QueryParam("showclinicalNotes") Boolean showclinicalNotes,
-			@DefaultValue("false") @QueryParam("showVitalSign") Boolean showVitalSign) {
+	public Response<String> downloadPatientVisit(@PathVariable("visitId") String visitId,
+			@DefaultValue("false") @RequestParam("showPH") Boolean showPH,
+			@DefaultValue("false") @RequestParam("showPLH") Boolean showPLH,
+			@DefaultValue("false") @RequestParam("showFH") Boolean showFH,
+			@DefaultValue("false") @RequestParam("showDA") Boolean showDA,
+			@DefaultValue("false") @RequestParam("isLabPrint") Boolean isLabPrint,
+			@DefaultValue("false") @RequestParam("showUSG") Boolean showUSG,
+			@DefaultValue("false") @RequestParam("isCustomPDF") Boolean isCustomPDF,
+			@DefaultValue("false") @RequestParam("showLMP") Boolean showLMP,
+			@DefaultValue("false") @RequestParam("showEDD") Boolean showEDD,
+			@DefaultValue("false") @RequestParam("showNoOfChildren") Boolean showNoOfChildren,
+			  @RequestParam("showPrescription") Boolean showPrescription,
+			  @RequestParam("showTreatment") Boolean showTreatment,
+			  @RequestParam("showclinicalNotes") Boolean showclinicalNotes,
+			@DefaultValue("false") @RequestParam("showVitalSign") Boolean showVitalSign) {
 		if (DPDoctorUtils.allStringsEmpty(visitId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -253,12 +252,12 @@ public class PatientVisitApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PatientVisitUrls.GET_PATIENT_LAST_VISIT)
-	@GET
+	
+	@GetMapping(value = PathProxy.PatientVisitUrls.GET_PATIENT_LAST_VISIT)
 	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_PATIENT_LAST_VISIT, notes = PathProxy.PatientVisitUrls.GET_PATIENT_LAST_VISIT)
-	public Response<PatientVisitResponse> getPatientLastVisit(@PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "patientId") String patientId) {
+	public Response<PatientVisitResponse> getPatientLastVisit(@PathVariable(value = "doctorId") String doctorId,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "patientId") String patientId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

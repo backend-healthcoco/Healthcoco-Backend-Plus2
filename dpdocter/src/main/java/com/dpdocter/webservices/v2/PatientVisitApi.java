@@ -4,18 +4,18 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -28,10 +28,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component(value = "PatientVisitApiV2")
-@Path(PathProxy.PATIENT_VISIT_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RestController(value = "PatientVisitApiV2")
+@RequestMapping(value=PathProxy.PATIENT_VISIT_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.PATIENT_VISIT_BASE_URL, description = "Endpoint for patient visit")
 public class PatientVisitApi {
 
@@ -47,14 +45,14 @@ public class PatientVisitApi {
 	private String imagePath;
 
 
-	@Path(value = PathProxy.PatientVisitUrls.GET_VISITS)
-	@GET
+	
+	@GetMapping(value = PathProxy.PatientVisitUrls.GET_VISITS)
 	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_VISITS, notes = PathProxy.PatientVisitUrls.GET_VISITS)
-	public Response<PatientVisitResponse> getVisit(@PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "patientId") String patientId, @QueryParam(value = "page") int page,
-			@QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@QueryParam("visitFor") String visitFor, @QueryParam("from") String from,@QueryParam("to") String to,@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<PatientVisitResponse> getVisit(@PathVariable(value = "doctorId") String doctorId,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "patientId") String patientId, @RequestParam(value = "page") int page,
+			@RequestParam(value = "size") int size, @DefaultValue("0") @RequestParam("updatedTime") String updatedTime,
+			@RequestParam("visitFor") String visitFor, @RequestParam("from") String from,@RequestParam("to") String to,  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(patientId, hospitalId, locationId)) {
 			logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
@@ -73,14 +71,14 @@ public class PatientVisitApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PatientVisitUrls.GET_VISITS_FOR_WEB)
-	@GET
+	
+	@GetMapping(value = PathProxy.PatientVisitUrls.GET_VISITS_FOR_WEB)
 	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_VISITS_FOR_WEB, notes = PathProxy.PatientVisitUrls.GET_VISITS_FOR_WEB)
-	public Response<PatientVisitResponse> getVisitForWEB(@QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "patientId") String patientId, @QueryParam(value = "page") int page,
-			@QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@QueryParam("visitFor") String visitFor,@QueryParam("from") String from,@QueryParam("to") String to, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<PatientVisitResponse> getVisitForWEB(@RequestParam(value = "doctorId") String doctorId,
+			@RequestParam(value = "locationId") String locationId, @RequestParam(value = "hospitalId") String hospitalId,
+			@RequestParam(value = "patientId") String patientId, @RequestParam(value = "page") int page,
+			@RequestParam(value = "size") int size, @DefaultValue("0") @RequestParam("updatedTime") String updatedTime,
+			@RequestParam("visitFor") String visitFor,@RequestParam("from") String from,@RequestParam("to") String to,   @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(patientId, hospitalId, locationId)) {
 			logger.warn("Patient Id, Hospital Id, Location Id Cannot Be Empty");

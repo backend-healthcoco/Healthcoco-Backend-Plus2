@@ -18,6 +18,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.DietPlan;
 import com.dpdocter.beans.DietPlanTemplate;
@@ -31,8 +37,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.DIET_PLAN_BASE_URL)
+@RestController
+(PathProxy.DIET_PLAN_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DIET_PLAN_BASE_URL, description = "Endpoint for Diet Plan")
@@ -43,8 +49,8 @@ public class DietPlanAPI {
 	@Autowired
 	private DietPlansService dietPlansService;
 
-	@Path(value = PathProxy.DietPlanUrls.ADD_EDIT_DIET_PLAN)
-	@POST
+	
+	@PostMapping(value = PathProxy.DietPlanUrls.ADD_EDIT_DIET_PLAN)
 	@ApiOperation(value = PathProxy.DietPlanUrls.ADD_EDIT_DIET_PLAN, notes = PathProxy.DietPlanUrls.ADD_EDIT_DIET_PLAN)
 	public Response<DietPlan> addEditDietPlan(DietPlan request) {
 
@@ -64,35 +70,35 @@ public class DietPlanAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DietPlanUrls.GET_DIET_PLANS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DietPlanUrls.GET_DIET_PLANS)
 	@ApiOperation(value = PathProxy.DietPlanUrls.GET_DIET_PLANS, notes = PathProxy.DietPlanUrls.GET_DIET_PLANS)
-	public Response<DietPlan> getDietPlans(@QueryParam("locationId") String locationId, @QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("patientId") String patientId,
-			@QueryParam("doctorId") String doctorId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("updatedTime") long updatedTime, @QueryParam("discarded") boolean discarded) {
+	public Response<DietPlan> getDietPlans(@RequestParam("locationId") String locationId, @RequestParam("page") int page,
+			@RequestParam("size") int size, @RequestParam("patientId") String patientId,
+			@RequestParam("doctorId") String doctorId, @RequestParam("hospitalId") String hospitalId,
+			@RequestParam("updatedTime") long updatedTime, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		Response<DietPlan> response = new Response<DietPlan>();
 		response.setDataList(dietPlansService.getDietPlans(page, size, patientId, doctorId, hospitalId, locationId,
 				updatedTime, discarded));
 		return response;
 	}
 	
-	@Path(value = PathProxy.DietPlanUrls.GET_DIET_PLANS_FOR_PATIENT)
-	@GET
+	
+	@GetMapping(value = PathProxy.DietPlanUrls.GET_DIET_PLANS_FOR_PATIENT)
 	@ApiOperation(value = PathProxy.DietPlanUrls.GET_DIET_PLANS_FOR_PATIENT, notes = PathProxy.DietPlanUrls.GET_DIET_PLANS_FOR_PATIENT)
-	public Response<DietPlan> getDietPlans( @QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("patientId") String patientId,
-			@QueryParam("updatedTime") long updatedTime, @QueryParam("discarded") boolean discarded) {
+	public Response<DietPlan> getDietPlans( @RequestParam("page") int page,
+			@RequestParam("size") int size, @RequestParam("patientId") String patientId,
+			@RequestParam("updatedTime") long updatedTime, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		Response<DietPlan> response = new Response<DietPlan>();
 		response.setDataList(dietPlansService.getDietPlansForPatient(page, size, patientId, updatedTime, discarded));
 		return response;
 	}
 
-	@Path(value = PathProxy.DietPlanUrls.DELETE_DIET_PLAN)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.DietPlanUrls.DELETE_DIET_PLAN)
 	@ApiOperation(value = PathProxy.DietPlanUrls.DELETE_DIET_PLAN, notes = PathProxy.DietPlanUrls.DELETE_DIET_PLAN)
-	public Response<DietPlan> deleteDietPlan(@PathParam("planId") String planId,
-			@QueryParam("discarded") boolean discarded) {
+	public Response<DietPlan> deleteDietPlan(@PathVariable("planId") String planId,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 
 		if (planId == null) {
 			logger.warn("Invalid Input");
@@ -104,10 +110,10 @@ public class DietPlanAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DietPlanUrls.GET_DIET_PLAN)
-	@GET
+	
+	@GetMapping(value = PathProxy.DietPlanUrls.GET_DIET_PLAN)
 	@ApiOperation(value = PathProxy.DietPlanUrls.GET_DIET_PLAN, notes = PathProxy.DietPlanUrls.GET_DIET_PLAN)
-	public Response<DietPlan> getDietPlan(@PathParam("planId") String planId, @QueryParam("languageId") String languageId) {
+	public Response<DietPlan> getDietPlan(@PathVariable("planId") String planId, @RequestParam("languageId") String languageId) {
 
 		if (planId == null) {
 			logger.warn("Invalid Input");
@@ -120,10 +126,10 @@ public class DietPlanAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DietPlanUrls.DOWNLOAD_DIET_PLAN)
-	@GET
+	
+	@GetMapping(value = PathProxy.DietPlanUrls.DOWNLOAD_DIET_PLAN)
 	@ApiOperation(value = PathProxy.DietPlanUrls.DOWNLOAD_DIET_PLAN, notes = PathProxy.DietPlanUrls.DOWNLOAD_DIET_PLAN)
-	public Response<String> downloadDietPlan(@PathParam("planId") String planId) {
+	public Response<String> downloadDietPlan(@PathVariable("planId") String planId) {
 
 		if (planId == null) {
 			logger.warn("Invalid Input");
@@ -135,11 +141,11 @@ public class DietPlanAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DietPlanUrls.SEND_DIET_PLAN_EMAIL)
-	@GET
+	
+	@GetMapping(value = PathProxy.DietPlanUrls.SEND_DIET_PLAN_EMAIL)
 	@ApiOperation(value = PathProxy.DietPlanUrls.SEND_DIET_PLAN_EMAIL, notes = PathProxy.DietPlanUrls.SEND_DIET_PLAN_EMAIL)
-	public Response<Boolean> emailDietPlan(@PathParam("planId") String planId,
-			@QueryParam("emailAddress") String emailAddress) {
+	public Response<Boolean> emailDietPlan(@PathVariable("planId") String planId,
+			@RequestParam("emailAddress") String emailAddress) {
 
 		if (emailAddress == null) {
 			logger.warn("Invalid Input");
@@ -151,8 +157,8 @@ public class DietPlanAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DietPlanUrls.ADD_EDIT_DIET_PLAN_TEMPLATE)
-	@POST
+	
+	@PostMapping(value = PathProxy.DietPlanUrls.ADD_EDIT_DIET_PLAN_TEMPLATE)
 	@ApiOperation(value = PathProxy.DietPlanUrls.ADD_EDIT_DIET_PLAN_TEMPLATE, notes = PathProxy.DietPlanUrls.ADD_EDIT_DIET_PLAN_TEMPLATE)
 	public Response<DietPlanTemplate> addEditDietPlanTemplate(DietPlanTemplate request) {
 
@@ -172,20 +178,20 @@ public class DietPlanAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATES)
-	@GET
+	
+	@GetMapping(value = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATES)
 	@ApiOperation(value = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATES, notes = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATES)
-	public Response<DietPlanTemplate> getDietPlanTemplates(@QueryParam("locationId") String locationId, @QueryParam("page") int page,
-			@QueryParam("size") int size, 
-			@QueryParam("doctorId") String doctorId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("updatedTime") long updatedTime, @QueryParam("discarded") boolean discarded,
-			@QueryParam("gender") String gender, @QueryParam("country") String country, @QueryParam("fromAge") Double fromAge,
-			@QueryParam("toAge") Double toAge, @QueryParam("community") String community,
-			@QueryParam("type") String type, @QueryParam("pregnancyCategory") String pregnancyCategory,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("foodPreference") String foodPreference,
-			@MatrixParam("disease") List<String> disease, @QueryParam("bmiFrom") Double bmiFrom, @QueryParam("bmiTo") Double bmiTo,
-			@QueryParam("languageId") String languageId, @QueryParam("age") Double age, @QueryParam("bmi") Double bmi,
-			@QueryParam("allDisease") @DefaultValue("false") boolean allDisease) {
+	public Response<DietPlanTemplate> getDietPlanTemplates(@RequestParam("locationId") String locationId, @RequestParam("page") int page,
+			@RequestParam("size") int size, 
+			@RequestParam("doctorId") String doctorId, @RequestParam("hospitalId") String hospitalId,
+			@RequestParam("updatedTime") long updatedTime, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@RequestParam("gender") String gender, @RequestParam("country") String country, @RequestParam("fromAge") Double fromAge,
+			@RequestParam("toAge") Double toAge, @RequestParam("community") String community,
+			@RequestParam("type") String type, @RequestParam("pregnancyCategory") String pregnancyCategory,
+			@RequestParam("searchTerm") String searchTerm, @RequestParam("foodPreference") String foodPreference,
+			@MatrixParam("disease") List<String> disease, @RequestParam("bmiFrom") Double bmiFrom, @RequestParam("bmiTo") Double bmiTo,
+			@RequestParam("languageId") String languageId, @RequestParam("age") Double age, @RequestParam("bmi") Double bmi,
+			@RequestParam("allDisease") @DefaultValue("false") boolean allDisease) {
 		
 		Response<DietPlanTemplate> response = dietPlansService.getDietPlanTemplates(page, size, doctorId, hospitalId, locationId,
 				updatedTime, discarded, gender, country, fromAge, toAge, community, type, pregnancyCategory, searchTerm, 
@@ -193,11 +199,11 @@ public class DietPlanAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DietPlanUrls.DELETE_DIET_PLAN_TEMPLATE)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.DietPlanUrls.DELETE_DIET_PLAN_TEMPLATE)
 	@ApiOperation(value = PathProxy.DietPlanUrls.DELETE_DIET_PLAN_TEMPLATE, notes = PathProxy.DietPlanUrls.DELETE_DIET_PLAN_TEMPLATE)
-	public Response<DietPlanTemplate> deleteDietPlanTemplate(@PathParam("planId") String planId,
-			@QueryParam("discarded") boolean discarded) {
+	public Response<DietPlanTemplate> deleteDietPlanTemplate(@PathVariable("planId") String planId,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 
 		if (planId == null) {
 			logger.warn("Invalid Input");
@@ -209,10 +215,10 @@ public class DietPlanAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATE)
-	@GET
+	
+	@GetMapping(value = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATE)
 	@ApiOperation(value = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATE, notes = PathProxy.DietPlanUrls.GET_DIET_PLAN_TEMPLATE)
-	public Response<DietPlanTemplate> getDietPlanTemplateById(@PathParam("planId") String planId, @QueryParam("languageId") String languageId) {
+	public Response<DietPlanTemplate> getDietPlanTemplateById(@PathVariable("planId") String planId, @RequestParam("languageId") String languageId) {
 
 		if (planId == null) {
 			logger.warn("Invalid Input");
@@ -225,8 +231,8 @@ public class DietPlanAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.DietPlanUrls.UPDATE_DIET_PLAN_TEMPLATE)
-	@GET
+	
+	@GetMapping(value = PathProxy.DietPlanUrls.UPDATE_DIET_PLAN_TEMPLATE)
 	public Response<DietPlanTemplate> updateDietPlanTemplate() {
 		Response<DietPlanTemplate> response = new Response<DietPlanTemplate>();
 		response.setData(dietPlansService.updateDietPlanTemplate());
@@ -234,11 +240,11 @@ public class DietPlanAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.DietPlanUrls.GET_LANGUAGES)
-	@GET
+	
+	@GetMapping(value = PathProxy.DietPlanUrls.GET_LANGUAGES)
 	@ApiOperation(value = PathProxy.DietPlanUrls.GET_LANGUAGES, notes = PathProxy.DietPlanUrls.GET_LANGUAGES)
-	public Response<Language> getLanguages(@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("discarded") Boolean discarded, @QueryParam("searchTerm") String searchTerm) {
+	public Response<Language> getLanguages(@RequestParam("size") int size, @RequestParam("page") int page,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded, @RequestParam("searchTerm") String searchTerm) {
 		Integer count = dietPlansService.countLanguage(discarded, searchTerm);
 		Response<Language> response = new Response<Language>();
 		if (count > 0)

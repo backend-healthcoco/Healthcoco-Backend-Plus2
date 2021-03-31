@@ -1,17 +1,16 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -24,8 +23,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.FORGOT_PASSWORD_BASE_URL)
+@RestController
+(PathProxy.FORGOT_PASSWORD_BASE_URL)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.FORGOT_PASSWORD_BASE_URL, description = "Endpoint for forgot password")
 public class ForgotPasswordApi {
@@ -35,9 +34,10 @@ public class ForgotPasswordApi {
 	@Autowired
 	private ForgotPasswordService forgotPasswordService;
 
-	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	@POST
+	@PostMapping(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
+	
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR, notes = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
 	public Response<String> forgotPassword(ForgotUsernamePasswordRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
@@ -50,9 +50,9 @@ public class ForgotPasswordApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	@POST
+	@PostMapping(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
 	public Response<Boolean> forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
@@ -66,8 +66,7 @@ public class ForgotPasswordApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
-	@POST
+	@PostMapping(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
 	public Response<Boolean> resetPasswordPatient(ResetPasswordRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
@@ -81,8 +80,7 @@ public class ForgotPasswordApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
-	@POST
+	@PostMapping(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
 	public Response<String> resetPassword(ResetPasswordRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
@@ -96,8 +94,7 @@ public class ForgotPasswordApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CB)
-	@POST
+	@PostMapping(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CB)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CB, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CB)
 	public Response<String> resetPasswordCB(ResetPasswordRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
@@ -111,10 +108,9 @@ public class ForgotPasswordApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
-	@GET
+	@GetMapping(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED, notes = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
-	public Response<String> checkLinkIsAlreadyUsed(@PathParam(value = "userId") String userId) {
+	public Response<String> checkLinkIsAlreadyUsed(@PathVariable(value = "userId") String userId) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -126,8 +122,7 @@ public class ForgotPasswordApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
-	@POST
+	@PostMapping(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME, notes = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
 	public Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request) {
 		if (request == null) {
@@ -141,8 +136,7 @@ public class ForgotPasswordApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PHARMACY)
-	@POST
+	@PostMapping(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PHARMACY)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PHARMACY, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PHARMACY)
 	public Response<String> resetPasswordPharmacy(ResetPasswordRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
@@ -156,8 +150,7 @@ public class ForgotPasswordApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CONFERENCE)
-	@POST
+	@PostMapping(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CONFERENCE)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CONFERENCE, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CONFERENCE)
 	public Response<String> resetPasswordForConference(ResetPasswordRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {

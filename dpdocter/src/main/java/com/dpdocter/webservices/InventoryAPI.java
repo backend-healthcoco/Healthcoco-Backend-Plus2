@@ -3,18 +3,17 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
@@ -33,8 +32,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.INVENTORY_BASE_URL)
+@RestController
+(PathProxy.INVENTORY_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.INVENTORY_BASE_URL, description = "Endpoint for Inventory API's")
@@ -45,9 +44,8 @@ public class InventoryAPI {
 	@Autowired
 	InventoryService inventoryService;
 	
-	@POST
+	@PostMapping(PathProxy.InventoryUrls.ADD_INVENTORY_ITEM)
 	@ApiOperation(value = PathProxy.InventoryUrls.ADD_INVENTORY_ITEM, notes = PathProxy.InventoryUrls.ADD_INVENTORY_ITEM)
-	@Path(PathProxy.InventoryUrls.ADD_INVENTORY_ITEM)
 	public Response<InventoryItem> addInventoryItem(InventoryItem request)
 	{
 		Response<InventoryItem> response = new Response<>();
@@ -70,9 +68,8 @@ public class InventoryAPI {
 		return response;
 	}
 	
-	@POST
+	@PostMapping(PathProxy.InventoryUrls.ADD_INVENTORY_STOCK)
 	@ApiOperation(value = PathProxy.InventoryUrls.ADD_INVENTORY_STOCK, notes = PathProxy.InventoryUrls.ADD_INVENTORY_STOCK)
-	@Path(PathProxy.InventoryUrls.ADD_INVENTORY_STOCK)
 	public Response<InventoryStock> addInventoryStock(InventoryStock request)
 	{
 		Response<InventoryStock> response = new Response<>();
@@ -95,9 +92,8 @@ public class InventoryAPI {
 		return response;
 	}
 	
-	@POST
+	@PostMapping(PathProxy.InventoryUrls.ADD_MANUFACTURER)
 	@ApiOperation(value = PathProxy.InventoryUrls.ADD_MANUFACTURER, notes = PathProxy.InventoryUrls.ADD_MANUFACTURER)
-	@Path(PathProxy.InventoryUrls.ADD_MANUFACTURER)
 	public Response<Manufacturer> addManufacturer(Manufacturer request)
 	{
 		Response<Manufacturer> response = new Response<>();
@@ -121,9 +117,8 @@ public class InventoryAPI {
 	}
 	
 	
-	@POST
+	@PostMapping(PathProxy.InventoryUrls.ADD_INVENTORY_BATCH)
 	@ApiOperation(value = PathProxy.InventoryUrls.ADD_INVENTORY_BATCH, notes = PathProxy.InventoryUrls.ADD_INVENTORY_BATCH)
-	@Path(PathProxy.InventoryUrls.ADD_INVENTORY_BATCH)
 	public Response<InventoryBatch> addInventoryBatch(InventoryBatch request)
 	{
 		Response<InventoryBatch> response = new Response<>();
@@ -146,10 +141,9 @@ public class InventoryAPI {
 		return response;
 	}
 	
-	@GET
+	@GetMapping(PathProxy.InventoryUrls.GET_INVENTORY_ITEMS)
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_ITEMS, notes = PathProxy.InventoryUrls.GET_INVENTORY_ITEMS)
-	@Path(PathProxy.InventoryUrls.GET_INVENTORY_ITEMS)
-	public Response<Object> getInventoryItem(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm , @QueryParam("type") String type , @QueryParam("page") long page ,@QueryParam("size") int size  )
+	public Response<Object> getInventoryItem(@RequestParam("hospitalId") String hospitalId , @RequestParam("locationId") String locationId , @RequestParam("searchTerm") String searchTerm , @RequestParam("type") String type , @RequestParam("page") long page ,@RequestParam("size") int size  )
 	{
 		Response<Object> response = new Response<>();
 		List<InventoryItemLookupResposne> inventoryItems = null;
@@ -172,10 +166,9 @@ public class InventoryAPI {
 		return response;
 	}
 	
-	@GET
+	@GetMapping(PathProxy.InventoryUrls.GET_INVENTORY_ITEM_BY_ID)
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_ITEM_BY_ID, notes = PathProxy.InventoryUrls.GET_INVENTORY_ITEM_BY_ID)
-	@Path(PathProxy.InventoryUrls.GET_INVENTORY_ITEM_BY_ID)
-	public Response<InventoryItemLookupResposne> getInventoryItemById(@PathParam("id") String id)
+	public Response<InventoryItemLookupResposne> getInventoryItemById(@PathVariable("id") String id)
 	{
 		Response<InventoryItemLookupResposne> response = new Response<>();
 		InventoryItemLookupResposne inventoryItem = null;
@@ -197,10 +190,9 @@ public class InventoryAPI {
 		return response;
 	}
 	
-	@GET
+	@GetMapping(PathProxy.InventoryUrls.GET_MANUFACTURERS)
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_MANUFACTURERS, notes = PathProxy.InventoryUrls.GET_MANUFACTURERS)
-	@Path(PathProxy.InventoryUrls.GET_MANUFACTURERS)
-	public Response<Manufacturer> getManufacturers(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm, @QueryParam("page") long page ,@QueryParam("size") int size  )
+	public Response<Manufacturer> getManufacturers(@RequestParam("hospitalId") String hospitalId , @RequestParam("locationId") String locationId , @RequestParam("searchTerm") String searchTerm, @RequestParam("page") long page ,@RequestParam("size") int size  )
 	{
 		Response<Manufacturer> response = new Response<>();
 		List<Manufacturer> manufacturers = null;
@@ -223,10 +215,9 @@ public class InventoryAPI {
 	}
 	
 	
-	@GET
+	@GetMapping(PathProxy.InventoryUrls.GET_INVENTORY_STOCKS)
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_STOCKS, notes = PathProxy.InventoryUrls.GET_INVENTORY_STOCKS)
-	@Path(PathProxy.InventoryUrls.GET_INVENTORY_STOCKS)
-	public Response<Object> getInventoryStock(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId ,@QueryParam("itemId") String itemId,@QueryParam("stockType") String stockType, @QueryParam("searchTerm") String searchTerm , @QueryParam("page") long page ,@QueryParam("size") int size  )
+	public Response<Object> getInventoryStock(@RequestParam("hospitalId") String hospitalId , @RequestParam("locationId") String locationId ,@RequestParam("itemId") String itemId,@RequestParam("stockType") String stockType, @RequestParam("searchTerm") String searchTerm , @RequestParam("page") long page ,@RequestParam("size") int size  )
 	{
 		Response<Object> response = new Response<>();
 		List<InventoryStockLookupResponse> inventoryStocks = null;
@@ -249,10 +240,9 @@ public class InventoryAPI {
 		return response;
 	}
 	
-	@GET
+	@GetMapping(PathProxy.InventoryUrls.GET_INVENTORY_BATCHES)
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES, notes = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES)
-	@Path(PathProxy.InventoryUrls.GET_INVENTORY_BATCHES)
-	public Response<InventoryBatch> getInventoryBatches(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("itemId") String itemId ,@QueryParam("searchTerm") String searchTerm, @QueryParam("page") long page ,@QueryParam("size") int size  )
+	public Response<InventoryBatch> getInventoryBatches(@RequestParam("hospitalId") String hospitalId , @RequestParam("locationId") String locationId , @RequestParam("itemId") String itemId ,@RequestParam("searchTerm") String searchTerm, @RequestParam("page") long page ,@RequestParam("size") int size  )
 	{
 		Response<InventoryBatch> response = new Response<>();
 		List<InventoryBatch> inventoryBatches = null;
@@ -274,9 +264,8 @@ public class InventoryAPI {
 		return response;
 	}
 	
-	@POST
+	@PostMapping(PathProxy.InventoryUrls.ADD_EDIT_SETTINGS)
 	@ApiOperation(value = PathProxy.InventoryUrls.ADD_EDIT_SETTINGS, notes = PathProxy.InventoryUrls.ADD_EDIT_SETTINGS)
-	@Path(PathProxy.InventoryUrls.ADD_EDIT_SETTINGS)
 	public Response<InventorySettings> addEditSettings(InventorySettingRequest request)
 	{
 		Response<InventorySettings> response = new Response<>();
@@ -299,10 +288,9 @@ public class InventoryAPI {
 		return response;
 	}
 	
-	@GET
+	@GetMapping(PathProxy.InventoryUrls.GET_SETTINGS)
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_SETTINGS, notes = PathProxy.InventoryUrls.GET_SETTINGS)
-	@Path(PathProxy.InventoryUrls.GET_SETTINGS)
-	public Response<InventorySettings> getInventorySettings(  @QueryParam("id") String id ,  @QueryParam("doctorId") String doctorId ,@QueryParam("locationId") String locationId ,@QueryParam("hospitalId") String hospitalId)
+	public Response<InventorySettings> getInventorySettings(  @RequestParam("id") String id ,  @RequestParam("doctorId") String doctorId ,@RequestParam("locationId") String locationId ,@RequestParam("hospitalId") String hospitalId)
 	{
 		Response<InventorySettings> response = new Response<>();
 		InventorySettings inventorySettings = null;
@@ -325,10 +313,9 @@ public class InventoryAPI {
 	}
 	
 	
-	@GET
+	@GetMapping(PathProxy.InventoryUrls.GET_INVENTORY_BATCHES_BY_RESOURCE_ID)
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES_BY_RESOURCE_ID, notes = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES_BY_RESOURCE_ID)
-	@Path(PathProxy.InventoryUrls.GET_INVENTORY_BATCHES_BY_RESOURCE_ID)
-	public Response<InventoryBatch> getInventoryBatchesBResourceId( @QueryParam("resourceId") String resourceId ,@QueryParam("locationId") String locationId ,@QueryParam("hospitalId") String hospitalId)
+	public Response<InventoryBatch> getInventoryBatchesBResourceId( @RequestParam("resourceId") String resourceId ,@RequestParam("locationId") String locationId ,@RequestParam("hospitalId") String hospitalId)
 	{
 		Response<InventoryBatch> response = new Response<>();
 		List<InventoryBatch> inventoryBatchs = null;

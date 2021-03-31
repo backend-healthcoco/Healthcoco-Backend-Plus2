@@ -20,6 +20,16 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
@@ -106,10 +116,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.CLINICAL_NOTES_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RestController
+@RequestMapping(value=PathProxy.CLINICAL_NOTES_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.CLINICAL_NOTES_BASE_URL, description = "Endpoint for clinical notes")
 public class ClinicalNotesApi {
 
@@ -136,10 +144,9 @@ public class ClinicalNotesApi {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	@Path(value = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE, notes = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE)
-	public Response<ClinicalNotes> addNotes(ClinicalNotesAddRequest request) {
+	public Response<ClinicalNotes> addNotes(@RequestBody ClinicalNotesAddRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPatientId())) {
 			logger.warn("Invalid Input");
@@ -161,11 +168,10 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.EDIT_CLINICAL_NOTES)
-	@PUT
+	@PutMapping(value = PathProxy.ClinicalNotesUrls.EDIT_CLINICAL_NOTES)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.EDIT_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.EDIT_CLINICAL_NOTES)
-	public Response<ClinicalNotes> editNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId,
-			ClinicalNotesEditRequest request) {
+	public Response<ClinicalNotes> editNotes(@PathVariable(value = "clinicalNotesId") String clinicalNotesId,
+			@RequestBody ClinicalNotesEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(clinicalNotesId, request.getDoctorId(),
 				request.getLocationId(), request.getHospitalId())) {
 			logger.warn("Invalid Input");
@@ -186,11 +192,10 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_CLINICAL_NOTES)
-	@DELETE
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_CLINICAL_NOTES)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.DELETE_CLINICAL_NOTES)
-	public Response<ClinicalNotes> deleteNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<ClinicalNotes> deleteNotes(@PathVariable(value = "clinicalNotesId") String clinicalNotesId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 
 		ClinicalNotes clinicalNotes = clinicalNotesService.deleteNote(clinicalNotesId, discarded);
 		Response<ClinicalNotes> response = new Response<ClinicalNotes>();
@@ -198,10 +203,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_ID)
-	@GET
+	@GetMapping(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_ID)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_ID, notes = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_ID)
-	public Response<ClinicalNotes> getNotesById(@PathParam(value = "clinicalNotesId") String clinicalNotesId) {
+	public Response<ClinicalNotes> getNotesById(@PathVariable(value = "clinicalNotesId") String clinicalNotesId) {
 		ClinicalNotes clinicalNotes = clinicalNotesService.getNotesById(clinicalNotesId, null);
 		if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
 			clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
@@ -211,13 +215,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@GET
+	@GetMapping
 	@ApiOperation(value = "GET_CLINICAL_NOTES", notes = "GET_CLINICAL_NOTES")
-	public Response<ClinicalNotes> getNotes(@QueryParam("page") long page, @QueryParam("size") int size,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	public Response<ClinicalNotes> getNotes(@RequestParam("page") long page, @RequestParam("size") int size,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "hospitalId") String hospitalId, @RequestParam(value = "patientId") String patientId,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime,
+			  @RequestParam(value = "discarded") Boolean discarded) {
 
 		List<ClinicalNotes> clinicalNotes = clinicalNotesService.getClinicalNotes(page, size, doctorId, locationId,
 				hospitalId, patientId, updatedTime,
@@ -235,13 +239,12 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID)
-	@GET
+	@GetMapping(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID, notes = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID)
-	public Response<ClinicalNotes> getNotes(@PathParam(value = "patientId") String patientId,
-			@QueryParam("page") long page, @QueryParam("size") int size,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	public Response<ClinicalNotes> getNotes(@PathVariable(value = "patientId") String patientId,
+			@RequestParam("page") long page, @RequestParam("size") int size,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime,
+			  @RequestParam(value = "discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -261,10 +264,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_COMPLAINT)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_COMPLAINT)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_COMPLAINT, notes = PathProxy.ClinicalNotesUrls.ADD_COMPLAINT)
-	public Response<Complaint> addComplaint(Complaint request) {
+	public Response<Complaint> addComplaint(@RequestBody Complaint request) {
 
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getComplaint())) {
@@ -283,10 +285,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION, notes = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION)
-	public Response<Observation> addObservation(Observation request) {
+	public Response<Observation> addObservation(@RequestBody Observation request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getObservation())) {
 			logger.warn("Invalid Input");
@@ -304,10 +305,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_INVESTIGATION)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_INVESTIGATION)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_INVESTIGATION, notes = PathProxy.ClinicalNotesUrls.ADD_INVESTIGATION)
-	public Response<Investigation> addInvestigation(Investigation request) {
+	public Response<Investigation> addInvestigation(@RequestBody Investigation request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getInvestigation())) {
 			logger.warn("Invalid Input");
@@ -326,10 +326,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_DIAGNOSIS)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_DIAGNOSIS)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_DIAGNOSIS, notes = PathProxy.ClinicalNotesUrls.ADD_DIAGNOSIS)
-	public Response<Diagnoses> addDiagnosis(Diagnoses request) {
+	public Response<Diagnoses> addDiagnosis(@RequestBody Diagnoses request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getDiagnosis())) {
 			logger.warn("Invalid Input");
@@ -348,10 +347,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_NOTES)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_NOTES)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_NOTES, notes = PathProxy.ClinicalNotesUrls.ADD_NOTES)
-	public Response<Notes> addNotes(Notes request) {
+	public Response<Notes> addNotes(@RequestBody Notes request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getNote())) {
 			logger.warn("Invalid Input");
@@ -370,10 +368,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_DIAGRAM)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_DIAGRAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_DIAGRAM, notes = PathProxy.ClinicalNotesUrls.ADD_DIAGRAM)
-	public Response<Diagram> addDiagram(Diagram request) {
+	public Response<Diagram> addDiagram(@RequestBody Diagram request) {
 		if (request == null
 				|| DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())
 				|| request.getDiagram() == null) {
@@ -401,13 +398,12 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_COMPLAINT)
-	@DELETE
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_COMPLAINT)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_COMPLAINT, notes = PathProxy.ClinicalNotesUrls.DELETE_COMPLAINT)
-	public Response<Complaint> deleteComplaint(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Complaint> deleteComplaint(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -426,13 +422,12 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_OBSERVATION)
-	@DELETE
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_OBSERVATION)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_OBSERVATION, notes = PathProxy.ClinicalNotesUrls.DELETE_OBSERVATION)
-	public Response<Observation> deleteObservation(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Observation> deleteObservation(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			@RequestParam(required = false, value ="discarded", defaultValue = "true")  Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Observation Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -452,13 +447,12 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_INVESTIGATION)
-	@DELETE
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_INVESTIGATION)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_INVESTIGATION, notes = PathProxy.ClinicalNotesUrls.DELETE_INVESTIGATION)
-	public Response<Investigation> deleteInvestigation(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Investigation> deleteInvestigation(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded")Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Investigation Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -479,13 +473,12 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_DIAGNOSIS)
-	@DELETE
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_DIAGNOSIS)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_DIAGNOSIS, notes = PathProxy.ClinicalNotesUrls.DELETE_DIAGNOSIS)
-	public Response<Diagnoses> deleteDiagnosis(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Diagnoses> deleteDiagnosis(@PathVariable("id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			 @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Diagnosis Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -503,13 +496,12 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_NOTE)
-	@DELETE
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_NOTE)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_NOTE, notes = PathProxy.ClinicalNotesUrls.DELETE_NOTE)
-	public Response<Notes> deleteNote(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Notes> deleteNote(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Note Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -527,13 +519,12 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_DIAGRAM)
-	@DELETE
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_DIAGRAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_DIAGRAM, notes = PathProxy.ClinicalNotesUrls.DELETE_DIAGRAM)
-	public Response<Diagram> deleteDiagram(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Diagram> deleteDiagram(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Diagram Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -550,14 +541,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS)
-	@GET
+	@GetMapping(value = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS, notes = PathProxy.ClinicalNotesUrls.GET_CINICAL_ITEMS)
-	public Response<Object> getClinicalItems(@PathParam("type") String type, @PathParam("range") String range,
-			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	public Response<Object> getClinicalItems(@PathVariable("type") String type, @PathVariable("range") String range,
+			@RequestParam("page") long page, @RequestParam("size") int size, @RequestParam(value = "doctorId") String doctorId,
+			@RequestParam(value = "locationId") String locationId, @RequestParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+			  @RequestParam(value = "discarded") Boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(type, range, doctorId)) {
 			logger.warn("Invalid Input.");
@@ -576,13 +566,12 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES)
-	@GET
+	@GetMapping(value = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES)
-	public Response<Boolean> emailClinicalNotes(@PathParam(value = "clinicalNotesId") String clinicalNotesId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "emailAddress") String emailAddress) {
+	public Response<Boolean> emailClinicalNotes(@PathVariable(value = "clinicalNotesId") String clinicalNotesId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "emailAddress") String emailAddress) {
 
 		if (DPDoctorUtils.anyStringEmpty(clinicalNotesId, doctorId, locationId, hospitalId, emailAddress)) {
 			logger.warn(
@@ -613,19 +602,18 @@ public class ClinicalNotesApi {
 			return null;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DOWNLOAD_CLINICAL_NOTES)
-	@GET
+	@GetMapping(value = PathProxy.ClinicalNotesUrls.DOWNLOAD_CLINICAL_NOTES)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DOWNLOAD_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.DOWNLOAD_CLINICAL_NOTES)
-	public Response<String> downloadClinicalNotes(@PathParam("clinicalNotesId") String clinicalNotesId,
-			@DefaultValue("false") @QueryParam("showPH") Boolean showPH,
-			@DefaultValue("false") @QueryParam("showPLH") Boolean showPLH,
-			@DefaultValue("false") @QueryParam("showFH") Boolean showFH,
-			@DefaultValue("false") @QueryParam("showDA") Boolean showDA,
-			@DefaultValue("false") @QueryParam("showUSG") Boolean showUSG,
-			@DefaultValue("false") @QueryParam("isCustomPDF") Boolean isCustomPDF,
-			@DefaultValue("false") @QueryParam("showLMP") Boolean showLMP,
-			@DefaultValue("false") @QueryParam("showEDD") Boolean showEDD,
-			@DefaultValue("false") @QueryParam("showNoOfChildren") Boolean showNoOfChildren) {
+	public Response<String> downloadClinicalNotes(@PathVariable("clinicalNotesId") String clinicalNotesId,
+			@DefaultValue("false") @RequestParam("showPH") Boolean showPH,
+			@DefaultValue("false") @RequestParam("showPLH") Boolean showPLH,
+			@DefaultValue("false") @RequestParam("showFH") Boolean showFH,
+			@DefaultValue("false") @RequestParam("showDA") Boolean showDA,
+			@DefaultValue("false") @RequestParam("showUSG") Boolean showUSG,
+			@DefaultValue("false") @RequestParam("isCustomPDF") Boolean isCustomPDF,
+			@DefaultValue("false") @RequestParam("showLMP") Boolean showLMP,
+			@DefaultValue("false") @RequestParam("showEDD") Boolean showEDD,
+			@DefaultValue("false") @RequestParam("showNoOfChildren") Boolean showNoOfChildren) {
 
 		Response<String> response = new Response<String>();
 		response.setData(clinicalNotesService.getClinicalNotesFile(clinicalNotesId, showPH, showPLH, showFH, showDA,
@@ -633,8 +621,7 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.UPDATE_QUERY_CLINICAL_NOTES)
-	@GET
+	@GetMapping(value = PathProxy.ClinicalNotesUrls.UPDATE_QUERY_CLINICAL_NOTES)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.UPDATE_QUERY_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.UPDATE_QUERY_CLINICAL_NOTES)
 	public Response<Boolean> updateQuery() {
 
@@ -643,10 +630,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PRESENT_COMPLAINT)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_PRESENT_COMPLAINT)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PRESENT_COMPLAINT, notes = PathProxy.ClinicalNotesUrls.ADD_PRESENT_COMPLAINT)
-	public Response<PresentComplaint> addPresentComplaints(PresentComplaint request) {
+	public Response<PresentComplaint> addPresentComplaints(@RequestBody PresentComplaint request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPresentComplaint())) {
 			logger.warn("Invalid Input");
@@ -665,10 +651,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PRESENT_COMPLAINT_HISTORY)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_PRESENT_COMPLAINT_HISTORY)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PRESENT_COMPLAINT_HISTORY, notes = PathProxy.ClinicalNotesUrls.ADD_PRESENT_COMPLAINT_HISTORY)
-	public Response<PresentComplaintHistory> addPresentComplaintsHistory(PresentComplaintHistory request) {
+	public Response<PresentComplaintHistory> addPresentComplaintsHistory(@RequestBody PresentComplaintHistory request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPresentComplaintHistory())) {
 			logger.warn("Invalid Input");
@@ -687,10 +672,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PROVISIONAL_DIAGNOSIS)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_PROVISIONAL_DIAGNOSIS)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PROVISIONAL_DIAGNOSIS, notes = PathProxy.ClinicalNotesUrls.ADD_PROVISIONAL_DIAGNOSIS)
-	public Response<ProvisionalDiagnosis> addProvisionalDiagnosis(ProvisionalDiagnosis request) {
+	public Response<ProvisionalDiagnosis> addProvisionalDiagnosis(@RequestBody ProvisionalDiagnosis request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getProvisionalDiagnosis())) {
 			logger.warn("Invalid Input");
@@ -709,10 +693,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_SYSTEM_EXAM)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_SYSTEM_EXAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_SYSTEM_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_SYSTEM_EXAM)
-	public Response<SystemExam> addSystemExam(SystemExam request) {
+	public Response<SystemExam> addSystemExam(@RequestBody SystemExam request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getSystemExam())) {
 			logger.warn("Invalid Input");
@@ -731,10 +714,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_GENERAL_EXAM)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_GENERAL_EXAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_GENERAL_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_GENERAL_EXAM)
-	public Response<GeneralExam> addGeneralExam(GeneralExam request) {
+	public Response<GeneralExam> addGeneralExam(@RequestBody GeneralExam request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getGeneralExam())) {
 			logger.warn("Invalid Input");
@@ -753,10 +735,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_MENSTRUAL_HISTORY)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_MENSTRUAL_HISTORY)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_MENSTRUAL_HISTORY, notes = PathProxy.ClinicalNotesUrls.ADD_MENSTRUAL_HISTORY)
-	public Response<MenstrualHistory> addMenstrualHistory(MenstrualHistory request) {
+	public Response<MenstrualHistory> addMenstrualHistory(@RequestBody MenstrualHistory request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getMenstrualHistory())) {
 			logger.warn("Invalid Input");
@@ -775,10 +756,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_OBSTETRICS_HISTORY)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_OBSTETRICS_HISTORY)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_OBSTETRICS_HISTORY, notes = PathProxy.ClinicalNotesUrls.ADD_OBSTETRICS_HISTORY)
-	public Response<ObstetricHistory> addObstetricHistory(ObstetricHistory request) {
+	public Response<ObstetricHistory> addObstetricHistory(@RequestBody ObstetricHistory request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getObstetricHistory())) {
 			logger.warn("Invalid Input");
@@ -797,10 +777,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_INDICATION_OF_USG)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_INDICATION_OF_USG)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_INDICATION_OF_USG, notes = PathProxy.ClinicalNotesUrls.ADD_INDICATION_OF_USG)
-	public Response<IndicationOfUSG> addIndicationOfUSG(IndicationOfUSG request) {
+	public Response<IndicationOfUSG> addIndicationOfUSG(@RequestBody IndicationOfUSG request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getIndicationOfUSG())) {
 			logger.warn("Invalid Input");
@@ -819,10 +798,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PA)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_PA)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PA, notes = PathProxy.ClinicalNotesUrls.ADD_PA)
-	public Response<PA> addEditPA(PA request) {
+	public Response<PA> addEditPA(@RequestBody PA request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPa())) {
 			logger.warn("Invalid Input");
@@ -840,10 +818,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PV)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_PV)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PV, notes = PathProxy.ClinicalNotesUrls.ADD_PV)
-	public Response<PV> addEditPV(PV request) {
+	public Response<PV> addEditPV(@RequestBody PV request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPv())) {
 			logger.warn("Invalid Input");
@@ -861,10 +838,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PS)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_PS)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PS, notes = PathProxy.ClinicalNotesUrls.ADD_PS)
-	public Response<PS> addEditPS(PS request) {
+	public Response<PS> addEditPS(@RequestBody PS request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPs())) {
 			logger.warn("Invalid Input");
@@ -882,10 +858,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PROCEDURE_NOTE)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_PROCEDURE_NOTE)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PROCEDURE_NOTE, notes = PathProxy.ClinicalNotesUrls.ADD_PROCEDURE_NOTE)
-	public Response<ProcedureNote> addEditProcedureNote(ProcedureNote request) {
+	public Response<ProcedureNote> addEditProcedureNote(@RequestBody ProcedureNote request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getProcedureNote())) {
 			logger.warn("Invalid Input");
@@ -901,10 +876,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_X_RAY_DETAILS)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_X_RAY_DETAILS)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_X_RAY_DETAILS, notes = PathProxy.ClinicalNotesUrls.ADD_X_RAY_DETAILS)
-	public Response<XRayDetails> addEditXRayDetails(XRayDetails request) {
+	public Response<XRayDetails> addEditXRayDetails(@RequestBody XRayDetails request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getxRayDetails())) {
 			logger.warn("Invalid Input");
@@ -922,10 +896,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_ECG_DETAILS)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_ECG_DETAILS)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_ECG_DETAILS, notes = PathProxy.ClinicalNotesUrls.ADD_ECG_DETAILS)
-	public Response<ECGDetails> addEditECGDetails(ECGDetails request) {
+	public Response<ECGDetails> addEditECGDetails(@RequestBody ECGDetails request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getEcgDetails())) {
 			logger.warn("Invalid Input");
@@ -943,10 +916,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_ECHO)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_ECHO)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_ECHO, notes = PathProxy.ClinicalNotesUrls.ADD_ECHO)
-	public Response<Echo> addEditEcho(Echo request) {
+	public Response<Echo> addEditEcho(@RequestBody Echo request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getEcho())) {
 			logger.warn("Invalid Input");
@@ -964,10 +936,9 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_HOLTER)
-	@POST
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_HOLTER)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_HOLTER, notes = PathProxy.ClinicalNotesUrls.ADD_HOLTER)
-	public Response<Holter> addEditHolter(Holter request) {
+	public Response<Holter> addEditHolter(@RequestBody Holter request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getHolter())) {
 			logger.warn("Invalid Input");
@@ -985,10 +956,10 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PC_NOSE)
-	@POST
+	
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_PC_NOSE)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PC_NOSE, notes = PathProxy.ClinicalNotesUrls.ADD_PC_NOSE)
-	public Response<PresentingComplaintNose> addEditPCNose(PresentingComplaintNose request) {
+	public Response<PresentingComplaintNose> addEditPCNose(@RequestBody PresentingComplaintNose request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPcNose())) {
 			logger.warn("Invalid Input");
@@ -1006,10 +977,10 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PC_EARS)
-	@POST
+	
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_PC_EARS)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PC_EARS, notes = PathProxy.ClinicalNotesUrls.ADD_PC_EARS)
-	public Response<PresentingComplaintEars> addEditPCEars(PresentingComplaintEars request) {
+	public Response<PresentingComplaintEars> addEditPCEars(@RequestBody PresentingComplaintEars request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPcEars())) {
 			logger.warn("Invalid Input");
@@ -1027,10 +998,10 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PC_THROAT)
-	@POST
+	
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_PC_THROAT)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PC_THROAT, notes = PathProxy.ClinicalNotesUrls.ADD_PC_THROAT)
-	public Response<PresentingComplaintThroat> addEditPCThroat(PresentingComplaintThroat request) {
+	public Response<PresentingComplaintThroat> addEditPCThroat(@RequestBody PresentingComplaintThroat request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPcThroat())) {
 			logger.warn("Invalid Input");
@@ -1047,10 +1018,10 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PC_ORAL_CAVITY)
-	@POST
+	
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_PC_ORAL_CAVITY)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PC_ORAL_CAVITY, notes = PathProxy.ClinicalNotesUrls.ADD_PC_ORAL_CAVITY)
-	public Response<PresentingComplaintOralCavity> addEditPCOralCavity(PresentingComplaintOralCavity request) {
+	public Response<PresentingComplaintOralCavity> addEditPCOralCavity(@RequestBody PresentingComplaintOralCavity request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPcOralCavity())) {
 			logger.warn("Invalid Input");
@@ -1068,10 +1039,10 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_NOSE_EXAM)
-	@POST
+	
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_NOSE_EXAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_NOSE_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_NOSE_EXAM)
-	public Response<NoseExamination> addEditNoseExam(NoseExamination request) {
+	public Response<NoseExamination> addEditNoseExam(@RequestBody NoseExamination request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getNoseExam())) {
 			logger.warn("Invalid Input");
@@ -1089,10 +1060,10 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_NECK_EXAM)
-	@POST
+	
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_NECK_EXAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_NECK_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_NECK_EXAM)
-	public Response<NeckExamination> addEditNeckExam(NeckExamination request) {
+	public Response<NeckExamination> addEditNeckExam(@RequestBody NeckExamination request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getNeckExam())) {
 			logger.warn("Invalid Input");
@@ -1110,10 +1081,10 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_EARS_EXAM)
-	@POST
+	
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_EARS_EXAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_EARS_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_EARS_EXAM)
-	public Response<EarsExamination> addEditEarsExam(EarsExamination request) {
+	public Response<EarsExamination> addEditEarsExam(@RequestBody EarsExamination request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getEarsExam())) {
 			logger.warn("Invalid Input");
@@ -1131,11 +1102,11 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_ORAL_CAVITY_THROAT_EXAM)
-	@POST
+	
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_ORAL_CAVITY_THROAT_EXAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_ORAL_CAVITY_THROAT_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_ORAL_CAVITY_THROAT_EXAM)
 	public Response<OralCavityAndThroatExamination> addEditOralCavityThroatExam(
-			OralCavityAndThroatExamination request) {
+			@RequestBody OralCavityAndThroatExamination request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getOralCavityThroatExam())) {
 			logger.warn("Invalid Input");
@@ -1155,11 +1126,11 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_INDIRECT_LARYGOSCOPY_EXAM)
-	@POST
+	
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_INDIRECT_LARYGOSCOPY_EXAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_INDIRECT_LARYGOSCOPY_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_INDIRECT_LARYGOSCOPY_EXAM)
 	public Response<IndirectLarygoscopyExamination> addEditIndirectLarygosccopyExam(
-			IndirectLarygoscopyExamination request) {
+			@RequestBody IndirectLarygoscopyExamination request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getIndirectLarygoscopyExam())) {
 			logger.warn("Invalid Input");
@@ -1179,13 +1150,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PROVISIONAL_DIAGNOSIS)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_PROVISIONAL_DIAGNOSIS)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PROVISIONAL_DIAGNOSIS, notes = PathProxy.ClinicalNotesUrls.DELETE_PROVISIONAL_DIAGNOSIS)
-	public Response<ProvisionalDiagnosis> deleteProvisionalDiagnosis(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<ProvisionalDiagnosis> deleteProvisionalDiagnosis(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+		    @RequestParam(required = false, value ="discarded", defaultValue="true")Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1206,13 +1177,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PRESENT_COMPLAINT)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_PRESENT_COMPLAINT)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PRESENT_COMPLAINT, notes = PathProxy.ClinicalNotesUrls.DELETE_PRESENT_COMPLAINT)
-	public Response<PresentComplaint> deletePresentComplaint(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<PresentComplaint> deletePresentComplaint(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			@RequestParam(required = false, value ="discarded",defaultValue = "true") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1233,13 +1204,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PRESENT_COMPLAINT_HISTORY)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_PRESENT_COMPLAINT_HISTORY)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PRESENT_COMPLAINT_HISTORY, notes = PathProxy.ClinicalNotesUrls.DELETE_PRESENT_COMPLAINT_HISTORY)
-	public Response<PresentComplaintHistory> deletePresentComplaintHistory(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<PresentComplaintHistory> deletePresentComplaintHistory(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1260,13 +1231,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_GENERAL_EXAM)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_GENERAL_EXAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_GENERAL_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_GENERAL_EXAM)
-	public Response<GeneralExam> deleteGeneralExam(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<GeneralExam> deleteGeneralExam(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1287,13 +1258,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_SYSTEM_EXAM)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_SYSTEM_EXAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_SYSTEM_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_SYSTEM_EXAM)
-	public Response<SystemExam> deleteSystemExam(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<SystemExam> deleteSystemExam(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1313,13 +1284,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_MENSTRUAL_HISTORY)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_MENSTRUAL_HISTORY)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_MENSTRUAL_HISTORY, notes = PathProxy.ClinicalNotesUrls.DELETE_MENSTRUAL_HISTORY)
-	public Response<MenstrualHistory> deleteMenstrualHistory(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<MenstrualHistory> deleteMenstrualHistory(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1340,13 +1311,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_INDICATION_OF_USG)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_INDICATION_OF_USG)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_INDICATION_OF_USG, notes = PathProxy.ClinicalNotesUrls.DELETE_INDICATION_OF_USG)
-	public Response<IndicationOfUSG> deleteIndicationOfUSG(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<IndicationOfUSG> deleteIndicationOfUSG(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1367,12 +1338,12 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PA)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_PA)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PA, notes = PathProxy.ClinicalNotesUrls.DELETE_PA)
-	public Response<PA> deletePA(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<PA> deletePA(@PathVariable(value = "id") String id, @PathVariable(value = "doctorId") String doctorId,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1391,12 +1362,12 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PV)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_PV)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PV, notes = PathProxy.ClinicalNotesUrls.DELETE_PV)
-	public Response<PV> deletePV(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<PV> deletePV(@PathVariable(value = "id") String id, @PathVariable(value = "doctorId") String doctorId,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1415,12 +1386,12 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PS)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_PS)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PS, notes = PathProxy.ClinicalNotesUrls.DELETE_PS)
-	public Response<PS> deletePS(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<PS> deletePS(@PathVariable(value = "id") String id, @PathVariable(value = "doctorId") String doctorId,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1439,13 +1410,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_OBSTETRIC_HISTORY)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_OBSTETRIC_HISTORY)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_OBSTETRIC_HISTORY, notes = PathProxy.ClinicalNotesUrls.DELETE_OBSTETRIC_HISTORY)
-	public Response<ObstetricHistory> deleteObstetricHistory(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<ObstetricHistory> deleteObstetricHistory(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1466,13 +1437,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_X_RAY_DETAILS)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_X_RAY_DETAILS)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_X_RAY_DETAILS, notes = PathProxy.ClinicalNotesUrls.DELETE_X_RAY_DETAILS)
-	public Response<XRayDetails> deleteXRayDetails(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<XRayDetails> deleteXRayDetails(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1492,13 +1463,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_ECG_DETAILS)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_ECG_DETAILS)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_ECG_DETAILS, notes = PathProxy.ClinicalNotesUrls.DELETE_ECG_DETAILS)
-	public Response<ECGDetails> deleteECGDetails(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<ECGDetails> deleteECGDetails(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1517,12 +1488,12 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_ECHO)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_ECHO)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_ECHO, notes = PathProxy.ClinicalNotesUrls.DELETE_ECHO)
-	public Response<Echo> deleteEcho(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Echo> deleteEcho(@PathVariable(value = "id") String id, @PathVariable(value = "doctorId") String doctorId,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1541,13 +1512,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_HOLTER)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_HOLTER)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_HOLTER, notes = PathProxy.ClinicalNotesUrls.DELETE_HOLTER)
-	public Response<Holter> deleteHolter(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Holter> deleteHolter(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1566,10 +1537,10 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.ADD_EDIT_EYE_OBSERVATION)
-	@POST
+	
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.ADD_EDIT_EYE_OBSERVATION)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_EDIT_EYE_OBSERVATION, notes = PathProxy.ClinicalNotesUrls.ADD_EDIT_EYE_OBSERVATION)
-	public Response<EyeObservation> addEditEyeObservation(EyeObservation eyeObservation) {
+	public Response<EyeObservation> addEditEyeObservation(@RequestBody EyeObservation eyeObservation) {
 		if (eyeObservation == null) {
 			throw new BusinessException(ServiceError.InvalidInput);
 		}
@@ -1579,12 +1550,12 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_EYE_OBSERVATION)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_EYE_OBSERVATION)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_EYE_OBSERVATION, notes = PathProxy.ClinicalNotesUrls.DELETE_EYE_OBSERVATION)
 
-	public Response<EyeObservation> deleteEyeObservation(@PathParam("id") String id,
-			@QueryParam("discarded") Boolean discarded) {
+	public Response<EyeObservation> deleteEyeObservation(@PathVariable("id") String id,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")Boolean discarded) {
 		EyeObservation eyeObservation = null;
 		if (id == null || id.isEmpty() || discarded == null) {
 			throw new BusinessException(ServiceError.InvalidInput);
@@ -1595,15 +1566,15 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.GET_EYE_OBSERVATIONS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ClinicalNotesUrls.GET_EYE_OBSERVATIONS)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_EYE_OBSERVATIONS, notes = PathProxy.ClinicalNotesUrls.GET_EYE_OBSERVATIONS)
-	public Response<EyeObservation> getEyeObservations(@QueryParam("page") long page, @QueryParam("size") int size,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
-			@DefaultValue("false") @QueryParam(value = "isOTPVerified") Boolean isOTPVerified) {
+	public Response<EyeObservation> getEyeObservations(@RequestParam("page") long page, @RequestParam("size") int size,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "hospitalId") String hospitalId, @RequestParam(value = "patientId") String patientId,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+			  @RequestParam(value = "discarded") Boolean discarded,
+			@DefaultValue("false") @RequestParam(value = "isOTPVerified") Boolean isOTPVerified) {
 		List<EyeObservation> eyeObservations = null;
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input.");
@@ -1616,13 +1587,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PROCEDURE_NOTE)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_PROCEDURE_NOTE)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PROCEDURE_NOTE, notes = PathProxy.ClinicalNotesUrls.DELETE_PROCEDURE_NOTE)
-	public Response<ProcedureNote> deleteProcedureNote(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<ProcedureNote> deleteProcedureNote(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1643,13 +1614,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PC_NOSE)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_PC_NOSE)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PC_NOSE, notes = PathProxy.ClinicalNotesUrls.DELETE_PC_NOSE)
-	public Response<PresentingComplaintNose> deletePCNose(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<PresentingComplaintNose> deletePCNose(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1670,13 +1641,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PC_EARS)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_PC_EARS)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PC_EARS, notes = PathProxy.ClinicalNotesUrls.DELETE_PC_EARS)
-	public Response<PresentingComplaintEars> deletePCEars(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<PresentingComplaintEars> deletePCEars(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1697,13 +1668,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PC_ORAL_CAVITY)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_PC_ORAL_CAVITY)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PC_ORAL_CAVITY, notes = PathProxy.ClinicalNotesUrls.DELETE_PC_ORAL_CAVITY)
-	public Response<PresentingComplaintOralCavity> deletePCOralCavity(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<PresentingComplaintOralCavity> deletePCOralCavity(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1724,13 +1695,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_NOSE_EXAM)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_NOSE_EXAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_NOSE_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_NOSE_EXAM)
-	public Response<NoseExamination> deleteNoseExam(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<NoseExamination> deleteNoseExam(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1750,13 +1721,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_NECK_EXAM)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_NECK_EXAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_NECK_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_NECK_EXAM)
-	public Response<NeckExamination> deleteNeckExam(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<NeckExamination> deleteNeckExam(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1776,13 +1747,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_EARS_EXAM)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_EARS_EXAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_EARS_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_EARS_EXAM)
-	public Response<EarsExamination> deleteEarsExam(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<EarsExamination> deleteEarsExam(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1802,13 +1773,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_ORAL_CAVITY_THROAT_EXAM)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_ORAL_CAVITY_THROAT_EXAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_ORAL_CAVITY_THROAT_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_ORAL_CAVITY_THROAT_EXAM)
-	public Response<OralCavityAndThroatExamination> deleteOralCavityThroatExam(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<OralCavityAndThroatExamination> deleteOralCavityThroatExam(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1828,13 +1799,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_INDIRECT_LARYGOSCOPY_EXAM)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_INDIRECT_LARYGOSCOPY_EXAM)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_INDIRECT_LARYGOSCOPY_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_INDIRECT_LARYGOSCOPY_EXAM)
-	public Response<IndirectLarygoscopyExamination> deleteIndirectlarygoscopyExam(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<IndirectLarygoscopyExamination> deleteIndirectlarygoscopyExam(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1854,13 +1825,13 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PC_THROAT)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ClinicalNotesUrls.DELETE_PC_THROAT)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PC_THROAT, notes = PathProxy.ClinicalNotesUrls.DELETE_PC_THROAT)
-	public Response<PresentingComplaintThroat> deletePCThroat(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<PresentingComplaintThroat> deletePCThroat(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1880,11 +1851,11 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY)
-	@GET
+	
+	@GetMapping(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY, notes = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY)
-	public Response<Diagnoses> getServicesBySpeciality(@QueryParam("speciality") String speciality,
-			@QueryParam("searchTerm") String searchTerm) {
+	public Response<Diagnoses> getServicesBySpeciality(@RequestParam("speciality") String speciality,
+			@RequestParam("searchTerm") String searchTerm) {
 		if (DPDoctorUtils.anyStringEmpty(speciality)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -1897,13 +1868,13 @@ public class ClinicalNotesApi {
 
 	}
 	
-	@Path(value = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES_WEB)
-	@GET
+	
+	@GetMapping(value = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES_WEB)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES_WEB, notes = PathProxy.ClinicalNotesUrls.EMAIL_CLINICAL_NOTES_WEB)
-	public Response<Boolean> emailClinicalNotesForWeb(@PathParam(value = "clinicalNotesId") String clinicalNotesId,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "emailAddress") String emailAddress) {
+	public Response<Boolean> emailClinicalNotesForWeb(@PathVariable(value = "clinicalNotesId") String clinicalNotesId,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "emailAddress") String emailAddress) {
 
 		if (DPDoctorUtils.anyStringEmpty(clinicalNotesId, emailAddress)) {
 			logger.warn(
@@ -1918,10 +1889,10 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.ClinicalNotesUrls.DOWNLOAD_MULTIPLE_CLINICAL_NOTES)
-	@POST
+	
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.DOWNLOAD_MULTIPLE_CLINICAL_NOTES)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DOWNLOAD_MULTIPLE_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.DOWNLOAD_MULTIPLE_CLINICAL_NOTES)
-	public Response<String> downloadMultipleClinicalNotes(ListIdrequest request) {
+	public Response<String> downloadMultipleClinicalNotes(@RequestBody ListIdrequest request) {
 		
 		if (request == null || request.getIds() == null || request.getIds().isEmpty()) {
 			logger.warn("Invalid Input");
@@ -1933,10 +1904,10 @@ public class ClinicalNotesApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.ClinicalNotesUrls.EMAIL_MULTIPLE_CLINICAL_NOTES)
-	@POST
+	
+	@PostMapping(value = PathProxy.ClinicalNotesUrls.EMAIL_MULTIPLE_CLINICAL_NOTES)
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.EMAIL_MULTIPLE_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.EMAIL_MULTIPLE_CLINICAL_NOTES)
-	public Response<Boolean> emailMultipleClinicalNotes(ListIdrequest request) {
+	public Response<Boolean> emailMultipleClinicalNotes(@RequestBody ListIdrequest request) {
 
 		if (request == null || request.getIds() == null || request.getIds().isEmpty() || DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
 			logger.warn("Invalid Input");

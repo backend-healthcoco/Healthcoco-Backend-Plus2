@@ -19,6 +19,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.DoctorConference;
 import com.dpdocter.beans.DoctorConferenceAgenda;
@@ -36,8 +42,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.CONFERENCE_URL)
+@RestController
+(PathProxy.CONFERENCE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.CONFERENCE_URL, description = "Endpoint for Conference")
@@ -51,21 +57,21 @@ public class DoctorConferenceAPI {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	@Path(value = PathProxy.ConferenceUrls.GET_SESSION_TOPICS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConferenceUrls.GET_SESSION_TOPICS)
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_SESSION_TOPICS, notes = PathProxy.ConferenceUrls.GET_SESSION_TOPICS)
-	public Response<SessionTopic> getTopics(@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("discarded") boolean discarded, @QueryParam("searchTerm") String searchTerm) {
+	public Response<SessionTopic> getTopics(@RequestParam("size") int size, @RequestParam("page") int page,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded, @RequestParam("searchTerm") String searchTerm) {
 
 		Response<SessionTopic> response = new Response<SessionTopic>();
 		response.setDataList(conferenceService.getTopics(size, page, discarded, searchTerm));
 		return response;
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.GET_SESSION_TOPIC)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConferenceUrls.GET_SESSION_TOPIC)
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_SESSION_TOPIC, notes = PathProxy.ConferenceUrls.GET_SESSION_TOPIC)
-	public Response<SessionTopic> getTopic(@PathParam("id") String id) {
+	public Response<SessionTopic> getTopic(@PathVariable("id") String id) {
 
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
@@ -78,11 +84,11 @@ public class DoctorConferenceAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.GET_SPEAKER_PROFILES)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConferenceUrls.GET_SPEAKER_PROFILES)
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_SPEAKER_PROFILES, notes = PathProxy.ConferenceUrls.GET_SPEAKER_PROFILES)
-	public Response<SpeakerProfile> getSpeakerProfiles(@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("discarded") boolean discarded, @QueryParam("searchTerm") String searchTerm) {
+	public Response<SpeakerProfile> getSpeakerProfiles(@RequestParam("size") int size, @RequestParam("page") int page,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded, @RequestParam("searchTerm") String searchTerm) {
 
 		Response<SpeakerProfile> response = new Response<SpeakerProfile>();
 		response.setDataList(conferenceService.getSpeakerProfiles(size, page, discarded, searchTerm));
@@ -90,10 +96,10 @@ public class DoctorConferenceAPI {
 
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.GET_SPEAKER_PROFILE)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConferenceUrls.GET_SPEAKER_PROFILE)
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_SPEAKER_PROFILE, notes = PathProxy.ConferenceUrls.GET_SPEAKER_PROFILE)
-	public Response<SpeakerProfile> getSpeakerProfile(@PathParam("id") String id) {
+	public Response<SpeakerProfile> getSpeakerProfile(@PathVariable("id") String id) {
 
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
@@ -107,15 +113,15 @@ public class DoctorConferenceAPI {
 
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSIONS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSIONS)
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSIONS, notes = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSIONS)
-	public Response<DoctorConferenceSession> getConferenceSessions(@QueryParam("size") int size,
-			@QueryParam("page") int page, @QueryParam("discarded") boolean discarded, @QueryParam("city") String city,
-			@QueryParam("fromtime") @DefaultValue("0") Integer fromtime,
-			@QueryParam("toTime") @DefaultValue("0") Integer toTime, @QueryParam("fromDate") String fromDate,
-			@QueryParam("toDate") String toDate, @QueryParam("searchTerm") String searchTerm,
-			@PathParam("conferenceId") String conferenceId, @MatrixParam("topics") List<String> topics) {
+	public Response<DoctorConferenceSession> getConferenceSessions(@RequestParam("size") int size,
+			@RequestParam("page") int page, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded, @RequestParam("city") String city,
+			@RequestParam("fromtime") @DefaultValue("0") Integer fromtime,
+			@RequestParam("toTime") @DefaultValue("0") Integer toTime, @RequestParam("fromDate") String fromDate,
+			@RequestParam("toDate") String toDate, @RequestParam("searchTerm") String searchTerm,
+			@PathVariable("conferenceId") String conferenceId, @MatrixParam("topics") List<String> topics) {
 		if (DPDoctorUtils.anyStringEmpty(conferenceId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -127,10 +133,10 @@ public class DoctorConferenceAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSION)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSION)
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSION, notes = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSION)
-	public Response<DoctorConferenceSession> getConferenceSession(@PathParam("id") String id) {
+	public Response<DoctorConferenceSession> getConferenceSession(@PathVariable("id") String id) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -142,13 +148,13 @@ public class DoctorConferenceAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.GET_DOCTOR_CONFERENCES)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConferenceUrls.GET_DOCTOR_CONFERENCES)
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_DOCTOR_CONFERENCES, notes = PathProxy.ConferenceUrls.GET_DOCTOR_CONFERENCES)
-	public Response<DoctorConference> getDoctorConference(@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("discarded") boolean discarded, @QueryParam("city") String city,
-			@QueryParam("speciality") String speciality, @QueryParam("fromDate") String fromDate,
-			@QueryParam("toDate") String toDate, @QueryParam("searchTerm") String searchTerm) {
+	public Response<DoctorConference> getDoctorConference(@RequestParam("size") int size, @RequestParam("page") int page,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded, @RequestParam("city") String city,
+			@RequestParam("speciality") String speciality, @RequestParam("fromDate") String fromDate,
+			@RequestParam("toDate") String toDate, @RequestParam("searchTerm") String searchTerm) {
 		List<DoctorConference> coference = conferenceService.getDoctorConference(size, page, discarded, city,
 				speciality, fromDate, toDate, searchTerm);
 		Response<DoctorConference> response = new Response<DoctorConference>();
@@ -156,10 +162,10 @@ public class DoctorConferenceAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.GET_DOCTOR_CONFERENCE)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConferenceUrls.GET_DOCTOR_CONFERENCE)
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_DOCTOR_CONFERENCE, notes = PathProxy.ConferenceUrls.GET_DOCTOR_CONFERENCE)
-	public Response<DoctorConference> getDoctorConference(@PathParam("id") String id) {
+	public Response<DoctorConference> getDoctorConference(@PathVariable("id") String id) {
 
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
@@ -172,15 +178,15 @@ public class DoctorConferenceAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.GET_CONFERENCE_AGENDAS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConferenceUrls.GET_CONFERENCE_AGENDAS)
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_CONFERENCE_AGENDAS, notes = PathProxy.ConferenceUrls.GET_CONFERENCE_AGENDAS)
-	public Response<DoctorConferenceAgenda> getConferenceAgenda(@QueryParam("size") int size,
-			@QueryParam("page") int page, @QueryParam("discarded") boolean discarded, @QueryParam("city") String city,
-			@QueryParam("fromtime") @DefaultValue("0") Integer fromtime,
-			@QueryParam("toTime") @DefaultValue("0") Integer toTime, @QueryParam("fromDate") String fromDate,
-			@QueryParam("toDate") String toDate, @QueryParam("searchTerm") String searchTerm,
-			@PathParam("conferenceId") String conferenceId) {
+	public Response<DoctorConferenceAgenda> getConferenceAgenda(@RequestParam("size") int size,
+			@RequestParam("page") int page, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded, @RequestParam("city") String city,
+			@RequestParam("fromtime") @DefaultValue("0") Integer fromtime,
+			@RequestParam("toTime") @DefaultValue("0") Integer toTime, @RequestParam("fromDate") String fromDate,
+			@RequestParam("toDate") String toDate, @RequestParam("searchTerm") String searchTerm,
+			@PathVariable("conferenceId") String conferenceId) {
 		if (DPDoctorUtils.anyStringEmpty(conferenceId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -193,10 +199,10 @@ public class DoctorConferenceAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.GET_CONFERENCE_AGENDA)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConferenceUrls.GET_CONFERENCE_AGENDA)
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_CONFERENCE_AGENDA, notes = PathProxy.ConferenceUrls.GET_CONFERENCE_AGENDA)
-	public Response<DoctorConferenceAgenda> getConferenceAgenda(@PathParam("id") String id) {
+	public Response<DoctorConferenceAgenda> getConferenceAgenda(@PathVariable("id") String id) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -210,10 +216,10 @@ public class DoctorConferenceAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSION_DATES)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSION_DATES)
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSION_DATES, notes = PathProxy.ConferenceUrls.GET_CONFERENCE_SESSION_DATES)
-	public Response<SessionDateResponse> getConferenceSessionDate(@PathParam("conferenceId") String conferenceId) {
+	public Response<SessionDateResponse> getConferenceSessionDate(@PathVariable("conferenceId") String conferenceId) {
 		if (DPDoctorUtils.anyStringEmpty(conferenceId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -227,8 +233,8 @@ public class DoctorConferenceAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.ADD_EDIT_SESSION_QUESTION)
-	@POST
+
+	@PostMapping(value = PathProxy.ConferenceUrls.ADD_EDIT_SESSION_QUESTION)
 	@ApiOperation(value = PathProxy.ConferenceUrls.ADD_EDIT_SESSION_QUESTION, notes = PathProxy.ConferenceUrls.ADD_EDIT_SESSION_QUESTION)
 	public Response<SessionQuestion> addEditQuestion(SessionQuestion request) {
 		if (request == null) {
@@ -250,13 +256,13 @@ public class DoctorConferenceAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.GET_SESSION_QUESTIONS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConferenceUrls.GET_SESSION_QUESTIONS)
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_SESSION_QUESTIONS, notes = PathProxy.ConferenceUrls.GET_SESSION_QUESTIONS)
-	public Response<SessionQuestion> getConferenceSessionQuestion(@QueryParam("size") int size,
-			@QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
-			@PathParam("sessionId") String sessionId, @QueryParam("userId") String userId,
-			@QueryParam("topLiked") boolean topLiked) {
+	public Response<SessionQuestion> getConferenceSessionQuestion(@RequestParam("size") int size,
+			@RequestParam("page") int page, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@PathVariable("sessionId") String sessionId, @RequestParam("userId") String userId,
+			@RequestParam("topLiked") boolean topLiked) {
 
 		if (DPDoctorUtils.anyStringEmpty(sessionId)) {
 			logger.warn("sessionId should not null or empty");
@@ -272,11 +278,11 @@ public class DoctorConferenceAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.GET_SESSION_QUESTION)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConferenceUrls.GET_SESSION_QUESTION)
 	@ApiOperation(value = PathProxy.ConferenceUrls.GET_SESSION_QUESTION, notes = PathProxy.ConferenceUrls.GET_SESSION_QUESTION)
-	public Response<SessionQuestion> getConferenceSessionQuestion(@PathParam("id") String id,
-			@QueryParam("userId") String userId) {
+	public Response<SessionQuestion> getConferenceSessionQuestion(@PathVariable("id") String id,
+			@RequestParam("userId") String userId) {
 
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("id should not null or empty");
@@ -291,11 +297,11 @@ public class DoctorConferenceAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.DELETE_SESSION_QUESTION)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ConferenceUrls.DELETE_SESSION_QUESTION)
 	@ApiOperation(value = PathProxy.ConferenceUrls.DELETE_SESSION_QUESTION, notes = PathProxy.ConferenceUrls.DELETE_SESSION_QUESTION)
-	public Response<SessionQuestion> deleteConferenceSessionQuestion(@PathParam("id") String id,
-			@QueryParam("userId") String userId, @QueryParam("discarded") boolean discarded) {
+	public Response<SessionQuestion> deleteConferenceSessionQuestion(@PathVariable("id") String id,
+			@RequestParam("userId") String userId, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(id, userId)) {
 			logger.warn("id should not null or empty");
@@ -310,11 +316,11 @@ public class DoctorConferenceAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ConferenceUrls.LIKE_SESSION_QUESTION)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConferenceUrls.LIKE_SESSION_QUESTION)
 	@ApiOperation(value = PathProxy.ConferenceUrls.LIKE_SESSION_QUESTION, notes = PathProxy.ConferenceUrls.LIKE_SESSION_QUESTION)
-	public Response<Boolean> likeQuestion(@PathParam("questionId") String questionId,
-			@QueryParam("userId") String userId) {
+	public Response<Boolean> likeQuestion(@PathVariable("questionId") String questionId,
+			@RequestParam("userId") String userId) {
 		if (DPDoctorUtils.anyStringEmpty(userId, questionId)) {
 			logger.warn("userId,questionId should not null or empty");
 			throw new BusinessException(ServiceError.InvalidInput, "userId,questionId should not null or empty");

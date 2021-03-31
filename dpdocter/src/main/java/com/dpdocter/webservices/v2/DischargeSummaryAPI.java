@@ -4,17 +4,17 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -26,10 +26,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component(value = "DischargeSummaryAPIV2")
-@Path(PathProxy.DISCHARGE_SUMMARY_BASE_URL)
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@RestController(value = "DischargeSummaryAPIV2")
+@RequestMapping(value=PathProxy.DISCHARGE_SUMMARY_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DISCHARGE_SUMMARY_BASE_URL)
 public class DischargeSummaryAPI {
 
@@ -42,14 +40,14 @@ public class DischargeSummaryAPI {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY)
-	@GET
+	
+	@GetMapping(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY)
-	public Response<DischargeSummaryResponse> getDischargeSummary(@QueryParam(value = "page") int page,
-			@QueryParam(value = "size") int size, @QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<DischargeSummaryResponse> getDischargeSummary(@RequestParam(value = "page") int page,
+			@RequestParam(value = "size") int size, @RequestParam(value = "doctorId") String doctorId,
+			@RequestParam(value = "locationId") String locationId, @RequestParam(value = "hospitalId") String hospitalId,
+			@RequestParam(value = "patientId") String patientId,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime,   @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		Response<DischargeSummaryResponse> response = null;
 		List<DischargeSummaryResponse> dischargeSummaries = null;
 

@@ -4,19 +4,18 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.BirthAchievement;
 import com.dpdocter.beans.GrowthChart;
@@ -37,8 +36,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.PAEDIATRIC_BASE_URL)
+@RestController
+(PathProxy.PAEDIATRIC_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.PAEDIATRIC_BASE_URL, description = "Endpoint for paediatric")
@@ -49,8 +48,8 @@ public class PaediatricAPI {
 	@Autowired
 	private PaediatricService paediatricService;
 
-	@Path(value = PathProxy.PaediatricUrls.ADD_EDIT_VACCINE)
-	@POST
+	
+	@PostMapping(value = PathProxy.PaediatricUrls.ADD_EDIT_VACCINE)
 	@ApiOperation(value = PathProxy.PaediatricUrls.ADD_EDIT_VACCINE, notes = PathProxy.PaediatricUrls.ADD_EDIT_VACCINE)
 	public Response<VaccineResponse> addVaccines(VaccineRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(),
@@ -64,8 +63,8 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.ADD_EDIT_GROWTH_CHART)
-	@POST
+	
+	@PostMapping(value = PathProxy.PaediatricUrls.ADD_EDIT_GROWTH_CHART)
 	@ApiOperation(value = PathProxy.PaediatricUrls.ADD_EDIT_GROWTH_CHART, notes = PathProxy.PaediatricUrls.ADD_EDIT_GROWTH_CHART)
 	public Response<GrowthChart> addGrowthChart(GrowthChart request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(),
@@ -79,8 +78,8 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.ADD_EDIT_ACHIEVEMENT)
-	@POST
+	
+	@PostMapping(value = PathProxy.PaediatricUrls.ADD_EDIT_ACHIEVEMENT)
 	@ApiOperation(value = PathProxy.PaediatricUrls.ADD_EDIT_ACHIEVEMENT, notes = PathProxy.PaediatricUrls.ADD_EDIT_ACHIEVEMENT)
 	public Response<BirthAchievement> addEditBirthAchievement(BirthAchievement request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
@@ -93,10 +92,10 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.GET_VACCINE_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.GET_VACCINE_BY_ID)
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_VACCINE_BY_ID, notes = PathProxy.PaediatricUrls.GET_VACCINE_BY_ID)
-	public Response<VaccineResponse> getVaccineById(@PathParam("id") String id) {
+	public Response<VaccineResponse> getVaccineById(@PathVariable("id") String id) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -107,10 +106,10 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.GET_GROWTH_CHART_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.GET_GROWTH_CHART_BY_ID)
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_GROWTH_CHART_BY_ID, notes = PathProxy.PaediatricUrls.GET_GROWTH_CHART_BY_ID)
-	public Response<GrowthChart> getGrowthChartById(@PathParam("id") String id) {
+	public Response<GrowthChart> getGrowthChartById(@PathVariable("id") String id) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -121,10 +120,10 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENT_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENT_BY_ID)
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENT_BY_ID, notes = PathProxy.PaediatricUrls.GET_ACHIEVEMENT_BY_ID)
-	public Response<BirthAchievement> getbirthAchievementById(@PathParam("id") String id) {
+	public Response<BirthAchievement> getbirthAchievementById(@PathVariable("id") String id) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -135,11 +134,11 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.DISCARD_GROWTH_CHART_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.DISCARD_GROWTH_CHART_BY_ID)
 	@ApiOperation(value = PathProxy.PaediatricUrls.DISCARD_GROWTH_CHART_BY_ID, notes = PathProxy.PaediatricUrls.DISCARD_GROWTH_CHART_BY_ID)
-	public Response<Boolean> discardGrowthChart(@PathParam("id") String id,
-			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+	public Response<Boolean> discardGrowthChart(@PathVariable("id") String id,
+			@DefaultValue("false") @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -150,13 +149,13 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.GET_VACCINES)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.GET_VACCINES)
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_VACCINES, notes = PathProxy.PaediatricUrls.GET_VACCINES)
-	public Response<VaccineResponse> getVaccines(@QueryParam("patientId") String patientId,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+	public Response<VaccineResponse> getVaccines(@RequestParam("patientId") String patientId,
+			@RequestParam("doctorId") String doctorId, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -168,13 +167,13 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS)
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS, notes = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS)
-	public Response<GrowthChart> getGrowthCharts(@QueryParam("patientId") String patientId,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+	public Response<GrowthChart> getGrowthCharts(@RequestParam("patientId") String patientId,
+			@RequestParam("doctorId") String doctorId, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime) {
 		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -186,12 +185,12 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENTS)
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_ACHIEVEMENTS, notes = PathProxy.PaediatricUrls.GET_ACHIEVEMENTS)
-	public Response<BirthAchievement> getGrowthCharts(@PathParam("patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @QueryParam("page") int page,
-			@QueryParam("size") int size) {
+	public Response<BirthAchievement> getGrowthCharts(@PathVariable("patientId") String patientId,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime, @RequestParam("page") int page,
+			@RequestParam("size") int size) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -203,11 +202,11 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION)
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION, notes = PathProxy.PaediatricUrls.GET_VACCINE_BRAND_ASSOCIATION)
 	public Response<VaccineBrandAssociationResponse> getVaccineBrandAssociation(
-			@QueryParam("vaccineId") String vaccineId, @QueryParam("vaccineBrandId") String vaccineBrandId) {
+			@RequestParam("vaccineId") String vaccineId, @RequestParam("vaccineBrandId") String vaccineBrandId) {
 		/*
 		 * if (DPDoctorUtils.allStringsEmpty(vaccineBrandId,vaccineId)) {
 		 * logger.warn("Invalid Input"); throw new
@@ -220,11 +219,11 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.GET_MULTIPLE_VACCINE_BRAND_ASSOCIATION)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.GET_MULTIPLE_VACCINE_BRAND_ASSOCIATION)
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_MULTIPLE_VACCINE_BRAND_ASSOCIATION, notes = PathProxy.PaediatricUrls.GET_MULTIPLE_VACCINE_BRAND_ASSOCIATION)
 	public Response<GroupedVaccineBrandAssociationResponse> getMultipleVaccineBrandAssociation(
-			@MatrixParam("vaccineId") List<String> vaccineIds, @QueryParam("vaccineBrandId") String vaccineBrandId) {
+			@MatrixParam("vaccineId") List<String> vaccineIds, @RequestParam("vaccineBrandId") String vaccineBrandId) {
 		/*
 		 * if (DPDoctorUtils.allStringsEmpty(vaccineBrandId,vaccineId)) {
 		 * logger.warn("Invalid Input"); throw new
@@ -237,8 +236,8 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.ADD_EDIT_MULTIPLE_VACCINE)
-	@POST
+	
+	@PostMapping(value = PathProxy.PaediatricUrls.ADD_EDIT_MULTIPLE_VACCINE)
 	@ApiOperation(value = PathProxy.PaediatricUrls.ADD_EDIT_MULTIPLE_VACCINE, notes = PathProxy.PaediatricUrls.ADD_EDIT_MULTIPLE_VACCINE)
 	public Response<Boolean> addEditVaccinesMultiple(List<VaccineRequest> requests) {
 		if (requests == null) {
@@ -250,8 +249,8 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.ADD_EDIT_MULTIPLE_VACCINE_STATUS)
-	@POST
+	
+	@PostMapping(value = PathProxy.PaediatricUrls.ADD_EDIT_MULTIPLE_VACCINE_STATUS)
 	@ApiOperation(value = PathProxy.PaediatricUrls.ADD_EDIT_MULTIPLE_VACCINE_STATUS, notes = PathProxy.PaediatricUrls.ADD_EDIT_MULTIPLE_VACCINE_STATUS)
 	public Response<Boolean> addEditVaccinesMultipleStatus(MultipleVaccineEditRequest request) {
 		if (request == null) {
@@ -263,12 +262,12 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.GET_MASTER_VACCINES)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.GET_MASTER_VACCINES)
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_MASTER_VACCINES, notes = PathProxy.PaediatricUrls.GET_MASTER_VACCINES)
-	public Response<MasterVaccineResponse> getVaccines(@QueryParam("searchTerm") String searchTerm,
-			@DefaultValue("false") @QueryParam("isChartVaccine") Boolean isChartVaccine, @QueryParam("page") int page,
-			@QueryParam("size") int size) {
+	public Response<MasterVaccineResponse> getVaccines(@RequestParam("searchTerm") String searchTerm,
+			@DefaultValue("false") @RequestParam("isChartVaccine") Boolean isChartVaccine, @RequestParam("page") int page,
+			@RequestParam("size") int size) {
 		List<MasterVaccineResponse> vaccineResponse = paediatricService.getMasterVaccineList(searchTerm, isChartVaccine,
 				page, size);
 		Response<MasterVaccineResponse> response = new Response<MasterVaccineResponse>();
@@ -276,8 +275,8 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.UPDATE_OLD_DATA)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.UPDATE_OLD_DATA)
 	@ApiOperation(value = PathProxy.PaediatricUrls.UPDATE_OLD_DATA, notes = PathProxy.PaediatricUrls.UPDATE_OLD_DATA)
 	public Response<Boolean> updateOldData() {
 		Response<Boolean> response = new Response<>();
@@ -285,10 +284,10 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.GET_GROUPED_VACCINES)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.GET_GROUPED_VACCINES)
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_GROUPED_VACCINES, notes = PathProxy.PaediatricUrls.GET_GROUPED_VACCINES)
-	public Response<PatientVaccineGroupedResponse> getGroupedVaccines(@QueryParam("patientId") String patientId) {
+	public Response<PatientVaccineGroupedResponse> getGroupedVaccines(@RequestParam("patientId") String patientId) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -299,11 +298,11 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.UPDATE_VACCINATION_CHART)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.UPDATE_VACCINATION_CHART)
 	@ApiOperation(value = PathProxy.PaediatricUrls.UPDATE_VACCINATION_CHART, notes = PathProxy.PaediatricUrls.UPDATE_VACCINATION_CHART)
-	public Response<Boolean> updateVaccinationChart(@PathParam("patientId") String patientId,
-			@PathParam("vaccineStartDate") Long vaccineStartDate) {
+	public Response<Boolean> updateVaccinationChart(@PathVariable("patientId") String patientId,
+			@PathVariable("vaccineStartDate") Long vaccineStartDate) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -314,11 +313,11 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS_GRAPH)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS_GRAPH)
 	@ApiOperation(value = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS_GRAPH, notes = PathProxy.PaediatricUrls.GET_GROWTH_CHARTS_GRAPH)
-	public Response<GrowthChartGraphResponse> getGrowthCharts(@QueryParam("patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+	public Response<GrowthChartGraphResponse> getGrowthCharts(@RequestParam("patientId") String patientId,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -329,12 +328,12 @@ public class PaediatricAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.PaediatricUrls.DOWNLOAD_VACCINE_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.PaediatricUrls.DOWNLOAD_VACCINE_BY_ID)
 	@ApiOperation(value = PathProxy.PaediatricUrls.DOWNLOAD_VACCINE_BY_ID, notes = PathProxy.PaediatricUrls.DOWNLOAD_VACCINE_BY_ID)
-	public Response<String> downloadCVaccineById(@PathParam("periodTime") Integer periodTime,
-			@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId) {
+	public Response<String> downloadCVaccineById(@PathVariable("periodTime") Integer periodTime,
+			@RequestParam("patientId") String patientId, @RequestParam("doctorId") String doctorId,
+			@RequestParam("locationId") String locationId, @RequestParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

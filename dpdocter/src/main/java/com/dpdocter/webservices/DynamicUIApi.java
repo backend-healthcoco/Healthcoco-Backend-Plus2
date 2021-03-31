@@ -1,15 +1,14 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.DataDynamicUI;
 import com.dpdocter.beans.DentalLabDynamicField;
@@ -31,8 +30,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.DYNAMIC_UI_BASE_URL)
+@RestController
+(PathProxy.DYNAMIC_UI_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DYNAMIC_UI_BASE_URL, description = "Endpoint for Dynamic UI")
@@ -41,10 +40,10 @@ public class DynamicUIApi {
 	@Autowired
 	DynamicUIService dynamicUIService;
 
-	@Path(value = PathProxy.DynamicUIUrls.GET_ALL_PERMISSIONS_FOR_DOCTOR)
-	@GET
+	
+	@GetMapping(value = PathProxy.DynamicUIUrls.GET_ALL_PERMISSIONS_FOR_DOCTOR)
 	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_ALL_PERMISSIONS_FOR_DOCTOR, notes = PathProxy.DynamicUIUrls.GET_ALL_PERMISSIONS_FOR_DOCTOR)
-	public Response<UIPermissions> getAllPermissionForDoctor(@PathParam("doctorId") String doctorId) {
+	public Response<UIPermissions> getAllPermissionForDoctor(@PathVariable("doctorId") String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id is null");
 		}
@@ -54,10 +53,10 @@ public class DynamicUIApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DynamicUIUrls.GET_PERMISSIONS_FOR_DOCTOR)
-	@GET
+	
+	@GetMapping(value = PathProxy.DynamicUIUrls.GET_PERMISSIONS_FOR_DOCTOR)
 	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_PERMISSIONS_FOR_DOCTOR, notes = PathProxy.DynamicUIUrls.GET_PERMISSIONS_FOR_DOCTOR)
-	public Response<DynamicUI> getPermissionForDoctor(@PathParam("doctorId") String doctorId) {
+	public Response<DynamicUI> getPermissionForDoctor(@PathVariable("doctorId") String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id is null");
 		}
@@ -67,8 +66,8 @@ public class DynamicUIApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DynamicUIUrls.POST_PERMISSIONS)
-	@POST
+	
+	@PostMapping(value = PathProxy.DynamicUIUrls.POST_PERMISSIONS)
 	@ApiOperation(value = "SUBMIT_DYNAMIC_UI_PERMISSION", notes = "SUBMIT_DYNAMIC_UI_PERMISSION")
 	public Response<DynamicUI> postPermissions(DynamicUIRequest dynamicUIRequest) {
 		if (dynamicUIRequest == null) {
@@ -87,8 +86,8 @@ public class DynamicUIApi {
 
 	}
 
-	@Path(value = PathProxy.DynamicUIUrls.POST_DATA_PERMISSIONS)
-	@POST
+	
+	@PostMapping(value = PathProxy.DynamicUIUrls.POST_DATA_PERMISSIONS)
 	@ApiOperation(value = "SUBMIT_DATA_DYNAMIC_UI_PERMISSION", notes = "SUBMIT_DATA_DYNAMIC_UI_PERMISSION")
 	public Response<DataDynamicUI> postDataPermissions(DataDynamicUI dynamicUIRequest) {
 		if (dynamicUIRequest == null) {
@@ -107,10 +106,10 @@ public class DynamicUIApi {
 
 	}
 
-	@Path(value = PathProxy.DynamicUIUrls.GET_BOTH_PERMISSION_FOR_DOCTOR)
-	@GET
+	
+	@GetMapping(value = PathProxy.DynamicUIUrls.GET_BOTH_PERMISSION_FOR_DOCTOR)
 	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_BOTH_PERMISSION_FOR_DOCTOR, notes = PathProxy.DynamicUIUrls.GET_BOTH_PERMISSION_FOR_DOCTOR)
-	public Response<DynamicUIResponse> getBothPermissionForDoctor(@PathParam("doctorId") String doctorId) {
+	public Response<DynamicUIResponse> getBothPermissionForDoctor(@PathVariable("doctorId") String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id is null");
 		}
@@ -121,10 +120,10 @@ public class DynamicUIApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DynamicUIUrls.GET_DATA_PERMISSION_FOR_DOCTOR)
-	@GET
+	
+	@GetMapping(value = PathProxy.DynamicUIUrls.GET_DATA_PERMISSION_FOR_DOCTOR)
 	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_DATA_PERMISSION_FOR_DOCTOR, notes = PathProxy.DynamicUIUrls.GET_DATA_PERMISSION_FOR_DOCTOR)
-	public Response<DataDynamicUI> getDataPermissionForDoctor(@PathParam("doctorId") String doctorId) {
+	public Response<DataDynamicUI> getDataPermissionForDoctor(@PathVariable("doctorId") String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id is null");
 		}
@@ -135,8 +134,8 @@ public class DynamicUIApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DynamicUIUrls.GET_ALL_DENTAL_LAB_PERMISSION_FOR_LAB)
-	@GET
+	
+	@GetMapping(value = PathProxy.DynamicUIUrls.GET_ALL_DENTAL_LAB_PERMISSION_FOR_LAB)
 	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_ALL_DENTAL_LAB_PERMISSION_FOR_LAB, notes = PathProxy.DynamicUIUrls.GET_ALL_DENTAL_LAB_PERMISSION_FOR_LAB)
 	public Response<DentalLabDynamicField> getAllPermissionForDentalLab() {
 
@@ -146,10 +145,10 @@ public class DynamicUIApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DynamicUIUrls.GET_DENTAL_LAB_PERMISSION_FOR_LAB)
-	@GET
+	
+	@GetMapping(value = PathProxy.DynamicUIUrls.GET_DENTAL_LAB_PERMISSION_FOR_LAB)
 	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_DENTAL_LAB_PERMISSION_FOR_LAB, notes = PathProxy.DynamicUIUrls.GET_DENTAL_LAB_PERMISSION_FOR_LAB)
-	public Response<DentalLabDynamicUi> getPermissionForDentalLab(@PathParam("dentalLabId") String dentalLabId) {
+	public Response<DentalLabDynamicUi> getPermissionForDentalLab(@PathVariable("dentalLabId") String dentalLabId) {
 		if (DPDoctorUtils.anyStringEmpty(dentalLabId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Dental Lab Id is null");
 		}
@@ -159,8 +158,8 @@ public class DynamicUIApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DynamicUIUrls.POST_DENTAL_LAB_PERMISSIONS)
-	@POST
+	
+	@PostMapping(value = PathProxy.DynamicUIUrls.POST_DENTAL_LAB_PERMISSIONS)
 	@ApiOperation(value = "SUBMIT_DENTAL_LAB_DYNAMIC_UI_PERMISSION", notes = "SUBMIT_DENTAL_LAB_DYNAMIC_UI_PERMISSION")
 	public Response<DentalLabDynamicUi> postDentalLabPermissions(DentalLabDynamicUi dynamicUIRequest) {
 		if (dynamicUIRequest == null) {
@@ -179,8 +178,8 @@ public class DynamicUIApi {
 
 	}
 
-	@Path(value = PathProxy.DynamicUIUrls.ADD_EDIT_KIOSK_PERMISSION)
-	@POST
+	
+	@PostMapping(value = PathProxy.DynamicUIUrls.ADD_EDIT_KIOSK_PERMISSION)
 	@ApiOperation(value = PathProxy.DynamicUIUrls.ADD_EDIT_KIOSK_PERMISSION, notes = "ADD_EDIT_KIOSK_PERMISSION")
 	public Response<KioskDynamicUi> addEditKoiskPermissions(KioskDynamicUiResquest dynamicUIRequest) {
 		if (dynamicUIRequest == null) {
@@ -199,10 +198,10 @@ public class DynamicUIApi {
 
 	}
 
-	@Path(value = PathProxy.DynamicUIUrls.GET_KIOSK_PERMISSION)
-	@POST
+	
+	@PostMapping(value = PathProxy.DynamicUIUrls.GET_KIOSK_PERMISSION)
 	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_KIOSK_PERMISSION, notes = "GET_KIOSK_PERMISSION")
-	public Response<KioskDynamicUi> getKoiskPermissions(@PathParam("doctorId") String doctorId) {
+	public Response<KioskDynamicUi> getKoiskPermissions(@PathVariable("doctorId") String doctorId) {
 
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id is null or Empty");
@@ -215,8 +214,8 @@ public class DynamicUIApi {
 
 	}
 
-	@Path(value = PathProxy.DynamicUIUrls.GET_ALL_NUTRITION_PERMISSION)
-	@GET
+	
+	@GetMapping(value = PathProxy.DynamicUIUrls.GET_ALL_NUTRITION_PERMISSION)
 	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_ALL_NUTRITION_PERMISSION, notes = "GET_ALL_NUTRITION_PERMISSION")
 	public Response<NutritionUI> getAllNutritionPermissions() {
 
@@ -227,10 +226,10 @@ public class DynamicUIApi {
 
 	}
 
-	@Path(value = PathProxy.DynamicUIUrls.GET_NUTRITION_PERMISSION)
-	@GET
+	
+	@GetMapping(value = PathProxy.DynamicUIUrls.GET_NUTRITION_PERMISSION)
 	@ApiOperation(value = PathProxy.DynamicUIUrls.GET_NUTRITION_PERMISSION, notes = "GET_NUTRITION_PERMISSION")
-	public Response<NutritionUI> GET_NUTRITION_PERMISSION(@PathParam("doctorId") String doctorId) {
+	public Response<NutritionUI> GET_NUTRITION_PERMISSION(@PathVariable("doctorId") String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id is null or Empty");
 		}
@@ -241,8 +240,8 @@ public class DynamicUIApi {
 
 	}
 
-	@Path(value = PathProxy.DynamicUIUrls.ADD_EDIT_NUTRITION_PERMISSION)
-	@POST
+	
+	@PostMapping(value = PathProxy.DynamicUIUrls.ADD_EDIT_NUTRITION_PERMISSION)
 	@ApiOperation(value = PathProxy.DynamicUIUrls.ADD_EDIT_NUTRITION_PERMISSION, notes = "ADD_EDIT_NUTRITION_PERMISSION")
 	public Response<NutritionUI> addEditNutritionPermissions(NutrirtionUIRequest request) {
 		if (request == null) {

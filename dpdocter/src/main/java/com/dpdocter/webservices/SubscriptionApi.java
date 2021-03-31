@@ -2,19 +2,18 @@ package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.Country;
 import com.dpdocter.beans.PackageDetailObject;
@@ -34,8 +33,8 @@ import io.swagger.annotations.ApiOperation;
 
 
 
-@Component
-@Path(PathProxy.SUBSCRIPTION_BASE_URL)
+@RestController
+(PathProxy.SUBSCRIPTION_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.SUBSCRIPTION_BASE_URL, description = "")
@@ -48,12 +47,12 @@ public class SubscriptionApi {
 	private SubscriptionService subscriptionService;
 	
 	
-	@Path(value = PathProxy.SubscriptionUrls.GET_SUBSCRIPTION_BY_DOCTORID)
-	@GET
+	
+	@GetMapping(value = PathProxy.SubscriptionUrls.GET_SUBSCRIPTION_BY_DOCTORID)
 	@ApiOperation(value = PathProxy.SubscriptionUrls.GET_SUBSCRIPTION_BY_DOCTORID, notes = PathProxy.SubscriptionUrls.GET_SUBSCRIPTION_BY_DOCTORID)
-	public Response<Subscription> getSubscriptionByDoctorId(@PathParam("doctorId") String doctorId,
-			@QueryParam(value = "packageName") PackageType packageName,@QueryParam(value = "duration") int duration,
-			@QueryParam(value = "newAmount") int newAmount ) {
+	public Response<Subscription> getSubscriptionByDoctorId(@PathVariable("doctorId") String doctorId,
+			@RequestParam(value = "packageName") PackageType packageName,@RequestParam(value = "duration") int duration,
+			@RequestParam(value = "newAmount") int newAmount ) {
 		if (doctorId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -66,10 +65,10 @@ public class SubscriptionApi {
 	}
 		
 
-	@Path(value = PathProxy.SubscriptionUrls.GET_PACKAGES_BY_NAME)
-	@GET
+	
+	@GetMapping(value = PathProxy.SubscriptionUrls.GET_PACKAGES_BY_NAME)
 	@ApiOperation(value = PathProxy.SubscriptionUrls.GET_PACKAGES_BY_NAME, notes = PathProxy.SubscriptionUrls.GET_PACKAGES_BY_NAME)
-	public Response<PackageDetailObject> getPackageDetailByPackageName(@QueryParam( value = "packageName") PackageType packageName) {
+	public Response<PackageDetailObject> getPackageDetailByPackageName(@RequestParam( value = "packageName") PackageType packageName) {
 		if (packageName == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -81,8 +80,8 @@ public class SubscriptionApi {
 
 	}
 	
-	@Path(value = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION)
-	@POST
+	
+	@PostMapping(value = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION)
 	@ApiOperation(value = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION, notes = PathProxy.SubscriptionUrls.ADD_EDIT_SUBSCRIPTION)
 	public Response<SubscriptionResponse> addEditSubscription(@RequestBody SubscriptionRequest request) {
 
@@ -98,8 +97,8 @@ public class SubscriptionApi {
 	
 	
 	
-	@Path(value = PathProxy.SubscriptionUrls.VERIFY_SIGNATURE)
-	@POST
+	
+	@PostMapping(value = PathProxy.SubscriptionUrls.VERIFY_SIGNATURE)
 	@ApiOperation(value = PathProxy.SubscriptionUrls.VERIFY_SIGNATURE, notes = PathProxy.SubscriptionUrls.VERIFY_SIGNATURE)
 	public Response<Boolean> verifySignature(@RequestBody SubscriptionPaymentSignatureRequest request) {
 		if (request == null) {
@@ -117,12 +116,12 @@ public class SubscriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.SubscriptionUrls.GET_COUNTRYLIST)
-	@GET
+	
+	@GetMapping(value = PathProxy.SubscriptionUrls.GET_COUNTRYLIST)
 	@ApiOperation(value = PathProxy.SubscriptionUrls.GET_COUNTRYLIST, notes = PathProxy.SubscriptionUrls.GET_COUNTRYLIST)
-	public Response<Country> getCountryList(@QueryParam("page") int page, @QueryParam("size") int size,			
-			@DefaultValue("false") @QueryParam(value = "isDiscarded") Boolean isDiscarded,
-			@DefaultValue("")@QueryParam(value = "searchTerm") String searchTerm) {
+	public Response<Country> getCountryList(@RequestParam("page") int page, @RequestParam("size") int size,			
+			@DefaultValue("false") @RequestParam(value = "isDiscarded") Boolean isDiscarded,
+			@DefaultValue("")@RequestParam(value = "searchTerm") String searchTerm) {
 
 		Integer count = subscriptionService.countCountry(isDiscarded, searchTerm);
 		Response<Country> response = new Response<Country>();
@@ -132,12 +131,12 @@ public class SubscriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.SubscriptionUrls.GET_PACKAGES)
-	@GET
+	
+	@GetMapping(value = PathProxy.SubscriptionUrls.GET_PACKAGES)
 	@ApiOperation(value = PathProxy.SubscriptionUrls.GET_PACKAGES, notes = PathProxy.SubscriptionUrls.GET_PACKAGES)
-	public Response<PackageDetailObject> getPackagesList(@QueryParam("page") int page, @QueryParam("size") int size,			
-			@DefaultValue("false") @QueryParam(value = "isDiscarded") Boolean isDiscarded,
-			@DefaultValue("")@QueryParam(value = "searchTerm") String searchTerm) {
+	public Response<PackageDetailObject> getPackagesList(@RequestParam("page") int page, @RequestParam("size") int size,			
+			@DefaultValue("false") @RequestParam(value = "isDiscarded") Boolean isDiscarded,
+			@DefaultValue("")@RequestParam(value = "searchTerm") String searchTerm) {
 		Integer count = subscriptionService.countPackages(isDiscarded, searchTerm);
 		Response<PackageDetailObject> response = new Response<PackageDetailObject>();
 		if (count > 0)
@@ -146,13 +145,13 @@ public class SubscriptionApi {
 		return response;
 	}	
 	
-	@Path(value = PathProxy.SubscriptionUrls.GET_SUBSCRIPTIONHISTORY_BY_DOCTORID)
-	@GET
+	
+	@GetMapping(value = PathProxy.SubscriptionUrls.GET_SUBSCRIPTIONHISTORY_BY_DOCTORID)
 	@ApiOperation(value = PathProxy.SubscriptionUrls.GET_SUBSCRIPTIONHISTORY_BY_DOCTORID, notes = PathProxy.SubscriptionUrls.GET_SUBSCRIPTIONHISTORY_BY_DOCTORID)
-	public Response<Subscription> getSubscriptionHistoryByDoctorId(@PathParam("doctorId") String doctorId,
-			@QueryParam("page") int page, @QueryParam("size") int size,			
-			@DefaultValue("false") @QueryParam(value = "isDiscarded") Boolean isDiscarded,
-			@DefaultValue("")@QueryParam(value = "searchTerm") String searchTerm) {
+	public Response<Subscription> getSubscriptionHistoryByDoctorId(@PathVariable("doctorId") String doctorId,
+			@RequestParam("page") int page, @RequestParam("size") int size,			
+			@DefaultValue("false") @RequestParam(value = "isDiscarded") Boolean isDiscarded,
+			@DefaultValue("")@RequestParam(value = "searchTerm") String searchTerm) {
 		if (doctorId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

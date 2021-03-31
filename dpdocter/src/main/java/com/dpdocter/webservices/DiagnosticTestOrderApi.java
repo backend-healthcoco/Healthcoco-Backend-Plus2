@@ -17,6 +17,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.DiagnosticTestPackage;
@@ -33,8 +38,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.DIAGNOSTIC_TEST_ORDER_BASE_URL)
+@RestController
+(PathProxy.DIAGNOSTIC_TEST_ORDER_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DIAGNOSTIC_TEST_ORDER_BASE_URL, description = "Endpoint for diagnostic test order apis")
@@ -45,14 +50,14 @@ public class DiagnosticTestOrderApi {
 	@Autowired
 	private DiagnosticTestOrderService diagnosticTestOrderService;
 
-	@Path(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_LABS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_LABS)
 	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_LABS, notes = DiagnosticTestOrderUrls.SEARCH_LABS)
-	public Response<LabSearchResponse> searchLabs(@QueryParam("city") String city,
-			@QueryParam("location") String location, @QueryParam(value = "latitude") String latitude,
-			@QueryParam(value = "longitude") String longitude, @QueryParam("searchTerm") String searchTerm, 
-			@MatrixParam(value = "test") List<String> testNames, @QueryParam("page") int page, @QueryParam("size") int size,
-			@DefaultValue(value = "false") @QueryParam("havePackage") Boolean havePackage) {
+	public Response<LabSearchResponse> searchLabs(@RequestParam("city") String city,
+			@RequestParam("location") String location, @RequestParam(value = "latitude") String latitude,
+			@RequestParam(value = "longitude") String longitude, @RequestParam("searchTerm") String searchTerm, 
+			@MatrixParam(value = "test") List<String> testNames, @RequestParam("page") int page, @RequestParam("size") int size,
+			@DefaultValue(value = "false") @RequestParam("havePackage") Boolean havePackage) {
 
 		List<LabSearchResponse> labSearchResponses = diagnosticTestOrderService.searchLabs(city, location, latitude, longitude, searchTerm, testNames, page, size, havePackage);
 
@@ -61,10 +66,10 @@ public class DiagnosticTestOrderApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.DiagnosticTestOrderUrls.GET_SAMPLE_PICKUP_TIME_SLOTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DiagnosticTestOrderUrls.GET_SAMPLE_PICKUP_TIME_SLOTS)
 	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.GET_SAMPLE_PICKUP_TIME_SLOTS, notes = DiagnosticTestOrderUrls.GET_SAMPLE_PICKUP_TIME_SLOTS)
-	public Response<DiagnosticTestSamplePickUpSlot> getDiagnosticTestSamplePickUpTimeSlots(@QueryParam("date") String date) {
+	public Response<DiagnosticTestSamplePickUpSlot> getDiagnosticTestSamplePickUpTimeSlots(@RequestParam("date") String date) {
 
 		List<DiagnosticTestSamplePickUpSlot> labSearchResponses = diagnosticTestOrderService.getDiagnosticTestSamplePickUpTimeSlots(date);
 		
@@ -73,8 +78,8 @@ public class DiagnosticTestOrderApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.DiagnosticTestOrderUrls.PLACE_ORDER)
-	@POST
+	
+	@PostMapping(value = PathProxy.DiagnosticTestOrderUrls.PLACE_ORDER)
 	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.PLACE_ORDER, notes = DiagnosticTestOrderUrls.PLACE_ORDER)
 	public Response<OrderDiagnosticTest> placeDiagnosticTestOrder(OrderDiagnosticTest request) {
 
@@ -88,10 +93,10 @@ public class DiagnosticTestOrderApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DiagnosticTestOrderUrls.GET_PATIENT_ORDERS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DiagnosticTestOrderUrls.GET_PATIENT_ORDERS)
 	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.GET_PATIENT_ORDERS, notes = DiagnosticTestOrderUrls.GET_PATIENT_ORDERS)
-	public Response<OrderDiagnosticTest> getPatientOrders(@PathParam("userId") String userId, @QueryParam("page") int page, @QueryParam("size") int size) {
+	public Response<OrderDiagnosticTest> getPatientOrders(@PathVariable("userId") String userId, @RequestParam("page") int page, @RequestParam("size") int size) {
 
 		List<OrderDiagnosticTest> orderDiagnosticTests = diagnosticTestOrderService.getPatientOrders(userId, page, size);
 		
@@ -100,10 +105,10 @@ public class DiagnosticTestOrderApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.DiagnosticTestOrderUrls.GET_LAB_ORDERS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DiagnosticTestOrderUrls.GET_LAB_ORDERS)
 	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.GET_LAB_ORDERS, notes = DiagnosticTestOrderUrls.GET_LAB_ORDERS)
-	public Response<OrderDiagnosticTest> getLabOrders(@PathParam("locationId") String locationId, @QueryParam("page") int page, @QueryParam("size") int size) {
+	public Response<OrderDiagnosticTest> getLabOrders(@PathVariable("locationId") String locationId, @RequestParam("page") int page, @RequestParam("size") int size) {
 
 		List<OrderDiagnosticTest> orderDiagnosticTests = diagnosticTestOrderService.getLabOrders(locationId, page, size);
 		
@@ -112,10 +117,10 @@ public class DiagnosticTestOrderApi {
 		return response;
 	}
 	
-	@GET
-	@Path(PathProxy.DiagnosticTestOrderUrls.CANCEL_ORDER_DIAGNOSTIC_TEST)
+	@GetMapping
+	(PathProxy.DiagnosticTestOrderUrls.CANCEL_ORDER_DIAGNOSTIC_TEST)
 	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.CANCEL_ORDER_DIAGNOSTIC_TEST, notes = PathProxy.DiagnosticTestOrderUrls.CANCEL_ORDER_DIAGNOSTIC_TEST)
-	public Response<OrderDiagnosticTest> cancelOrderDiagnosticTest(@PathParam("orderId") String orderId, @PathParam("userId") String userId) {
+	public Response<OrderDiagnosticTest> cancelOrderDiagnosticTest(@PathVariable("orderId") String orderId, @PathVariable("userId") String userId) {
 		 if (DPDoctorUtils.anyStringEmpty(orderId, userId)) {
 				throw new BusinessException(ServiceError.InvalidInput, "OderId or UserId cannot be null");
 		}
@@ -126,11 +131,11 @@ public class DiagnosticTestOrderApi {
 		return response;
 	}
 	
-	@GET
-	@Path(PathProxy.DiagnosticTestOrderUrls.GET_ORDER_BY_ID)
+	@GetMapping
+	(PathProxy.DiagnosticTestOrderUrls.GET_ORDER_BY_ID)
 	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.GET_ORDER_BY_ID, notes = PathProxy.DiagnosticTestOrderUrls.GET_ORDER_BY_ID)
-	public Response<OrderDiagnosticTest> getDiagnosticTestOrderById(@PathParam("orderId") String orderId, 
-			@DefaultValue(value="false") @QueryParam("isLab") Boolean isLab, @DefaultValue(value="false") @QueryParam("isUser") Boolean isUser) {
+	public Response<OrderDiagnosticTest> getDiagnosticTestOrderById(@PathVariable("orderId") String orderId, 
+			@DefaultValue(value="false") @RequestParam("isLab") Boolean isLab, @DefaultValue(value="false") @RequestParam("isUser") Boolean isUser) {
 		 if (DPDoctorUtils.anyStringEmpty(orderId)) {
 				throw new BusinessException(ServiceError.InvalidInput, "OderId cannot be null");
 		}
@@ -141,11 +146,11 @@ public class DiagnosticTestOrderApi {
 		return response;
 	}
 	
-	@GET
-	@Path(PathProxy.DiagnosticTestOrderUrls.GET_DIAGNOSTIC_TEST_PACKAGES)
+	@GetMapping
+	(PathProxy.DiagnosticTestOrderUrls.GET_DIAGNOSTIC_TEST_PACKAGES)
 	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.GET_DIAGNOSTIC_TEST_PACKAGES, notes = PathProxy.DiagnosticTestOrderUrls.GET_DIAGNOSTIC_TEST_PACKAGES)
-	public Response<DiagnosticTestPackage> getDiagnosticTestPackages(@PathParam("locationId") String locationId, 
-			@PathParam("hospitalId") String hospitalId, @DefaultValue(value="true") @QueryParam("discarded") Boolean discarded, @QueryParam("page") int page, @QueryParam("size") int size) {
+	public Response<DiagnosticTestPackage> getDiagnosticTestPackages(@PathVariable("locationId") String locationId, 
+			@PathVariable("hospitalId") String hospitalId, @DefaultValue(value="true") @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded, @RequestParam("page") int page, @RequestParam("size") int size) {
 		 if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 				throw new BusinessException(ServiceError.InvalidInput, "LocationId or HospitalId cannot be null");
 		}
@@ -156,13 +161,13 @@ public class DiagnosticTestOrderApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_DIAGNOSTIC_TEST)
-	@GET
+	
+	@GetMapping(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_DIAGNOSTIC_TEST)
 	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_DIAGNOSTIC_TEST, notes = PathProxy.DiagnosticTestOrderUrls.SEARCH_DIAGNOSTIC_TEST)
-	public Response<Object> searchDiagnosticTest(@QueryParam("page") int page, @QueryParam("size") int size,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
-			@QueryParam(value = "searchTerm") String searchTerm) {
+	public Response<Object> searchDiagnosticTest(@RequestParam("page") int page, @RequestParam("size") int size,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+			  @RequestParam(value = "discarded") Boolean discarded,
+			@RequestParam(value = "searchTerm") String searchTerm) {
 		
 		List<DiagnosticTest> diagnosticTests = diagnosticTestOrderService.searchDiagnosticTest(page, size, updatedTime, discarded, searchTerm);
 		Response<Object> response = new Response<Object>();

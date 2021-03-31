@@ -2,17 +2,16 @@ package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
 import com.dpdocter.exceptions.BusinessException;
@@ -23,8 +22,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.SOLR_PATIENT_TREATMENT_BASE_URL)
+@RestController
+(PathProxy.SOLR_PATIENT_TREATMENT_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.SOLR_PATIENT_TREATMENT_BASE_URL, description = "Endpoint for es clinical notes")
@@ -35,13 +34,13 @@ public class ESTreatmentAPI {
     @Autowired
     private ESTreatmentService esTreatmentService;
 
-    @Path(value = PathProxy.SolrPatientTreatmentUrls.SEARCH)
-    @GET
+    
+    @GetMapping(value = PathProxy.SolrPatientTreatmentUrls.SEARCH)
     @ApiOperation(value = PathProxy.SolrPatientTreatmentUrls.SEARCH, notes = PathProxy.SolrPatientTreatmentUrls.SEARCH)
-    public Response<Object> search(@PathParam("type") String type, @PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
-	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+    public Response<Object> search(@PathVariable("type") String type, @PathVariable("range") String range, @RequestParam("page") int page, @RequestParam("size") int size,
+	    @RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+	    @RequestParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+	      @RequestParam(value = "discarded") Boolean discarded, @RequestParam(value = "searchTerm") String searchTerm) {
     	if (DPDoctorUtils.anyStringEmpty(type, range, locationId, hospitalId)) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

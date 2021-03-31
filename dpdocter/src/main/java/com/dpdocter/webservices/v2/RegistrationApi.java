@@ -4,11 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -17,7 +13,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -32,10 +32,8 @@ import io.swagger.annotations.ApiOperation;
 /**
  * @author parag
  */
-@Component(value = "RegistrationApiV2")
-@Path(PathProxy.REGISTRATION_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RestController(value = "RegistrationApiV2")
+@RequestMapping(value=PathProxy.REGISTRATION_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.REGISTRATION_BASE_URL, description = "Endpoint for register")
 public class RegistrationApi {
 
@@ -66,16 +64,16 @@ public class RegistrationApi {
 			return null;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_USERS)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_USERS)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_USERS, notes = PathProxy.RegistrationUrls.GET_USERS)
-	public Response<ClinicDoctorResponse> getUsers(@QueryParam("doctorId") String doctorId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@QueryParam(value = "role") String role,
-			@DefaultValue("false") @QueryParam(value = "active") Boolean active,
-			@QueryParam(value = "userState") String userState) {
+	public Response<ClinicDoctorResponse> getUsers(@RequestParam("doctorId") String doctorId,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId,
+			@RequestParam(value = "page") int page, @RequestParam(value = "size") int size,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+			@RequestParam(value = "role") String role,
+			@DefaultValue("false") @RequestParam(value = "active") Boolean active,
+			@RequestParam(value = "userState") String userState) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);

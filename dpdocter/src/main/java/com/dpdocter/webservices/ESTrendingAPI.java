@@ -4,17 +4,16 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.Offer;
 import com.dpdocter.elasticsearch.services.ESTrendingServices;
@@ -25,8 +24,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.SOLR_TRENDING_BASE_URL)
+@RestController
+(PathProxy.SOLR_TRENDING_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.SOLR_TRENDING_BASE_URL, description = "Endpoint for Trending")
@@ -40,13 +39,13 @@ public class ESTrendingAPI {
 	@Autowired
 	private ESTrendingServices estrendingService;
 
-	@Path(value = PathProxy.ESTrendingUrl.SEARCH_OFFERS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ESTrendingUrl.SEARCH_OFFERS)
 	@ApiOperation(value = PathProxy.ESTrendingUrl.SEARCH_OFFERS, notes = PathProxy.ESTrendingUrl.SEARCH_OFFERS)
-	public Response<Offer> searchOffers(@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("discarded") @DefaultValue("false") Boolean discarded,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("productId") String productId,
-			@QueryParam("offerType") String offerType, @QueryParam("productType") String productType) {
+	public Response<Offer> searchOffers(@RequestParam("size") int size, @RequestParam("page") int page,
+			@RequestParam("discarded") @DefaultValue("false") Boolean discarded,
+			@RequestParam("searchTerm") String searchTerm, @RequestParam("productId") String productId,
+			@RequestParam("offerType") String offerType, @RequestParam("productType") String productType) {
 
 		Response<Offer> response = new Response<Offer>();
 		List<Offer> offers = estrendingService.searchOffer(size, page, discarded, searchTerm, productId, offerType,
@@ -69,13 +68,13 @@ public class ESTrendingAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ESTrendingUrl.SEARCH_TRENDINGS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ESTrendingUrl.SEARCH_TRENDINGS)
 	@ApiOperation(value = PathProxy.ESTrendingUrl.SEARCH_TRENDINGS, notes = PathProxy.ESTrendingUrl.SEARCH_TRENDINGS)
-	public Response<TrendingResponse> searchTrendings(@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("discarded") @DefaultValue("false") Boolean discarded,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("trendingType") String trendingType,
-			@QueryParam("resourceType") String resourceType) {
+	public Response<TrendingResponse> searchTrendings(@RequestParam("size") int size, @RequestParam("page") int page,
+			@RequestParam("discarded") @DefaultValue("false") Boolean discarded,
+			@RequestParam("searchTerm") String searchTerm, @RequestParam("trendingType") String trendingType,
+			@RequestParam("resourceType") String resourceType) {
 
 		Response<TrendingResponse> response = new Response<TrendingResponse>();
 		List<TrendingResponse> trendings = estrendingService.searchTrendings(size, page, discarded, searchTerm,

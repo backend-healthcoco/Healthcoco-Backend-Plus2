@@ -1,15 +1,14 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.VersionControl;
 import com.dpdocter.exceptions.BusinessException;
@@ -20,8 +19,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.VERSION_CONTROL_BASE_URL)
+@RestController
+(PathProxy.VERSION_CONTROL_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.VERSION_CONTROL_BASE_URL, description = "Endpoint for version controliing")
@@ -34,8 +33,7 @@ public class VersionControlAPI {
 	 VersionControlService versionControlService;
 	 
 
-	    @Path(value = PathProxy.VersionControlUrls.CHECK_VERSION)
-	    @POST
+	   @PostMapping(value = PathProxy.VersionControlUrls.CHECK_VERSION)
 	    @ApiOperation(value =PathProxy.VersionControlUrls.CHECK_VERSION, notes = PathProxy.VersionControlUrls.CHECK_VERSION)
 	    public Response<Integer> checkVersion(VersionControl versionControl)
 	    {
@@ -50,8 +48,7 @@ public class VersionControlAPI {
 	    	return response;
 	    }
 	    
-	    @Path(value = PathProxy.VersionControlUrls.CHANGE_VERSION)
-	    @POST
+	   @PostMapping(value = PathProxy.VersionControlUrls.CHANGE_VERSION)
 	    @ApiOperation(value =PathProxy.VersionControlUrls.CHANGE_VERSION, notes = PathProxy.VersionControlUrls.CHANGE_VERSION)
 	    public Response<VersionControl> changeVersion(VersionControl versionControl)
 	    {

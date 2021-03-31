@@ -3,19 +3,18 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.BrokenAppointment;
 import com.dpdocter.beans.ClinicalIndicator;
@@ -39,8 +38,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.REPORTS_BASE_URL)
+@RestController
+(PathProxy.REPORTS_BASE_URL)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.REPORTS_BASE_URL, description = "Endpoint for Medical Report Register")
@@ -51,13 +50,13 @@ public class ReportsAPI {
 	@Autowired
 	private ReportsService reportsService;
 
-	@Path(value = PathProxy.ReportsUrls.GET_IPD_REPORTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_IPD_REPORTS)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_IPD_REPORTS, notes = PathProxy.ReportsUrls.GET_IPD_REPORTS)
-	public Response<IPDReportsResponse> getIPDReports(@QueryParam("locationId") String locationId,
-			@QueryParam("doctorId") String doctorId, @QueryParam("patientId") String patientId,
-			@QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
+	public Response<IPDReportsResponse> getIPDReports(@RequestParam("locationId") String locationId,
+			@RequestParam("doctorId") String doctorId, @RequestParam("patientId") String patientId,
+			@RequestParam("from") String from, @RequestParam("to") String to, @RequestParam("page") int page,
+			@RequestParam("size") int size, @RequestParam("updatedTime") String updatedTime) {
 		IPDReportsResponse ipdReports = reportsService.getIPDReportsList(locationId, doctorId, patientId, from, to,
 				page, size, updatedTime);
 		Response<IPDReportsResponse> response = new Response<IPDReportsResponse>();
@@ -65,11 +64,11 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_OPD_REPORTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_OPD_REPORTS)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_OPD_REPORTS, notes = PathProxy.ReportsUrls.GET_OPD_REPORTS)
-	public Response<OPDReportsResponse> getOPDReports(@QueryParam("locationId") String locationId,@QueryParam("doctorId") String doctorId,@QueryParam("patientId") String patientId,@QueryParam("from") String from,
-			@QueryParam("to")String to,@QueryParam("page")  long page, @QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
+	public Response<OPDReportsResponse> getOPDReports(@RequestParam("locationId") String locationId,@RequestParam("doctorId") String doctorId,@RequestParam("patientId") String patientId,@RequestParam("from") String from,
+			@RequestParam("to")String to,@RequestParam("page")  long page, @RequestParam("size") int size, @RequestParam("updatedTime") String updatedTime) {
 		OPDReportsResponse opdReports = reportsService.getOPDReportsList(locationId, doctorId, patientId, from, to, page,
 				size, updatedTime);
 		Response<OPDReportsResponse> response = new Response<OPDReportsResponse>();
@@ -77,13 +76,13 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_OT_REPORTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_OT_REPORTS)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_OT_REPORTS, notes = PathProxy.ReportsUrls.GET_OT_REPORTS)
-	public Response<OTReportsResponse> getOTReports(@QueryParam("locationId") String locationId,
-			@QueryParam("doctorId") String doctorId, @QueryParam("patientId") String patientId,
-			@QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
+	public Response<OTReportsResponse> getOTReports(@RequestParam("locationId") String locationId,
+			@RequestParam("doctorId") String doctorId, @RequestParam("patientId") String patientId,
+			@RequestParam("from") String from, @RequestParam("to") String to, @RequestParam("page") int page,
+			@RequestParam("size") int size, @RequestParam("updatedTime") String updatedTime) {
 		OTReportsResponse otReports = reportsService.getOTReportsList(locationId, doctorId, patientId, from, to, page,
 				size, updatedTime);
 		Response<OTReportsResponse> response = new Response<OTReportsResponse>();
@@ -91,13 +90,13 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_DELIVERY_REPORTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_DELIVERY_REPORTS)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_DELIVERY_REPORTS, notes = PathProxy.ReportsUrls.GET_DELIVERY_REPORTS)
-	public Response<DeliveryReportsResponse> getDeliveryReports(@QueryParam("locationId") String locationId,
-			@QueryParam("doctorId") String doctorId, @QueryParam("patientId") String patientId,
-			@QueryParam("from") String from, @QueryParam("to") String to, @QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
+	public Response<DeliveryReportsResponse> getDeliveryReports(@RequestParam("locationId") String locationId,
+			@RequestParam("doctorId") String doctorId, @RequestParam("patientId") String patientId,
+			@RequestParam("from") String from, @RequestParam("to") String to, @RequestParam("page") int page,
+			@RequestParam("size") int size, @RequestParam("updatedTime") String updatedTime) {
 		DeliveryReportsResponse deliveryReports = reportsService.getDeliveryReportsList(locationId, doctorId, patientId,
 				from, to, page, size, updatedTime);
 		Response<DeliveryReportsResponse> response = new Response<DeliveryReportsResponse>();
@@ -105,8 +104,8 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.SUBMIT_IPD_REPORTS)
-	@POST
+	
+	@PostMapping(value = PathProxy.ReportsUrls.SUBMIT_IPD_REPORTS)
 	@ApiOperation(value = PathProxy.ReportsUrls.SUBMIT_IPD_REPORTS, notes = PathProxy.ReportsUrls.SUBMIT_IPD_REPORTS)
 	public Response<IPDReports> submitIPDReports(IPDReports request) {
 		if (request == null) {
@@ -119,8 +118,8 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.SUBMIT_OPD_REPORTS)
-	@POST
+	
+	@PostMapping(value = PathProxy.ReportsUrls.SUBMIT_OPD_REPORTS)
 	@ApiOperation(value = PathProxy.ReportsUrls.SUBMIT_OPD_REPORTS, notes = PathProxy.ReportsUrls.SUBMIT_OPD_REPORTS)
 	public Response<OPDReports> submitOPDReports(OPDReports request) {
 		if (request == null) {
@@ -133,8 +132,8 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.SUBMIT_OT_REPORTS)
-	@POST
+	
+	@PostMapping(value = PathProxy.ReportsUrls.SUBMIT_OT_REPORTS)
 	@ApiOperation(value = PathProxy.ReportsUrls.SUBMIT_OT_REPORTS, notes = PathProxy.ReportsUrls.SUBMIT_OT_REPORTS)
 	public Response<OTReports> submitOTReports(OTReports request) {
 		if (request == null) {
@@ -147,8 +146,8 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.SUBMIT_DELIVERY_REPORTS)
-	@POST
+	
+	@PostMapping(value = PathProxy.ReportsUrls.SUBMIT_DELIVERY_REPORTS)
 	@ApiOperation(value = PathProxy.ReportsUrls.SUBMIT_DELIVERY_REPORTS, notes = PathProxy.ReportsUrls.SUBMIT_DELIVERY_REPORTS)
 	public Response<DeliveryReports> submitDeliveryReports(DeliveryReports request) {
 		if (request == null) {
@@ -161,8 +160,8 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.ADD_PRESCRIPTION_IN_OPD_REPORTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.ADD_PRESCRIPTION_IN_OPD_REPORTS)
 	@ApiOperation(value = PathProxy.ReportsUrls.ADD_PRESCRIPTION_IN_OPD_REPORTS, notes = PathProxy.ReportsUrls.ADD_PRESCRIPTION_IN_OPD_REPORTS)
 	public Response<Boolean> addPrescriptionOPDReports() {
 		Boolean save = reportsService.addPrescriptionOPDReports();
@@ -171,8 +170,8 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.ADD_CLINICAL_INDICATOR)
-	@POST
+	
+	@PostMapping(value = PathProxy.ReportsUrls.ADD_CLINICAL_INDICATOR)
 	@ApiOperation(value = PathProxy.ReportsUrls.ADD_CLINICAL_INDICATOR, notes = PathProxy.ReportsUrls.ADD_CLINICAL_INDICATOR)
 	public Response<ClinicalIndicator> addClinicalIndicator(ClinicalIndicator request) {
 		if (request == null) {
@@ -189,10 +188,10 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_CLINICAL_INDICATOR)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_CLINICAL_INDICATOR)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_CLINICAL_INDICATOR, notes = PathProxy.ReportsUrls.GET_CLINICAL_INDICATOR)
-	public Response<ClinicalIndicator> getClinicalIndicator(@PathParam("id") String id) {
+	public Response<ClinicalIndicator> getClinicalIndicator(@PathVariable("id") String id) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "id is NULL");
@@ -203,13 +202,13 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_CLINICAL_INDICATORS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_CLINICAL_INDICATORS)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_CLINICAL_INDICATORS, notes = PathProxy.ReportsUrls.GET_CLINICAL_INDICATORS)
-	public Response<ClinicalIndicator> getClinicalIndicators(@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId, @QueryParam("discarded") boolean discarded,
-			@QueryParam("type") String type) {
+	public Response<ClinicalIndicator> getClinicalIndicators(@RequestParam("size") int size, @RequestParam("page") int page,
+			@RequestParam("doctorId") String doctorId, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@RequestParam("type") String type) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId,locationId,hospitalId is NULL");
@@ -221,11 +220,11 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.DELETE_CLINICAL_INDICATORS)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ReportsUrls.DELETE_CLINICAL_INDICATORS)
 	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_CLINICAL_INDICATORS, notes = PathProxy.ReportsUrls.DELETE_CLINICAL_INDICATORS)
-	public Response<ClinicalIndicator> deleteClinicalIndicator(@PathParam("id") String id,
-			@QueryParam("discarded") boolean discarded) {
+	public Response<ClinicalIndicator> deleteClinicalIndicator(@PathVariable("id") String id,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "id is NULL");
@@ -236,8 +235,8 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.ADD_BROKEN_APPOINTMENT)
-	@POST
+	
+	@PostMapping(value = PathProxy.ReportsUrls.ADD_BROKEN_APPOINTMENT)
 	@ApiOperation(value = PathProxy.ReportsUrls.ADD_BROKEN_APPOINTMENT, notes = PathProxy.ReportsUrls.ADD_BROKEN_APPOINTMENT)
 	public Response<BrokenAppointment> addBrokenAppointment(BrokenAppointment request) {
 		if (request == null) {
@@ -254,10 +253,10 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_BROKEN_APPOINTMENT)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_BROKEN_APPOINTMENT)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_BROKEN_APPOINTMENT, notes = PathProxy.ReportsUrls.GET_BROKEN_APPOINTMENT)
-	public Response<BrokenAppointment> getBrokenAppointment(@PathParam("id") String id) {
+	public Response<BrokenAppointment> getBrokenAppointment(@PathVariable("id") String id) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "id is NULL");
@@ -268,13 +267,13 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_BROKEN_APPOINTMENTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_BROKEN_APPOINTMENTS)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_BROKEN_APPOINTMENTS, notes = PathProxy.ReportsUrls.GET_BROKEN_APPOINTMENTS)
-	public Response<BrokenAppointment> getBrokenAppointments(@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId, @QueryParam("discarded") boolean discarded,
-			@QueryParam("type") String type) {
+	public Response<BrokenAppointment> getBrokenAppointments(@RequestParam("size") int size, @RequestParam("page") int page,
+			@RequestParam("doctorId") String doctorId, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@RequestParam("type") String type) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId,locationId,hospitalId is NULL");
@@ -286,11 +285,11 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.DELETE_BROKEN_APPOINTMENT)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ReportsUrls.DELETE_BROKEN_APPOINTMENT)
 	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_BROKEN_APPOINTMENT, notes = PathProxy.ReportsUrls.DELETE_BROKEN_APPOINTMENT)
-	public Response<BrokenAppointment> deleteBrokenAppointment(@PathParam("id") String id,
-			@QueryParam("discarded") boolean discarded) {
+	public Response<BrokenAppointment> deleteBrokenAppointment(@PathVariable("id") String id,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "id is NULL");
@@ -301,8 +300,8 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.ADD_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER)
-	@POST
+	
+	@PostMapping(value = PathProxy.ReportsUrls.ADD_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER)
 	@ApiOperation(value = PathProxy.ReportsUrls.ADD_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER, notes = PathProxy.ReportsUrls.ADD_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER)
 	public Response<EquipmentLogAMCAndServicingRegister> addEquipmentLogAMCAndServicingRegister(
 			EquipmentLogAMCAndServicingRegister request) {
@@ -321,11 +320,11 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER, notes = PathProxy.ReportsUrls.GET_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER)
 	public Response<EquipmentLogAMCAndServicingRegister> getEquipmentLogAMCAndServicingRegister(
-			@PathParam("id") String id) {
+			@PathVariable("id") String id) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "id is NULL");
@@ -337,13 +336,13 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTERS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTERS)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTERS, notes = PathProxy.ReportsUrls.GET_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTERS)
 	public Response<EquipmentLogAMCAndServicingRegister> getEquipmentLogAMCAndServicingRegisters(
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("discarded") boolean discarded, @QueryParam("type") String type) {
+			@RequestParam("size") int size, @RequestParam("page") int page, @RequestParam("doctorId") String doctorId,
+			@RequestParam("locationId") String locationId, @RequestParam("hospitalId") String hospitalId,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded, @RequestParam("type") String type) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId,locationId,hospitalId is NULL");
@@ -355,11 +354,11 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.DELETE_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ReportsUrls.DELETE_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER)
 	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER, notes = PathProxy.ReportsUrls.DELETE_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER)
 	public Response<EquipmentLogAMCAndServicingRegister> deleteEquipmentLogAMCAndServicingRegister(
-			@PathParam("id") String id, @QueryParam("discarded") boolean discarded) {
+			@PathVariable("id") String id, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "id is NULL");
@@ -371,8 +370,8 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.ADD_REPAIR_RECORDS_OR_COMPLAINCE_BOOK)
-	@POST
+	
+	@PostMapping(value = PathProxy.ReportsUrls.ADD_REPAIR_RECORDS_OR_COMPLAINCE_BOOK)
 	@ApiOperation(value = PathProxy.ReportsUrls.ADD_REPAIR_RECORDS_OR_COMPLAINCE_BOOK, notes = PathProxy.ReportsUrls.ADD_REPAIR_RECORDS_OR_COMPLAINCE_BOOK)
 	public Response<RepairRecordsOrComplianceBook> addRepairRecordsOrComplianceBook(
 			RepairRecordsOrComplianceBook request) {
@@ -390,10 +389,10 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_REPAIR_RECORDS_OR_COMPLAINCE_BOOK)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_REPAIR_RECORDS_OR_COMPLAINCE_BOOK)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_REPAIR_RECORDS_OR_COMPLAINCE_BOOK, notes = PathProxy.ReportsUrls.GET_REPAIR_RECORDS_OR_COMPLAINCE_BOOK)
-	public Response<RepairRecordsOrComplianceBook> getRepairRecordsOrComplianceBook(@PathParam("id") String id) {
+	public Response<RepairRecordsOrComplianceBook> getRepairRecordsOrComplianceBook(@PathVariable("id") String id) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "id is NULL");
@@ -404,13 +403,13 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_REPAIR_RECORDS_OR_COMPLAINCE_BOOKS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_REPAIR_RECORDS_OR_COMPLAINCE_BOOKS)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_REPAIR_RECORDS_OR_COMPLAINCE_BOOKS, notes = PathProxy.ReportsUrls.GET_REPAIR_RECORDS_OR_COMPLAINCE_BOOKS)
-	public Response<RepairRecordsOrComplianceBook> getRepairRecordsOrComplianceBooks(@QueryParam("size") int size,
-			@QueryParam("page") int page, @QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("discarded") boolean discarded, @QueryParam("type") String type) {
+	public Response<RepairRecordsOrComplianceBook> getRepairRecordsOrComplianceBooks(@RequestParam("size") int size,
+			@RequestParam("page") int page, @RequestParam("doctorId") String doctorId,
+			@RequestParam("locationId") String locationId, @RequestParam("hospitalId") String hospitalId,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded, @RequestParam("type") String type) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "doctorId,locationId,hospitalId is NULL");
@@ -422,11 +421,11 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.DELETE_REPAIR_RECORDS_OR_COMPLAINCE_BOOK)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.ReportsUrls.DELETE_REPAIR_RECORDS_OR_COMPLAINCE_BOOK)
 	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_REPAIR_RECORDS_OR_COMPLAINCE_BOOK, notes = PathProxy.ReportsUrls.DELETE_REPAIR_RECORDS_OR_COMPLAINCE_BOOK)
-	public Response<RepairRecordsOrComplianceBook> deleteRepairRecordsOrComplianceBook(@PathParam("id") String id,
-			@QueryParam("discarded") boolean discarded) {
+	public Response<RepairRecordsOrComplianceBook> deleteRepairRecordsOrComplianceBook(@PathVariable("id") String id,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "id is NULL");
@@ -438,10 +437,10 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.DOWNLOAD_OT_REPORTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.DOWNLOAD_OT_REPORTS)
 	@ApiOperation(value = PathProxy.ReportsUrls.DOWNLOAD_OT_REPORTS, notes = PathProxy.ReportsUrls.DOWNLOAD_OT_REPORTS)
-	public Response<String> downloadOTReports(@PathParam("otId") String otId) {
+	public Response<String> downloadOTReports(@PathVariable("otId") String otId) {
 		if (DPDoctorUtils.allStringsEmpty(otId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -451,10 +450,10 @@ public class ReportsAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.ReportsUrls.DOWNLOAD_DELIVERY_REPORT)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.DOWNLOAD_DELIVERY_REPORT)
 	@ApiOperation(value = PathProxy.ReportsUrls.DOWNLOAD_DELIVERY_REPORT, notes = PathProxy.ReportsUrls.DOWNLOAD_DELIVERY_REPORT)
-	public Response<String> downloadDeliveryReports(@PathParam("reportId") String reportId) {
+	public Response<String> downloadDeliveryReports(@PathVariable("reportId") String reportId) {
 		if (DPDoctorUtils.allStringsEmpty(reportId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -464,8 +463,8 @@ public class ReportsAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.ReportsUrls.UPDATE_OT_REPORTS)
-	@POST
+	
+	@PostMapping(value = PathProxy.ReportsUrls.UPDATE_OT_REPORTS)
 	@ApiOperation(value = PathProxy.ReportsUrls.UPDATE_OT_REPORTS, notes = PathProxy.ReportsUrls.UPDATE_OT_REPORTS)
 	public Response<Boolean> updateOTReports() {
 		Response<Boolean> response = new Response<Boolean>();
@@ -473,40 +472,40 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_IPD_REPORT)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_IPD_REPORT)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_IPD_REPORT, notes = PathProxy.ReportsUrls.GET_IPD_REPORT)
-	public Response<IPDReports> getIPDReportById(@PathParam("id") String reportId) {
+	public Response<IPDReports> getIPDReportById(@PathVariable("id") String reportId) {
 		IPDReports ipdReports = reportsService.getIPDReportById(reportId);
 		Response<IPDReports> response = new Response<IPDReports>();
 		response.setData(ipdReports);
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_OPD_REPORT)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_OPD_REPORT)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_OPD_REPORT, notes = PathProxy.ReportsUrls.GET_OPD_REPORT)
-	public Response<OPDReportCustomResponse> getOPDReportById(@PathParam("id") String reportId) {
+	public Response<OPDReportCustomResponse> getOPDReportById(@PathVariable("id") String reportId) {
 		OPDReportCustomResponse opdReports = reportsService.getOPDReportById(reportId);
 		Response<OPDReportCustomResponse> response = new Response<OPDReportCustomResponse>();
 		response.setData(opdReports);
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_OT_REPORT)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_OT_REPORT)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_OT_REPORT, notes = PathProxy.ReportsUrls.GET_OT_REPORT)
-	public Response<OTReports> getOTReportById(@PathParam("id") String reportId) {
+	public Response<OTReports> getOTReportById(@PathVariable("id") String reportId) {
 		OTReports otReports = reportsService.getOTReportById(reportId);
 		Response<OTReports> response = new Response<OTReports>();
 		response.setData(otReports);
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.GET_DELIVERY_REPORT)
-	@GET
+	
+	@GetMapping(value = PathProxy.ReportsUrls.GET_DELIVERY_REPORT)
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_DELIVERY_REPORT, notes = PathProxy.ReportsUrls.GET_DELIVERY_REPORT)
-	public Response<DeliveryReports> getDeliveryReportById(@PathParam("id") String reportId) {
+	public Response<DeliveryReports> getDeliveryReportById(@PathVariable("id") String reportId) {
 		DeliveryReports deliveryReports = reportsService.getDeliveryReportById(reportId);
 		Response<DeliveryReports> response = new Response<DeliveryReports>();
 		response.setData(deliveryReports);

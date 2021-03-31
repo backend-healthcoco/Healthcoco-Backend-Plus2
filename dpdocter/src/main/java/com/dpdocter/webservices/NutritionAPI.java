@@ -3,21 +3,20 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.AssessmentPersonalDetail;
 import com.dpdocter.beans.BloodGlucose;
@@ -61,8 +60,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.NUTRITION_BASE_URL)
+@RestController
+(PathProxy.NUTRITION_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.NUTRITION_BASE_URL, description = "Endpoint for nutrition api's")
@@ -82,8 +81,8 @@ public class NutritionAPI {
 	@Autowired
 	private NutritionReferenceService nutritionReferenceService;
 
-	@POST
-	@Path(PathProxy.NutritionUrl.ADD_EDIT_NUTRITION_REFERENCE)
+	@PostMapping
+	(PathProxy.NutritionUrl.ADD_EDIT_NUTRITION_REFERENCE)
 	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_NUTRITION_REFERENCE)
 	public Response<NutritionReferenceResponse> addEditNutritionResponse(AddEditNutritionReferenceRequest request) {
 		if (request == null) {
@@ -104,13 +103,13 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.NutritionUrl.GET_NUTRITION_REFERENCES)
-	@GET
+	
+	@GetMapping(value = PathProxy.NutritionUrl.GET_NUTRITION_REFERENCES)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_REFERENCES)
-	public Response<NutritionReferenceResponse> getNutritionReference(@QueryParam("patientId") String patientId,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId, @QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("updatedTime") String updatedTime) {
+	public Response<NutritionReferenceResponse> getNutritionReference(@RequestParam("patientId") String patientId,
+			@RequestParam("doctorId") String doctorId, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId, @RequestParam("page") int page, @RequestParam("size") int size,
+			@RequestParam("searchTerm") String searchTerm, @RequestParam("updatedTime") String updatedTime) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -121,12 +120,12 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.NutritionUrl.GET_NUTRITION_ANALYTICS)
-	@GET
+	
+	@GetMapping(value = PathProxy.NutritionUrl.GET_NUTRITION_ANALYTICS)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_ANALYTICS)
-	public Response<NutritionGoalAnalytics> getNutritionAnalytics(@QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @DefaultValue("0") @QueryParam("fromDate") Long fromDate,
-			@DefaultValue("0") @QueryParam("toDate") Long toDate) {
+	public Response<NutritionGoalAnalytics> getNutritionAnalytics(@RequestParam("doctorId") String doctorId,
+			@RequestParam("locationId") String locationId, @DefaultValue("0") @RequestParam("fromDate") Long fromDate,
+			@DefaultValue("0") @RequestParam("toDate") Long toDate) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -139,10 +138,10 @@ public class NutritionAPI {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	@Path(PathProxy.NutritionUrl.GET_NUTRITION_PLAN_BY_ID)
-	@GET
+	
+	@GetMapping(PathProxy.NutritionUrl.GET_NUTRITION_PLAN_BY_ID)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_PLAN_BY_ID, notes = PathProxy.NutritionUrl.GET_NUTRITION_PLAN_BY_ID)
-	public Response<NutritionPlanResponse> getPlanById(@PathParam("id") String id) {
+	public Response<NutritionPlanResponse> getPlanById(@PathVariable("id") String id) {
 
 		Response<NutritionPlanResponse> response = null;
 
@@ -156,8 +155,8 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.GET_ALL_PLAN_CATEGORY)
-	@GET
+	
+	@GetMapping(PathProxy.NutritionUrl.GET_ALL_PLAN_CATEGORY)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_ALL_PLAN_CATEGORY, notes = PathProxy.NutritionUrl.GET_ALL_PLAN_CATEGORY)
 	public Response<NutritionPlanType> getPlanCategory() {
 
@@ -167,10 +166,10 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.GET_SUBSCRIPTION_PLAN_BY_ID)
-	@GET
+	
+	@GetMapping(PathProxy.NutritionUrl.GET_SUBSCRIPTION_PLAN_BY_ID)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_SUBSCRIPTION_PLAN_BY_ID, notes = PathProxy.NutritionUrl.GET_SUBSCRIPTION_PLAN_BY_ID)
-	public Response<SubscriptionNutritionPlan> getSubscriptionPlan(@PathParam("id") String id) {
+	public Response<SubscriptionNutritionPlan> getSubscriptionPlan(@PathVariable("id") String id) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
@@ -180,12 +179,12 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.GET_SUBSCRIPTION_PLANS)
-	@GET
+	
+	@GetMapping(PathProxy.NutritionUrl.GET_SUBSCRIPTION_PLANS)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_SUBSCRIPTION_PLANS, notes = PathProxy.NutritionUrl.GET_SUBSCRIPTION_PLANS)
-	public Response<SubscriptionNutritionPlan> getSubscriptionPlans(@QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("nutritionplanId") String nutritionplanId,
-			@QueryParam("discarded") @DefaultValue("false") boolean discarded) {
+	public Response<SubscriptionNutritionPlan> getSubscriptionPlans(@RequestParam("page") int page,
+			@RequestParam("size") int size, @RequestParam("nutritionplanId") String nutritionplanId,
+			@RequestParam("discarded") @DefaultValue("false") boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(nutritionplanId)) {
 			throw new BusinessException(ServiceError.InvalidInput, " NutritionplanId must not be null ");
 		}
@@ -194,8 +193,8 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.GENERATE_ID)
-	@GET
+	
+	@GetMapping(PathProxy.NutritionUrl.GENERATE_ID)
 	@ApiOperation(value = PathProxy.NutritionUrl.GENERATE_ID, notes = PathProxy.NutritionUrl.GENERATE_ID)
 	public Response<String> getGenerateId() {
 		Response<String> response = new Response<String>();
@@ -204,8 +203,8 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.ADD_USER_PLAN_SUBSCRIPTION)
-	@POST
+	
+	@PostMapping(PathProxy.NutritionUrl.ADD_USER_PLAN_SUBSCRIPTION)
 	@ApiOperation(value = PathProxy.NutritionUrl.ADD_USER_PLAN_SUBSCRIPTION, notes = PathProxy.NutritionUrl.ADD_USER_PLAN_SUBSCRIPTION)
 	public Response<UserNutritionSubscriptionResponse> addEditUserPlanSubscription(UserNutritionSubscription request) {
 		if (request == null) {
@@ -221,10 +220,10 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.DELETE_USER_PLAN_SUBSCRIPTION)
-	@DELETE
+	
+	@DeleteMapping(PathProxy.NutritionUrl.DELETE_USER_PLAN_SUBSCRIPTION)
 	@ApiOperation(value = PathProxy.NutritionUrl.DELETE_USER_PLAN_SUBSCRIPTION, notes = PathProxy.NutritionUrl.DELETE_USER_PLAN_SUBSCRIPTION)
-	public Response<UserNutritionSubscription> deleteUserPlanSubscription(@PathParam("id") String id) {
+	public Response<UserNutritionSubscription> deleteUserPlanSubscription(@PathVariable("id") String id) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
@@ -233,10 +232,10 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.GET_USER_PLAN_SUBSCRIPTION)
-	@GET
+	
+	@GetMapping(PathProxy.NutritionUrl.GET_USER_PLAN_SUBSCRIPTION)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_USER_PLAN_SUBSCRIPTION, notes = PathProxy.NutritionUrl.GET_USER_PLAN_SUBSCRIPTION)
-	public Response<UserNutritionSubscriptionResponse> getUserPlanSubscription(@PathParam("id") String id) {
+	public Response<UserNutritionSubscriptionResponse> getUserPlanSubscription(@PathVariable("id") String id) {
 
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
@@ -246,12 +245,12 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.GET_USER_PLAN_SUBSCRIPTIONS)
-	@GET
+	
+	@GetMapping(PathProxy.NutritionUrl.GET_USER_PLAN_SUBSCRIPTIONS)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_USER_PLAN_SUBSCRIPTIONS, notes = PathProxy.NutritionUrl.GET_USER_PLAN_SUBSCRIPTIONS)
-	public Response<UserNutritionSubscriptionResponse> getUserPlanSubscriptions(@PathParam("userId") String userId,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("updatedTime") long updatedTime,
-			@QueryParam("discarded") @DefaultValue("false") boolean discarded) {
+	public Response<UserNutritionSubscriptionResponse> getUserPlanSubscriptions(@PathVariable("userId") String userId,
+			@RequestParam("page") int page, @RequestParam("size") int size, @RequestParam("updatedTime") long updatedTime,
+			@RequestParam("discarded") @DefaultValue("false") boolean discarded) {
 		Response<UserNutritionSubscriptionResponse> response = new Response<UserNutritionSubscriptionResponse>();
 		if (DPDoctorUtils.allStringsEmpty(userId)) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
@@ -260,12 +259,12 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.GET_NUTRITION_PLAN)
-	@GET
+	
+	@GetMapping(PathProxy.NutritionUrl.GET_NUTRITION_PLAN)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_PLAN, notes = PathProxy.NutritionUrl.GET_NUTRITION_PLAN)
-	public Response<NutritionPlan> getPlan(@QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("type") String type, @QueryParam("updatedTime") long updatedTime,
-			@QueryParam("discarded") @DefaultValue("true") boolean discarded) {
+	public Response<NutritionPlan> getPlan(@RequestParam("page") int page, @RequestParam("size") int size,
+			@RequestParam("type") String type, @RequestParam("updatedTime") long updatedTime,
+			@RequestParam("discarded")   boolean discarded) {
 
 		Response<NutritionPlan> response = new Response<NutritionPlan>();
 		response.setDataList(nutritionService.getNutritionPlans(page, size, type, updatedTime, discarded));
@@ -273,8 +272,8 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.GET_NUTRITION_PLAN_CATEGORY)
-	@POST
+	
+	@PostMapping(PathProxy.NutritionUrl.GET_NUTRITION_PLAN_CATEGORY)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_PLAN_CATEGORY, notes = PathProxy.NutritionUrl.GET_NUTRITION_PLAN_CATEGORY)
 	public Response<NutritionPlanWithCategoryResponse> getPlanByCategory(NutritionPlanRequest request) {
 
@@ -284,8 +283,8 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_DETAIL)
-	@POST
+	
+	@PostMapping(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_DETAIL)
 	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_DETAIL, notes = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_DETAIL)
 	public Response<AssessmentPersonalDetail> addEditAssessmentPatientDetail(AssessmentPersonalDetail request) {
 		if (request == null) {
@@ -302,8 +301,8 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_LIFE_STYLE)
-	@POST
+	
+	@PostMapping(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_LIFE_STYLE)
 	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_LIFE_STYLE, notes = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_LIFE_STYLE)
 	public Response<PatientLifeStyle> addEditAssessmentLifeStyle(PatientLifeStyle request) {
 		if (request == null) {
@@ -319,8 +318,8 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_FOOD_AND_EXCERCISE)
-	@POST
+	
+	@PostMapping(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_FOOD_AND_EXCERCISE)
 	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_FOOD_AND_EXCERCISE, notes = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_FOOD_AND_EXCERCISE)
 	public Response<PatientFoodAndExcercise> addEditAssessmentFoodAndExcercise(PatientFoodAndExcercise request) {
 		if (request == null) {
@@ -336,8 +335,8 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_HISTORY)
-	@POST
+	
+	@PostMapping(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_HISTORY)
 	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_HISTORY, notes = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_HISTORY)
 	public Response<AssessmentFormHistoryResponse> addEditAssessmentPatientHistory(
 			PatientAssesentmentHistoryRequest request) {
@@ -354,8 +353,8 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_MEASUREMENT)
-	@POST
+	
+	@PostMapping(PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_MEASUREMENT)
 	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_MEASUREMENT, notes = PathProxy.NutritionUrl.ADD_EDIT_ASSESSMENT_PATIENT_MEASUREMENT)
 	public Response<PatientMeasurementInfo> addEditAssessmentPatientMeasurement(PatientMeasurementInfo request) {
 		if (request == null) {
@@ -371,14 +370,14 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_DETAIL)
-	@GET
+	
+	@GetMapping(PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_DETAIL)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_DETAIL, notes = PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_DETAIL)
-	public Response<AssessmentPersonalDetail> getAssessmentPatientDetail(@QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("updateTime") long updateTime,
-			@QueryParam("discarded") boolean discarded, @QueryParam("doctorId") String doctorId,
-			@QueryParam("patientId") String patientId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId) {
+	public Response<AssessmentPersonalDetail> getAssessmentPatientDetail(@RequestParam("page") int page,
+			@RequestParam("size") int size, @RequestParam("updateTime") long updateTime,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded, @RequestParam("doctorId") String doctorId,
+			@RequestParam("patientId") String patientId, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId) {
 
 		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, " hospitalId ,locationId should not null");
@@ -394,10 +393,10 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.GET_ASSESSMENT_LIFE_STYLE)
-	@GET
+	
+	@GetMapping(PathProxy.NutritionUrl.GET_ASSESSMENT_LIFE_STYLE)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_ASSESSMENT_LIFE_STYLE, notes = PathProxy.NutritionUrl.GET_ASSESSMENT_LIFE_STYLE)
-	public Response<PatientLifeStyle> getPatientLifeStyle(@PathParam("assessmentId") String assessmentId) {
+	public Response<PatientLifeStyle> getPatientLifeStyle(@PathVariable("assessmentId") String assessmentId) {
 
 		if (DPDoctorUtils.allStringsEmpty(assessmentId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "assessmentId should not be null");
@@ -408,11 +407,11 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.GET_ASSESSMENT_FOOD_AND_EXCERCISE)
-	@GET
+	
+	@GetMapping(PathProxy.NutritionUrl.GET_ASSESSMENT_FOOD_AND_EXCERCISE)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_ASSESSMENT_FOOD_AND_EXCERCISE, notes = PathProxy.NutritionUrl.GET_ASSESSMENT_FOOD_AND_EXCERCISE)
 	public Response<PatientFoodAndExcercise> getAssessmentFoodAndExcercise(
-			@PathParam("assessmentId") String assessmentId) {
+			@PathVariable("assessmentId") String assessmentId) {
 
 		if (DPDoctorUtils.allStringsEmpty(assessmentId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "assessmentId should not be null");
@@ -423,11 +422,11 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_HISTORY)
-	@GET
+	
+	@GetMapping(PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_HISTORY)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_HISTORY, notes = PathProxy.NutritionUrl.GET_ASSESSMENT_FOOD_AND_EXCERCISE)
 	public Response<AssessmentFormHistoryResponse> getAssessmentHistory(
-			@PathParam("assessmentId") String assessmentId) {
+			@PathVariable("assessmentId") String assessmentId) {
 
 		if (DPDoctorUtils.allStringsEmpty(assessmentId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "assessmentId should not be null");
@@ -438,10 +437,10 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_MEASUREMENT)
-	@GET
+	
+	@GetMapping(PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_MEASUREMENT)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_MEASUREMENT, notes = PathProxy.NutritionUrl.GET_ASSESSMENT_PATIENT_MEASUREMENT)
-	public Response<PatientMeasurementInfo> getAssessmentMeasureInfo(@PathParam("assessmentId") String assessmentId) {
+	public Response<PatientMeasurementInfo> getAssessmentMeasureInfo(@PathVariable("assessmentId") String assessmentId) {
 
 		if (DPDoctorUtils.allStringsEmpty(assessmentId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "assessmentId should not be null");
@@ -452,10 +451,10 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.NutritionUrl.UPDATE_IS_SHARE_WITH_PATIENT)
-	@GET
+	
+	@GetMapping(value = PathProxy.NutritionUrl.UPDATE_IS_SHARE_WITH_PATIENT)
 	@ApiOperation(value = PathProxy.NutritionUrl.UPDATE_IS_SHARE_WITH_PATIENT, notes = PathProxy.NutritionUrl.UPDATE_IS_SHARE_WITH_PATIENT)
-	public Response<Boolean> updateShareWithPatent(@PathParam("recordId") String recordId) {
+	public Response<Boolean> updateShareWithPatent(@PathVariable("recordId") String recordId) {
 		if (DPDoctorUtils.anyStringEmpty(recordId)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Record Id Cannot Be Empty");
@@ -466,8 +465,8 @@ public class NutritionAPI {
 
 	}
 
-	@Path(value = PathProxy.NutritionUrl.ADD_NUTRITION_RECORD)
-	@POST
+	
+	@PostMapping(value = PathProxy.NutritionUrl.ADD_NUTRITION_RECORD)
 	@ApiOperation(value = PathProxy.NutritionUrl.ADD_NUTRITION_RECORD, notes = PathProxy.NutritionUrl.ADD_NUTRITION_RECORD)
 	public Response<NutritionRecord> addNutritionRecord(NutritionRecord request) {
 		if (request == null) {
@@ -486,8 +485,8 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@POST
-	@Path(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD_MULTIPART_FILE)
+	@PostMapping
+	(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD_MULTIPART_FILE)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD_MULTIPART_FILE, notes = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD_MULTIPART_FILE)
 	public Response<RecordsFile> uploadNutritionRecordMultipart(@FormDataParam("file") FormDataBodyPart file,
@@ -511,8 +510,8 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@POST
-	@Path(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD)
+	@PostMapping
+	(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD)
 	@ApiOperation(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD, notes = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD)
 	public Response<RecordsFile> uploadNutritionRecord(DoctorLabReportUploadRequest request) {
 		if (request == null || request.getFileDetails() == null) {
@@ -534,10 +533,10 @@ public class NutritionAPI {
 			return null;
 	}
 
-	@Path(value = PathProxy.NutritionUrl.GET_NUTRITION_RECORD_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.NutritionUrl.GET_NUTRITION_RECORD_BY_ID)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_RECORD_BY_ID, notes = PathProxy.NutritionUrl.GET_NUTRITION_RECORD_BY_ID)
-	public Response<NutritionRecord> getRecordById(@PathParam("recordId") String recordId) {
+	public Response<NutritionRecord> getRecordById(@PathVariable("recordId") String recordId) {
 		if (DPDoctorUtils.anyStringEmpty(recordId)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "report Id Cannot Be Empty");
@@ -551,14 +550,14 @@ public class NutritionAPI {
 
 	}
 
-	@Path(value = PathProxy.NutritionUrl.GET_NUTRITION_RECORDS)
-	@GET
+	
+	@GetMapping(value = PathProxy.NutritionUrl.GET_NUTRITION_RECORDS)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITION_RECORDS, notes = PathProxy.NutritionUrl.GET_NUTRITION_RECORDS)
-	public Response<NutritionRecord> getDoctorLabReports(@QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("discarded") Boolean discarded,
-			@QueryParam("isnutrition") @DefaultValue("isNutrition") Boolean isNutrition) {
+	public Response<NutritionRecord> getDoctorLabReports(@RequestParam("page") int page, @RequestParam("size") int size,
+			@RequestParam("patientId") String patientId, @RequestParam("doctorId") String doctorId,
+			@RequestParam("locationId") String locationId, @RequestParam("hospitalId") String hospitalId,
+			@RequestParam("searchTerm") String searchTerm, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@RequestParam("isnutrition") @DefaultValue("isNutrition") Boolean isNutrition) {
 
 		List<NutritionRecord> records = nutritionRecordService.getNutritionRecord(page, size, patientId, doctorId,
 				locationId, hospitalId, searchTerm, discarded, isNutrition);
@@ -568,11 +567,11 @@ public class NutritionAPI {
 
 	}
 
-	@Path(PathProxy.NutritionUrl.DELETE_NUTRITION_RECORD)
-	@DELETE
+	
+	@DeleteMapping(PathProxy.NutritionUrl.DELETE_NUTRITION_RECORD)
 	@ApiOperation(value = PathProxy.NutritionUrl.DELETE_NUTRITION_RECORD, notes = PathProxy.NutritionUrl.DELETE_NUTRITION_RECORD)
-	public Response<NutritionRecord> deleteUserPlanSubscription(@PathParam("recordId") String recordId,
-			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+	public Response<NutritionRecord> deleteUserPlanSubscription(@PathVariable("recordId") String recordId,
+			@RequestParam("discarded")   Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(recordId)) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
@@ -582,8 +581,8 @@ public class NutritionAPI {
 	}
 	
 
-	@Path(PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN)
-	@POST
+	
+	@PostMapping(PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN, notes = PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN)
 	public Response<NutritionPlanWithCategoryShortResponse> getPlanDetailsByCategory(NutritionPlanRequest request) {
 
@@ -593,10 +592,10 @@ public class NutritionAPI {
 		return response;
 	}
 	
-	@Path(PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN_BY_ID)
-	@GET
+	
+	@GetMapping(PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN_BY_ID)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN_BY_ID, notes = PathProxy.NutritionUrl.GET_USER_NUTRITION_PLAN_BY_ID)
-	public Response<NutritionPlan> getNutritionPlanById(@PathParam("id") String id) {
+	public Response<NutritionPlan> getNutritionPlanById(@PathVariable("id") String id) {
 
 		Response<NutritionPlan> response = null;
 
@@ -610,10 +609,10 @@ public class NutritionAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.NutritionUrl.GET_TESTIMONIALS_BY_PLAN_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.NutritionUrl.GET_TESTIMONIALS_BY_PLAN_ID)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_TESTIMONIALS_BY_PLAN_ID, notes = PathProxy.NutritionUrl.GET_TESTIMONIALS_BY_PLAN_ID)
-	public Response<Testimonial> getTestimonialsByPlanId(@PathParam("id") String planId , @QueryParam("page") int page ,  @QueryParam("size") int size ) {
+	public Response<Testimonial> getTestimonialsByPlanId(@PathVariable("id") String planId , @RequestParam("page") int page ,  @RequestParam("size") int size ) {
 		if (planId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
@@ -626,8 +625,8 @@ public class NutritionAPI {
 	}
 	
 
-	@Path(value = PathProxy.NutritionUrl.ADD_EDIT_SUGAR_SETTINGS)
-	@POST
+	
+	@PostMapping(value = PathProxy.NutritionUrl.ADD_EDIT_SUGAR_SETTINGS)
 	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_SUGAR_SETTINGS, notes = PathProxy.NutritionUrl.ADD_EDIT_SUGAR_SETTINGS)
 	public Response<SugarSetting> addEditSugarSetting(SugarSetting request) {
 		if (request == null) {
@@ -641,10 +640,10 @@ public class NutritionAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.NutritionUrl.GET_SUGAR_SETTINGS_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.NutritionUrl.GET_SUGAR_SETTINGS_BY_ID)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_SUGAR_SETTINGS_BY_ID, notes = PathProxy.NutritionUrl.GET_SUGAR_SETTINGS_BY_ID)
-	public Response<SugarSetting> getSugarSettingById(@PathParam("id") String id) {
+	public Response<SugarSetting> getSugarSettingById(@PathVariable("id") String id) {
 		if (id == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
@@ -658,8 +657,8 @@ public class NutritionAPI {
 	
 	
 
-	@Path(value = PathProxy.NutritionUrl.ADD_EDIT_BLOOD_GLUCOSE)
-	@POST
+	
+	@PostMapping(value = PathProxy.NutritionUrl.ADD_EDIT_BLOOD_GLUCOSE)
 	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_BLOOD_GLUCOSE, notes = PathProxy.NutritionUrl.ADD_EDIT_BLOOD_GLUCOSE)
 	public Response<BloodGlucose> addEditBloodGlucose(BloodGlucose request) {
 		if (request == null) {
@@ -673,10 +672,10 @@ public class NutritionAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.NutritionUrl.GET_BLOOD_GLUCOSE_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.NutritionUrl.GET_BLOOD_GLUCOSE_BY_ID)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_BLOOD_GLUCOSE_BY_ID, notes = PathProxy.NutritionUrl.GET_BLOOD_GLUCOSE_BY_ID)
-	public Response<BloodGlucose> getBloodGlucoseById(@PathParam("id") String id) {
+	public Response<BloodGlucose> getBloodGlucoseById(@PathVariable("id") String id) {
 		if (id == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
@@ -686,10 +685,10 @@ public class NutritionAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.NutritionUrl.GET_BLOOD_GLUCOSE_LIST_BY_PATIENT_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.NutritionUrl.GET_BLOOD_GLUCOSE_LIST_BY_PATIENT_ID)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_BLOOD_GLUCOSE_LIST_BY_PATIENT_ID, notes = PathProxy.NutritionUrl.GET_BLOOD_GLUCOSE_LIST_BY_PATIENT_ID)
-	public Response<BloodGlucose> getBloodGlucoseListByPatientId(@QueryParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size) {
+	public Response<BloodGlucose> getBloodGlucoseListByPatientId(@RequestParam("patientId") String patientId, @RequestParam("page") int page, @RequestParam("size") int size) {
 		if (patientId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
@@ -700,8 +699,8 @@ public class NutritionAPI {
 	}
 	
 
-	@Path(value = PathProxy.NutritionUrl.ADD_EDIT_SUGAR_MEDICINE_REMINDER)
-	@POST
+	
+	@PostMapping(value = PathProxy.NutritionUrl.ADD_EDIT_SUGAR_MEDICINE_REMINDER)
 	@ApiOperation(value = PathProxy.NutritionUrl.ADD_EDIT_SUGAR_MEDICINE_REMINDER, notes = PathProxy.NutritionUrl.ADD_EDIT_SUGAR_MEDICINE_REMINDER)
 	public Response<SugarMedicineReminder> addEditSugarMedicineReminder(SugarMedicineReminder request) {
 		if (request == null) {
@@ -714,10 +713,10 @@ public class NutritionAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.NutritionUrl.GET_SUGAR_MEDICINE_REMINDER_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.NutritionUrl.GET_SUGAR_MEDICINE_REMINDER_BY_ID)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_SUGAR_MEDICINE_REMINDER_BY_ID, notes = PathProxy.NutritionUrl.GET_SUGAR_MEDICINE_REMINDER_BY_ID)
-	public Response<SugarMedicineReminder> getSugarMedicineReminderById(@PathParam("id") String id) {
+	public Response<SugarMedicineReminder> getSugarMedicineReminderById(@PathVariable("id") String id) {
 		if (id == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
@@ -727,10 +726,10 @@ public class NutritionAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.NutritionUrl.GET_SUGAR_MEDICINE_REMINDER_LIST_BY_PATIENT_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.NutritionUrl.GET_SUGAR_MEDICINE_REMINDER_LIST_BY_PATIENT_ID)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_SUGAR_MEDICINE_REMINDER_LIST_BY_PATIENT_ID, notes = PathProxy.NutritionUrl.GET_SUGAR_MEDICINE_REMINDER_LIST_BY_PATIENT_ID)
-	public Response<SugarMedicineReminder> getSugarReminderListByPatientId(@QueryParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size) {
+	public Response<SugarMedicineReminder> getSugarReminderListByPatientId(@RequestParam("patientId") String patientId, @RequestParam("page") int page, @RequestParam("size") int size) {
 		if (patientId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
@@ -740,12 +739,12 @@ public class NutritionAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.NutritionUrl.GET_RDA_FOR_PATIENT)
-	@GET
+	
+	@GetMapping(value = PathProxy.NutritionUrl.GET_RDA_FOR_PATIENT)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_RDA_FOR_PATIENT, notes = PathProxy.NutritionUrl.GET_RDA_FOR_PATIENT)
-	public Response<NutritionRDA> getRDAForPatient(@PathParam("patientId") String patientId, 
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId) {
+	public Response<NutritionRDA> getRDAForPatient(@PathVariable("patientId") String patientId, 
+			@RequestParam("doctorId") String doctorId, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId) {
 		if (patientId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
@@ -755,14 +754,14 @@ public class NutritionAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.NutritionUrl.GET_NUTRITIONIST_REPORT_OF_DIET_PLAN)
-	@GET
+	
+	@GetMapping(value = PathProxy.NutritionUrl.GET_NUTRITIONIST_REPORT_OF_DIET_PLAN)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_NUTRITIONIST_REPORT_OF_DIET_PLAN, notes = PathProxy.NutritionUrl.GET_NUTRITIONIST_REPORT_OF_DIET_PLAN)
-	public Response<NutritionistReport> getNutrionistReportOfDietPlan(@PathParam("nutritionistId") String nutritionistId, 
-			@QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate, 
-			@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("discarded") Boolean discarded){ 
-//			@QueryParam("searchTerm") String searchTerm) {
+	public Response<NutritionistReport> getNutrionistReportOfDietPlan(@PathVariable("nutritionistId") String nutritionistId, 
+			@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate, 
+			@RequestParam("size") int size, @RequestParam("page") int page,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded){ 
+//			@RequestParam("searchTerm") String searchTerm) {
 		if (nutritionistId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, " Invalid input");
 		}
@@ -771,11 +770,11 @@ public class NutritionAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.NutritionUrl.GET_CLUSTERS_OF_STUDENTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.NutritionUrl.GET_CLUSTERS_OF_STUDENTS)
 	@ApiOperation(value = PathProxy.NutritionUrl.GET_CLUSTERS_OF_STUDENTS, notes = PathProxy.NutritionUrl.GET_CLUSTERS_OF_STUDENTS)
-	public Response<String> getClusterOfStudents(@PathParam("schoolId") String schoolId, 
-			@QueryParam("branchId") String branchId, @QueryParam("size") int size, @QueryParam("page") int page) {
+	public Response<String> getClusterOfStudents(@PathVariable("schoolId") String schoolId, 
+			@RequestParam("branchId") String branchId, @RequestParam("size") int size, @RequestParam("page") int page) {
 		if (schoolId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
 		}

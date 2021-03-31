@@ -5,18 +5,18 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.v2.Appointment;
 import com.dpdocter.elasticsearch.services.ESCityService;
@@ -32,10 +32,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component(value = "AppointmentApiV2")
-@Path(PathProxy.APPOINTMENT_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RestController(value = "AppointmentApiV2")
+@RequestMapping(value=PathProxy.APPOINTMENT_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.APPOINTMENT_BASE_URL, description = "Endpoint for appointment")
 public class AppointmentApi {
 
@@ -53,10 +51,10 @@ public class AppointmentApi {
 	@Autowired
 	MailService mailService;
 
-	@POST
+	@PostMapping
 	@ApiOperation(value = "ADD_APPOINTMENT", notes = "ADD_APPOINTMENT")
 	public Response<Appointment> BookAppoinment(AppointmentRequest request,
-			@DefaultValue(value = "false") @QueryParam(value = "isStatusChange") Boolean isStatusChange)
+			@DefaultValue(value = "false") @RequestParam(value = "isStatusChange") Boolean isStatusChange)
 			throws MessagingException {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId())) {
@@ -88,30 +86,30 @@ public class AppointmentApi {
 
 	}
 
-	@GET
+	@GetMapping
 	@ApiOperation(value = "GET_APPOINTMENTS", notes = "GET_APPOINTMENTS")
-	public Response<Appointment> getDoctorAppointments(@QueryParam(value = "locationId") String locationId,
-			@MatrixParam(value = "doctorId") List<String> doctorId, @QueryParam(value = "patientId") String patientId,
-			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
-			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
-			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
-			@QueryParam(value = "status") String status, @QueryParam(value = "sortBy") String sortBy,
-			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime ,@DefaultValue("false") @QueryParam("isRegisteredPatientRequired") Boolean isRegisteredPatientRequired,
-			@DefaultValue(value = "false") @QueryParam(value = "isWeb") Boolean isWeb, @DefaultValue("true") @QueryParam("discarded") Boolean discarded,@QueryParam("branch") String branch) {
+	public Response<Appointment> getDoctorAppointments(@RequestParam(value = "locationId") String locationId,
+			@MatrixParam(value = "doctorId") List<String> doctorId, @RequestParam(value = "patientId") String patientId,
+			@RequestParam(value = "from") String from, @RequestParam(value = "to") String to,
+			@RequestParam(value = "page") int page, @RequestParam(value = "size") int size,
+			@DefaultValue(value = "0") @RequestParam(value = "updatedTime") String updatedTime,
+			@RequestParam(value = "status") String status, @RequestParam(value = "sortBy") String sortBy,
+			@RequestParam(value = "fromTime") String fromTime, @RequestParam(value = "toTime") String toTime ,@DefaultValue("false") @RequestParam("isRegisteredPatientRequired") Boolean isRegisteredPatientRequired,
+			@DefaultValue(value = "false") @RequestParam(value = "isWeb") Boolean isWeb,   @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,@RequestParam("branch") String branch) {
 
 		Response<Appointment> response = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
 				page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb, discarded,branch);
 		return response;
 	}
 
-	@Path(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS, notes = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)
-	public Response<Object> getPatientAppointments(@QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "patientId") String patientId,
-			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
-			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
-			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "type") String type) {
+	public Response<Object> getPatientAppointments(@RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "patientId") String patientId,
+			@RequestParam(value = "from") String from, @RequestParam(value = "to") String to,
+			@RequestParam(value = "page") int page, @RequestParam(value = "size") int size,
+			@DefaultValue(value = "0") @RequestParam(value = "updatedTime") String updatedTime, @RequestParam(value = "type") String type) {
 
 		Response<Object> response = appointmentService.getPatientAppointments(locationId, doctorId, patientId, from,
 				to, page, size, updatedTime, type);

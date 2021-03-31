@@ -4,21 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.PrintSettings;
@@ -32,8 +31,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.PRINT_SETTINGS_BASE_URL)
+@RestController
+(PathProxy.PRINT_SETTINGS_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.PRINT_SETTINGS_BASE_URL, description = "Endpoint for print settings")
@@ -47,11 +46,11 @@ public class PrintSettingsApi {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	@Path(value = PathProxy.PrintSettingsUrls.SAVE_PRINT_SETTINGS)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrintSettingsUrls.SAVE_PRINT_SETTINGS)
 	@ApiOperation(value = "SAVE_PRINT_SETTINGS", notes = "SAVE_PRINT_SETTINGS")
 	public Response<PrintSettings> saveSettings(PrintSettings request,
-			@QueryParam("printSettingType") String printSettingType) {
+			@RequestParam("printSettingType") String printSettingType) {
 
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId())) {
@@ -68,16 +67,16 @@ public class PrintSettingsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrintSettingsUrls.GET_PRINT_SETTINGS)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrintSettingsUrls.GET_PRINT_SETTINGS)
 	@ApiOperation(value = "GET_PRINT_SETTINGS", notes = "GET_PRINT_SETTINGS")
-	public Response<PrintSettings> getSettings(@PathParam(value = "printFilter") String printFilter,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "page") int page,
-			@QueryParam(value = "size") int size,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
-			@DefaultValue("true") @QueryParam(value = "isWeb") Boolean isWeb) {
+	public Response<PrintSettings> getSettings(@PathVariable(value = "printFilter") String printFilter,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId, @RequestParam(value = "page") int page,
+			@RequestParam(value = "size") int size,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+			  @RequestParam(value = "discarded") Boolean discarded,
+			  @RequestParam(value = "isWeb") Boolean isWeb) {
 
 		if (DPDoctorUtils.anyStringEmpty(printFilter, locationId, hospitalId)) {
 			logger.warn("PrintFilter, DoctorId or locationId or hospitalId cannot be null");
@@ -104,14 +103,14 @@ public class PrintSettingsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrintSettingsUrls.GET_PRINT_SETTING_BY_TYPE)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrintSettingsUrls.GET_PRINT_SETTING_BY_TYPE)
 	@ApiOperation(value = "GET_PRINT_SETTING_BY_TYPE", notes = "GET_PRINT_SETTING_BY_TYPE")
-	public Response<PrintSettings> getSettingByType(@PathParam(value = "printFilter") String printFilter,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@PathParam("printSettingType") String printSettingType,
-			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded) {
+	public Response<PrintSettings> getSettingByType(@PathVariable(value = "printFilter") String printFilter,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			@PathVariable("printSettingType") String printSettingType,
+			@DefaultValue("false") @RequestParam(value = "discarded") Boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(printFilter, locationId, hospitalId)) {
 			logger.warn("PrintFilter, DoctorId or locationId or hospitalId cannot be null");
@@ -128,8 +127,8 @@ public class PrintSettingsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrintSettingsUrls.GET_PRINT_SETTING_TYPE)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrintSettingsUrls.GET_PRINT_SETTING_TYPE)
 	@ApiOperation(value = "GET_PRINT_SETTING_TYPE", notes = "GET_PRINT_SETTING_TYPE")
 	public Response<Boolean> putSettingByType() {
 
@@ -138,14 +137,14 @@ public class PrintSettingsApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrintSettingsUrls.GET_LAB_PRINT_SETTING)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrintSettingsUrls.GET_LAB_PRINT_SETTING)
 	@ApiOperation(value = "GET_LAB_PRINT_SETTING", notes = "GET_LAB_PRINT_SETTING")
-	public Response<PrintSettings> getSettings(@PathParam(value = "printFilter") String printFilter,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	public Response<PrintSettings> getSettings(@PathVariable(value = "printFilter") String printFilter,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId,
+			@RequestParam(value = "page") int page, @RequestParam(value = "size") int size,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+			  @RequestParam(value = "discarded") Boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(printFilter, locationId, hospitalId)) {
 			logger.warn("PrintFilter, DoctorId or locationId or hospitalId cannot be null");
@@ -166,13 +165,13 @@ public class PrintSettingsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrintSettingsUrls.DELETE_PRINT_SETTINGS)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.PrintSettingsUrls.DELETE_PRINT_SETTINGS)
 	@ApiOperation(value = "DELETE_PRINT_SETTINGS", notes = "DELETE_PRINT_SETTINGS")
-	public Response<PrintSettings> deletePrintSettings(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<PrintSettings> deletePrintSettings(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, locationId, hospitalId)) {
 			logger.warn("Id, DoctorId or locationId or hospitalId cannot be null");
@@ -194,11 +193,11 @@ public class PrintSettingsApi {
 
 	}
 
-	@Path(value = PathProxy.PrintSettingsUrls.GET_GENERAL_NOTES)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrintSettingsUrls.GET_GENERAL_NOTES)
 	@ApiOperation(value = "GET_GENERAL_NOTES", notes = "GET_GENERAL_NOTES")
-	public Response<String> getSettingsGeneralNote(@PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+	public Response<String> getSettingsGeneralNote(@PathVariable(value = "doctorId") String doctorId,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId) {
 
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn(" DoctorId or locationId or hospitalId cannot be null");
@@ -212,10 +211,10 @@ public class PrintSettingsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrintSettingsUrls.UPLOAD_FILE)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrintSettingsUrls.UPLOAD_FILE)
 	@ApiOperation(value = PathProxy.PrintSettingsUrls.UPLOAD_FILE, notes = PathProxy.PrintSettingsUrls.UPLOAD_FILE)
-	public Response<String> upladFile(FileDetails fileDetails, @QueryParam("type") String type) {
+	public Response<String> upladFile(FileDetails fileDetails, @RequestParam("type") String type) {
 		if (DPDoctorUtils.anyStringEmpty(type)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -231,8 +230,8 @@ public class PrintSettingsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrintSettingsUrls.UPLOAD_SIGNATURE)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrintSettingsUrls.UPLOAD_SIGNATURE)
 	@ApiOperation(value = PathProxy.PrintSettingsUrls.UPLOAD_SIGNATURE, notes = PathProxy.PrintSettingsUrls.UPLOAD_SIGNATURE)
 	public Response<String> upladSignature(FileDetails fileDetails) {
 		if (DPDoctorUtils.anyStringEmpty(fileDetails.getFileEncoded())) {
@@ -246,12 +245,12 @@ public class PrintSettingsApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrintSettingsUrls.BLANK_PRINT)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrintSettingsUrls.BLANK_PRINT)
 	@ApiOperation(value = PathProxy.PrintSettingsUrls.BLANK_PRINT, notes = PathProxy.PrintSettingsUrls.BLANK_PRINT)
-	public Response<String> createBlankPrint(@PathParam("patientId") String patientId,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId) {
+	public Response<String> createBlankPrint(@PathVariable("patientId") String patientId,
+			@RequestParam("doctorId") String doctorId, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

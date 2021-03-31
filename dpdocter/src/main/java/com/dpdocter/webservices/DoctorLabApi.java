@@ -4,21 +4,19 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.DoctorLabReport;
 import com.dpdocter.beans.RecordsFile;
@@ -40,8 +38,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.DOCTOR_LAB_URL)
+@RestController
+(PathProxy.DOCTOR_LAB_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DOCTOR_LAB_URL, description = "Endpoint for doctor lab")
@@ -53,8 +51,8 @@ public class DoctorLabApi {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	@Path(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_LAB_REPORT)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_LAB_REPORT)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_LAB_REPORT, notes = PathProxy.DoctorLabUrls.ADD_DOCTOR_LAB_REPORT)
 	public Response<DoctorLabReport> addDoctorLabReport(DoctorLabReport request) {
 		if (request == null) {
@@ -81,8 +79,8 @@ public class DoctorLabApi {
 			return null;
 	}
 
-	@POST
-	@Path(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_MULTIPART_FILE)
+	@PostMapping
+	(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_MULTIPART_FILE)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_MULTIPART_FILE, notes = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_MULTIPART_FILE)
 	public Response<RecordsFile> uploadDoctorLabReportMultipart(@FormDataParam("file") FormDataBodyPart file,
@@ -106,8 +104,8 @@ public class DoctorLabApi {
 		return response;
 	}
 
-	@POST
-	@Path(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_FILE)
+	@PostMapping
+	(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_FILE)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_FILE, notes = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_FILE)
 	public Response<RecordsFile> uploadDoctorLabReport(DoctorLabReportUploadRequest request) {
 		if (request == null || request.getFileDetails() == null) {
@@ -122,10 +120,10 @@ public class DoctorLabApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorLabUrls.GET_DOCTOR_LAB_REPORT_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorLabUrls.GET_DOCTOR_LAB_REPORT_BY_ID)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.GET_DOCTOR_LAB_REPORT_BY_ID, notes = PathProxy.DoctorLabUrls.GET_DOCTOR_LAB_REPORT_BY_ID)
-	public Response<DoctorLabReportResponse> getRecordById(@PathParam("reportId") String reportId) {
+	public Response<DoctorLabReportResponse> getRecordById(@PathVariable("reportId") String reportId) {
 		if (DPDoctorUtils.anyStringEmpty(reportId)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "report Id Cannot Be Empty");
@@ -139,15 +137,15 @@ public class DoctorLabApi {
 
 	}
 
-	@Path(value = PathProxy.DoctorLabUrls.GET_DOCTOR_LAB_REPORTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorLabUrls.GET_DOCTOR_LAB_REPORTS)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.GET_DOCTOR_LAB_REPORTS, notes = PathProxy.DoctorLabUrls.GET_DOCTOR_LAB_REPORTS)
-	public Response<DoctorLabReportResponse> getDoctorLabReports(@QueryParam("page") long page,
-			@QueryParam("size") int size, @QueryParam("patientId") String patientId,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("discarded") Boolean discarded,
-			@QueryParam("isdoctorLab") @DefaultValue("true") Boolean isdoctorLab) {
+	public Response<DoctorLabReportResponse> getDoctorLabReports(@RequestParam("page") long page,
+			@RequestParam("size") int size, @RequestParam("patientId") String patientId,
+			@RequestParam("doctorId") String doctorId, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId, @RequestParam("searchTerm") String searchTerm,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@RequestParam("isdoctorLab")   Boolean isdoctorLab) {
 		if (DPDoctorUtils.anyStringEmpty(hospitalId, locationId)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "hospitalId,locationId Cannot Be Empty");
@@ -162,8 +160,8 @@ public class DoctorLabApi {
 
 	}
 
-	@POST
-	@Path(value = PathProxy.DoctorLabUrls.ADD_TO_FAVOURITE_DOCTOR_LIST)
+	@PostMapping
+	(value = PathProxy.DoctorLabUrls.ADD_TO_FAVOURITE_DOCTOR_LIST)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.ADD_TO_FAVOURITE_DOCTOR_LIST, notes = PathProxy.DoctorLabUrls.ADD_TO_FAVOURITE_DOCTOR_LIST)
 	public Response<Boolean> addDoctorToFavouriteList(DoctorLabFavouriteDoctorRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -177,13 +175,13 @@ public class DoctorLabApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorLabUrls.GET_FAVOURITE_DOCTOR)
-	@GET
+
+	@GetMapping	(value = PathProxy.DoctorLabUrls.GET_FAVOURITE_DOCTOR)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.GET_FAVOURITE_DOCTOR, notes = PathProxy.DoctorLabUrls.GET_FAVOURITE_DOCTOR)
-	public Response<DoctorLabFavouriteDoctorResponse> getFavouriteDoctors(@QueryParam("page") long page,
-			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("city") String city) {
+	public Response<DoctorLabFavouriteDoctorResponse> getFavouriteDoctors(@RequestParam("page") long page,
+			@RequestParam("size") int size, @RequestParam("doctorId") String doctorId,
+			@RequestParam("locationId") String locationId, @RequestParam("hospitalId") String hospitalId,
+			@RequestParam("searchTerm") String searchTerm, @RequestParam("city") String city) {
 		if (DPDoctorUtils.anyStringEmpty(hospitalId, locationId)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "hospitalId,locationId Cannot Be Empty");
@@ -198,14 +196,14 @@ public class DoctorLabApi {
 
 	}
 
-	@Path(value = PathProxy.DoctorLabUrls.SEARCH_DOCTOR)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorLabUrls.SEARCH_DOCTOR)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.SEARCH_DOCTOR, notes = PathProxy.DoctorLabUrls.SEARCH_DOCTOR)
-	public Response<DoctorLabSearchDoctorResponse> searchDoctors(@QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("speciality") String speciality,
-			@QueryParam("city") String city) {
+	public Response<DoctorLabSearchDoctorResponse> searchDoctors(@RequestParam("page") int page,
+			@RequestParam("size") int size, @RequestParam("doctorId") String doctorId,
+			@RequestParam("locationId") String locationId, @RequestParam("hospitalId") String hospitalId,
+			@RequestParam("searchTerm") String searchTerm, @RequestParam("speciality") String speciality,
+			@RequestParam("city") String city) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "hospitalId,locationId Cannot Be Empty");
@@ -218,10 +216,10 @@ public class DoctorLabApi {
 
 	}
 
-	@Path(value = PathProxy.DoctorLabUrls.UPDATE_IS_SHARE_WITH_DOCTOR)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorLabUrls.UPDATE_IS_SHARE_WITH_DOCTOR)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.UPDATE_IS_SHARE_WITH_DOCTOR, notes = PathProxy.DoctorLabUrls.UPDATE_IS_SHARE_WITH_DOCTOR)
-	public Response<Boolean> updateShareWithDoctor(@PathParam("reportId") String reportId) {
+	public Response<Boolean> updateShareWithDoctor(@PathVariable("reportId") String reportId) {
 		if (DPDoctorUtils.anyStringEmpty(reportId)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Record Id Cannot Be Empty");
@@ -232,10 +230,10 @@ public class DoctorLabApi {
 
 	}
 
-	@Path(value = PathProxy.DoctorLabUrls.UPDATE_IS_SHARE_WITH_PATIENT)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorLabUrls.UPDATE_IS_SHARE_WITH_PATIENT)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.UPDATE_IS_SHARE_WITH_PATIENT, notes = PathProxy.DoctorLabUrls.UPDATE_IS_SHARE_WITH_PATIENT)
-	public Response<Boolean> updateShareWithPatent(@PathParam("reportId") String reportId) {
+	public Response<Boolean> updateShareWithPatent(@PathVariable("reportId") String reportId) {
 		if (DPDoctorUtils.anyStringEmpty(reportId)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Record Id Cannot Be Empty");
@@ -246,10 +244,10 @@ public class DoctorLabApi {
 
 	}
 
-	@Path(value = PathProxy.DoctorLabUrls.DELETE_FAVOURITE_DOCTOR)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.DoctorLabUrls.DELETE_FAVOURITE_DOCTOR)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.DELETE_FAVOURITE_DOCTOR, notes = PathProxy.DoctorLabUrls.DELETE_FAVOURITE_DOCTOR)
-	public Response<Boolean> DiscardFavouriteDoctor(@PathParam("id") String id) {
+	public Response<Boolean> DiscardFavouriteDoctor(@PathVariable("id") String id) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Id Cannot Be Empty");
@@ -260,10 +258,10 @@ public class DoctorLabApi {
 
 	}
 
-	@Path(value = PathProxy.DoctorLabUrls.DELETE_DOCTOR_LAB_REPORTS)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.DoctorLabUrls.DELETE_DOCTOR_LAB_REPORTS)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.DELETE_DOCTOR_LAB_REPORTS, notes = PathProxy.DoctorLabUrls.DELETE_DOCTOR_LAB_REPORTS)
-	public Response<Boolean> DiscardDoctorLabReports(@PathParam("reportId") String reportId) {
+	public Response<Boolean> DiscardDoctorLabReports(@PathVariable("reportId") String reportId) {
 		if (DPDoctorUtils.anyStringEmpty(reportId)) {
 			logger.warn("Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "report Id Cannot Be Empty");
@@ -274,8 +272,8 @@ public class DoctorLabApi {
 
 	}
 
-	@POST
-	@Path(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_REFERENCE)
+	@PostMapping
+	(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_REFERENCE)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_REFERENCE, notes = PathProxy.DoctorLabUrls.ADD_DOCTOR_REFERENCE)
 	public Response<Boolean> addDoctorReference(DoctorLabDoctorReferenceRequest request) {
 		if (request == null
@@ -289,8 +287,8 @@ public class DoctorLabApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorLabUrls.DOWNLOAD_REPORT)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorLabUrls.DOWNLOAD_REPORT)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.DOWNLOAD_REPORT, notes = PathProxy.DoctorLabUrls.DOWNLOAD_REPORT)
 	public Response<String> downloadReport() throws IOException {
 		Response<String> response = new Response<String>();

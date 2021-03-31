@@ -1,10 +1,6 @@
 package com.dpdocter.webservices.v2;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -13,8 +9,11 @@ import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.DoctorSignUp;
@@ -31,11 +30,9 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@RestController
-@Component(value = "SignUpApiV2")
-@Path(PathProxy.SIGNUP_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+
+@RestController(value = "SignUpApiV2")
+@RequestMapping(value=PathProxy.SIGNUP_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.SIGNUP_BASE_URL, description = "")
 
 public class SignupApi {
@@ -57,8 +54,7 @@ public class SignupApi {
 	private Logger logger = LogManager.getLogger(SignupApi.class);
 	
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
-	@POST
+	@PostMapping(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getFirstName(), request.getEmailAddress(),request.getCity(),
@@ -96,10 +92,9 @@ public class SignupApi {
 	}
 	
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.VERIFY_USER)
-	@GET
+	@GetMapping(value = PathProxy.SignUpUrls.VERIFY_USER)
 	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_USER, notes = PathProxy.SignUpUrls.VERIFY_USER)
-	public Response<String> verifyUser(@PathParam(value = "tokenId") String tokenId) {
+	public Response<String> verifyUser(@PathVariable(value = "tokenId") String tokenId) {
 		if (tokenId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -111,12 +106,11 @@ public class SignupApi {
 	}
 	
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.DOCTOR_REGISTER)
-	@POST
+	@PostMapping(value = PathProxy.SignUpUrls.DOCTOR_REGISTER)
 	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_REGISTER, notes = PathProxy.SignUpUrls.DOCTOR_REGISTER)
 	 public Response<DoctorRegisterResponse> DoctorRegister(@RequestBody DoctorOtpRequest request) {
-	//	@QueryParam(value = "mobileNumber") String mobileNumber,
-	//	 @QueryParam(value = "countryCode") String countryCode
+	//	@RequestParam(value = "mobileNumber") String mobileNumber,
+	//	 @RequestParam(value = "countryCode") String countryCode
 			if (request == null || request.getMobileNumber().isEmpty()) {
 			    logger.warn("Mobile number is null");
 			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -136,11 +130,10 @@ public class SignupApi {
 		return imagePath + imageURL;
 	}
 	
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
-	@GET
+	@Produces(MediaType.APPLICATION_JSON)	
+	@GetMapping(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
 	@ApiOperation(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR, notes = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
-	public Response<Boolean> resendVerificationEmail(@PathParam(value = "emailaddress") String emailaddress) {
+	public Response<Boolean> resendVerificationEmail(@PathVariable(value = "emailaddress") String emailaddress) {
 		if (DPDoctorUtils.anyStringEmpty(emailaddress)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

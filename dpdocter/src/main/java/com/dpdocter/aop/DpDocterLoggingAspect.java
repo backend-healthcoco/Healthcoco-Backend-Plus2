@@ -22,7 +22,7 @@ import com.mongodb.DuplicateKeyException;
 
 import common.util.web.Response;
 
-@Component
+@RestController
 @Aspect
 public class DpDocterLoggingAspect {
 	

@@ -3,18 +3,17 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.AppointmentGeneralFeedback;
 import com.dpdocter.beans.DailyImprovementFeedback;
@@ -39,10 +38,11 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
+@RestController
+(PathProxy.FEEDBACK_BASE_URL)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@Path(PathProxy.FEEDBACK_BASE_URL)
+
 @Api(value = PathProxy.FEEDBACK_BASE_URL, description = "Endpoint for feedback API")
 public class FeedbackAPI {
 
@@ -51,8 +51,8 @@ public class FeedbackAPI {
 	@Autowired
 	FeedbackService feedbackService;
 
-	@POST
-	@Path(PathProxy.FeedbackUrls.ADD_EDIT_GENERAL_APPOINTMENT_FEEDBACK)
+	@PostMapping
+	(PathProxy.FeedbackUrls.ADD_EDIT_GENERAL_APPOINTMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_EDIT_GENERAL_APPOINTMENT_FEEDBACK)
 	public Response<AppointmentGeneralFeedback> addEditAppointmentGeneralFeedback(AppointmentGeneralFeedback feedback) {
 		Response<AppointmentGeneralFeedback> response = new Response<>();
@@ -72,8 +72,8 @@ public class FeedbackAPI {
 		return response;
 	}
 
-	@POST
-	@Path(PathProxy.FeedbackUrls.ADD_EDIT_PHARMACY_FEEDBACK)
+	@PostMapping
+	(PathProxy.FeedbackUrls.ADD_EDIT_PHARMACY_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_EDIT_PHARMACY_FEEDBACK)
 	public Response<PharmacyFeedback> addEditPharmacyFeedback(PharmacyFeedbackRequest feedback) {
 		Response<PharmacyFeedback> response = new Response<>();
@@ -93,8 +93,8 @@ public class FeedbackAPI {
 		return response;
 	}
 
-	@POST
-	@Path(PathProxy.FeedbackUrls.ADD_EDIT_PRESCRIPTION_FEEDBACK)
+	@PostMapping
+	(PathProxy.FeedbackUrls.ADD_EDIT_PRESCRIPTION_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_EDIT_PRESCRIPTION_FEEDBACK)
 	public Response<PrescriptionFeedback> addEditPrescriptionFeedback(PrescriptionFeedbackRequest feedback) {
 		Response<PrescriptionFeedback> response = new Response<>();
@@ -114,8 +114,8 @@ public class FeedbackAPI {
 		return response;
 	}
 
-	@POST
-	@Path(PathProxy.FeedbackUrls.ADD_EDIT_DAILY_IMPROVEMENT_FEEDBACK)
+	@PostMapping
+	(PathProxy.FeedbackUrls.ADD_EDIT_DAILY_IMPROVEMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_EDIT_DAILY_IMPROVEMENT_FEEDBACK)
 	public Response<DailyImprovementFeedback> addEditDailyImprovementFeedback(
 			DailyImprovementFeedbackRequest feedback) {
@@ -135,8 +135,8 @@ public class FeedbackAPI {
 		return response;
 	}
 
-	@POST
-	@Path(PathProxy.FeedbackUrls.ADD_EDIT_PATIENT_FEEDBACK)
+	@PostMapping
+	(PathProxy.FeedbackUrls.ADD_EDIT_PATIENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_EDIT_PATIENT_FEEDBACK)
 	public Response<PatientFeedback> addEditPatientFeedback(PatientFeedbackRequest feedback) {
 		Response<PatientFeedback> response = new Response<>();
@@ -156,8 +156,8 @@ public class FeedbackAPI {
 		return response;
 	}
 
-	@POST
-	@Path(PathProxy.FeedbackUrls.GET_GENERAL_APPOINTMENT_FEEDBACK)
+	@PostMapping
+	(PathProxy.FeedbackUrls.GET_GENERAL_APPOINTMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_GENERAL_APPOINTMENT_FEEDBACK)
 	public Response<AppointmentGeneralFeedback> getGeneralAppointmentFeedback(FeedbackGetRequest request) {
 		Response<AppointmentGeneralFeedback> response = new Response<>();
@@ -173,8 +173,8 @@ public class FeedbackAPI {
 		return response;
 	}
 
-	@POST
-	@Path(PathProxy.FeedbackUrls.GET_PHARMACY_FEEDBACK)
+	@PostMapping
+	(PathProxy.FeedbackUrls.GET_PHARMACY_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_PHARMACY_FEEDBACK)
 	public Response<PharmacyFeedback> getPharmacyFeedback(FeedbackGetRequest request) {
 		Response<PharmacyFeedback> response = new Response<>();
@@ -190,8 +190,8 @@ public class FeedbackAPI {
 		return response;
 	}
 
-	@POST
-	@Path(PathProxy.FeedbackUrls.GET_PRESCRIPTION_FEEDBACK)
+	@PostMapping
+	(PathProxy.FeedbackUrls.GET_PRESCRIPTION_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_PRESCRIPTION_FEEDBACK)
 	public Response<PrescriptionFeedback> getPrescriptionFeedback(FeedbackGetRequest request) {
 		Response<PrescriptionFeedback> response = new Response<>();
@@ -207,12 +207,12 @@ public class FeedbackAPI {
 		return response;
 	}
 
-	@GET
-	@Path(PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
+	@GetMapping
+	(PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
-	public Response<DailyImprovementFeedbackResponse> getDailyImprovementFeedback( @QueryParam("page") long page, @QueryParam("size") int size,
-		    @QueryParam(value = "prescriptionId") String prescriptionId, @QueryParam(value = "doctorId") String doctorId,
-		    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId) {
+	public Response<DailyImprovementFeedbackResponse> getDailyImprovementFeedback( @RequestParam("page") long page, @RequestParam("size") int size,
+		    @RequestParam(value = "prescriptionId") String prescriptionId, @RequestParam(value = "doctorId") String doctorId,
+		    @RequestParam(value = "locationId") String locationId, @RequestParam(value = "hospitalId") String hospitalId) {
 		Response<DailyImprovementFeedbackResponse> response = new Response<>();
 		List<DailyImprovementFeedbackResponse> feedbacks = null;
 		try {
@@ -227,11 +227,11 @@ public class FeedbackAPI {
 		return response;
 	}
 
-	@POST
-	@Path(PathProxy.FeedbackUrls.GET_PATIENT_FEEDBACK)
+	@PostMapping
+	(PathProxy.FeedbackUrls.GET_PATIENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_PATIENT_FEEDBACK)
 	public Response<PatientFeedbackResponse> getPatientFeedback(FeedbackGetRequest request,
-			@QueryParam("type") String type) {
+			@RequestParam("type") String type) {
 		Response<PatientFeedbackResponse> response = new Response<>();
 		List<PatientFeedbackResponse> feedbacks = null;
 		try {
@@ -245,8 +245,8 @@ public class FeedbackAPI {
 		return response;
 	}
 
-	@POST
-	@Path(PathProxy.FeedbackUrls.ADD_PATIENT_FEEDBACK_REPLY)
+	@PostMapping
+	(PathProxy.FeedbackUrls.ADD_PATIENT_FEEDBACK_REPLY)
 	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_PATIENT_FEEDBACK_REPLY)
 	public Response<PatientFeedbackResponse> addPatientFeedbackReply(PatientFeedbackReplyRequest request) {
 		Response<PatientFeedbackResponse> response = new Response<>();
@@ -262,15 +262,15 @@ public class FeedbackAPI {
 		return response;
 	}
 
-	@GET
-	@Path(PathProxy.FeedbackUrls.GET_PATIENT_FEEDBACK_FOR_MOBILE)
+	@GetMapping
+	(PathProxy.FeedbackUrls.GET_PATIENT_FEEDBACK_FOR_MOBILE)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_PATIENT_FEEDBACK_FOR_MOBILE)
 	public Response<PatientFeedbackIOSResponse> getPatientFeedback(@MatrixParam("services") List<String> services,
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("patientId") String patientId,
-			@QueryParam("doctorId") String doctorId, @QueryParam("localeId") String localeId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("discarded") Boolean discarded, @QueryParam("isApproved") Boolean isApproved,
-			@QueryParam("type") String type) {
+			@RequestParam("size") int size, @RequestParam("page") int page, @RequestParam("patientId") String patientId,
+			@RequestParam("doctorId") String doctorId, @RequestParam("localeId") String localeId,
+			@RequestParam("locationId") String locationId, @RequestParam("hospitalId") String hospitalId,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded, @RequestParam("isApproved") Boolean isApproved,
+			@RequestParam("type") String type) {
 		Response<PatientFeedbackIOSResponse> response = new Response<>();
 		List<PatientFeedbackIOSResponse> feedbacks = null;
 		try {

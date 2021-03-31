@@ -19,6 +19,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.CertificateTemplate;
 import com.dpdocter.beans.ConsentForm;
@@ -33,10 +41,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.CERTIFICATE_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RestController
+@RequestMapping(value=PathProxy.CERTIFICATE_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.CERTIFICATE_BASE_URL, description = "")
 public class CertificatesAPI {
 
@@ -49,19 +55,17 @@ public class CertificatesAPI {
 	private String imagePath;
 
 	
-	@Path(value = PathProxy.CertificateTemplatesUrls.ADD_CERTIFICATE_TEMPLATES)
-	@POST
+	@PostMapping(value = PathProxy.CertificateTemplatesUrls.ADD_CERTIFICATE_TEMPLATES)
 	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.ADD_CERTIFICATE_TEMPLATES, notes = PathProxy.CertificateTemplatesUrls.ADD_CERTIFICATE_TEMPLATES)
-	public Response<Boolean> addCertificateTemplates(CertificateTemplate request) {
+	public Response<Boolean> addCertificateTemplates(@RequestBody CertificateTemplate request) {
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(certificatesServices.addCertificateTemplates(request));
 		return response;
 	}
 
-	@Path(value = PathProxy.CertificateTemplatesUrls.GET_CERTIFICATE_TEMPLATE_BY_ID)
-	@GET
+	@GetMapping(value = PathProxy.CertificateTemplatesUrls.GET_CERTIFICATE_TEMPLATE_BY_ID)
 	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.GET_CERTIFICATE_TEMPLATE_BY_ID, notes = PathProxy.CertificateTemplatesUrls.GET_CERTIFICATE_TEMPLATE_BY_ID)
-	public Response<CertificateTemplate> getCertificateTemplateById(@QueryParam("templateId") String templateId) {
+	public Response<CertificateTemplate> getCertificateTemplateById(@RequestParam("templateId") String templateId) {
 		if (DPDoctorUtils.anyStringEmpty(templateId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -70,23 +74,21 @@ public class CertificatesAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.CertificateTemplatesUrls.GET_CERTIFICATE_TEMPLATES)
-	@GET
+	@GetMapping(value = PathProxy.CertificateTemplatesUrls.GET_CERTIFICATE_TEMPLATES)
 	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.GET_CERTIFICATE_TEMPLATES, notes = PathProxy.CertificateTemplatesUrls.GET_CERTIFICATE_TEMPLATES)
-	public Response<CertificateTemplate> getCertificateTemplates(@QueryParam("page") long page,
-			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@DefaultValue("false") @QueryParam("discarded") Boolean discarded,
-			@MatrixParam("speciality") List<String> specialities, @QueryParam("type") String type) {
+	public Response<CertificateTemplate> getCertificateTemplates(@RequestParam("page") long page,
+			@RequestParam("size") int size, @RequestParam("doctorId") String doctorId, @RequestParam("locationId") String locationId,
+			@DefaultValue("false") @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@MatrixParam("speciality") List<String> specialities, @RequestParam("type") String type) {
 		Response<CertificateTemplate> response = new Response<CertificateTemplate>();
 		response.setDataList(certificatesServices.getCertificateTemplates(page, size, doctorId, locationId, discarded, specialities, type));
 		return response;
 	}
 
-	@Path(value = PathProxy.CertificateTemplatesUrls.DELETE_CERTIFICATE_TEMPLATES)
-	@DELETE
+	@DeleteMapping(value = PathProxy.CertificateTemplatesUrls.DELETE_CERTIFICATE_TEMPLATES)
 	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.DELETE_CERTIFICATE_TEMPLATES, notes = PathProxy.CertificateTemplatesUrls.DELETE_CERTIFICATE_TEMPLATES)
-	public Response<Boolean> discardCertificateTemplates(@PathParam("templateId") String templateId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Boolean> discardCertificateTemplates(@PathVariable("templateId") String templateId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(templateId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -95,10 +97,9 @@ public class CertificatesAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.CertificateTemplatesUrls.ADD_PATIENT_CERTIFICATE)
-	@POST
+	@PostMapping(value = PathProxy.CertificateTemplatesUrls.ADD_PATIENT_CERTIFICATE)
 	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.ADD_PATIENT_CERTIFICATE, notes = PathProxy.CertificateTemplatesUrls.ADD_PATIENT_CERTIFICATE)
-	public Response<ConsentForm> addPatientCertificate(ConsentForm request) {
+	public Response<ConsentForm> addPatientCertificate(@RequestBody ConsentForm request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -112,10 +113,9 @@ public class CertificatesAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.CertificateTemplatesUrls.GET_PATIENT_CERTIFICATE_BY_ID)
-	@GET
+	@GetMapping(value = PathProxy.CertificateTemplatesUrls.GET_PATIENT_CERTIFICATE_BY_ID)
 	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.GET_PATIENT_CERTIFICATE_BY_ID, notes = PathProxy.CertificateTemplatesUrls.GET_PATIENT_CERTIFICATE_BY_ID)
-	public Response<ConsentForm> getPatientCertificateById(@PathParam("certificateId") String certificateId) {
+	public Response<ConsentForm> getPatientCertificateById(@PathVariable("certificateId") String certificateId) {
 		if (DPDoctorUtils.anyStringEmpty(certificateId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -124,14 +124,13 @@ public class CertificatesAPI {
 		return response;
 	}
 	
-	@Path(value = PathProxy.CertificateTemplatesUrls.GET_PATIENT_CERTIFICATES)
-	@GET
+	@GetMapping(value = PathProxy.CertificateTemplatesUrls.GET_PATIENT_CERTIFICATES)
 	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.GET_PATIENT_CERTIFICATES, notes = PathProxy.CertificateTemplatesUrls.GET_PATIENT_CERTIFICATES)
-	public Response<ConsentForm> getPatientCertificates(@QueryParam("page") long page, @QueryParam("size") int size,
-			@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") boolean discarded,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @QueryParam("type") String type) {
+	public Response<ConsentForm> getPatientCertificates(@RequestParam("page") long page, @RequestParam("size") int size,
+			@RequestParam("patientId") String patientId, @RequestParam("doctorId") String doctorId,
+			@RequestParam("locationId") String locationId, @RequestParam("hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime, @RequestParam("type") String type) {
 
 		Response<ConsentForm> response = new Response<ConsentForm>();
 		List<ConsentForm> consentForms = certificatesServices.getPatientCertificates(page, size, patientId, doctorId, locationId,
@@ -140,11 +139,10 @@ public class CertificatesAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.CertificateTemplatesUrls.DELETE_PATIENT_CERTIFICATE)
-	@DELETE
+	@DeleteMapping(value = PathProxy.CertificateTemplatesUrls.DELETE_PATIENT_CERTIFICATE)
 	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.DELETE_PATIENT_CERTIFICATE, notes = PathProxy.CertificateTemplatesUrls.DELETE_PATIENT_CERTIFICATE)
-	public Response<ConsentForm> deletePatientCertificate(@PathParam("certificateId") String certificateId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<ConsentForm> deletePatientCertificate(@PathVariable("certificateId") String certificateId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(certificateId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -153,10 +151,9 @@ public class CertificatesAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.CertificateTemplatesUrls.DOWNLOAD_PATIENT_CERTIFICATE)
-	@GET
+	@GetMapping(value = PathProxy.CertificateTemplatesUrls.DOWNLOAD_PATIENT_CERTIFICATE)
 	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.DOWNLOAD_PATIENT_CERTIFICATE, notes = PathProxy.CertificateTemplatesUrls.DOWNLOAD_PATIENT_CERTIFICATE)
-	public Response<String> downloadPatientCertificate(@PathParam("certificateId") String certificateId) {
+	public Response<String> downloadPatientCertificate(@PathVariable("certificateId") String certificateId) {
 		if (DPDoctorUtils.anyStringEmpty(certificateId)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -166,9 +163,7 @@ public class CertificatesAPI {
 		return response;
 	}
 
-	@POST
-	@Path(value = PathProxy.CertificateTemplatesUrls.SAVE_CERTIFICATE_SIGN_IMAGE)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@PostMapping(value = PathProxy.CertificateTemplatesUrls.SAVE_CERTIFICATE_SIGN_IMAGE,consumes = MediaType.MULTIPART_FORM_DATA)
 	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.SAVE_CERTIFICATE_SIGN_IMAGE, notes = PathProxy.CertificateTemplatesUrls.SAVE_CERTIFICATE_SIGN_IMAGE)
 	public Response<String> saveCertificateSignImage(@FormDataParam("file") FormDataBodyPart file,
 			@FormDataParam("certificateId") FormDataBodyPart certificateId) {

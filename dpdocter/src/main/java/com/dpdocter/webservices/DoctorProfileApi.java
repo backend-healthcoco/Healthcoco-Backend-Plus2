@@ -4,12 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,8 +12,12 @@ import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.AddEditSEORequest;
 import com.dpdocter.beans.Clinic;
@@ -75,8 +74,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.DOCTOR_PROFILE_URL)
+@RestController
+(PathProxy.DOCTOR_PROFILE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DOCTOR_PROFILE_URL, description = "Endpoint for doctor profile")
@@ -105,8 +104,8 @@ public class DoctorProfileApi {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME)
 	public Response<DoctorNameAddEditRequest> addEditName(DoctorNameAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getFirstName())) {
@@ -120,8 +119,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE)
 	public Response<DoctorExperienceAddEditRequest> addEditExperience(DoctorExperienceAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
@@ -136,8 +135,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONTACT)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONTACT)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONTACT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_CONTACT)
 	public Response<DoctorContactAddEditRequest> addEditContact(DoctorContactAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
@@ -150,8 +149,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EDUCATION)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EDUCATION)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EDUCATION, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_EDUCATION)
 	public Response<DoctorEducationAddEditRequest> addEditEducation(DoctorEducationAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
@@ -164,19 +163,19 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.GET_MEDICAL_COUNCILS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.GET_MEDICAL_COUNCILS)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_MEDICAL_COUNCILS, notes = PathProxy.DoctorProfileUrls.GET_MEDICAL_COUNCILS)
-	public Response<MedicalCouncil> getMedicalCouncils(@QueryParam("page") long page, @QueryParam("size") int size,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	public Response<MedicalCouncil> getMedicalCouncils(@RequestParam("page") long page, @RequestParam("size") int size,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime) {
 		List<MedicalCouncil> medicalCouncils = doctorProfileService.getMedicalCouncils(page, size, updatedTime);
 		Response<MedicalCouncil> response = new Response<MedicalCouncil>();
 		response.setDataList(medicalCouncils);
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SPECIALITY)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SPECIALITY)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SPECIALITY, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_SPECIALITY)
 	public Response<DoctorSpecialityAddEditRequest> addEditSpeciality(DoctorSpecialityAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
@@ -192,8 +191,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_SERVICES)
 	public Response<DoctorServicesAddEditRequest> addEditServices(@RequestBody DoctorServicesAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
@@ -224,8 +223,8 @@ public class DoctorProfileApi {
 //	}
 
 	
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT)
 	public Response<DoctorAchievementAddEditRequest> addEditAchievement(DoctorAchievementAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
@@ -238,8 +237,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_STATEMENT)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_STATEMENT)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_STATEMENT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_STATEMENT)
 	public Response<DoctorProfessionalStatementAddEditRequest> addEditProfessionalStatement(
 			DoctorProfessionalStatementAddEditRequest request) {
@@ -254,8 +253,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_REGISTRATION_DETAIL)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_REGISTRATION_DETAIL)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_REGISTRATION_DETAIL, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_REGISTRATION_DETAIL)
 	public Response<DoctorRegistrationAddEditRequest> addEditRegistrationDetail(
 			DoctorRegistrationAddEditRequest request) {
@@ -270,8 +269,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE_DETAIL)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE_DETAIL)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE_DETAIL, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE_DETAIL)
 	public Response<DoctorExperienceDetailAddEditRequest> addEditExperienceDetail(
 			DoctorExperienceDetailAddEditRequest request) {
@@ -286,8 +285,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE)
 	public Response<String> addEditProfilePicture(DoctorProfilePictureAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
@@ -303,8 +302,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE)
 	public Response<String> addEditCoverPicture(DoctorProfilePictureAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
@@ -320,8 +319,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_MEMBERSHIP)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_MEMBERSHIP)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_MEMBERSHIP, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_MEMBERSHIP)
 	public Response<DoctorProfessionalAddEditRequest> addEditProfessionalMembership(
 			DoctorProfessionalAddEditRequest request) {
@@ -336,15 +335,15 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
-	public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp,
-			@QueryParam(value = "patientId") String patientId,
-			@DefaultValue(value = "true") @QueryParam(value = "isSearched") Boolean isSearched,
-			@QueryParam(value = "userState") String userState) {
+	public Response<DoctorProfile> getDoctorProfile(@PathVariable("doctorId") String doctorId,
+			@RequestParam("locationId") String locationId, @RequestParam("hospitalId") String hospitalId,
+			@DefaultValue(value = "false") @RequestParam(value = "isMobileApp") Boolean isMobileApp,
+			@RequestParam(value = "patientId") String patientId,
+			@DefaultValue(value = "true") @RequestParam(value = "isSearched") Boolean isSearched,
+			@RequestParam(value = "userState") String userState) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
@@ -412,11 +411,11 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.GET_PROFESSIONAL_MEMBERSHIPS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.GET_PROFESSIONAL_MEMBERSHIPS)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_PROFESSIONAL_MEMBERSHIPS, notes = PathProxy.DoctorProfileUrls.GET_PROFESSIONAL_MEMBERSHIPS)
-	public Response<ProfessionalMembership> getProfessionalMemberships(@QueryParam("page") long page,
-			@QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	public Response<ProfessionalMembership> getProfessionalMemberships(@RequestParam("page") long page,
+			@RequestParam("size") int size, @DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime) {
 		List<ProfessionalMembership> professionalMemberships = doctorProfileService.getProfessionalMemberships(page,
 				size, updatedTime);
 		Response<ProfessionalMembership> response = new Response<ProfessionalMembership>();
@@ -424,8 +423,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_NUMBERS)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_NUMBERS)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_NUMBERS, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_NUMBERS)
 	public Response<DoctorAppointmentNumbersAddEditRequest> addEditAppointmentNumbers(
 			DoctorAppointmentNumbersAddEditRequest request) {
@@ -445,8 +444,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
 	public Response<DoctorVisitingTimeAddEditRequest> addEditVisitingTime(DoctorVisitingTimeAddEditRequest request) {
 		if (request == null) {
@@ -464,8 +463,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONSULTATION_FEE)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONSULTATION_FEE)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONSULTATION_FEE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_CONSULTATION_FEE)
 	public Response<DoctorConsultationFeeAddEditRequest> addEditConsultationFee(
 			DoctorConsultationFeeAddEditRequest request) {
@@ -484,8 +483,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_SLOT)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_SLOT)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_SLOT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_SLOT)
 	public Response<DoctorAppointmentSlotAddEditRequest> addEditAppointmentSlot(
 			DoctorAppointmentSlotAddEditRequest request) {
@@ -505,8 +504,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENERAL_INFO)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENERAL_INFO)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENERAL_INFO, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_GENERAL_INFO)
 	public Response<DoctorGeneralInfo> addEditGeneralInfo(DoctorGeneralInfo request) {
 		if (request == null) {
@@ -532,33 +531,33 @@ public class DoctorProfileApi {
 			return null;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.GET_SPECIALITIES)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.GET_SPECIALITIES)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_SPECIALITIES, notes = PathProxy.DoctorProfileUrls.GET_SPECIALITIES)
-	public Response<Speciality> getSpeciality(@QueryParam("page") long page, @QueryParam("size") int size,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	public Response<Speciality> getSpeciality(@RequestParam("page") long page, @RequestParam("size") int size,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime) {
 		List<Speciality> specialities = doctorProfileService.getSpecialities(page, size, updatedTime);
 		Response<Speciality> response = new Response<Speciality>();
 		response.setDataList(specialities);
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.GET_SERVICES)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.GET_SERVICES)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_SERVICES, notes = PathProxy.DoctorProfileUrls.GET_SERVICES)
-	public Response<Services> getServices(@QueryParam("page") int page, @QueryParam("size") int size,@QueryParam("searchTerm") String searchTerm,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	public Response<Services> getServices(@RequestParam("page") int page, @RequestParam("size") int size,@RequestParam("searchTerm") String searchTerm,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime) {
 		List<Services> specialities = doctorProfileService.getServices(page, size, updatedTime,searchTerm);
 		Response<Services> response = new Response<Services>();
 		response.setDataList(specialities);
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES, notes = PathProxy.DoctorProfileUrls.GET_EDUCATION_INSTITUTES)
-	public Response<EducationInstitute> getEducationInstitutes(@QueryParam("page") long page,
-			@QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	public Response<EducationInstitute> getEducationInstitutes(@RequestParam("page") long page,
+			@RequestParam("size") int size, @DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime) {
 		List<EducationInstitute> educationInstitutes = doctorProfileService.getEducationInstitutes(page, size,
 				updatedTime);
 		Response<EducationInstitute> response = new Response<EducationInstitute>();
@@ -566,11 +565,11 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS, notes = PathProxy.DoctorProfileUrls.GET_EDUCATION_QUALIFICATIONS)
-	public Response<EducationQualification> getEducationQualifications(@QueryParam("page") long page,
-			@QueryParam("size") int size, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	public Response<EducationQualification> getEducationQualifications(@RequestParam("page") long page,
+			@RequestParam("size") int size, @DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime) {
 		List<EducationQualification> qualifications = doctorProfileService.getEducationQualifications(page, size,
 				updatedTime);
 		Response<EducationQualification> response = new Response<EducationQualification>();
@@ -578,8 +577,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA)
 	public Response<DoctorMultipleDataAddEditResponse> addEditMultipleData(DoctorMultipleDataAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
@@ -600,8 +599,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_FACILITY)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_FACILITY)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_FACILITY, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_FACILITY)
 	public Response<DoctorAddEditFacilityRequest> addEditFacility(DoctorAddEditFacilityRequest request) {
 		if (request == null) {
@@ -620,8 +619,8 @@ public class DoctorProfileApi {
 
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENDER)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENDER)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENDER, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_GENDER)
 	public Response<DoctorGenderAddEditRequest> addEditGender(DoctorGenderAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
@@ -635,8 +634,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_DOB)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_DOB)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_DOB, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_DOB)
 	public Response<DoctorDOBAddEditRequest> addEditDOB(DoctorDOBAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
@@ -650,11 +649,11 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.SET_RECOMMENDATION)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.SET_RECOMMENDATION)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.SET_RECOMMENDATION, notes = PathProxy.DoctorProfileUrls.SET_RECOMMENDATION)
-	public Response<DoctorClinicProfile> setRecommendation(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("patientId") String patientId) {
+	public Response<DoctorClinicProfile> setRecommendation(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("patientId") String patientId) {
 
 		DoctorClinicProfile doctorClinicProfile = doctorProfileService.addEditRecommedation(doctorId, locationId,
 				patientId);
@@ -663,11 +662,11 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.SET_CLINIC_RECOMMENDATION)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.SET_CLINIC_RECOMMENDATION)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.SET_CLINIC_RECOMMENDATION, notes = PathProxy.DoctorProfileUrls.SET_CLINIC_RECOMMENDATION)
-	public Response<Location> setRecommendation(@PathParam("locationId") String locationId,
-			@PathParam("patientId") String patientId) {
+	public Response<Location> setRecommendation(@PathVariable("locationId") String locationId,
+			@PathVariable("patientId") String patientId) {
 
 		Location location = locationService.addEditRecommedation(locationId, patientId);
 		Response<Location> response = new Response<Location>();
@@ -677,12 +676,12 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.GET_PATIENT)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.GET_PATIENT)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_PATIENT, notes = PathProxy.DoctorProfileUrls.GET_PATIENT)
-	public Response<DoctorContactsResponse> getPatient(@QueryParam("page") long page, @QueryParam("size") int size,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId, @QueryParam("from") long from, @QueryParam("to") long to) {
+	public Response<DoctorContactsResponse> getPatient(@RequestParam("page") long page, @RequestParam("size") int size,
+			@RequestParam("doctorId") String doctorId, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId, @RequestParam("from") long from, @RequestParam("to") long to) {
 
 		Response<DoctorContactsResponse> response = new Response<DoctorContactsResponse>();
 		DoctorContactsResponse doctorContactsResponse = doctorProfileService.getPatient(page, size, doctorId,
@@ -691,11 +690,11 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.GET_LABS_WITH_REPORTS_COUNT)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.GET_LABS_WITH_REPORTS_COUNT)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_LABS_WITH_REPORTS_COUNT, notes = PathProxy.DoctorProfileUrls.GET_LABS_WITH_REPORTS_COUNT)
-	public Response<List<Clinic>> getLabWithReportCount(@PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+	public Response<List<Clinic>> getLabWithReportCount(@PathVariable(value = "doctorId") String doctorId,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId) || DPDoctorUtils.anyStringEmpty(locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -706,16 +705,16 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.GET_REPORTS_FOR_SPECIFIC_DOCTOR)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.GET_REPORTS_FOR_SPECIFIC_DOCTOR)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_REPORTS_FOR_SPECIFIC_DOCTOR, notes = PathProxy.DoctorProfileUrls.GET_REPORTS_FOR_SPECIFIC_DOCTOR)
 	public Response<List<Clinic>> getLabWithReportCount(
-			@PathParam(value = "prescribedByDoctorId") String prescribedByDoctorId,
-			@PathParam(value = "prescribedByLocationId") String prescribedByLocationId,
-			@PathParam(value = "prescribedByHospitalId") String prescribedByHospitalId,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "size") int size,
-			@QueryParam(value = "page") long page) {
+			@PathVariable(value = "prescribedByDoctorId") String prescribedByDoctorId,
+			@PathVariable(value = "prescribedByLocationId") String prescribedByLocationId,
+			@PathVariable(value = "prescribedByHospitalId") String prescribedByHospitalId,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "hospitalId") String hospitalId, @RequestParam(value = "size") int size,
+			@RequestParam(value = "page") long page) {
 		if (DPDoctorUtils.anyStringEmpty(prescribedByDoctorId)
 				|| DPDoctorUtils.anyStringEmpty(prescribedByLocationId)) {
 			logger.warn("Invalid Input");
@@ -728,12 +727,12 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_STATS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_STATS)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_STATS, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_STATS)
-	public Response<DoctorStatisticsResponse> getDoctorsStats(@PathParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId,
-			@DefaultValue("WEEK") @QueryParam(value = "type") String type) {
+	public Response<DoctorStatisticsResponse> getDoctorsStats(@PathVariable(value = "doctorId") String doctorId,
+			@RequestParam(value = "locationId") String locationId,
+			@DefaultValue("WEEK") @RequestParam(value = "type") String type) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -745,11 +744,11 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_EMR_SETTING)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.UPDATE_EMR_SETTING)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_EMR_SETTING, notes = PathProxy.DoctorProfileUrls.UPDATE_EMR_SETTING)
-	public Response<Boolean> updateEMRSetting(@PathParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "discarded") Boolean discarded) {
+	public Response<Boolean> updateEMRSetting(@PathVariable(value = "doctorId") String doctorId,
+			@RequestParam(value = "discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -761,8 +760,8 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SEO)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SEO)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SEO, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_SEO)
 	public Response<AddEditSEORequest> addEditSEO(AddEditSEORequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
@@ -775,11 +774,11 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL)
-	public Response<DoctorProfile> getDoctorProfile(@PathParam("slugURL") String slugURL,
-			@PathParam("userUId") String userUId) {
+	public Response<DoctorProfile> getDoctorProfile(@PathVariable("slugURL") String slugURL,
+			@PathVariable("userUId") String userUId) {
 		if (DPDoctorUtils.anyStringEmpty(userUId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
@@ -827,11 +826,11 @@ public class DoctorProfileApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS, notes = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS)
-	public Response<Boolean> updatePresccriptionSMS(@PathParam("doctorId") String doctorId,
-			@QueryParam("isSendSMS") boolean isSendSMS) {
+	public Response<Boolean> updatePresccriptionSMS(@PathVariable("doctorId") String doctorId,
+			@RequestParam("isSendSMS") boolean isSendSMS) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -843,11 +842,11 @@ public class DoctorProfileApi {
 	}
 	
 	
-	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_SAVE_TO_INVENTORY)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.UPDATE_SAVE_TO_INVENTORY)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_SAVE_TO_INVENTORY, notes = PathProxy.DoctorProfileUrls.UPDATE_SAVE_TO_INVENTORY)
-	public Response<Boolean> updateSaveToInventory(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
-			@QueryParam("saveToInventory") boolean saveToInventory) {
+	public Response<Boolean> updateSaveToInventory(@PathVariable("doctorId") String doctorId,@PathVariable("locationId") String locationId,
+			@RequestParam("saveToInventory") boolean saveToInventory) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId , locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -859,11 +858,11 @@ public class DoctorProfileApi {
 	}
 	
 	
-	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY, notes = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY)
-	public Response<Boolean> updateShowInventory(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
-			@QueryParam("showInventory") boolean showInventory) {
+	public Response<Boolean> updateShowInventory(@PathVariable("doctorId") String doctorId,@PathVariable("locationId") String locationId,
+			@RequestParam("showInventory") boolean showInventory) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId , locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -874,11 +873,11 @@ public class DoctorProfileApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY_COUNT)
-	@GET
+	
+	@GetMapping(value = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY_COUNT)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY_COUNT, notes = PathProxy.DoctorProfileUrls.UPDATE_SHOW_INVENTORY_COUNT)
-	public Response<Boolean> updateShowInventoryCount(@PathParam("doctorId") String doctorId,@PathParam("locationId") String locationId,
-			@QueryParam("showInventoryCount") boolean showInventoryCount) {
+	public Response<Boolean> updateShowInventoryCount(@PathVariable("doctorId") String doctorId,@PathVariable("locationId") String locationId,
+			@RequestParam("showInventoryCount") boolean showInventoryCount) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId , locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -889,10 +888,9 @@ public class DoctorProfileApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_TIME)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_TIME)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_TIME, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_TIME)
-
 	public Response<Boolean> addEditOnlineConsultationTime(@RequestBody DoctorOnlineWorkingTimeRequest request) {
 		if (request == null) {
 			logger.warn("Doctor Contact Request Is Empty");
@@ -911,10 +909,9 @@ public class DoctorProfileApi {
 	
 	}
 	
-	@Path(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_TIME)
-	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_TIME, notes = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_TIME)
-	@GET
-	public Response<DoctorOnlineWorkingTimeRequest> getOnlineConsultationTime(@PathParam("doctorId") String doctorId) {
+	@GetMapping(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_TIME)
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_TIME, notes = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_TIME)	
+	public Response<DoctorOnlineWorkingTimeRequest> getOnlineConsultationTime(@PathVariable("doctorId") String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Doctor Id Is Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Is Empty");
@@ -926,10 +923,9 @@ public class DoctorProfileApi {
 		return response;
 	}
 		
-	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_FEES)
-	@POST
+	
+	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_FEES)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_FEES, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_ONLINE_CONSULTATION_FEES)
-
 	public Response<DoctorOnlineConsultationFees> addEditOnlineConsultationFees(@RequestBody DoctorOnlineConsultationFees request) {
 		if (request == null) {
 			logger.warn("Doctor Contact Request Is Empty");
@@ -948,10 +944,9 @@ public class DoctorProfileApi {
 	
 	}
 	
-	@Path(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_FEES)
+	@GetMapping(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_FEES)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_FEES, notes = PathProxy.DoctorProfileUrls.GET_ONLINE_CONSULTATION_FEES)
-	@GET
-	public Response<DoctorOnlineConsultationFees> getOnlineConsultationFees(@PathParam("doctorId") String doctorId) {
+	public Response<DoctorOnlineConsultationFees> getOnlineConsultationFees(@PathVariable("doctorId") String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Doctor Id Is Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Is Empty");
@@ -965,8 +960,7 @@ public class DoctorProfileApi {
 	}
 
 	
-	@Path(value = PathProxy.DoctorProfileUrls.UPLOAD_REGISTRATION_DETAILS)
-	@POST
+	@PostMapping(value = PathProxy.DoctorProfileUrls.UPLOAD_REGISTRATION_DETAILS)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPLOAD_REGISTRATION_DETAILS, notes = PathProxy.DoctorProfileUrls.UPLOAD_REGISTRATION_DETAILS)
 	public Response<String> uploadRegistrationDetails(DoctorRegistrationDetails request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {

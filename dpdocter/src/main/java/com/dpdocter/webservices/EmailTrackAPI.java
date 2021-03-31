@@ -3,14 +3,13 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.EmailTrack;
 import com.dpdocter.services.EmailTackService;
@@ -19,8 +18,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.EMAIL_TRACK_BASE_URL)
+@RestController
+(PathProxy.EMAIL_TRACK_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.EMAIL_TRACK_BASE_URL, description = "Endpoint for email track")
@@ -31,11 +30,11 @@ public class EmailTrackAPI {
     @Autowired
     private EmailTackService emailTackService;
 
-    @GET
+    @GetMapping
     @ApiOperation(value = "GET_EMAIL_DETAILS", notes = "GET_EMAIL_DETAILS")
-    public Response<EmailTrack> getEmailDetails(@QueryParam(value = "patientId") String patientId, @QueryParam(value = "doctorId") String doctorId,
-	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId, @QueryParam("page") long page,
-	    @QueryParam("size") int size) {
+    public Response<EmailTrack> getEmailDetails(@RequestParam(value = "patientId") String patientId, @RequestParam(value = "doctorId") String doctorId,
+	    @RequestParam(value = "locationId") String locationId, @RequestParam(value = "hospitalId") String hospitalId, @RequestParam("page") long page,
+	    @RequestParam("size") int size) {
 
 	List<EmailTrack> emailTrackList = emailTackService.getEmailDetails(patientId, doctorId, locationId, hospitalId, page, size);
 	Response<EmailTrack> response = new Response<EmailTrack>();

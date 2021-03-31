@@ -4,16 +4,15 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.Exercise;
 import com.dpdocter.elasticsearch.response.ESIngredientResponse;
@@ -26,8 +25,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.SOLR_RECIPE_BASE_URL)
+@RestController
+(PathProxy.SOLR_RECIPE_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.SOLR_RECIPE_BASE_URL, description = "Endpoint for solr recipe")
@@ -38,12 +37,12 @@ public class ESRecipeAPI {
 	@Autowired
 	private ESRecipeService esRecipeService;
 
-	@Path(value = PathProxy.SolrRecipeUrls.SEARCH_RECIPES)
-	@GET
+	
+	@GetMapping(value = PathProxy.SolrRecipeUrls.SEARCH_RECIPES)
 	@ApiOperation(value = PathProxy.SolrRecipeUrls.SEARCH_RECIPES, notes = PathProxy.SolrRecipeUrls.SEARCH_RECIPES)
-	public Response<ESRecipeResponse> searchRecipe(@QueryParam("page") int page, @QueryParam("size") int size,
-			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded,
-			@QueryParam(value = "searchTerm") String searchTerm, @QueryParam(value = "verified") Boolean verified) {
+	public Response<ESRecipeResponse> searchRecipe(@RequestParam("page") int page, @RequestParam("size") int size,
+			@DefaultValue("false") @RequestParam(value = "discarded") Boolean discarded,
+			@RequestParam(value = "searchTerm") String searchTerm, @RequestParam(value = "verified") Boolean verified) {
 
 		List<ESRecipeResponse> recipeDocuments = esRecipeService.searchRecipe(page, size, discarded, searchTerm, verified);
 		Response<ESRecipeResponse> response = new Response<ESRecipeResponse>();
@@ -51,12 +50,12 @@ public class ESRecipeAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.SolrRecipeUrls.SEARCH_RECIPES_FOR_USER_APP)
-	@GET
+	
+	@GetMapping(value = PathProxy.SolrRecipeUrls.SEARCH_RECIPES_FOR_USER_APP)
 	@ApiOperation(value = PathProxy.SolrRecipeUrls.SEARCH_RECIPES_FOR_USER_APP, notes = PathProxy.SolrRecipeUrls.SEARCH_RECIPES_FOR_USER_APP)
-	public Response<ESRecipeResponse> searchRecipeForUserApp(@QueryParam("page") int page, @QueryParam("size") int size,
-			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded,
-			@QueryParam(value = "searchTerm") String searchTerm) {
+	public Response<ESRecipeResponse> searchRecipeForUserApp(@RequestParam("page") int page, @RequestParam("size") int size,
+			@DefaultValue("false") @RequestParam(value = "discarded") Boolean discarded,
+			@RequestParam(value = "searchTerm") String searchTerm) {
 
 		List<ESRecipeUserAppResponse> recipeDocuments = esRecipeService.searchRecipeForUserApp(page, size, discarded,
 				searchTerm);
@@ -65,12 +64,12 @@ public class ESRecipeAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.SolrRecipeUrls.SEARCH_INGREDIENTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.SolrRecipeUrls.SEARCH_INGREDIENTS)
 	@ApiOperation(value = PathProxy.SolrRecipeUrls.SEARCH_INGREDIENTS, notes = PathProxy.SolrRecipeUrls.SEARCH_INGREDIENTS)
-	public Response<ESIngredientResponse> searchIngredient(@QueryParam("page") int page, @QueryParam("size") int size,
-			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded,
-			@QueryParam(value = "searchTerm") String searchTerm) {
+	public Response<ESIngredientResponse> searchIngredient(@RequestParam("page") int page, @RequestParam("size") int size,
+			@DefaultValue("false") @RequestParam(value = "discarded") Boolean discarded,
+			@RequestParam(value = "searchTerm") String searchTerm) {
 
 		List<ESIngredientResponse> ingredientDocument = esRecipeService.searchIngredient(page, size, discarded,
 				searchTerm);
@@ -79,12 +78,12 @@ public class ESRecipeAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.SolrRecipeUrls.SEARCH_NUTRIENTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.SolrRecipeUrls.SEARCH_NUTRIENTS)
 	@ApiOperation(value = PathProxy.SolrRecipeUrls.SEARCH_NUTRIENTS, notes = PathProxy.SolrRecipeUrls.SEARCH_NUTRIENTS)
-	public Response<ESNutrientResponse> searchNutrient(@QueryParam("page") int page, @QueryParam("size") int size,
-			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded,
-			@QueryParam(value = "searchTerm") String searchTerm) {
+	public Response<ESNutrientResponse> searchNutrient(@RequestParam("page") int page, @RequestParam("size") int size,
+			@DefaultValue("false") @RequestParam(value = "discarded") Boolean discarded,
+			@RequestParam(value = "searchTerm") String searchTerm) {
 
 		List<ESNutrientResponse> nutrientDocument = esRecipeService.searchNutrient(page, size, discarded, searchTerm);
 		Response<ESNutrientResponse> response = new Response<ESNutrientResponse>();
@@ -93,12 +92,12 @@ public class ESRecipeAPI {
 
 	}
 
-	@Path(value = PathProxy.SolrRecipeUrls.SEARCH_EXERCISE)
-	@GET
+	
+	@GetMapping(value = PathProxy.SolrRecipeUrls.SEARCH_EXERCISE)
 	@ApiOperation(value = PathProxy.SolrRecipeUrls.SEARCH_EXERCISE, notes = PathProxy.SolrRecipeUrls.SEARCH_EXERCISE)
-	public Response<Exercise> searchExercise(@QueryParam("page") int page, @QueryParam("size") int size,
-			@DefaultValue("false") @QueryParam(value = "discarded") Boolean discarded,
-			@QueryParam(value = "searchTerm") String searchTerm) {
+	public Response<Exercise> searchExercise(@RequestParam("page") int page, @RequestParam("size") int size,
+			@DefaultValue("false") @RequestParam(value = "discarded") Boolean discarded,
+			@RequestParam(value = "searchTerm") String searchTerm) {
 		List<Exercise> documents = esRecipeService.searchExercise(page, size, discarded, searchTerm);
 		Response<Exercise> response = new Response<Exercise>();
 		response.setDataList(documents);

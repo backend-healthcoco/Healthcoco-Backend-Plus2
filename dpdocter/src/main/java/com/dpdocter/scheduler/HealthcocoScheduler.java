@@ -37,7 +37,7 @@
 //
 //import common.util.web.DateUtil;
 //
-//@Component
+//@RestController
 //public class HealthcocoScheduler {
 //
 //	

@@ -4,17 +4,16 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
@@ -28,8 +27,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.USER_FAVOURITES_BASE_URL)
+@RestController
+(PathProxy.USER_FAVOURITES_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.USER_FAVOURITES_BASE_URL, description = "Endpoint for user favourites")
@@ -40,11 +39,11 @@ public class UserFavouritesApi {
 	@Autowired
 	private UserFavouriteService userFavouriteService;
 	
-	@Path(value = PathProxy.UserFavouritesUrls.ADD_REMOVE_FROM_FAVOURITES)
-	@GET
+	
+	@GetMapping(value = PathProxy.UserFavouritesUrls.ADD_REMOVE_FROM_FAVOURITES)
 	@ApiOperation(value = PathProxy.UserFavouritesUrls.ADD_REMOVE_FROM_FAVOURITES, notes = PathProxy.UserFavouritesUrls.ADD_REMOVE_FROM_FAVOURITES)
-	public Response<Boolean> addRemoveFavourites(@PathParam("resourceType") String resourceType, @PathParam("userId") String userId, @PathParam("resourceId") String resourceId,
-			@QueryParam("locationId") String locationId, @DefaultValue(value = "false") @QueryParam("discarded") Boolean discarded) {
+	public Response<Boolean> addRemoveFavourites(@PathVariable("resourceType") String resourceType, @PathVariable("userId") String userId, @PathVariable("resourceId") String resourceId,
+			@RequestParam("locationId") String locationId, @DefaultValue(value = "false") @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(userId, resourceId, resourceType)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -56,11 +55,11 @@ public class UserFavouritesApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_DOCTORS)
-	@GET
+	
+	@GetMapping(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_DOCTORS)
 	@ApiOperation(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_DOCTORS, notes = PathProxy.UserFavouritesUrls.GET_FAVOURITE_DOCTORS)
-	public Response<ESDoctorDocument> getFavouriteDoctors(@QueryParam("page") long page, @QueryParam("size") int size,
-			@PathParam("userId") String userId) {
+	public Response<ESDoctorDocument> getFavouriteDoctors(@RequestParam("page") long page, @RequestParam("size") int size,
+			@PathVariable("userId") String userId) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -72,11 +71,11 @@ public class UserFavouritesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_PHARMACIES)
-	@GET
+	
+	@GetMapping(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_PHARMACIES)
 	@ApiOperation(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_PHARMACIES, notes = PathProxy.UserFavouritesUrls.GET_FAVOURITE_PHARMACIES)
-	public Response<ESUserLocaleDocument> getFavouritePharmacies(@QueryParam("page") long page, @QueryParam("size") int size,
-			@PathParam("userId") String userId) {
+	public Response<ESUserLocaleDocument> getFavouritePharmacies(@RequestParam("page") long page, @RequestParam("size") int size,
+			@PathVariable("userId") String userId) {
 
 		List<ESUserLocaleDocument> pharmacies = userFavouriteService.getFavouritePharmacies(page, size, userId);
 
@@ -85,11 +84,11 @@ public class UserFavouritesApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_LABS)
-	@GET
+	
+	@GetMapping(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_LABS)
 	@ApiOperation(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_LABS, notes = PathProxy.UserFavouritesUrls.GET_FAVOURITE_LABS)
-	public Response<LabResponse> getFavouriteLabs(@QueryParam("page") long page, @QueryParam("size") int size,
-			@PathParam("userId") String userId) {
+	public Response<LabResponse> getFavouriteLabs(@RequestParam("page") long page, @RequestParam("size") int size,
+			@PathVariable("userId") String userId) {
 
 		List<LabResponse> doctors = userFavouriteService.getFavouriteLabs(page, size, userId);
 

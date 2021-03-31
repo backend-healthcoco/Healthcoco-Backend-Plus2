@@ -6,19 +6,18 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.InternalPromoCode;
@@ -48,8 +47,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.WEB_APPOINTMENT_BASE_URL)
+@RestController
+(PathProxy.WEB_APPOINTMENT_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.WEB_APPOINTMENT_BASE_URL, description = "Endpoint for appointment")
@@ -87,21 +86,21 @@ public class WebAppointmentApi {
 	@Autowired
     private OTPService otpService;
 	
-	@Path(value = PathProxy.WebAppointmentUrls.GET_CLINICS_BY_DOCTOR_SLUG_URL)
-	@GET
+	
+	@GetMapping(value = PathProxy.WebAppointmentUrls.GET_CLINICS_BY_DOCTOR_SLUG_URL)
 	@ApiOperation(value = PathProxy.WebAppointmentUrls.GET_CLINICS_BY_DOCTOR_SLUG_URL, notes = PathProxy.WebAppointmentUrls.GET_CLINICS_BY_DOCTOR_SLUG_URL)
-	public Response<WebDoctorClinicsResponse> getClinicsByDoctorSlugURL(@PathParam("doctorSlugUrl") String doctorSlugUrl) {		
+	public Response<WebDoctorClinicsResponse> getClinicsByDoctorSlugURL(@PathVariable("doctorSlugUrl") String doctorSlugUrl) {		
 		WebDoctorClinicsResponse webDoctorClinicsResponse = webAppointmentService.getClinicsByDoctorSlugURL(doctorSlugUrl);
 		Response<WebDoctorClinicsResponse> response = new Response<WebDoctorClinicsResponse>();
 		response.setData(webDoctorClinicsResponse);
 		return response;
 	}
 	
-	@Path(value = PathProxy.WebAppointmentUrls.GET_TIME_SLOTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.WebAppointmentUrls.GET_TIME_SLOTS)
 	@ApiOperation(value = PathProxy.WebAppointmentUrls.GET_TIME_SLOTS, notes = PathProxy.WebAppointmentUrls.GET_TIME_SLOTS)
-	public Response<WebAppointmentSlotDataResponse> getTimeSlots(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId, @PathParam("date") String date) {
+	public Response<WebAppointmentSlotDataResponse> getTimeSlots(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId, @PathVariable("date") String date) {
 		
 		WebAppointmentSlotDataResponse slots = webAppointmentService.getTimeSlots(doctorId, locationId, hospitalId, date);
 		Response<WebAppointmentSlotDataResponse> response = new Response<WebAppointmentSlotDataResponse>();
@@ -109,8 +108,8 @@ public class WebAppointmentApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.WebAppointmentUrls.ADD_APPOINTMENT)
-	@POST
+	
+	@PostMapping(value = PathProxy.WebAppointmentUrls.ADD_APPOINTMENT)
 	@ApiOperation(value = PathProxy.WebAppointmentUrls.ADD_APPOINTMENT, notes = PathProxy.WebAppointmentUrls.ADD_APPOINTMENT)
 	public Response<Appointment> BookAppoinment(AppointmentRequest request)
 			throws MessagingException {
@@ -146,11 +145,11 @@ public class WebAppointmentApi {
 
 	}
 	
-	@Path(value = PathProxy.WebAppointmentUrls.LOGIN_PATIENT)
-	@POST
+	
+	@PostMapping(value = PathProxy.WebAppointmentUrls.LOGIN_PATIENT)
 	@ApiOperation(value = PathProxy.LoginUrls.LOGIN_PATIENT, notes = PathProxy.LoginUrls.LOGIN_PATIENT)
 	public Response<Object> loginPatient(LoginPatientRequest request,
-			@DefaultValue("true") @QueryParam("discardedAddress") Boolean discardedAddress) {
+			  @RequestParam("discardedAddress") Boolean discardedAddress) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null
 				|| request.getPassword().length == 0) {
 			logger.warn("Invalid Input");
@@ -186,8 +185,7 @@ public class WebAppointmentApi {
 	}
 	
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.WebAppointmentUrls.PATIENT_SIGNUP_MOBILE)
-	@POST
+	@PostMapping(value = PathProxy.WebAppointmentUrls.PATIENT_SIGNUP_MOBILE)
 	@ApiOperation(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE, notes = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
 	public Response<RegisteredPatientDetails> patientSignupMobile(PatientSignupRequestMobile request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null
@@ -233,10 +231,10 @@ public class WebAppointmentApi {
 		return response;
 	}
 
-	 @Path(value = PathProxy.WebAppointmentUrls.OTP_GENERATOR_MOBILE)
-	    @GET
+	 
+	    @GetMapping(value = PathProxy.WebAppointmentUrls.OTP_GENERATOR_MOBILE)
 	    @ApiOperation(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE, notes = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
-	    public Response<Boolean> otpGenerator(@PathParam("mobileNumber") String mobileNumber, @DefaultValue("false") @QueryParam(value = "isPatientOTP") Boolean isPatientOTP) {
+	    public Response<Boolean> otpGenerator(@PathVariable("mobileNumber") String mobileNumber, @DefaultValue("false") @RequestParam(value = "isPatientOTP") Boolean isPatientOTP) {
 		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 		    logger.warn("Invalid Input. Mobile Number Cannot Be Empty");
 		    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty");
@@ -247,10 +245,10 @@ public class WebAppointmentApi {
 		return response;
 	    }
 
-	    @Path(value = PathProxy.WebAppointmentUrls.VERIFY_OTP_MOBILE)
-	    @GET
+	    
+	    @GetMapping(value = PathProxy.WebAppointmentUrls.VERIFY_OTP_MOBILE)
 	    @ApiOperation(value = PathProxy.OTPUrls.VERIFY_OTP_MOBILE, notes = PathProxy.OTPUrls.VERIFY_OTP_MOBILE)
-	    public Response<Boolean> verifyOTP(@PathParam("mobileNumber") String mobileNumber, @PathParam("otpNumber") String otpNumber) {
+	    public Response<Boolean> verifyOTP(@PathVariable("mobileNumber") String mobileNumber, @PathVariable("otpNumber") String otpNumber) {
 		if (DPDoctorUtils.anyStringEmpty(otpNumber, mobileNumber)) {
 		    logger.warn("Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");
 		    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. DoctorId, LocationId, HospitalId, PatientId, OTP Number Cannot Be Empty");

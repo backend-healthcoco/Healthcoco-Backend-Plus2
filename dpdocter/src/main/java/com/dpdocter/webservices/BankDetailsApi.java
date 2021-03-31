@@ -12,7 +12,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.BankDetails;
 import com.dpdocter.exceptions.BusinessException;
@@ -24,10 +28,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.BANK_DETAILS_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RestController
+@RequestMapping(value=PathProxy.BANK_DETAILS_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.BANK_DETAILS_BASE_URL, description = "Endpoint for records")
 public class BankDetailsApi {
 
@@ -37,9 +39,8 @@ public class BankDetailsApi {
 	private BankDetailsService bankDetailsService;
 	
 	
-	@Path(value = PathProxy.BankDetailsUrls.ADD_EDIT_BANK_DETAILS)
+	@PostMapping(value = PathProxy.BankDetailsUrls.ADD_EDIT_BANK_DETAILS)
 	@ApiOperation(value = PathProxy.BankDetailsUrls.ADD_EDIT_BANK_DETAILS, notes = PathProxy.BankDetailsUrls.ADD_EDIT_BANK_DETAILS)
-	@POST
 	public Response<Boolean> saveBankDetails(@RequestBody BankDetails request) {
 	
 		if (request == null) {
@@ -65,10 +66,9 @@ public class BankDetailsApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.BankDetailsUrls.GET_BANK_DETAILS_BY_DOCTORID)
-	@GET
+	@GetMapping(value = PathProxy.BankDetailsUrls.GET_BANK_DETAILS_BY_DOCTORID)
 	@ApiOperation(value = PathProxy.BankDetailsUrls.GET_BANK_DETAILS_BY_DOCTORID, notes = PathProxy.BankDetailsUrls.GET_BANK_DETAILS_BY_DOCTORID)
-	public Response<BankDetails> getBankDetails(@PathParam("doctorId") String doctorId) {
+	public Response<BankDetails> getBankDetails(@PathVariable("doctorId") String doctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "id is NULL");

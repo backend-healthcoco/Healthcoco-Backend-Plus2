@@ -2,17 +2,17 @@ package com.dpdocter.webservices.v2;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LoginResponse;
@@ -27,10 +27,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component(value = "LoginApiV2")
-@Path(PathProxy.LOGIN_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RestController(value = "LoginApiV2")
+@RequestMapping(value=PathProxy.LOGIN_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.LOGIN_BASE_URL, description = "Endpoint for login")
 public class LoginApiV2 {
 
@@ -45,12 +43,12 @@ public class LoginApiV2 {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	@Path(value = PathProxy.LoginUrls.LOGIN_USER)
-	@POST
+	
+	@PostMapping(value = PathProxy.LoginUrls.LOGIN_USER)
 	@ApiOperation(value = PathProxy.LoginUrls.LOGIN_USER, notes = PathProxy.LoginUrls.LOGIN_USER)
 	public Response<LoginResponse> login(LoginRequest request,
-			@DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp,
-			@DefaultValue(value = "false") @QueryParam(value = "isNutritionist") Boolean isNutritionist) {
+			@DefaultValue(value = "false") @RequestParam(value = "isMobileApp") Boolean isMobileApp,
+			@DefaultValue(value = "false") @RequestParam(value = "isNutritionist") Boolean isNutritionist) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUsername()) || request.getPassword() == null
 				|| request.getPassword().length == 0) {
 			logger.warn("Invalid Input");
@@ -79,11 +77,11 @@ public class LoginApiV2 {
 		return response;
 	}
 //
-//	@Path(value = PathProxy.LoginUrls.LOGIN_PATIENT)
-//	@POST
+//	(value = PathProxy.LoginUrls.LOGIN_PATIENT)
+//	@PostMapping
 //	@ApiOperation(value = PathProxy.LoginUrls.LOGIN_PATIENT, notes = PathProxy.LoginUrls.LOGIN_PATIENT)
 //	public Response<Object> loginPatient(LoginPatientRequest request,
-//			@DefaultValue("true") @QueryParam("discardedAddress") Boolean discardedAddress) {
+//			  @RequestParam("discardedAddress") Boolean discardedAddress) {
 //		if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
 //			logger.warn("Invalid Input");
 //			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -129,8 +127,8 @@ public class LoginApiV2 {
 
 	}
 //
-//	@Path(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
-//	@POST
+//	(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
+//	@PostMapping
 //	@ApiOperation(value = PathProxy.LoginUrls.IS_LOCATION_ADMIN, notes = PathProxy.LoginUrls.IS_LOCATION_ADMIN)
 //	public Response<Boolean> isLocationAdmin(LoginRequest request) {
 //		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUsername()) || request.getPassword() == null
@@ -144,8 +142,8 @@ public class LoginApiV2 {
 //		return response;
 //	}
 //
-//	@Path(value = PathProxy.LoginUrls.ADD_EDIT_DOCTOR_LOGIN_PIN)
-//	@POST
+//	(value = PathProxy.LoginUrls.ADD_EDIT_DOCTOR_LOGIN_PIN)
+//	@PostMapping
 //	@ApiOperation(value = PathProxy.LoginUrls.ADD_EDIT_DOCTOR_LOGIN_PIN, notes = PathProxy.LoginUrls.ADD_EDIT_DOCTOR_LOGIN_PIN)
 //	public Response<DoctorLoginPin> addEditLoginPin(DoctorLoginPin request) {
 //		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId()) || request.getPin() == null
@@ -159,10 +157,10 @@ public class LoginApiV2 {
 //		return response;
 //	}
 //
-//	@Path(value = PathProxy.LoginUrls.GET_DOCTOR_LOGIN_PIN)
-//	@GET
+//	(value = PathProxy.LoginUrls.GET_DOCTOR_LOGIN_PIN)
+//	@GetMapping
 //	@ApiOperation(value = PathProxy.LoginUrls.GET_DOCTOR_LOGIN_PIN, notes = PathProxy.LoginUrls.GET_DOCTOR_LOGIN_PIN)
-//	public Response<DoctorLoginPin> getLoginPin(@PathParam("doctorId") String doctorId) {
+//	public Response<DoctorLoginPin> getLoginPin(@PathVariable("doctorId") String doctorId) {
 //		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 //			logger.warn("Invalid Input");
 //			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -173,8 +171,8 @@ public class LoginApiV2 {
 //		return response;
 //	}
 //
-//	@Path(value = PathProxy.LoginUrls.CHECK_DOCTOR_LOGIN_PIN)
-//	@POST
+//	(value = PathProxy.LoginUrls.CHECK_DOCTOR_LOGIN_PIN)
+//	@PostMapping
 //	@ApiOperation(value = PathProxy.LoginUrls.CHECK_DOCTOR_LOGIN_PIN, notes = PathProxy.LoginUrls.CHECK_DOCTOR_LOGIN_PIN)
 //	public Response<Boolean> checkLoginPin(DoctorLoginPinRequest request) {
 //		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getPin())) {

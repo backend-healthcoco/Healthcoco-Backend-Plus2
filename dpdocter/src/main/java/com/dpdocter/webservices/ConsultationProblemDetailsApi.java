@@ -12,7 +12,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.ConsultationProblemDetails;
 import com.dpdocter.exceptions.BusinessException;
@@ -24,10 +29,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.CONSULTATION_PROBLEM_DETAILS_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON_VALUE)
-@Consumes(MediaType.APPLICATION_JSON_VALUE)
+@RestController
+@RequestMapping(value=PathProxy.CONSULTATION_PROBLEM_DETAILS_BASE_URL,produces = MediaType.APPLICATION_JSON_VALUE ,consumes = MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.CONSULTATION_PROBLEM_DETAILS_BASE_URL, description = "Endpoint for consultationProblemDetails")
 public class ConsultationProblemDetailsApi {
 	
@@ -36,8 +39,7 @@ public class ConsultationProblemDetailsApi {
 	@Autowired
 	private ConsultationProblemDetailsService consultationProblemDetailsService;
 
-	@POST
-	@Path(value = PathProxy.ConsultationproblemDetailsUrls.ADD_EDIT_CONSULTATION_PROBLEM_DETAILS)
+	@PostMapping(value = PathProxy.ConsultationproblemDetailsUrls.ADD_EDIT_CONSULTATION_PROBLEM_DETAILS)
 	@ApiOperation(value = PathProxy.ConsultationproblemDetailsUrls.ADD_EDIT_CONSULTATION_PROBLEM_DETAILS, notes = PathProxy.ConsultationproblemDetailsUrls.ADD_EDIT_CONSULTATION_PROBLEM_DETAILS)
 	public Response<ConsultationProblemDetails> addEditConsultationProblemDetails(@RequestBody ConsultationProblemDetailsRequest request)
 	{
@@ -51,10 +53,10 @@ public class ConsultationProblemDetailsApi {
 	return response;
 	}
 	
-	@Path(value = PathProxy.ConsultationproblemDetailsUrls.GET_CONSULTATION_PROBLEM_DETAILS)
-	@GET
+	
+	@GetMapping(value = PathProxy.ConsultationproblemDetailsUrls.GET_CONSULTATION_PROBLEM_DETAILS)
 	@ApiOperation(value = PathProxy.ConsultationproblemDetailsUrls.GET_CONSULTATION_PROBLEM_DETAILS, notes = PathProxy.ConsultationproblemDetailsUrls.GET_CONSULTATION_PROBLEM_DETAILS)
-	public Response<ConsultationProblemDetails> getConsultationDetails( @QueryParam(value ="problemDetailsId") String problemDetailsId) {
+	public Response<ConsultationProblemDetails> getConsultationDetails( @RequestParam(value ="problemDetailsId") String problemDetailsId) {
 		//Integer count = consultationProblemDetailsService.countConsultationProblemDetails(discarded, searchTerm);
 		Response<ConsultationProblemDetails> response = new Response<ConsultationProblemDetails>();
 		

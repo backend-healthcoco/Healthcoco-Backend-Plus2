@@ -1,20 +1,19 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.LabPrintDocument;
 import com.dpdocter.beans.LabPrintSetting;
@@ -29,8 +28,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.Lab_PRINT_BASE_URL)
+@RestController
+(PathProxy.Lab_PRINT_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.Lab_PRINT_BASE_URL, description = "")
@@ -40,8 +39,8 @@ public class LabPrintAPI {
 	@Autowired
 	private LabPrintServices labprintservices;
 
-	@Path(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_SETTING)
-	@POST
+	
+	@PostMapping(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_SETTING)
 	@ApiOperation(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_SETTING, notes = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_SETTING)
 	public Response<LabPrintSetting> addEditPrintSetting(LabPrintSetting request) {
 		if (request == null) {
@@ -58,11 +57,11 @@ public class LabPrintAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.LabPrintUrls.GET_Lab_PRINT_SETTING)
-	@GET
+	
+	@GetMapping(value = PathProxy.LabPrintUrls.GET_Lab_PRINT_SETTING)
 	@ApiOperation(value = PathProxy.LabPrintUrls.GET_Lab_PRINT_SETTING, notes = PathProxy.LabPrintUrls.GET_Lab_PRINT_SETTING)
-	public Response<LabPrintSetting> getLabPrintSetting(@PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId) {
+	public Response<LabPrintSetting> getLabPrintSetting(@PathVariable("locationId") String locationId,
+			@PathVariable("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -73,8 +72,8 @@ public class LabPrintAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_HEADER)
-	@POST
+	
+	@PostMapping(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_HEADER)
 	@ApiOperation(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_HEADER, notes = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_HEADER)
 	public Response<LabPrintSetting> addEditPrintHeader(LabPrintContentRequest request) {
 		if (request == null) {
@@ -91,8 +90,8 @@ public class LabPrintAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER)
-	@POST
+	
+	@PostMapping(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER)
 	@ApiOperation(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER, notes = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER)
 	public Response<LabPrintSetting> addEditPrintFooter(LabPrintContentRequest request) {
 		if (request == null) {
@@ -109,10 +108,10 @@ public class LabPrintAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.LabPrintUrls.GET_LAB_DOCUMENT)
-	@GET
+	
+	@GetMapping(value = PathProxy.LabPrintUrls.GET_LAB_DOCUMENT)
 	@ApiOperation(value = PathProxy.LabPrintUrls.GET_LAB_DOCUMENT, notes = PathProxy.LabPrintUrls.GET_LAB_DOCUMENT)
-	public Response<LabPrintDocument> getLabPrintDocument(@PathParam("documentId") String documentId) {
+	public Response<LabPrintDocument> getLabPrintDocument(@PathVariable("documentId") String documentId) {
 		if (DPDoctorUtils.anyStringEmpty(documentId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -123,8 +122,8 @@ public class LabPrintAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_DOCUMENT)
-	@POST
+	
+	@PostMapping(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_DOCUMENT)
 	@ApiOperation(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_DOCUMENT, notes = PathProxy.LabPrintUrls.ADD_EDIT_LAB_DOCUMENT)
 	public Response<LabPrintDocument> addLabPrintDocument(LabPrintDocumentAddEditRequest request) {
 		if (request == null) {
@@ -143,14 +142,14 @@ public class LabPrintAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.LabPrintUrls.GET_LAB_DOCUMENTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.LabPrintUrls.GET_LAB_DOCUMENTS)
 	@ApiOperation(value = PathProxy.LabPrintUrls.GET_LAB_DOCUMENTS, notes = PathProxy.LabPrintUrls.GET_LAB_DOCUMENTS)
-	public Response<LabPrintDocument> getLabPrintDocuments(@QueryParam("size") int size, @QueryParam("page") int page,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId, @QueryParam("searchTerm") String searchTerm,
-			@DefaultValue("0") @QueryParam("to") Long to, @DefaultValue("0") @QueryParam("from") Long from,
-			@QueryParam("isParent") boolean isParent, @QueryParam("isdiscarded") boolean isdiscarded) {
+	public Response<LabPrintDocument> getLabPrintDocuments(@RequestParam("size") int size, @RequestParam("page") int page,
+			@RequestParam("doctorId") String doctorId, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId, @RequestParam("searchTerm") String searchTerm,
+			@DefaultValue("0") @RequestParam("to") Long to, @DefaultValue("0") @RequestParam("from") Long from,
+			@RequestParam("isParent") boolean isParent, @RequestParam("isdiscarded") boolean isdiscarded) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -162,11 +161,11 @@ public class LabPrintAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.LabPrintUrls.DELETE_LAB_DOCUMENT)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.LabPrintUrls.DELETE_LAB_DOCUMENT)
 	@ApiOperation(value = PathProxy.LabPrintUrls.DELETE_LAB_DOCUMENT, notes = PathProxy.LabPrintUrls.DELETE_LAB_DOCUMENT)
-	public Response<Boolean> deleteLabPrintDocument(@PathParam("documentId") String documentId,
-			@QueryParam("isdiscarded") boolean isdiscarded) {
+	public Response<Boolean> deleteLabPrintDocument(@PathVariable("documentId") String documentId,
+			@RequestParam("isdiscarded") boolean isdiscarded) {
 		if (DPDoctorUtils.anyStringEmpty(documentId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

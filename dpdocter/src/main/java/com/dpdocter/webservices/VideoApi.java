@@ -3,18 +3,17 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.MyVideo;
 import com.dpdocter.beans.Video;
@@ -30,8 +29,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.VIDEO_BASE_URL)
+@RestController
+(PathProxy.VIDEO_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.VIDEO_BASE_URL, description = "Endpoint for videos")
@@ -44,8 +43,8 @@ public class VideoApi {
 	 VideoService videoService;
 	 
 
-	    @Path(value = PathProxy.VideoUrls.ADD_VIDEO)
-	    @POST
+	    
+	    @PostMapping(value = PathProxy.VideoUrls.ADD_VIDEO)
 	    @Consumes({ MediaType.MULTIPART_FORM_DATA })
 	    @ApiOperation(value =PathProxy.VideoUrls.ADD_VIDEO, notes = PathProxy.VideoUrls.ADD_VIDEO)
 	    public Response<Video> addVideo(@FormDataParam("file") FormDataBodyPart file,
@@ -63,10 +62,10 @@ public class VideoApi {
 	    	return response;
 	    }
 	    
-	    @Path(value = PathProxy.VideoUrls.GET_VIDEO)
-	    @GET
+	    
+	    @GetMapping(value = PathProxy.VideoUrls.GET_VIDEO)
 	    @ApiOperation(value =PathProxy.VideoUrls.GET_VIDEO, notes = PathProxy.VideoUrls.GET_VIDEO)
-	    public Response<Video> getVideoss(@QueryParam(value = "doctorId") String doctorId , @QueryParam(value = "searchTerm") String searchTerm, @MatrixParam(value ="tags") List<String> tags, @QueryParam(value = "page") int page , @QueryParam(value = "size") int size)
+	    public Response<Video> getVideoss(@RequestParam(value = "doctorId") String doctorId , @RequestParam(value = "searchTerm") String searchTerm, @MatrixParam(value ="tags") List<String> tags, @RequestParam(value = "page") int page , @RequestParam(value = "size") int size)
 	    {
 	    	List<Video> videos = null;
 	    	if (doctorId == null) {
@@ -79,8 +78,8 @@ public class VideoApi {
 	    	return response;
 	    }
 	    
-	    @Path(value = PathProxy.VideoUrls.ADD_MY_VIDEO)
-	    @POST
+	   
+	    @PostMapping(value = PathProxy.VideoUrls.ADD_MY_VIDEO)
 	    @Consumes({ MediaType.MULTIPART_FORM_DATA })
 	    @ApiOperation(value =PathProxy.VideoUrls.ADD_MY_VIDEO, notes = PathProxy.VideoUrls.ADD_MY_VIDEO)
 	    public Response<MyVideo> addMyVideo(@FormDataParam("file") FormDataBodyPart file,

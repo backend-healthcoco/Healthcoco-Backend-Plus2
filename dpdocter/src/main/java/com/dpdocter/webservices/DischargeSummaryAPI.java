@@ -21,6 +21,12 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.BabyNote;
 import com.dpdocter.beans.Cement;
@@ -53,8 +59,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.DISCHARGE_SUMMARY_BASE_URL)
+@RestController
+(PathProxy.DISCHARGE_SUMMARY_BASE_URL)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DISCHARGE_SUMMARY_BASE_URL)
@@ -74,8 +80,8 @@ public class DischargeSummaryAPI {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
-	@Path(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
-	@POST
+	
+	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
 	public Response<DischargeSummaryResponse> addEditDischargeSummary(DischargeSummaryRequest request) {
 		Response<DischargeSummaryResponse> response = null;
@@ -95,14 +101,14 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY)
-	@GET
+	
+	@GetMapping(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY)
-	public Response<DischargeSummaryResponse> getDischargeSummary(@QueryParam(value = "page") long page,
-			@QueryParam(value = "size") int size, @QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+	public Response<DischargeSummaryResponse> getDischargeSummary(@RequestParam(value = "page") long page,
+			@RequestParam(value = "size") int size, @RequestParam(value = "doctorId") String doctorId,
+			@RequestParam(value = "locationId") String locationId, @RequestParam(value = "hospitalId") String hospitalId,
+			@RequestParam(value = "patientId") String patientId,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime) {
 		Response<DischargeSummaryResponse> response = null;
 		List<DischargeSummaryResponse> dischargeSummaries = null;
 
@@ -119,11 +125,11 @@ public class DischargeSummaryAPI {
 
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.VIEW_DISCHARGE_SUMMARY)
-	@GET
+	
+	@GetMapping(value = PathProxy.DischargeSummaryUrls.VIEW_DISCHARGE_SUMMARY)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.VIEW_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.VIEW_DISCHARGE_SUMMARY)
 	public Response<DischargeSummaryResponse> viewDischargeSummary(
-			@PathParam("dischargeSummeryId") String dischargeSummeryId) {
+			@PathVariable("dischargeSummeryId") String dischargeSummeryId) {
 		Response<DischargeSummaryResponse> response = null;
 		DischargeSummaryResponse dischargeSummary = null;
 
@@ -140,14 +146,14 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.DELETE_DISCHARGE_SUMMARY)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.DischargeSummaryUrls.DELETE_DISCHARGE_SUMMARY)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DELETE_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.DELETE_DISCHARGE_SUMMARY)
 	public Response<DischargeSummaryResponse> deleteDischargeSummary(
-			@PathParam(value = "dischargeSummeryId") String dischargeSummeryId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@PathVariable(value = "dischargeSummeryId") String dischargeSummeryId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (StringUtils.isEmpty(dischargeSummeryId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId)
 				|| StringUtils.isEmpty(locationId)) {
 			logger.warn("Discharge Summery  Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
@@ -161,22 +167,22 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_DISCHARGE_SUMMARY)
-	@GET
+	
+	@GetMapping(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_DISCHARGE_SUMMARY)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.DOWNLOAD_DISCHARGE_SUMMARY)
-	public Response<String> downloadDischargeSummary(@PathParam("dischargeSummeryId") String dischargeSummeryId) {
+	public Response<String> downloadDischargeSummary(@PathVariable("dischargeSummeryId") String dischargeSummeryId) {
 		Response<String> response = new Response<String>();
 		response.setData(dischargeSummaryService.downloadDischargeSummary(dischargeSummeryId));
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY)
-	@GET
+	
+	@GetMapping(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY)
-	public Response<Boolean> emailDischargeSummary(@PathParam(value = "dischargeSummeryId") String dischargeSummeryId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "emailAddress") String emailAddress) {
+	public Response<Boolean> emailDischargeSummary(@PathVariable(value = "dischargeSummeryId") String dischargeSummeryId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "emailAddress") String emailAddress) {
 
 		if (DPDoctorUtils.anyStringEmpty(dischargeSummeryId, doctorId, locationId, hospitalId, emailAddress)) {
 			logger.warn(
@@ -192,14 +198,14 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY_WEB)
-	@GET
+	
+	@GetMapping(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY_WEB)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY_WEB, notes = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY_WEB)
 	public Response<Boolean> emailDischargeSummaryForWeb(
-			@PathParam(value = "dischargeSummeryId") String dischargeSummeryId,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "emailAddress") String emailAddress) {
+			@PathVariable(value = "dischargeSummeryId") String dischargeSummeryId,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "emailAddress") String emailAddress) {
 
 		if (DPDoctorUtils.anyStringEmpty(dischargeSummeryId, emailAddress)) {
 			logger.warn(
@@ -215,8 +221,8 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_BY_VISIT)
-	@GET
+	
+	@GetMapping(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_BY_VISIT)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_BY_VISIT, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_BY_VISIT)
 	public Response<DischargeSummaryResponse> addMultiVisit(@MatrixParam("visitIds") List<String> visitIds) {
 
@@ -230,8 +236,8 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.UPDATE_DISCHARGE_SUMMARY_DATA)
-	@GET
+
+	@GetMapping	(value = PathProxy.DischargeSummaryUrls.UPDATE_DISCHARGE_SUMMARY_DATA)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.UPDATE_DISCHARGE_SUMMARY_DATA, notes = PathProxy.DischargeSummaryUrls.UPDATE_DISCHARGE_SUMMARY_DATA)
 	public Response<Integer> updateData() {
 
@@ -241,8 +247,8 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.ADD_LABOUR_NOTES)
-	@POST
+	
+	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_LABOUR_NOTES)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_LABOUR_NOTES, notes = PathProxy.DischargeSummaryUrls.ADD_LABOUR_NOTES)
 	public Response<LabourNote> addLabourNote(LabourNote request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -262,8 +268,8 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.ADD_BABY_NOTES)
-	@POST
+	
+	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_BABY_NOTES)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_BABY_NOTES, notes = PathProxy.DischargeSummaryUrls.ADD_BABY_NOTES)
 	public Response<BabyNote> addBabyNote(BabyNote request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -282,8 +288,8 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.ADD_OPERATION_NOTES)
-	@POST
+	
+	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_OPERATION_NOTES)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_OPERATION_NOTES, notes = PathProxy.DischargeSummaryUrls.ADD_OPERATION_NOTES)
 	public Response<OperationNote> addOperationNote(OperationNote request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -303,13 +309,13 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.DELETE_BABY_NOTES)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.DischargeSummaryUrls.DELETE_BABY_NOTES)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DELETE_BABY_NOTES, notes = PathProxy.DischargeSummaryUrls.DELETE_BABY_NOTES)
-	public Response<BabyNote> deleteBabyNote(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<BabyNote> deleteBabyNote(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Baby Notes Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -327,13 +333,13 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.DELETE_LABOUR_NOTES)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.DischargeSummaryUrls.DELETE_LABOUR_NOTES)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DELETE_LABOUR_NOTES, notes = PathProxy.DischargeSummaryUrls.DELETE_LABOUR_NOTES)
-	public Response<LabourNote> deleteLabourNote(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<LabourNote> deleteLabourNote(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Labour Notes Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -352,13 +358,13 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.DELETE_OPERAION_NOTES)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.DischargeSummaryUrls.DELETE_OPERAION_NOTES)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DELETE_OPERAION_NOTES, notes = PathProxy.DischargeSummaryUrls.DELETE_OPERAION_NOTES)
-	public Response<OperationNote> deleteOperationNote(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<OperationNote> deleteOperationNote(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("OperationNote Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -378,8 +384,8 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.ADD_CEMENT)
-	@POST
+	
+	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_CEMENT)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_CEMENT, notes = PathProxy.DischargeSummaryUrls.ADD_CEMENT)
 	public Response<Cement> addCement(Cement request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -398,13 +404,13 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.DELETE_CEMENT)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.DischargeSummaryUrls.DELETE_CEMENT)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DELETE_CEMENT, notes = PathProxy.DischargeSummaryUrls.DELETE_CEMENT)
-	public Response<Cement> deleteCement(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Cement> deleteCement(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Cement Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -422,8 +428,8 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.ADD_IMPLANT)
-	@POST
+	
+	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_IMPLANT)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_IMPLANT, notes = PathProxy.DischargeSummaryUrls.ADD_IMPLANT)
 	public Response<Implant> addImplant(Implant request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -442,13 +448,13 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.DELETE_IMPLANT)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.DischargeSummaryUrls.DELETE_IMPLANT)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DELETE_IMPLANT, notes = PathProxy.DischargeSummaryUrls.DELETE_IMPLANT)
-	public Response<Implant> deleteImplant(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Implant> deleteImplant(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("implant Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -466,14 +472,14 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_ITEMS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_ITEMS)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_ITEMS, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_ITEMS)
-	public Response<Object> getDischargeSummaryItems(@PathParam("type") String type, @PathParam("range") String range,
-			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	public Response<Object> getDischargeSummaryItems(@PathVariable("type") String type, @PathVariable("range") String range,
+			@RequestParam("page") long page, @RequestParam("size") int size, @RequestParam(value = "doctorId") String doctorId,
+			@RequestParam(value = "locationId") String locationId, @RequestParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+			  @RequestParam(value = "discarded") Boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(type, range, doctorId)) {
 			logger.warn("Invalid Input.");
@@ -487,8 +493,8 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.ADD_EDIT_FLOWSHEETS)
-	@POST
+	
+	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_EDIT_FLOWSHEETS)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_EDIT_FLOWSHEETS, notes = PathProxy.DischargeSummaryUrls.ADD_EDIT_FLOWSHEETS)
 	public Response<FlowsheetResponse> addEditFlowsheets(AddEditFlowSheetRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -504,32 +510,32 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS, notes = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS)
-	public Response<String> downloadFlowSheet(@PathParam("id") String id) {
+	public Response<String> downloadFlowSheet(@PathVariable("id") String id) {
 		Response<String> response = new Response<String>();
 		response.setData(dischargeSummaryService.downloadFlowSheet(id, true));
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS_BY_DISCHARGE_SUMMARY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS_BY_DISCHARGE_SUMMARY_ID)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS_BY_DISCHARGE_SUMMARY_ID, notes = PathProxy.DischargeSummaryUrls.DOWNLOAD_FLOWSHEETS_BY_DISCHARGE_SUMMARY_ID)
-	public Response<String> downloadFlowSheetByDischargeSummaryId(@PathParam("dischargeSummaryId") String id) {
+	public Response<String> downloadFlowSheetByDischargeSummaryId(@PathVariable("dischargeSummaryId") String id) {
 		Response<String> response = new Response<String>();
 		response.setData(dischargeSummaryService.downloadFlowSheet(id, false));
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.GET_FLOWSHEETS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DischargeSummaryUrls.GET_FLOWSHEETS)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_FLOWSHEETS, notes = PathProxy.DischargeSummaryUrls.GET_FLOWSHEETS)
-	public Response<FlowsheetResponse> getFlowSheets(@QueryParam(value = "page") int page,
-			@QueryParam(value = "size") int size, @QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<FlowsheetResponse> getFlowSheets(@RequestParam(value = "page") int page,
+			@RequestParam(value = "size") int size, @RequestParam(value = "doctorId") String doctorId,
+			@RequestParam(value = "locationId") String locationId, @RequestParam(value = "hospitalId") String hospitalId,
+			@RequestParam(value = "patientId") String patientId,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime,   @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		Response<FlowsheetResponse> response = null;
 		List<FlowsheetResponse> flowsheetResponses = null;
 
@@ -546,10 +552,10 @@ public class DischargeSummaryAPI {
 
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.GET_FLOWSHEET_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.DischargeSummaryUrls.GET_FLOWSHEET_BY_ID)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_FLOWSHEET_BY_ID, notes = PathProxy.DischargeSummaryUrls.GET_FLOWSHEET_BY_ID)
-	public Response<FlowsheetResponse> getFlowSheetById(@PathParam("id") String id) {
+	public Response<FlowsheetResponse> getFlowSheetById(@PathVariable("id") String id) {
 		Response<FlowsheetResponse> response = null;
 		FlowsheetResponse flowsheetResponses = null;
 
@@ -564,8 +570,8 @@ public class DischargeSummaryAPI {
 	}
 
 
-	@Path(value = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM)
-	@POST
+	
+	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM)
 	public Response<Diagram> addDiagram(Diagram request) {
 		if (request == null
@@ -586,8 +592,8 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
-	@POST
+
+	@PostMapping(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
 	public Response<String> uploadDiagram(DoctorLabReportUploadRequest request) {
 		if (request == null || request.getFileDetails() == null
@@ -603,8 +609,7 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@POST
-	@Path(value = PathProxy.DischargeSummaryUrls.UPLOAD_MULTIPART_DIAGRAM)
+	@PostMapping(value = PathProxy.DischargeSummaryUrls.UPLOAD_MULTIPART_DIAGRAM)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.UPLOAD_MULTIPART_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.UPLOAD_MULTIPART_DIAGRAM)
 	public Response<String> uploadDoctorLabReportMultipart(@FormDataParam("file") FormDataBodyPart file) {

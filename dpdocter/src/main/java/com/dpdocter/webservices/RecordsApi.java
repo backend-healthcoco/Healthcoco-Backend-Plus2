@@ -3,16 +3,9 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +13,13 @@ import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.Records;
@@ -51,8 +50,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.RECORDS_BASE_URL)
+@RestController
+(PathProxy.RECORDS_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.RECORDS_BASE_URL, description = "Endpoint for records")
@@ -72,8 +71,8 @@ public class RecordsApi {
 	@Autowired
 	private OTPService otpService;
 
-	@POST
-	@Path(value = PathProxy.RecordsUrls.ADD_RECORDS)
+	@PostMapping
+	(value = PathProxy.RecordsUrls.ADD_RECORDS)
 	@ApiOperation(value = PathProxy.RecordsUrls.ADD_RECORDS, notes = PathProxy.RecordsUrls.ADD_RECORDS)
 	public Response<Records> addRecords(RecordsAddRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -99,8 +98,8 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.TAG_RECORD)
-	@POST
+	
+	@PostMapping(value = PathProxy.RecordsUrls.TAG_RECORD)
 	@ApiOperation(value = PathProxy.RecordsUrls.TAG_RECORD, notes = PathProxy.RecordsUrls.TAG_RECORD)
 	public Response<Boolean> tagRecord(TagRecordRequest request) {
 		if (request == null) {
@@ -113,8 +112,8 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.SEARCH_RECORD)
-	@POST
+	
+	@PostMapping(value = PathProxy.RecordsUrls.SEARCH_RECORD)
 	@ApiOperation(value = PathProxy.RecordsUrls.SEARCH_RECORD, notes = PathProxy.RecordsUrls.SEARCH_RECORD)
 	public Response<Records> searchRecords(RecordsSearchRequest request) {
 //		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
@@ -130,10 +129,10 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.GET_RECORD_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecordsUrls.GET_RECORD_BY_ID)
 	@ApiOperation(value = "GET_RECORDS_BY_ID", notes = "GET_RECORDS_BY_ID")
-	public Response<Records> getRecordById(@PathParam("recordId") String recordId) {
+	public Response<Records> getRecordById(@PathVariable("recordId") String recordId) {
 		if (DPDoctorUtils.anyStringEmpty(recordId)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Record Id Cannot Be Empty");
@@ -147,14 +146,14 @@ public class RecordsApi {
 
 	}
 
-	@Path(value = PathProxy.RecordsUrls.GET_RECORDS_PATIENT_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecordsUrls.GET_RECORDS_PATIENT_ID)
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_RECORDS_PATIENT_ID, notes = PathProxy.RecordsUrls.GET_RECORDS_PATIENT_ID)
-	public Response<Object> getRecordsByPatientId(@PathParam("patientId") String patientId,
-			@QueryParam("page") int page, @QueryParam("size") int size,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
-			@DefaultValue("false") @QueryParam("isDoctorApp") Boolean isDoctorApp, @QueryParam(value = "sortBy") String sortBy) {
+	public Response<Object> getRecordsByPatientId(@PathVariable("patientId") String patientId,
+			@RequestParam("page") int page, @RequestParam("size") int size,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@DefaultValue("false") @RequestParam("isDoctorApp") Boolean isDoctorApp, @RequestParam(value = "sortBy") String sortBy) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("Patient Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
@@ -166,12 +165,12 @@ public class RecordsApi {
 
 	}
 
-	@Path(value = PathProxy.RecordsUrls.GET_RECORDS_DOCTOR_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecordsUrls.GET_RECORDS_DOCTOR_ID)
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_RECORDS_DOCTOR_ID, notes = PathProxy.RecordsUrls.GET_RECORDS_DOCTOR_ID)
-	public Response<Records> getRecordsByDoctorId(@PathParam("doctorId") String doctorId, @QueryParam("page") long page,
-			@QueryParam("size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Records> getRecordsByDoctorId(@PathVariable("doctorId") String doctorId, @RequestParam("page") long page,
+			@RequestParam("size") int size, @DefaultValue("0") @RequestParam("updatedTime") String updatedTime,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
@@ -185,12 +184,12 @@ public class RecordsApi {
 
 	}
 
-	@Path(value = PathProxy.RecordsUrls.GET_RECORD_COUNT)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecordsUrls.GET_RECORD_COUNT)
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_RECORD_COUNT, notes = PathProxy.RecordsUrls.GET_RECORD_COUNT)
-	public Response<Integer> getRecordCount(@PathParam("doctorId") String doctorId,
-			@PathParam("patientId") String patientId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId) {
+	public Response<Integer> getRecordCount(@PathVariable("doctorId") String doctorId,
+			@PathVariable("patientId") String patientId, @PathVariable("locationId") String locationId,
+			@PathVariable("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, patientId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -203,11 +202,11 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.GET_ALL_TAGS)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecordsUrls.GET_ALL_TAGS)
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_ALL_TAGS, notes = PathProxy.RecordsUrls.GET_ALL_TAGS)
-	public Response<Tags> getAllTags(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId) {
+	public Response<Tags> getAllTags(@PathVariable("doctorId") String doctorId, @PathVariable("locationId") String locationId,
+			@PathVariable("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -218,8 +217,8 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.CREATE_TAG)
-	@POST
+	
+	@PostMapping(value = PathProxy.RecordsUrls.CREATE_TAG)
 	@ApiOperation(value = PathProxy.RecordsUrls.CREATE_TAG, notes = PathProxy.RecordsUrls.CREATE_TAG)
 	public Response<Tags> createTag(Tags tags) {
 		if (tags == null) {
@@ -231,22 +230,22 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.GET_PATIENT_EMAIL_ADD)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecordsUrls.GET_PATIENT_EMAIL_ADD)
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_PATIENT_EMAIL_ADD, notes = PathProxy.RecordsUrls.GET_PATIENT_EMAIL_ADD)
-	public Response<String> getPatientEmailId(@PathParam("patientId") String patientId) {
+	public Response<String> getPatientEmailId(@PathVariable("patientId") String patientId) {
 		String emailAdd = recordsService.getPatientEmailAddress(patientId);
 		Response<String> response = new Response<String>();
 		response.setData(emailAdd);
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.EMAIL_RECORD)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecordsUrls.EMAIL_RECORD)
 	@ApiOperation(value = PathProxy.RecordsUrls.EMAIL_RECORD, notes = PathProxy.RecordsUrls.EMAIL_RECORD)
-	public Response<Boolean> emailRecords(@PathParam("recordId") String recordId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId, @PathParam("emailAddress") String emailAddress,
+	public Response<Boolean> emailRecords(@PathVariable("recordId") String recordId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId, @PathVariable("emailAddress") String emailAddress,
 			@MatrixParam("fileIds") List<String> fileIds) {
 		if (DPDoctorUtils.anyStringEmpty(recordId, emailAddress, doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
@@ -258,11 +257,11 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.DELETE_RECORD)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RecordsUrls.DELETE_RECORD)
 	@ApiOperation(value = PathProxy.RecordsUrls.DELETE_RECORD, notes = PathProxy.RecordsUrls.DELETE_RECORD)
-	public Response<Records> deleteRecords(@PathParam("recordId") String recordId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Records> deleteRecords(@PathVariable("recordId") String recordId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(recordId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -273,11 +272,11 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.DELETE_TAG)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RecordsUrls.DELETE_TAG)
 	@ApiOperation(value = PathProxy.RecordsUrls.DELETE_TAG, notes = PathProxy.RecordsUrls.DELETE_TAG)
-	public Response<Tags> deleteTag(@PathParam("tagid") String tagid,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Tags> deleteTag(@PathVariable("tagid") String tagid,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(tagid)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -288,8 +287,8 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.GET_FLEXIBLE_COUNTS)
-	@POST
+	
+	@PostMapping(value = PathProxy.RecordsUrls.GET_FLEXIBLE_COUNTS)
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_FLEXIBLE_COUNTS, notes = PathProxy.RecordsUrls.GET_FLEXIBLE_COUNTS)
 	public Response<FlexibleCounts> getCounts(FlexibleCounts flexibleCounts) {
 		if (flexibleCounts == null || DPDoctorUtils.anyStringEmpty(flexibleCounts.getDoctorId(),
@@ -303,10 +302,10 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.EDIT_RECORD)
-	@PUT
+	
+	@PutMapping(value = PathProxy.RecordsUrls.EDIT_RECORD)
 	@ApiOperation(value = PathProxy.RecordsUrls.EDIT_RECORD, notes = PathProxy.RecordsUrls.EDIT_RECORD)
-	public Response<Records> editRecords(@PathParam(value = "recordId") String recordId, RecordsEditRequest request) {
+	public Response<Records> editRecords(@PathVariable(value = "recordId") String recordId, RecordsEditRequest request) {
 		if (DPDoctorUtils.anyStringEmpty(recordId) || request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -330,8 +329,8 @@ public class RecordsApi {
 			return null;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.CHANGE_LABEL_AND_DESCRIPTION_RECORD)
-	@POST
+	
+	@PostMapping(value = PathProxy.RecordsUrls.CHANGE_LABEL_AND_DESCRIPTION_RECORD)
 	@ApiOperation(value = PathProxy.RecordsUrls.CHANGE_LABEL_AND_DESCRIPTION_RECORD, notes = PathProxy.RecordsUrls.CHANGE_LABEL_AND_DESCRIPTION_RECORD)
 	public Response<Boolean> changeLabelAndDescription(ChangeRecordLabelDescriptionRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getRecordId())) {
@@ -343,8 +342,8 @@ public class RecordsApi {
 		return response;
 	}
 
-	@POST
-	@Path(value = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART)
+	@PostMapping
+	(value = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART, notes = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART)
 	public Response<Records> addRecordsMultipart(@FormDataParam("file") FormDataBodyPart file,
@@ -370,8 +369,8 @@ public class RecordsApi {
 		return response;
 	}
 
-	@POST
-	@Path(value = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE)
+	@PostMapping
+	(value = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE, notes = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE)
 	public Response<String> saveRecordsImage(@FormDataParam("file") FormDataBodyPart file,
@@ -386,11 +385,11 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.CHANGE_RECORD_STATE)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecordsUrls.CHANGE_RECORD_STATE)
 	@ApiOperation(value = PathProxy.RecordsUrls.CHANGE_RECORD_STATE, notes = PathProxy.RecordsUrls.CHANGE_RECORD_STATE)
-	public Response<Records> changeRecordState(@PathParam("recordId") String recordId,
-			@PathParam("recordsState") String recordsState) {
+	public Response<Records> changeRecordState(@PathVariable("recordId") String recordId,
+			@PathVariable("recordsState") String recordsState) {
 		if (DPDoctorUtils.anyStringEmpty(recordId, recordsState)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -406,8 +405,8 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.ADD_USER_RECORDS)
-	@POST
+	
+	@PostMapping(value = PathProxy.RecordsUrls.ADD_USER_RECORDS)
 	@ApiOperation(value = PathProxy.RecordsUrls.ADD_USER_RECORDS, notes = PathProxy.RecordsUrls.ADD_USER_RECORDS)
 	public Response<UserRecords> addUserRecords(UserRecords request) {
 
@@ -429,8 +428,8 @@ public class RecordsApi {
 		return response;
 	}
 
-	@POST
-	@Path(value = PathProxy.RecordsUrls.UPLOAD_USER_RECORD_FILE)
+	@PostMapping
+	(value = PathProxy.RecordsUrls.UPLOAD_USER_RECORD_FILE)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.RecordsUrls.UPLOAD_USER_RECORD_FILE, notes = PathProxy.RecordsUrls.UPLOAD_USER_RECORD_FILE)
 	public Response<RecordsFile> uploadUserRecord(@FormDataParam("file") FormDataBodyPart file,
@@ -454,10 +453,10 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.GET_USER_RECORD_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecordsUrls.GET_USER_RECORD_BY_ID)
 	@ApiOperation(value = "GET_USER_RECORD_BY_ID", notes = "GET_USER_RECORD_BY_ID")
-	public Response<UserRecords> getUserRecordById(@PathParam("recordId") String recordId) {
+	public Response<UserRecords> getUserRecordById(@PathVariable("recordId") String recordId) {
 		if (DPDoctorUtils.anyStringEmpty(recordId)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Record Id Cannot Be Empty");
@@ -471,14 +470,14 @@ public class RecordsApi {
 
 	}
 
-	@Path(value = PathProxy.RecordsUrls.GET_USER_RECORDS)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecordsUrls.GET_USER_RECORDS)
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_USER_RECORDS, notes = PathProxy.RecordsUrls.GET_USER_RECORDS)
-	public Response<Object> getUserRecords(@QueryParam("patientId") String patientId, @QueryParam("page") long page,
-			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Object> getUserRecords(@RequestParam("patientId") String patientId, @RequestParam("page") long page,
+			@RequestParam("size") int size, @RequestParam("doctorId") String doctorId,
+			@RequestParam("locationId") String locationId, @RequestParam("hospitalId") String hospitalId,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(patientId) && DPDoctorUtils.anyStringEmpty(hospitalId, doctorId, locationId)) {
 			logger.warn("Patient Id or hospitalId ,doctorId ,locationId Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -491,11 +490,11 @@ public class RecordsApi {
 
 	}
 
-	@Path(value = PathProxy.RecordsUrls.GET_USER_RECORDS_ALLOWANCE)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecordsUrls.GET_USER_RECORDS_ALLOWANCE)
 	@ApiOperation(value = "GET_USER_RECORDS_ALLOWANCE", notes = "GET_USER_RECORDS_ALLOWANCE")
-	public Response<UserAllowanceDetails> getUserRecordAllowance(@QueryParam("userId") String userId,
-			@QueryParam("mobileNumber") String mobileNumber) {
+	public Response<UserAllowanceDetails> getUserRecordAllowance(@RequestParam("userId") String userId,
+			@RequestParam("mobileNumber") String mobileNumber) {
 		if (DPDoctorUtils.anyStringEmpty(userId) && DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Record Id Cannot Be Empty");
@@ -509,12 +508,12 @@ public class RecordsApi {
 
 	}
 
-	@Path(value = PathProxy.RecordsUrls.DELETE_OR_HIDE_USER_RECORD)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RecordsUrls.DELETE_OR_HIDE_USER_RECORD)
 	@ApiOperation(value = PathProxy.RecordsUrls.DELETE_OR_HIDE_USER_RECORD, notes = PathProxy.RecordsUrls.DELETE_OR_HIDE_USER_RECORD)
-	public Response<UserRecords> deleteUserRecord(@PathParam("recordId") String recordId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
-			@DefaultValue("false") @QueryParam("isVisible") Boolean isVisible) {
+	public Response<UserRecords> deleteUserRecord(@PathVariable("recordId") String recordId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@DefaultValue("false") @RequestParam("isVisible") Boolean isVisible) {
 		if (DPDoctorUtils.anyStringEmpty(recordId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -525,10 +524,10 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.DELETE_USER_RECORDS_FILE)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RecordsUrls.DELETE_USER_RECORDS_FILE)
 	@ApiOperation(value = PathProxy.RecordsUrls.DELETE_USER_RECORDS_FILE, notes = PathProxy.RecordsUrls.DELETE_USER_RECORDS_FILE)
-	public Response<UserRecords> deleteUserRecordFile(@PathParam("recordId") String recordId,
+	public Response<UserRecords> deleteUserRecordFile(@PathVariable("recordId") String recordId,
 			@MatrixParam("fileIds") List<String> fileIds) {
 		if (DPDoctorUtils.anyStringEmpty(recordId)) {
 			logger.warn("Invalid Input");
@@ -540,10 +539,10 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.SHARE_RECORD_WITH_PATIENT)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecordsUrls.SHARE_RECORD_WITH_PATIENT)
 	@ApiOperation(value = PathProxy.RecordsUrls.SHARE_RECORD_WITH_PATIENT, notes = PathProxy.RecordsUrls.SHARE_RECORD_WITH_PATIENT)
-	public Response<Boolean> shareUserRecords(@PathParam("recordId") String recordId) {
+	public Response<Boolean> shareUserRecords(@PathVariable("recordId") String recordId) {
 		if (DPDoctorUtils.anyStringEmpty(recordId)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Record Id cannot Be Empty");

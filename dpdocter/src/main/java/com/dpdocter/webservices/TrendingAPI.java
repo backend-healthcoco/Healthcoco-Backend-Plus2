@@ -1,18 +1,17 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -25,8 +24,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.TRENDING_URL)
+@RestController
+(PathProxy.TRENDING_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.TRENDING_URL, description = "Endpoint for Trending")
@@ -39,10 +38,10 @@ public class TrendingAPI {
 	@Autowired
 	private TrendingService trendingService;
 
-	@Path(value = PathProxy.TrendingUrls.GET_TRENDING)
-	@GET
+	
+	@GetMapping(value = PathProxy.TrendingUrls.GET_TRENDING)
 	@ApiOperation(value = PathProxy.TrendingUrls.GET_TRENDING, notes = PathProxy.TrendingUrls.GET_TRENDING)
-	public Response<TrendingResponse> getTrending(@PathParam("id") String id, @QueryParam("userId") String userId) {
+	public Response<TrendingResponse> getTrending(@PathVariable("id") String id, @RequestParam("userId") String userId) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -55,10 +54,10 @@ public class TrendingAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.TrendingUrls.GET_OFFER)
-	@GET
+	
+	@GetMapping(value = PathProxy.TrendingUrls.GET_OFFER)
 	@ApiOperation(value = PathProxy.TrendingUrls.GET_OFFER, notes = PathProxy.TrendingUrls.GET_OFFER)
-	public Response<OfferResponse> getOffer(@PathParam("id") String id) {
+	public Response<OfferResponse> getOffer(@PathVariable("id") String id) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

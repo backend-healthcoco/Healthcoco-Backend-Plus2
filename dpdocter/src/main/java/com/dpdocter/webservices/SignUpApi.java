@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -16,7 +12,10 @@ import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.ClinicContactUs;
 import com.dpdocter.beans.CollectionBoy;
@@ -47,8 +46,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.SIGNUP_BASE_URL)
+@RestController
+(PathProxy.SIGNUP_BASE_URL)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.SIGNUP_BASE_URL, description = "Endpoint for signup")
 public class SignUpApi {
@@ -88,8 +87,7 @@ public class SignUpApi {
 	 * @return User List
 	 */
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
-	@POST
+	@PostMapping(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
 	@ApiOperation(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE, notes = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
 	public Response<RegisteredPatientDetails> patientSignupMobile(PatientSignupRequestMobile request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null
@@ -144,8 +142,7 @@ public class SignUpApi {
 	 * lock patients.
 	 */
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)
-	@POST
+	@PostMapping(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)	
 	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT, notes = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)
 	public Response<Boolean> verifyOrUnlockPatient(VerifyUnlockPatientRequest request) {
 		boolean flag = false;
@@ -161,10 +158,9 @@ public class SignUpApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.VERIFY_LOCALE)
-	@GET
+	@GetMapping(value = PathProxy.SignUpUrls.VERIFY_LOCALE)
 	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_LOCALE, notes = PathProxy.SignUpUrls.VERIFY_LOCALE)
-	public Response<String> verifyLocale(@PathParam(value = "tokenId") String tokenId) {
+	public Response<String> verifyLocale(@PathVariable(value = "tokenId") String tokenId) {
 		if (tokenId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -176,8 +172,7 @@ public class SignUpApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
-	@POST
+	@PostMapping(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
 	@ApiOperation(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE, notes = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
 	public Response<User> patientProfilePicChange(PatientProfilePicChangeRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUsername())) {
@@ -201,10 +196,9 @@ public class SignUpApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.VERIFY_USER)
-	@GET
+	@GetMapping(value = PathProxy.SignUpUrls.VERIFY_USER)
 	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_USER, notes = PathProxy.SignUpUrls.VERIFY_USER)
-	public Response<String> verifyUser(@PathParam(value = "tokenId") String tokenId) {
+	public Response<String> verifyUser(@PathVariable(value = "tokenId") String tokenId) {
 		if (tokenId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -216,10 +210,9 @@ public class SignUpApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
-	@GET
+	@GetMapping(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
 	@ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
-	public Response<Boolean> checkUsernameExist(@PathParam(value = "username") String username) {
+	public Response<Boolean> checkUsernameExist(@PathVariable(value = "username") String username) {
 		if (username == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -230,10 +223,9 @@ public class SignUpApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST)
-	@GET
+	@GetMapping(value = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST)
 	@ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST)
-	public Response<Boolean> checkMobileNumExist(@PathParam(value = "mobileNumber") String mobileNumber) {
+	public Response<Boolean> checkMobileNumExist(@PathVariable(value = "mobileNumber") String mobileNumber) {
 		if (mobileNumber == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -244,11 +236,10 @@ public class SignUpApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
-	@GET
+	@GetMapping(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
 	@ApiOperation(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP, notes = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
 	public Response<PateientSignUpCheckResponse> checkMobileNumberSignedUp(
-			@PathParam(value = "mobileNumber") String mobileNumber) {
+			@PathVariable(value = "mobileNumber") String mobileNumber) {
 		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 			logger.warn("Invalid Input. Mobile Number Cannot Be Empty!");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty!");
@@ -261,10 +252,9 @@ public class SignUpApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
-	@GET
+	@GetMapping(value = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
 	@ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
-	public Response<Boolean> checkEmailExist(@PathParam(value = "emailaddress") String emailaddress) {
+	public Response<Boolean> checkEmailExist(@PathVariable(value = "emailaddress") String emailaddress) {
 		if (DPDoctorUtils.anyStringEmpty(emailaddress)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -278,9 +268,8 @@ public class SignUpApi {
 		return imagePath + imageURL;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
-	@POST
+	@Produces(MediaType.APPLICATION_JSON)	
+	@PostMapping(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
 	@ApiOperation(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT, notes = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
 	public Response<String> submitDoctorContactUsInfo(DoctorContactUs doctorContactUs) {
 		if (doctorContactUs == null) {
@@ -303,8 +292,7 @@ public class SignUpApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT)
-	@POST
+	@PostMapping(value = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT)
 	@ApiOperation(value = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT, notes = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT)
 	public Response<String> submitClinicContactUsInfo(ClinicContactUs clinicContactUs) {
 		if (clinicContactUs == null) {
@@ -325,8 +313,7 @@ public class SignUpApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
-	@POST
+	@PostMapping(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
 	@ApiOperation(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY, notes = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
 	public Response<CollectionBoyResponse> collectionBoySignup(CollectionBoy request) {
 		Response<CollectionBoyResponse> response = null;
@@ -342,10 +329,9 @@ public class SignUpApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.WELCOME_USER)
-	@GET
+	@GetMapping(value = PathProxy.SignUpUrls.WELCOME_USER)
 	@ApiOperation(value = PathProxy.SignUpUrls.WELCOME_USER, notes = PathProxy.SignUpUrls.WELCOME_USER)
-	public Response<DoctorContactUs> welcomeUser(@PathParam(value = "tokenId") String tokenId) {
+	public Response<DoctorContactUs> welcomeUser(@PathVariable(value = "tokenId") String tokenId) {
 		if (tokenId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -357,8 +343,7 @@ public class SignUpApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
-	@POST
+	@PostMapping(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getFirstName(), request.getEmailAddress(),
@@ -397,10 +382,10 @@ public class SignUpApi {
 	
 	
 //	@Produces(MediaType.APPLICATION_JSON)
-//	@Path(value = PathProxy.SignUpUrls.DOCTOR_REGISTER)
-//	@GET
+//	(value = PathProxy.SignUpUrls.DOCTOR_REGISTER)
+//	@GetMapping
 //	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_REGISTER, notes = PathProxy.SignUpUrls.DOCTOR_REGISTER)
-//	 public Response<Boolean> DoctorRegister(@QueryParam(value = "mobileNumber") String mobileNumber) {
+//	 public Response<Boolean> DoctorRegister(@RequestParam(value = "mobileNumber") String mobileNumber) {
 //			if (mobileNumber == null || mobileNumber.isEmpty()) {
 //			    logger.warn("Mobile number is null");
 //			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -416,10 +401,10 @@ public class SignUpApi {
 //		}
 	
 //	@Produces(MediaType.APPLICATION_JSON)
-//	@Path(value = PathProxy.SignUpUrls.VERIFY_EMAIL_ADDRESS)
-//	@GET
+//	(value = PathProxy.SignUpUrls.VERIFY_EMAIL_ADDRESS)
+//	@GetMapping
 //	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_EMAIL_ADDRESS, notes = PathProxy.SignUpUrls.VERIFY_EMAIL_ADDRESS)
-//	public Response<Boolean> verifyEmail(@PathParam(value = "emailaddress") String emailaddress) {
+//	public Response<Boolean> verifyEmail(@PathVariable(value = "emailaddress") String emailaddress) {
 //		if (DPDoctorUtils.anyStringEmpty(emailaddress)) {
 //			logger.warn("Invalid Input");
 //			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

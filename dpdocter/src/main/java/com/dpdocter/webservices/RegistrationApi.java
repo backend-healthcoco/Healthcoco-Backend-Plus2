@@ -3,16 +3,9 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -22,8 +15,14 @@ import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
@@ -78,8 +77,8 @@ import io.swagger.annotations.ApiOperation;
 /**
  * @author parag
  */
-@Component
-@Path(PathProxy.REGISTRATION_BASE_URL)
+@RestController
+(PathProxy.REGISTRATION_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.REGISTRATION_BASE_URL, description = "Endpoint for register")
@@ -117,8 +116,8 @@ public class RegistrationApi {
 	@Value(value = "${invalid.input}")
 	private String invalidInput;
 
-	@Path(value = PathProxy.RegistrationUrls.PATIENT_REGISTER)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.PATIENT_REGISTER)
 	@ApiOperation(value = PathProxy.RegistrationUrls.PATIENT_REGISTER, notes = PathProxy.RegistrationUrls.PATIENT_REGISTER, response = Response.class)
 	public Response<RegisteredPatientDetails> patientRegister(PatientRegistrationRequest request,
 			@MatrixParam(value = "infoType") List<String> infoType) {
@@ -171,8 +170,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE)
-	@PUT
+	
+	@PutMapping(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE)
 	@ApiOperation(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, notes = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, response = Response.class)
 	public Response<RegisteredPatientDetails> editPatientRegister(PatientRegistrationRequest request,
 			@MatrixParam(value = "infoType") List<String> infoType) {
@@ -201,13 +200,13 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM)
 	@ApiOperation(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, response = Response.class)
-	public Response<RegisteredPatientDetails> getExistingPatients(@PathParam("mobileNumber") String mobileNumber,
-			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId, @QueryParam("role") String role,
-			@DefaultValue("false") @QueryParam("forChangeNumber") Boolean forChangeNumber) {
+	public Response<RegisteredPatientDetails> getExistingPatients(@PathVariable("mobileNumber") String mobileNumber,
+			@PathVariable("doctorId") String doctorId, @PathVariable("locationId") String locationId,
+			@PathVariable("hospitalId") String hospitalId, @RequestParam("role") String role,
+			@DefaultValue("false") @RequestParam("forChangeNumber") Boolean forChangeNumber) {
 		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 			logger.warn(mobileNumberValidaton);
 			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
@@ -227,12 +226,12 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM)
 	@ApiOperation(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, response = Response.class)
-	public Response<Object> getExistingPatients(@PathParam("mobileNumber") String mobileNumber,
-			@DefaultValue("false") @QueryParam("getAddress") Boolean getAddress,
-			@DefaultValue("true") @QueryParam("discardedAddress") Boolean discardedAddress) {
+	public Response<Object> getExistingPatients(@PathVariable("mobileNumber") String mobileNumber,
+			@DefaultValue("false") @RequestParam("getAddress") Boolean getAddress,
+			  @RequestParam("discardedAddress") Boolean discardedAddress) {
 		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 			logger.warn(mobileNumberValidaton);
 			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
@@ -259,10 +258,10 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT)
 	@ApiOperation(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT, notes = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT, response = Response.class)
-	public Response<Integer> getExistingPatientsCount(@PathParam("mobileNumber") String mobileNumber) {
+	public Response<Integer> getExistingPatientsCount(@PathVariable("mobileNumber") String mobileNumber) {
 		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -278,12 +277,12 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE, notes = PathProxy.RegistrationUrls.GET_PATIENT_PROFILE, response = Response.class)
-	public Response<RegisteredPatientDetails> getPatientProfile(@PathParam("userId") String userId,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId) {
+	public Response<RegisteredPatientDetails> getPatientProfile(@PathVariable("userId") String userId,
+			@RequestParam("doctorId") String doctorId, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -301,8 +300,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.ADD_REFERRENCE)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.ADD_REFERRENCE)
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_REFERRENCE, notes = PathProxy.RegistrationUrls.ADD_REFERRENCE, response = Response.class)
 	public Response<Reference> addReference(Reference request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getReference(), request.getDoctorId(),
@@ -320,11 +319,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.DELETE_REFERRENCE)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RegistrationUrls.DELETE_REFERRENCE)
 	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_REFERRENCE, notes = PathProxy.RegistrationUrls.DELETE_REFERRENCE, response = Response.class)
-	public Response<Reference> deleteReferrence(@PathParam("referrenceId") String referrenceId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Reference> deleteReferrence(@PathVariable("referrenceId") String referrenceId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (referrenceId == null) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -339,14 +338,14 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_REFERRENCES)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_REFERRENCES)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_REFERRENCES, notes = PathProxy.RegistrationUrls.GET_REFERRENCES, response = Response.class)
-	public Response<ReferenceDetail> getReferences(@PathParam("range") String range, @QueryParam("page") long page,
-			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	public Response<ReferenceDetail> getReferences(@PathVariable("range") String range, @RequestParam("page") long page,
+			@RequestParam("size") int size, @RequestParam(value = "doctorId") String doctorId,
+			@RequestParam(value = "locationId") String locationId, @RequestParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+			  @RequestParam(value = "discarded") Boolean discarded) {
 
 		List<ReferenceDetail> references = registrationService.getReferences(range, page, size, doctorId, locationId,
 				hospitalId, updatedTime, discarded);
@@ -355,10 +354,10 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_PATIENT_INITIAL_COUNTER)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_PATIENT_INITIAL_COUNTER)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_PATIENT_INITIAL_COUNTER, notes = PathProxy.RegistrationUrls.GET_PATIENT_INITIAL_COUNTER, response = Response.class)
-	public Response<PatientInitialAndCounter> getPatientInitialAndCounter(@PathParam("locationId") String locationId) {
+	public Response<PatientInitialAndCounter> getPatientInitialAndCounter(@PathVariable("locationId") String locationId) {
 
 		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			logger.warn(invalidInput);
@@ -370,12 +369,12 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_AND_COUNTER)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_AND_COUNTER)
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_AND_COUNTER, notes = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_AND_COUNTER, response = Response.class)
-	public Response<Boolean> updatePatientInitialAndCounter(@PathParam("locationId") String locationId,
-			@PathParam("patientInitial") String patientInitial, @PathParam("patientCounter") int patientCounter,
-			@DefaultValue(value = "true") @QueryParam("isPidHasDate") Boolean isPidHasDate) {
+	public Response<Boolean> updatePatientInitialAndCounter(@PathVariable("locationId") String locationId,
+			@PathVariable("patientInitial") String patientInitial, @PathVariable("patientCounter") int patientCounter,
+			@DefaultValue(value = "true") @RequestParam("isPidHasDate") Boolean isPidHasDate) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, patientInitial, new Integer(patientCounter).toString())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -390,10 +389,10 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_CLINIC_DETAILS)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_CLINIC_DETAILS)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_CLINIC_DETAILS, notes = PathProxy.RegistrationUrls.GET_CLINIC_DETAILS, response = Response.class)
-	public Response<Location> getClinicDetails(@PathParam("clinicId") String clinicId) {
+	public Response<Location> getClinicDetails(@PathVariable("clinicId") String clinicId) {
 		if (DPDoctorUtils.anyStringEmpty(clinicId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -420,8 +419,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE)
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE, notes = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE)
 	public Response<ClinicProfile> updateClinicProfile(ClinicProfile request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
@@ -438,8 +437,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE_HANDHELD)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE_HANDHELD)
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE_HANDHELD, notes = PathProxy.RegistrationUrls.UPDATE_CLINIC_PROFILE_HANDHELD)
 	public Response<ClinicProfile> updateClinicProfile(ClinicProfileHandheld request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
@@ -455,8 +454,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_ADDRESS)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_ADDRESS)
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_ADDRESS, notes = PathProxy.RegistrationUrls.UPDATE_CLINIC_ADDRESS)
 	public Response<ClinicAddress> updateClinicAddress(ClinicAddress request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
@@ -472,8 +471,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_TIMING)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_TIMING)
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_TIMING, notes = PathProxy.RegistrationUrls.UPDATE_CLINIC_TIMING)
 	public Response<ClinicTiming> updateClinicTiming(ClinicTiming request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
@@ -489,8 +488,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_SPECIALIZATION)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_SPECIALIZATION)
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_SPECIALIZATION, notes = PathProxy.RegistrationUrls.UPDATE_CLINIC_SPECIALIZATION)
 	public Response<ClinicSpecialization> updateClinicSpecialization(ClinicSpecialization request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
@@ -508,8 +507,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_LAB_PROPERTIES)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_LAB_PROPERTIES)
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CLINIC_LAB_PROPERTIES, notes = PathProxy.RegistrationUrls.UPDATE_CLINIC_LAB_PROPERTIES)
 	public Response<ClinicLabProperties> updateLabProperties(ClinicLabProperties request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
@@ -526,8 +525,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.CHANGE_CLINIC_LOGO)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.CHANGE_CLINIC_LOGO)
 	@ApiOperation(value = PathProxy.RegistrationUrls.CHANGE_CLINIC_LOGO, notes = PathProxy.RegistrationUrls.CHANGE_CLINIC_LOGO)
 	public Response<ClinicLogo> changeClinicLogo(ClinicLogoAddRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
@@ -550,8 +549,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.ADD_CLINIC_IMAGE)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.ADD_CLINIC_IMAGE)
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_CLINIC_IMAGE, notes = PathProxy.RegistrationUrls.ADD_CLINIC_IMAGE)
 	public Response<ClinicImage> addClinicImage(ClinicImageAddRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
@@ -582,11 +581,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.DELETE_CLINIC_IMAGE)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RegistrationUrls.DELETE_CLINIC_IMAGE)
 	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_CLINIC_IMAGE, notes = PathProxy.RegistrationUrls.DELETE_CLINIC_IMAGE)
-	public Response<Boolean> deleteClinicImage(@PathParam(value = "locationId") String locationId,
-			@PathParam(value = "counter") int counter) {
+	public Response<Boolean> deleteClinicImage(@PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "counter") int counter) {
 		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			logger.warn("Invalid Input. Location Id is null");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Location Id is null");
@@ -603,8 +602,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_BLOOD_GROUP)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_BLOOD_GROUP)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_BLOOD_GROUP, notes = PathProxy.RegistrationUrls.GET_BLOOD_GROUP)
 	public Response<BloodGroup> getBloodGroup() {
 		List<BloodGroup> bloodGroupResponse = registrationService.getBloodGroup();
@@ -613,8 +612,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	// @Path(value = PathProxy.RegistrationUrls.ADD_PROFESSION)
-	// @POST
+	// (value = PathProxy.RegistrationUrls.ADD_PROFESSION)
+	// @PostMapping
 	// @ApiOperation(value = PathProxy.RegistrationUrls.ADD_PROFESSION, notes =
 	// PathProxy.RegistrationUrls.ADD_PROFESSION)
 	// public Response<Profession> addProfession(Profession request) {
@@ -629,11 +628,11 @@ public class RegistrationApi {
 	// return response;
 	// }
 
-	@Path(value = PathProxy.RegistrationUrls.GET_PROFESSION)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_PROFESSION)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_PROFESSION, notes = PathProxy.RegistrationUrls.GET_PROFESSION)
-	public Response<Profession> getProfession(@QueryParam("page") long page, @QueryParam("size") int size,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	public Response<Profession> getProfession(@RequestParam("page") long page, @RequestParam("size") int size,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime) {
 
 		List<Profession> professionResponse = registrationService.getProfession(page, size, updatedTime);
 		Response<Profession> response = new Response<Profession>();
@@ -641,8 +640,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.USER_REGISTER_IN_CLINIC)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.USER_REGISTER_IN_CLINIC)
 	@ApiOperation(value = PathProxy.RegistrationUrls.USER_REGISTER_IN_CLINIC, notes = PathProxy.RegistrationUrls.USER_REGISTER_IN_CLINIC)
 	public Response<RegisterDoctorResponse> userRegister(DoctorRegisterRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getEmailAddress(), request.getFirstName(),
@@ -665,11 +664,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.EDIT_USER_IN_CLINIC)
-	@PUT
+	
+	@PutMapping(value = PathProxy.RegistrationUrls.EDIT_USER_IN_CLINIC)
 	@ApiOperation(value = PathProxy.RegistrationUrls.EDIT_USER_IN_CLINIC, notes = PathProxy.RegistrationUrls.EDIT_USER_IN_CLINIC)
-	public Response<RegisterDoctorResponse> editUserInClinic(@PathParam("userId") String userId,
-			@PathParam("locationId") String locationId, DoctorRegisterRequest request) {
+	public Response<RegisterDoctorResponse> editUserInClinic(@PathVariable("userId") String userId,
+			@PathVariable("locationId") String locationId, DoctorRegisterRequest request) {
 		if (request == null
 				|| DPDoctorUtils.anyStringEmpty(userId, locationId, request.getFirstName(), request.getHospitalId())) {
 			logger.warn(invalidInput);
@@ -692,8 +691,8 @@ public class RegistrationApi {
 			return null;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.ADD_EDIT_ROLE)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.ADD_EDIT_ROLE)
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_EDIT_ROLE, notes = PathProxy.RegistrationUrls.ADD_EDIT_ROLE)
 	public Response<Role> addRole(Role request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getRole())// ,
@@ -709,11 +708,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_STAFF_ROLE)
-	@PUT
+	
+	@PutMapping(value = PathProxy.RegistrationUrls.UPDATE_STAFF_ROLE)
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_STAFF_ROLE, notes = PathProxy.RegistrationUrls.UPDATE_STAFF_ROLE)
-	public Response<RegisterDoctorResponse> updateStaffRole(@PathParam("userId") String userId,
-			@PathParam("locationId") String locationId, DoctorRegisterRequest request) {
+	public Response<RegisterDoctorResponse> updateStaffRole(@PathVariable("userId") String userId,
+			@PathVariable("locationId") String locationId, DoctorRegisterRequest request) {
 		if (request == null
 				|| DPDoctorUtils.anyStringEmpty(userId, locationId, request.getFirstName(), request.getHospitalId())) {
 			logger.warn(invalidInput);
@@ -729,14 +728,14 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_ROLE)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_ROLE)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_ROLE, notes = PathProxy.RegistrationUrls.GET_ROLE)
-	public Response<Role> getRole(@PathParam(value = "range") String range,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "page") long page, @QueryParam(value = "size") int size,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@QueryParam(value = "role") String role) {
+	public Response<Role> getRole(@PathVariable(value = "range") String range,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId,
+			@RequestParam(value = "page") long page, @RequestParam(value = "size") int size,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+			@RequestParam(value = "role") String role) {
 		if (DPDoctorUtils.anyStringEmpty(range, locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -748,17 +747,17 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_USERS)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_USERS)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_USERS, notes = PathProxy.RegistrationUrls.GET_USERS)
-	public Response<ClinicDoctorResponse> getUsers(@PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "page") long page,
-			@QueryParam(value = "size") int size,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@QueryParam(value = "role") String role,
-			@DefaultValue("false") @QueryParam(value = "active") Boolean active,
-			@DefaultValue("false") @QueryParam(value = "access") Boolean access,
-			@QueryParam(value = "userState") String userState) {
+	public Response<ClinicDoctorResponse> getUsers(@PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId, @RequestParam(value = "page") long page,
+			@RequestParam(value = "size") int size,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+			@RequestParam(value = "role") String role,
+			@DefaultValue("false") @RequestParam(value = "active") Boolean active,
+			@DefaultValue("false") @RequestParam(value = "access") Boolean access,
+			@RequestParam(value = "userState") String userState) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -770,11 +769,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.DELETE_ROLE)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RegistrationUrls.DELETE_ROLE)
 	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_ROLE, notes = PathProxy.RegistrationUrls.DELETE_ROLE)
-	public Response<Role> deleteRole(@PathParam(value = "roleId") String roleId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Role> deleteRole(@PathVariable(value = "roleId") String roleId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(roleId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -785,12 +784,12 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.ACTIVATE_DEACTIVATE_USER)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RegistrationUrls.ACTIVATE_DEACTIVATE_USER)
 	@ApiOperation(value = PathProxy.RegistrationUrls.ACTIVATE_DEACTIVATE_USER, notes = PathProxy.RegistrationUrls.ACTIVATE_DEACTIVATE_USER)
-	public Response<Boolean> activateDeactivateUser(@PathParam(value = "userId") String userId,
-			@PathParam(value = "locationId") String locationId,
-			@DefaultValue("true") @QueryParam("isActivate") Boolean isActivate) {
+	public Response<Boolean> activateDeactivateUser(@PathVariable(value = "userId") String userId,
+			@PathVariable(value = "locationId") String locationId,
+			  @RequestParam("isActivate") Boolean isActivate) {
 		if (DPDoctorUtils.anyStringEmpty(userId, locationId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -802,12 +801,12 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.ACCESS_USER)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RegistrationUrls.ACCESS_USER)
 	@ApiOperation(value = PathProxy.RegistrationUrls.ACCESS_USER, notes = PathProxy.RegistrationUrls.ACCESS_USER)
-	public Response<Boolean> LoginAccessUser(@PathParam(value = "userId") String userId,
-			@PathParam(value = "locationId") String locationId,
-			@DefaultValue("true") @QueryParam("hasLoginAccess") Boolean hasLoginAccess) {
+	public Response<Boolean> LoginAccessUser(@PathVariable(value = "userId") String userId,
+			@PathVariable(value = "locationId") String locationId,
+			  @RequestParam("hasLoginAccess") Boolean hasLoginAccess) {
 		if (DPDoctorUtils.anyStringEmpty(userId, locationId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -819,8 +818,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.ADD_FEEDBACK)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.ADD_FEEDBACK)
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_FEEDBACK, notes = PathProxy.RegistrationUrls.ADD_FEEDBACK)
 	public Response<Feedback> addFeedback(Feedback request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getExplanation())) {
@@ -834,11 +833,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.VISIBLE_FEEDBACK)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.VISIBLE_FEEDBACK)
 	@ApiOperation(value = PathProxy.RegistrationUrls.VISIBLE_FEEDBACK, notes = PathProxy.RegistrationUrls.VISIBLE_FEEDBACK)
-	public Response<Feedback> visibleFeedback(@PathParam("feedbackId") String feedbackId,
-			@DefaultValue("true") @QueryParam("isVisible") Boolean isVisible) {
+	public Response<Feedback> visibleFeedback(@PathVariable("feedbackId") String feedbackId,
+			  @RequestParam("isVisible") Boolean isVisible) {
 
 		Feedback feedback = registrationService.visibleFeedback(feedbackId, isVisible);
 		transnationalService.checkDoctor(new ObjectId(feedback.getDoctorId()), new ObjectId(feedback.getLocationId()));
@@ -847,12 +846,12 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_PATIENT_STATUS)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_PATIENT_STATUS)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_PATIENT_STATUS, notes = PathProxy.RegistrationUrls.GET_PATIENT_STATUS)
-	public Response<PatientStatusResponse> getPatientStatus(@PathParam("patientId") String patientId,
-			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId) {
+	public Response<PatientStatusResponse> getPatientStatus(@PathVariable("patientId") String patientId,
+			@PathVariable("doctorId") String doctorId, @PathVariable("locationId") String locationId,
+			@PathVariable("hospitalId") String hospitalId) {
 
 		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, locationId, hospitalId)) {
 			logger.warn(invalidInput);
@@ -866,14 +865,14 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_DOCTOR_FEEDBACK)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_DOCTOR_FEEDBACK)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_DOCTOR_FEEDBACK, notes = PathProxy.RegistrationUrls.GET_DOCTOR_FEEDBACK)
-	public Response<Feedback> getFeedback(@QueryParam("page") long page, @QueryParam("size") int size,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@QueryParam(value = "type") String type) {
+	public Response<Feedback> getFeedback(@RequestParam("page") long page, @RequestParam("size") int size,
+			@RequestParam("doctorId") String doctorId, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+			@RequestParam(value = "type") String type) {
 
 		List<Feedback> feedbacks = registrationService.getFeedback(page, size, doctorId, locationId, hospitalId,
 				updatedTime, type);
@@ -882,11 +881,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.CHECK_PATIENT_NUMBER)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.CHECK_PATIENT_NUMBER)
 	@ApiOperation(value = PathProxy.RegistrationUrls.CHECK_PATIENT_NUMBER, notes = PathProxy.RegistrationUrls.CHECK_PATIENT_NUMBER)
-	public Response<Boolean> checkPatientNumber(@PathParam("oldMobileNumber") String oldMobileNumber,
-			@PathParam("newMobileNumber") String newMobileNumber) {
+	public Response<Boolean> checkPatientNumber(@PathVariable("oldMobileNumber") String oldMobileNumber,
+			@PathVariable("newMobileNumber") String newMobileNumber) {
 		if (DPDoctorUtils.anyStringEmpty(oldMobileNumber, newMobileNumber)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -898,11 +897,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.CHANGE_PATIENT_NUMBER)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.CHANGE_PATIENT_NUMBER)
 	@ApiOperation(value = PathProxy.RegistrationUrls.CHANGE_PATIENT_NUMBER, notes = PathProxy.RegistrationUrls.CHANGE_PATIENT_NUMBER)
-	public Response<Boolean> changePatientNumber(@PathParam("oldMobileNumber") String oldMobileNumber,
-			@PathParam("newMobileNumber") String newMobileNumber, @PathParam("otpNumber") String otpNumber) {
+	public Response<Boolean> changePatientNumber(@PathVariable("oldMobileNumber") String oldMobileNumber,
+			@PathVariable("newMobileNumber") String newMobileNumber, @PathVariable("otpNumber") String otpNumber) {
 		if (DPDoctorUtils.anyStringEmpty(oldMobileNumber, newMobileNumber)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -914,9 +913,9 @@ public class RegistrationApi {
 		return response;
 	}
 
-	// @Path(value =
+	// (value =
 	// PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_COUNTER_ON_CLINIC_LEVEL)
-	// @GET
+	// @GetMapping
 	// public Response<Boolean> updatePIDOnClinicLevel() {
 	//
 	// Boolean changePatientNumberResponse =
@@ -926,8 +925,8 @@ public class RegistrationApi {
 	// return response;
 	// }
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_DOCTOR_CLINIC_PROFILE)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.UPDATE_DOCTOR_CLINIC_PROFILE)
 	public Response<Boolean> updateDoctorClinicProfile() {
 
 		Boolean changePatientNumberResponse = registrationService.updateDoctorClinicProfile();
@@ -936,8 +935,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.ADD_SUGGESTION)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.ADD_SUGGESTION)
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_SUGGESTION, notes = PathProxy.RegistrationUrls.ADD_SUGGESTION)
 	public Response<Suggestion> addSuggestion(Suggestion request) {
 		if (request == null) {
@@ -951,12 +950,12 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_SUGGESTION)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_SUGGESTION)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_SUGGESTION, notes = PathProxy.RegistrationUrls.GET_SUGGESTION)
-	public Response<Object> getSuggestion(@QueryParam("page") long page, @QueryParam("size") int size,
-			@PathParam("userId") String userId, @QueryParam("suggetionTypesuggetionType") String suggetionType,
-			@QueryParam("state") String state, @QueryParam("searchTerm") String searchTerm) {
+	public Response<Object> getSuggestion(@RequestParam("page") long page, @RequestParam("size") int size,
+			@PathVariable("userId") String userId, @RequestParam("suggetionTypesuggetionType") String suggetionType,
+			@RequestParam("state") String state, @RequestParam("searchTerm") String searchTerm) {
 
 		List<Suggestion> suggestions = suggestionService.getSuggestion(page, size, userId, suggetionType, state,
 				searchTerm);
@@ -965,8 +964,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_ROLE_COLLECTION_DATA)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.UPDATE_ROLE_COLLECTION_DATA)
 	public Response<Boolean> updateRoleCollectionData() {
 
 		Boolean updateRoleCollectionDataResponse = registrationService.updateRoleCollectionData();
@@ -975,8 +974,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@POST
-	@Path(value = PathProxy.RegistrationUrls.ADD_CONSENT_FORM)
+	@PostMapping
+	(value = PathProxy.RegistrationUrls.ADD_CONSENT_FORM)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_CONSENT_FORM, notes = PathProxy.RegistrationUrls.ADD_CONSENT_FORM)
 	public Response<ConsentForm> addConsentForm(@FormDataParam("file") FormDataBodyPart file,
@@ -1002,8 +1001,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@POST
-	@Path(value = PathProxy.RegistrationUrls.ADD_CONSENT_FORM_DATA)
+	@PostMapping
+	(value = PathProxy.RegistrationUrls.ADD_CONSENT_FORM_DATA)
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_CONSENT_FORM_DATA, notes = PathProxy.RegistrationUrls.ADD_CONSENT_FORM_DATA)
 	public Response<ConsentForm> addConsentForm(ConsentForm request) {
 		if (request == null) {
@@ -1019,15 +1018,15 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_CONSENT_FORM)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_CONSENT_FORM)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_CONSENT_FORM, notes = PathProxy.RegistrationUrls.GET_CONSENT_FORM)
-	public Response<ConsentForm> getConsentForm(@QueryParam("page") long page, @QueryParam("size") int size,
-			@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("PID") String PID, @QueryParam("searchTerm") String searchTerm,
-			@DefaultValue("true") @QueryParam("discarded") boolean discarded,
-			@DefaultValue("0") @QueryParam("updatedTime") long updatedTime) {
+	public Response<ConsentForm> getConsentForm(@RequestParam("page") long page, @RequestParam("size") int size,
+			@RequestParam("patientId") String patientId, @RequestParam("doctorId") String doctorId,
+			@RequestParam("locationId") String locationId, @RequestParam("hospitalId") String hospitalId,
+			@RequestParam("PID") String PID, @RequestParam("searchTerm") String searchTerm,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@DefaultValue("0") @RequestParam("updatedTime") long updatedTime) {
 
 		Response<ConsentForm> response = new Response<ConsentForm>();
 		List<ConsentForm> consentForms = registrationService.getConcentForm(page, size, patientId, doctorId, locationId,
@@ -1036,32 +1035,32 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM)
 	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM, notes = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM)
-	public Response<ConsentForm> deleteConsentForm(@PathParam("consentFormId") String consentFormId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<ConsentForm> deleteConsentForm(@PathVariable("consentFormId") String consentFormId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		Response<ConsentForm> response = new Response<ConsentForm>();
 		response.setData(registrationService.deleteConcentForm(consentFormId, discarded));
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.DOWNLOAD_CONSENT_FORM)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.DOWNLOAD_CONSENT_FORM)
 	@ApiOperation(value = PathProxy.RegistrationUrls.DOWNLOAD_CONSENT_FORM, notes = PathProxy.RegistrationUrls.DOWNLOAD_CONSENT_FORM)
-	public Response<String> downloadConsentForm(@PathParam("consentFormId") String consentFormId) {
+	public Response<String> downloadConsentForm(@PathVariable("consentFormId") String consentFormId) {
 		Response<String> response = new Response<String>();
 		response.setData(registrationService.downloadConcentForm(consentFormId));
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.EMAIL_CONSENT_FORM)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.EMAIL_CONSENT_FORM)
 	@ApiOperation(value = PathProxy.RegistrationUrls.EMAIL_CONSENT_FORM, notes = PathProxy.RegistrationUrls.EMAIL_CONSENT_FORM)
-	public Response<Boolean> emailConsentForm(@PathParam(value = "consentFormId") String consentFormId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "emailAddress") String emailAddress) {
+	public Response<Boolean> emailConsentForm(@PathVariable(value = "consentFormId") String consentFormId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "emailAddress") String emailAddress) {
 
 		if (DPDoctorUtils.anyStringEmpty(consentFormId, doctorId, locationId, hospitalId, emailAddress)) {
 			logger.warn(
@@ -1076,18 +1075,18 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_PID)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.UPDATE_PID)
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_PID, notes = PathProxy.RegistrationUrls.UPDATE_PID)
-	public Response<Integer> updateRegisterPID(@QueryParam(value = "createdTime") long createdTime) {
+	public Response<Integer> updateRegisterPID(@RequestParam(value = "createdTime") long createdTime) {
 
 		Response<Integer> response = new Response<Integer>();
 		response.setData(registrationService.updateRegisterPID(createdTime));
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.ADD_FORM_CONTENT)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.ADD_FORM_CONTENT)
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_FORM_CONTENT, notes = PathProxy.RegistrationUrls.ADD_FORM_CONTENT)
 	public Response<FormContent> addEditFormContent(FormContent request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -1101,14 +1100,14 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_FORM_CONTENT)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_FORM_CONTENT)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_FORM_CONTENT, notes = PathProxy.RegistrationUrls.GET_FORM_CONTENT)
-	public Response<FormContent> getFormContents(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam("type") String type,
-			@QueryParam("title") String title, @QueryParam("updatedTime") String updatedTime,
-			@QueryParam("discarded") boolean discarded) {
+	public Response<FormContent> getFormContents(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId,
+			@RequestParam("page") long page, @RequestParam("size") int size, @RequestParam("type") String type,
+			@RequestParam("title") String title, @RequestParam("updatedTime") String updatedTime,
+			@RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"doctorId,locationId and hospitalId could not have null value");
@@ -1120,11 +1119,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.DELETE_FORM_CONTENT)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RegistrationUrls.DELETE_FORM_CONTENT)
 	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_FORM_CONTENT, notes = PathProxy.RegistrationUrls.DELETE_FORM_CONTENT)
-	public Response<FormContent> deleteFormContents(@PathParam("contentId") String contentId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<FormContent> deleteFormContents(@PathVariable("contentId") String contentId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(contentId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Content Id could not null");
 
@@ -1134,11 +1133,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.ADD_EDIT_USER_REMINDERS)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.ADD_EDIT_USER_REMINDERS)
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_EDIT_USER_REMINDERS, notes = PathProxy.RegistrationUrls.ADD_EDIT_USER_REMINDERS)
 	public Response<UserReminders> addEditPatientReminders(UserReminders request,
-			@QueryParam("reminderType") String reminderType) {
+			@RequestParam("reminderType") String reminderType) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
 
@@ -1151,11 +1150,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_USER_REMINDERS)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_USER_REMINDERS)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_USER_REMINDERS, notes = PathProxy.RegistrationUrls.GET_USER_REMINDERS)
-	public Response<UserReminders> getPatientReminders(@PathParam("userId") String userId,
-			@QueryParam("reminderType") String reminderType) {
+	public Response<UserReminders> getPatientReminders(@PathVariable("userId") String userId,
+			@RequestParam("reminderType") String reminderType) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User Id could not null");
 
@@ -1165,8 +1164,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.ADD_EDIT_USER_ADDRESS)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.ADD_EDIT_USER_ADDRESS)
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_EDIT_USER_ADDRESS, notes = PathProxy.RegistrationUrls.ADD_EDIT_USER_ADDRESS)
 	public Response<UserAddress> addEditUserAddress(UserAddress request) {
 		if (request == null) {
@@ -1182,12 +1181,12 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_USER_ADDRESS)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_USER_ADDRESS)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_USER_ADDRESS, notes = PathProxy.RegistrationUrls.GET_USER_ADDRESS)
-	public Response<UserAddress> getUserAddress(@QueryParam("userId") String userId,
-			@QueryParam("mobileNumber") String mobileNumber,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<UserAddress> getUserAddress(@RequestParam("userId") String userId,
+			@RequestParam("mobileNumber") String mobileNumber,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.allStringsEmpty(userId, mobileNumber)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User Id & MobileNumber could not null");
 		}
@@ -1196,12 +1195,12 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.DELETE_USER_ADDRESS)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RegistrationUrls.DELETE_USER_ADDRESS)
 	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_USER_ADDRESS, notes = PathProxy.RegistrationUrls.DELETE_USER_ADDRESS)
-	public Response<UserAddress> deleteUserAddress(@PathParam("addressId") String addressId,
-			@QueryParam("userId") String userId, @QueryParam("mobileNumber") String mobileNumber,
-			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+	public Response<UserAddress> deleteUserAddress(@PathVariable("addressId") String addressId,
+			@RequestParam("userId") String userId, @RequestParam("mobileNumber") String mobileNumber,
+			@DefaultValue("false") @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(userId, addressId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User Id  & Address Id could not null");
 
@@ -1211,13 +1210,13 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.DELETE_PATIENT)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RegistrationUrls.DELETE_PATIENT)
 	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_PATIENT, notes = PathProxy.RegistrationUrls.DELETE_PATIENT)
-	public Response<Object> deletePatient(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@PathParam("patientId") String patientId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded,
-			@DefaultValue("false") @QueryParam("isMobileApp") Boolean isMobileApp) {
+	public Response<Object> deletePatient(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId,
+			@PathVariable("patientId") String patientId,   @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@DefaultValue("false") @RequestParam("isMobileApp") Boolean isMobileApp) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Doctor Id, locationId, hospitalId & patientId could not null");
@@ -1228,13 +1227,13 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_DELETED_PATIENT, notes = PathProxy.RegistrationUrls.GET_DELETED_PATIENT)
-	public Response<PatientShortCard> getDeletedPatient(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm,
-			@QueryParam("sortBy") String sortBy) {
+	public Response<PatientShortCard> getDeletedPatient(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId,
+			@RequestParam("page") int page, @RequestParam("size") int size, @RequestParam("searchTerm") String searchTerm,
+			@RequestParam("sortBy") String sortBy) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId, hospitalId could not null");
 
@@ -1245,13 +1244,13 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER)
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER, notes = PathProxy.RegistrationUrls.UPDATE_PATIENT_NUMBER)
-	public Response<Boolean> updatePatientNumber(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@PathParam("oldPatientId") String patientId, @QueryParam("newPatientId") String newPatientId,
-			@QueryParam("mobileNumber") String mobileNumber) {
+	public Response<Boolean> updatePatientNumber(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId,
+			@PathVariable("oldPatientId") String patientId, @RequestParam("newPatientId") String newPatientId,
+			@RequestParam("mobileNumber") String mobileNumber) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId, hospitalId could not null");
 
@@ -1269,12 +1268,12 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.SET_DEFAULT_DOCTOR_IN_LIST)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.SET_DEFAULT_DOCTOR_IN_LIST)
 	@ApiOperation(value = PathProxy.RegistrationUrls.SET_DEFAULT_DOCTOR_IN_LIST, notes = PathProxy.RegistrationUrls.SET_DEFAULT_DOCTOR_IN_LIST)
-	public Response<Boolean> setDefaultDoctor(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@QueryParam("defaultDoctorId") String defaultDoctorId) {
+	public Response<Boolean> setDefaultDoctor(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId,
+			@RequestParam("defaultDoctorId") String defaultDoctorId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, defaultDoctorId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -1285,11 +1284,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.SET_DEFAULT_CLINIC_IN_LIST)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.SET_DEFAULT_CLINIC_IN_LIST)
 	@ApiOperation(value = PathProxy.RegistrationUrls.SET_DEFAULT_CLINIC_IN_LIST, notes = PathProxy.RegistrationUrls.SET_DEFAULT_CLINIC_IN_LIST)
-	public Response<Boolean> setDefaultDoctor(@PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId, @QueryParam("defaultLocationId") String defaultLocationId) {
+	public Response<Boolean> setDefaultDoctor(@PathVariable("locationId") String locationId,
+			@PathVariable("hospitalId") String hospitalId, @RequestParam("defaultLocationId") String defaultLocationId) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -1300,11 +1299,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_CLINICS)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_CLINICS)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_CLINICS, notes = PathProxy.RegistrationUrls.GET_CLINICS)
-	public Response<Location> getUsers(@PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId) {
+	public Response<Location> getUsers(@PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -1317,8 +1316,8 @@ public class RegistrationApi {
 //	
 //	
 
-	@Path(value = "update")
-	@GET
+	
+	@GetMapping(value = "update")
 	public Response<Boolean> update() {
 
 		Response<Boolean> response = new Response<Boolean>();
@@ -1326,11 +1325,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.CHECK_IF_PNUM_EXIST)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.CHECK_IF_PNUM_EXIST)
 	@ApiOperation(value = PathProxy.RegistrationUrls.CHECK_IF_PNUM_EXIST, notes = PathProxy.RegistrationUrls.CHECK_IF_PNUM_EXIST)
-	public Response<Boolean> checkIfPNUMExist(@PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId, @PathParam("PNUM") String PNUM) {
+	public Response<Boolean> checkIfPNUMExist(@PathVariable("locationId") String locationId,
+			@PathVariable("hospitalId") String hospitalId, @PathVariable("PNUM") String PNUM) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "LocationId, hospitalId could not null");
 
@@ -1345,8 +1344,8 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_CALENDAR_VIEW)
-	@POST
+	
+	@PostMapping(value = PathProxy.RegistrationUrls.UPDATE_CALENDAR_VIEW)
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_CALENDAR_VIEW, notes = PathProxy.RegistrationUrls.UPDATE_CALENDAR_VIEW)
 	public Response<DoctorCalendarView> updateDoctorCalendarView(@RequestBody DoctorCalendarView request) {
 
@@ -1370,11 +1369,11 @@ public class RegistrationApi {
 
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.GET_DOCTOR_CALENDAR_VIEW)
-	@GET
+	
+	@GetMapping(value = PathProxy.RegistrationUrls.GET_DOCTOR_CALENDAR_VIEW)
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_DOCTOR_CALENDAR_VIEW, notes = PathProxy.RegistrationUrls.GET_DOCTOR_CALENDAR_VIEW)
-	public Response<DoctorCalendarView> getDoctorCalendarView(@QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId) {
+	public Response<DoctorCalendarView> getDoctorCalendarView(@RequestParam("doctorId") String doctorId,
+			@RequestParam("locationId") String locationId) {
 
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
 

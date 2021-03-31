@@ -4,17 +4,17 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -27,10 +27,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component(value = "PatientTreamentAPIV2")
-@Path(PathProxy.PATIENT_TREATMENT_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RestController(value = "PatientTreamentAPIV2")
+@RequestMapping(value=PathProxy.PATIENT_TREATMENT_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.PATIENT_TREATMENT_BASE_URL, description = "Endpoint for patient treatment")
 public class PatientTreamentAPI {
 
@@ -45,14 +43,14 @@ public class PatientTreamentAPI {
 	@Autowired
 	private OTPService otpService;
 	
-	@GET
+	@GetMapping
 	@ApiOperation(value = "GET_PATIENT_TREATMENTS", notes = "GET_PATIENT_TREATMENTS")
-	public Response<PatientTreatmentResponse> getPatientTreatments(@QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId,
-			@QueryParam("patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,@QueryParam("from") String from,@QueryParam("to") String to,
-			@QueryParam(value = "status") String status) {
+	public Response<PatientTreatmentResponse> getPatientTreatments(@RequestParam("page") int page,
+			@RequestParam("size") int size, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId, @RequestParam("doctorId") String doctorId,
+			@RequestParam("patientId") String patientId, @DefaultValue("0") @RequestParam("updatedTime") String updatedTime,
+			  @RequestParam(value = "discarded") Boolean discarded,@RequestParam("from") String from,@RequestParam("to") String to,
+			@RequestParam(value = "status") String status) {
 		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);

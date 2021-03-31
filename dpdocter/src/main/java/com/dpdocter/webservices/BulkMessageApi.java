@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +15,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.SMSDeliveryReports;
 import com.dpdocter.exceptions.BusinessException;
@@ -23,8 +27,8 @@ import com.dpdocter.services.SMSServices;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.BULK_SMS_BASE_URL)
+@RestController
+@RequestMapping(value=PathProxy.BULK_SMS_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.BULK_SMS_BASE_URL, description = "Endpoint for bulk sms")
 public class BulkMessageApi {
 
@@ -37,8 +41,7 @@ public class BulkMessageApi {
 	
 	
 	
-	@Path(value = PathProxy.BulkSMSUrls.UPDATE_DELIVERY_REPORTS)
-    @POST
+	@PostMapping(value = PathProxy.BulkSMSUrls.UPDATE_DELIVERY_REPORTS)
     @ApiOperation(value = PathProxy.BulkSMSUrls.UPDATE_DELIVERY_REPORTS, notes = PathProxy.BulkSMSUrls.UPDATE_DELIVERY_REPORTS)
     public String updateDeliveryReports(String request) {
 

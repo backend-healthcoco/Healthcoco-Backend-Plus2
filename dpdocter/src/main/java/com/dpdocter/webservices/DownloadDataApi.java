@@ -1,9 +1,6 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -11,7 +8,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -22,8 +21,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.DOWNLOAD_DATA_BASE_URL)
+@RestController
+(PathProxy.DOWNLOAD_DATA_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DOWNLOAD_DATA_BASE_URL, description = "Endpoint for upload data")
@@ -34,11 +33,11 @@ public class DownloadDataApi {
 	@Autowired
 	private DownloadDataService downloadDataService;
 
-	@Path(value = PathProxy.UploadDataUrls.PATIENTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.UploadDataUrls.PATIENTS)
 	@ApiOperation(value = PathProxy.UploadDataUrls.PATIENTS, notes = PathProxy.UploadDataUrls.PATIENTS)
-	public Response<Boolean> downloadPatientData(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> downloadPatientData(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -49,11 +48,11 @@ public class DownloadDataApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.UploadDataUrls.PRESCRIPTIONS)
-	@GET
+	
+	@GetMapping(value = PathProxy.UploadDataUrls.PRESCRIPTIONS)
 	@ApiOperation(value = PathProxy.UploadDataUrls.PRESCRIPTIONS, notes = PathProxy.UploadDataUrls.PRESCRIPTIONS)
-	public Response<Boolean> downloadPrescriptionData(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> downloadPrescriptionData(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -64,11 +63,11 @@ public class DownloadDataApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.UploadDataUrls.APPOINTMENTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.UploadDataUrls.APPOINTMENTS)
 	@ApiOperation(value = PathProxy.UploadDataUrls.APPOINTMENTS, notes = PathProxy.UploadDataUrls.APPOINTMENTS)
-	public Response<Boolean> downloadAppointmentData(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> downloadAppointmentData(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -79,11 +78,11 @@ public class DownloadDataApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.UploadDataUrls.TREATMENTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.UploadDataUrls.TREATMENTS)
 	@ApiOperation(value = PathProxy.UploadDataUrls.TREATMENTS, notes = PathProxy.UploadDataUrls.TREATMENTS)
-	public Response<Boolean> downloadTreatmentData(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> downloadTreatmentData(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -94,11 +93,11 @@ public class DownloadDataApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.UploadDataUrls.CLINICAL_NOTES)
-	@GET
+	
+	@GetMapping(value = PathProxy.UploadDataUrls.CLINICAL_NOTES)
 	@ApiOperation(value = PathProxy.UploadDataUrls.CLINICAL_NOTES, notes = PathProxy.UploadDataUrls.CLINICAL_NOTES)
-	public Response<Boolean> downloadClinicalNotesData(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> downloadClinicalNotesData(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -109,11 +108,11 @@ public class DownloadDataApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.UploadDataUrls.INVOICES)
-	@GET
+	
+	@GetMapping(value = PathProxy.UploadDataUrls.INVOICES)
 	@ApiOperation(value = PathProxy.UploadDataUrls.INVOICES, notes = PathProxy.UploadDataUrls.INVOICES)
-	public Response<Boolean> downloadInvoicesData(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> downloadInvoicesData(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -124,11 +123,11 @@ public class DownloadDataApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.UploadDataUrls.PAYMENTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.UploadDataUrls.PAYMENTS)
 	@ApiOperation(value = PathProxy.UploadDataUrls.PAYMENTS, notes = PathProxy.UploadDataUrls.PAYMENTS)
-	public Response<Boolean> downloadPaymentsData(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> downloadPaymentsData(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -139,11 +138,11 @@ public class DownloadDataApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.DownloadDataUrls.CLINICAL_ITEMS)
-	@GET
+	
+	@GetMapping(value = PathProxy.DownloadDataUrls.CLINICAL_ITEMS)
 	@ApiOperation(value = PathProxy.DownloadDataUrls.CLINICAL_ITEMS, notes = PathProxy.DownloadDataUrls.CLINICAL_ITEMS)
-	public Response<Boolean> downloadClinicalItems(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> downloadClinicalItems(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -153,8 +152,8 @@ public class DownloadDataApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.UploadDataUrls.UPDATE_EMR)
-	@GET
+	
+	@GetMapping(value = PathProxy.UploadDataUrls.UPDATE_EMR)
 	@ApiOperation(value = PathProxy.UploadDataUrls.UPDATE_EMR, notes = PathProxy.UploadDataUrls.UPDATE_EMR)
 	public Response<Boolean> update() {
 		

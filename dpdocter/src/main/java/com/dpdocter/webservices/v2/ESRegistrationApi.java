@@ -1,19 +1,19 @@
 package com.dpdocter.webservices.v2;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.elasticsearch.beans.AdvancedSearch;
 import com.dpdocter.elasticsearch.response.v2.ESPatientResponseDetails;
@@ -26,10 +26,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component(value = "ESRegistrationApiV2")
-@Path(PathProxy.SOLR_REGISTRATION_BASEURL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RestController(value = "ESRegistrationApiV2")
+@RequestMapping(value=PathProxy.SOLR_REGISTRATION_BASEURL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.SOLR_REGISTRATION_BASEURL, description = "Endpoint for solr register")
 public class ESRegistrationApi {
 
@@ -41,12 +39,12 @@ public class ESRegistrationApi {
     @Value(value = "${image.path}")
     private String imagePath;
 
-    @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
-    @GET
+    
+    @GetMapping(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
     @ApiOperation(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT, notes = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
-    public Response<ESPatientResponseDetails> searchPatient(@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-	    @PathParam(value = "searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size,
-	    @QueryParam("doctorId") String doctorId, @QueryParam("role") String role) {
+    public Response<ESPatientResponseDetails> searchPatient(@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId,
+	    @PathVariable(value = "searchTerm") String searchTerm, @RequestParam("page") int page, @RequestParam("size") int size,
+	    @RequestParam("doctorId") String doctorId, @RequestParam("role") String role) {
 	if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, searchTerm)) {
 	    logger.warn("Location Id, Hospital Id and Search Term Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Location Id, Hospital Id and Search Term Cannot Be Empty");
@@ -59,8 +57,8 @@ public class ESRegistrationApi {
 	return response;
     }
 
-    @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
-    @POST
+    
+    @PostMapping(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
     @ApiOperation(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV, notes = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
     public Response<ESPatientResponseDetails> searchPatient(AdvancedSearch request) {
 

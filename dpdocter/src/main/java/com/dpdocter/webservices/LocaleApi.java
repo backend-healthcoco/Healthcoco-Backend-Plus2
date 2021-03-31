@@ -5,19 +5,18 @@ import java.util.List;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.Locale;
 import com.dpdocter.elasticsearch.services.ESLocaleService;
@@ -44,8 +43,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.LOCALE_BASE_URL)
+@RestController
+(PathProxy.LOCALE_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.LOCALE_BASE_URL, description = "Endpoint for Locale API's")
@@ -68,10 +67,10 @@ public class LocaleApi {
 	@Autowired
 	private TransactionalManagementService transnationalService;
 
-	@GET
-	@Path(PathProxy.LocaleUrls.GET_LOCALE_DETAILS)
-	public Response<Locale> getLocaleDetails(@QueryParam("id") String id,
-			@QueryParam("contactNumber") String contactNumber, @QueryParam("patientId") String patientId) {
+	@GetMapping
+	(PathProxy.LocaleUrls.GET_LOCALE_DETAILS)
+	public Response<Locale> getLocaleDetails(@RequestParam("id") String id,
+			@RequestParam("contactNumber") String contactNumber, @RequestParam("patientId") String patientId) {
 		Response<Locale> response = null;
 		Locale locale = null;
 
@@ -91,9 +90,9 @@ public class LocaleApi {
 		return response;
 	}
 
-	@GET
-	@Path(PathProxy.LocaleUrls.GET_LOCALE_BY_SLUGURL)
-	public Response<Locale> getLocaleDetails(@PathParam("slugUrl") String slugUrl) {
+	@GetMapping
+	(PathProxy.LocaleUrls.GET_LOCALE_BY_SLUGURL)
+	public Response<Locale> getLocaleDetails(@PathVariable("slugUrl") String slugUrl) {
 		Response<Locale> response = null;
 		Locale locale = null;
 
@@ -108,8 +107,8 @@ public class LocaleApi {
 		return response;
 	}
 
-	@POST
-	@Path(PathProxy.LocaleUrls.ADD_USER_REQUEST)
+	@PostMapping
+	(PathProxy.LocaleUrls.ADD_USER_REQUEST)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	public Response<UserSearchRequest> addUserRequestInQueue(@FormDataParam("file") FormDataBodyPart file,
 			@FormDataParam("data") FormDataBodyPart data) {
@@ -137,10 +136,10 @@ public class LocaleApi {
 		return response;
 	}
 
-	@GET
-	@Path(PathProxy.LocaleUrls.GET_PATIENT_ORDER_HISTORY)
-	public Response<SearchRequestFromUserResponse> getPatientOrderHistory(@PathParam("userId") String userId,
-			@QueryParam("page") long page, @QueryParam("size") int size) {
+	@GetMapping
+	(PathProxy.LocaleUrls.GET_PATIENT_ORDER_HISTORY)
+	public Response<SearchRequestFromUserResponse> getPatientOrderHistory(@PathVariable("userId") String userId,
+			@RequestParam("page") long page, @RequestParam("size") int size) {
 		Response<SearchRequestFromUserResponse> response = null;
 		List<SearchRequestFromUserResponse> list = null;
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
@@ -155,12 +154,12 @@ public class LocaleApi {
 
 	}
 
-	@GET
-	@Path(PathProxy.LocaleUrls.GET_PHARMCIES_FOR_ORDER)
-	public Response<SearchRequestToPharmacyResponse> getPharmaciesForOrder(@QueryParam("userId") String userId,
-			@QueryParam("uniqueRequestId") String uniqueRequestId, @QueryParam("replyType") String replyType,
-			@QueryParam("page") long page, @QueryParam("size") int size, @QueryParam("latitude") Double latitude,
-			@QueryParam("longitude") Double longitude) {
+	@GetMapping
+	(PathProxy.LocaleUrls.GET_PHARMCIES_FOR_ORDER)
+	public Response<SearchRequestToPharmacyResponse> getPharmaciesForOrder(@RequestParam("userId") String userId,
+			@RequestParam("uniqueRequestId") String uniqueRequestId, @RequestParam("replyType") String replyType,
+			@RequestParam("page") long page, @RequestParam("size") int size, @RequestParam("latitude") Double latitude,
+			@RequestParam("longitude") Double longitude) {
 		Response<SearchRequestToPharmacyResponse> response = null;
 		List<SearchRequestToPharmacyResponse> list = null;
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
@@ -176,10 +175,10 @@ public class LocaleApi {
 
 	}
 
-	@GET
-	@Path(PathProxy.LocaleUrls.GET_PHARMCIES_COUNT_FOR_ORDER)
-	public Response<Integer> getPharmaciesCountForOrder(@QueryParam("uniqueRequestId") String uniqueRequestId,
-			@QueryParam("replyType") String replyType) {
+	@GetMapping
+	(PathProxy.LocaleUrls.GET_PHARMCIES_COUNT_FOR_ORDER)
+	public Response<Integer> getPharmaciesCountForOrder(@RequestParam("uniqueRequestId") String uniqueRequestId,
+			@RequestParam("replyType") String replyType) {
 		Response<Integer> response = null;
 		Integer count = 0;
 		if (DPDoctorUtils.anyStringEmpty(uniqueRequestId)) {
@@ -194,8 +193,8 @@ public class LocaleApi {
 
 	}
 
-	@POST
-	@Path(value = PathProxy.LocaleUrls.UPLOAD_RX_IMAGE)
+	@PostMapping
+	(value = PathProxy.LocaleUrls.UPLOAD_RX_IMAGE)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.LocaleUrls.UPLOAD_RX_IMAGE, notes = PathProxy.LocaleUrls.UPLOAD_RX_IMAGE)
 	public Response<ImageURLResponse> addLocaleImageMultipart(@FormDataParam("file") FormDataBodyPart file) {
@@ -216,11 +215,11 @@ public class LocaleApi {
 		return response;
 	}
 
-	@GET
-	@Path(value = PathProxy.LocaleUrls.ADD_EDIT_RECOMMENDATION)
+	@GetMapping
+	(value = PathProxy.LocaleUrls.ADD_EDIT_RECOMMENDATION)
 	@ApiOperation(value = PathProxy.LocaleUrls.ADD_EDIT_RECOMMENDATION, notes = PathProxy.LocaleUrls.ADD_EDIT_RECOMMENDATION)
-	public Response<Locale> addEditRecommedation(@QueryParam("localeId") String localeId,
-			@QueryParam("patientId") String patientId, @QueryParam("type") RecommendationType type) {
+	public Response<Locale> addEditRecommedation(@RequestParam("localeId") String localeId,
+			@RequestParam("patientId") String patientId, @RequestParam("type") RecommendationType type) {
 		Locale locale = null;
 		Response<Locale> response = null;
 		if (DPDoctorUtils.anyStringEmpty(localeId, patientId) || type == null) {
@@ -234,8 +233,8 @@ public class LocaleApi {
 		return response;
 	}
 
-	@POST
-	@Path(PathProxy.LocaleUrls.ORDER_DRUG)
+	@PostMapping
+	(PathProxy.LocaleUrls.ORDER_DRUG)
 	@ApiOperation(value = PathProxy.LocaleUrls.ORDER_DRUG, notes = PathProxy.LocaleUrls.ORDER_DRUG)
 	public Response<OrderDrugsRequest> orderDrug(OrderDrugsRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocaleId(), request.getUserId())
@@ -258,10 +257,10 @@ public class LocaleApi {
 		return response;
 	}
 
-	@GET
-	@Path(value = PathProxy.LocaleUrls.GET_USER_FAKE_REQUEST_COUNT)
+	@GetMapping
+	(value = PathProxy.LocaleUrls.GET_USER_FAKE_REQUEST_COUNT)
 	@ApiOperation(value = PathProxy.LocaleUrls.GET_USER_FAKE_REQUEST_COUNT, notes = PathProxy.LocaleUrls.GET_USER_FAKE_REQUEST_COUNT)
-	public Response<UserFakeRequestDetailResponse> getUserFakeRequestCount(@PathParam("patientId") String patientId) {
+	public Response<UserFakeRequestDetailResponse> getUserFakeRequestCount(@PathVariable("patientId") String patientId) {
 		Response<UserFakeRequestDetailResponse> response = null;
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -272,12 +271,12 @@ public class LocaleApi {
 		return response;
 	}
 
-	@GET
-	@Path(PathProxy.LocaleUrls.GET_PATIENT_ORDERS)
+	@GetMapping
+	(PathProxy.LocaleUrls.GET_PATIENT_ORDERS)
 	@ApiOperation(value = PathProxy.LocaleUrls.GET_PATIENT_ORDERS, notes = PathProxy.LocaleUrls.GET_PATIENT_ORDERS)
-	public Response<OrderDrugsResponse> getPatientOrders(@PathParam("userId") String userId,
-			@QueryParam("page") long page, @QueryParam("size") int size,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+	public Response<OrderDrugsResponse> getPatientOrders(@PathVariable("userId") String userId,
+			@RequestParam("page") long page, @RequestParam("size") int size,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime) {
 
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User id is null");
@@ -291,12 +290,12 @@ public class LocaleApi {
 
 	}
 
-	@GET
-	@Path(PathProxy.LocaleUrls.GET_PATIENT_REQUEST)
+	@GetMapping
+	(PathProxy.LocaleUrls.GET_PATIENT_REQUEST)
 	@ApiOperation(value = PathProxy.LocaleUrls.GET_PATIENT_REQUEST, notes = PathProxy.LocaleUrls.GET_PATIENT_REQUEST)
-	public Response<SearchRequestFromUserResponse> getPatientRequests(@PathParam("userId") String userId,
-			@QueryParam("page") long page, @QueryParam("size") int size,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+	public Response<SearchRequestFromUserResponse> getPatientRequests(@PathVariable("userId") String userId,
+			@RequestParam("page") long page, @RequestParam("size") int size,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User id is null");
 		}
@@ -309,11 +308,11 @@ public class LocaleApi {
 
 	}
 
-	@GET
-	@Path(PathProxy.LocaleUrls.CANCEL_ORDER_DRUG)
+	@GetMapping
+	(PathProxy.LocaleUrls.CANCEL_ORDER_DRUG)
 	@ApiOperation(value = PathProxy.LocaleUrls.CANCEL_ORDER_DRUG, notes = PathProxy.LocaleUrls.CANCEL_ORDER_DRUG)
-	public Response<OrderDrugsRequest> cancelOrderDrug(@PathParam("orderId") String orderId,
-			@PathParam("userId") String userId) {
+	public Response<OrderDrugsRequest> cancelOrderDrug(@PathVariable("orderId") String orderId,
+			@PathVariable("userId") String userId) {
 		if (DPDoctorUtils.anyStringEmpty(orderId, userId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "OderId or UserId cannot be null");
 		}

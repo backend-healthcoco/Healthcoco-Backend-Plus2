@@ -17,6 +17,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.exceptions.BusinessException;
@@ -31,9 +38,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@Path(PathProxy.ADMIT_CARD_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RequestMapping(value=PathProxy.ADMIT_CARD_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.ADMIT_CARD_URL, description = "")
 public class AdmitCardAPI {
 	private Logger logger = LogManager.getLogger(AdmitCardAPI.class);
@@ -41,10 +46,9 @@ public class AdmitCardAPI {
 	@Autowired
 	private AdmitCardService admitCardService;
 
-	@POST
-	@Path(value = PathProxy.AdmitCardUrls.ADD_ADMIT_CARD)
+	@PostMapping(value = PathProxy.AdmitCardUrls.ADD_ADMIT_CARD)
 	@ApiOperation(value = PathProxy.AdmitCardUrls.ADD_ADMIT_CARD, notes = PathProxy.AdmitCardUrls.ADD_ADMIT_CARD)
-	public Response<AdmitCardResponse> addEditAdmitCard(AdmitCardRequest request) {
+	public Response<AdmitCardResponse> addEditAdmitCard(@RequestBody AdmitCardRequest request) {
 		Response<AdmitCardResponse> response = null;
 		AdmitCardResponse admitCardResponse = null;
 
@@ -66,14 +70,13 @@ public class AdmitCardAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.AdmitCardUrls.GET_ADMIT_CARDS)
-	@GET
+	@GetMapping(value = PathProxy.AdmitCardUrls.GET_ADMIT_CARDS)
 	@ApiOperation(value = PathProxy.AdmitCardUrls.GET_ADMIT_CARDS, notes = PathProxy.AdmitCardUrls.GET_ADMIT_CARDS)
-	public Response<AdmitCardResponse> getAdmitCards(@QueryParam(value = "page") long page,
-			@QueryParam(value = "size") int size, @QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "patientId") String patientId, @QueryParam("updatedTime") long updatedTime,
-			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+	public Response<AdmitCardResponse> getAdmitCards(@RequestParam(value = "page") long page,
+			@RequestParam(value = "size") int size, @RequestParam(value = "doctorId") String doctorId,
+			@RequestParam(value = "locationId") String locationId, @RequestParam(value = "hospitalId") String hospitalId,
+			@RequestParam(value = "patientId") String patientId, @RequestParam("updatedTime") long updatedTime,
+			@DefaultValue("false") @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		Response<AdmitCardResponse> response = null;
 		List<AdmitCardResponse> admitCardResponses = null;
 
@@ -86,10 +89,9 @@ public class AdmitCardAPI {
 
 	}
 
-	@Path(value = PathProxy.AdmitCardUrls.VIEW_ADMIT_CARD)
-	@GET
+	@GetMapping(value = PathProxy.AdmitCardUrls.VIEW_ADMIT_CARD)
 	@ApiOperation(value = PathProxy.AdmitCardUrls.VIEW_ADMIT_CARD, notes = PathProxy.AdmitCardUrls.VIEW_ADMIT_CARD)
-	public Response<AdmitCardResponse> viewAdmitCard(@PathParam("admitCardId") String admitCardId) {
+	public Response<AdmitCardResponse> viewAdmitCard(@PathVariable("admitCardId") String admitCardId) {
 		Response<AdmitCardResponse> response = null;
 		AdmitCardResponse admitCardResponse = null;
 
@@ -105,13 +107,12 @@ public class AdmitCardAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.AdmitCardUrls.DELETE_ADMIT_CARD)
-	@DELETE
+	@DeleteMapping(value = PathProxy.AdmitCardUrls.DELETE_ADMIT_CARD)
 	@ApiOperation(value = PathProxy.AdmitCardUrls.DELETE_ADMIT_CARD, notes = PathProxy.AdmitCardUrls.DELETE_ADMIT_CARD)
-	public Response<AdmitCardResponse> deleteAdmitCard(@PathParam(value = "admitCardId") String admitCardId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<AdmitCardResponse> deleteAdmitCard(@PathVariable(value = "admitCardId") String admitCardId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (StringUtils.isEmpty(admitCardId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId)
 				|| StringUtils.isEmpty(locationId)) {
 			logger.warn("Admit card  Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
@@ -125,35 +126,32 @@ public class AdmitCardAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.AdmitCardUrls.DOWNLOAD_ADMIT_CARD)
-	@GET
+	@GetMapping(value = PathProxy.AdmitCardUrls.DOWNLOAD_ADMIT_CARD)
 	@ApiOperation(value = PathProxy.AdmitCardUrls.DOWNLOAD_ADMIT_CARD, notes = PathProxy.AdmitCardUrls.DOWNLOAD_ADMIT_CARD)
-	public Response<String> downloadAdmitCard(@PathParam("admitCardId") String admitCardId) {
+	public Response<String> downloadAdmitCard(@PathVariable("admitCardId") String admitCardId) {
 		Response<String> response = new Response<String>();
 		response.setData(admitCardService.downloadDischargeSummary(admitCardId));
 		return response;
 	}
 
-	@Path(value = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD)
-	@GET
+	@GetMapping(value = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD)
 	@ApiOperation(value = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD, notes = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD)
-	public Response<Boolean> emailAdmitCard(@PathParam(value = "admitCardId") String admitCardId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "emailAddress") String emailAddress) {
+	public Response<Boolean> emailAdmitCard(@PathVariable(value = "admitCardId") String admitCardId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "emailAddress") String emailAddress) {
 		admitCardService.emailAdmitCard(admitCardId, doctorId, locationId, hospitalId, emailAddress);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
 	}
 	
-	@Path(value = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD_WEB)
-	@GET
+	@GetMapping(value = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD_WEB)
 	@ApiOperation(value = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD_WEB, notes = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD_WEB)
-	public Response<Boolean> emailAdmitCardForWeb(@PathParam(value = "admitCardId") String admitCardId,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "emailAddress") String emailAddress) {
+	public Response<Boolean> emailAdmitCardForWeb(@PathVariable(value = "admitCardId") String admitCardId,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "emailAddress") String emailAddress) {
 		admitCardService.emailAdmitCardForWeb(admitCardId, doctorId, locationId, hospitalId, emailAddress);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);

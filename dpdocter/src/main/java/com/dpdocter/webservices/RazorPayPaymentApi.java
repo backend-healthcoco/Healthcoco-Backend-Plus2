@@ -2,13 +2,11 @@ package com.dpdocter.webservices;
 
 import java.io.IOException;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -21,8 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.RAZORPAY_BASE_URL)
+@RestController
+(PathProxy.RAZORPAY_BASE_URL)
 @Api(value = PathProxy.RAZORPAY_BASE_URL, description = "Endpoint for razorPay settlement api")
 public class RazorPayPaymentApi {
 
@@ -34,8 +32,8 @@ public class RazorPayPaymentApi {
 
 		    
 	
-		@Path(value = PathProxy.RazorPayUrls.GET_SETTLEMENT)
-	    @POST
+		
+	    @PostMapping(value = PathProxy.RazorPayUrls.GET_SETTLEMENT)
 	    @ApiOperation(value = PathProxy.RazorPayUrls.GET_SETTLEMENT, notes = PathProxy.RazorPayUrls.GET_SETTLEMENT)
 	    public String updateDeliveryReports(String request) {
 

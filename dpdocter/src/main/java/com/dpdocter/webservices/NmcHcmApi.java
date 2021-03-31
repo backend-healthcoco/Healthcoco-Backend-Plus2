@@ -2,15 +2,14 @@ package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.NmcHcm;
@@ -21,7 +20,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@Path(value=PathProxy.NMC_HCM_BASE_URL)
+(value=PathProxy.NMC_HCM_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON_VALUE)
 @Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.NMC_HCM_BASE_URL, description = "Endpoint for NmcHcm")
@@ -47,13 +46,13 @@ public class NmcHcmApi {
 //	return response;
 //	}
 	
-	@Path(value = PathProxy.NmcHcmUrls.GET_NMC_HCM_DETAILS)
+	
 	@ApiOperation(value = PathProxy.NmcHcmUrls.GET_NMC_HCM_DETAILS, notes =PathProxy.NmcHcmUrls.GET_NMC_HCM_DETAILS)
-	@GET
-	public Response<NmcHcm> getNmcHcmDetails(@DefaultValue("0") @QueryParam(value ="size") int size, 
-			@DefaultValue("0") @QueryParam( value ="page") int page, 
-			@QueryParam( value ="searchTerm") String searchTerm,
-			@QueryParam( value ="type") String type,@DefaultValue("false")@QueryParam( value ="discarded") Boolean discarded) {
+	@GetMapping(value = PathProxy.NmcHcmUrls.GET_NMC_HCM_DETAILS)
+	public Response<NmcHcm> getNmcHcmDetails(@DefaultValue("0") @RequestParam(value ="size") int size, 
+			@DefaultValue("0") @RequestParam( value ="page") int page, 
+			@RequestParam( value ="searchTerm") String searchTerm,
+			@RequestParam( value ="type") String type,@DefaultValue("false")@RequestParam( value ="discarded") Boolean discarded) {
 		
 		Response<NmcHcm> response = new Response<NmcHcm>();
 			response.setCount(nmcHcmServices.countNmcData(type, searchTerm,discarded));

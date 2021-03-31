@@ -13,7 +13,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.BulkSmsCredits;
 import com.dpdocter.beans.BulkSmsPackage;
@@ -31,10 +37,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.BULK_SMS_PACKAGE_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RestController
+@RequestMapping(value=PathProxy.BULK_SMS_PACKAGE_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.BULK_SMS_PACKAGE_BASE_URL, description = "Endpoint for records")
 public class BulkSmsApi {
 	
@@ -44,13 +48,12 @@ public class BulkSmsApi {
 	@Autowired
 	private BulkSmsServices bulkSmsServices;
 	
-	@Path(value = PathProxy.BulkSmsPackageUrls.GET_SMS_PACKAGE)
+	@GetMapping(value = PathProxy.BulkSmsPackageUrls.GET_SMS_PACKAGE)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_SMS_PACKAGE, notes = PathProxy.BulkSmsPackageUrls.GET_SMS_PACKAGE)
-	@GET
-	public Response<BulkSmsPackage> getBulkSmsPackages(@DefaultValue("0")@QueryParam(value ="size") int size, 
-			@DefaultValue("0")	@QueryParam( value ="page") int page,
-			@QueryParam(value ="discarded") Boolean discarded, 
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	public Response<BulkSmsPackage> getBulkSmsPackages(@DefaultValue("0")@RequestParam(value ="size") int size, 
+			@DefaultValue("0")	@RequestParam( value ="page") int page,
+			@RequestParam(value ="discarded") Boolean discarded, 
+			@RequestParam(value ="searchTerm") String searchTerm) {
 
 		Response<BulkSmsPackage> response = new Response<BulkSmsPackage>();
 			response.setCount(bulkSmsServices.CountBulkSmsPackage(searchTerm, discarded));
@@ -60,14 +63,13 @@ public class BulkSmsApi {
 	}
 	
 	
-	@Path(value = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS)
-	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS, notes = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS)
-	@GET	
-	public Response<BulkSmsCredits> getBulkSmsCredits(@DefaultValue("0")@QueryParam(value ="size") int size, 
-			@DefaultValue("0")	@QueryParam(value ="page") int page,
-			@QueryParam(value ="doctorId") String doctorId,
-			@QueryParam(value ="locationIdId") String locationId,
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	@GetMapping(value = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS)
+	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS, notes = PathProxy.BulkSmsPackageUrls.GET_BULK_SMS_CREDITS)	
+	public Response<BulkSmsCredits> getBulkSmsCredits(@DefaultValue("0")@RequestParam(value ="size") int size, 
+			@DefaultValue("0")	@RequestParam(value ="page") int page,
+			@RequestParam(value ="doctorId") String doctorId,
+			@RequestParam(value ="locationIdId") String locationId,
+			@RequestParam(value ="searchTerm") String searchTerm) {
 
 		Response<BulkSmsCredits> response = new Response<BulkSmsCredits>();
 		if (doctorId == null && locationId==null) {
@@ -79,14 +81,13 @@ public class BulkSmsApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.BulkSmsPackageUrls.GET_SMS_HISTORY)
+	@GetMapping(value = PathProxy.BulkSmsPackageUrls.GET_SMS_HISTORY)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_SMS_HISTORY, notes = PathProxy.BulkSmsPackageUrls.GET_SMS_HISTORY)
-	@GET
-	public Response<BulkSmsCredits> getBulkSmsHistory(@DefaultValue("0")@QueryParam(value ="size") int size, 
-			@DefaultValue("0")	@QueryParam(value ="page") int page,
-			@QueryParam(value ="doctorId") String doctorId,
-			@QueryParam(value ="locationIdId") String locationId,
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	public Response<BulkSmsCredits> getBulkSmsHistory(@DefaultValue("0")@RequestParam(value ="size") int size, 
+			@DefaultValue("0")	@RequestParam(value ="page") int page,
+			@RequestParam(value ="doctorId") String doctorId,
+			@RequestParam(value ="locationIdId") String locationId,
+			@RequestParam(value ="searchTerm") String searchTerm) {
 
 		Response<BulkSmsCredits> response = new Response<BulkSmsCredits>();
 		if (doctorId == null && locationId==null) {
@@ -98,13 +99,12 @@ public class BulkSmsApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.BulkSmsPackageUrls.GET_SMS_REPORT)
+	@GetMapping(value = PathProxy.BulkSmsPackageUrls.GET_SMS_REPORT)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_SMS_REPORT, notes = PathProxy.BulkSmsPackageUrls.GET_SMS_REPORT)
-	@GET
-	public Response<MessageResponse> getBulkSmsReport(@DefaultValue("0")@QueryParam(value ="size") int size, 
-			@DefaultValue("0")	@QueryParam(value ="page") int page,
-			@QueryParam(value ="doctorId") String doctorId,
-			@QueryParam(value ="locationIdId") String locationId) {
+	public Response<MessageResponse> getBulkSmsReport(@DefaultValue("0")@RequestParam(value ="size") int size, 
+			@DefaultValue("0")	@RequestParam(value ="page") int page,
+			@RequestParam(value ="doctorId") String doctorId,
+			@RequestParam(value ="locationIdId") String locationId) {
 
 		Response<MessageResponse> response = new Response<MessageResponse>();
 		if (doctorId == null && locationId==null) {
@@ -117,9 +117,8 @@ public class BulkSmsApi {
 	}
 	
 	
-	@Path(value = PathProxy.BulkSmsPackageUrls.CREATE_PAYMENT)
+	@PostMapping(value = PathProxy.BulkSmsPackageUrls.CREATE_PAYMENT)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.CREATE_PAYMENT, notes = PathProxy.BulkSmsPackageUrls.CREATE_PAYMENT)
-	@POST
 	public Response<BulkSmsPaymentResponse> createOrder(@RequestBody OrderRequest request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
@@ -135,9 +134,8 @@ public class BulkSmsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.BulkSmsPackageUrls.VERIFY_SIGNATURE)
+	@PostMapping(value = PathProxy.BulkSmsPackageUrls.VERIFY_SIGNATURE)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.VERIFY_SIGNATURE, notes = PathProxy.BulkSmsPackageUrls.VERIFY_SIGNATURE)
-	@POST
 	public Response<Boolean> verifySignature(@RequestBody PaymentSignatureRequest request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
@@ -154,11 +152,10 @@ public class BulkSmsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.BulkSmsPackageUrls.GET_SMS_STATUS)
+	@GetMapping(value = PathProxy.BulkSmsPackageUrls.GET_SMS_STATUS)
 	@ApiOperation(value = PathProxy.BulkSmsPackageUrls.GET_SMS_STATUS, notes = PathProxy.BulkSmsPackageUrls.GET_SMS_STATUS)
-	@GET
 	public Response<MessageStatus> getSmsStatus(
-			@QueryParam(value ="messageId") String messageId) {
+			@RequestParam(value ="messageId") String messageId) {
 
 		Response<MessageStatus> response = new Response<MessageStatus>();
 		if (messageId == null && messageId==null) {

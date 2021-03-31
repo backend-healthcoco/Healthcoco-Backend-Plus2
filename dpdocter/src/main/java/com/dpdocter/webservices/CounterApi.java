@@ -15,6 +15,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.CaloriesCounter;
 import com.dpdocter.beans.ExerciseCounter;
@@ -32,10 +40,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.COUNTER_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RestController
+@RequestMapping(value=PathProxy.COUNTER_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.COUNTER_BASE_URL, description = "Endpoint for CounterAPI")
 public class CounterApi {
 	private static Logger logger = LogManager.getLogger(CounterApi.class.getName());
@@ -43,10 +49,10 @@ public class CounterApi {
 	@Autowired
 	private CounterService counterService;
 
-	@Path(value = PathProxy.CounterUrls.ADD_EDIT_WATER_COUNTER)
-	@POST
+	
+	@PostMapping(value = PathProxy.CounterUrls.ADD_EDIT_WATER_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.ADD_EDIT_WATER_COUNTER, notes = PathProxy.CounterUrls.ADD_EDIT_WATER_COUNTER)
-	public Response<WaterCounter> addWaterCounter(WaterCounter request) {
+	public Response<WaterCounter> addWaterCounter(@RequestBody WaterCounter request) {
 
 		if (request == null) {
 			logger.warn("Invalid Input");
@@ -65,10 +71,10 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.GET_WATER_COUNTER)
-	@GET
+	
+	@GetMapping(value = PathProxy.CounterUrls.GET_WATER_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.GET_WATER_COUNTER, notes = PathProxy.CounterUrls.GET_WATER_COUNTER)
-	public Response<WaterCounter> getWaterCounterById(@PathParam("counterId") String counterId) {
+	public Response<WaterCounter> getWaterCounterById(@PathVariable("counterId") String counterId) {
 
 		if (DPDoctorUtils.anyStringEmpty(counterId)) {
 			logger.warn("Invalid Input");
@@ -81,12 +87,12 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.GET_WATER_COUNTERS)
-	@GET
+	
+	@GetMapping(value = PathProxy.CounterUrls.GET_WATER_COUNTERS)
 	@ApiOperation(value = PathProxy.CounterUrls.GET_WATER_COUNTERS, notes = PathProxy.CounterUrls.GET_WATER_COUNTERS)
-	public Response<WaterCounter> getWaterCounters(@PathParam("userId") String userId, @QueryParam("size") int size,
-			@QueryParam("page") int page, @QueryParam("fromDate") String fromDate,
-			@QueryParam("toDate") String toDate) {
+	public Response<WaterCounter> getWaterCounters(@PathVariable("userId") String userId, @RequestParam("size") int size,
+			@RequestParam("page") int page, @RequestParam("fromDate") String fromDate,
+			@RequestParam("toDate") String toDate) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -97,11 +103,11 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.DELETE_WATER_COUNTER)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.CounterUrls.DELETE_WATER_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.DELETE_WATER_COUNTER, notes = PathProxy.CounterUrls.DELETE_WATER_COUNTER)
-	public Response<WaterCounter> deleteWaterCounter(@PathParam("counterId") String counterId,
-			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+	public Response<WaterCounter> deleteWaterCounter(@PathVariable("counterId") String counterId,
+			@RequestParam("discarded")   Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(counterId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -112,10 +118,10 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.ADD_EDIT_WEIGHT_COUNTER)
-	@POST
+	
+	@PostMapping(value = PathProxy.CounterUrls.ADD_EDIT_WEIGHT_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.ADD_EDIT_WEIGHT_COUNTER, notes = PathProxy.CounterUrls.ADD_EDIT_WEIGHT_COUNTER)
-	public Response<WeightCounter> addWeightCounter(WeightCounter request) {
+	public Response<WeightCounter> addWeightCounter(@RequestBody WeightCounter request) {
 
 		if (request == null) {
 			logger.warn("Invalid Input");
@@ -133,10 +139,10 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.GET_WEIGHT_COUNTER)
-	@GET
+	
+	@GetMapping(value = PathProxy.CounterUrls.GET_WEIGHT_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.GET_WEIGHT_COUNTER, notes = PathProxy.CounterUrls.GET_WEIGHT_COUNTER)
-	public Response<WeightCounter> getWeightCounterById(@PathParam("counterId") String counterId) {
+	public Response<WeightCounter> getWeightCounterById(@PathVariable("counterId") String counterId) {
 
 		if (DPDoctorUtils.anyStringEmpty(counterId)) {
 			logger.warn("Invalid Input");
@@ -149,12 +155,12 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.GET_WEIGHT_COUNTERS)
-	@GET
+	
+	@GetMapping(value = PathProxy.CounterUrls.GET_WEIGHT_COUNTERS)
 	@ApiOperation(value = PathProxy.CounterUrls.GET_WEIGHT_COUNTERS, notes = PathProxy.CounterUrls.GET_WEIGHT_COUNTERS)
-	public Response<WeightCounter> getWeightCounter(@PathParam("userId") String userId, @QueryParam("size") int size,
-			@QueryParam("page") int page, @QueryParam("fromDate") String fromDate,
-			@QueryParam("toDate") String toDate) {
+	public Response<WeightCounter> getWeightCounter(@PathVariable("userId") String userId, @RequestParam("size") int size,
+			@RequestParam("page") int page, @RequestParam("fromDate") String fromDate,
+			@RequestParam("toDate") String toDate) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -165,11 +171,11 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.DELETE_WEIGHT_COUNTER)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.CounterUrls.DELETE_WEIGHT_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.DELETE_WEIGHT_COUNTER, notes = PathProxy.CounterUrls.DELETE_WEIGHT_COUNTER)
-	public Response<WeightCounter> deleteWeightCounter(@PathParam("counterId") String counterId,
-			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+	public Response<WeightCounter> deleteWeightCounter(@PathVariable("counterId") String counterId,
+			@RequestParam("discarded")   Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(counterId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -180,10 +186,10 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.ADD_EDIT_WEIGHT_COUNTER_SETTING)
-	@POST
+	
+	@PostMapping(value = PathProxy.CounterUrls.ADD_EDIT_WEIGHT_COUNTER_SETTING)
 	@ApiOperation(value = PathProxy.CounterUrls.ADD_EDIT_WEIGHT_COUNTER_SETTING, notes = PathProxy.CounterUrls.ADD_EDIT_WEIGHT_COUNTER_SETTING)
-	public Response<WeightCounterSetting> addWeightCounterSetting(WeightCounterSetting request) {
+	public Response<WeightCounterSetting> addWeightCounterSetting(@RequestBody WeightCounterSetting request) {
 
 		if (request == null) {
 			logger.warn("Invalid Input");
@@ -201,10 +207,10 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.GET_WEIGHT_COUNTER_SETTING)
-	@GET
+	
+	@GetMapping(value = PathProxy.CounterUrls.GET_WEIGHT_COUNTER_SETTING)
 	@ApiOperation(value = PathProxy.CounterUrls.GET_WEIGHT_COUNTER_SETTING, notes = PathProxy.CounterUrls.GET_WEIGHT_COUNTER_SETTING)
-	public Response<WeightCounterSetting> getWeightCounterSetting(@PathParam("userId") String userId) {
+	public Response<WeightCounterSetting> getWeightCounterSetting(@PathVariable("userId") String userId) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -215,10 +221,10 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.ADD_EDIT_WATER_COUNTER_SETTING)
-	@POST
+	
+	@PostMapping(value = PathProxy.CounterUrls.ADD_EDIT_WATER_COUNTER_SETTING)
 	@ApiOperation(value = PathProxy.CounterUrls.ADD_EDIT_WATER_COUNTER_SETTING, notes = PathProxy.CounterUrls.ADD_EDIT_WATER_COUNTER_SETTING)
-	public Response<WaterCounterSetting> addWaterCountererSetting(WaterCounterSetting request) {
+	public Response<WaterCounterSetting> addWaterCountererSetting(@RequestBody WaterCounterSetting request) {
 
 		if (request == null) {
 			logger.warn("Invalid Input");
@@ -236,10 +242,10 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.GET_WATER_COUNTER_SETTING)
-	@GET
+	
+	@GetMapping(value = PathProxy.CounterUrls.GET_WATER_COUNTER_SETTING)
 	@ApiOperation(value = PathProxy.CounterUrls.GET_WATER_COUNTER_SETTING, notes = PathProxy.CounterUrls.GET_WATER_COUNTER_SETTING)
-	public Response<WaterCounterSetting> getWaterCounterSetting(@PathParam("userId") String userId) {
+	public Response<WaterCounterSetting> getWaterCounterSetting(@PathVariable("userId") String userId) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -250,10 +256,10 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.ADD_EDIT_MEAL_COUNTER)
-	@POST
+	
+	@PostMapping(value = PathProxy.CounterUrls.ADD_EDIT_MEAL_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.ADD_EDIT_MEAL_COUNTER, notes = PathProxy.CounterUrls.ADD_EDIT_MEAL_COUNTER)
-	public Response<MealCounter> addMealCounter(MealCounter request) {
+	public Response<MealCounter> addMealCounter(@RequestBody MealCounter request) {
 
 		if (request == null) {
 			logger.warn("Invalid Input");
@@ -272,10 +278,10 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.GET_MEAL_COUNTER)
-	@GET
+	
+	@GetMapping(value = PathProxy.CounterUrls.GET_MEAL_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.GET_MEAL_COUNTER, notes = PathProxy.CounterUrls.GET_MEAL_COUNTER)
-	public Response<MealCounter> getMealCounterById(@PathParam("counterId") String counterId) {
+	public Response<MealCounter> getMealCounterById(@PathVariable("counterId") String counterId) {
 
 		if (DPDoctorUtils.anyStringEmpty(counterId)) {
 			logger.warn("Invalid Input");
@@ -288,12 +294,12 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.GET_MEAL_COUNTERS)
-	@GET
+	
+	@GetMapping(value = PathProxy.CounterUrls.GET_MEAL_COUNTERS)
 	@ApiOperation(value = PathProxy.CounterUrls.GET_MEAL_COUNTERS, notes = PathProxy.CounterUrls.GET_MEAL_COUNTERS)
-	public Response<MealCounter> getMealCounters(@PathParam("userId") String userId, @QueryParam("size") int size,
-			@QueryParam("page") int page, @QueryParam("fromDate") String fromDate, @QueryParam("toDate") String toDate,
-			@QueryParam("mealTime") String mealTime) {
+	public Response<MealCounter> getMealCounters(@PathVariable("userId") String userId, @RequestParam("size") int size,
+			@RequestParam("page") int page, @RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate,
+			@RequestParam("mealTime") String mealTime) {
 		if (DPDoctorUtils.anyStringEmpty(userId, mealTime)) {
 			logger.warn("userId,mealtime must not null or empty");
 			throw new BusinessException(ServiceError.InvalidInput, "userId,mealtime must not null or empty");
@@ -304,11 +310,11 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.DELETE_MEAL_COUNTER)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.CounterUrls.DELETE_MEAL_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.DELETE_MEAL_COUNTER, notes = PathProxy.CounterUrls.DELETE_MEAL_COUNTER)
-	public Response<MealCounter> deleteMealCounter(@PathParam("counterId") String counterId,
-			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+	public Response<MealCounter> deleteMealCounter(@PathVariable("counterId") String counterId,
+			@RequestParam("discarded")   Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(counterId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -319,10 +325,10 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.ADD_EDIT_EXERCISE_COUNTER)
-	@POST
+	
+	@PostMapping(value = PathProxy.CounterUrls.ADD_EDIT_EXERCISE_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.ADD_EDIT_EXERCISE_COUNTER, notes = PathProxy.CounterUrls.ADD_EDIT_EXERCISE_COUNTER)
-	public Response<ExerciseCounter> addExerciseCounter(ExerciseCounter request) {
+	public Response<ExerciseCounter> addExerciseCounter(@RequestBody ExerciseCounter request) {
 
 		if (request == null) {
 			logger.warn("Invalid Input");
@@ -341,10 +347,10 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.GET_EXERCISE_COUNTER)
-	@GET
+	
+	@GetMapping(value = PathProxy.CounterUrls.GET_EXERCISE_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.GET_EXERCISE_COUNTER, notes = PathProxy.CounterUrls.GET_EXERCISE_COUNTER)
-	public Response<ExerciseCounter> getExerciseCounterById(@PathParam("counterId") String counterId) {
+	public Response<ExerciseCounter> getExerciseCounterById(@PathVariable("counterId") String counterId) {
 
 		if (DPDoctorUtils.anyStringEmpty(counterId)) {
 			logger.warn("Invalid Input");
@@ -357,12 +363,12 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.GET_EXERCISE_COUNTERS)
-	@GET
+	
+	@GetMapping(value = PathProxy.CounterUrls.GET_EXERCISE_COUNTERS)
 	@ApiOperation(value = PathProxy.CounterUrls.GET_EXERCISE_COUNTERS, notes = PathProxy.CounterUrls.GET_EXERCISE_COUNTERS)
-	public Response<ExerciseCounter> getExerciseCounters(@PathParam("userId") String userId,
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("fromDate") String fromDate,
-			@QueryParam("toDate") String toDate) {
+	public Response<ExerciseCounter> getExerciseCounters(@PathVariable("userId") String userId,
+			@RequestParam("size") int size, @RequestParam("page") int page, @RequestParam("fromDate") String fromDate,
+			@RequestParam("toDate") String toDate) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -373,11 +379,11 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.DELETE_EXERCISE_COUNTER)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.CounterUrls.DELETE_EXERCISE_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.DELETE_EXERCISE_COUNTER, notes = PathProxy.CounterUrls.DELETE_EXERCISE_COUNTER)
-	public Response<ExerciseCounter> deleteExerciseCounter(@PathParam("counterId") String counterId,
-			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+	public Response<ExerciseCounter> deleteExerciseCounter(@PathVariable("counterId") String counterId,
+			@RequestParam("discarded")   Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(counterId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -388,10 +394,10 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.ADD_EDIT_CALORIES_COUNTER)
-	@POST
+	
+	@PostMapping(value = PathProxy.CounterUrls.ADD_EDIT_CALORIES_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.ADD_EDIT_CALORIES_COUNTER, notes = PathProxy.CounterUrls.ADD_EDIT_CALORIES_COUNTER)
-	public Response<CaloriesCounter> addCaloriesCounter(CaloriesCounter request) {
+	public Response<CaloriesCounter> addCaloriesCounter(@RequestBody CaloriesCounter request) {
 
 		if (request == null) {
 			logger.warn("Invalid Input");
@@ -410,10 +416,10 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.GET_CALORIES_COUNTER)
-	@GET
+	
+	@GetMapping(value = PathProxy.CounterUrls.GET_CALORIES_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.GET_CALORIES_COUNTER, notes = PathProxy.CounterUrls.GET_CALORIES_COUNTER)
-	public Response<CaloriesCounter> getCaloriesCounterById(@PathParam("counterId") String counterId) {
+	public Response<CaloriesCounter> getCaloriesCounterById(@PathVariable("counterId") String counterId) {
 
 		if (DPDoctorUtils.anyStringEmpty(counterId)) {
 			logger.warn("Invalid Input");
@@ -426,12 +432,12 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.GET_CALORIES_COUNTERS)
-	@GET
+	
+	@GetMapping(value = PathProxy.CounterUrls.GET_CALORIES_COUNTERS)
 	@ApiOperation(value = PathProxy.CounterUrls.GET_CALORIES_COUNTERS, notes = PathProxy.CounterUrls.GET_CALORIES_COUNTERS)
-	public Response<CaloriesCounter> getCaloriesCounters(@PathParam("userId") String userId,
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("fromDate") String fromDate,
-			@QueryParam("toDate") String toDate) {
+	public Response<CaloriesCounter> getCaloriesCounters(@PathVariable("userId") String userId,
+			@RequestParam("size") int size, @RequestParam("page") int page, @RequestParam("fromDate") String fromDate,
+			@RequestParam("toDate") String toDate) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -442,11 +448,11 @@ public class CounterApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.CounterUrls.DELETE_CALORIES_COUNTER)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.CounterUrls.DELETE_CALORIES_COUNTER)
 	@ApiOperation(value = PathProxy.CounterUrls.DELETE_CALORIES_COUNTER, notes = PathProxy.CounterUrls.DELETE_CALORIES_COUNTER)
-	public Response<CaloriesCounter> deleteCaloriesCounter(@PathParam("counterId") String counterId,
-			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+	public Response<CaloriesCounter> deleteCaloriesCounter(@PathVariable("counterId") String counterId,
+			@RequestParam("discarded")   Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(counterId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

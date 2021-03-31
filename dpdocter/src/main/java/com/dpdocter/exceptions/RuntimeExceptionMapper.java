@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 import common.util.web.JacksonUtil;
 
-@Component
+@RestController
 @Provider
 @Produces({ "text/html;charset=utf-8", "text/xml;charset=utf-8", "application/json;charset=utf-8" })
 public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException> {

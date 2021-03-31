@@ -3,15 +3,8 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +12,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.DiagnosticTest;
@@ -66,8 +65,8 @@ import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Component
-@Path(PathProxy.PRESCRIPTION_BASE_URL)
+@RestController
+(PathProxy.PRESCRIPTION_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.PRESCRIPTION_BASE_URL, description = "Endpoint for prescription")
@@ -90,8 +89,8 @@ public class PrescriptionApi {
 	@Autowired
 	private OTPService otpService;
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_DRUG)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_DRUG)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG, notes = PathProxy.PrescriptionUrls.ADD_DRUG)
 	public Response<Drug> addDrug(DrugAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(),
@@ -117,10 +116,10 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG)
-	@PUT
+	
+	@PutMapping(value = PathProxy.PrescriptionUrls.EDIT_DRUG)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG, notes = PathProxy.PrescriptionUrls.EDIT_DRUG)
-	public Response<Drug> editDrug(@PathParam(value = "drugId") String drugId, DrugAddEditRequest request) {
+	public Response<Drug> editDrug(@PathVariable(value = "drugId") String drugId, DrugAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(drugId, request.getDoctorId(), request.getHospitalId(),
 				request.getLocationId())) {
 			logger.warn("Invalid Input");
@@ -134,13 +133,13 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.PrescriptionUrls.DELETE_DRUG)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_DRUG, notes = PathProxy.PrescriptionUrls.DELETE_DRUG)
-	public Response<Drug> deleteDrug(@PathParam(value = "drugId") String drugId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Drug> deleteDrug(@PathVariable(value = "drugId") String drugId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (StringUtils.isEmpty(drugId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId)
 				|| StringUtils.isEmpty(locationId)) {
 			logger.warn("Drug Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
@@ -164,10 +163,10 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_DRUG_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.GET_DRUG_ID)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_DRUG_ID, notes = PathProxy.PrescriptionUrls.GET_DRUG_ID)
-	public Response<Drug> getDrugDetails(@PathParam("drugId") String drugId) {
+	public Response<Drug> getDrugDetails(@PathVariable("drugId") String drugId) {
 		if (drugId == null) {
 			logger.error("DrugId Is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "DrugId Is NULL");
@@ -178,8 +177,8 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_LAB_TEST)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_LAB_TEST)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_LAB_TEST, notes = PathProxy.PrescriptionUrls.ADD_LAB_TEST)
 	public Response<LabTest> addLabTest(LabTest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocationId(), request.getHospitalId())
@@ -199,10 +198,10 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.EDIT_LAB_TEST)
-	@PUT
+	
+	@PutMapping(value = PathProxy.PrescriptionUrls.EDIT_LAB_TEST)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_LAB_TEST, notes = PathProxy.PrescriptionUrls.EDIT_LAB_TEST)
-	public Response<LabTest> editLabTest(@PathParam(value = "labTestId") String labTestId, LabTest request) {
+	public Response<LabTest> editLabTest(@PathVariable(value = "labTestId") String labTestId, LabTest request) {
 		if (request == null
 				|| DPDoctorUtils.anyStringEmpty(labTestId, request.getLocationId(), request.getHospitalId())) {
 			logger.warn("Invalid Input");
@@ -221,12 +220,12 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_LAB_TEST)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.PrescriptionUrls.DELETE_LAB_TEST)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_LAB_TEST, notes = PathProxy.PrescriptionUrls.DELETE_LAB_TEST)
-	public Response<LabTest> deleteLabTest(@PathParam(value = "labTestId") String labTestId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<LabTest> deleteLabTest(@PathVariable(value = "labTestId") String labTestId,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(labTestId, hospitalId, locationId)) {
 			logger.warn("Lab Test Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -246,10 +245,10 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_LAB_TEST_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.GET_LAB_TEST_BY_ID)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_LAB_TEST_BY_ID, notes = PathProxy.PrescriptionUrls.GET_LAB_TEST_BY_ID)
-	public Response<LabTest> getLabTestDetails(@PathParam("labTestId") String labTestId) {
+	public Response<LabTest> getLabTestDetails(@PathVariable("labTestId") String labTestId) {
 		if (DPDoctorUtils.anyStringEmpty(labTestId)) {
 			logger.error("Lab Test Id Is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id Is NULL");
@@ -260,8 +259,8 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE, notes = PathProxy.PrescriptionUrls.ADD_TEMPLATE)
 	public Response<TemplateAddEditResponse> addTemplate(TemplateAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -275,8 +274,8 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE_HANDHELD)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE_HANDHELD)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE_HANDHELD, notes = PathProxy.PrescriptionUrls.ADD_TEMPLATE_HANDHELD)
 	public Response<TemplateAddEditResponseDetails> addTemplateHandheld(TemplateAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -290,10 +289,10 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.EDIT_TEMPLATE)
-	@PUT
+	
+	@PutMapping(value = PathProxy.PrescriptionUrls.EDIT_TEMPLATE)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_TEMPLATE, notes = PathProxy.PrescriptionUrls.EDIT_TEMPLATE)
-	public Response<TemplateAddEditResponseDetails> editTemplate(@PathParam(value = "templateId") String templateId,
+	public Response<TemplateAddEditResponseDetails> editTemplate(@PathVariable(value = "templateId") String templateId,
 			TemplateAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(templateId, request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getName()) || request.getItems() == null) {
@@ -307,13 +306,13 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_TEMPLATE)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.PrescriptionUrls.DELETE_TEMPLATE)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_TEMPLATE, notes = PathProxy.PrescriptionUrls.DELETE_TEMPLATE)
-	public Response<TemplateAddEditResponseDetails> deleteTemplate(@PathParam(value = "templateId") String templateId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<TemplateAddEditResponseDetails> deleteTemplate(@PathVariable(value = "templateId") String templateId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(templateId, doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -325,12 +324,12 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_TEMPLATE_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_TEMPLATE_ID)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_TEMPLATE_TEMPLATE_ID, notes = PathProxy.PrescriptionUrls.GET_TEMPLATE_TEMPLATE_ID)
-	public Response<TemplateAddEditResponseDetails> getTemplate(@PathParam(value = "templateId") String templateId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId) {
+	public Response<TemplateAddEditResponseDetails> getTemplate(@PathVariable(value = "templateId") String templateId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(templateId, doctorId, hospitalId, locationId)) {
 			logger.warn("Template Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -343,14 +342,14 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_TEMPLATE)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.GET_TEMPLATE)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_TEMPLATE, notes = PathProxy.PrescriptionUrls.GET_TEMPLATE)
-	public Response<TemplateAddEditResponseDetails> getAllTemplates(@QueryParam("page") int page,
-			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<TemplateAddEditResponseDetails> getAllTemplates(@RequestParam("page") int page,
+			@RequestParam("size") int size, @RequestParam("doctorId") String doctorId,
+			@RequestParam("locationId") String locationId, @RequestParam("hospitalId") String hospitalId,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input");
@@ -363,8 +362,8 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION)
 	public Response<PrescriptionAddEditResponse> addPrescription(PrescriptionAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -391,8 +390,8 @@ public class PrescriptionApi {
 
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION_HANDHELD)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION_HANDHELD)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION_HANDHELD, notes = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION_HANDHELD)
 	public Response<PrescriptionAddEditResponseDetails> addPrescriptionHandheld(PrescriptionAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -418,11 +417,11 @@ public class PrescriptionApi {
 
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.EDIT_PRESCRIPTION)
-	@PUT
+	
+	@PutMapping(value = PathProxy.PrescriptionUrls.EDIT_PRESCRIPTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.EDIT_PRESCRIPTION)
 	public Response<PrescriptionAddEditResponseDetails> editPrescription(
-			@PathParam(value = "prescriptionId") String prescriptionId, PrescriptionAddEditRequest request) {
+			@PathVariable(value = "prescriptionId") String prescriptionId, PrescriptionAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(prescriptionId, request.getDoctorId(),
 				request.getLocationId(), request.getHospitalId(), request.getPatientId())) {
 			logger.warn("Invalid Input");
@@ -445,13 +444,13 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION)
-	public Response<Prescription> deletePrescription(@PathParam(value = "prescriptionId") String prescriptionId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Prescription> deletePrescription(@PathVariable(value = "prescriptionId") String prescriptionId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId, @PathVariable(value = "patientId") String patientId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, hospitalId, locationId)) {
 			logger.warn("Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -464,10 +463,10 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.GET_PRESCRIPTION)
-	public Response<Prescription> getPrescription(@PathParam(value = "prescriptionId") String prescriptionId) {
+	public Response<Prescription> getPrescription(@PathVariable(value = "prescriptionId") String prescriptionId) {
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Prescription or Patient Id Cannot Be Empty");
 		}
@@ -479,13 +478,13 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@GET
+	@GetMapping
 	@ApiOperation(value = "GET_PRESCRIPTIONS", notes = "GET_PRESCRIPTIONS")
-	public Response<Prescription> getPrescription(@QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Prescription> getPrescription(@RequestParam("page") int page, @RequestParam("size") int size,
+			@RequestParam("doctorId") String doctorId, @RequestParam("locationId") String locationId,
+			@RequestParam("hospitalId") String hospitalId, @RequestParam("patientId") String patientId,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
@@ -500,13 +499,13 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_PATIENT_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_PATIENT_ID)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_PATIENT_ID, notes = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_PATIENT_ID)
-	public Response<Object> getPrescriptionByPatientId(@PathParam("patientId") String patientId,
-			@QueryParam("page") int page, @QueryParam("size") int size,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Object> getPrescriptionByPatientId(@PathVariable("patientId") String patientId,
+			@RequestParam("page") int page, @RequestParam("size") int size,
+			@DefaultValue("0") @RequestParam("updatedTime") String updatedTime,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
 		}
@@ -514,12 +513,12 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_COUNT)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_COUNT)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_COUNT, notes = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_COUNT)
-	public Response<Integer> getPrescriptionCount(@PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "patientId") String patientId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId) {
+	public Response<Integer> getPrescriptionCount(@PathVariable(value = "doctorId") String doctorId,
+			@PathVariable(value = "patientId") String patientId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId) {
 
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
 			logger.warn("Invalid Input");
@@ -533,8 +532,8 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_DOSAGE)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_DRUG_DOSAGE)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG_DOSAGE, notes = PathProxy.PrescriptionUrls.ADD_DRUG_DOSAGE)
 	public Response<DrugDosageAddEditResponse> addDrugDosage(DrugDosageAddEditRequest request) {
 		if (request == null || request.getDosage() == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(),
@@ -549,10 +548,10 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DOSAGE)
-	@PUT
+	
+	@PutMapping(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DOSAGE)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DOSAGE, notes = PathProxy.PrescriptionUrls.EDIT_DRUG_DOSAGE)
-	public Response<DrugDosageAddEditResponse> editDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId,
+	public Response<DrugDosageAddEditResponse> editDrugDosage(@PathVariable(value = "drugDosageId") String drugDosageId,
 			DrugDosageAddEditRequest request) {
 		if (request == null || request.getDosage() == null || DPDoctorUtils.anyStringEmpty(drugDosageId,
 				request.getDoctorId(), request.getHospitalId(), request.getLocationId(), request.getDosage())) {
@@ -567,13 +566,13 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DOSAGE)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DOSAGE)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DOSAGE, notes = PathProxy.PrescriptionUrls.DELETE_DRUG_DOSAGE)
-	public Response<DrugDosageAddEditResponse> deleteDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<DrugDosageAddEditResponse> deleteDrugDosage(@PathVariable(value = "drugDosageId") String drugDosageId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(drugDosageId, doctorId, hospitalId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -586,8 +585,8 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_DIRECTION)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_DRUG_DIRECTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG_DIRECTION, notes = PathProxy.PrescriptionUrls.ADD_DRUG_DIRECTION)
 	public Response<DrugDirectionAddEditResponse> addDrugDirection(DrugDirectionAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(),
@@ -602,11 +601,11 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DIRECTION)
-	@PUT
+	
+	@PutMapping(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DIRECTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DIRECTION, notes = PathProxy.PrescriptionUrls.EDIT_DRUG_DIRECTION)
 	public Response<DrugDirectionAddEditResponse> editDrugDirection(
-			@PathParam(value = "drugDirectionId") String drugDirectionId, DrugDirectionAddEditRequest request) {
+			@PathVariable(value = "drugDirectionId") String drugDirectionId, DrugDirectionAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(),
 				request.getLocationId(), request.getDirection())) {
 			logger.warn("Invalid Input");
@@ -620,14 +619,14 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DIRECTION)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DIRECTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DIRECTION, notes = PathProxy.PrescriptionUrls.DELETE_DRUG_DIRECTION)
 	public Response<DrugDirectionAddEditResponse> deleteDrugDirection(
-			@PathParam(value = "drugDirectionId") String drugDirectionId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@PathVariable(value = "drugDirectionId") String drugDirectionId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(drugDirectionId, doctorId, hospitalId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -640,8 +639,8 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_DURATION_UNIT)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_DRUG_DURATION_UNIT)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG_DURATION_UNIT, notes = PathProxy.PrescriptionUrls.ADD_DRUG_DURATION_UNIT)
 	public Response<DrugDurationUnitAddEditResponse> addDrugDurationUnit(DrugDurationUnitAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(),
@@ -657,11 +656,11 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DURATION_UNIT)
-	@PUT
+	
+	@PutMapping(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DURATION_UNIT)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DURATION_UNIT, notes = PathProxy.PrescriptionUrls.EDIT_DRUG_DURATION_UNIT)
 	public Response<DrugDurationUnitAddEditResponse> editDrugDurationUnit(
-			@PathParam(value = "drugDurationUnitId") String drugDurationUnitId,
+			@PathVariable(value = "drugDurationUnitId") String drugDurationUnitId,
 			DrugDurationUnitAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(),
 				request.getLocationId(), request.getUnit())) {
@@ -677,14 +676,14 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DURATION_UNIT)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DURATION_UNIT)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_DRUG_DURATION_UNIT, notes = PathProxy.PrescriptionUrls.DELETE_DRUG_DURATION_UNIT)
 	public Response<DrugDurationUnitAddEditResponse> deleteDrugDurationUnit(
-			@PathParam(value = "drugDurationUnitId") String drugDurationUnitId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@PathVariable(value = "drugDurationUnitId") String drugDurationUnitId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(drugDurationUnitId, doctorId, hospitalId, locationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -697,15 +696,15 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_ITEMS)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_ITEMS)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_ITEMS, notes = PathProxy.PrescriptionUrls.GET_PRESCRIPTION_ITEMS)
-	public Response<Object> getPrescriptionItems(@PathParam("type") String type, @PathParam("range") String range,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@QueryParam(value = "disease") String disease,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	public Response<Object> getPrescriptionItems(@PathVariable("type") String type, @PathVariable("range") String range,
+			@RequestParam("page") int page, @RequestParam("size") int size, @RequestParam(value = "doctorId") String doctorId,
+			@RequestParam(value = "locationId") String locationId, @RequestParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+			@RequestParam(value = "disease") String disease,
+			  @RequestParam(value = "discarded") Boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(type, range)) {
 			logger.warn("Invalid Input");
@@ -730,13 +729,13 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION)
-	public Response<Boolean> emailPrescription(@PathParam(value = "prescriptionId") String prescriptionId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "emailAddress") String emailAddress) {
+	public Response<Boolean> emailPrescription(@PathVariable(value = "prescriptionId") String prescriptionId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "emailAddress") String emailAddress) {
 
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, locationId, hospitalId, emailAddress)) {
 			logger.warn(
@@ -751,13 +750,13 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION_WEB)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION_WEB)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.EMAIL_PRESCRIPTION_WEB)
-	public Response<Boolean> emailPrescriptionForWeb(@PathParam(value = "prescriptionId") String prescriptionId,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "emailAddress") String emailAddress) {
+	public Response<Boolean> emailPrescriptionForWeb(@PathVariable(value = "prescriptionId") String prescriptionId,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "emailAddress") String emailAddress) {
 
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId, emailAddress)) {
 			logger.warn(
@@ -772,13 +771,13 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION)
-	public Response<Boolean> smsPrescription(@PathParam(value = "prescriptionId") String prescriptionId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "mobileNumber") String mobileNumber) {
+	public Response<Boolean> smsPrescription(@PathVariable(value = "prescriptionId") String prescriptionId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "mobileNumber") String mobileNumber) {
 
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, locationId, hospitalId, mobileNumber)) {
 			logger.warn(
@@ -793,13 +792,13 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION_WEB)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION_WEB)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.SMS_PRESCRIPTION_WEB)
-	public Response<Boolean> smsPrescriptionForWeb(@PathParam(value = "prescriptionId") String prescriptionId,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "mobileNumber") String mobileNumber) {
+	public Response<Boolean> smsPrescriptionForWeb(@PathVariable(value = "prescriptionId") String prescriptionId,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "mobileNumber") String mobileNumber) {
 
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId, mobileNumber)) {
 			logger.warn(
@@ -814,8 +813,8 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_EDIT_DIAGNOSTIC_TEST)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_EDIT_DIAGNOSTIC_TEST)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_EDIT_DIAGNOSTIC_TEST, notes = PathProxy.PrescriptionUrls.ADD_EDIT_DIAGNOSTIC_TEST)
 	public Response<DiagnosticTest> addEditDiagnosticTest(DiagnosticTest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocationId(), request.getHospitalId(),
@@ -834,12 +833,12 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_DIAGNOSTIC_TEST)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.PrescriptionUrls.DELETE_DIAGNOSTIC_TEST)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_DIAGNOSTIC_TEST, notes = PathProxy.PrescriptionUrls.DELETE_DIAGNOSTIC_TEST)
-	public Response<DiagnosticTest> deleteDiagnosticTest(@PathParam(value = "diagnosticTestId") String diagnosticTestId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<DiagnosticTest> deleteDiagnosticTest(@PathVariable(value = "diagnosticTestId") String diagnosticTestId,
+			@PathVariable(value = "locationId") String locationId, @PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(diagnosticTestId, hospitalId, locationId)) {
 			logger.warn("Diagnostic Test Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -855,10 +854,10 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_DIAGNOSTIC_TEST_BY_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.GET_DIAGNOSTIC_TEST_BY_ID)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_DIAGNOSTIC_TEST_BY_ID, notes = PathProxy.PrescriptionUrls.GET_DIAGNOSTIC_TEST_BY_ID)
-	public Response<DiagnosticTest> getDiagnosticTest(@PathParam("diagnosticTestId") String diagnosticTestId) {
+	public Response<DiagnosticTest> getDiagnosticTest(@PathVariable("diagnosticTestId") String diagnosticTestId) {
 		if (DPDoctorUtils.anyStringEmpty(diagnosticTestId)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -869,11 +868,11 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT, notes = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT)
-	public Response<PrescriptionTestAndRecord> checkPrescriptionExists(@PathParam("uniqueEmrId") String uniqueEmrId,
-			@QueryParam("patientId") String patientId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId) {
+	public Response<PrescriptionTestAndRecord> checkPrescriptionExists(@PathVariable("uniqueEmrId") String uniqueEmrId,
+			@RequestParam("patientId") String patientId, @RequestParam("locationId") String locationId, @RequestParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(uniqueEmrId)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -885,12 +884,12 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION)
-	public Response<String> downloadPrescription(@PathParam("prescriptionId") String prescriptionId, @DefaultValue("false") @QueryParam("showPH") Boolean showPH,
-    		@DefaultValue("false") @QueryParam("showPLH") Boolean showPLH, @DefaultValue("false") @QueryParam("showFH") Boolean showFH, 
-    		@DefaultValue("false") @QueryParam("showDA") Boolean showDA, @DefaultValue("false") @QueryParam("isLabPrint") Boolean isLabPrint) {
+	public Response<String> downloadPrescription(@PathVariable("prescriptionId") String prescriptionId, @DefaultValue("false") @RequestParam("showPH") Boolean showPH,
+    		@DefaultValue("false") @RequestParam("showPLH") Boolean showPLH, @DefaultValue("false") @RequestParam("showFH") Boolean showFH, 
+    		@DefaultValue("false") @RequestParam("showDA") Boolean showDA, @DefaultValue("false") @RequestParam("isLabPrint") Boolean isLabPrint) {
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -900,11 +899,11 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_TO_DOCTOR)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.ADD_DRUG_TO_DOCTOR)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG_TO_DOCTOR, notes = PathProxy.PrescriptionUrls.ADD_DRUG_TO_DOCTOR)
-	public Response<Drug> makeDrugFavourite(@PathParam("drugId") String drugId, @PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+	public Response<Drug> makeDrugFavourite(@PathVariable("drugId") String drugId, @PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(drugId, doctorId, locationId, hospitalId)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -925,8 +924,8 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_ADVICE)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_ADVICE)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_ADVICE, notes = PathProxy.PrescriptionUrls.ADD_ADVICE)
 	public Response<Advice> addAdvice(Advice request) {
 		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
@@ -943,13 +942,13 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_ADVICE)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.PrescriptionUrls.DELETE_ADVICE)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_ADVICE, notes = PathProxy.PrescriptionUrls.DELETE_ADVICE)
-	public Response<Advice> deleteAdvice(@PathParam("adviceId") String adviceId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Advice> deleteAdvice(@PathVariable("adviceId") String adviceId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 
 		Response<Advice> response = new Response<Advice>();
 		response.setData(prescriptionServices.deleteAdvice(adviceId, doctorId, locationId, hospitalId, discarded));
@@ -960,8 +959,8 @@ public class PrescriptionApi {
 	 * Don't not use it. To add existing custom drugs in my fav..fr updating
 	 * mongodb data
 	 */
-	// @Path(value = PathProxy.PrescriptionUrls.ADD_CUSTOM_DRUG_TO_FAV)
-	// @GET
+	// (value = PathProxy.PrescriptionUrls.ADD_CUSTOM_DRUG_TO_FAV)
+	// @GetMapping
 	// public Response<Boolean> makeCustomDrugFavourite() {
 	//
 	// Response<Boolean> response = new Response<Boolean>();
@@ -969,8 +968,8 @@ public class PrescriptionApi {
 	// return response;
 	// }
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_FAVOURITE_DRUG)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_FAVOURITE_DRUG)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_FAVOURITE_DRUG, notes = PathProxy.PrescriptionUrls.ADD_FAVOURITE_DRUG)
 	public Response<Drug> addFavouriteDrug(DrugAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(),
@@ -985,9 +984,9 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.DRUGS_INTERACTION)
-	@POST
-	public Response<DrugInteractionResposne> drugInteraction(List<Drug> request, @QueryParam("patientId") String patientId) { 
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.DRUGS_INTERACTION)
+	public Response<DrugInteractionResposne> drugInteraction(List<Drug> request, @RequestParam("patientId") String patientId) { 
 
 		List<DrugInteractionResposne> drugInteractionResposnes = prescriptionServices.drugInteraction(request, patientId);
 		Response<DrugInteractionResposne> response = new Response<DrugInteractionResposne>();
@@ -995,8 +994,8 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.ADD_GENERIC_CODES_WITH_REACTION)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.ADD_GENERIC_CODES_WITH_REACTION)
 	public Response<Boolean> addGenericsWithReaction() {
 
 		Response<Boolean> response = new Response<Boolean>();
@@ -1005,8 +1004,8 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.ADD_FAVOURITES_TO_DRUGS)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.ADD_FAVOURITES_TO_DRUGS)
 	public Response<Boolean> addFavouritesToDrug() {
 
 		Response<Boolean> response = new Response<Boolean>();
@@ -1014,11 +1013,11 @@ public class PrescriptionApi {
 		return response;
 	}
 
-//	@Path(value = PathProxy.PrescriptionUrls.CHECK_PATIENT_EXISTS_FOR_LAB_WITH_PRESCRIPTIONID)
-//	@GET
+//	(value = PathProxy.PrescriptionUrls.CHECK_PATIENT_EXISTS_FOR_LAB_WITH_PRESCRIPTIONID)
+//	@GetMapping
 //	@ApiOperation(value = PathProxy.PrescriptionUrls.CHECK_PATIENT_EXISTS_FOR_LAB_WITH_PRESCRIPTIONID, notes = PathProxy.PrescriptionUrls.CHECK_PATIENT_EXISTS_FOR_LAB_WITH_PRESCRIPTIONID)
-//	public Response<String> checkPrescriptionExists(@PathParam("uniqueEmrId") String uniqueEmrId,
-//			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+//	public Response<String> checkPrescriptionExists(@PathVariable("uniqueEmrId") String uniqueEmrId,
+//			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId) {
 //		if (DPDoctorUtils.anyStringEmpty(uniqueEmrId, locationId, hospitalId)) {
 //			logger.error("Invalid Input");
 //			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -1030,8 +1029,8 @@ public class PrescriptionApi {
 //		return response;
 //	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.ADD_EYE_PRESCRPTION)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_EYE_PRESCRPTION)
 	public Response<EyePrescription> addEyePrescription( EyePrescription request) {
 
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -1054,8 +1053,8 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.EDIT_EYE_PRESCRPTION)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.EDIT_EYE_PRESCRPTION)
 	public Response<EyePrescription> editEyePrescription( EyePrescription request) {
 
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
@@ -1076,9 +1075,9 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTION_BY_ID)
-	@GET
-	public Response<EyePrescription> getEyePrescription( @PathParam("id") String id) {
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTION_BY_ID)
+	public Response<EyePrescription> getEyePrescription( @PathVariable("id") String id) {
 
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
@@ -1090,15 +1089,15 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTIONS)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTIONS)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTIONS, notes = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTIONS)
-	public Response<EyePrescription> getEyePrescriptions(@QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
-			@DefaultValue("false") @QueryParam(value = "isOTPVerified") Boolean isOTPVerified) {
+	public Response<EyePrescription> getEyePrescriptions(@RequestParam("page") int page, @RequestParam("size") int size,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "hospitalId") String hospitalId, @RequestParam(value = "patientId") String patientId,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+			  @RequestParam(value = "discarded") Boolean discarded,
+			@DefaultValue("false") @RequestParam(value = "isOTPVerified") Boolean isOTPVerified) {
 		List<EyePrescription> eyePrescriptions = null;
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input.");
@@ -1110,10 +1109,10 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.DOWNLOAD_EYE_PRESCRIPTION)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.DOWNLOAD_EYE_PRESCRIPTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DOWNLOAD_EYE_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.DOWNLOAD_EYE_PRESCRIPTION)
-	public Response<String> downloadEyePrescription(@PathParam("prescriptionId") String prescriptionId) {
+	public Response<String> downloadEyePrescription(@PathVariable("prescriptionId") String prescriptionId) {
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -1123,13 +1122,13 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION)
-	public Response<Boolean> emailEyePrescription(@PathParam(value = "prescriptionId") String prescriptionId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "emailAddress") String emailAddress) {
+	public Response<Boolean> emailEyePrescription(@PathVariable(value = "prescriptionId") String prescriptionId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "emailAddress") String emailAddress) {
 
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, locationId, hospitalId, emailAddress)) {
 			logger.warn(
@@ -1144,13 +1143,13 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION_WEB)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION_WEB)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION_WEB)
-	public Response<Boolean> emailEyePrescriptionForWeb(@PathParam(value = "prescriptionId") String prescriptionId,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "emailAddress") String emailAddress) {
+	public Response<Boolean> emailEyePrescriptionForWeb(@PathVariable(value = "prescriptionId") String prescriptionId,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "emailAddress") String emailAddress) {
 
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, locationId, hospitalId, emailAddress)) {
 			logger.warn(
@@ -1165,13 +1164,13 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION)
-	public Response<Boolean> smsEyePrescription(@PathParam(value = "prescriptionId") String prescriptionId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "mobileNumber") String mobileNumber) {
+	public Response<Boolean> smsEyePrescription(@PathVariable(value = "prescriptionId") String prescriptionId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "mobileNumber") String mobileNumber) {
 
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId, mobileNumber)) {
 			logger.warn(
@@ -1185,13 +1184,13 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION_WEB)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION_WEB)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION_WEB)
-	public Response<Boolean> smsEyePrescriptionForWeb(@PathParam(value = "prescriptionId") String prescriptionId,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "mobileNumber") String mobileNumber) {
+	public Response<Boolean> smsEyePrescriptionForWeb(@PathVariable(value = "prescriptionId") String prescriptionId,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "hospitalId") String hospitalId,
+			@PathVariable(value = "mobileNumber") String mobileNumber) {
 
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId, mobileNumber)) {
 			logger.warn(
@@ -1205,13 +1204,13 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_EYE_PRESCRIPTION)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.PrescriptionUrls.DELETE_EYE_PRESCRIPTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_EYE_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.DELETE_EYE_PRESCRIPTION)
-	public Response<EyePrescription> deleteEyePrescription(@PathParam(value = "prescriptionId") String prescriptionId,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<EyePrescription> deleteEyePrescription(@PathVariable(value = "prescriptionId") String prescriptionId,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId, @PathVariable(value = "patientId") String patientId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, hospitalId, locationId)) {
 			logger.warn("Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1224,8 +1223,8 @@ public class PrescriptionApi {
 	}
 	
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUGS)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUGS)
 	public Response<Drug> getCustomDrugs() {
 		List<Drug> drugs = prescriptionServices.getAllCustomDrug();
 		Response<Drug> response = new Response<Drug>();
@@ -1233,8 +1232,8 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.ADD_EDIT_INSTRUCTIONS)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_EDIT_INSTRUCTIONS)
 	public Response<Instructions> addEditInstruction( Instructions request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId())) {
@@ -1248,13 +1247,13 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_INSTRUCTIONS)
-	@GET
-	public Response<Instructions> getInstructions(@QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.GET_INSTRUCTIONS)
+	public Response<Instructions> getInstructions(@RequestParam("page") int page, @RequestParam("size") int size,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @RequestParam(value = "updatedTime") String updatedTime,
+			  @RequestParam(value = "discarded") Boolean discarded) {
 
 		if ( DPDoctorUtils.anyStringEmpty(doctorId,locationId,hospitalId)) {
 			logger.warn("Invalid Input");
@@ -1264,13 +1263,13 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_INSTRUCTIONS)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.PrescriptionUrls.DELETE_INSTRUCTIONS)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_INSTRUCTIONS, notes = PathProxy.PrescriptionUrls.DELETE_INSTRUCTIONS)
-	public Response<Instructions> deleteInstructions(@PathParam(value = "id") String id,
-			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Instructions> deleteInstructions(@PathVariable(value = "id") String id,
+			@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
+			@PathVariable(value = "hospitalId") String hospitalId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
 			logger.warn("Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1282,8 +1281,8 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.UPDATE_GENERIC_CODES)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.UPDATE_GENERIC_CODES)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.UPDATE_GENERIC_CODES, notes = PathProxy.PrescriptionUrls.UPDATE_GENERIC_CODES)
 	public Response<Boolean> updateGenericCodes() {
 		
@@ -1293,10 +1292,10 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.PrescriptionUrls.GET_DRUG_SUBSTITUTES)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.GET_DRUG_SUBSTITUTES)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_DRUG_SUBSTITUTES, notes = PathProxy.PrescriptionUrls.GET_DRUG_SUBSTITUTES)
-	public Response<List<Drug>> getDrugSubstitues(@PathParam("drugId") String drugId) {
+	public Response<List<Drug>> getDrugSubstitues(@PathVariable("drugId") String drugId) {
 		if (drugId == null) {
 			logger.error("DrugId Is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "DrugId Is NULL");
@@ -1307,8 +1306,8 @@ public class PrescriptionApi {
 		return response;
 	}
 		
-	@Path(value = PathProxy.PrescriptionUrls.ADD_NUTRITION_REFERRAL)
-	@POST
+	
+	@PostMapping(value = PathProxy.PrescriptionUrls.ADD_NUTRITION_REFERRAL)
 	public Response<NutritionReferral> addNutritionReferral( NutritionReferralRequest request) {
 
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId() , request.getDoctorId(), request.getLocationId(),
@@ -1322,13 +1321,13 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION_WEB)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION_WEB)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION_WEB, notes = PathProxy.PrescriptionUrls.DELETE_PRESCRIPTION_WEB)
-	public Response<Prescription> deletePrescriptionForWeb(@PathParam(value = "prescriptionId") String prescriptionId,
-			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Prescription> deletePrescriptionForWeb(@PathVariable(value = "prescriptionId") String prescriptionId,
+			@RequestParam(value = "doctorId") String doctorId, @RequestParam(value = "locationId") String locationId,
+			@RequestParam(value = "hospitalId") String hospitalId, @RequestParam(value = "patientId") String patientId,
+			  @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, hospitalId, locationId)) {
 			logger.warn("Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -1340,8 +1339,8 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.UPDATE_DRUG_RANKING_ON_BASIS_OF_RANKING)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.UPDATE_DRUG_RANKING_ON_BASIS_OF_RANKING)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.UPDATE_DRUG_RANKING_ON_BASIS_OF_RANKING, notes = PathProxy.PrescriptionUrls.UPDATE_DRUG_RANKING_ON_BASIS_OF_RANKING)
 	public Response<Boolean> updateDrugRankingOnBasisOfRanking() {
 		
@@ -1351,8 +1350,8 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.UPLOAD_DRUGS)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.UPLOAD_DRUGS)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.UPLOAD_DRUGS, notes = PathProxy.PrescriptionUrls.UPLOAD_DRUGS)
 	public Response<Boolean> uploadDrugs() {
 		
@@ -1362,8 +1361,8 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.UPDATE_DRUG_INTERACTION)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.UPDATE_DRUG_INTERACTION)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.UPDATE_DRUG_INTERACTION, notes = PathProxy.PrescriptionUrls.UPDATE_DRUG_INTERACTION)
 	public Response<Boolean> updateDrugInteraction() {
 		
@@ -1373,8 +1372,8 @@ public class PrescriptionApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.PrescriptionUrls.UPDATE_PRESCRIPTION_DRUG)
-	@GET
+	
+	@GetMapping(value = PathProxy.PrescriptionUrls.UPDATE_PRESCRIPTION_DRUG)
 	@ApiOperation(value = PathProxy.PrescriptionUrls.UPDATE_PRESCRIPTION_DRUG, notes = PathProxy.PrescriptionUrls.UPDATE_PRESCRIPTION_DRUG)
 	public Response<Boolean> updatePrescriptionDrugType() {
 		

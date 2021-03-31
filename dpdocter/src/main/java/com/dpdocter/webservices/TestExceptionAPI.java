@@ -2,15 +2,14 @@ package com.dpdocter.webservices;
 
 import javax.mail.MessagingException;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.elasticsearch.document.ESProfessionDocument;
 import com.dpdocter.elasticsearch.repository.ESProfessionRepository;
@@ -24,8 +23,8 @@ import com.google.android.gcm.server.Sender;
 import common.util.web.FCMSender;
 import common.util.web.Response;
 
-@Component
-@Path("testing")
+@RestController
+("testing")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TestExceptionAPI {
@@ -42,15 +41,15 @@ public class TestExceptionAPI {
 	@Value("${patient.android.google.services.api.key}")
     private String PATIENT_GEOCODING_SERVICES_API_KEY;
 	
-    @GET
-    @Path("/exception/{id}")
-    public String exceptionTest(@PathParam("id") String id) throws BusinessException {
+    @GetMapping
+    ("/exception/{id}")
+    public String exceptionTest(@PathVariable("id") String id) throws BusinessException {
 	throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
     }
     
-    @GET
-    @Path("/get")
-    public Response<ESProfessionDocument> get(@PathParam("id") String id) {
+    @GetMapping
+    ("/get")
+    public Response<ESProfessionDocument> get(@PathVariable("id") String id) {
 	
     	ESProfessionDocument documents = null;
 //    			esProfessionRepository.findById("55f40520e4b0cb1d08c1700d").orElse(null);
@@ -60,8 +59,8 @@ public class TestExceptionAPI {
     	return response;
     }
     
-	@GET
-	@Path("/mail")
+	@GetMapping
+	("/mail")
 	public Response<Boolean> testMail() throws MessagingException {
 		/*Boolean status = mailService.sendExceptionMail("Testing Business Exception mail");
 		Response<Boolean> response = new Response<>();
@@ -70,9 +69,9 @@ public class TestExceptionAPI {
 		throw new MessagingException("testing advice");
 	}
 
-	@GET
-	@Path("/notification/{id}")
-	public Boolean testNotification(@PathParam("id") final Integer id) {
+	@GetMapping
+	("/notification/{id}")
+	public Boolean testNotification(@PathVariable("id") final Integer id) {
 		final String patientToken = "ex_B-ybBKNo:APA91bFuB36OhqqC4DpLfk77qirsPDW-x4-W-ePHikTPa0iTAV0_TV3H9Y07S42N9Yo4FBMt3EMN-iJtBhxuct840KTuRRoGReajh8L2WRx55yNnW45-arSeco2zsYEZ9aIsaYvuM9V3";
 		final String doctorToken = "dQm3y7MATVI:APA91bEiyFic8EZqhMPpDQ9o2mxl-37BfxoSzLJKyw-rBwsZbPNHMr4NgymsBuQhsZpQCsHBd90vlZ6snoBCCWGEKvAEOUzZ1D3uQrlsPcn6-_KsLx9k-fXoEWOFtSWlQRHmxEH2SKZM";
 		Thread t = new Thread() {

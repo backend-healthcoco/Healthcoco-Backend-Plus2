@@ -1,14 +1,7 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +9,11 @@ import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.FoodCommunity;
@@ -46,7 +44,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@Path(PathProxy.RECIPE_BASE_URL)
+(PathProxy.RECIPE_BASE_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.RECIPE_BASE_URL, description = "Endpoint for recipe")
@@ -65,8 +63,8 @@ public class RecipeApi {
 	@Autowired
 	private TransactionalManagementService transnationalService;
 
-	@Path(value = PathProxy.RecipeUrls.ADD_EDIT_NUTRIENT)
-	@POST
+	
+	@PostMapping(value = PathProxy.RecipeUrls.ADD_EDIT_NUTRIENT)
 	@ApiOperation(value = PathProxy.RecipeUrls.ADD_EDIT_NUTRIENT, notes = PathProxy.RecipeUrls.ADD_EDIT_NUTRIENT)
 	public Response<Nutrient> addEditNutrient(Nutrient request) {
 
@@ -94,8 +92,8 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.ADD_EDIT_INGREDIENT)
-	@POST
+	
+	@PostMapping(value = PathProxy.RecipeUrls.ADD_EDIT_INGREDIENT)
 	@ApiOperation(value = PathProxy.RecipeUrls.ADD_EDIT_INGREDIENT, notes = PathProxy.RecipeUrls.ADD_EDIT_INGREDIENT)
 	public Response<Ingredient> addEditIngredient(Ingredient request) {
 
@@ -123,10 +121,10 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.GET_INGREDIENT)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_INGREDIENT)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_INGREDIENT, notes = PathProxy.RecipeUrls.GET_INGREDIENT)
-	public Response<Ingredient> getIngredient(@PathParam("ingredientId") String ingredientId) {
+	public Response<Ingredient> getIngredient(@PathVariable("ingredientId") String ingredientId) {
 
 		if (DPDoctorUtils.anyStringEmpty(ingredientId)) {
 			logger.warn("Invalid Input");
@@ -139,10 +137,10 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.GET_NUTRIENT)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_NUTRIENT)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRIENT, notes = PathProxy.RecipeUrls.GET_NUTRIENT)
-	public Response<Nutrient> getNutrient(@PathParam("nutrientId") String nutrientId) {
+	public Response<Nutrient> getNutrient(@PathVariable("nutrientId") String nutrientId) {
 
 		if (DPDoctorUtils.anyStringEmpty(nutrientId)) {
 			logger.warn("Invalid Input");
@@ -155,13 +153,13 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.GET_NUTRIENTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_NUTRIENTS)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRIENTS, notes = PathProxy.RecipeUrls.GET_NUTRIENTS)
-	public Response<Nutrient> getNutrients(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") Boolean discarded,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("category") String category) {
+	public Response<Nutrient> getNutrients(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId,
+			@RequestParam("size") int size, @RequestParam("page") int page, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@RequestParam("searchTerm") String searchTerm, @RequestParam("category") String category) {
 
 		Response<Nutrient> response = new Response<Nutrient>();
 		response.setDataList(recipeService.getNutrients(size, page, discarded, searchTerm, category, doctorId,
@@ -169,13 +167,13 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.GET_INGREDIENTS)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_INGREDIENTS)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_INGREDIENTS, notes = PathProxy.RecipeUrls.GET_INGREDIENTS)
-	public Response<Ingredient> getIngredients(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") Boolean discarded,
-			@QueryParam("searchTerm") String searchTerm) {
+	public Response<Ingredient> getIngredients(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId,
+			@RequestParam("size") int size, @RequestParam("page") int page, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@RequestParam("searchTerm") String searchTerm) {
 
 		Response<Ingredient> response = new Response<Ingredient>();
 		response.setDataList(
@@ -183,13 +181,13 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.DELETE_INGREDIENT)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RecipeUrls.DELETE_INGREDIENT)
 	@ApiOperation(value = PathProxy.RecipeUrls.DELETE_INGREDIENT, notes = PathProxy.RecipeUrls.DELETE_INGREDIENT)
-	public Response<Ingredient> deleteIngredient(@PathParam("ingredientId") String ingredientId,
-			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId,
-			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+	public Response<Ingredient> deleteIngredient(@PathVariable("ingredientId") String ingredientId,
+			@PathVariable("doctorId") String doctorId, @PathVariable("locationId") String locationId,
+			@PathVariable("hospitalId") String hospitalId,
+			@RequestParam("discarded")   Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(ingredientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -200,13 +198,13 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.DELETE_NUTRIENT)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RecipeUrls.DELETE_NUTRIENT)
 	@ApiOperation(value = PathProxy.RecipeUrls.DELETE_NUTRIENT, notes = PathProxy.RecipeUrls.DELETE_NUTRIENT)
-	public Response<Nutrient> deleteNutrient(@PathParam("nutrientId") String nutrientId,
-			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId,
-			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+	public Response<Nutrient> deleteNutrient(@PathVariable("nutrientId") String nutrientId,
+			@PathVariable("doctorId") String doctorId, @PathVariable("locationId") String locationId,
+			@PathVariable("hospitalId") String hospitalId,
+			@RequestParam("discarded")   Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(nutrientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -217,12 +215,12 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.DELETE_RECIPE)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RecipeUrls.DELETE_RECIPE)
 	@ApiOperation(value = PathProxy.RecipeUrls.DELETE_RECIPE, notes = PathProxy.RecipeUrls.DELETE_RECIPE)
-	public Response<Recipe> deleteRecipe(@PathParam("recipeId") String recipeId, @PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+	public Response<Recipe> deleteRecipe(@PathVariable("recipeId") String recipeId, @PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId,
+			@RequestParam("discarded")   Boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(recipeId)) {
 			logger.warn("Invalid Input");
@@ -234,13 +232,13 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.GET_RECIPES)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_RECIPES)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPES, notes = PathProxy.RecipeUrls.GET_RECIPES)
-	public Response<Recipe> getRecipes(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
-			@QueryParam("searchTerm") String searchTerm, @QueryParam("planId") String planId) {
+	public Response<Recipe> getRecipes(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId,
+			@RequestParam("size") int size, @RequestParam("page") int page, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@RequestParam("searchTerm") String searchTerm, @RequestParam("planId") String planId) {
 
 		Response<Recipe> response = new Response<Recipe>();
 		response.setDataList(
@@ -248,10 +246,10 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.GET_RECIPE)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_RECIPE)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPE, notes = PathProxy.RecipeUrls.GET_RECIPE)
-	public Response<Recipe> getRecipe(@PathParam("recipeId") String recipeId) {
+	public Response<Recipe> getRecipe(@PathVariable("recipeId") String recipeId) {
 		if (DPDoctorUtils.anyStringEmpty(recipeId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -262,8 +260,8 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.ADD_EDIT_RECIPE)
-	@POST
+	
+	@PostMapping(value = PathProxy.RecipeUrls.ADD_EDIT_RECIPE)
 	@ApiOperation(value = PathProxy.RecipeUrls.ADD_EDIT_RECIPE, notes = PathProxy.RecipeUrls.ADD_EDIT_RECIPE)
 	public Response<Recipe> addEditRecipes(Recipe request) {
 		if (request == null) {
@@ -310,10 +308,10 @@ public class RecipeApi {
 			return null;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.ADD_FAVOURITE_RECIPE)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.ADD_FAVOURITE_RECIPE)
 	@ApiOperation(value = PathProxy.RecipeUrls.ADD_FAVOURITE_RECIPE, notes = PathProxy.RecipeUrls.ADD_FAVOURITE_RECIPE)
-	public Response<Boolean> getRecipes(@QueryParam("userId") String userId, @QueryParam("recipeId") String recipeId) {
+	public Response<Boolean> getRecipes(@RequestParam("userId") String userId, @RequestParam("recipeId") String recipeId) {
 		Response<Boolean> response = new Response<Boolean>();
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("Invalid Input");
@@ -325,12 +323,12 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.GET_RECENT_RECIPE)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_RECENT_RECIPE)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECENT_RECIPE, notes = PathProxy.RecipeUrls.GET_RECENT_RECIPE)
-	public Response<RecentRecipeResponse> getRecentRecipes(@PathParam("userId") String userId,
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
-			@QueryParam("mealTime") String mealTime) {
+	public Response<RecentRecipeResponse> getRecentRecipes(@PathVariable("userId") String userId,
+			@RequestParam("size") int size, @RequestParam("page") int page, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@RequestParam("mealTime") String mealTime) {
 
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("Invalid Input");
@@ -343,11 +341,11 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.GET_FREQUENT_RECIPE)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_FREQUENT_RECIPE)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_FREQUENT_RECIPE, notes = PathProxy.RecipeUrls.GET_FREQUENT_RECIPE)
-	public Response<RecentRecipeResponse> getFrequenttRecipes(@PathParam("userId") String userId,
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded) {
+	public Response<RecentRecipeResponse> getFrequenttRecipes(@PathVariable("userId") String userId,
+			@RequestParam("size") int size, @RequestParam("page") int page, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "user Id should not be null or empty");
@@ -358,11 +356,11 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.GET_FAVOURITE_RECIPE)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_FAVOURITE_RECIPE)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_FAVOURITE_RECIPE, notes = PathProxy.RecipeUrls.GET_FAVOURITE_RECIPE)
-	public Response<RecentRecipeResponse> getFavouritetRecipes(@PathParam("userId") String userId,
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded) {
+	public Response<RecentRecipeResponse> getFavouritetRecipes(@PathVariable("userId") String userId,
+			@RequestParam("size") int size, @RequestParam("page") int page, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "user Id should not be null or empty");
@@ -373,11 +371,11 @@ public class RecipeApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.RecipeUrls.GET_RECIPES_BY_PLAN_ID)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_RECIPES_BY_PLAN_ID)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPES_BY_PLAN_ID, notes = PathProxy.RecipeUrls.GET_RECIPES_BY_PLAN_ID)
-	public Response<RecipeCardResponse> getRecipesByPlanId(@QueryParam("planId") String planId,
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded) {
+	public Response<RecipeCardResponse> getRecipesByPlanId(@RequestParam("planId") String planId,
+			@RequestParam("size") int size, @RequestParam("page") int page, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(planId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "user Id should not be null or empty");
@@ -388,12 +386,12 @@ public class RecipeApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.RecipeUrls.DELETE_RECIPE_TEMPLATE)
-	@DELETE
+	
+	@DeleteMapping(value = PathProxy.RecipeUrls.DELETE_RECIPE_TEMPLATE)
 	@ApiOperation(value = PathProxy.RecipeUrls.DELETE_RECIPE_TEMPLATE, notes = PathProxy.RecipeUrls.DELETE_RECIPE_TEMPLATE)
-	public Response<RecipeTemplate> deleteRecipeTemplate(@PathParam("recipeId") String recipeId, @PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@QueryParam("discarded") @DefaultValue("true") Boolean discarded) {
+	public Response<RecipeTemplate> deleteRecipeTemplate(@PathVariable("recipeId") String recipeId, @PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId,
+			@RequestParam("discarded")   Boolean discarded) {
 
 		if (DPDoctorUtils.anyStringEmpty(recipeId)) {
 			logger.warn("Invalid Input");
@@ -405,22 +403,22 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.GET_RECIPES_TEMPLATE)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_RECIPES_TEMPLATE)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPES_TEMPLATE, notes = PathProxy.RecipeUrls.GET_RECIPES_TEMPLATE)
-	public Response<RecipeTemplate> getRecipeTemplates(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@QueryParam("size") int size, @QueryParam("page") int page, @QueryParam("discarded") boolean discarded,
-			@QueryParam("searchTerm") String searchTerm) {
+	public Response<RecipeTemplate> getRecipeTemplates(@PathVariable("doctorId") String doctorId,
+			@PathVariable("locationId") String locationId, @PathVariable("hospitalId") String hospitalId,
+			@RequestParam("size") int size, @RequestParam("page") int page, @RequestParam(required = false, value ="discarded", defaultValue="true")boolean discarded,
+			@RequestParam("searchTerm") String searchTerm) {
 
 		Response<RecipeTemplate> response = recipeService.getRecipeTemplates(size, page, discarded, searchTerm, doctorId, locationId, hospitalId);
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.GET_RECIPE_TEMPLATE)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_RECIPE_TEMPLATE)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPE_TEMPLATE, notes = PathProxy.RecipeUrls.GET_RECIPE_TEMPLATE)
-	public Response<RecipeTemplate> getRecipeTemplate(@PathParam("recipeTemplateId") String recipeTemplateId) {
+	public Response<RecipeTemplate> getRecipeTemplate(@PathVariable("recipeTemplateId") String recipeTemplateId) {
 		if (DPDoctorUtils.anyStringEmpty(recipeTemplateId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -431,8 +429,8 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.ADD_EDIT_RECIPE_TEMPLATE)
-	@POST
+	
+	@PostMapping(value = PathProxy.RecipeUrls.ADD_EDIT_RECIPE_TEMPLATE)
 	@ApiOperation(value = PathProxy.RecipeUrls.ADD_EDIT_RECIPE_TEMPLATE, notes = PathProxy.RecipeUrls.ADD_EDIT_RECIPE_TEMPLATE)
 	public Response<RecipeTemplate> addEditRecipeTemplate(RecipeTemplate request) {
 		if (request == null) {
@@ -456,13 +454,13 @@ public class RecipeApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.RecipeUrls.GET_FOOD_COMMUNITIES)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_FOOD_COMMUNITIES)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_FOOD_COMMUNITIES, notes = PathProxy.RecipeUrls.GET_FOOD_COMMUNITIES)
-	public Response<FoodCommunity> getFoodCommunities(@QueryParam(value ="size") int size, 
-			@QueryParam(value ="page") int page,
-			@QueryParam(value ="discarded") Boolean discarded, 
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	public Response<FoodCommunity> getFoodCommunities(@RequestParam(value ="size") int size, 
+			@RequestParam(value ="page") int page,
+			@RequestParam(value ="discarded") Boolean discarded, 
+			@RequestParam(value ="searchTerm") String searchTerm) {
 		Integer count = recipeService.countFoodCommunities(discarded, searchTerm);
 		Response<FoodCommunity> response = new Response<FoodCommunity>();
 		if (count > 0)
@@ -471,13 +469,13 @@ public class RecipeApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.RecipeUrls.GET_FOOD_GROUPS)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_FOOD_GROUPS)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_FOOD_GROUPS, notes = PathProxy.RecipeUrls.GET_FOOD_GROUPS)
-	public Response<FoodGroup> getFoodGroups(@QueryParam(value ="size") int size, 
-			@QueryParam(value ="page") int page,
-			@QueryParam(value ="discarded") Boolean discarded, 
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	public Response<FoodGroup> getFoodGroups(@RequestParam(value ="size") int size, 
+			@RequestParam(value ="page") int page,
+			@RequestParam(value ="discarded") Boolean discarded, 
+			@RequestParam(value ="searchTerm") String searchTerm) {
 		Integer count = recipeService.countFoodGroups(discarded, searchTerm);
 		Response<FoodGroup> response = new Response<FoodGroup>();
 		if (count > 0)
@@ -486,13 +484,13 @@ public class RecipeApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.RecipeUrls.GET_NUTRIENT_GOALS)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_NUTRIENT_GOALS)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRIENT_GOALS, notes = PathProxy.RecipeUrls.GET_NUTRIENT_GOALS)
-	public Response<NutrientGoal> getNutrientGoals(@QueryParam(value ="size") int size, 
-			@QueryParam(value ="page") int page,
-			@QueryParam(value ="discarded") Boolean discarded, 
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	public Response<NutrientGoal> getNutrientGoals(@RequestParam(value ="size") int size, 
+			@RequestParam(value ="page") int page,
+			@RequestParam(value ="discarded") Boolean discarded, 
+			@RequestParam(value ="searchTerm") String searchTerm) {
 		Integer count = recipeService.countNutrientGoals(discarded, searchTerm);
 		Response<NutrientGoal> response = new Response<NutrientGoal>();
 		if (count > 0)
@@ -501,13 +499,13 @@ public class RecipeApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecipeUrls.GET_RECIPE_NUTRIENT_TYPES)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_RECIPE_NUTRIENT_TYPES)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_RECIPE_NUTRIENT_TYPES, notes = PathProxy.RecipeUrls.GET_RECIPE_NUTRIENT_TYPES)
-	public Response<RecipeNutrientType> getRecipeNutrientTypes(@QueryParam(value ="size") int size, 
-			@QueryParam(value ="page") int page,
-			@QueryParam(value ="discarded") Boolean discarded, 
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	public Response<RecipeNutrientType> getRecipeNutrientTypes(@RequestParam(value ="size") int size, 
+			@RequestParam(value ="page") int page,
+			@RequestParam(value ="discarded") Boolean discarded, 
+			@RequestParam(value ="searchTerm") String searchTerm) {
 		Integer count = recipeService.countRecipeNutrientTypes(discarded, searchTerm);
 		Response<RecipeNutrientType> response = new Response<RecipeNutrientType>();
 		if (count > 0)
@@ -516,13 +514,13 @@ public class RecipeApi {
 		return response;
 	}
 	
-	@Path(value = PathProxy.RecipeUrls.GET_NUTRITION_DISEASES)
-	@GET
+	
+	@GetMapping(value = PathProxy.RecipeUrls.GET_NUTRITION_DISEASES)
 	@ApiOperation(value = PathProxy.RecipeUrls.GET_NUTRITION_DISEASES, notes = PathProxy.RecipeUrls.GET_NUTRITION_DISEASES)
-	public Response<NutritionDisease> getNutritionDisease(@QueryParam(value ="size") int size, 
-			@QueryParam(value ="page") int page,
-			@QueryParam(value ="discarded") Boolean discarded, 
-			@QueryParam(value ="searchTerm") String searchTerm) {
+	public Response<NutritionDisease> getNutritionDisease(@RequestParam(value ="size") int size, 
+			@RequestParam(value ="page") int page,
+			@RequestParam(value ="discarded") Boolean discarded, 
+			@RequestParam(value ="searchTerm") String searchTerm) {
 		Integer count = recipeService.countDisease(discarded, searchTerm);
 		Response<NutritionDisease> response = new Response<NutritionDisease>();
 		if (count > 0)

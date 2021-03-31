@@ -19,8 +19,8 @@ import com.dpdocter.webservices.PathProxy;
 
 import common.util.web.Response;
 
-@Component
-@Path(PathProxy.GENERAL_TESTS_URL)
+@RestController
+(PathProxy.GENERAL_TESTS_URL)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 class GeneralTestsAPI {
@@ -36,9 +36,9 @@ class GeneralTestsAPI {
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
 
-	@Path(value = "/geocodeLocation/{address}")
-	@GET
-	public Response<GeocodedLocation> getAccessControls(@PathParam(value = "address") String address) {
+	(value = "/geocodeLocation/{address}")
+	@GetMapping
+	public Response<GeocodedLocation> getAccessControls(@PathVariable(value = "address") String address) {
 		List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(address);
 
 		Response<GeocodedLocation> response = new Response<GeocodedLocation>();
@@ -46,8 +46,8 @@ class GeneralTestsAPI {
 		return response;
 	}
 
-	@Path(value = "push")
-	@GET
+	(value = "push")
+	@GetMapping
 	public Response<Boolean> reminder() {
 		pushNotificationServices.notifyUser("570ca16fe4b07c04418b3568", "Hello", "Healthcoco", "1", null);
 		Response<Boolean> response = new Response<Boolean>();
@@ -55,8 +55,8 @@ class GeneralTestsAPI {
 		return response;
 	}
 
-	// @Path(value = "pushIOS")
-	// @GET
+	// (value = "pushIOS")
+	// @GetMapping
 	// public Response<Boolean> pushIOS() {
 	//
 	// pushNotificationServices.pushNotificationOnIosDevices("bb", "Hello", "h",
