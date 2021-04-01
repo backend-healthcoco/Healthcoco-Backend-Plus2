@@ -6,6 +6,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.exceptions.BusinessException;
@@ -19,9 +21,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-(PathProxy.EMAIL_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RequestMapping(value = PathProxy.EMAIL_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.EMAIL_BASE_URL, description = "Endpoint for  mail ")
 public class EmailAPI {
 
@@ -30,7 +30,7 @@ public class EmailAPI {
 
 	@PostMapping
 	@ApiOperation(value = PathProxy.EmailUrls.UNSUBSCRIBE_MAIL, notes = PathProxy.EmailUrls.UNSUBSCRIBE_MAIL)
-	public Response<Boolean> unsubscribeMail(MailSubsciptionRequest request) {
+	public Response<Boolean> unsubscribeMail(@RequestBody MailSubsciptionRequest request) {
 		if (DPDoctorUtils.anyStringEmpty(request.getSubscriberId())) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
 

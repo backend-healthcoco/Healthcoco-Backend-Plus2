@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,9 +45,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-(PathProxy.CONFERENCE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RequestMapping(value = PathProxy.CONFERENCE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.CONFERENCE_URL, description = "Endpoint for Conference")
 public class DoctorConferenceAPI {
 
@@ -236,7 +236,7 @@ public class DoctorConferenceAPI {
 
 	@PostMapping(value = PathProxy.ConferenceUrls.ADD_EDIT_SESSION_QUESTION)
 	@ApiOperation(value = PathProxy.ConferenceUrls.ADD_EDIT_SESSION_QUESTION, notes = PathProxy.ConferenceUrls.ADD_EDIT_SESSION_QUESTION)
-	public Response<SessionQuestion> addEditQuestion(SessionQuestion request) {
+	public Response<SessionQuestion> addEditQuestion(@RequestBody SessionQuestion request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

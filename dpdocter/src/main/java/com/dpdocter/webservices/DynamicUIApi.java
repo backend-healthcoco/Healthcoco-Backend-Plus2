@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.beans.DataDynamicUI;
@@ -31,9 +33,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-(PathProxy.DYNAMIC_UI_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RequestMapping(value=PathProxy.DYNAMIC_UI_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DYNAMIC_UI_BASE_URL, description = "Endpoint for Dynamic UI")
 public class DynamicUIApi {
 
@@ -69,7 +69,7 @@ public class DynamicUIApi {
 	
 	@PostMapping(value = PathProxy.DynamicUIUrls.POST_PERMISSIONS)
 	@ApiOperation(value = "SUBMIT_DYNAMIC_UI_PERMISSION", notes = "SUBMIT_DYNAMIC_UI_PERMISSION")
-	public Response<DynamicUI> postPermissions(DynamicUIRequest dynamicUIRequest) {
+	public Response<DynamicUI> postPermissions(@RequestBody DynamicUIRequest dynamicUIRequest) {
 		if (dynamicUIRequest == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Request is null");
 		} else if (dynamicUIRequest.getUiPermissions() == null) {
@@ -89,7 +89,7 @@ public class DynamicUIApi {
 	
 	@PostMapping(value = PathProxy.DynamicUIUrls.POST_DATA_PERMISSIONS)
 	@ApiOperation(value = "SUBMIT_DATA_DYNAMIC_UI_PERMISSION", notes = "SUBMIT_DATA_DYNAMIC_UI_PERMISSION")
-	public Response<DataDynamicUI> postDataPermissions(DataDynamicUI dynamicUIRequest) {
+	public Response<DataDynamicUI> postDataPermissions(@RequestBody DataDynamicUI dynamicUIRequest) {
 		if (dynamicUIRequest == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Request is null");
 		} else if (dynamicUIRequest.getDataDynamicField() == null) {
@@ -161,7 +161,7 @@ public class DynamicUIApi {
 	
 	@PostMapping(value = PathProxy.DynamicUIUrls.POST_DENTAL_LAB_PERMISSIONS)
 	@ApiOperation(value = "SUBMIT_DENTAL_LAB_DYNAMIC_UI_PERMISSION", notes = "SUBMIT_DENTAL_LAB_DYNAMIC_UI_PERMISSION")
-	public Response<DentalLabDynamicUi> postDentalLabPermissions(DentalLabDynamicUi dynamicUIRequest) {
+	public Response<DentalLabDynamicUi> postDentalLabPermissions(@RequestBody DentalLabDynamicUi dynamicUIRequest) {
 		if (dynamicUIRequest == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Request is null");
 		} else if (dynamicUIRequest.getDentalLabDynamicField() == null) {
@@ -181,7 +181,7 @@ public class DynamicUIApi {
 	
 	@PostMapping(value = PathProxy.DynamicUIUrls.ADD_EDIT_KIOSK_PERMISSION)
 	@ApiOperation(value = PathProxy.DynamicUIUrls.ADD_EDIT_KIOSK_PERMISSION, notes = "ADD_EDIT_KIOSK_PERMISSION")
-	public Response<KioskDynamicUi> addEditKoiskPermissions(KioskDynamicUiResquest dynamicUIRequest) {
+	public Response<KioskDynamicUi> addEditKoiskPermissions(@RequestBody KioskDynamicUiResquest dynamicUIRequest) {
 		if (dynamicUIRequest == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Request is null");
 		} else if (dynamicUIRequest.getKioskPermission() == null) {
@@ -243,7 +243,7 @@ public class DynamicUIApi {
 	
 	@PostMapping(value = PathProxy.DynamicUIUrls.ADD_EDIT_NUTRITION_PERMISSION)
 	@ApiOperation(value = PathProxy.DynamicUIUrls.ADD_EDIT_NUTRITION_PERMISSION, notes = "ADD_EDIT_NUTRITION_PERMISSION")
-	public Response<NutritionUI> addEditNutritionPermissions(NutrirtionUIRequest request) {
+	public Response<NutritionUI> addEditNutritionPermissions(@RequestBody NutrirtionUIRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Request is null");
 		} else if (request.getUiPermission() == null) {

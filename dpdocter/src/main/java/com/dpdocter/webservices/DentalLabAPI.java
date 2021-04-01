@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -66,9 +68,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-(PathProxy.DENTAL_LAB_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RequestMapping(value=PathProxy.DENTAL_LAB_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DENTAL_LAB_BASE_URL, description = "Endpoint for dental lab")
 public class DentalLabAPI {
 
@@ -86,7 +86,7 @@ public class DentalLabAPI {
 	
 	@PostMapping(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORKS)
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORKS, notes = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORKS)
-	public Response<DentalWork> addEditDEntalWorks(AddEditCustomWorkRequest request) {
+	public Response<DentalWork> addEditDEntalWorks(@RequestBody AddEditCustomWorkRequest request) {
 		DentalWork dentalWork = null;
 		if (request == null) {
 			logger.warn("Invalid Input");
@@ -154,7 +154,7 @@ public class DentalLabAPI {
 	
 	@PostMapping(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_LAB_DOCTOR_ASSOCIATION)
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_LAB_DOCTOR_ASSOCIATION, notes = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_LAB_DOCTOR_ASSOCIATION)
-	public Response<DentalLabDoctorAssociation> addEditDentalLabDoctorAssociation(DentalLabDoctorAssociation request) {
+	public Response<DentalLabDoctorAssociation> addEditDentalLabDoctorAssociation(@RequestBody DentalLabDoctorAssociation request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -190,7 +190,7 @@ public class DentalLabAPI {
 	
 	@PostMapping(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORK_PICKUP)
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORK_PICKUP, notes = PathProxy.DentalLabUrls.ADD_EDIT_DENTAL_WORK_PICKUP)
-	public Response<DentalLabPickup> addEditPickupRequest(DentalLabPickupRequest request) {
+	public Response<DentalLabPickup> addEditPickupRequest(@RequestBody DentalLabPickupRequest request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -220,7 +220,7 @@ public class DentalLabAPI {
 	
 	@PostMapping(value = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_WORK_ASSOCIAITION)
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_WORK_ASSOCIAITION, notes = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_WORK_ASSOCIAITION)
-	public Response<Boolean> addEditRateCardWorkAssociation(List<RateCardDentalWorkAssociation> request) {
+	public Response<Boolean> addEditRateCardWorkAssociation(@RequestBody List<RateCardDentalWorkAssociation> request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -250,7 +250,7 @@ public class DentalLabAPI {
 	
 	@PostMapping(value = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION)
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION, notes = PathProxy.DentalLabUrls.ADD_EDIT_RATE_CARD_DOCTOR_ASSOCIAITION)
-	public Response<RateCardDoctorAssociation> addEditRateCardDoctorAssociation(RateCardDoctorAssociation request) {
+	public Response<RateCardDoctorAssociation> addEditRateCardDoctorAssociation(@RequestBody RateCardDoctorAssociation request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -279,7 +279,7 @@ public class DentalLabAPI {
 	
 	@PostMapping(value = PathProxy.DentalLabUrls.ADD_EDIT_COLLECTION_BOY_DOCTOR_ASSOCIAITION)
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_COLLECTION_BOY_DOCTOR_ASSOCIAITION, notes = PathProxy.DentalLabUrls.ADD_EDIT_COLLECTION_BOY_DOCTOR_ASSOCIAITION)
-	public Response<Boolean> addEditCollectionBoyDoctorAssociation(List<CollectionBoyDoctorAssociation> request) {
+	public Response<Boolean> addEditCollectionBoyDoctorAssociation(@RequestBody List<CollectionBoyDoctorAssociation> request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -325,7 +325,7 @@ public class DentalLabAPI {
 	
 	@PostMapping(value = PathProxy.DentalLabUrls.CHANGE_REQUEST_STATUS)
 	@ApiOperation(value = PathProxy.DentalLabUrls.CHANGE_REQUEST_STATUS, notes = PathProxy.DentalLabUrls.CHANGE_REQUEST_STATUS)
-	public Response<Boolean> changeStatus(DentalLabPickupChangeStatusRequest request) {
+	public Response<Boolean> changeStatus(@RequestBody DentalLabPickupChangeStatusRequest request) {
 		if (DPDoctorUtils.anyStringEmpty(request.getDentalLabPickupId(), request.getStatus())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -355,7 +355,7 @@ public class DentalLabAPI {
 	@PostMapping
 	(value = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_BASE_64)
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_BASE_64, notes = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_BASE_64)
-	public Response<ImageURLResponse> addDentalImageBase64(FileDetails fileDetails) {
+	public Response<ImageURLResponse> addDentalImageBase64(@RequestBody FileDetails fileDetails) {
 
 		if (fileDetails == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -371,7 +371,7 @@ public class DentalLabAPI {
 	@PostMapping
 	(value = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_DOCTOR)
 	@ApiOperation(value = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_DOCTOR, notes = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_DOCTOR)
-	public Response<Boolean> updateDentalStagesForDoctor(UpdateDentalStagingRequest request) {
+	public Response<Boolean> updateDentalStagesForDoctor(@RequestBody UpdateDentalStagingRequest request) {
 
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -384,7 +384,7 @@ public class DentalLabAPI {
 	@PostMapping
 	(value = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_LAB)
 	@ApiOperation(value = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_LAB, notes = PathProxy.DentalLabUrls.UPDATE_DENTAL_STAGES_FOR_LAB)
-	public Response<Boolean> updateDentalStagesForLab(UpdateDentalStagingRequest request) {
+	public Response<Boolean> updateDentalStagesForLab(@RequestBody UpdateDentalStagingRequest request) {
 
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -441,7 +441,7 @@ public class DentalLabAPI {
 	
 	@PostMapping(value = PathProxy.DentalLabUrls.UPDATE_ETA)
 	@ApiOperation(value = PathProxy.DentalLabUrls.UPDATE_ETA, notes = PathProxy.DentalLabUrls.UPDATE_ETA)
-	public Response<Boolean> updateETA(UpdateETARequest request) {
+	public Response<Boolean> updateETA(@RequestBody UpdateETARequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -501,7 +501,7 @@ public class DentalLabAPI {
 	
 	@PostMapping(value = PathProxy.DentalLabUrls.DOCTOR_REGISTRATION)
 	@ApiOperation(value = PathProxy.DentalLabUrls.DOCTOR_REGISTRATION, notes = PathProxy.DentalLabUrls.DOCTOR_REGISTRATION)
-	public Response<Boolean> doctorRegistration(DentalLabDoctorRegistrationRequest request) {
+	public Response<Boolean> doctorRegistration(@RequestBody DentalLabDoctorRegistrationRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -513,7 +513,7 @@ public class DentalLabAPI {
 	
 	@PostMapping(value = PathProxy.DentalLabUrls.ADD_EDIT_TAX)
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_TAX, notes = PathProxy.DentalLabUrls.ADD_EDIT_TAX)
-	public Response<TaxResponse> addEditTax(AddEditTaxRequest request) {
+	public Response<TaxResponse> addEditTax(@RequestBody AddEditTaxRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -537,7 +537,7 @@ public class DentalLabAPI {
 	
 	@PostMapping(value = PathProxy.DentalLabUrls.ADD_EDIT_RECEIPT)
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_EDIT_RECEIPT, notes = PathProxy.DentalLabUrls.ADD_EDIT_RECEIPT)
-	public Response<DentalWorksReceipt> addEditReceipt(DentalWorksReceipt request) {
+	public Response<DentalWorksReceipt> addEditReceipt(@RequestBody DentalWorksReceipt request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}

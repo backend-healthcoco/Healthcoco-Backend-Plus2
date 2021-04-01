@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -75,9 +76,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-(PathProxy.DOCTOR_PROFILE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RequestMapping(value=PathProxy.DOCTOR_PROFILE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DOCTOR_PROFILE_URL, description = "Endpoint for doctor profile")
 public class DoctorProfileApi {
 
@@ -107,7 +106,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME)
-	public Response<DoctorNameAddEditRequest> addEditName(DoctorNameAddEditRequest request) {
+	public Response<DoctorNameAddEditRequest> addEditName(@RequestBody DoctorNameAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getFirstName())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -122,7 +121,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE)
-	public Response<DoctorExperienceAddEditRequest> addEditExperience(DoctorExperienceAddEditRequest request) {
+	public Response<DoctorExperienceAddEditRequest> addEditExperience(@RequestBody DoctorExperienceAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -138,7 +137,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONTACT)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONTACT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_CONTACT)
-	public Response<DoctorContactAddEditRequest> addEditContact(DoctorContactAddEditRequest request) {
+	public Response<DoctorContactAddEditRequest> addEditContact(@RequestBody DoctorContactAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -152,7 +151,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EDUCATION)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EDUCATION, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_EDUCATION)
-	public Response<DoctorEducationAddEditRequest> addEditEducation(DoctorEducationAddEditRequest request) {
+	public Response<DoctorEducationAddEditRequest> addEditEducation(@RequestBody DoctorEducationAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -177,7 +176,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SPECIALITY)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SPECIALITY, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_SPECIALITY)
-	public Response<DoctorSpecialityAddEditRequest> addEditSpeciality(DoctorSpecialityAddEditRequest request) {
+	public Response<DoctorSpecialityAddEditRequest> addEditSpeciality(@RequestBody DoctorSpecialityAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -226,7 +225,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_ACHIEVEMENT)
-	public Response<DoctorAchievementAddEditRequest> addEditAchievement(DoctorAchievementAddEditRequest request) {
+	public Response<DoctorAchievementAddEditRequest> addEditAchievement(@RequestBody DoctorAchievementAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -241,7 +240,7 @@ public class DoctorProfileApi {
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_STATEMENT)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_STATEMENT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_STATEMENT)
 	public Response<DoctorProfessionalStatementAddEditRequest> addEditProfessionalStatement(
-			DoctorProfessionalStatementAddEditRequest request) {
+			@RequestBody DoctorProfessionalStatementAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -257,7 +256,7 @@ public class DoctorProfileApi {
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_REGISTRATION_DETAIL)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_REGISTRATION_DETAIL, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_REGISTRATION_DETAIL)
 	public Response<DoctorRegistrationAddEditRequest> addEditRegistrationDetail(
-			DoctorRegistrationAddEditRequest request) {
+			@RequestBody DoctorRegistrationAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -273,7 +272,7 @@ public class DoctorProfileApi {
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE_DETAIL)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE_DETAIL, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_EXPERIENCE_DETAIL)
 	public Response<DoctorExperienceDetailAddEditRequest> addEditExperienceDetail(
-			DoctorExperienceDetailAddEditRequest request) {
+			@RequestBody DoctorExperienceDetailAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -288,7 +287,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE)
-	public Response<String> addEditProfilePicture(DoctorProfilePictureAddEditRequest request) {
+	public Response<String> addEditProfilePicture(@RequestBody DoctorProfilePictureAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -305,7 +304,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE)
-	public Response<String> addEditCoverPicture(DoctorProfilePictureAddEditRequest request) {
+	public Response<String> addEditCoverPicture(@RequestBody DoctorProfilePictureAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -323,7 +322,7 @@ public class DoctorProfileApi {
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_MEMBERSHIP)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_MEMBERSHIP, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFESSIONAL_MEMBERSHIP)
 	public Response<DoctorProfessionalAddEditRequest> addEditProfessionalMembership(
-			DoctorProfessionalAddEditRequest request) {
+			@RequestBody DoctorProfessionalAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -427,7 +426,8 @@ public class DoctorProfileApi {
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_NUMBERS)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_NUMBERS, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_NUMBERS)
 	public Response<DoctorAppointmentNumbersAddEditRequest> addEditAppointmentNumbers(
-			DoctorAppointmentNumbersAddEditRequest request) {
+		@RequestBody DoctorAppointmentNumbersAddEditRequest request) {
+		
 		if (request == null) {
 			logger.warn("Doctor Contact Request Is Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
@@ -447,7 +447,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
-	public Response<DoctorVisitingTimeAddEditRequest> addEditVisitingTime(DoctorVisitingTimeAddEditRequest request) {
+	public Response<DoctorVisitingTimeAddEditRequest> addEditVisitingTime(@RequestBody DoctorVisitingTimeAddEditRequest request) {
 		if (request == null) {
 			logger.warn("Doctor Contact Request Is Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
@@ -467,7 +467,7 @@ public class DoctorProfileApi {
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONSULTATION_FEE)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_CONSULTATION_FEE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_CONSULTATION_FEE)
 	public Response<DoctorConsultationFeeAddEditRequest> addEditConsultationFee(
-			DoctorConsultationFeeAddEditRequest request) {
+			@RequestBody DoctorConsultationFeeAddEditRequest request) {
 		if (request == null) {
 			logger.warn("Doctor Contact Request Is Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
@@ -487,7 +487,7 @@ public class DoctorProfileApi {
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_SLOT)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_SLOT, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_APPOINTMENT_SLOT)
 	public Response<DoctorAppointmentSlotAddEditRequest> addEditAppointmentSlot(
-			DoctorAppointmentSlotAddEditRequest request) {
+			@RequestBody DoctorAppointmentSlotAddEditRequest request) {
 		if (request == null) {
 			logger.warn("Doctor Contact Request Is Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
@@ -507,7 +507,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENERAL_INFO)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENERAL_INFO, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_GENERAL_INFO)
-	public Response<DoctorGeneralInfo> addEditGeneralInfo(DoctorGeneralInfo request) {
+	public Response<DoctorGeneralInfo> addEditGeneralInfo(@RequestBody DoctorGeneralInfo request) {
 		if (request == null) {
 			logger.warn("Doctor Contact Request Is Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact Request Is Empty");
@@ -580,7 +580,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA)
-	public Response<DoctorMultipleDataAddEditResponse> addEditMultipleData(DoctorMultipleDataAddEditRequest request) {
+	public Response<DoctorMultipleDataAddEditResponse> addEditMultipleData(@RequestBody DoctorMultipleDataAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Request Cannot Be null");
 			throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
@@ -602,7 +602,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_FACILITY)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_FACILITY, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_FACILITY)
-	public Response<DoctorAddEditFacilityRequest> addEditFacility(DoctorAddEditFacilityRequest request) {
+	public Response<DoctorAddEditFacilityRequest> addEditFacility(@RequestBody DoctorAddEditFacilityRequest request) {
 		if (request == null) {
 			logger.warn("Request Is Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Request Is Empty");
@@ -622,7 +622,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENDER)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_GENDER, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_GENDER)
-	public Response<DoctorGenderAddEditRequest> addEditGender(DoctorGenderAddEditRequest request) {
+	public Response<DoctorGenderAddEditRequest> addEditGender(@RequestBody DoctorGenderAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -637,7 +637,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_DOB)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_DOB, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_DOB)
-	public Response<DoctorDOBAddEditRequest> addEditDOB(DoctorDOBAddEditRequest request) {
+	public Response<DoctorDOBAddEditRequest> addEditDOB(@RequestBody DoctorDOBAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -763,7 +763,7 @@ public class DoctorProfileApi {
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SEO)
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SEO, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_SEO)
-	public Response<AddEditSEORequest> addEditSEO(AddEditSEORequest request) {
+	public Response<AddEditSEORequest> addEditSEO(@RequestBody AddEditSEORequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

@@ -154,7 +154,7 @@ public class DentalImagingAPI {
 
 	@PostMapping(value = PathProxy.DentalImagingUrl.ADD_RECORDS)	
 	@ApiOperation(value = PathProxy.DentalImagingUrl.ADD_RECORDS, notes = PathProxy.DentalImagingUrl.ADD_RECORDS)
-	public Response<DentalImagingReports> addRecordsBase64(DentalimagingReportsUploadRequest request) {
+	public Response<DentalImagingReports> addRecordsBase64(@RequestBody DentalimagingReportsUploadRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -215,7 +215,7 @@ public class DentalImagingAPI {
 	
 	@PostMapping(value = PathProxy.DentalImagingUrl.DOCTOR_REGISTRATION)
 	@ApiOperation(value = PathProxy.DentalImagingUrl.DOCTOR_REGISTRATION, notes = PathProxy.DentalImagingUrl.DOCTOR_REGISTRATION)
-	public Response<Boolean> doctorRegistration(DentalImagingLabDoctorRegistrationRequest request) {
+	public Response<Boolean> doctorRegistration(@RequestBody DentalImagingLabDoctorRegistrationRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -227,7 +227,7 @@ public class DentalImagingAPI {
 	
 	@PostMapping(value = PathProxy.DentalImagingUrl.ADD_EDIT_INVOICE)
 	@ApiOperation(value = PathProxy.DentalImagingUrl.ADD_EDIT_INVOICE, notes = PathProxy.DentalImagingUrl.ADD_EDIT_INVOICE)
-	public Response<DentalImagingInvoice> addEditDentalImaging(DentalImagingInvoice request) {
+	public Response<DentalImagingInvoice> addEditDentalImaging(@RequestBody DentalImagingInvoice request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}

@@ -20,6 +20,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,9 +41,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-(PathProxy.DIAGNOSTIC_TEST_ORDER_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RequestMapping(value=PathProxy.DIAGNOSTIC_TEST_ORDER_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DIAGNOSTIC_TEST_ORDER_BASE_URL, description = "Endpoint for diagnostic test order apis")
 public class DiagnosticTestOrderApi {
 
@@ -81,7 +81,7 @@ public class DiagnosticTestOrderApi {
 	
 	@PostMapping(value = PathProxy.DiagnosticTestOrderUrls.PLACE_ORDER)
 	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.PLACE_ORDER, notes = DiagnosticTestOrderUrls.PLACE_ORDER)
-	public Response<OrderDiagnosticTest> placeDiagnosticTestOrder(OrderDiagnosticTest request) {
+	public Response<OrderDiagnosticTest> placeDiagnosticTestOrder(@RequestBody OrderDiagnosticTest request) {
 
 		if(request == null) {
 			logger.warn("Invalid Input");

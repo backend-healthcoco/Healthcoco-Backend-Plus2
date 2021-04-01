@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -60,9 +62,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-(PathProxy.DISCHARGE_SUMMARY_BASE_URL)
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@RequestMapping(value = PathProxy.DISCHARGE_SUMMARY_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DISCHARGE_SUMMARY_BASE_URL)
 public class DischargeSummaryAPI {
 
@@ -83,7 +83,7 @@ public class DischargeSummaryAPI {
 	
 	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
-	public Response<DischargeSummaryResponse> addEditDischargeSummary(DischargeSummaryRequest request) {
+	public Response<DischargeSummaryResponse> addEditDischargeSummary(@RequestBody DischargeSummaryRequest request) {
 		Response<DischargeSummaryResponse> response = null;
 		DischargeSummaryResponse dischargeSummary = null;
 		if (request == null) {
@@ -250,7 +250,7 @@ public class DischargeSummaryAPI {
 	
 	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_LABOUR_NOTES)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_LABOUR_NOTES, notes = PathProxy.DischargeSummaryUrls.ADD_LABOUR_NOTES)
-	public Response<LabourNote> addLabourNote(LabourNote request) {
+	public Response<LabourNote> addLabourNote(@RequestBody LabourNote request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getLabourNotes())) {
 			logger.warn("Invalid Input");
@@ -271,7 +271,7 @@ public class DischargeSummaryAPI {
 	
 	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_BABY_NOTES)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_BABY_NOTES, notes = PathProxy.DischargeSummaryUrls.ADD_BABY_NOTES)
-	public Response<BabyNote> addBabyNote(BabyNote request) {
+	public Response<BabyNote> addBabyNote(@RequestBody BabyNote request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getBabyNotes())) {
 			logger.warn("Invalid Input");
@@ -291,7 +291,7 @@ public class DischargeSummaryAPI {
 	
 	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_OPERATION_NOTES)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_OPERATION_NOTES, notes = PathProxy.DischargeSummaryUrls.ADD_OPERATION_NOTES)
-	public Response<OperationNote> addOperationNote(OperationNote request) {
+	public Response<OperationNote> addOperationNote(@RequestBody OperationNote request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getOperationNotes())) {
 			logger.warn("Invalid Input");
@@ -387,7 +387,7 @@ public class DischargeSummaryAPI {
 	
 	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_CEMENT)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_CEMENT, notes = PathProxy.DischargeSummaryUrls.ADD_CEMENT)
-	public Response<Cement> addCement(Cement request) {
+	public Response<Cement> addCement(@RequestBody Cement request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getCement())) {
 			logger.warn("Invalid Input");
@@ -431,7 +431,7 @@ public class DischargeSummaryAPI {
 	
 	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_IMPLANT)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_IMPLANT, notes = PathProxy.DischargeSummaryUrls.ADD_IMPLANT)
-	public Response<Implant> addImplant(Implant request) {
+	public Response<Implant> addImplant(@RequestBody Implant request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getImplant())) {
 			logger.warn("Invalid Input");
@@ -496,7 +496,7 @@ public class DischargeSummaryAPI {
 	
 	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_EDIT_FLOWSHEETS)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_EDIT_FLOWSHEETS, notes = PathProxy.DischargeSummaryUrls.ADD_EDIT_FLOWSHEETS)
-	public Response<FlowsheetResponse> addEditFlowsheets(AddEditFlowSheetRequest request) {
+	public Response<FlowsheetResponse> addEditFlowsheets(@RequestBody AddEditFlowSheetRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId())) {
 			logger.warn("Invalid Input");
@@ -573,7 +573,7 @@ public class DischargeSummaryAPI {
 	
 	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM)
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM)
-	public Response<Diagram> addDiagram(Diagram request) {
+	public Response<Diagram> addDiagram(@RequestBody Diagram request) {
 		if (request == null
 				|| DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())
 				|| request.getDiagram() == null) {

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,9 +41,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-(PathProxy.DOCTOR_LAB_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@RequestMapping(value = PathProxy.DOCTOR_LAB_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DOCTOR_LAB_URL, description = "Endpoint for doctor lab")
 public class DoctorLabApi {
 	private static Logger logger = LogManager.getLogger(DoctorLabApi.class.getName());
@@ -54,7 +54,7 @@ public class DoctorLabApi {
 	
 	@PostMapping(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_LAB_REPORT)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_LAB_REPORT, notes = PathProxy.DoctorLabUrls.ADD_DOCTOR_LAB_REPORT)
-	public Response<DoctorLabReport> addDoctorLabReport(DoctorLabReport request) {
+	public Response<DoctorLabReport> addDoctorLabReport(@RequestBody DoctorLabReport request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -107,7 +107,7 @@ public class DoctorLabApi {
 	@PostMapping
 	(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_FILE)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_FILE, notes = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_FILE)
-	public Response<RecordsFile> uploadDoctorLabReport(DoctorLabReportUploadRequest request) {
+	public Response<RecordsFile> uploadDoctorLabReport(@RequestBody DoctorLabReportUploadRequest request) {
 		if (request == null || request.getFileDetails() == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -163,7 +163,7 @@ public class DoctorLabApi {
 	@PostMapping
 	(value = PathProxy.DoctorLabUrls.ADD_TO_FAVOURITE_DOCTOR_LIST)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.ADD_TO_FAVOURITE_DOCTOR_LIST, notes = PathProxy.DoctorLabUrls.ADD_TO_FAVOURITE_DOCTOR_LIST)
-	public Response<Boolean> addDoctorToFavouriteList(DoctorLabFavouriteDoctorRequest request) {
+	public Response<Boolean> addDoctorToFavouriteList(@RequestBody DoctorLabFavouriteDoctorRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getLocationId(), request.getFavouriteDoctorId(), request.getFavouriteHospitalId(),
 				request.getFavouriteLocationId())) {
@@ -275,7 +275,7 @@ public class DoctorLabApi {
 	@PostMapping
 	(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_REFERENCE)
 	@ApiOperation(value = PathProxy.DoctorLabUrls.ADD_DOCTOR_REFERENCE, notes = PathProxy.DoctorLabUrls.ADD_DOCTOR_REFERENCE)
-	public Response<Boolean> addDoctorReference(DoctorLabDoctorReferenceRequest request) {
+	public Response<Boolean> addDoctorReference(@RequestBody DoctorLabDoctorReferenceRequest request) {
 		if (request == null
 				|| DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 						request.getLocationName(), request.getFirstName(), request.getMobileNumber())) {
