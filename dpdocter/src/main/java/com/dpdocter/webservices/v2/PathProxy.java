@@ -165,13 +165,14 @@ public interface PathProxy {
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
 
 	public interface ClinicalNotesUrls {
-		
+		public static final String GET_NOTES_FOR_WEB = "/get/note";
 	}
 	
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";
 
 	public interface PatientTreatmentURLs {
-		
+		public static final String GET_TREATMENT_FOR_WEB = "/get/treat";
+
 	}
 	
 	public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";

@@ -15,5 +15,9 @@ public interface ClinicalNotesService {
 
 	ClinicalNotes getNotesById(String id, ObjectId visitId);
 
+	List<ClinicalNotes> getClinicalNotesNEWCODE(int page, int size, String doctorId, String locationId,
+			String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, String from, String to,
+			Boolean discarded, Boolean inHistory);
+
 	
 }

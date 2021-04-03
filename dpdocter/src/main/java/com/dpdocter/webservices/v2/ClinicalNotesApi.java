@@ -67,6 +67,31 @@ public class ClinicalNotesApi {
 		return response;
 	}
 	
+	@Path(value=PathProxy.ClinicalNotesUrls.GET_NOTES_FOR_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_NOTES_FOR_WEB, notes = PathProxy.ClinicalNotesUrls.GET_NOTES_FOR_WEB)
+	public Response<ClinicalNotes> getNotesTEMP(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,@QueryParam("from") String from,@QueryParam("to") String to,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+
+		List<ClinicalNotes> clinicalNotes = clinicalNotesService.getClinicalNotesNEWCODE(page, size, doctorId, locationId,
+				hospitalId, patientId, updatedTime,
+				otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), from,to,discarded, false);
+
+		if (clinicalNotes != null && !clinicalNotes.isEmpty()) {
+			for (ClinicalNotes clinicalNote : clinicalNotes) {
+				if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
+					clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
+				}
+			}
+		}
+		Response<ClinicalNotes> response = new Response<ClinicalNotes>();
+		response.setDataList(clinicalNotes);
+		return response;
+	}
+	
 
 	private List<Diagram> getFinalDiagrams(List<Diagram> diagrams) {
 		for (Diagram diagram : diagrams) {

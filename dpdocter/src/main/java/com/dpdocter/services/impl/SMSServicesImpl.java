@@ -1064,7 +1064,7 @@ public class SMSServicesImpl implements SMSServices {
 				   
 				 responses.getEntity().writeTo(out);
 				 String responseString = out.toString();
-				System.out.println("responseString"+responseString);
+
 				  ObjectMapper mapper = new ObjectMapper();
 
 				MessageResponse list = mapper.readValue(out.toString(),MessageResponse.class);
@@ -1165,7 +1165,6 @@ public class SMSServicesImpl implements SMSServices {
 								  .setHeader( "api-key", KEY)
 								  .build();
 								//System.out.println("response"+client.execute(httprequest));
-								System.out.println("senderId"+senderId);
 								 org.apache.http.HttpResponse responses = client.execute(httprequest);
 								 responses.getEntity().writeTo(out);
 								 list = mapper.readValue(out.toString(),MessageResponse.class);
@@ -1182,8 +1181,7 @@ public class SMSServicesImpl implements SMSServices {
 					   
 					 
 					 String responseString = out.toString();
-					System.out.println("responseString"+responseString);
-					 
+			 
 
 					
 			       
@@ -1274,7 +1272,6 @@ public class SMSServicesImpl implements SMSServices {
 									  .setHeader( "api-key", KEY)
 									  .build();
 									//System.out.println("response"+client.execute(httprequest));
-									System.out.println("senderId"+senderId);
 									 org.apache.http.HttpResponse responses = client.execute(httprequest);
 									 responses.getEntity().writeTo(out);
 									 list = mapper.readValue(out.toString(),MessageResponse.class);
@@ -1290,8 +1287,7 @@ public class SMSServicesImpl implements SMSServices {
 						   
 						 
 						 String responseString = out.toString();
-						System.out.println("responseString"+responseString);
-						 
+					 
 		       
 						MessageCollection collection=new MessageCollection();
 						list.setMessageId(list.getId());
