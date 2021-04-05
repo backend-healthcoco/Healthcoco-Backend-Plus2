@@ -2152,7 +2152,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		case "CONFIRMED_APPOINTMENT_TO_DOCTOR": {
 			text = "Healthcoco! Your appointment with " + patientName + " has been scheduled @ " + dateTime
 					+ (clinicName != "" ? " at " + clinicName : "") + (branch != null ? ", " + branch : "") + ".";
-			smsTrackDetail.setTemplateId("1307161526616449686");
+			smsTrackDetail.setTemplateId("1307161191335595866");
 			smsDetail.setUserName(doctorName);
 		}
 			break;
@@ -2227,7 +2227,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		case "RESCHEDULE_APPOINTMENT_TO_DOCTOR": {
 			text = "Your appointment with " + patientName + " has been rescheduled to " + dateTime + " at " + clinicName
 					+ (branch != "" ? ", " + branch : "") + ".";
-			smsTrackDetail.setTemplateId("1307161522509431392");
+			smsTrackDetail.setTemplateId("1307161537254569636");
 			smsDetail.setUserName(doctorName);
 		}
 			break;

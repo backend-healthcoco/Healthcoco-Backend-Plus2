@@ -1198,7 +1198,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return registeredPatientDetails;
 	}
 
-	 @Scheduled(cron = "0 30 12 * * ?", zone = "IST")
+
+	//@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
 	@Override
 	public Boolean updatePatientAge() {
 		PatientCollection patientCollection = null;
@@ -1240,7 +1241,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	}
 
-	 @Scheduled(cron = "0 30 12 * * ?", zone = "IST")
+
+//	@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
 	@Override
 	public Boolean updateDoctorAge() {
 		DoctorCollection doctorCollection = null;
