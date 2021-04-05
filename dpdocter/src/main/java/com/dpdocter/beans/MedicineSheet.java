@@ -7,7 +7,7 @@ public class MedicineSheet {
 
 	private List<String> nurseName;
 	private String drugName;
-	private String time;
+	private WorkingHours time;
 	private String advice;
 	private Boolean isHighRiskMedicine = false;
 	
@@ -29,10 +29,11 @@ public class MedicineSheet {
 	public void setIsHighRiskMedicine(Boolean isHighRiskMedicine) {
 		this.isHighRiskMedicine = isHighRiskMedicine;
 	}
-	public String getTime() {
+	
+	public WorkingHours getTime() {
 		return time;
 	}
-	public void setTime(String time) {
+	public void setTime(WorkingHours time) {
 		this.time = time;
 	}
 	public String getAdvice() {

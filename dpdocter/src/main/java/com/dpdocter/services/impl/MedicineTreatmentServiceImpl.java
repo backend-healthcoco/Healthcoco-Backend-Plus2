@@ -57,6 +57,7 @@ public class MedicineTreatmentServiceImpl implements MedicineTreatmentService {
 				}
 				request.setUpdatedTime(new Date());
 				request.setCreatedBy(medicineTreatmentSheetCollection.getCreatedBy());
+				medicineTreatmentSheetCollection.setMedicine(null);
 				BeanUtil.map(request, medicineTreatmentSheetCollection);
 
 			} else {
@@ -81,7 +82,7 @@ public class MedicineTreatmentServiceImpl implements MedicineTreatmentService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 
-		return null;
+		return response;
 	}
 
 	@Override
