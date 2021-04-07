@@ -1,13 +1,18 @@
 package com.dpdocter.services.impl;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -15,22 +20,30 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.NursingCareExam;
 import com.dpdocter.beans.Patient;
-import com.dpdocter.collections.AdmitCardCollection;
+import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.InitialAssessmentCollection;
 import com.dpdocter.collections.NursesAdmissionCollection;
 import com.dpdocter.collections.NursingCareExamCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PreOperationFormCollection;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.LineSpace;
+import com.dpdocter.enums.PrintSettingType;
+import com.dpdocter.enums.VitalSignsUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.InitialAssessmentFormRepository;
 import com.dpdocter.repository.NursesAdmissionFormRepository;
 import com.dpdocter.repository.NursingCareexamRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PreOperationFormRepository;
+import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.InitialAdmissionRequest;
 import com.dpdocter.request.InitialAssessmentRequest;
@@ -38,8 +51,11 @@ import com.dpdocter.request.PreOperationAssessmentRequest;
 import com.dpdocter.response.AdmitCardResponse;
 import com.dpdocter.response.InitialAdmissionResponse;
 import com.dpdocter.response.InitialAssessmentResponse;
+import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.PreOperationAssessmentResponse;
 import com.dpdocter.services.InitialAssessmentService;
+import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.PatientVisitService;
 
 import common.util.web.DPDoctorUtils;
 
@@ -65,6 +81,24 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService{
 	
 	@Autowired
 	private MongoTemplate mongoTemplate;
+	
+	@Autowired
+	private PatientRepository patientRepository;
+	
+	@Value(value = "${image.path}")
+	private String imagePath;
+	
+	@Autowired
+	private PrintSettingsRepository printSettingsRepository;
+	
+	@Value(value = "${jasper.print.clinicalnotes.a4.fileName}")
+	private String doctorinitialassessmentA4FileName;
+	
+	@Autowired
+	private PatientVisitService patientVisitService;
+
+	@Autowired
+	private JasperReportService jasperReportService;
 	
 	@Override
 	public InitialAssessmentResponse addEditInitialAssessmentForm(InitialAssessmentRequest request) {
@@ -545,5 +579,170 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService{
 		return response;
 	}
 
+	@Override
+	public String downloadInitialAssessmentFormById(String initialAssessmentId) {
+		String response = null;
+
+		try {
+			InitialAssessmentCollection initialAssessmentCollection = initialAssessmentFormRepository
+					.findById(new ObjectId(initialAssessmentId)).orElse(null);
+			if (initialAssessmentCollection != null) {
+				PatientCollection patient = patientRepository.findByUserIdAndLocationIdAndHospitalId(
+						initialAssessmentCollection.getPatientId(), initialAssessmentCollection.getLocationId(),
+						initialAssessmentCollection.getHospitalId());
+
+				UserCollection user = userRepository.findById(initialAssessmentCollection.getPatientId()).orElse(null);
+				JasperReportResponse jasperReportResponse = null;
+
+				jasperReportResponse = createJasper(initialAssessmentCollection, patient, user,PrintSettingType.IPD.getType());
+
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Invoice Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Id does not exist");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Exception in download initial assessment "+e.getMessage());
+		}
+		return response;
+	}
+
+	private JasperReportResponse createJasper(InitialAssessmentCollection initialAssessmentCollection,
+			PatientCollection patient, UserCollection user, String type) throws NumberFormatException, IOException {
+	
+		JasperReportResponse response = null;
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		String pattern = "dd/MM/yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+		Boolean show = false;
+		PrintSettingsCollection printSettings = null;
+		printSettings = printSettingsRepository
+				.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+						initialAssessmentCollection.getDoctorId(), initialAssessmentCollection.getLocationId(),
+						initialAssessmentCollection.getHospitalId(), ComponentType.ALL.getType(), PrintSettingType.IPD.getType());
+		if (printSettings == null){
+			List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
+					.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
+							initialAssessmentCollection.getDoctorId(), initialAssessmentCollection.getLocationId(),
+							initialAssessmentCollection.getHospitalId(), ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),new Sort(Sort.Direction.DESC, "updatedTime"));
+			if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+				printSettings = printSettingsCollections.get(0);
+		}
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+
+		
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getPastHistory())) {
+			show = true;
+			parameters.put("pastHistory", initialAssessmentCollection.getPastHistory());
+		}
+		parameters.put("showPH", show);
+		
+		show = false;
+
+
+		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getPresentComplaint())) {
+			show = true;
+			parameters.put("complaints", initialAssessmentCollection.getPresentComplaint());
+		}
+		parameters.put("showcompl", show);
+		show = false;
+		
+
+		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getProvisionalDiagnosis())) {
+			show = true;
+			parameters.put("diagnosis", initialAssessmentCollection.getProvisionalDiagnosis());
+		}
+		parameters.put("showDiagnosis", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getInvestigation())) {
+			show = true;
+			parameters.put("treatmentPlan", initialAssessmentCollection.getInvestigation());
+		}
+		parameters.put("showTP", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getGeneralExam())) {
+			show = true;
+			parameters.put("examination", initialAssessmentCollection.getGeneralExam());
+		}
+		parameters.put("showEx", show);
+		show = false;
+
+	
+		
+		
+		
+		
+		
+
+		parameters.put("contentLineSpace",
+				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
+						? printSettings.getContentLineSpace()
+						: LineSpace.SMALL.name());
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails()
+						: null),
+				patient,
+				"<b>ADMIT-CARD-ID: </b>"
+						+ (initialAssessmentCollection.getUniqueEmrId() != null ? initialAssessmentCollection.getUniqueEmrId() : "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				initialAssessmentCollection.getCreatedTime() != null ? initialAssessmentCollection.getCreatedTime() : new Date(),
+				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
+		patientVisitService.generatePrintSetup(parameters, printSettings, initialAssessmentCollection.getDoctorId());
+		String pdfName = (user != null ? user.getFirstName() : "") + "DOCTORASSESSMENT"
+				+ initialAssessmentCollection.getUniqueEmrId() + new Date().getTime();
+
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4")
+				: "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
+						? printSettings.getPageSetup().getLeftMargin()
+						: 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin()
+						: 20)
+				: 20;
+		response = jasperReportService.createPDF(ComponentType.DOCTOR_INITIAL_ASSESSMENT, parameters, doctorinitialassessmentA4FileName,
+				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+
+		return response;
+
+	}
+
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+	}
+	
 	
 }

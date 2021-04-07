@@ -49,6 +49,8 @@ public interface InitialAssessmentService {
 	Boolean deleteInitialAssessment(String initialAssessmentId, String doctorId, String hospitalId, String locationId,
 			Boolean discarded);
 
+	String downloadInitialAssessmentFormById(String initialAssessmentId);
+
 	
 
 

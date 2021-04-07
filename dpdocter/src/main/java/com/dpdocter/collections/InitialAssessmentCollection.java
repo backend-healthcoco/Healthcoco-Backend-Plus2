@@ -62,6 +62,8 @@ public class InitialAssessmentCollection extends GenericCollection {
 	@Field
 	private boolean discarded = false;
 
+	@Field
+	private String uniqueEmrId;
 
 	public ObjectId getId() {
 		return id;
@@ -199,6 +201,15 @@ public class InitialAssessmentCollection extends GenericCollection {
 	public void setDiscarded(boolean discarded) {
 		this.discarded = discarded;
 	}
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
+	
 	
 	
 	

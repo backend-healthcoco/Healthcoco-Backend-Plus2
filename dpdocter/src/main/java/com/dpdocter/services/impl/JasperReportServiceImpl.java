@@ -161,6 +161,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-consent-form.jrxml");
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.ADMIT_CARD.getType()))
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-admit-card.jrxml");
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.DOCTOR_INITIAL_ASSESSMENT.getType()))
+			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-admit-card.jrxml");
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-discharge-summary.jrxml");
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.OT_REPORTS.getType())) {
@@ -315,6 +317,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.CLINICAL_NOTES.getType()))
 			createClinicalNotes(parameters, jasperDesign, columnWidth, contentFontSize, pageWidth, pageHeight,
+					normalStyle);
+		
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.DOCTOR_INITIAL_ASSESSMENT.getType()))
+			createDoctorInitilaAssessment(parameters, jasperDesign, columnWidth, contentFontSize, pageWidth, pageHeight,
 					normalStyle);
 
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType()))
@@ -482,6 +488,78 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		return jasperDesign;
 
+	}
+
+	private void createDoctorInitilaAssessment(Map<String, Object> parameters, JasperDesign jasperDesign,
+			int columnWidth, Integer contentFontSize, int pageWidth, int pageHeight, JRDesignStyle normalStyle) {
+		Boolean show = false;
+
+		band = new JRDesignBand();
+		band.setHeight(18);
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{title}"));
+		jrDesignTextField.setX(0);
+		jrDesignTextField.setY(0);
+		jrDesignTextField.setHeight(18);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setFontSize(Float.valueOf(contentFontSize));
+		band.addElement(jrDesignTextField);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		((JRDesignSection) jasperDesign.getDetailSection())
+				.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+
+		band = new JRDesignBand();
+		band.setHeight(10);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		int fieldWidth = 118;
+		if (contentFontSize > 13)
+			fieldWidth = 145;
+		else if (contentFontSize > 11)
+			fieldWidth = 128;
+
+	
+		
+		//new fields		
+//		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$P{vitalSigns}", fieldWidth, false, 0, false);
+
+		System.out.println(parameters);
+		show = (Boolean) parameters.get("showPH");
+		if (show) {
+			addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{pastHistory}", fieldWidth, false, 0, false);
+		}
+	
+	
+		show = (Boolean) parameters.get("showcompl");
+		if (show) {
+			addItems(jasperDesign, columnWidth, "$P{Complaints}", "$P{complaints}", fieldWidth, false, 0, false);
+		}
+
+		show = (Boolean) parameters.get("showEx");
+		if (show) {
+			addItems(jasperDesign, columnWidth, "$P{Examination}", "$P{examination}", fieldWidth, false, 0, false);
+		}
+
+	
+
+		
+		show = (Boolean) parameters.get("showDiagnosis");
+		if (show) {
+			addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$P{diagnosis}", fieldWidth, false, 0, false);
+		}
+
+		show = (Boolean) parameters.get("showTP");
+		if (show) {
+			addItems(jasperDesign, columnWidth, "$P{TreatmentPlan}", "$P{treatmentPlan}", fieldWidth, false, 0, false);
+		}
+
+			
+		
+			
 	}
 
 	private void createBlankPdfReport(JasperDesign jasperDesign, Map<String, Object> parameters,

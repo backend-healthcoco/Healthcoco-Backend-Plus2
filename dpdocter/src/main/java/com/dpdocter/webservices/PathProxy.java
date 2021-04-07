@@ -2467,6 +2467,8 @@ public interface PathProxy {
 		public static final String GET_ASSESSMENT_FORM ="/get/{patientId}";
 		public static final String GET_ASSESSMENT_FORM_BY_ID ="/getById/{initialAssessmentId}";
 		public static final String DELETE_ASSESSMENT_FORM = "/{initialAssessmentId}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DOWNLOAD_ASSESSMENT_FORM_BY_ID ="/download/{initialAssessmentId}";
+
 	}
 	public static final String ADMISSION_ASSESSMENT_BASE_URL = BASE_URL + "/admissionAssessment";
 
