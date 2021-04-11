@@ -1,6 +1,7 @@
 package com.dpdocter.webservices;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -20,10 +21,17 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDeliveryReports;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.SMSFormat;
 import com.dpdocter.beans.SMSTrack;
+import com.dpdocter.beans.SmsRequest;
+import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.SMSResponse;
@@ -47,17 +55,33 @@ public class SMSServicesAPI {
     @Autowired
     private TransactionalManagementService transactionalManagementService;
 
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Path(value = PathProxy.SMSUrls.SEND_SMS)
-//    @POST
-//    @ApiOperation(value = PathProxy.SMSUrls.SEND_SMS, notes = PathProxy.SMSUrls.SEND_SMS)
-//    public Response<Boolean> sendSMS(SMSTrackDetail request) {
-//	smsServices.sendSMS(request, true);
-//	Response<Boolean> response = new Response<Boolean>();
-//	response.setData(true);
-//	return response;
-//    }
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path(value = PathProxy.SMSUrls.SEND_SMS)
+    @POST
+    @ApiOperation(value = PathProxy.SMSUrls.SEND_SMS, notes = PathProxy.SMSUrls.SEND_SMS)
+    public Response<Boolean> sendSMS(@RequestBody SmsRequest request) {
+    	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+    	SMS sms = new SMS();
+    	if(!DPDoctorUtils.anyStringEmpty(request.getMessage()))
+    	sms.setSmsText(request.getMessage());
+    	SMSDetail smsDetail = new SMSDetail();
+		SMSAddress smsAddress = new SMSAddress();
+		if(!DPDoctorUtils.anyStringEmpty(request.getMobileNumber()))
+		smsAddress.setRecipient(request.getMobileNumber());
+		sms.setSmsAddress(smsAddress);
+		if(!DPDoctorUtils.anyStringEmpty(request.getTemplateId()))
+        smsTrackDetail.setTemplateId(request.getTemplateId());
+		smsDetail.setSms(sms);
+		smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+		smsDetails.add(smsDetail);
+		smsTrackDetail.setSmsDetails(smsDetails);
+	smsServices.sendSMS(smsTrackDetail, true);
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
 
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)

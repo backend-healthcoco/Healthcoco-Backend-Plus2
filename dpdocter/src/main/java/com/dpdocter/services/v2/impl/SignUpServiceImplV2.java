@@ -193,7 +193,7 @@ public class SignUpServiceImplV2 implements SignUpService {
 
 			// smsDetail.setUserName(doctorContactUs.getFirstName());
 			SMS sms = new SMS();
-
+			sms.setOtp(OTP);
 			// String link = welcomeLink + "/" + tokenCollection.getId()+"/";
 			// String shortUrl = DPDoctorUtils.urlShortner(link);
 			sms.setSmsText(OTP

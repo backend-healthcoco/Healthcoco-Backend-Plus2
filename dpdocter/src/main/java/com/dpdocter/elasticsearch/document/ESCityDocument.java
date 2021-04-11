@@ -13,7 +13,7 @@ public class ESCityDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.Text,fielddata = true)
+    @Field(type = FieldType.Text, fielddata = true)
     private String city;
 
     @Field(type = FieldType.Boolean)
