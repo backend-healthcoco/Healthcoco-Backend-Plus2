@@ -5,14 +5,12 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
+import common.util.web.DPDoctorUtils;
+
 public class DrugTypeTests {
 
 	public static void main(String[] args) throws IOException {Calendar cal = Calendar.getInstance();
-		Date today = cal.getTime();
-		cal.add(Calendar.YEAR, 1); // to get previous year add 1
-		Date expiryDate = cal.getTime();
-
-		System.out.println("today is --> " + today);
-		System.out.println("expiryDate is --> " + expiryDate);
+	 String shortUrl = DPDoctorUtils.urlShortner("https://d1ayyk8caoqrgh.cloudfront.net/rtpcr/finalcopy1617795732224.png");
+	System.out.println(shortUrl);
 	}
 }

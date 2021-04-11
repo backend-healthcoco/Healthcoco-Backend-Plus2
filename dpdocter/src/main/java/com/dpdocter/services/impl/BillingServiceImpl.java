@@ -3405,7 +3405,7 @@ System.out.println("Aggregation"+aggregation);
 						+ doctorPatientInvoiceCollection.getUniqueInvoiceId() + " by "
 						+ locationCollection.getLocationName() + ". " + invoiceDetails + " and the total cost is "
 						+ doctorPatientInvoiceCollection.getGrandTotal() + ". For queries,contact clinic" + clinicNumber
-						+ ".");
+						+ ".-Healthcoco");
 
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(mobileNumber);
@@ -3468,7 +3468,7 @@ System.out.println("Aggregation"+aggregation);
 						+ locationCollection.getLocationName() + ". " + " and the total amount paid is "
 						+ doctorPatientReceiptCollection.getAmountPaid() + " on Date:"
 						+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate())
-						+ ". For queries,contact clinic " + clinicNumber + ".");
+						+ ". For queries,contact clinic " + clinicNumber + ".-Healthcoco");
 
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(mobileNumber);

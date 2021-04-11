@@ -197,12 +197,15 @@ public class SignUpServiceImplV2 implements SignUpService{
 			
 		//	smsDetail.setUserName(doctorContactUs.getFirstName());
 			SMS sms = new SMS();
-		
-		//	String link = welcomeLink + "/" + tokenCollection.getId()+"/";
-		//	String shortUrl = DPDoctorUtils.urlShortner(link);
-			sms.setSmsText(OTP+" is your Healthcoco OTP. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy! OTPVerification");
 
-				SMSAddress smsAddress = new SMSAddress();
+			sms.setOtp(OTP);
+			// String link = welcomeLink + "/" + tokenCollection.getId()+"/";
+			// String shortUrl = DPDoctorUtils.urlShortner(link);
+			sms.setSmsText(OTP
+					+ " is your Healthcoco OTP. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy! OTPVerification");
+
+			SMSAddress smsAddress = new SMSAddress();
+
 			smsAddress.setRecipient(mobileNumber);
 			sms.setSmsAddress(smsAddress);
 			smsDetail.setSms(sms);

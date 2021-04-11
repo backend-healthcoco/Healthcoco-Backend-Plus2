@@ -13,7 +13,11 @@ public class ESCityDocument {
     @Id
     private String id;
 
+<<<<<<< HEAD
     @Field(type = FieldType.Text)
+=======
+    @Field(type = FieldType.Text, fielddata = true)
+>>>>>>> 26d38db... HAPPY-6129
     private String city;
 
     @Field(type = FieldType.Boolean)
