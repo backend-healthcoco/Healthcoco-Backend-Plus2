@@ -28,6 +28,8 @@ public class OrderReponse {
 	private Integer attempts;
 	
 	private List<String>notes;
+	
+	private List<String> offers;
 
 	public String getId() {
 		return id;
@@ -124,6 +126,16 @@ public class OrderReponse {
 	public void setNotes(List<String> notes) {
 		this.notes = notes;
 	}
+
+	public List<String> getOffers() {
+		return offers;
+	}
+
+	public void setOffers(List<String> offers) {
+		this.offers = offers;
+	}
+
+	
 
 	
 	

@@ -1154,7 +1154,7 @@ public class SMSServicesImpl implements SMSServices {
 					/*if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
 						isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(), subscriptionDetailCollection);*/
 				 DoctorCollection doctorClinicProfileCollection=doctorRepository.findByUserId(smsTrackDetail.getDoctorId());
-				 doctorClinicProfileCollection.setIsTransactionalSms(true);
+				 
 					if (doctorClinicProfileCollection.getIsTransactionalSms() == true) {
 				 //if (isSMSInAccount) {
 			//			if (!isEnvProduction) {
