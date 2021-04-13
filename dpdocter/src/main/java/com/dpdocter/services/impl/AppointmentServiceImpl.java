@@ -2219,7 +2219,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")+","
 					+ (!branch.isEmpty() ? " " + branch : "")+(clinicContactNum != "" ? " " + clinicContactNum : "")
 					+ "  has been rescheduled @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
-					+ ",. Download Healthcoco App- " + patientAppBitLink;
+					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
 			smsTrackDetail.setTemplateId("1307161191460900446");
 		}

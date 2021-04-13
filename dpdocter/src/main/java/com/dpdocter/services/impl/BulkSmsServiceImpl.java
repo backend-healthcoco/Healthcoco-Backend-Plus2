@@ -646,28 +646,28 @@ public class BulkSmsServiceImpl implements BulkSmsServices{
 			con.setRequestProperty("Authorization", "Basic " +  authStringEnc);
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(orderRequest.toString());
-			
-			  wr.flush();
-	             wr.close();
-	             con.disconnect();
-	             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-	 			String inputLine;
-	 			
-	 			/* response = new StringBuffer(); */
-	 			StringBuffer output = new StringBuffer();
-	 			while ((inputLine = in.readLine()) != null) {
 
-	 				output.append(inputLine);
-	 				System.out.println("response:"+output.toString());
-	 			}
-	 			
-	 			  ObjectMapper mapper = new ObjectMapper();
-	 			  
-	 			 OrderReponse list = mapper.readValue(output.toString(),OrderReponse.class);
-	 			//OrderReponse res=list.get(0); 
- 			
 
-	//		order = rayzorpayClient.Orders.create(orderRequest);
+			wr.flush();
+			wr.close();
+			con.disconnect();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+
+			/* response = new StringBuffer(); */
+			StringBuffer output = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+
+				output.append(inputLine);
+			}
+
+			ObjectMapper mapper = new ObjectMapper();
+			System.out.println(output.toString());
+			OrderReponse list = mapper.readValue(output.toString(), OrderReponse.class);
+			// OrderReponse res=list.get(0);
+
+			// order = rayzorpayClient.Orders.create(orderRequest);
+
 
 			if (user != null) {
 				BulkSmsPaymentCollection collection = new BulkSmsPaymentCollection();

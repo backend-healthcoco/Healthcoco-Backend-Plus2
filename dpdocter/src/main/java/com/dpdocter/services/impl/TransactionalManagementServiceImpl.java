@@ -798,7 +798,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
 
 	// Appointment Reminder to Doctor, if appointment > 0
-	//@Scheduled(cron = "0 0 22 * * ?", zone = "IST")
+	//@Scheduled(cron = "0 35 13 * * ?", zone = "IST")
 	@Scheduled(cron = "${appointment.reminder.to.doctor.cron.time}", zone = "IST")
 	@Override
 	@Transactional
@@ -872,14 +872,15 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				for (Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()) {
 					DoctorAppointmentSMSResponse response = entry.getValue();
 					UserCollection userCollection = response.getDoctor();
-					String message = "Healthcoco! You have " + response.getNoOfAppointments()
-							+ " appointments scheduled today.%0a" + response.getMessage()
-							+ ".%0aStay Happy!!";
+//					String message = "Healthcoco! You have " + response.getNoOfAppointments()
+//							+ " appointments scheduled today.%0a" + response.getMessage()
+//							+ ".%0aStay Happy!!";
+					String message="Hi "+userCollection.getFirstName()+" ,you have "+response.getNoOfAppointments()+" appointments scheduled today.-Healthcoco";
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 					smsTrackDetail.setDoctorId(userCollection.getId());
 					smsTrackDetail.setLocationId(response.getLocationId());
 					smsTrackDetail.setType("APPOINTMENT");
-					smsTrackDetail.setTemplateId("1307161526784855576");
+					smsTrackDetail.setTemplateId("1307161786275046509");
 					SMSDetail smsDetail = new SMSDetail();
 					smsDetail.setUserId(userCollection.getId());
 					SMS sms = new SMS();
@@ -1060,9 +1061,11 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						for (Entry<String, LocationAdminAppointmentLookupResponse> entry : locationDetailsMap
 								.entrySet()) {
 							LocationAdminAppointmentLookupResponse response = entry.getValue();
-							String message = "Healthcoco! Your clinic " + response.getLocationName() + " have "
-									+ response.getTotalAppointments() + " appointments scheduled today.%0a"
-									+ response.getMessage() + ".%0aStay Happy!";
+						//	String message = "Healthcoco! Your clinic " + response.getLocationName() + " have "
+						//			+ response.getTotalAppointments() + " appointments scheduled today.%0a"
+						//			+ response.getMessage() + ".%0aStay Happy!";
+							String message="Hi "+response.getLocationAdminName()+" ,you have "+response.getTotalAppointments()+" appointments scheduled today.-Healthcoco";
+
 
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 							smsTrackDetail.setDoctorId(response.getUserId());
