@@ -2140,9 +2140,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 		String text = "";
 		switch (type) {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
-					+ (branch != null ? ", " + branch : "") + (clinicContactNum != "" ? ", " + clinicContactNum : "")
-					+ " has been confirmed @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
+			text = "Your appointment with " + doctorName +(clinicName != "" ? ", " + clinicName : "")
+					+ (!branch.isEmpty() ? ", " + branch : "") + (clinicContactNum != "" ? ", " + clinicContactNum : "")
+					+ "    has been confirmed @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
 			smsTrackDetail.setTemplateId("1307161191156377476");
@@ -2150,9 +2150,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "CONFIRMED_APPOINTMENT_TO_DOCTOR": {
-			text = "Healthcoco! Your appointment with " + patientName + " has been scheduled @ " + dateTime
-					+ (clinicName != "" ? " at " + clinicName : "") + (branch != null ? ", " + branch : "") + ".";
-			smsTrackDetail.setTemplateId("1307161526616449686");
+			text = "Your appointment with " + patientName + " has been scheduled @ " + dateTime
+					+ (clinicName != "" ? " at " + clinicName : "")+(branch != "" ? ", " + branch : "")  + ".-Healthcoco";
+			text="Your appointment with "+patientName+" has been scheduled @ "+dateTime+" at "+(clinicName != "" ?  clinicName : "")+".-Healthcoco";
+			smsTrackDetail.setTemplateId("1307161527137176431");
 			smsDetail.setUserName(doctorName);
 		}
 			break;
@@ -2173,8 +2174,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR": {
-			text = "Your appointment" + " with " + patientName + " for " + dateTime + " at " + clinicName
-					+ (branch != "" ? ", " + branch : "") + " has been cancelled as per your request.";
+			text = "Healthcoco! Your appointment" + " with " + patientName + " for " + dateTime + " at " + clinicName
+					+ (!branch.isEmpty() ? ", " + branch : "") + " has been cancelled as per your request.";
 			smsDetail.setUserName(doctorName);
 			smsTrackDetail.setTemplateId("1307161191475616939");
 		}
@@ -2182,11 +2183,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR": {
 			text = "Your appointment @ " + dateTime + " has been cancelled by " + doctorName
-					+ (clinicName != "" ? ", " + clinicName : "") + (branch != "" ? ", " + branch : "")
-					+ (clinicContactNum != "" ? ", " + clinicContactNum : "")
-					+ ". Request you to book again. Download Healthcoco App- " + patientAppBitLink;
+					+ (clinicName != "" ? ", " + clinicName : "") +","+ (!branch.isEmpty() ? " " + branch : "")
+					+","+ (clinicContactNum != "" ? " " + clinicContactNum : "")
+					+ ". Request you to book again.-Healthcoco";
 			smsDetail.setUserName(patientName);
-			smsTrackDetail.setTemplateId("1307161522503253641");
+			smsTrackDetail.setTemplateId("1307161555507748947");
 		}
 			break;
 
@@ -2215,9 +2216,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_PATIENT": {
-			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
-					+ (branch != "" ? ", " + branch : "") + (clinicContactNum != "" ? ", " + clinicContactNum : "")
-					+ " has been rescheduled @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
+			text = "Your appointment with " + doctorName + (clinicName != "" ? ", " + clinicName : "")+","
+					+ (!branch.isEmpty() ? " " + branch : "")+(clinicContactNum != "" ? " " + clinicContactNum : "")
+					+ "  has been rescheduled @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
 			smsTrackDetail.setTemplateId("1307161191460900446");
@@ -2226,8 +2227,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		case "RESCHEDULE_APPOINTMENT_TO_DOCTOR": {
 			text = "Your appointment with " + patientName + " has been rescheduled to " + dateTime + " at " + clinicName
-					+ (branch != "" ? ", " + branch : "") + ".";
-			smsTrackDetail.setTemplateId("1307161522509431392");
+					+ (!branch.isEmpty() ? ", " + branch : "") + ".-Healthcoco";
+			smsTrackDetail.setTemplateId("1307161537254569636");
 			smsDetail.setUserName(doctorName);
 		}
 			break;
@@ -2235,7 +2236,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		
 		case "CONFIRMED_ONLINE_APPOINTMENT_TO_PATIENT": {
 			text = "Your online "+ consultationType +" consultation with " + doctorName + (clinicName != "" ? ", " + clinicName : "")
-					+ (branch != null ? ", " + branch : "") + (clinicContactNum != "" ? ", " + clinicContactNum : "")
+					+ (!branch.isEmpty() ? ", " + branch : "") + (clinicContactNum != "" ? ", " + clinicContactNum : "")
 					+ " has been confirmed @ " + dateTime + (googleMapShortUrl != "" ? ", " + googleMapShortUrl : "")
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
@@ -2245,7 +2246,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		case "CONFIRMED_ONLINE_APPOINTMENT_TO_DOCTOR": {
 			text = "Healthcoco! Your online "+ consultationType +" consultation with " + patientName + " has been scheduled @ " + dateTime
-					+ (clinicName != "" ? " at " + clinicName : "") + (branch != null ? ", " + branch : "") + ".";
+					+ (clinicName != "" ? " at " + clinicName : "") + (!branch.isEmpty() ? ", " + branch : "") + ".";
 			smsDetail.setUserName(doctorName);
 			smsTrackDetail.setTemplateId("1307161649367351507");
 		}

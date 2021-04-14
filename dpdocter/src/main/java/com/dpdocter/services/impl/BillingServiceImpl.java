@@ -3390,7 +3390,7 @@ public class BillingServiceImpl implements BillingService {
 						+ doctorPatientInvoiceCollection.getUniqueInvoiceId() + " by "
 						+ locationCollection.getLocationName() + ". " + invoiceDetails + " and the total cost is "
 						+ doctorPatientInvoiceCollection.getGrandTotal() + ". For queries,contact clinic" + clinicNumber
-						+ ".");
+						+ ".-Healthcoco");
 
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(mobileNumber);
@@ -3453,7 +3453,7 @@ public class BillingServiceImpl implements BillingService {
 						+ locationCollection.getLocationName() + ". " + " and the total amount paid is "
 						+ doctorPatientReceiptCollection.getAmountPaid() + " on Date:"
 						+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate())
-						+ ". For queries,contact clinic " + clinicNumber + ".");
+						+ ". For queries,contact clinic " + clinicNumber + ".-Healthcoco");
 
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(mobileNumber);

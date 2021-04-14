@@ -13,6 +13,8 @@ public class SMS {
     private String smsText;
 
     private SMSAddress smsAddress;
+    
+    private String otp;
 
     
     public SMS() {
@@ -55,5 +57,19 @@ public class SMS {
     public String toString() {
 	return "SMS [smsText=" + smsText + ", smsAddress=" + smsAddress + "]";
     }
+
+
+
+	public String getOtp() {
+		return otp;
+	}
+
+
+
+	public void setOtp(String otp) {
+		this.otp = otp;
+	}
+    
+    
 
 }

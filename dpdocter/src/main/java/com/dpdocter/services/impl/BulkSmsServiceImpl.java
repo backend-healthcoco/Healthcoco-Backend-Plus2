@@ -608,7 +608,7 @@ public class BulkSmsServiceImpl implements BulkSmsServices {
 			}
 
 			ObjectMapper mapper = new ObjectMapper();
-
+			System.out.println(output.toString());
 			OrderReponse list = mapper.readValue(output.toString(), OrderReponse.class);
 			// OrderReponse res=list.get(0);
 

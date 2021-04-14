@@ -192,26 +192,26 @@ public class SMSServicesImpl implements SMSServices {
 //			message.setAuthKey(AUTH_KEY);
 //			message.setCountryCode(COUNTRY_CODE);
 //			message.setRoute(ROUTE);
-//			if(locationCollection != null && !DPDoctorUtils.anyStringEmpty(locationCollection.getSmsCode()))
-//			{
-//				message.setSenderId(locationCollection.getSmsCode());
-//			}
-//			else
-//			{
+//		//	if(locationCollection != null && !DPDoctorUtils.anyStringEmpty(locationCollection.getSmsCode()))
+//		//	{
+//		//		message.setSenderId(locationCollection.getSmsCode());
+//		//	}
+//		//	else
+//		//	{
 //				message.setSenderId(SENDER_ID);
-//			}
+//	//		}
 //			message.setUnicode(UNICODE);
 //			Boolean isSMSInAccount = true;
 //			UserMobileNumbers userNumber = null;
 ////			SubscriptionDetailCollection subscriptionDetailCollection = null;
 //
-//			if (!isEnvProduction) {
-//				FileInputStream fileIn = new FileInputStream(MOBILE_NUMBERS_RESOURCE);
-//				ObjectInputStream in = new ObjectInputStream(fileIn);
-//				userNumber = (UserMobileNumbers) in.readObject();
-//				in.close();
-//				fileIn.close();
-//			}
+////			if (!isEnvProduction) {
+////				FileInputStream fileIn = new FileInputStream(MOBILE_NUMBERS_RESOURCE);
+////				ObjectInputStream in = new ObjectInputStream(fileIn);
+////				userNumber = (UserMobileNumbers) in.readObject();
+////				in.close();
+////				fileIn.close();
+////			}
 ////			if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId())) {
 ////				
 ////				List<SubscriptionDetailCollection> subscriptionDetailCollections = subscriptionDetailRepository
@@ -223,11 +223,11 @@ public class SMSServicesImpl implements SMSServices {
 //				/*if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
 //					isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(), subscriptionDetailCollection);*/
 //				if (isSMSInAccount) {
-//					if (!isEnvProduction) {
+//				//	if (!isEnvProduction) {
 //						if (userNumber != null && smsDetails.getSms() != null
 //								&& smsDetails.getSms().getSmsAddress() != null) {
 //							String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
-//							if (userNumber.mobileNumber.contains(recipient)) {
+//						//	if (userNumber.mobileNumber.contains(recipient)) {
 //								smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE + recipient);
 //								SMS sms = new SMS();
 //								BeanUtil.map(smsDetails.getSms(), sms);
@@ -238,19 +238,19 @@ public class SMSServicesImpl implements SMSServices {
 //								String xmlSMSData = createXMLData(message);
 //								responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
 //								smsTrackDetail.setResponseId(responseId);
-//							}
+//						//	}
 //						}
-//					} else {
-//						SMS sms = new SMS();
-//						BeanUtil.map(smsDetails.getSms(), sms);
-//						if (sms.getSmsText() != null)
-//							sms.setSmsText(UriUtils.encode(sms.getSmsText(), "UTF-8"));
-//						smsList.add(sms);
-//						message.setSms(smsList);
-//						String xmlSMSData = createXMLData(message);
-//						responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
-//						smsTrackDetail.setResponseId(responseId);
-//					}
+////					} else {
+////						SMS sms = new SMS();
+////						BeanUtil.map(smsDetails.getSms(), sms);
+////						if (sms.getSmsText() != null)
+////							sms.setSmsText(UriUtils.encode(sms.getSmsText(), "UTF-8"));
+////						smsList.add(sms);
+////						message.setSms(smsList);
+////						String xmlSMSData = createXMLData(message);
+////						responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
+////						smsTrackDetail.setResponseId(responseId);
+////					}
 //				}
 //
 //				if (save)
@@ -271,6 +271,7 @@ public class SMSServicesImpl implements SMSServices {
 	@Async
 	@Override
 	@Transactional
+	
 	public Boolean sendAndSaveOTPSMS(String message, String mobileNumber,String otp) {
 		Boolean response = false;
 		try {
@@ -819,22 +820,24 @@ public class SMSServicesImpl implements SMSServices {
 
 	}
 
-	@Override
-	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, String otp, Boolean save) {
-		Boolean response = false;
-		try {
-			if(smsTrackDetail.getSmsDetails().size() > 0)
-			{
-				response = sendAndSaveOTPSMS(smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText(), smsTrackDetail.getSmsDetails().get(0).getSms().getSmsAddress().getRecipient(), otp);
-			}
-			response = true;
-		} catch (BusinessException e) {
-			e.printStackTrace();
-			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, "Error while sendind Sms");
-		}
-		return response;
-	}
+//	@Override
+//	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
+//	//public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, String otp, Boolean save) {
+//	
+//	Boolean response = false;
+//		try {
+//			if(smsTrackDetail.getSmsDetails().size() > 0)
+//			{
+//				response = sendAndSaveOTPSMS(smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText(), smsTrackDetail.getSmsDetails().get(0).getSms().getSmsAddress().getRecipient(),smsTrackDetail.getSmsDetails().get(0).getSms().getOtp());
+//			}
+//			response = true;
+//		} catch (BusinessException e) {
+//			e.printStackTrace();
+//			logger.error(e);
+//			throw new BusinessException(ServiceError.Unknown, "Error while sendind Sms");
+//		}
+//		return response;
+//	}
 	
 	@Override
 	public Boolean sendPatientOTP(String mobileNumber , String otp)
@@ -1031,6 +1034,13 @@ public class SMSServicesImpl implements SMSServices {
 //
 //	}
 
+
+
+	
+
+	
+	
+//commenting new service 	
 	//new sms service
 		@Override
 		public String getBulkSMSResponse(List<String>mobileNumbers,String message,String doctorId,String locationId,long subCredits) {
@@ -1051,7 +1061,7 @@ public class SMSServicesImpl implements SMSServices {
 						.addParameter("type", type)
 						.addParameter("body", message)
 						.addParameter("sender",SENDER_ID)
-						.addParameter("unicode", "1")
+					//	.addParameter("unicode", "1")
 				  .setUri(strUrl)
 				  .setHeader( "api-key", KEY)
 				  .build();
@@ -1093,7 +1103,7 @@ public class SMSServicesImpl implements SMSServices {
 
 		}
 
-	@Override
+	    @Override
 		@Transactional
 		public Boolean sendSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
 			Boolean response = false;
@@ -1144,7 +1154,7 @@ public class SMSServicesImpl implements SMSServices {
 					/*if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
 						isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(), subscriptionDetailCollection);*/
 				 DoctorCollection doctorClinicProfileCollection=doctorRepository.findByUserId(smsTrackDetail.getDoctorId());
-
+				 
 					if (doctorClinicProfileCollection.getIsTransactionalSms() == true) {
 				 //if (isSMSInAccount) {
 			//			if (!isEnvProduction) {
@@ -1159,7 +1169,7 @@ public class SMSServicesImpl implements SMSServices {
 										.addParameter("type", type)
 										.addParameter("body", message)
 										.addParameter("sender",SENDER_ID)
-										.addParameter("unicode", "1")
+										//.addParameter("unicode", "1")
 										.addParameter("template_id", smsTrackDetail.getTemplateId())
 								  .setUri(strUrl)
 								  .setHeader( "api-key", KEY)
@@ -1268,7 +1278,7 @@ public class SMSServicesImpl implements SMSServices {
 											.addParameter("type", type)
 											.addParameter("body", message)
 											.addParameter("sender",SENDER_ID)
-											.addParameter("unicode", "1")
+											//.addParameter("unicode", "1")
 											.addParameter("template_id", smsTrackDetail.getTemplateId())
 									  .setUri(strUrl)
 									  .setHeader( "api-key", KEY)
@@ -1317,6 +1327,12 @@ public class SMSServicesImpl implements SMSServices {
 			throw new BusinessException(ServiceError.Unknown, "Error while sending Sms");
 		} 
 		return response;
+	}
+
+	@Override
+	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, String otp, Boolean save) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	
