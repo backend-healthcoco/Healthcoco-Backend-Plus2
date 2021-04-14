@@ -28,6 +28,11 @@ private String id;
 
 	private boolean discarded = false;
 
+	private String IPDNumber;
+	
+	private String localExam;
+
+
 	public String getId() {
 		return id;
 	}
@@ -124,8 +129,21 @@ private String id;
 		this.discarded = discarded;
 	}
 
-	
-	
+	public String getIPDNumber() {
+		return IPDNumber;
+	}
 
+	public void setIPDNumber(String iPDNumber) {
+		IPDNumber = iPDNumber;
+	}
 
+	public String getLocalExam() {
+		return localExam;
+	}
+
+	public void setLocalExam(String localExam) {
+		this.localExam = localExam;
+	}
+
+	
 }

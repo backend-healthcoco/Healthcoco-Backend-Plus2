@@ -44,6 +44,14 @@ public class PreOperationFormCollection extends GenericCollection {
 	@Field
 	private boolean discarded = false;
 
+	@Field
+	private String IPDNumber;
+
+	@Field
+	private String uniqueEmrId;
+	
+	@Field
+	private String localExam;
 
 	public ObjectId getId() {
 		return id;
@@ -141,8 +149,29 @@ public class PreOperationFormCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	
-	
+	public String getIPDNumber() {
+		return IPDNumber;
+	}
+
+	public void setIPDNumber(String iPDNumber) {
+		IPDNumber = iPDNumber;
+	}
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	public String getLocalExam() {
+		return localExam;
+	}
+
+	public void setLocalExam(String localExam) {
+		this.localExam = localExam;
+	}
 	
 	
 }

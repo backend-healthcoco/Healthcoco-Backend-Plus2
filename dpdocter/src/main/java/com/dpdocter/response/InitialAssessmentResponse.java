@@ -40,6 +40,9 @@ private String id;
 	
 	private boolean discarded = false;
 
+	private String treatmentsPlan;
+	 
+	private String IPDNumber;
 
 	public String getId() {
 		return id;
@@ -176,6 +179,22 @@ private String id;
 
 	public void setDiscarded(boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getTreatmentsPlan() {
+		return treatmentsPlan;
+	}
+
+	public void setTreatmentsPlan(String treatmentsPlan) {
+		this.treatmentsPlan = treatmentsPlan;
+	}
+
+	public String getIPDNumber() {
+		return IPDNumber;
+	}
+
+	public void setIPDNumber(String iPDNumber) {
+		IPDNumber = iPDNumber;
 	}
 	
 	

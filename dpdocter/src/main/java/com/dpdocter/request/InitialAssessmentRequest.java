@@ -39,6 +39,10 @@ public class InitialAssessmentRequest extends GenericCollection {
 	
 	private boolean discarded = false;
 
+	private String treatmentsPlan;
+ 
+	private String IPDNumber;
+
 
 	public String getId() {
 		return id;
@@ -174,6 +178,22 @@ public class InitialAssessmentRequest extends GenericCollection {
 
 	public void setDiscarded(boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getTreatmentsPlan() {
+		return treatmentsPlan;
+	}
+
+	public void setTreatmentsPlan(String treatmentsPlan) {
+		this.treatmentsPlan = treatmentsPlan;
+	}
+
+	public String getIPDNumber() {
+		return IPDNumber;
+	}
+
+	public void setIPDNumber(String iPDNumber) {
+		IPDNumber = iPDNumber;
 	}
 	
 		

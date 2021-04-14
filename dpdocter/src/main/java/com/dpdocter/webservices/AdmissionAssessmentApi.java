@@ -183,4 +183,19 @@ private static Logger logger = Logger.getLogger(AdmissionAssessmentApi.class.get
 		response.setData(formResponse);
 		return response;
 	}
+	
+	@Path(value = PathProxy.AdmissionAssessmentsUrls.DOWNLOAD_ADMISSION_FORM_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.AdmissionAssessmentsUrls.DOWNLOAD_ADMISSION_FORM_BY_ID, notes = PathProxy.AdmissionAssessmentsUrls.DOWNLOAD_ADMISSION_FORM_BY_ID)
+	public Response<String> downloadNurseAdmissionFormById(@PathParam("nurseAdmissionFormId") String nurseAdmissionFormId) {
+		if (nurseAdmissionFormId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<String> response = new Response<String>();
+		response.setData(initialAssessmentService.downloadNurseAdmissionFormById(nurseAdmissionFormId));
+		return response;
+
+	}
 }

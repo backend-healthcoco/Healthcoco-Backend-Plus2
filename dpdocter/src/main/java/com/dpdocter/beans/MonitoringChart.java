@@ -18,7 +18,6 @@ public class MonitoringChart {
     
     private String  anySpecialEventsAndStatDrugs;
     
-    private List<Medication> medication;
 	private String diagnosis;	
 	private String referanceDone;	
 	private String nurseName;
@@ -80,14 +79,6 @@ public class MonitoringChart {
 	}
 
 	
-	public List<Medication> getMedication() {
-		return medication;
-	}
-
-	public void setMedication(List<Medication> medication) {
-		this.medication = medication;
-	}
-
 	public String getDiagnosis() {
 		return diagnosis;
 	}

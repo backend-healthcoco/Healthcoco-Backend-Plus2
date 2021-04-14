@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.function.BiFunction;
 
 import javax.mail.MessagingException;
 
@@ -19,6 +20,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -633,7 +635,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, "Exception in download Flow Sheet");
+			throw new BusinessException(ServiceError.Unknown, "Exception in download Flow Sheet"+ e.getMessage());
 		}
 		return response;
 	}
@@ -2663,6 +2665,10 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	@Override
 	@Transactional
 	public FlowsheetResponse addEditFlowSheets(AddEditFlowSheetRequest request) {
+		
+	      JSONObject jsonObj = new JSONObject(request);
+	      System.out.println(jsonObj.toString(4)); // pretty print json
+
 		DischargeSummaryCollection dischargeSummaryCollection = null;
 		FlowsheetResponse response = null;
 		FlowsheetCollection flowsheetCollection = null;
@@ -2969,7 +2975,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					jasperBean.setDiagnosis("<b>Diagnosis :- </b>" + flowsheet.getDiagnosis());
 				}
 				if (!DPDoctorUtils.anyStringEmpty(flowsheet.getReferTo())) {
-					jasperBean.setReferTo("<b>Refer To :- </b>" + flowsheet.getReferTo());
+					jasperBean.setReferTo("<b>ReferTo :- </b>" + flowsheet.getReferTo());
 				}
 //				if (flowsheet.getMedication() != null) {
 //					List<Medication> temp = null;
@@ -3107,39 +3113,39 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 //			}
 //		}
 
-//		if(flowsheetCollection.getMonitoringChart()!=null && !flowsheetCollection.getMonitoringChart().isEmpty()) {
-//			monitorBeans=new ArrayList<MonitoringChartJasperBean>();
-//			MonitoringChartJasperBean monitorBean = null;
-//		int i = 1;
-//			for(MonitoringChart monitoringchart:flowsheetCollection.getMonitoringChart())
-//			{
-//				monitorBean = new MonitoringChartJasperBean();
-//				monitorBean.setNo(i);
-//				
-//				if (monitoringchart.getTime()!=null) {
-//					monitorBean.setTime("<b>Time:-    </b>" + monitoringchart.getTime());
-//				}
-//				
-//				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getIntake())) {
-//					monitorBean.setIntake("<b>Intake :-    </b>" + monitoringchart.getIntake());
-//				}
-//				
-//				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getOutputDrain())) {
-//					monitorBean.setOutputDrain("<b>Bp :-    </b>" + monitoringchart.getOutputDrain());
-//				}
-//				
-//				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getbP())) {
-//					monitorBean.setOutputDrain("<b>Hr :-    </b>" + monitoringchart.gethR());
-//				}
-//				
-//				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getbP())) {
-//					monitorBean.setsPO2("<b>SPO2 :-    </b>" + monitoringchart.getsPO2());
-//				}
-//				
-//				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getAnySpecialEventsAndStatDrugs())) {
-//					monitorBean.setAnySpecialEventsAndStatDrugs("<b>AnySpecialEventsAndStatDrugs:-    </b>" + monitoringchart.getAnySpecialEventsAndStatDrugs());
-//				}
-//				
+		if(flowsheetCollection.getMonitoringChart()!=null && !flowsheetCollection.getMonitoringChart().isEmpty()) {
+			monitorBeans=new ArrayList<MonitoringChartJasperBean>();
+			MonitoringChartJasperBean monitorBean = null;
+		int i = 1;
+			for(MonitoringChart monitoringchart:flowsheetCollection.getMonitoringChart())
+			{
+				monitorBean = new MonitoringChartJasperBean();
+				monitorBean.setNo(i);
+				
+				if (monitoringchart.getTime()!=null) {
+					monitorBean.setTime("<b>Time:-    </b>" + monitoringchart.getTime());
+				}
+				
+				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getIntake())) {
+					monitorBean.setIntake("<b>Intake :-    </b>" + monitoringchart.getIntake());
+				}
+				
+				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getOutputDrain())) {
+					monitorBean.setOutputDrain("<b>Bp :-    </b>" + monitoringchart.getOutputDrain());
+				}
+				
+				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getbP())) {
+					monitorBean.setOutputDrain("<b>Hr :-    </b>" + monitoringchart.gethR());
+				}
+				
+				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getbP())) {
+					monitorBean.setsPO2("<b>SPO2 :-    </b>" + monitoringchart.getsPO2());
+				}
+				
+				if (!DPDoctorUtils.anyStringEmpty(monitoringchart.getAnySpecialEventsAndStatDrugs())) {
+					monitorBean.setAnySpecialEventsAndStatDrugs("<b>AnySpecialEventsAndStatDrugs:-    </b>" + monitoringchart.getAnySpecialEventsAndStatDrugs());
+				}
+				
 
 //				String monitor=" ";
 //				
@@ -3187,10 +3193,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 //				i++;
 //				monitorBeans.add(monitorBean);
 //				
-//			}
-//			parameters.put("monitoringChart", monitorBeans);
-//		}
+			}
+			parameters.put("monitoringChart", monitorBeans);
+		}
 
+		
+			
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 						? printSettings.getContentLineSpace()
@@ -3240,13 +3248,14 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	}
 
-	private List<MonitoringChartJasperBean> getMonitoringChartJasperDetails(String prescriptionId,
+	
+	private List<MonitoringChartJasperBean> getMonitoringChartJasperDetails(FlowsheetCollection prescriptionCollection,
 			Map<String, Object> parameters, Boolean isMonitoringChart, PrintSettingsCollection printSettings) {
-		FlowsheetCollection prescriptionCollection = null;
+//		FlowsheetCollection prescriptionCollection = null;
 		List<MonitoringChartJasperBean> prescriptionItems = new ArrayList<MonitoringChartJasperBean>();
 		try {
 
-			prescriptionCollection = flowsheetRepository.findById(new ObjectId(prescriptionId)).orElse(null);
+//			prescriptionCollection = flowsheetRepository.findById(new ObjectId(prescriptionId)).orElse(null);
 			Boolean showIntake = false, showOutputDrain = false, showBp = false, showHr = false, showSpo2 = false,
 					showanySpecialEventsAndStatDrugs = false;
 

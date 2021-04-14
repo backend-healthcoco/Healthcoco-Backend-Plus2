@@ -19,6 +19,8 @@ private String id;
 	private String pastHistory;
 
 	private String generalExam;
+	
+	private String localExam;
 
 	private String investigation;
 
@@ -27,6 +29,8 @@ private String id;
 	private String treatmentsPlan;
 	
 	private boolean discarded = false;
+
+	private String IPDNumber;
 
 
 	public String getId() {
@@ -123,6 +127,22 @@ private String id;
 
 	public void setDiscarded(boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getIPDNumber() {
+		return IPDNumber;
+	}
+
+	public void setIPDNumber(String iPDNumber) {
+		IPDNumber = iPDNumber;
+	}
+
+	public String getLocalExam() {
+		return localExam;
+	}
+
+	public void setLocalExam(String localExam) {
+		this.localExam = localExam;
 	}
 
 	

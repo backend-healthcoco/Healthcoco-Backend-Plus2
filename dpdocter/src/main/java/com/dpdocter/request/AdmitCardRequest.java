@@ -36,6 +36,7 @@ public class AdmitCardRequest {
 	private VitalSigns vitalSigns;
 	private String preOprationalOrders;
 	private String nursingCare;
+	private String IPDNumber;
 
 	public String getIp() {
 		return ip;
@@ -269,6 +270,15 @@ public class AdmitCardRequest {
 
 	public void setNursingCare(String nursingCare) {
 		this.nursingCare = nursingCare;
+	}
+
+	
+	public String getIPDNumber() {
+		return IPDNumber;
+	}
+
+	public void setIPDNumber(String iPDNumber) {
+		IPDNumber = iPDNumber;
 	}
 
 	@Override

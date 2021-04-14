@@ -48,7 +48,12 @@ public class NursesAdmissionCollection extends GenericCollection{
 	@Field
 	private boolean discarded = false;
 
-
+	@Field
+	private String uniqueEmrId;
+	
+	@Field
+	private String IPDNumber;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -163,6 +168,22 @@ public class NursesAdmissionCollection extends GenericCollection{
 
 	public void setDiscarded(boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	public String getIPDNumber() {
+		return IPDNumber;
+	}
+
+	public void setIPDNumber(String iPDNumber) {
+		IPDNumber = iPDNumber;
 	}
 	
 	

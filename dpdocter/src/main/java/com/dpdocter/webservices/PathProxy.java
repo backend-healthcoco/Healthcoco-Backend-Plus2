@@ -2479,7 +2479,7 @@ public interface PathProxy {
 		public static final String ADD_NURSING_CARE ="/add/nursingCare";
 		public static final String DELETE_NURSING_CARE = "/nursingCare/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String DELETE_ADMISSION_FORM = "/{nurseAdmissionFormId}/{doctorId}/{locationId}/{hospitalId}/delete";
-
+		public static final String DOWNLOAD_ADMISSION_FORM_BY_ID ="/download/{nurseAdmissionFormId}";
 	}
 	
 	public static final String PREOPERATION_ASSESSMENT_BASE_URL = BASE_URL + "/preOperationAssessment";
@@ -2489,6 +2489,7 @@ public interface PathProxy {
 		public static final String GET_PREOPERATION_FORM ="/get/{patientId}";
 		public static final String GET_PREOPERATION_FORM_BY_ID ="/getById/{preOperationFormId}";
 		public static final String DELETE_PREOPERATION_FORM = "/{preOperationFormId}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DOWNLOAD_PREOPERATION_FORM_BY_ID ="/download/{preOperationFormId}";
 	}
 	
 	public static final String MEDICINE_SHEET_BASE_URL = BASE_URL + "/medicineTreatmentSheet";

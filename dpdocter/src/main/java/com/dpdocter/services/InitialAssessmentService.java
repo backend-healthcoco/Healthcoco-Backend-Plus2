@@ -51,6 +51,10 @@ public interface InitialAssessmentService {
 
 	String downloadInitialAssessmentFormById(String initialAssessmentId);
 
+	String downloadPreOprationFormById(String preOperationFormId);
+
+	String downloadNurseAdmissionFormById(String nurseAdmissionFormId);
+
 	
 
 

@@ -118,7 +118,7 @@ public class InitialAssessmentApi {
 	@Path(value = PathProxy.InitialAssessmentsUrls.DOWNLOAD_ASSESSMENT_FORM_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.InitialAssessmentsUrls.DOWNLOAD_ASSESSMENT_FORM_BY_ID, notes = PathProxy.InitialAssessmentsUrls.DOWNLOAD_ASSESSMENT_FORM_BY_ID)
-	public Response<String> downloadgetById(@PathParam("initialAssessmentId") String initialAssessmentId) {
+	public Response<String> downloadInitialAssessmentFormById(@PathParam("initialAssessmentId") String initialAssessmentId) {
 		if (initialAssessmentId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

@@ -114,4 +114,19 @@ private static Logger logger = Logger.getLogger(PreOperationAssessmentApi.class.
 		response.setData(formResponse);
 		return response;
 	}
+	
+	@Path(value = PathProxy.PreOprationAssessmentsUrls.DOWNLOAD_PREOPERATION_FORM_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.PreOprationAssessmentsUrls.DOWNLOAD_PREOPERATION_FORM_BY_ID, notes = PathProxy.PreOprationAssessmentsUrls.DOWNLOAD_PREOPERATION_FORM_BY_ID)
+	public Response<String> downloadPreOprationFormById(@PathParam("preOperationFormId") String preOperationFormId) {
+		if (preOperationFormId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<String> response = new Response<String>();
+		response.setData(initialAssessmentService.downloadPreOprationFormById(preOperationFormId));
+		return response;
+
+	}
 }

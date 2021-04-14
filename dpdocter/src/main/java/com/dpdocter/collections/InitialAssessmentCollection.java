@@ -64,6 +64,12 @@ public class InitialAssessmentCollection extends GenericCollection {
 
 	@Field
 	private String uniqueEmrId;
+	
+	@Field
+	private String treatmentsPlan;
+	
+	@Field
+	private String IPDNumber;
 
 	public ObjectId getId() {
 		return id;
@@ -208,6 +214,22 @@ public class InitialAssessmentCollection extends GenericCollection {
 
 	public void setUniqueEmrId(String uniqueEmrId) {
 		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	public String getTreatmentsPlan() {
+		return treatmentsPlan;
+	}
+
+	public void setTreatmentsPlan(String treatmentsPlan) {
+		this.treatmentsPlan = treatmentsPlan;
+	}
+
+	public String getIPDNumber() {
+		return IPDNumber;
+	}
+
+	public void setIPDNumber(String iPDNumber) {
+		IPDNumber = iPDNumber;
 	}
 	
 	
