@@ -6,20 +6,20 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.PrintSettings;
 import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.exceptions.BusinessException;
@@ -33,8 +33,8 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.PRINT_SETTINGS_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.PRINT_SETTINGS_BASE_URL, description = "Endpoint for print settings")
 public class PrintSettingsApi {
 
@@ -214,34 +214,34 @@ public class PrintSettingsApi {
 	
 	@PostMapping(value = PathProxy.PrintSettingsUrls.UPLOAD_FILE)
 	@ApiOperation(value = PathProxy.PrintSettingsUrls.UPLOAD_FILE, notes = PathProxy.PrintSettingsUrls.UPLOAD_FILE)
-	public Response<String> upladFile(FileDetails fileDetails, @RequestParam("type") String type) {
+	public Response<String> upladFile(@RequestParam("file") MultipartFile file, @RequestParam("type") String type) {
 		if (DPDoctorUtils.anyStringEmpty(type)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		if (DPDoctorUtils.anyStringEmpty(fileDetails.getFileEncoded())) {
+		if (file == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
 		Response<String> response = new Response<String>();
-		String file = printSettingsService.uploadFile(fileDetails, type);
-		response.setData(file);
+		String fileResponse = printSettingsService.uploadFile(file, type);
+		response.setData(fileResponse);
 		return response;
 	}
 
 	
 	@PostMapping(value = PathProxy.PrintSettingsUrls.UPLOAD_SIGNATURE)
 	@ApiOperation(value = PathProxy.PrintSettingsUrls.UPLOAD_SIGNATURE, notes = PathProxy.PrintSettingsUrls.UPLOAD_SIGNATURE)
-	public Response<String> upladSignature(FileDetails fileDetails) {
-		if (DPDoctorUtils.anyStringEmpty(fileDetails.getFileEncoded())) {
+	public Response<String> upladSignature(@RequestParam("file") MultipartFile file) {
+		if (file == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
 		Response<String> response = new Response<String>();
-		String file = printSettingsService.uploadSignature(fileDetails);
-		response.setData(file);
+		String fileResponse = printSettingsService.uploadSignature(file);
+		response.setData(fileResponse);
 		return response;
 	}
 	

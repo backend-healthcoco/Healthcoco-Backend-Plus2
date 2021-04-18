@@ -2,11 +2,12 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dpdocter.beans.NutritionRecord;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.request.DoctorLabReportUploadRequest;
 import com.dpdocter.request.MyFiileRequest;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface NutritionRecordService {
 
@@ -14,14 +15,14 @@ public interface NutritionRecordService {
 
 	NutritionRecord getNutritionRecord(String recordId);
 
-	RecordsFile uploadNutritionRecord(FormDataBodyPart file, MyFiileRequest request);
+	RecordsFile uploadNutritionRecord(MultipartFile file, MyFiileRequest request);
 
 	List<NutritionRecord> getNutritionRecord(int page, int size, String patientId, String doctorId, String locationId,
 			String hospitalId, String searchTerm, Boolean discarded,Boolean isNutrition);
 
 	NutritionRecord deleteNutritionRecord(String recordId, Boolean discarded);
 
-	public RecordsFile uploadNutritionRecord(DoctorLabReportUploadRequest request);
+	public RecordsFile uploadNutritionRecord(MultipartFile file, DoctorLabReportUploadRequest request);
 
 	Boolean updateShareWithPatient(String recordId);
 }

@@ -5,7 +5,8 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -67,8 +68,8 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.PRESCRIPTION_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.PRESCRIPTION_BASE_URL, description = "Endpoint for prescription")
 public class PrescriptionApi {
 

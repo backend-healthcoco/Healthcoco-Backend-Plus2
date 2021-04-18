@@ -7,7 +7,8 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
@@ -79,8 +81,8 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 (PathProxy.REGISTRATION_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.REGISTRATION_BASE_URL, description = "Endpoint for register")
 public class RegistrationApi {
 
@@ -552,7 +554,7 @@ public class RegistrationApi {
 	
 	@PostMapping(value = PathProxy.RegistrationUrls.ADD_CLINIC_IMAGE)
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_CLINIC_IMAGE, notes = PathProxy.RegistrationUrls.ADD_CLINIC_IMAGE)
-	public Response<ClinicImage> addClinicImage(ClinicImageAddRequest request) {
+	public Response<ClinicImage> addClinicImage(@RequestParam("file") MultipartFile file, ClinicImageAddRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getId())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -974,14 +976,11 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@PostMapping
-	(value = PathProxy.RegistrationUrls.ADD_CONSENT_FORM)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@PostMapping(value = PathProxy.RegistrationUrls.ADD_CONSENT_FORM)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE})
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_CONSENT_FORM, notes = PathProxy.RegistrationUrls.ADD_CONSENT_FORM)
-	public Response<ConsentForm> addConsentForm(@FormDataParam("file") FormDataBodyPart file,
-			@FormDataParam("data") FormDataBodyPart data) {
-		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		ConsentForm request = data.getValueAs(ConsentForm.class);
+	public Response<ConsentForm> addConsentForm(@RequestParam("file") MultipartFile file,
+			@RequestBody ConsentForm request) {
 
 		if (file == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

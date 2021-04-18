@@ -6,7 +6,8 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.logging.log4j.LogManager;
@@ -33,7 +34,7 @@ import io.swagger.annotations.ApiOperation;
  * @author parag
  */
 @RestController(value = "RegistrationApiV2")
-@RequestMapping(value=PathProxy.REGISTRATION_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
+@RequestMapping(value=PathProxy.REGISTRATION_BASE_URL,produces = MediaType.APPLICATION_JSON_VALUE ,consumes = MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.REGISTRATION_BASE_URL, description = "Endpoint for register")
 public class RegistrationApi {
 

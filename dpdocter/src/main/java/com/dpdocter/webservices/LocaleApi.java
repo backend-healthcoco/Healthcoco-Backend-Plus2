@@ -6,17 +6,19 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.Locale;
 import com.dpdocter.elasticsearch.services.ESLocaleService;
@@ -35,8 +37,6 @@ import com.dpdocter.response.UserFakeRequestDetailResponse;
 import com.dpdocter.services.LocaleService;
 import com.dpdocter.services.PharmacyService;
 import com.dpdocter.services.TransactionalManagementService;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -45,8 +45,8 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.LOCALE_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.LOCALE_BASE_URL, description = "Endpoint for Locale API's")
 public class LocaleApi {
 
@@ -107,15 +107,12 @@ public class LocaleApi {
 		return response;
 	}
 
-	@PostMapping
-	(PathProxy.LocaleUrls.ADD_USER_REQUEST)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
-	public Response<UserSearchRequest> addUserRequestInQueue(@FormDataParam("file") FormDataBodyPart file,
-			@FormDataParam("data") FormDataBodyPart data) {
+	@PostMapping(PathProxy.LocaleUrls.ADD_USER_REQUEST)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE})
+	public Response<UserSearchRequest> addUserRequestInQueue(@RequestParam("file") MultipartFile file,
+			@RequestBody UserSearchRequest request) {
 		Response<UserSearchRequest> response = null;
 		UserSearchRequest status = null;
-		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		UserSearchRequest request = data.getValueAs(UserSearchRequest.class);
 		ImageURLResponse imageURLResponse = null;
 		if (file != null) {
 			imageURLResponse = localeService.addRXImageMultipart(file);
@@ -193,16 +190,10 @@ public class LocaleApi {
 
 	}
 
-	@PostMapping
-	(value = PathProxy.LocaleUrls.UPLOAD_RX_IMAGE)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@PostMapping(value = PathProxy.LocaleUrls.UPLOAD_RX_IMAGE)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE})
 	@ApiOperation(value = PathProxy.LocaleUrls.UPLOAD_RX_IMAGE, notes = PathProxy.LocaleUrls.UPLOAD_RX_IMAGE)
-	public Response<ImageURLResponse> addLocaleImageMultipart(@FormDataParam("file") FormDataBodyPart file) {
-		/*
-		 * data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		 * LocaleImageAddEditRequest request =
-		 * data.getValueAs(LocaleImageAddEditRequest.class);
-		 */
+	public Response<ImageURLResponse> addLocaleImageMultipart(@RequestParam("file") MultipartFile file) {
 		ImageURLResponse imageURLResponse = null;
 		Response<ImageURLResponse> response = null;
 		if (file == null) {

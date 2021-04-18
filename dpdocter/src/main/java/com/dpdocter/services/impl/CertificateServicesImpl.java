@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -51,8 +52,6 @@ import com.dpdocter.response.ConsentFormCollectionLookupResponse;
 import com.dpdocter.services.CertificatesServices;
 import com.dpdocter.services.FileManager;
 import com.mongodb.BasicDBObject;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -653,16 +652,15 @@ public class CertificateServicesImpl implements CertificatesServices {
 //	}
 
 	@Override
-	public String saveCertificateSignImage(FormDataBodyPart file, String certificateIdStr) {
+	public String saveCertificateSignImage(MultipartFile file, String certificateIdStr) {
 		String recordPath = null;
 		try {
 
 			Date createdTime = new Date();
 			if (file != null) {
 				String path = "certificateSigns" + File.separator + certificateIdStr;
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 
 				recordPath = path + File.separator + fileName + createdTime.getTime() +"." +fileExtension;
 				fileManager.saveRecord(file, recordPath, 0.0, false);

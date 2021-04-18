@@ -29,6 +29,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.BabyNote;
@@ -36,7 +37,6 @@ import com.dpdocter.beans.Cement;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.Diagram;
-import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.FlowSheetJasperBean;
 import com.dpdocter.beans.GenericCode;
@@ -119,8 +119,6 @@ import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.PushNotificationServices;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -3309,16 +3307,21 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Override
 	@Transactional
-	public Diagram addEditDiagram(Diagram diagram) {
+	public Diagram addEditDiagram(MultipartFile file, Diagram diagram) {
 		try {
-			if (diagram.getDiagram() != null) {
-				String path = "dischargeSummary" + File.separator + "diagrams";
-				diagram.getDiagram().setFileName(diagram.getDiagram().getFileName() + new Date().getTime());
-				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(diagram.getDiagram(), path,
-						false);
-				diagram.setDiagramUrl(imageURLResponse.getImageUrl());
-
+			if (file != null) {
+				if (!DPDoctorUtils.anyStringEmpty(file.getOriginalFilename())) {
+					String path = "dischargeSummary" + File.separator + "diagrams";
+					String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+					String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+					String imagepath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+					ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, false);
+					if (imageURLResponse != null) {
+						diagram.setDiagramUrl(imageURLResponse.getImageUrl());
+					}
+				}
 			}
+			
 			DiagramsCollection diagramsCollection = new DiagramsCollection();
 			BeanUtil.map(diagram, diagramsCollection);
 			if (DPDoctorUtils.allStringsEmpty(diagram.getDoctorId()))
@@ -3347,15 +3350,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				diagramsCollection.setCreatedBy(oldDiagramsCollection.getCreatedBy());
 				diagramsCollection.setCreatedTime(oldDiagramsCollection.getCreatedTime());
 				diagramsCollection.setDiscarded(oldDiagramsCollection.getDiscarded());
-				if (diagram.getDiagram() == null) {
+				if (file == null) {
 					diagramsCollection.setDiagramUrl(oldDiagramsCollection.getDiagramUrl());
 					diagramsCollection.setFileExtension(oldDiagramsCollection.getFileExtension());
 				}
 			}
 			diagramsCollection = diagramsRepository.save(diagramsCollection);
 			BeanUtil.map(diagramsCollection, diagram);
-			diagram.setDiagram(null);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -3372,24 +3373,19 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@Override
-	public String uploadDischargeDiagram(DoctorLabReportUploadRequest request) {
+	public String uploadDischargeDiagram(MultipartFile file, DoctorLabReportUploadRequest request) {
 
 		String response = null;
 		try {
-			Date createdTime = null;
-
-			createdTime = new Date();
-
-			FileDetails fileDetail = request.getFileDetails();
+			Date createdTime = new Date();
 
 			String path = "dischargeSummary" + File.separator + "diagram";
-
-			String fileName = fileDetail.getFileName().replaceFirst("." + fileDetail.getFileExtension(), "");
-			String recordPath = path + File.separator + fileName + createdTime.getTime() + "."
-					+ fileDetail.getFileExtension();
-			fileManager.saveRecordBase64(fileDetail, recordPath);
-			if (!DPDoctorUtils.anyStringEmpty(recordPath))
-				response = getFinalImageURL(recordPath);
+			String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+			String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+			String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
+			ImageURLResponse imageURLResponse=fileManager.saveImage(file, recordPath, false);
+			if (imageURLResponse!=null)
+				response = getFinalImageURL(imageURLResponse.getImageUrl());
 
 		} catch (Exception e) {
 			logger.error(e);
@@ -3402,7 +3398,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@Override
-	public String uploadDischargeSummaryMultipart(FormDataBodyPart file) {
+	public String uploadDischargeSummaryMultipart(MultipartFile file) {
 		String recordPath = null;
 		try {
 			Date createdTime = new Date();
@@ -3410,9 +3406,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 			if (file != null) {
 				String path = "dischargeSummary" + File.separator + "diagram";
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 				recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
 				fileManager.saveRecord(file, recordPath, fileSizeInMB, false);
 			}

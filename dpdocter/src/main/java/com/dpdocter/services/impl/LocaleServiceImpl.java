@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.Locale;
 import com.dpdocter.beans.LocaleImage;
@@ -33,8 +34,6 @@ import com.dpdocter.repository.UserResourceFavouriteRepository;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.LocaleService;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -273,20 +272,16 @@ public class LocaleServiceImpl implements LocaleService {
 
 	@Override
 	@Transactional
-	public ImageURLResponse addRXImageMultipart(FormDataBodyPart file) {
+	public ImageURLResponse addRXImageMultipart(MultipartFile file) {
 		try {
-			// Boolean response =false;
-			// LocaleImageCollection localeImageCollection = null;
 			ImageURLResponse imageURLResponse = null;
 			Date createdTime = new Date();
 			if (file != null) {
-				if (!DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName())) {
+				if (!DPDoctorUtils.anyStringEmpty(file.getOriginalFilename())) {
 					String path = "localeRX";
-					FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-					String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-					String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+					String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+					String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 					String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
-					// String recordLabel = fileName;
 					imageURLResponse = new ImageURLResponse();
 					imageURLResponse = fileManager.saveImage(file, recordPath, true);
 				}

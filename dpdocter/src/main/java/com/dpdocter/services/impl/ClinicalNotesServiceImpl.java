@@ -31,6 +31,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
@@ -367,9 +368,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Autowired
 	private PatientTreatmentServices patientTreatmentServices;
-
-	@Autowired
-	private PatientVisitService patientTrackService;
 
 	@Override
 	@Transactional
@@ -2325,16 +2323,22 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Override
 	@Transactional
-	public Diagram addEditDiagram(Diagram diagram) {
+	public Diagram addEditDiagram(MultipartFile file, Diagram diagram) {
+		String fileExtension = "";
 		try {
-			if (diagram.getDiagram() != null) {
-				String path = "clinicalNotes" + File.separator + "diagrams";
-				diagram.getDiagram().setFileName(diagram.getDiagram().getFileName() + new Date().getTime());
-				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(diagram.getDiagram(), path,
-						false);
-				diagram.setDiagramUrl(imageURLResponse.getImageUrl());
-
+			if (file != null) {
+				if (!DPDoctorUtils.anyStringEmpty(file.getOriginalFilename())) {
+					String path = "clinicalNotes" + File.separator + "diagrams";
+					fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+					String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+					String imagepath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+					ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, false);
+					if (imageURLResponse != null) {
+						diagram.setDiagramUrl(imageURLResponse.getImageUrl());
+					}
+				}
 			}
+			
 			DiagramsCollection diagramsCollection = new DiagramsCollection();
 			BeanUtil.map(diagram, diagramsCollection);
 			if (DPDoctorUtils.allStringsEmpty(diagram.getDoctorId()))
@@ -2363,15 +2367,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				diagramsCollection.setCreatedBy(oldDiagramsCollection.getCreatedBy());
 				diagramsCollection.setCreatedTime(oldDiagramsCollection.getCreatedTime());
 				diagramsCollection.setDiscarded(oldDiagramsCollection.getDiscarded());
-				if (diagram.getDiagram() == null) {
+				if (file == null) {
 					diagramsCollection.setDiagramUrl(oldDiagramsCollection.getDiagramUrl());
 					diagramsCollection.setFileExtension(oldDiagramsCollection.getFileExtension());
 				}
 			}
 			diagramsCollection = diagramsRepository.save(diagramsCollection);
 			BeanUtil.map(diagramsCollection, diagram);
-			diagram.setDiagram(null);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

@@ -3,6 +3,7 @@ package com.dpdocter.services;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.BabyNote;
 import com.dpdocter.beans.Cement;
@@ -15,7 +16,6 @@ import com.dpdocter.request.DischargeSummaryRequest;
 import com.dpdocter.request.DoctorLabReportUploadRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.FlowsheetResponse;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface DischargeSummaryService {
 
@@ -80,9 +80,9 @@ public interface DischargeSummaryService {
 
 	public String downloadFlowSheet(String id, Boolean byFlowsheetId);
 
-	Diagram addEditDiagram(Diagram diagram);
+	Diagram addEditDiagram(MultipartFile file, Diagram diagram);
 
-	String uploadDischargeDiagram(DoctorLabReportUploadRequest request);
+	String uploadDischargeDiagram(MultipartFile file, DoctorLabReportUploadRequest request);
 
-	String uploadDischargeSummaryMultipart(FormDataBodyPart file);
+	String uploadDischargeSummaryMultipart(MultipartFile file);
 }

@@ -7,7 +7,8 @@ import javax.mail.MessagingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,8 +50,8 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.WEB_APPOINTMENT_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.WEB_APPOINTMENT_BASE_URL, description = "Endpoint for appointment")
 public class WebAppointmentApi {
 
@@ -184,7 +185,7 @@ public class WebAppointmentApi {
 
 	}
 	
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.WebAppointmentUrls.PATIENT_SIGNUP_MOBILE)
 	@ApiOperation(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE, notes = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
 	public Response<RegisteredPatientDetails> patientSignupMobile(PatientSignupRequestMobile request) {

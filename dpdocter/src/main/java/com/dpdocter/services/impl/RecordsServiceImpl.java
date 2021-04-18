@@ -33,6 +33,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
@@ -115,8 +116,6 @@ import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -239,7 +238,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Override
 	@Transactional
-	public Records addRecord(RecordsAddRequest request, String createdBy) {
+	public Records addRecord(MultipartFile file, RecordsAddRequest request, String createdBy) {
 		Records records = null;
 		try {
 			String localPatientName = null, patientMobileNumber = null;
@@ -286,23 +285,21 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsCollection.setRecordsUrl(recordsURL);
 				recordsCollection.setRecordsPath(recordsURL);
 				if (DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))
-					recordsCollection.setRecordsLabel(request.getFileDetails().getFileName());
+					recordsCollection.setRecordsLabel(file.getOriginalFilename());
 			}
-			if (request.getFileDetails() != null) {
-				String recordLable = request.getFileDetails().getFileName();
-				request.getFileDetails().setFileName(request.getFileDetails().getFileName() + createdTime.getTime());
+			if (file != null) {
+				String recordLable = file.getOriginalFilename();
 				String path = "records" + File.separator + request.getPatientId();
-
-				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(),
-						path, false);
-				String fileName = request.getFileDetails().getFileName() + "."
-						+ request.getFileDetails().getFileExtension();
-				String recordPath = path + File.separator + fileName;
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+				String imagepath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
+				
+				ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, false);
 
 				recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
-				recordsCollection.setRecordsPath(recordPath);
+				recordsCollection.setRecordsPath(imagepath);
 				if (DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))
-					recordsCollection.setRecordsLabel(request.getFileDetails().getFileName());
+					recordsCollection.setRecordsLabel(recordLable);
 			}
 			recordsCollection.setCreatedTime(createdTime);
 			recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
@@ -435,7 +432,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Override
 	@Transactional
-	public Records editRecord(RecordsEditRequest request) {
+	public Records editRecord(MultipartFile file, RecordsEditRequest request) {
 
 		Records records = new Records();
 		try {
@@ -448,14 +445,14 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsCollection
 						.setRecordsLabel(FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length() - 13));
 			}
-			if (request.getFileDetails() != null) {
-				request.getFileDetails().setFileName(request.getFileDetails().getFileName() + new Date().getTime());
+			if (file != null) {
 				String path = request.getPatientId() + File.separator + "records";
-				// save image
-				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(),
-						path, false);
-				String fileName = request.getFileDetails().getFileName() + "."
-						+ request.getFileDetails().getFileExtension();
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+				String imagepath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+				
+				ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, false);
+				
 				String recordPath = path + File.separator + fileName;
 
 				recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
@@ -543,8 +540,6 @@ public class RecordsServiceImpl implements RecordsService {
 		List<Records> records = null;
 		List<RecordsLookupResponse> recordsLookupResponses = null;
 		try {
-			boolean isOTPVerified = otpService.checkOTPVerified(request.getDoctorId(), request.getLocationId(),
-					request.getHospitalId(), request.getPatientId());
 			ObjectId tagObjectId = null, patientObjectId = null, doctorObjectId = null, locationObjectId = null,
 					hospitalObjectId = null;
 
@@ -1391,7 +1386,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Override
 	@Transactional
-	public Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request) {
+	public Records addRecordsMultipart(MultipartFile file, RecordsAddRequestMultipart request) {
 		try {
 			String localPatientName = null, patientMobileNumber = null;
 			PrescriptionCollection prescriptionCollection = null;
@@ -1448,11 +1443,10 @@ public class RecordsServiceImpl implements RecordsService {
 						.setRecordsLabel(FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length() - 13));
 			}
 			if (file != null) {
-				if (!DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName())) {
+				if (!DPDoctorUtils.anyStringEmpty(file.getOriginalFilename())) {
 					String path = "userRecords";
-					FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-					String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-					String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+					String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+					String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 					String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
 					String recordLabel = fileName;
 					fileManager.saveRecord(file, recordPath, 0.0, false);
@@ -1572,16 +1566,15 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Override
 	@Transactional
-	public String saveRecordsImage(FormDataBodyPart file, String patientIdString) {
+	public String saveRecordsImage(MultipartFile file, String patientIdString) {
 		String recordPath = null;
 		try {
 
 			Date createdTime = new Date();
 			if (file != null) {
 				String path = "records" + File.separator + patientIdString;
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 
 				recordPath = path + File.separator + fileName + createdTime.getTime() + fileExtension;
 				fileManager.saveRecord(file, recordPath, 0.0, false);
@@ -2136,7 +2129,7 @@ public class RecordsServiceImpl implements RecordsService {
 	}
 
 	@Override
-	public RecordsFile uploadUserRecord(FormDataBodyPart file, MyFiileRequest request) {
+	public RecordsFile uploadUserRecord(MultipartFile file, MyFiileRequest request) {
 		RecordsFile recordsFile = null;
 		try {
 			UserAllowanceDetailsCollection userAllowanceDetailsCollection = null;
@@ -2170,9 +2163,8 @@ public class RecordsServiceImpl implements RecordsService {
 			}
 			if (file != null) {
 				String path = "userRecords" + File.separator + request.getPatientId();
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 				String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
 				String recordfileLabel = fileName;
 				Double fileSizeInMB = 0.0;

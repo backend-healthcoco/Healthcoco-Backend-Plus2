@@ -2,7 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import com.dpdocter.beans.FileDetails;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dpdocter.beans.PrintSettings;
 
 public interface PrintSettingsService {
@@ -17,9 +18,9 @@ public interface PrintSettingsService {
 
 	String getPrintSettingsGeneralNote(String doctorId, String locationId, String hospitalId);
 
-	public String uploadFile(FileDetails fileDetails, String type);
+	public String uploadFile(MultipartFile file, String type);
 
-	String uploadSignature(FileDetails fileDetails);
+	String uploadSignature(MultipartFile file);
 
 	PrintSettings getSettingByType(String printFilter, String doctorId, String locationId, String hospitalId,
 			Boolean discarded, String printSettingType);

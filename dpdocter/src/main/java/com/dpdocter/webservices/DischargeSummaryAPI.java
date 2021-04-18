@@ -3,16 +3,8 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.BabyNote;
 import com.dpdocter.beans.Cement;
@@ -53,8 +46,6 @@ import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.FlowsheetResponse;
 import com.dpdocter.services.DischargeSummaryService;
 import com.dpdocter.services.TransactionalManagementService;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -62,7 +53,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping(value = PathProxy.DISCHARGE_SUMMARY_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
+@RequestMapping(value = PathProxy.DISCHARGE_SUMMARY_BASE_URL,produces = MediaType.APPLICATION_JSON_VALUE ,consumes = MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.DISCHARGE_SUMMARY_BASE_URL)
 public class DischargeSummaryAPI {
 
@@ -568,20 +559,19 @@ public class DischargeSummaryAPI {
 
 		return response;
 	}
-
-
 	
 	@PostMapping(value = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.ADD_DIAGRAM)
-	public Response<Diagram> addDiagram(@RequestBody Diagram request) {
+	public Response<Diagram> addDiagram(@RequestParam("file") MultipartFile file, @RequestBody Diagram request) {
 		if (request == null
 				|| DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())
-				|| request.getDiagram() == null) {
+				|| file == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		Diagram diagram = dischargeSummaryService.addEditDiagram(request);
+		Diagram diagram = dischargeSummaryService.addEditDiagram(file, request);
 
 		if (diagram.getDiagramUrl() != null) {
 			diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
@@ -594,15 +584,15 @@ public class DischargeSummaryAPI {
 
 
 	@PostMapping(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.UPLOAD_DIAGRAM)
-	public Response<String> uploadDiagram(DoctorLabReportUploadRequest request) {
-		if (request == null || request.getFileDetails() == null
-				|| DPDoctorUtils.anyStringEmpty(request.getFileDetails().getFileEncoded())) {
+	public Response<String> uploadDiagram(@RequestParam("file") MultipartFile file, DoctorLabReportUploadRequest request) {
+		if (request == null || file == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		String diagram = dischargeSummaryService.uploadDischargeDiagram(request);
+		String diagram = dischargeSummaryService.uploadDischargeDiagram(file, request);
 
 		Response<String> response = new Response<String>();
 		response.setData(diagram);
@@ -610,11 +600,11 @@ public class DischargeSummaryAPI {
 	}
 
 	@PostMapping(value = PathProxy.DischargeSummaryUrls.UPLOAD_MULTIPART_DIAGRAM)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.UPLOAD_MULTIPART_DIAGRAM, notes = PathProxy.DischargeSummaryUrls.UPLOAD_MULTIPART_DIAGRAM)
-	public Response<String> uploadDoctorLabReportMultipart(@FormDataParam("file") FormDataBodyPart file) {
+	public Response<String> uploadDoctorLabReportMultipart(@RequestParam("file") MultipartFile file) {
 
-		if (file == null || DPDoctorUtils.anyStringEmpty(file.getContentDisposition().getFileName())) {
+		if (file == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 

@@ -3,6 +3,7 @@ package com.dpdocter.services;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
@@ -60,7 +61,7 @@ public interface ClinicalNotesService {
 
 	Notes addEditNotes(Notes notes);
 
-	Diagram addEditDiagram(Diagram diagram);
+	Diagram addEditDiagram(MultipartFile file, Diagram diagram);
 
 	Complaint deleteComplaint(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 

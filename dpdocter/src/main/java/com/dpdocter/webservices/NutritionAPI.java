@@ -5,7 +5,8 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,8 +16,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.AssessmentPersonalDetail;
 import com.dpdocter.beans.BloodGlucose;
@@ -62,8 +65,8 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.NUTRITION_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.NUTRITION_BASE_URL, description = "Endpoint for nutrition api's")
 public class NutritionAPI {
 
@@ -485,17 +488,12 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@PostMapping
-	(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD_MULTIPART_FILE)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@PostMapping(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD_MULTIPART_FILE)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE})
 	@ApiOperation(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD_MULTIPART_FILE, notes = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD_MULTIPART_FILE)
-	public Response<RecordsFile> uploadNutritionRecordMultipart(@FormDataParam("file") FormDataBodyPart file,
-			@FormDataParam("data") FormDataBodyPart data) {
+	public Response<RecordsFile> uploadNutritionRecordMultipart(@RequestParam("file") MultipartFile file, @RequestBody MyFiileRequest request) {
 
-		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		MyFiileRequest request = data.getValueAs(MyFiileRequest.class);
-
-		if (request == null || DPDoctorUtils.anyStringEmpty(file.getContentDisposition().getFileName())) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(file.getOriginalFilename())) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
@@ -510,16 +508,16 @@ public class NutritionAPI {
 		return response;
 	}
 
-	@PostMapping
-	(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD)
+	@PostMapping(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE})
 	@ApiOperation(value = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD, notes = PathProxy.NutritionUrl.UPLOAD_NUTRITION_RECORD)
-	public Response<RecordsFile> uploadNutritionRecord(DoctorLabReportUploadRequest request) {
-		if (request == null || request.getFileDetails() == null) {
+	public Response<RecordsFile> uploadNutritionRecord(@RequestParam("file") MultipartFile file, DoctorLabReportUploadRequest request) {
+		if (request == null || file == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		RecordsFile recordsFiles = nutritionRecordService.uploadNutritionRecord(request);
+		RecordsFile recordsFiles = nutritionRecordService.uploadNutritionRecord(file, request);
 
 		Response<RecordsFile> response = new Response<RecordsFile>();
 		response.setData(recordsFiles);

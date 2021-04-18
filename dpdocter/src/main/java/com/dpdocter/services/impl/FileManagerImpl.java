@@ -23,6 +23,7 @@ import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -38,8 +39,6 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -165,12 +164,12 @@ public class FileManagerImpl implements FileManager {
 
 	@Override
 	@Transactional
-	public Double saveRecord(FormDataBodyPart file, String recordPath, Double allowedSize, Boolean checkSize) {
+	public Double saveRecord(MultipartFile file, String recordPath, Double allowedSize, Boolean checkSize) {
 		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 		AmazonS3 s3client = new AmazonS3Client(credentials);
 		Double fileSizeInMB = 0.0;
 		try {
-			InputStream fis = file.getEntityAs(InputStream.class);
+			InputStream fis = file.getInputStream();
 			ObjectMetadata metadata = new ObjectMetadata();
 			byte[] contentBytes = IOUtils.toByteArray(fis);
 			if (checkSize) {
@@ -181,12 +180,12 @@ public class FileManagerImpl implements FileManager {
 				}
 			}
 			metadata.setContentLength(contentBytes.length);
-			metadata.setContentEncoding(file.getContentDisposition().getType());
-			metadata.setContentType(file.getMediaType().getType());
+			metadata.setContentEncoding(file.getContentType());
+			metadata.setContentType(file.getContentType());
 			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
 
 			s3client.putObject(
-					new PutObjectRequest(bucketName, recordPath, file.getEntityAs(InputStream.class), metadata));
+					new PutObjectRequest(bucketName, recordPath, file.getInputStream(), metadata));
 
 		} catch (AmazonServiceException ase) {
 			System.out.println("Error Message:    " + ase.getMessage() + " HTTP Status Code: " + ase.getStatusCode()
@@ -203,7 +202,7 @@ public class FileManagerImpl implements FileManager {
 		}
 		return fileSizeInMB;
 	}
-
+	
 	@Override
 	@Transactional
 	public Double saveRecordBase64(FileDetails fileDetail, String recordPath) {
@@ -247,12 +246,12 @@ public class FileManagerImpl implements FileManager {
 
 	@Override
 	@Transactional
-	public ImageURLResponse saveImage(FormDataBodyPart file, String recordPath, Boolean createThumbnail) {
+	public ImageURLResponse saveImage(MultipartFile file, String recordPath, Boolean createThumbnail) {
 		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 		AmazonS3 s3client = new AmazonS3Client(credentials);
 		ImageURLResponse response = new ImageURLResponse();
 		try {
-			InputStream fis = file.getEntityAs(InputStream.class);
+			InputStream fis = file.getInputStream();
 			ObjectMetadata metadata = new ObjectMetadata();
 			byte[] contentBytes = IOUtils.toByteArray(fis);
 
@@ -264,11 +263,11 @@ public class FileManagerImpl implements FileManager {
 			 */
 
 			metadata.setContentLength(contentBytes.length);
-			metadata.setContentEncoding(file.getContentDisposition().getType());
-			metadata.setContentType(file.getMediaType().getType());
+			metadata.setContentEncoding(file.getContentType());
+			metadata.setContentType(file.getContentType());
 			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
 			s3client.putObject(
-					new PutObjectRequest(bucketName, recordPath, file.getEntityAs(InputStream.class), metadata));
+					new PutObjectRequest(bucketName, recordPath, file.getInputStream(), metadata));
 			response.setImageUrl(imagePath + recordPath);
 			if (createThumbnail) {
 				response.setThumbnailUrl(imagePath + saveThumbnailUrl(file, recordPath));
@@ -297,12 +296,11 @@ public class FileManagerImpl implements FileManager {
 
 	@Override
 	@Transactional
-	public String saveThumbnailUrl(FormDataBodyPart file, String path) {
+	public String saveThumbnailUrl(MultipartFile file, String path) {
 		String thumbnailUrl = "";
 
 		try {
-			FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-			String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+			String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
 			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 			AmazonS3 s3client = new AmazonS3Client(credentials);
 			S3Object object = s3client.getObject(new GetObjectRequest(bucketName, path));
@@ -359,14 +357,15 @@ public class FileManagerImpl implements FileManager {
 		}
 		return thumbnailUrl;
 	}
-
 	@Override
 	@Transactional
-	public List<String> convertPdfToImage(FileDetails fileDetails, String path, Boolean createThumbnail)
+	public List<String> convertPdfToImage(MultipartFile file, String path, Boolean createThumbnail)
 			throws Exception {
 		FileDetails fileDetail = null;
-		byte[] base64 = Base64.decodeBase64(fileDetails.getFileEncoded());
-		PDDocument document = PDDocument.load(base64);
+		InputStream fis = file.getInputStream();
+		byte[] contentBytes = IOUtils.toByteArray(fis);
+		
+		PDDocument document = PDDocument.load(contentBytes);
 		PDFRenderer pdfRenderer = new PDFRenderer(document);
 		document.getPages().getCount();
 		List<String> imagelist = new ArrayList<String>();
@@ -385,9 +384,12 @@ public class FileManagerImpl implements FileManager {
 			// fileDetails.getFileName().replace(" ", "") + "-" + (i) , path, false);
 			fileDetail.setFileEncoded(Base64.encodeBase64String(outstream.toByteArray()));
 
-			fileDetail.setFileName(fileDetails.getFileName().replace(" ", "") + "-" + (i));
+			String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+			String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+			
+			fileDetail.setFileName(fileName.replace(" ", "") + "-" + (i));
 			fileDetail.setFileExtension("jpg");
-			imageURLResponse = saveImageAndReturnImageUrl(fileDetail, path, false);
+			imageURLResponse = saveImage(file, path, false);
 			if (imageURLResponse != null && !DPDoctorUtils.anyStringEmpty(imageURLResponse.getImageUrl()))
 				imagelist.add(imagePath + imageURLResponse.getImageUrl());
 		}

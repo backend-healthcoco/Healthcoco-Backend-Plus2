@@ -3,6 +3,7 @@ package com.dpdocter.services;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
@@ -30,7 +31,6 @@ import com.dpdocter.response.DentalWorksInvoiceResponse;
 import com.dpdocter.response.DentalWorksReceiptResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.TaxResponse;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface DentalLabService {
 
@@ -109,7 +109,7 @@ public interface DentalLabService {
 	 * isCollectedAtDoctor, Boolean isCompleted, Boolean isAcceptedAtLab);
 	 */
 
-	ImageURLResponse addDentalImage(FormDataBodyPart file);
+	ImageURLResponse addDentalImage(MultipartFile file);
 
 	ImageURLResponse addDentalImageBase64(FileDetails fileDetails);
 

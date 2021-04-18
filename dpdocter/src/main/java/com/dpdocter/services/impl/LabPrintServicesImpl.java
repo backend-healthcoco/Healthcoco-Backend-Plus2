@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -15,6 +16,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.LabPrintContentSetup;
 import com.dpdocter.beans.LabPrintDocument;
@@ -174,7 +176,7 @@ public class LabPrintServicesImpl implements LabPrintServices {
 	}
 
 	@Override
-	public LabPrintSetting setHeaderAndFooterSetup(LabPrintContentRequest request, String type) {
+	public LabPrintSetting setHeaderAndFooterSetup(MultipartFile file, LabPrintContentRequest request, String type) {
 		LabPrintSetting response = null;
 		LabPrintSettingCollection labPrintSettingCollection = null;
 		String path = "";
@@ -201,12 +203,16 @@ public class LabPrintServicesImpl implements LabPrintServices {
 				labPrintSettingCollection.setHospitalId(hospitalObjectId);
 				labPrintSettingCollection.setCreatedTime(new Date());
 			}
-			if (request.getFileDetails() != null) {
-				request.getFileDetails().setFileName(request.getFileDetails().getFileName() + new Date());
-				path = "lab/print/setup" + File.separator + request.getLocationId();
-				imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getFileDetails(), path, false);
-
+			if (file != null) {
+				if (!DPDoctorUtils.anyStringEmpty(file.getOriginalFilename())) {
+					path = "lab/print/setup" + File.separator + request.getLocationId();
+					String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+					String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+					String imagepath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+					imageURLResponse = fileManager.saveImage(file, imagepath, false);
+				}
 			}
+			
 			if (type.equals("FOOTER")) {
 				contentSetup = labPrintSettingCollection.getFooterSetup();
 			} else if (type.equals("HEADER")) {

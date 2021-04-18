@@ -1,6 +1,7 @@
 package com.dpdocter.exceptions;
 
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 
 public class ServiceException extends Exception {
     private static final long serialVersionUID = 1L;
@@ -9,7 +10,7 @@ public class ServiceException extends Exception {
 
     private Error error;
 
-    private MediaType mediaType = MediaType.APPLICATION_XML_TYPE;
+    private MediaType mediaType = MediaType.APPLICATION_XML;
 
     public ServiceException(StatusCode statusCode, Error errors) {
 	this.statusCode = statusCode.value();

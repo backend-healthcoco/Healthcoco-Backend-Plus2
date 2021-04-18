@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -22,9 +23,9 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.DefaultPrintSettings;
-import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.PrintSettings;
 import com.dpdocter.collections.HospitalCollection;
@@ -38,7 +39,6 @@ import com.dpdocter.enums.PrintSettingType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.DentalLabPrintSettingRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
@@ -67,9 +67,6 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	@Autowired
 	private HospitalRepository hospitalRepository;
-
-	@Autowired
-	private DentalLabPrintSettingRepository dentalLabPrintSettingRepository;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -403,15 +400,16 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	}
 
 	@Override
-	public String uploadFile(FileDetails fileDetails, String type) {
+	public String uploadFile(MultipartFile file, String type) {
 		ImageURLResponse response = null;
-		String path = "";
 		try {
 
-			fileDetails.setFileName(fileDetails.getFileName() + new Date());
-			path = "print/setup" + File.separator + type;
-			response = fileManager.saveImageAndReturnImageUrl(fileDetails, path, false);
-
+			String path = "print/setup" + File.separator + type;
+			String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+			String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+			String imagepath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+						
+			response = fileManager.saveImage(file, imagepath, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error occured while uploading Image");
@@ -421,13 +419,15 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	}
 
 	@Override
-	public String uploadSignature(FileDetails fileDetails) {
+	public String uploadSignature(MultipartFile file) {
 		ImageURLResponse response = null;
-		String path = "";
 		try {
-			fileDetails.setFileName(fileDetails.getFileName() + new Date());
-			path = "print/setup" + File.separator + "signature";
-			response = fileManager.saveImageAndReturnImageUrl(fileDetails, path, false);
+			String path = "print/setup" + File.separator + "signature";
+			String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+			String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+			String imagepath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+			
+			response = fileManager.saveImage(file, imagepath, false);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -588,7 +588,6 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 		List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
 		
 			Boolean showTreatmentQuantity = false, showTreatmentDiscount = false;
-			int no = 0;
 			patientTreatmentJasperDetails = new ArrayList<PatientTreatmentJasperDetails>();
 			
 			patientTreatmentJasperDetails.add(null);

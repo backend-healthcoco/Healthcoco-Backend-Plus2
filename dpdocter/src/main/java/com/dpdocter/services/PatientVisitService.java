@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.ClinicalNotesJasperDetails;
 import com.dpdocter.beans.DoctorContactsResponse;
@@ -32,7 +33,7 @@ public interface PatientVisitService {
 	DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, long page, int size,
 			String role);
 
-	PatientVisitResponse addMultipleData(AddMultipleDataRequest request);
+	PatientVisitResponse addMultipleData(AddMultipleDataRequest request, MultipartFile file);
 
 	PatientVisitResponse getVisit(String visitId);
 

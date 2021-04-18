@@ -50,6 +50,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.Address;
@@ -267,7 +268,6 @@ import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -3757,7 +3757,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public ConsentForm addConcentForm(FormDataBodyPart file, ConsentForm request) {
+	public ConsentForm addConcentForm(MultipartFile file, ConsentForm request) {
 		ConsentForm response = null;
 		try {
 
@@ -3765,11 +3765,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
 			if (file != null) {
-				if (!DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName())) {
+				if (!DPDoctorUtils.anyStringEmpty(file.getOriginalFilename())) {
 					String path = "sign" + File.separator + request.getPatientId();
-					FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-					String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-					String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+					String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+					String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 					String imagepath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
 					ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, false);
 					if (imageURLResponse != null) {

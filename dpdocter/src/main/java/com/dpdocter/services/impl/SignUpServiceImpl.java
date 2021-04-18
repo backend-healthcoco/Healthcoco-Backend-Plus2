@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.CollectionBoy;
@@ -91,7 +94,6 @@ import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.GenerateUniqueUserNameService;
-import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
@@ -179,9 +181,6 @@ public class SignUpServiceImpl implements SignUpService {
 
 	@Autowired
 	private HospitalRepository hospitalRepository;
-
-	@Autowired
-	private LocationServices locationServices;
 
 	@Autowired
 	private ConfexUserRepository confexUserRepository;
@@ -298,7 +297,7 @@ public class SignUpServiceImpl implements SignUpService {
 
 	@Override
 	@Transactional
-	public User patientSignUp(PatientSignUpRequest request) {
+	public User patientSignUp(MultipartFile file, PatientSignUpRequest request) {
 		User user = null;
 		try {
 			// get role of specified type
@@ -339,12 +338,13 @@ public class SignUpServiceImpl implements SignUpService {
 			patientCollection.setUserId(userCollection.getId());
 			Date createdTime = new Date();
 			patientCollection.setCreatedTime(createdTime);
-			if (request.getImage() != null) {
+			if (file != null) {
 				String path = "profile-image";
-				// save image
-				request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path,
-						true);
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+				String imagepath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
+				
+				ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, true);
 				patientCollection.setImageUrl(imageURLResponse.getImageUrl());
 				patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 			}
@@ -422,7 +422,7 @@ public class SignUpServiceImpl implements SignUpService {
 
 	@Override
 	@Transactional
-	public User patientProfilePicChange(PatientProfilePicChangeRequest request) {
+	public User patientProfilePicChange(MultipartFile file, PatientProfilePicChangeRequest request) {
 		User user = null;
 		try {
 			UserCollection userCollection = userRepository.findByUserName(request.getUsername());
@@ -441,10 +441,10 @@ public class SignUpServiceImpl implements SignUpService {
 				if (patientCollection != null) {
 					if (request.getImage() != null) {
 						String path = "profile-image";
-						// save image
-						request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-						ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(),
-								path, true);
+						String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+						String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+						String imagepath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+						ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, true);
 						patientCollection.setImageUrl(imageURLResponse.getImageUrl());
 						patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 						patientCollection.setUpdatedTime(new Date());

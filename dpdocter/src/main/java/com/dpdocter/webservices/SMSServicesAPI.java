@@ -6,7 +6,8 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,8 +48,8 @@ public class SMSServicesAPI {
     @Autowired
     private TransactionalManagementService transactionalManagementService;
 
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON_VALUE)
+//    @Consumes(MediaType.APPLICATION_JSON_VALUE)
 //    (value = PathProxy.SMSUrls.SEND_SMS)
 //    @PostMapping
 //    @ApiOperation(value = PathProxy.SMSUrls.SEND_SMS, notes = PathProxy.SMSUrls.SEND_SMS)
@@ -59,8 +60,8 @@ public class SMSServicesAPI {
 //	return response;
 //    }
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @GetMapping
     @ApiOperation(value = "GET_SMS", notes = "GET_SMS")
     public Response<SMSResponse> getSMS(@RequestParam("page") int page, @RequestParam("size") int size, @RequestParam(value = "doctorId") String doctorId,
@@ -75,8 +76,8 @@ public class SMSServicesAPI {
 	return response;
     }
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @GetMapping(value = PathProxy.SMSUrls.GET_SMS_DETAILS)
     @ApiOperation(value = PathProxy.SMSUrls.GET_SMS_DETAILS, notes = PathProxy.SMSUrls.GET_SMS_DETAILS)
     public Response<SMSTrack> getSMSDetails(@RequestParam("page") long page, @RequestParam("size") int size, @RequestParam(value = "patientId") String patientId,
@@ -116,8 +117,8 @@ public class SMSServicesAPI {
 	return "true";
     }
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @GetMapping(value = PathProxy.SMSUrls.ADD_NUMBER)
     @ApiOperation(value = PathProxy.SMSUrls.ADD_NUMBER, notes = PathProxy.SMSUrls.ADD_NUMBER)
     public Response<Boolean> addNumber(@PathVariable(value = "mobileNumber") String mobileNumber) {
@@ -127,8 +128,8 @@ public class SMSServicesAPI {
 	return response;
     }
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @GetMapping(value = PathProxy.SMSUrls.DELETE_NUMBER)
     @ApiOperation(value = PathProxy.SMSUrls.DELETE_NUMBER, notes = PathProxy.SMSUrls.DELETE_NUMBER)
     public Response<Boolean> deleteNumber(@PathVariable(value = "mobileNumber") String mobileNumber) {
@@ -138,8 +139,8 @@ public class SMSServicesAPI {
 	return response;
     }
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(value = PathProxy.SMSUrls.ADD_EDIT_SMS_FORMAT)
     @ApiOperation(value = PathProxy.SMSUrls.ADD_EDIT_SMS_FORMAT, notes = PathProxy.SMSUrls.ADD_EDIT_SMS_FORMAT)
     public Response<SMSFormat> addSmsFormat(SMSFormat request) {
@@ -153,8 +154,8 @@ public class SMSServicesAPI {
 	return response;
     }
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @GetMapping(value = PathProxy.SMSUrls.GET_SMS_FORMAT)
     @ApiOperation(value = PathProxy.SMSUrls.GET_SMS_FORMAT, notes = PathProxy.SMSUrls.GET_SMS_FORMAT)
     public Response<SMSFormat> getSmsFormat(@PathVariable(value = "doctorId") String doctorId, @PathVariable(value = "locationId") String locationId,
@@ -169,8 +170,8 @@ public class SMSServicesAPI {
 	return response;
     }
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @GetMapping(value = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT)
     @ApiOperation(value = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT, notes = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT)
     public Response<Boolean> sendPromotionalSMSToPatient() {
@@ -182,8 +183,8 @@ public class SMSServicesAPI {
     }
 
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
     @GetMapping(value = PathProxy.SMSUrls.SEND_BULK_SMS)
     @ApiOperation(value = PathProxy.SMSUrls.SEND_BULK_SMS, notes = PathProxy.SMSUrls.SEND_BULK_SMS)
     public Response<String> sendBulkSMS(@MatrixParam("mobileNumbers") List<String> mobileNumbers, @PathVariable(value = "message") String message) {

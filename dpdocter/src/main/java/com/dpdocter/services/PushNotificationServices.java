@@ -3,6 +3,7 @@ package com.dpdocter.services;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.UserDevice;
 import com.dpdocter.collections.UserDeviceCollection;
@@ -17,7 +18,7 @@ public interface PushNotificationServices {
 	void notifyUser(String userId, String message, String componentType, String componentTypeId,
 			List<UserDeviceCollection> userDeviceCollections);
 
-	void broadcastNotification(BroadcastNotificationRequest request);
+	void broadcastNotification(MultipartFile file, BroadcastNotificationRequest request);
 
 	void readNotification(String deviceId, Integer count);
 

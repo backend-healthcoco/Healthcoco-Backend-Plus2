@@ -24,6 +24,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.PatientShortCard;
@@ -58,8 +59,6 @@ import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.ProcedureSheetService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -434,14 +433,13 @@ public class ProcedureSheetServiceImpl implements ProcedureSheetService {
 
 	@Override
 	@Transactional
-	public ImageURLResponse addDiagrams(FormDataBodyPart file) {
+	public ImageURLResponse addDiagrams(MultipartFile file) {
 		ImageURLResponse imageURLResponse = null;
 		try {
 			if (file != null) {
 				String path = "procedure-sheet";
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
 				imageURLResponse = fileManager.saveImage(file, recordPath, true);
 			}

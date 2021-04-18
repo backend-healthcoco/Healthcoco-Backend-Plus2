@@ -6,13 +6,13 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.Records;
@@ -42,8 +43,6 @@ import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.RecordsService;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -52,8 +51,8 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.RECORDS_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.RECORDS_BASE_URL, description = "Endpoint for records")
 public class RecordsApi {
 
@@ -71,17 +70,17 @@ public class RecordsApi {
 	@Autowired
 	private OTPService otpService;
 
-	@PostMapping
-	(value = PathProxy.RecordsUrls.ADD_RECORDS)
+	@PostMapping(value = PathProxy.RecordsUrls.ADD_RECORDS)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.RecordsUrls.ADD_RECORDS, notes = PathProxy.RecordsUrls.ADD_RECORDS)
-	public Response<Records> addRecords(RecordsAddRequest request) {
+	public Response<Records> addRecords(@RequestParam("file") MultipartFile file, RecordsAddRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId(), request.getPatientId()) || request.getFileDetails() == null) {
+				request.getHospitalId(), request.getPatientId()) || file == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		Records records = recordsService.addRecord(request, null);
+		Records records = recordsService.addRecord(file, request, null);
 
 		// patient track
 		if (records != null) {
@@ -305,12 +304,13 @@ public class RecordsApi {
 	
 	@PutMapping(value = PathProxy.RecordsUrls.EDIT_RECORD)
 	@ApiOperation(value = PathProxy.RecordsUrls.EDIT_RECORD, notes = PathProxy.RecordsUrls.EDIT_RECORD)
-	public Response<Records> editRecords(@PathVariable(value = "recordId") String recordId, RecordsEditRequest request) {
+	public Response<Records> editRecords(@PathVariable(value = "recordId") String recordId, @RequestParam("file") MultipartFile file, 
+			RecordsEditRequest request) {
 		if (DPDoctorUtils.anyStringEmpty(recordId) || request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		request.setId(recordId);
-		Records records = recordsService.editRecord(request);
+		Records records = recordsService.editRecord(file, request);
 		if (records != null) {
 			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
 			String visitId = patientTrackService.editRecord(records.getId(), VisitedFor.REPORTS);
@@ -342,15 +342,10 @@ public class RecordsApi {
 		return response;
 	}
 
-	@PostMapping
-	(value = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@PostMapping(value = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE})
 	@ApiOperation(value = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART, notes = PathProxy.RecordsUrls.ADD_RECORDS_MULTIPART)
-	public Response<Records> addRecordsMultipart(@FormDataParam("file") FormDataBodyPart file,
-			@FormDataParam("data") FormDataBodyPart data) {
-		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		RecordsAddRequestMultipart request = data.getValueAs(RecordsAddRequestMultipart.class);
-
+	public Response<Records> addRecordsMultipart(@RequestParam("file") MultipartFile file, RecordsAddRequestMultipart request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -369,16 +364,12 @@ public class RecordsApi {
 		return response;
 	}
 
-	@PostMapping
-	(value = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@PostMapping(value = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE})
 	@ApiOperation(value = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE, notes = PathProxy.RecordsUrls.SAVE_RECORDS_IMAGE)
-	public Response<String> saveRecordsImage(@FormDataParam("file") FormDataBodyPart file,
-			@FormDataParam("patientId") FormDataBodyPart patientId) {
-		patientId.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		String patientIdString = patientId.getValueAs(String.class);
-
-		String imageURL = recordsService.saveRecordsImage(file, patientIdString);
+	public Response<String> saveRecordsImage(@RequestParam("file") MultipartFile file, @PathVariable("patientId")  String patientId) {
+	
+		String imageURL = recordsService.saveRecordsImage(file, patientId);
 		imageURL = getFinalImageURL(imageURL);
 		Response<String> response = new Response<String>();
 		response.setData(imageURL);
@@ -428,17 +419,12 @@ public class RecordsApi {
 		return response;
 	}
 
-	@PostMapping
-	(value = PathProxy.RecordsUrls.UPLOAD_USER_RECORD_FILE)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@PostMapping(value = PathProxy.RecordsUrls.UPLOAD_USER_RECORD_FILE)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE})
 	@ApiOperation(value = PathProxy.RecordsUrls.UPLOAD_USER_RECORD_FILE, notes = PathProxy.RecordsUrls.UPLOAD_USER_RECORD_FILE)
-	public Response<RecordsFile> uploadUserRecord(@FormDataParam("file") FormDataBodyPart file,
-			@FormDataParam("data") FormDataBodyPart data) {
+	public Response<RecordsFile> uploadUserRecord(@RequestParam("file") MultipartFile file, MyFiileRequest request) {
 
-		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		MyFiileRequest request = data.getValueAs(MyFiileRequest.class);
-
-		if (request == null || DPDoctorUtils.anyStringEmpty(file.getContentDisposition().getFileName())) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(file.getOriginalFilename())) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 

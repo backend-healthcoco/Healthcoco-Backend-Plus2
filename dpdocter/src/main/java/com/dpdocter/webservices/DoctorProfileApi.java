@@ -4,14 +4,13 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.AddEditSEORequest;
 import com.dpdocter.beans.Clinic;
@@ -36,7 +36,6 @@ import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Services;
 import com.dpdocter.beans.Speciality;
-import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
@@ -76,7 +75,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping(value=PathProxy.DOCTOR_PROFILE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
+@RequestMapping(value=PathProxy.DOCTOR_PROFILE_URL,produces = MediaType.APPLICATION_JSON_VALUE ,consumes = MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.DOCTOR_PROFILE_URL, description = "Endpoint for doctor profile")
 public class DoctorProfileApi {
 
@@ -97,9 +96,6 @@ public class DoctorProfileApi {
 	@Autowired
 	private DoctorStatsService doctorStatsService;
 	
-	@Autowired
-	private ESMasterService esMasterService;
-
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -286,13 +282,14 @@ public class DoctorProfileApi {
 
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_PROFILE_PICTURE)
-	public Response<String> addEditProfilePicture(@RequestBody DoctorProfilePictureAddEditRequest request) {
+	public Response<String> addEditProfilePicture(@RequestParam("file") MultipartFile file, @RequestBody DoctorProfilePictureAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		String addEditProfilePictureResponse = doctorProfileService.addEditProfilePicture(request);
+		String addEditProfilePictureResponse = doctorProfileService.addEditProfilePicture(file, request);
 		if (addEditProfilePictureResponse != null)
 			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 		addEditProfilePictureResponse = getFinalImageURL(addEditProfilePictureResponse);
@@ -303,13 +300,14 @@ public class DoctorProfileApi {
 
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_COVER_PICTURE)
-	public Response<String> addEditCoverPicture(@RequestBody DoctorProfilePictureAddEditRequest request) {
+	public Response<String> addEditCoverPicture(@RequestParam("file") MultipartFile file, @RequestBody DoctorProfilePictureAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		String addEditCoverPictureResponse = doctorProfileService.addEditCoverPicture(request);
+		String addEditCoverPictureResponse = doctorProfileService.addEditCoverPicture(file, request);
 		if (addEditCoverPictureResponse != null)
 			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 		addEditCoverPictureResponse = getFinalImageURL(addEditCoverPictureResponse);
@@ -579,13 +577,15 @@ public class DoctorProfileApi {
 
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_MULTIPLE_DATA)
-	public Response<DoctorMultipleDataAddEditResponse> addEditMultipleData(@RequestBody DoctorMultipleDataAddEditRequest request) {
+	public Response<DoctorMultipleDataAddEditResponse> addEditMultipleData(@RequestParam("profileImage") MultipartFile profileImage,
+			@RequestParam("coverImage") MultipartFile coverImage, @RequestBody DoctorMultipleDataAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Request Cannot Be null");
 			throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
 		}
-		DoctorMultipleDataAddEditResponse addEditNameResponse = doctorProfileService.addEditMultipleData(request);
+		DoctorMultipleDataAddEditResponse addEditNameResponse = doctorProfileService.addEditMultipleData(profileImage, coverImage, request);
 		transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 
 		addEditNameResponse.setCoverImageUrl(getFinalImageURL(addEditNameResponse.getCoverImageUrl()));
@@ -961,13 +961,14 @@ public class DoctorProfileApi {
 
 	
 	@PostMapping(value = PathProxy.DoctorProfileUrls.UPLOAD_REGISTRATION_DETAILS)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPLOAD_REGISTRATION_DETAILS, notes = PathProxy.DoctorProfileUrls.UPLOAD_REGISTRATION_DETAILS)
-	public Response<String> uploadRegistrationDetails(DoctorRegistrationDetails request) {
+	public Response<String> uploadRegistrationDetails(@RequestParam("file") MultipartFile file, @RequestBody DoctorRegistrationDetails request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		String addEditCoverPictureResponse = doctorProfileService.uploadRegistrationDetails(request);
+		String addEditCoverPictureResponse = doctorProfileService.uploadRegistrationDetails(file, request);
 		if (addEditCoverPictureResponse != null)
 			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 		addEditCoverPictureResponse = getFinalImageURL(addEditCoverPictureResponse);

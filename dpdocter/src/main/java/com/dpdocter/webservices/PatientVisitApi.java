@@ -5,7 +5,8 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.exceptions.BusinessException;
@@ -34,8 +36,8 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.PATIENT_VISIT_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.PATIENT_VISIT_BASE_URL, description = "Endpoint for patient visit")
 public class PatientVisitApi {
 
@@ -52,15 +54,16 @@ public class PatientVisitApi {
 
 	
 	@PostMapping(value = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE})
 	@ApiOperation(value = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA, notes = PathProxy.PatientVisitUrls.ADD_MULTIPLE_DATA)
-	public Response<PatientVisitResponse> addMultipleData(AddMultipleDataRequest request) {
+	public Response<PatientVisitResponse> addMultipleData(AddMultipleDataRequest request, @RequestParam("file") MultipartFile file) {
 
 		if (request == null || DPDoctorUtils.allStringsEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPatientId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		PatientVisitResponse patienVisitResponse = patientVisitService.addMultipleData(request);
+		PatientVisitResponse patienVisitResponse = patientVisitService.addMultipleData(request, file);
 		Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
 		response.setData(patienVisitResponse);
 		return response;

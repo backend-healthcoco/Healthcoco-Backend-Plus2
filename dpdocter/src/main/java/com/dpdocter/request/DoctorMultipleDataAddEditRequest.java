@@ -3,7 +3,6 @@ package com.dpdocter.request;
 import java.util.List;
 
 import com.dpdocter.beans.DOB;
-import com.dpdocter.beans.FileDetails;
 
 public class DoctorMultipleDataAddEditRequest {
 
@@ -16,10 +15,6 @@ public class DoctorMultipleDataAddEditRequest {
 	private int experience;
 
 	private List<String> specialities;
-
-	private FileDetails profileImage;
-
-	private FileDetails coverImage;
 
 	private String gender;
 
@@ -67,22 +62,6 @@ public class DoctorMultipleDataAddEditRequest {
 		this.specialities = specialities;
 	}
 
-	public FileDetails getProfileImage() {
-		return profileImage;
-	}
-
-	public void setProfileImage(FileDetails profileImage) {
-		this.profileImage = profileImage;
-	}
-
-	public FileDetails getCoverImage() {
-		return coverImage;
-	}
-
-	public void setCoverImage(FileDetails coverImage) {
-		this.coverImage = coverImage;
-	}
-
 	public List<String> getSpecialities() {
 		return specialities;
 	}
@@ -118,7 +97,6 @@ public class DoctorMultipleDataAddEditRequest {
 	@Override
 	public String toString() {
 		return "DoctorMultipleDataAddEditRequest [doctorId=" + doctorId + ", title=" + title + ", firstName="
-				+ firstName + ", experience=" + experience + ", specialities=" + specialities + ", profileImage="
-				+ profileImage + ", coverImage=" + coverImage + ", gender=" + gender + ", dob=" + dob + "]";
+				+ firstName + ", experience=" + experience + ", specialities=" + specialities + ", gender=" + gender + ", dob=" + dob + "]";
 	}
 }

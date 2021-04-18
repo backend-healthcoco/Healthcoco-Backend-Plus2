@@ -3,6 +3,8 @@ package com.dpdocter.services;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dpdocter.beans.DoctorLabReport;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.request.DoctorLabDoctorReferenceRequest;
@@ -12,15 +14,14 @@ import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.response.DoctorLabFavouriteDoctorResponse;
 import com.dpdocter.response.DoctorLabReportResponse;
 import com.dpdocter.response.DoctorLabSearchDoctorResponse;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface DoctorLabService {
 
 	public DoctorLabReport addDoctorLabReport(DoctorLabReport request);
 
-	public RecordsFile uploadDoctorLabReport(DoctorLabReportUploadRequest request);
+	public RecordsFile uploadDoctorLabReport(MultipartFile file, DoctorLabReportUploadRequest request);
 
-	public RecordsFile uploadDoctorLabReportMultipart(FormDataBodyPart file, MyFiileRequest request);
+	public RecordsFile uploadDoctorLabReportMultipart(MultipartFile file, MyFiileRequest request);
 
 	public List<DoctorLabReportResponse> getDoctorLabReport(long page, int size, String patientId, String doctorId,
 			String locationId, String hospitalId, String searchTerm, Boolean discarded, Boolean doctorLab);

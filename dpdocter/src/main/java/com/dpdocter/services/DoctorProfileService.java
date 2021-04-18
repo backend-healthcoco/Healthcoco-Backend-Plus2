@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dpdocter.beans.AddEditSEORequest;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorContactsResponse;
@@ -62,9 +64,9 @@ public interface DoctorProfileService {
 
 	DoctorExperienceDetailAddEditRequest addEditExperienceDetail(DoctorExperienceDetailAddEditRequest request);
 
-	String addEditProfilePicture(DoctorProfilePictureAddEditRequest request);
+	String addEditProfilePicture(MultipartFile file, DoctorProfilePictureAddEditRequest request);
 
-	String addEditCoverPicture(DoctorProfilePictureAddEditRequest request);
+	String addEditCoverPicture(MultipartFile file, DoctorProfilePictureAddEditRequest request);
 
 	DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, String patientId,
 			Boolean isMobileApp, Boolean isSearched, String userState);
@@ -89,7 +91,7 @@ public interface DoctorProfileService {
 
 	List<EducationQualification> getEducationQualifications(long page, int size, String updatedTime);
 
-	DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request);
+	DoctorMultipleDataAddEditResponse addEditMultipleData(MultipartFile profileImage, MultipartFile coverImage, DoctorMultipleDataAddEditRequest request);
 
 	DoctorAddEditFacilityRequest addEditFacility(DoctorAddEditFacilityRequest request);
 
@@ -142,7 +144,7 @@ public interface DoctorProfileService {
 	public Integer countOnlineConsultingfees(Boolean discarded, String searchTerm);
 	
 	
-	String uploadRegistrationDetails(DoctorRegistrationDetails request);
+	String uploadRegistrationDetails(MultipartFile file, DoctorRegistrationDetails request);
 
 	Services addEditServices(Services request);
 

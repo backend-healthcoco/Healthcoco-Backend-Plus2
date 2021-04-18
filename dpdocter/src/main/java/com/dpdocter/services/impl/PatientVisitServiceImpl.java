@@ -35,6 +35,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.Age;
 import com.dpdocter.beans.Appointment;
@@ -754,7 +755,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	@Transactional
-	public PatientVisitResponse addMultipleData(AddMultipleDataRequest request) {
+	public PatientVisitResponse addMultipleData(AddMultipleDataRequest request, MultipartFile file) {
 		PatientVisitResponse response = new PatientVisitResponse();
 		String visitId = request.getVisitId();
 		Appointment appointment = null;
@@ -837,7 +838,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (request.getRecord() != null) {
 
 				addRecords(request, response, patientVisitCollection, visitId, appointment,
-						patientVisitCollection.getCreatedBy());
+						patientVisitCollection.getCreatedBy(), file);
 			}
 			if (request.getTreatmentRequest() != null) {
 				request.getTreatmentRequest().setCreatedTime(request.getCreatedTime());
@@ -911,8 +912,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private void addRecords(AddMultipleDataRequest request, PatientVisitResponse response,
-			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment, String createdBy) {
-		Records records = recordsService.addRecord(request.getRecord(), createdBy);
+			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment, String createdBy, MultipartFile record) {
+		Records records = recordsService.addRecord(record, request.getRecord(), createdBy);
 
 		if (records != null) {
 			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));

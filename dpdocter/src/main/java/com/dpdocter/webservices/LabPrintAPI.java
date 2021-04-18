@@ -3,7 +3,8 @@ package com.dpdocter.webservices;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.LabPrintDocument;
 import com.dpdocter.beans.LabPrintSetting;
@@ -30,8 +32,8 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.Lab_PRINT_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.Lab_PRINT_BASE_URL, description = "")
 public class LabPrintAPI {
 
@@ -74,8 +76,9 @@ public class LabPrintAPI {
 
 	
 	@PostMapping(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_HEADER)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_HEADER, notes = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_HEADER)
-	public Response<LabPrintSetting> addEditPrintHeader(LabPrintContentRequest request) {
+	public Response<LabPrintSetting> addEditPrintHeader(@RequestParam("file") MultipartFile file, LabPrintContentRequest request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -85,15 +88,16 @@ public class LabPrintAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<LabPrintSetting> response = new Response<LabPrintSetting>();
-		response.setData(labprintservices.setHeaderAndFooterSetup(request, "HEADER"));
+		response.setData(labprintservices.setHeaderAndFooterSetup(file, request, "HEADER"));
 
 		return response;
 	}
 
 	
 	@PostMapping(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER, notes = PathProxy.LabPrintUrls.ADD_EDIT_LAB_PRINT_FOOTER)
-	public Response<LabPrintSetting> addEditPrintFooter(LabPrintContentRequest request) {
+	public Response<LabPrintSetting> addEditPrintFooter(@RequestParam("file") MultipartFile file, LabPrintContentRequest request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -103,7 +107,7 @@ public class LabPrintAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<LabPrintSetting> response = new Response<LabPrintSetting>();
-		response.setData(labprintservices.setHeaderAndFooterSetup(request, "FOOTER"));
+		response.setData(labprintservices.setHeaderAndFooterSetup(file, request, "FOOTER"));
 
 		return response;
 	}

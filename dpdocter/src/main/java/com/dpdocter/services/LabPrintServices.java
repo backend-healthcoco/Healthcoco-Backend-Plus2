@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dpdocter.beans.LabPrintDocument;
 import com.dpdocter.beans.LabPrintSetting;
 import com.dpdocter.request.LabPrintContentRequest;
@@ -13,7 +15,7 @@ public interface LabPrintServices {
 
 	public LabPrintSetting getLabPrintSetting(String locationId, String hospitalId);
 
-	public LabPrintSetting setHeaderAndFooterSetup(LabPrintContentRequest request, String type);
+	public LabPrintSetting setHeaderAndFooterSetup(MultipartFile file, LabPrintContentRequest request, String type);
 
 	public List<LabPrintDocument> getLabPrintDocuments(int page, int size, String locationId, String doctorId,
 			String hospitalId, String searchTerm, Boolean isParent, Long from, Long to, Boolean discarded);

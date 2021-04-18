@@ -1,17 +1,9 @@
 package com.dpdocter.webservices;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +22,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping(value=PathProxy.CONSULTATION_PROBLEM_DETAILS_BASE_URL,produces = MediaType.APPLICATION_JSON_VALUE ,consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value=PathProxy.CONSULTATION_PROBLEM_DETAILS_BASE_URL,produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.CONSULTATION_PROBLEM_DETAILS_BASE_URL, description = "Endpoint for consultationProblemDetails")
 public class ConsultationProblemDetailsApi {
 	

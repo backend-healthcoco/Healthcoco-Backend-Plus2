@@ -1,9 +1,10 @@
 package com.dpdocter.services;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dpdocter.beans.Locale;
 import com.dpdocter.enums.RecommendationType;
 import com.dpdocter.response.ImageURLResponse;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface LocaleService {
 
@@ -13,7 +14,7 @@ public interface LocaleService {
 
 	Locale addEditRecommedation(String localeId, String patientId, RecommendationType type);
 
-	ImageURLResponse addRXImageMultipart(FormDataBodyPart file);
+	ImageURLResponse addRXImageMultipart(MultipartFile file);
 
 	public Locale getLocaleDetailBySlugUrl(String slugUrl);
 }

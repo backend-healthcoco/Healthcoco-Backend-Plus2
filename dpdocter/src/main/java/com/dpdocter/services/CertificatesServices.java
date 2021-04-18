@@ -2,9 +2,10 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dpdocter.beans.CertificateTemplate;
 import com.dpdocter.beans.ConsentForm;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface CertificatesServices {
 
@@ -27,6 +28,6 @@ public interface CertificatesServices {
 
 	String downloadPatientCertificate(String certificateId);
 
-	String saveCertificateSignImage(FormDataBodyPart file, String certificateIdStr);
+	String saveCertificateSignImage(MultipartFile file, String certificateIdStr);
 
 }

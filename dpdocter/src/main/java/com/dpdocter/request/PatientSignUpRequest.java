@@ -2,7 +2,6 @@ package com.dpdocter.request;
 
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DOB;
-import com.dpdocter.beans.FileDetails;
 
 public class PatientSignUpRequest {
     // user details
@@ -22,8 +21,6 @@ public class PatientSignUpRequest {
 
     // patient details
     private String bloodGroup;
-
-    private FileDetails image;
 
     private DOB dob;
 
@@ -95,14 +92,6 @@ public class PatientSignUpRequest {
 	this.bloodGroup = bloodGroup;
     }
 
-    public FileDetails getImage() {
-	return image;
-    }
-
-    public void setImage(FileDetails image) {
-	this.image = image;
-    }
-
     public DOB getDob() {
 	return dob;
     }
@@ -130,8 +119,7 @@ public class PatientSignUpRequest {
     @Override
     public String toString() {
 	return "PatientSignUpRequest [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName
-		+ ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", bloodGroup=" + bloodGroup + ", image="
-		+ image + ", dob=" + dob + ", gender=" + gender + ", address=" + address + "]";
+		+ ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", bloodGroup=" + bloodGroup + ", dob=" + dob + ", gender=" + gender + ", address=" + address + "]";
     }
 
 }

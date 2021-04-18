@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.beans.DoctorSignUp;
@@ -16,7 +18,7 @@ import com.dpdocter.response.PateientSignUpCheckResponse;
 
 public interface SignUpService {
 
-    User patientSignUp(PatientSignUpRequest request);
+    User patientSignUp(MultipartFile file, PatientSignUpRequest request);
 
     Boolean checkUserNameExist(String username);
 
@@ -24,7 +26,7 @@ public interface SignUpService {
 
     Boolean checkEmailAddressExist(String email);
 
-    User patientProfilePicChange(PatientProfilePicChangeRequest request);
+    User patientProfilePicChange(MultipartFile file, PatientProfilePicChangeRequest request);
 
     String verifyUser(String tokenId);
 

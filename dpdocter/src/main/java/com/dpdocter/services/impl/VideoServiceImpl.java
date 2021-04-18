@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.MyVideo;
 import com.dpdocter.beans.Video;
@@ -32,8 +33,6 @@ import com.dpdocter.request.AddVideoRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.VideoService;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -61,16 +60,15 @@ public class VideoServiceImpl implements VideoService {
 	
 	@Override
 	@Transactional
-	public Video addVideo(FormDataBodyPart file, AddVideoRequest request) {
+	public Video addVideo(MultipartFile file, AddVideoRequest request) {
 		Video response = null;
 		VideoCollection videoCollection = null;
 		ImageURLResponse imageURLResponse = null;
 		try {
 			if (file != null) {
 				String path = "video" + File.separator + request.getSpeciality();
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
 				imageURLResponse = fileManager.saveImage(file, recordPath, false);
 			}
@@ -93,16 +91,15 @@ public class VideoServiceImpl implements VideoService {
 
 	@Override
 	@Transactional
-	public MyVideo addMyVideo(FormDataBodyPart file, AddMyVideoRequest request) {
+	public MyVideo addMyVideo(MultipartFile file, AddMyVideoRequest request) {
 		MyVideo response = null;
 		MyVideoCollection myVideoCollection = null;
 		ImageURLResponse imageURLResponse = null;
 		try {
 			if (file != null) {
 				String path = "video" + File.separator + request.getDoctorId();
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
 				imageURLResponse = fileManager.saveImage(file, recordPath, false);
 			}

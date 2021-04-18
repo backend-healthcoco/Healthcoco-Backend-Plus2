@@ -1,7 +1,5 @@
 package com.dpdocter.request;
 
-import com.dpdocter.beans.FileDetails;
-
 public class RecordsEditRequest {
 
 	private String id;
@@ -11,8 +9,6 @@ public class RecordsEditRequest {
 	private String doctorId;
 
 	private String explanation;
-
-	private FileDetails fileDetails;
 
 	private String locationId;
 
@@ -60,14 +56,6 @@ public class RecordsEditRequest {
 		this.explanation = explanation;
 	}
 
-	public FileDetails getFileDetails() {
-		return fileDetails;
-	}
-
-	public void setFileDetails(FileDetails fileDetails) {
-		this.fileDetails = fileDetails;
-	}
-
 	public String getLocationId() {
 		return locationId;
 	}
@@ -111,7 +99,7 @@ public class RecordsEditRequest {
 	@Override
 	public String toString() {
 		return "RecordsEditRequest [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId + ", explanation="
-				+ explanation + ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId="
+				+ explanation + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", visitId=" + visitId + ", recordsUrl=" + recordsUrl + ", recordsLabel=" + recordsLabel
 				+ "]";
 	}

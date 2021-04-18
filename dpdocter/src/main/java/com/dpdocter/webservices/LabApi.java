@@ -6,16 +6,18 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.CollectionBoy;
@@ -50,8 +52,6 @@ import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.services.LabReportsService;
 import com.dpdocter.services.LabService;
 import com.dpdocter.services.LocationServices;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -60,8 +60,8 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.LAB_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.LAB_BASE_URL, description = "")
 public class LabApi {
 
@@ -515,15 +515,11 @@ public class LabApi {
 		return response;
 	}
 
-	@PostMapping
-	(value = PathProxy.LabUrls.UPLOAD_REPORTS_MULTIPART)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@PostMapping(value = PathProxy.LabUrls.UPLOAD_REPORTS_MULTIPART)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.LabUrls.UPLOAD_REPORTS_MULTIPART, notes = PathProxy.LabUrls.UPLOAD_REPORTS_MULTIPART)
-	public Response<LabReports> addRecordsMultipart(@FormDataParam("file") FormDataBodyPart file,
-			@FormDataParam("data") FormDataBodyPart data) {
-		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		LabReportsAddRequest request = data.getValueAs(LabReportsAddRequest.class);
-
+	public Response<LabReports> addRecordsMultipart(@RequestParam("file") MultipartFile file,
+			@RequestBody LabReportsAddRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -535,16 +531,15 @@ public class LabApi {
 		return response;
 	}
 
-	@PostMapping
-	(value = PathProxy.LabUrls.UPLOAD_REPORTS)
+	@PostMapping(value = PathProxy.LabUrls.UPLOAD_REPORTS)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.LabUrls.UPLOAD_REPORTS, notes = PathProxy.LabUrls.UPLOAD_REPORTS)
-	public Response<LabReports> addRecordsBase64(RecordUploadRequest request) {
+	public Response<LabReports> addRecordsBase64(@RequestParam("file") MultipartFile file, RecordUploadRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		LabReports labReports = labReportsService.addLabReportBase64(request.getFileDetails(),
-				request.getLabReportsAddRequest());
+		LabReports labReports = labReportsService.addLabReportBase64(file, request.getLabReportsAddRequest());
 
 		Response<LabReports> response = new Response<LabReports>();
 		response.setData(labReports);
@@ -684,16 +679,15 @@ public class LabApi {
 		return response;
 	}
 
-	@PostMapping
-	(value = PathProxy.LabUrls.UPLOAD_REPORTS_TO_DOCTOR)
+	@PostMapping(value = PathProxy.LabUrls.UPLOAD_REPORTS_TO_DOCTOR)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.LabUrls.UPLOAD_REPORTS_TO_DOCTOR, notes = PathProxy.LabUrls.UPLOAD_REPORTS_TO_DOCTOR)
-	public Response<LabReports> addRecordsBase64(DoctorRecordUploadRequest request) {
+	public Response<LabReports> addRecordsBase64(@RequestParam("file") MultipartFile file, DoctorRecordUploadRequest request) {
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		LabReports labReports = labReportsService.addLabReportBase64(request.getFileDetails(),
-				request.getLabReportsAddRequest());
+		LabReports labReports = labReportsService.addLabReportBase64(file, request.getLabReportsAddRequest());
 
 		Response<LabReports> response = new Response<LabReports>();
 		response.setData(labReports);

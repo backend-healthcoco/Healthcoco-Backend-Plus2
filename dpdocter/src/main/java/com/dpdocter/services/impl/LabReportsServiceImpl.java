@@ -27,8 +27,8 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LabSubReportJasperDetails;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
@@ -67,8 +67,6 @@ import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -124,16 +122,15 @@ public class LabReportsServiceImpl implements LabReportsService {
 
 	@Override
 	@Transactional
-	public LabReports addLabReports(FormDataBodyPart file, LabReportsAddRequest request) {
+	public LabReports addLabReports(MultipartFile file, LabReportsAddRequest request) {
 		LabReports response = null;
 		LabReportsCollection labReportsCollection = null;
 		ImageURLResponse imageURLResponse = null;
 		try {
 			if (file != null) {
 				String path = "lab-reports";
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
 				imageURLResponse = fileManager.saveImage(file, recordPath, true);
 			}
@@ -162,24 +159,22 @@ public class LabReportsServiceImpl implements LabReportsService {
 
 	@Override
 	@Transactional
-	public LabReports addLabReportBase64(FileDetails fileDetails, LabReportsAddRequest request) {
+	public LabReports addLabReportBase64(MultipartFile file, LabReportsAddRequest request) {
 		LabReports response = null;
 		LabReportsCollection labReportsCollection = null;
 		ImageURLResponse imageURLResponse = null;
 		try {
 			Date createdTime = new Date();
 
-			if (fileDetails != null) {
-				// String path = "lab-reports";
-				// String recordLabel = fileDetails.getFileName();
-				fileDetails.setFileName(fileDetails.getFileName() + createdTime.getTime());
-
+			if (file != null) {
 				String path = "lab-reports" + File.separator + request.getPatientName();
-
-				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails, path, true);
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+				String imagepath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
+				 imageURLResponse = fileManager.saveImage(file, imagepath, true);
 				if (imageURLResponse != null) {
-					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
-					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());
+					imageURLResponse.setImageUrl(getFinalImageURL(imageURLResponse.getImageUrl()));
+					imageURLResponse.setThumbnailUrl(getFinalImageURL(imageURLResponse.getThumbnailUrl()));
 				}
 			}
 			labReportsCollection = labReportsRepository
@@ -289,24 +284,23 @@ public class LabReportsServiceImpl implements LabReportsService {
 
 	@Override
 	@Transactional
-	public LabReports addLabReportBase64(FileDetails fileDetails, DoctorLabReportsAddRequest request) {
+	public LabReports addLabReportBase64(MultipartFile file, DoctorLabReportsAddRequest request) {
 		LabReports response = null;
 		LabReportsCollection labReportsCollection = null;
 		ImageURLResponse imageURLResponse = null;
 		try {
 			Date createdTime = new Date();
 
-			if (fileDetails != null) {
-				// String path = "lab-reports";
-				// String recordLabel = fileDetails.getFileName();
-				fileDetails.setFileName(fileDetails.getFileName() + createdTime.getTime());
-
+			if (file != null) {
 				String path = "lab-reports" + File.separator + request.getPatientId();
 
-				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails, path, true);
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+				String imagepath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
+				imageURLResponse = fileManager.saveImage(file, imagepath, true);
 				if (imageURLResponse != null) {
-					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
-					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());
+					imageURLResponse.setImageUrl(getFinalImageURL(imageURLResponse.getImageUrl()));
+					imageURLResponse.setThumbnailUrl(getFinalImageURL(imageURLResponse.getThumbnailUrl()));
 				}
 			}
 
@@ -324,9 +318,6 @@ public class LabReportsServiceImpl implements LabReportsService {
 			BeanUtil.map(labReportsCollection, response);
 
 			if (labReportsCollection != null) {
-
-				UserCollection doctor = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
-
 				if (request.getMobileNumber() != null) {
 					LocationCollection daughterlocationCollection = locationRepository
 							.findById(labReportsCollection.getLocationId()).orElse(null);

@@ -488,7 +488,7 @@ public interface PathProxy {
 
 		public static final String ADD_RECORDS_MULTIPART = "/addMultipart";
 
-		public static final String SAVE_RECORDS_IMAGE = "/saveImage";
+		public static final String SAVE_RECORDS_IMAGE = "/saveImage/{patientId}";
 
 		public static final String CHANGE_RECORD_STATE = "/{recordId}/{recordsState}/changeState";
 
@@ -1935,7 +1935,7 @@ public interface PathProxy {
 
 		public static final String DOWNLOAD_PATIENT_CERTIFICATE = "/patient/{certificateId}/download";
 
-		public static final String SAVE_CERTIFICATE_SIGN_IMAGE = "/patient/saveCertifcateSign";
+		public static final String SAVE_CERTIFICATE_SIGN_IMAGE = "/patient/saveCertifcateSign/{certificateId}";
 
 	}
 
@@ -2259,7 +2259,7 @@ public interface PathProxy {
 
 	public interface OrderMedicineUrls {
 
-		public static final String UPLOAD_PRESCRIPTION = "/upload/prescription";
+		public static final String UPLOAD_PRESCRIPTION = "/upload/prescription/{patientId}";
 		public static final String MEDICINE_ORDER_ADD_EDIT_RX = "/addEditRx";
 		public static final String MEDICINE_ORDER_ADD_EDIT_ADDRESS = "/addEditAddress";
 		public static final String MEDICINE_ORDER_ADD_EDIT_PAYMENT = "/addEditPayment";

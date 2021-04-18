@@ -2,14 +2,13 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.Resume;
 import com.dpdocter.beans.SendAppLink;
 
 public interface AdminServices {
-
-	Resume addResumes(Resume request);
-
 	void importDrug();
 
 	void importCity();
@@ -43,4 +42,6 @@ public interface AdminServices {
 	Boolean addSpecialities();
 
 	Boolean addSymptomsDiseasesCondition();
+
+	Resume addResumes(MultipartFile file, Resume request);
 }

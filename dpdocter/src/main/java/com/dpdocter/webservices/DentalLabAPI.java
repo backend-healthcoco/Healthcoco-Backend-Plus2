@@ -3,21 +3,13 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.DentalLabDoctorAssociation;
@@ -59,8 +52,6 @@ import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.TaxResponse;
 import com.dpdocter.services.DentalLabService;
 import com.dpdocter.services.LocationServices;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -68,7 +59,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping(value=PathProxy.DENTAL_LAB_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
+@RequestMapping(value=PathProxy.DENTAL_LAB_BASE_URL,produces = MediaType.APPLICATION_JSON_VALUE ,consumes = MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.DENTAL_LAB_BASE_URL, description = "Endpoint for dental lab")
 public class DentalLabAPI {
 
@@ -337,9 +328,9 @@ public class DentalLabAPI {
 
 	@PostMapping
 	(value = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_MULTIPART)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_MULTIPART, notes = PathProxy.DentalLabUrls.ADD_DENTAL_IMAGE_MULTIPART)
-	public Response<ImageURLResponse> addDentalImageMultipart(@FormDataParam("file") FormDataBodyPart file) {
+	public Response<ImageURLResponse> addDentalImageMultipart(@RequestParam("file") MultipartFile file) {
 
 		if (file == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

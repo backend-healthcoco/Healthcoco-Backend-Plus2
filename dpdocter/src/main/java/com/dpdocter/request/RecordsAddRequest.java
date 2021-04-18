@@ -2,8 +2,6 @@ package com.dpdocter.request;
 
 import java.util.Date;
 
-import com.dpdocter.beans.FileDetails;
-
 public class RecordsAddRequest {
 
 	private String patientId;
@@ -13,8 +11,6 @@ public class RecordsAddRequest {
 	private String recordsUrl;
 
 	private String explanation;
-
-	private FileDetails fileDetails;
 
 	private String locationId;
 
@@ -78,14 +74,6 @@ public class RecordsAddRequest {
 
 	public void setExplanation(String explanation) {
 		this.explanation = explanation;
-	}
-
-	public FileDetails getFileDetails() {
-		return fileDetails;
-	}
-
-	public void setFileDetails(FileDetails fileDetails) {
-		this.fileDetails = fileDetails;
 	}
 
 	public Boolean getShareWithPatient() {
@@ -213,7 +201,7 @@ public class RecordsAddRequest {
 	@Override
 	public String toString() {
 		return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", recordsUrl=" + recordsUrl
-				+ ", explanation=" + explanation + ", fileDetails=" + fileDetails + ", locationId=" + locationId
+				+ ", explanation=" + explanation + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy
 				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", diagnosticTestId="
 				+ diagnosticTestId + ", recordsLabel=" + recordsLabel + ", recordsState=" + recordsState

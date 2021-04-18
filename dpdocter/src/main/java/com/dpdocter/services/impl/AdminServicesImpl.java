@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -34,6 +35,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.CustomAggregationOperation;
@@ -311,18 +313,23 @@ public class AdminServicesImpl implements AdminServices {
 	
 	@Override
 	@Transactional
-	public Resume addResumes(Resume request) {
+	public Resume addResumes(MultipartFile file, Resume request) {
 		Resume response = null;
 		try {
 			ResumeCollection resumeCollection = new ResumeCollection();
 			BeanUtil.map(request, resumeCollection);
 			resumeCollection.setCreatedTime(new Date());
-			if (request.getFile() != null) {
-				request.getFile().setFileName(request.getFile().getFileName() + (new Date()).getTime());
-				String path = "resumes" + File.separator + request.getType();
-				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getFile(), path,
-						false);
-				resumeCollection.setPath(imageURLResponse.getImageUrl());
+			if (file != null) {
+				if (!DPDoctorUtils.anyStringEmpty(file.getOriginalFilename())) {
+					String path = "resumes" + File.separator + request.getType();
+					String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+					String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+					String imagepath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+					ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, false);
+					if (imageURLResponse != null) {
+						resumeCollection.setPath(imageURLResponse.getImageUrl());
+					}
+				}
 			}
 			resumeCollection = resumeRepository.save(resumeCollection);
 			if (resumeCollection != null) {

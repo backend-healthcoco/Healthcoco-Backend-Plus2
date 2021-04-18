@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -18,7 +19,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RestController;
 
 import common.util.web.JacksonUtil;
 
@@ -125,15 +126,15 @@ public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException>
 	    } else if (json) {
 		String jsonStr = JacksonUtil.obj2Json(data);
 		// responseInvoker.get().getWriter().write(jsonStr);
-		return Response.status(data.getErrorCode().getErrorCode()).type(MediaType.APPLICATION_JSON_TYPE).entity(jsonStr).build();
+		return Response.status(data.getErrorCode().getErrorCode()).type(MediaType.APPLICATION_JSON_VALUE).entity(jsonStr).build();
 	    } else if (xml) {
 		String xmlStr = getXml(data);
-		return Response.status(data.getErrorCode().getErrorCode()).type(MediaType.TEXT_XML_TYPE).entity(xmlStr).build();
+		return Response.status(data.getErrorCode().getErrorCode()).type(MediaType.TEXT_XML_VALUE).entity(xmlStr).build();
 	    } else {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		exception.printStackTrace(pw);
-		return Response.status(data.getErrorCode().getErrorCode()).type(MediaType.TEXT_XML_TYPE).entity(sw.toString()).build();
+		return Response.status(data.getErrorCode().getErrorCode()).type(MediaType.TEXT_XML_VALUE).entity(sw.toString()).build();
 	    }
 	} catch (Exception e) {
 	    return Response.serverError().build();

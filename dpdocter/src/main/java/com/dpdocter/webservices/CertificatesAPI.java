@@ -3,22 +3,14 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.CertificateTemplate;
 import com.dpdocter.beans.ConsentForm;
@@ -42,7 +35,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping(value=PathProxy.CERTIFICATE_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
+@RequestMapping(value=PathProxy.CERTIFICATE_BASE_URL,produces = MediaType.APPLICATION_JSON_VALUE ,consumes = MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.CERTIFICATE_BASE_URL, description = "")
 public class CertificatesAPI {
 
@@ -163,14 +156,13 @@ public class CertificatesAPI {
 		return response;
 	}
 
-	@PostMapping(value = PathProxy.CertificateTemplatesUrls.SAVE_CERTIFICATE_SIGN_IMAGE,consumes = MediaType.MULTIPART_FORM_DATA)
+	@PostMapping(value = PathProxy.CertificateTemplatesUrls.SAVE_CERTIFICATE_SIGN_IMAGE)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE})
 	@ApiOperation(value = PathProxy.CertificateTemplatesUrls.SAVE_CERTIFICATE_SIGN_IMAGE, notes = PathProxy.CertificateTemplatesUrls.SAVE_CERTIFICATE_SIGN_IMAGE)
-	public Response<String> saveCertificateSignImage(@FormDataParam("file") FormDataBodyPart file,
-			@FormDataParam("certificateId") FormDataBodyPart certificateId) {
-		certificateId.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		String certificateIdStr = certificateId.getValueAs(String.class);
-
-		String imageURL = certificatesServices.saveCertificateSignImage(file, certificateIdStr);
+	public Response<String> saveCertificateSignImage(@RequestParam("file") MultipartFile file,
+			@PathVariable("certificateId") String certificateId) {
+		
+		String imageURL = certificatesServices.saveCertificateSignImage(file, certificateId);
 		Response<String> response = new Response<String>();
 		response.setData(imageURL);
 		return response;

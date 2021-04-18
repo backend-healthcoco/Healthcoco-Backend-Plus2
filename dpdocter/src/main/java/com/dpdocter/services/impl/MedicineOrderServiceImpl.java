@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DrugInfo;
@@ -59,8 +60,6 @@ import com.dpdocter.services.MedicineOrderService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -115,7 +114,7 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 	
 	@Override
 	@Transactional
-	public ImageURLResponse saveRXMedicineOrderImage(FormDataBodyPart file, String patientIdString) {
+	public ImageURLResponse saveRXMedicineOrderImage(MultipartFile file, String patientIdString) {
 		String recordPath = null;
 		ImageURLResponse imageURLResponse = null;
 		try {
@@ -127,9 +126,8 @@ public class MedicineOrderServiceImpl implements MedicineOrderService{
 					patientIdString = patientIdString.replace("\"", "");
 				}
 				String path = "medorderRX" + File.separator + patientIdString;
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 
 				recordPath = path + File.separator + fileName + createdTime.getTime() + fileExtension;
 				imageURLResponse = fileManager.saveImage(file, recordPath, true);

@@ -27,8 +27,6 @@ import io.swagger.annotations.ApiOperation;
 
 public class UserSymptomApi {
 
-	
-		
 		private Logger logger = LogManager.getLogger(UserSymptomApi.class);	
 		@Autowired
 		private UserSymptomService userSymptomServices;

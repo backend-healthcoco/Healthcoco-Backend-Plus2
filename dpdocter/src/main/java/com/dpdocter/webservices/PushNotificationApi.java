@@ -3,7 +3,8 @@ package com.dpdocter.webservices;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.UserDevice;
 import com.dpdocter.exceptions.BusinessException;
@@ -26,8 +28,8 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.PUSH_NOTIFICATION_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.PUSH_NOTIFICATION_BASE_URL, description = "Endpoint for push notification")
 public class PushNotificationApi {
 
@@ -52,13 +54,14 @@ public class PushNotificationApi {
 	
 	
 	@PostMapping(value = PathProxy.PushNotificationUrls.BROADCAST_NOTIFICATION)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.PushNotificationUrls.BROADCAST_NOTIFICATION, notes = PathProxy.PushNotificationUrls.BROADCAST_NOTIFICATION)
-	public Response<Boolean> broadcastNotification(BroadcastNotificationRequest request){
+	public Response<Boolean> broadcastNotification(@RequestParam("file") MultipartFile file, BroadcastNotificationRequest request){
 		if(request == null){
 			    logger.warn("Invalid Input");
 			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		pushNotificationServices.broadcastNotification(request);
+		pushNotificationServices.broadcastNotification(file, request);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;

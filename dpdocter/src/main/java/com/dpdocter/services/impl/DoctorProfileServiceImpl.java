@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -22,6 +24,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.AddEditSEORequest;
@@ -506,22 +509,25 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Override
 	@Transactional
-	public String addEditProfilePicture(DoctorProfilePictureAddEditRequest request) {
+	public String addEditProfilePicture(MultipartFile file, DoctorProfilePictureAddEditRequest request) {
 		UserCollection userCollection = null;
 		String response = "";
 		try {
 			userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
-			if (request.getImage() != null) {
-				String path = "profile-image";
-				// save image
-				request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path,
-						true);
-				userCollection.setImageUrl(imageURLResponse.getImageUrl());
-				userCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
-
-				userCollection = userRepository.save(userCollection);
-				response = userCollection.getImageUrl();
+			if (file != null) {
+				if (!DPDoctorUtils.anyStringEmpty(file.getOriginalFilename())) {
+					String path = "profile-image" ;
+					String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+					String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+					String imagepath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+					ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, true);
+					if (imageURLResponse != null) {
+						userCollection.setImageUrl(imageURLResponse.getImageUrl());
+						userCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
+						userCollection = userRepository.save(userCollection);
+						response = userCollection.getImageUrl();
+					}
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -533,21 +539,25 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Override
 	@Transactional
-	public String addEditCoverPicture(DoctorProfilePictureAddEditRequest request) {
+	public String addEditCoverPicture(MultipartFile file, DoctorProfilePictureAddEditRequest request) {
 		UserCollection userCollection = null;
 		String response = "";
 		try {
 			userCollection = userRepository.findById(new ObjectId(request.getDoctorId())).orElse(null);
-			if (request.getImage() != null) {
-				String path = "cover-image";
-				// save image
-				request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path,
-						true);
-				userCollection.setCoverImageUrl(imageURLResponse.getImageUrl());
-				userCollection.setCoverThumbnailImageUrl(imageURLResponse.getThumbnailUrl());
-				userCollection = userRepository.save(userCollection);
-				response = userCollection.getCoverImageUrl();
+			if (file != null) {
+				if (!DPDoctorUtils.anyStringEmpty(file.getOriginalFilename())) {
+					String path = "cover-image";
+					String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+					String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+					String imagepath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+					ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, true);
+					if (imageURLResponse != null) {
+						userCollection.setCoverImageUrl(imageURLResponse.getImageUrl());
+						userCollection.setCoverThumbnailImageUrl(imageURLResponse.getThumbnailUrl());
+						userCollection = userRepository.save(userCollection);
+						response = userCollection.getCoverImageUrl();
+					}
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1105,7 +1115,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request) {
+	public DoctorMultipleDataAddEditResponse addEditMultipleData(MultipartFile profileImage, MultipartFile coverImage, 
+			DoctorMultipleDataAddEditRequest request) {
 		UserCollection userCollection = null;
 		DoctorCollection doctorCollection = null;
 		List<String> specialitiesresponse = new ArrayList<>();
@@ -1190,27 +1201,33 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					doctorCollection.setSpecialities(null);
 
 				}
-
-				if (request.getProfileImage() != null) {
-					String path = "profile-image";
-					// save image
-					request.getProfileImage()
-							.setFileName(request.getProfileImage().getFileName() + new Date().getTime());
-					ImageURLResponse imageURLResponse = fileManager
-							.saveImageAndReturnImageUrl(request.getProfileImage(), path, true);
-					userCollection.setImageUrl(imageURLResponse.getImageUrl());
-					userCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
+				if (profileImage != null) {
+					if (!DPDoctorUtils.anyStringEmpty(profileImage.getOriginalFilename())) {
+						String path = "profile-image";
+						String fileExtension = FilenameUtils.getExtension(profileImage.getOriginalFilename());
+						String fileName = profileImage.getOriginalFilename().replaceFirst("." + fileExtension, "");
+						String imagepath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+						ImageURLResponse imageURLResponse = fileManager.saveImage(profileImage, imagepath, true);
+						if (imageURLResponse != null) {
+							userCollection.setImageUrl(imageURLResponse.getImageUrl());
+							userCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
+						}
+					}
+				}
+				if (coverImage != null) {
+					if (!DPDoctorUtils.anyStringEmpty(coverImage.getOriginalFilename())) {
+						String path = "cover-image";
+						String fileExtension = FilenameUtils.getExtension(coverImage.getOriginalFilename());
+						String fileName = coverImage.getOriginalFilename().replaceFirst("." + fileExtension, "");
+						String imagepath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+						ImageURLResponse imageURLResponse = fileManager.saveImage(coverImage, imagepath, true);
+						if (imageURLResponse != null) {
+							userCollection.setCoverImageUrl(imageURLResponse.getImageUrl());
+							userCollection.setCoverThumbnailImageUrl(imageURLResponse.getThumbnailUrl());
+						}
+					}
 				}
 
-				if (request.getCoverImage() != null) {
-					String path = "cover-image";
-					// save image
-					request.getCoverImage().setFileName(request.getCoverImage().getFileName() + new Date().getTime());
-					ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getCoverImage(),
-							path, true);
-					userCollection.setCoverImageUrl(imageURLResponse.getImageUrl());
-					userCollection.setCoverThumbnailImageUrl(imageURLResponse.getThumbnailUrl());
-				}
 				userCollection = userRepository.save(userCollection);
 				doctorCollection = doctorRepository.save(doctorCollection);
 
@@ -2005,38 +2022,39 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	
 	@Override
 	@Transactional
-	public String uploadRegistrationDetails(DoctorRegistrationDetails request) {
+	public String uploadRegistrationDetails(MultipartFile file, DoctorRegistrationDetails request) {
 		DoctorCollection doctorCollection = null;
 		String response = "";
 		try {
 			doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 			DoctorClinicProfileCollection doctorclinic=doctorClinicProfileRepository.findByDoctorIdAndLocationId(new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()));
 			
-			if (request.getImage() != null) {
-				String path = "registration-Docs";
-				// save image
-				request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path,
-						true);
-				if(request.getType()!=null && request.getType().getType().equalsIgnoreCase(RegistrationType.REGISTRATION_DETAILS.getType())) {
-					doctorCollection.setRegistrationImageUrl(imageURLResponse.getImageUrl());
-					doctorCollection.setRegistrationThumbnailUrl(imageURLResponse.getThumbnailUrl());
-					response = doctorCollection.getRegistrationImageUrl();
+			if (file != null) {
+				if (!DPDoctorUtils.anyStringEmpty(file.getOriginalFilename())) {
+					String path = "registration-Docs" ;
+					String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+					String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+					String imagepath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+					
+					if(request.getType()!=null && request.getType().getType().equalsIgnoreCase(RegistrationType.REGISTRATION_DETAILS.getType())) {
+						ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, true);
+						doctorCollection.setRegistrationImageUrl(imageURLResponse.getImageUrl());
+						doctorCollection.setRegistrationThumbnailUrl(imageURLResponse.getThumbnailUrl());
+						response = doctorCollection.getRegistrationImageUrl();
+					}
+					if(request.getType()!=null && request.getType().getType().equalsIgnoreCase(RegistrationType.CLINIC_OWNERSHIP.getType())) {
+						ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, false);
+						doctorclinic.setClinicOwnershipImageUrl(imageURLResponse.getImageUrl());
+						doctorClinicProfileRepository.save(doctorclinic);
+						response =doctorclinic.getClinicOwnershipImageUrl();	
+					}
+					if(request.getType()!=null && request.getType().getType().equalsIgnoreCase(RegistrationType.PHOTOID_PROOF.getType())) {
+						ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, false);
+						doctorCollection.setPhotoIdImageUrl(imageURLResponse.getImageUrl());
+						response = doctorCollection.getPhotoIdImageUrl();						
+					}					
+					doctorCollection= doctorRepository.save(doctorCollection);
 				}
-				if(request.getType()!=null && request.getType().getType().equalsIgnoreCase(RegistrationType.CLINIC_OWNERSHIP.getType())) {
-					doctorclinic.setClinicOwnershipImageUrl(imageURLResponse.getImageUrl());
-					doctorClinicProfileRepository.save(doctorclinic);
-					response =doctorclinic.getClinicOwnershipImageUrl();
-					
-					}
-				if(request.getType()!=null && request.getType().getType().equalsIgnoreCase(RegistrationType.PHOTOID_PROOF.getType())) {
-					doctorCollection.setPhotoIdImageUrl(imageURLResponse.getImageUrl());
-					response = doctorCollection.getPhotoIdImageUrl();
-					
-					}
-				
-				doctorCollection= doctorRepository.save(doctorCollection);
-		
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

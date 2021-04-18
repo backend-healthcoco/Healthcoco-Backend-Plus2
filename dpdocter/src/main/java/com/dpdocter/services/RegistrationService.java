@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
@@ -137,7 +139,7 @@ public interface RegistrationService {
 
 	Boolean updateRoleCollectionData();
 
-	ConsentForm addConcentForm(FormDataBodyPart file, ConsentForm request);
+	ConsentForm addConcentForm(MultipartFile file, ConsentForm request);
 
 	List<ConsentForm> getConcentForm(long page, int size, String patientId, String doctorId, String locationId,
 			String hospitalId, String PID, String searchTerm, boolean discarded, long updatedTime);

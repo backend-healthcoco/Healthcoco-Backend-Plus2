@@ -3,25 +3,21 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.Resume;
@@ -40,8 +36,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping(value=PathProxy.ADMIN_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
-@Api(value = PathProxy.ADMIN_BASE_URL, description = "",produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
+@RequestMapping(value=PathProxy.ADMIN_BASE_URL,produces = MediaType.APPLICATION_JSON_VALUE ,consumes = MediaType.APPLICATION_JSON_VALUE)
+@Api(value = PathProxy.ADMIN_BASE_URL, description = "",produces = MediaType.APPLICATION_JSON_VALUE ,consumes = MediaType.APPLICATION_JSON_VALUE)
 public class AdminAPI {
 
 	private static Logger logger = LogManager.getLogger(AdminAPI.class.getName());
@@ -62,8 +58,9 @@ public class AdminAPI {
 	private String imagePath;
 
 	@PostMapping(value = PathProxy.AdminUrls.ADD_RESUMES)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.AdminUrls.ADD_RESUMES, notes = PathProxy.AdminUrls.ADD_RESUMES)
-	public Response<Resume> addResumes(@RequestBody Resume request) {
+	public Response<Resume> addResumes(@RequestParam("file") MultipartFile file, @RequestBody Resume request) {
 		if (request == null
 				|| DPDoctorUtils.anyStringEmpty(request.getEmailAddress(), request.getName(), request.getMobileNumber())
 				|| request.getFile() == null) {
@@ -71,7 +68,7 @@ public class AdminAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		Resume resume = adminServices.addResumes(request);
+		Resume resume = adminServices.addResumes(file, request);
 		resume.setPath(getFinalImageURL(resume.getPath()));
 		Response<Resume> response = new Response<Resume>();
 		response.setData(resume);

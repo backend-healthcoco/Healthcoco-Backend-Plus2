@@ -38,6 +38,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorLabReport;
@@ -78,6 +79,7 @@ import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.response.DoctorLabFavouriteDoctorResponse;
 import com.dpdocter.response.DoctorLabReportResponse;
 import com.dpdocter.response.DoctorLabSearchDoctorResponse;
+import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.DoctorLabService;
 import com.dpdocter.services.FileManager;
@@ -299,7 +301,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	}
 
 	@Override
-	public RecordsFile uploadDoctorLabReport(DoctorLabReportUploadRequest request) {
+	public RecordsFile uploadDoctorLabReport(MultipartFile file, DoctorLabReportUploadRequest request) {
 
 		RecordsFile recordsFile = null;
 		try {
@@ -310,37 +312,35 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
 			}
-			FileDetails fileDetails = request.getFileDetails();
-			recordsFile = new RecordsFile();
-			createdTime = new Date();
-			String path = "doctorLabReports" + File.separator
-					+ (!DPDoctorUtils.anyStringEmpty(request.getPatientId()) ? request.getPatientId() : "unknown");
-
-			String fileName = fileDetails.getFileName().replaceFirst("." + fileDetails.getFileExtension(), "");
-			String recordPath = path + File.separator + fileName + createdTime.getTime() + "."
-					+ fileDetails.getFileExtension();
-			String recordfileLabel = fileName;
-			Double fileSizeInMB = fileManager.saveRecordBase64(fileDetails, recordPath);
-
-			recordsFile = new RecordsFile();
-			recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
-			recordsFile.setFileSizeInMB(fileSizeInMB);
-			recordsFile.setRecordsUrl(getFinalImageURL(recordPath));
-			recordsFile.setThumbnailUrl(
-					getFinalImageURL(fileManager.saveThumbnailAndReturnThumbNailUrl(fileDetails, recordPath)));
-			recordsFile.setRecordsFileLabel(recordfileLabel);
-			recordsFile.setRecordsPath(path);
-			recordsFile.setRecordsType(request.getRecordsType());
-			if (recordsFile.getRecordsUrl().toLowerCase().contains(".pdf")) {
-				List<String> imResponses = new ArrayList<String>();
-				fileDetails.setFileName(fileDetails.getFileName() + new Date().getTime());
-				path = "doctorLabReports" + File.separator
-						+ (!DPDoctorUtils.anyStringEmpty(request.getPatientId()) ? request.getPatientId() : "unknown");
-				imResponses.addAll(fileManager.convertPdfToImage(fileDetails, path, true));
-				if (imResponses != null && !imResponses.isEmpty())
-					recordsFile.setPdfInImgs(imResponses);
+			if (file != null) {
+				if (!DPDoctorUtils.anyStringEmpty(file.getOriginalFilename())) {
+					String path = "doctorLabReports" + File.separator
+							+ (!DPDoctorUtils.anyStringEmpty(request.getPatientId()) ? request.getPatientId() : "unknown");
+					String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+					String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+					String recordPath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+					Double fileSizeInMB = fileManager.saveRecord(file, recordPath, 0.0, false);
+					String recordfileLabel = fileName;
+					
+					recordsFile = new RecordsFile();
+					recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
+					recordsFile.setFileSizeInMB(fileSizeInMB);
+					recordsFile.setRecordsUrl(getFinalImageURL(recordPath));
+					recordsFile.setThumbnailUrl(
+							getFinalImageURL(fileManager.saveThumbnailUrl(file, recordPath)));
+					recordsFile.setRecordsFileLabel(recordfileLabel);
+					recordsFile.setRecordsPath(path);
+					recordsFile.setRecordsType(request.getRecordsType());
+					if (recordsFile.getRecordsUrl().toLowerCase().contains(".pdf")) {
+						List<String> imResponses = new ArrayList<String>();
+						path = "doctorLabReports" + File.separator
+								+ (!DPDoctorUtils.anyStringEmpty(request.getPatientId()) ? request.getPatientId() : "unknown");
+						imResponses.addAll(fileManager.convertPdfToImage(file, path, true));
+						if (imResponses != null && !imResponses.isEmpty())
+							recordsFile.setPdfInImgs(imResponses);
+					}
+				}
 			}
-
 		} catch (
 
 		Exception e) {
@@ -354,7 +354,7 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 	}
 
 	@Override
-	public RecordsFile uploadDoctorLabReportMultipart(FormDataBodyPart file, MyFiileRequest request) {
+	public RecordsFile uploadDoctorLabReportMultipart(MultipartFile file, MyFiileRequest request) {
 		RecordsFile recordsFile = null;
 		try {
 			Date createdTime = new Date();
@@ -369,9 +369,8 @@ public class DoctorLabServiceImpl implements DoctorLabService {
 			if (file != null) {
 				String path = "doctorLabReports" + File.separator
 						+ (!DPDoctorUtils.anyStringEmpty(request.getPatientId()) ? request.getPatientId() : "unknown");
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 				String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
 				String recordfileLabel = fileName;
 

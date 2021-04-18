@@ -2,7 +2,8 @@ package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +26,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.FORGOT_PASSWORD_BASE_URL)
-@Consumes(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.FORGOT_PASSWORD_BASE_URL, description = "Endpoint for forgot password")
 public class ForgotPasswordApi {
 
@@ -35,7 +36,7 @@ public class ForgotPasswordApi {
 	private ForgotPasswordService forgotPasswordService;
 
 	
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
 	
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR, notes = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
@@ -51,7 +52,7 @@ public class ForgotPasswordApi {
 	}
 
 	
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
 	public Response<Boolean> forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
@@ -65,7 +66,7 @@ public class ForgotPasswordApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
 	public Response<Boolean> resetPasswordPatient(ResetPasswordRequest request) {
@@ -79,7 +80,7 @@ public class ForgotPasswordApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
 	public Response<String> resetPassword(ResetPasswordRequest request) {
@@ -93,7 +94,7 @@ public class ForgotPasswordApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CB)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CB, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CB)
 	public Response<String> resetPasswordCB(ResetPasswordRequest request) {
@@ -107,7 +108,7 @@ public class ForgotPasswordApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@GetMapping(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED, notes = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
 	public Response<String> checkLinkIsAlreadyUsed(@PathVariable(value = "userId") String userId) {
@@ -121,7 +122,7 @@ public class ForgotPasswordApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME, notes = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
 	public Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request) {
@@ -135,7 +136,7 @@ public class ForgotPasswordApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PHARMACY)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PHARMACY, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PHARMACY)
 	public Response<String> resetPasswordPharmacy(ResetPasswordRequest request) {
@@ -149,7 +150,7 @@ public class ForgotPasswordApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CONFERENCE)
 	@ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CONFERENCE, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CONFERENCE)
 	public Response<String> resetPasswordForConference(ResetPasswordRequest request) {

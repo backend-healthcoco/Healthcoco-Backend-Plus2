@@ -28,6 +28,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.CollectionBoyDoctorAssociation;
 import com.dpdocter.beans.CustomAggregationOperation;
@@ -1444,17 +1445,15 @@ public class DentalLabServiceImpl implements DentalLabService {
 
 	@Override
 	@Transactional
-	public ImageURLResponse addDentalImage(FormDataBodyPart file) {
+	public ImageURLResponse addDentalImage(MultipartFile file) {
 		ImageURLResponse imageURLResponse = null;
 		try {
 			if (file != null) {
 				String path = "dental-images";
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
 				imageURLResponse = fileManager.saveImage(file, recordPath, true);
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

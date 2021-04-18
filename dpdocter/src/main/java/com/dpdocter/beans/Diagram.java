@@ -17,10 +17,6 @@ public class Diagram extends GenericCollection {
 
     private String hospitalId;
 
-    private FileDetails diagram;
-
-    private String fileExtension;
-
     private Boolean discarded = false;
 
     private String speciality;
@@ -75,22 +71,6 @@ public class Diagram extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    public FileDetails getDiagram() {
-	return diagram;
-    }
-
-    public void setDiagram(FileDetails diagram) {
-	this.diagram = diagram;
-    }
-
-    public String getFileExtension() {
-	return fileExtension;
-    }
-
-    public void setFileExtension(String fileExtension) {
-	this.fileExtension = fileExtension;
-    }
-
     public Boolean getDiscarded() {
 	return discarded;
     }
@@ -118,8 +98,7 @@ public class Diagram extends GenericCollection {
 	@Override
 	public String toString() {
 		return "Diagram [id=" + id + ", diagramUrl=" + diagramUrl + ", tags=" + tags + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", diagram=" + diagram
-				+ ", fileExtension=" + fileExtension + ", discarded=" + discarded + ", speciality=" + speciality
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", speciality=" + speciality
 				+ ", clinicalNotesId=" + clinicalNotesId + "]";
 	}
 

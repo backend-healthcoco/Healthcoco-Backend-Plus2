@@ -5,7 +5,8 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -35,8 +37,8 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.PROCEDURE_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.PROCEDURE_BASE_URL, description = "Endpoint for procedure")
 public class ProcedureAPI {
 
@@ -171,9 +173,9 @@ public class ProcedureAPI {
 
 	@PostMapping
 	(value = PathProxy.ProcedureUrls.ADD_DIAGRAM)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE})
 	@ApiOperation(value = PathProxy.ProcedureUrls.ADD_DIAGRAM, notes = PathProxy.ProcedureUrls.ADD_DIAGRAM)
-	public Response<ImageURLResponse> addDiagramMultipart(@FormDataParam("file") FormDataBodyPart file) {
+	public Response<ImageURLResponse> addDiagramMultipart(@RequestParam("file") MultipartFile file) {
 
 		if (file == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

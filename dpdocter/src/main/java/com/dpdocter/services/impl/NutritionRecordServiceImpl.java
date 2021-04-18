@@ -17,8 +17,8 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.NutritionRecord;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.collections.NutritionRecordCollection;
@@ -35,8 +35,6 @@ import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.NutritionRecordService;
 import com.dpdocter.services.PushNotificationServices;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -60,7 +58,7 @@ public class NutritionRecordServiceImpl implements NutritionRecordService {
 	private String imagePath;
 
 	@Override
-	public RecordsFile uploadNutritionRecord(FormDataBodyPart file, MyFiileRequest request) {
+	public RecordsFile uploadNutritionRecord(MultipartFile file, MyFiileRequest request) {
 		RecordsFile recordsFile = null;
 		try {
 
@@ -75,9 +73,8 @@ public class NutritionRecordServiceImpl implements NutritionRecordService {
 			}
 			if (file != null) {
 				String path = "nuutritionRecord" + File.separator + request.getPatientId();
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
 				String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
 				String recordfileLabel = fileName;
 				Double fileSizeInMB = 0.0;
@@ -282,7 +279,7 @@ public class NutritionRecordServiceImpl implements NutritionRecordService {
 	}
 
 	@Override
-	public RecordsFile uploadNutritionRecord(DoctorLabReportUploadRequest request) {
+	public RecordsFile uploadNutritionRecord(MultipartFile file, DoctorLabReportUploadRequest request) {
 
 		RecordsFile recordsFile = null;
 		try {
@@ -293,24 +290,25 @@ public class NutritionRecordServiceImpl implements NutritionRecordService {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
 			}
-			FileDetails fileDetails = request.getFileDetails();
 			recordsFile = new RecordsFile();
 			createdTime = new Date();
 			String path = "nuutritionRecord" + File.separator
 					+ (!DPDoctorUtils.anyStringEmpty(request.getPatientId()) ? request.getPatientId() : "unknown");
 
-			String fileName = fileDetails.getFileName().replaceFirst("." + fileDetails.getFileExtension(), "");
-			String recordPath = path + File.separator + fileName + createdTime.getTime() + "."
-					+ fileDetails.getFileExtension();
+			String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+			String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+			String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
 			String recordfileLabel = fileName;
-			Double fileSizeInMB = fileManager.saveRecordBase64(fileDetails, recordPath);
+			
+			
+			Double fileSizeInMB = fileManager.saveRecord(file, recordPath, 0.0, false);
 
 			recordsFile = new RecordsFile();
 			recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
 			recordsFile.setFileSizeInMB(fileSizeInMB);
 			recordsFile.setRecordsUrl(getFinalImageURL(recordPath));
 			recordsFile.setThumbnailUrl(
-					getFinalImageURL(fileManager.saveThumbnailAndReturnThumbNailUrl(fileDetails, recordPath)));
+					getFinalImageURL(fileManager.saveThumbnailUrl(file, recordPath)));
 			recordsFile.setRecordsFileLabel(recordfileLabel);
 			recordsFile.setRecordsPath(path);
 			recordsFile.setRecordsType(request.getRecordsType());

@@ -6,15 +6,16 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.DrugInfo;
 import com.dpdocter.beans.MedicineOrder;
@@ -31,8 +32,6 @@ import com.dpdocter.request.MedicineOrderRXAddEditRequest;
 import com.dpdocter.request.MedicineOrderRxImageRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.MedicineOrderService;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -42,25 +41,19 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.ORDER_MEDICINE_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.ORDER_MEDICINE_BASE_URL, description = "Endpoint for records")
 public class MedicineOrderAPI {
 	
 	@Autowired
 	private MedicineOrderService medicineOrderService;
 
-	@PostMapping
-	(value = PathProxy.OrderMedicineUrls.UPLOAD_PRESCRIPTION)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@PostMapping(value = PathProxy.OrderMedicineUrls.UPLOAD_PRESCRIPTION)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE})
 	@ApiOperation(value = PathProxy.OrderMedicineUrls.UPLOAD_PRESCRIPTION, notes = PathProxy.OrderMedicineUrls.UPLOAD_PRESCRIPTION)
-	public Response<ImageURLResponse> saveRecordsImage(@FormDataParam("file") FormDataBodyPart file,
-			@FormDataParam("data") FormDataBodyPart patientId) {
-		patientId.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		String patientIdString = patientId.getValueAs(String.class);
-
-		ImageURLResponse imageURL = medicineOrderService.saveRXMedicineOrderImage(file, patientIdString);
-		//imageURL = getFinalImageURL(imageURL);
+	public Response<ImageURLResponse> saveRecordsImage(@RequestParam("file") MultipartFile file, @PathVariable("patientId")  String patientId) {
+		ImageURLResponse imageURL = medicineOrderService.saveRXMedicineOrderImage(file, patientId);
 		Response<ImageURLResponse> response = new Response<ImageURLResponse>();
 		response.setData(imageURL);
 		return response;

@@ -3,7 +3,8 @@ package com.dpdocter.webservices;
 import javax.mail.MessagingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,8 +26,8 @@ import common.util.web.Response;
 
 @RestController
 ("testing")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 public class TestExceptionAPI {
 
 	@Autowired

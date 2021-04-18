@@ -5,7 +5,8 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,8 +41,8 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.FEEDBACK_BASE_URL)
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
+@Produces(MediaType.APPLICATION_JSON_VALUE)
 
 @Api(value = PathProxy.FEEDBACK_BASE_URL, description = "Endpoint for feedback API")
 public class FeedbackAPI {

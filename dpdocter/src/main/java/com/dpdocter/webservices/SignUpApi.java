@@ -5,7 +5,8 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.ClinicContactUs;
 import com.dpdocter.beans.CollectionBoy;
@@ -48,7 +51,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 (PathProxy.SIGNUP_BASE_URL)
-@Consumes(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.SIGNUP_BASE_URL, description = "Endpoint for signup")
 public class SignUpApi {
 
@@ -86,7 +89,7 @@ public class SignUpApi {
 	 * @param PatientSignupRequestMobile
 	 * @return User List
 	 */
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
 	@ApiOperation(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE, notes = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
 	public Response<RegisteredPatientDetails> patientSignupMobile(PatientSignupRequestMobile request) {
@@ -141,7 +144,7 @@ public class SignUpApi {
 	 * false ,no unlock in this case.Also while unlock check 80% match for only
 	 * lock patients.
 	 */
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)	
 	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT, notes = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)
 	public Response<Boolean> verifyOrUnlockPatient(VerifyUnlockPatientRequest request) {
@@ -157,7 +160,7 @@ public class SignUpApi {
 
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@GetMapping(value = PathProxy.SignUpUrls.VERIFY_LOCALE)
 	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_LOCALE, notes = PathProxy.SignUpUrls.VERIFY_LOCALE)
 	public Response<String> verifyLocale(@PathVariable(value = "tokenId") String tokenId) {
@@ -171,15 +174,16 @@ public class SignUpApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE})
 	@ApiOperation(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE, notes = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
-	public Response<User> patientProfilePicChange(PatientProfilePicChangeRequest request) {
+	public Response<User> patientProfilePicChange(@RequestParam("file") MultipartFile file, PatientProfilePicChangeRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUsername())) {
 			logger.warn("Inavlid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
 		}
-		User user = signUpService.patientProfilePicChange(request);
+		User user = signUpService.patientProfilePicChange(file, request);
 		transnationalService.addResource(new ObjectId(user.getId()), Resource.PATIENT, false);
 		transnationalService.checkPatient(new ObjectId(user.getId()));
 		if (user != null) {
@@ -195,7 +199,7 @@ public class SignUpApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@GetMapping(value = PathProxy.SignUpUrls.VERIFY_USER)
 	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_USER, notes = PathProxy.SignUpUrls.VERIFY_USER)
 	public Response<String> verifyUser(@PathVariable(value = "tokenId") String tokenId) {
@@ -209,7 +213,7 @@ public class SignUpApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@GetMapping(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
 	@ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
 	public Response<Boolean> checkUsernameExist(@PathVariable(value = "username") String username) {
@@ -222,7 +226,7 @@ public class SignUpApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@GetMapping(value = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST)
 	@ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST)
 	public Response<Boolean> checkMobileNumExist(@PathVariable(value = "mobileNumber") String mobileNumber) {
@@ -235,7 +239,7 @@ public class SignUpApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@GetMapping(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
 	@ApiOperation(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP, notes = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
 	public Response<PateientSignUpCheckResponse> checkMobileNumberSignedUp(
@@ -251,7 +255,7 @@ public class SignUpApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@GetMapping(value = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
 	@ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
 	public Response<Boolean> checkEmailExist(@PathVariable(value = "emailaddress") String emailaddress) {
@@ -268,7 +272,7 @@ public class SignUpApi {
 		return imagePath + imageURL;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)	
+	@Produces(MediaType.APPLICATION_JSON_VALUE)	
 	@PostMapping(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
 	@ApiOperation(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT, notes = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
 	public Response<String> submitDoctorContactUsInfo(DoctorContactUs doctorContactUs) {
@@ -291,7 +295,7 @@ public class SignUpApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT)
 	@ApiOperation(value = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT, notes = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT)
 	public Response<String> submitClinicContactUsInfo(ClinicContactUs clinicContactUs) {
@@ -312,7 +316,7 @@ public class SignUpApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
 	@ApiOperation(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY, notes = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
 	public Response<CollectionBoyResponse> collectionBoySignup(CollectionBoy request) {
@@ -328,7 +332,7 @@ public class SignUpApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@GetMapping(value = PathProxy.SignUpUrls.WELCOME_USER)
 	@ApiOperation(value = PathProxy.SignUpUrls.WELCOME_USER, notes = PathProxy.SignUpUrls.WELCOME_USER)
 	public Response<DoctorContactUs> welcomeUser(@PathVariable(value = "tokenId") String tokenId) {
@@ -342,7 +346,7 @@ public class SignUpApi {
 		return response;
 	}
 
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request) {
@@ -381,7 +385,7 @@ public class SignUpApi {
 	}
 	
 	
-//	@Produces(MediaType.APPLICATION_JSON)
+//	@Produces(MediaType.APPLICATION_JSON_VALUE)
 //	(value = PathProxy.SignUpUrls.DOCTOR_REGISTER)
 //	@GetMapping
 //	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_REGISTER, notes = PathProxy.SignUpUrls.DOCTOR_REGISTER)
@@ -400,7 +404,7 @@ public class SignUpApi {
 //			return response;
 //		}
 	
-//	@Produces(MediaType.APPLICATION_JSON)
+//	@Produces(MediaType.APPLICATION_JSON_VALUE)
 //	(value = PathProxy.SignUpUrls.VERIFY_EMAIL_ADDRESS)
 //	@GetMapping
 //	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_EMAIL_ADDRESS, notes = PathProxy.SignUpUrls.VERIFY_EMAIL_ADDRESS)

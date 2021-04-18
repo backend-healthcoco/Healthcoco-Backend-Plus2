@@ -2,12 +2,13 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dpdocter.request.AddEditProcedureSheetRequest;
 import com.dpdocter.request.AddEditProcedureSheetStructureRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.ProcedureSheetResponse;
 import com.dpdocter.response.ProcedureSheetStructureResponse;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface ProcedureSheetService {
 
@@ -31,7 +32,7 @@ public interface ProcedureSheetService {
 			String patientId, String searchTerm, Long from, Long to, Boolean discarded, int page, int size,
 			String type);
 
-	ImageURLResponse addDiagrams(FormDataBodyPart file);
+	ImageURLResponse addDiagrams(MultipartFile file);
 
 	public String downloadProcedureSheet(String id);
 

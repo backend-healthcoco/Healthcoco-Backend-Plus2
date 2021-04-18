@@ -3,9 +3,10 @@ package com.dpdocter.services;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.response.ImageURLResponse;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface FileManager {
 	ImageURLResponse saveImageAndReturnImageUrl(FileDetails fileDetails, String path, Boolean createThumbnail)
@@ -13,15 +14,15 @@ public interface FileManager {
 
 	String saveThumbnailAndReturnThumbNailUrl(FileDetails fileDetails, String path);
 
-	Double saveRecord(FormDataBodyPart file, String recordPath, Double allowedSize, Boolean checkSize);
+	Double saveRecord(MultipartFile file, String recordPath, Double allowedSize, Boolean checkSize);
 
-	ImageURLResponse saveImage(FormDataBodyPart file, String recordPath, Boolean createThumbnail);
+	ImageURLResponse saveImage(MultipartFile file, String recordPath, Boolean createThumbnail);
 
-	public String saveThumbnailUrl(FormDataBodyPart file, String path);
+	public String saveThumbnailUrl(MultipartFile file, String path);
 
 	public Double saveRecordBase64(FileDetails fileDetail, String recordPath);
 	
-	public List<String> convertPdfToImage(FileDetails fileDetails, String path, Boolean createThumbnail) throws Exception;
+	public List<String> convertPdfToImage(MultipartFile file, String path, Boolean createThumbnail) throws Exception;
 
 	public String saveThumbnailAndReturnThumbNailUrl(String fileName, String path);
 

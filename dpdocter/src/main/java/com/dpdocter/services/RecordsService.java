@@ -3,6 +3,7 @@ package com.dpdocter.services;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
@@ -18,12 +19,11 @@ import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
 import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.response.MailResponse;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.Response;
 
 public interface RecordsService {
-	Records addRecord(RecordsAddRequest request, String createdBy);
+	Records addRecord(MultipartFile file, RecordsAddRequest request, String createdBy);
 
 	void tagRecord(TagRecordRequest request);
 
@@ -58,16 +58,16 @@ public interface RecordsService {
 
 	FlexibleCounts getFlexibleCounts(FlexibleCounts flexibleCounts);
 
-	Records editRecord(RecordsEditRequest request);
+	Records editRecord(MultipartFile file, RecordsEditRequest request);
 
 	void changeLabelAndDescription(String recordId, String label, String explanation);
 
 	Response<Object> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded,
 			Boolean isDoctorApp, String sortBy);
 
-	Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request);
+	Records addRecordsMultipart(MultipartFile file, RecordsAddRequestMultipart request);
 
-	String saveRecordsImage(FormDataBodyPart file, String patientIdString);
+	String saveRecordsImage(MultipartFile file, String patientIdString);
 
 	Records changeRecordState(String recordId, String recordsState);
 
@@ -86,7 +86,7 @@ public interface RecordsService {
 
 	UserRecords shareUserRecordsFile(String recordId, String patientId);
 
-	RecordsFile uploadUserRecord(FormDataBodyPart file, MyFiileRequest request);
+	RecordsFile uploadUserRecord(MultipartFile file, MyFiileRequest request);
 
 	List<Records> getRecordsByDoctorId(String doctorId, long page, int size, String updatedTime, Boolean discarded);
 

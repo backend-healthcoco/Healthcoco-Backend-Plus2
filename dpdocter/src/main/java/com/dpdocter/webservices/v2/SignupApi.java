@@ -2,7 +2,8 @@ package com.dpdocter.webservices.v2;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import org.springframework.http.MediaType;
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +33,7 @@ import io.swagger.annotations.ApiOperation;
 
 
 @RestController(value = "SignUpApiV2")
-@RequestMapping(value=PathProxy.SIGNUP_BASE_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
+@RequestMapping(value=PathProxy.SIGNUP_BASE_URL,produces = MediaType.APPLICATION_JSON_VALUE ,consumes = MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.SIGNUP_BASE_URL, description = "")
 
 public class SignupApi {
@@ -53,7 +54,7 @@ public class SignupApi {
 	
 	private Logger logger = LogManager.getLogger(SignupApi.class);
 	
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
 	public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request) {
@@ -91,7 +92,7 @@ public class SignupApi {
 		return response;
 	}
 	
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@GetMapping(value = PathProxy.SignUpUrls.VERIFY_USER)
 	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_USER, notes = PathProxy.SignUpUrls.VERIFY_USER)
 	public Response<String> verifyUser(@PathVariable(value = "tokenId") String tokenId) {
@@ -105,7 +106,7 @@ public class SignupApi {
 		return response;
 	}
 	
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON_VALUE)
 	@PostMapping(value = PathProxy.SignUpUrls.DOCTOR_REGISTER)
 	@ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_REGISTER, notes = PathProxy.SignUpUrls.DOCTOR_REGISTER)
 	 public Response<DoctorRegisterResponse> DoctorRegister(@RequestBody DoctorOtpRequest request) {
@@ -130,7 +131,7 @@ public class SignupApi {
 		return imagePath + imageURL;
 	}
 	
-	@Produces(MediaType.APPLICATION_JSON)	
+	@Produces(MediaType.APPLICATION_JSON_VALUE)	
 	@GetMapping(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
 	@ApiOperation(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR, notes = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
 	public Response<Boolean> resendVerificationEmail(@PathVariable(value = "emailaddress") String emailaddress) {

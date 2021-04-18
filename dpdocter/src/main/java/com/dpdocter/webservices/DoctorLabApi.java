@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.DoctorLabReport;
 import com.dpdocter.beans.RecordsFile;
@@ -32,8 +32,6 @@ import com.dpdocter.response.DoctorLabFavouriteDoctorResponse;
 import com.dpdocter.response.DoctorLabReportResponse;
 import com.dpdocter.response.DoctorLabSearchDoctorResponse;
 import com.dpdocter.services.DoctorLabService;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -41,7 +39,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping(value = PathProxy.DOCTOR_LAB_URL,produces = MediaType.APPLICATION_JSON ,consumes = MediaType.APPLICATION_JSON)
+@RequestMapping(value = PathProxy.DOCTOR_LAB_URL,produces = MediaType.APPLICATION_JSON_VALUE ,consumes = MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.DOCTOR_LAB_URL, description = "Endpoint for doctor lab")
 public class DoctorLabApi {
 	private static Logger logger = LogManager.getLogger(DoctorLabApi.class.getName());
@@ -79,17 +77,13 @@ public class DoctorLabApi {
 			return null;
 	}
 
-	@PostMapping
-	(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_MULTIPART_FILE)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@PostMapping(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_MULTIPART_FILE)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_MULTIPART_FILE, notes = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_MULTIPART_FILE)
-	public Response<RecordsFile> uploadDoctorLabReportMultipart(@FormDataParam("file") FormDataBodyPart file,
-			@FormDataParam("data") FormDataBodyPart data) {
+	public Response<RecordsFile> uploadDoctorLabReportMultipart(@RequestParam("file") MultipartFile file,
+			@RequestBody MyFiileRequest request) {
 
-		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		MyFiileRequest request = data.getValueAs(MyFiileRequest.class);
-
-		if (request == null || DPDoctorUtils.anyStringEmpty(file.getContentDisposition().getFileName())) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(file.getOriginalFilename())) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
@@ -104,16 +98,16 @@ public class DoctorLabApi {
 		return response;
 	}
 
-	@PostMapping
-	(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_FILE)
+	@PostMapping(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_FILE)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA_VALUE })
 	@ApiOperation(value = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_FILE, notes = PathProxy.DoctorLabUrls.UPLOAD_DOCTOR_LAB_FILE)
-	public Response<RecordsFile> uploadDoctorLabReport(@RequestBody DoctorLabReportUploadRequest request) {
-		if (request == null || request.getFileDetails() == null) {
+	public Response<RecordsFile> uploadDoctorLabReport(@RequestParam("file") MultipartFile file, @RequestBody DoctorLabReportUploadRequest request) {
+		if (request == null || file == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		RecordsFile recordsFiles = doctorLabService.uploadDoctorLabReport(request);
+		RecordsFile recordsFiles = doctorLabService.uploadDoctorLabReport(file, request);
 
 		Response<RecordsFile> response = new Response<RecordsFile>();
 		response.setData(recordsFiles);

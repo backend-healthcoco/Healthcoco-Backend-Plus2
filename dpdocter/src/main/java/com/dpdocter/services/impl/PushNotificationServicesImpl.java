@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -27,6 +29,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dpdocter.beans.Notification;
 import com.dpdocter.beans.UserDevice;
@@ -2575,16 +2578,17 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public void broadcastNotification(BroadcastNotificationRequest request) {
+	public void broadcastNotification(MultipartFile file, BroadcastNotificationRequest request) {
 		// Boolean response = false;
 		try {
 			String imageUrl = null;
 			if (request.getImage() != null) {
 				String path = "broadcastImages";
-				// save image
-				request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path,
-						true);
+				
+				String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+				String fileName = file.getOriginalFilename().replaceFirst("." + fileExtension, "");
+				String imagepath = path + File.separator + fileName + new Date().getTime() + "." + fileExtension;
+				ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, true);
 				imageUrl = getFinalImageURL(imageURLResponse.getImageUrl());
 			}
 			Collection<String> pushTokens = null;

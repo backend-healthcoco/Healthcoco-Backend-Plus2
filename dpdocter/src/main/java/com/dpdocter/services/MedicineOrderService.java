@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dpdocter.beans.DrugInfo;
 import com.dpdocter.beans.MedicineOrder;
 import com.dpdocter.beans.TrackingOrder;
@@ -15,11 +17,10 @@ import com.dpdocter.request.MedicineOrderRXAddEditRequest;
 import com.dpdocter.request.MedicineOrderRxImageRequest;
 import com.dpdocter.request.UpdateOrderStatusRequest;
 import com.dpdocter.response.ImageURLResponse;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface MedicineOrderService {
 
-	ImageURLResponse saveRXMedicineOrderImage(FormDataBodyPart file, String patientIdString);
+	ImageURLResponse saveRXMedicineOrderImage(MultipartFile file, String patientIdString);
 
 	MedicineOrder addeditRx(MedicineOrderRXAddEditRequest request);
 
