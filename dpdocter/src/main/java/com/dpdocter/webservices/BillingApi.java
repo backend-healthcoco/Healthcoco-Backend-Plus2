@@ -279,7 +279,7 @@ public class BillingApi {
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@PathParam("patientId") String patientId, @QueryParam(value = "from") String from,
 			@QueryParam(value = "to") String to, @QueryParam(value = "page") long page,
-			@QueryParam(value = "size") int size,
+			@QueryParam(value = "size") int size,@QueryParam(value = "type") String type,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, patientId)) {
 			logger.warn("Invalid Input");
@@ -287,7 +287,7 @@ public class BillingApi {
 		}
 
 		DoctorPatientLedgerResponse doctorPatientLedgers = billingService.getLedger(doctorId, locationId, hospitalId,
-				patientId, from, to, page, size, updatedTime);
+				patientId, from, to, page, size, updatedTime,type);
 
 		Response<DoctorPatientLedgerResponse> response = new Response<DoctorPatientLedgerResponse>();
 		response.setData(doctorPatientLedgers);
