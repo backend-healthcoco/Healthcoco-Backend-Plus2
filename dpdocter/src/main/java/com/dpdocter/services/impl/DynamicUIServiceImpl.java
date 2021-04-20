@@ -149,7 +149,6 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 					if (specialityCollection != null) {
 						speciality = specialityCollection.getSpeciality();
 					}
-					System.out.println(speciality);
 					tempPermissions = getAllPermissionBySpeciality(String.valueOf(speciality));
 					if (tempPermissions != null) {
 						patientVisitPermissionsSet.addAll(tempPermissions.getPatientVisitPermissions());

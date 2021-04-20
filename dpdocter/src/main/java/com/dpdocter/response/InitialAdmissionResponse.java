@@ -43,7 +43,8 @@ private String id;
 	private boolean discarded = false;
 
 	
-	@Field
+	private String IPDNumber;
+
 
 	public String getId() {
 		return id;
@@ -171,6 +172,14 @@ private String id;
 
 	public void setDiscarded(boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getIPDNumber() {
+		return IPDNumber;
+	}
+
+	public void setIPDNumber(String iPDNumber) {
+		IPDNumber = iPDNumber;
 	}
 	
 	

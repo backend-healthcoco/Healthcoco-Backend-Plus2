@@ -37,6 +37,9 @@ private String id;
 	private String coMorbidities;//more than one illness or disease
 	
 	private boolean discarded = false;
+	
+	private String IPDNumber;
+
 
 
 	public String getId() {
@@ -150,6 +153,14 @@ private String id;
 
 	public void setDiscarded(boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getIPDNumber() {
+		return IPDNumber;
+	}
+
+	public void setIPDNumber(String iPDNumber) {
+		IPDNumber = iPDNumber;
 	}
 
 	

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
@@ -88,9 +89,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	private String visitDiagramsA4FileName;
 
 
-	@Override
+//	@Override
 	@Transactional
-	public List<ClinicalNotes> getClinicalNotes(int page, int size, String doctorId, String locationId,
+	public List<ClinicalNotes> getClinicalNotesOLD(int page, int size, String doctorId, String locationId,
 			String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, String from,String to,Boolean discarded,
 			Boolean inHistory) {
 		List<ClinicalnoteLookupBean> clinicalNotesCollections = null;
@@ -201,7 +202,409 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return clinicalNotes;
 	}
+	
+	
+	@Override
+	@Transactional
+	public List<ClinicalNotes> getClinicalNotes(int page, int size, String doctorId, String locationId,
+			String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, String from,String to,Boolean discarded,
+			Boolean inHistory) {
+		List<ClinicalnoteLookupBean> clinicalNotesCollections = null;
+		List<ClinicalNotes> clinicalNotes = null;
+		try {
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				patientObjectId = new ObjectId(patientId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
 
+			long createdTimestamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
+					.is(patientObjectId).and("isPatientDiscarded").ne(true);
+			
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			DateTime fromDateTime = null, toDateTime= null;
+			if (!DPDoctorUtils.anyStringEmpty(from)) {
+				localCalendar.setTime(new Date(Long.parseLong(from)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				 fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));				
+			}
+			if (!DPDoctorUtils.anyStringEmpty(to)) {
+				localCalendar.setTime(new Date(Long.parseLong(to)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				 toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));			
+			}
+			if(fromDateTime!= null && toDateTime != null) {
+				criteria.and("createdTime").gte(fromDateTime).lte(toDateTime);
+			}else if(fromDateTime!= null) {
+				criteria.and("createdTime").gte(fromDateTime);
+			}else if(toDateTime != null) {
+				criteria.and("createdTime").lte(toDateTime);
+			}
+
+
+			
+			if (discarded !=null)
+				criteria.and("discarded").is(discarded);
+			if (inHistory)
+				criteria.and("inHistory").is(inHistory);
+
+			if (!isOTPVerified) {
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(doctorId))
+					criteria.and("doctorId").is(doctorObjectId);
+			}
+
+			Aggregation aggregation = null;
+
+			if (size > 0)
+				aggregation = 	Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size),
+						Aggregation.lookup("appointment_cl", "appointmentId", "_id", "appointmentRequest"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
+										true))),
+						//cn
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$_id").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.lookup("clinical_notes_cl", "_id", "_id", "clinicalNotes"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$clinicalNotes").append("preserveNullAndEmptyArrays",
+										true))),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$diagrams")
+										.append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex5"))),
+						Aggregation.lookup("diagrams_cl", "clinicalNotes.diagrams", "_id", "diagrams"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$diagrams").append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex6"))),
+//						clinicalNotesFirstProjectAggregationOperation(), clinicalNotesFirstGroupAggregationOperation(),
+						clinicalNotesSecondProjectAggregationOperation(), clinicalNotesSecondGroupAggregationOperation(),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
+										true))),
+						//cn
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$_id").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.lookup("clinical_notes_cl", "_id", "_id", "clinicalNotes"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$clinicalNotes").append("preserveNullAndEmptyArrays",
+										true))),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$clinicalNotes.diagrams")
+										.append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex5"))),
+						Aggregation.lookup("diagrams_cl", "clinicalNotes.diagrams", "_id", "diagrams"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$diagrams").append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex6"))),
+						clinicalNotesFirstProjectAggregationOperation(), clinicalNotesFirstGroupAggregationOperation(),
+//						clinicalNotesSecondProjectAggregationOperation(), clinicalNotesSecondGroupAggregationOperation(),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			System.out.println(aggregation);
+			AggregationResults<ClinicalNotes> aggregationResults = mongoTemplate.aggregate(aggregation,
+					ClinicalNotesCollection.class, ClinicalNotes.class);
+			clinicalNotes = aggregationResults.getMappedResults();
+			
+			System.out.println(clinicalNotes);
+
+			
+			if (clinicalNotes != null) {
+				for (ClinicalNotes clinicalNote : clinicalNotes) {
+					
+					if(clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
+						List<Diagram> diagrams = null;
+						for (Diagram diagram : clinicalNote.getDiagrams()) {
+							if (diagram.getId() != null) {
+								if (diagrams == null)
+									diagrams = new ArrayList<Diagram>();
+								diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
+								diagrams.add(diagram);
+							}
+						}
+						clinicalNote.setDiagrams(diagrams);
+					}
+				}
+			}
+
+//			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
+//				clinicalNotes = new ArrayList<ClinicalNotes>();
+//				for (ClinicalnoteLookupBean clinicalNotesCollection : clinicalNotesCollections) {
+//					ClinicalNotes clinicalNote = getClinicalNote(clinicalNotesCollection);
+//					clinicalNotes.add(clinicalNote);
+//				}
+//			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(" Error Occurred While Getting Clinical Notes");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting clinical notes",
+						e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Clinical Notes");
+		}
+		return clinicalNotes;
+	}
+
+	private AggregationOperation clinicalNotesFirstProjectAggregationOperation() {
+		return new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
+				.append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId").append("doctorId", "$doctorId")
+				.append("locationId", "$locationId").append("hospitalId", "$hospitalId")
+//				.append("visitedTime", "$visitedTime").append("visitedFor", "$visitedFor")
+//				.append("treatmentId", "$treatmentId").append("recordId", "$recordId")
+//				.append("eyePrescriptionId", "$eyePrescriptionId")
+				.append("appointmentId", "$appointmentId")
+				.append("time", "$time").append("fromDate", "$fromDate").append("discarded", "$discarded")
+				.append("appointmentRequest", "$appointmentRequest").append("createdTime", "$createdTime")
+				.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
+				.append("adminCreatedTime", "$adminCreatedTime")
+//				.append("prescriptions", "$prescriptions")
+//				.append("clinicalNotes", "$clinicalNotes")
+				
+				.append("observation", "$observation")
+				.append("diagnosis", "$diagnosis")
+				.append("generalExam", "$generalExam")
+				.append("investigation", "$investigation")
+				.append("inHistory", "$clinicalNotes.inHistory")
+
+				.append("note", "$clinicalNotes.note")
+				.append("provisionalDiagnosis", "$clinicalNotes.provisionalDiagnosis")
+				.append("systemExam", "$clinicalNotes.systemExam")
+				.append("complaint", "$clinicalNotes.complaint")
+				.append("presentComplaint", "$clinicalNotes.presentComplaint")
+				.append("presentComplaintHistory", "$clinicalNotes.presentComplaintHistory")
+				.append("menstrualHistory", "$clinicalNotes.menstrualHistory")
+				.append("obstetricHistory", "$clinicalNotes.obstetricHistory")
+				.append("indicationOfUSG", "$clinicalNotes.indicationOfUSG")
+				.append("pv", "$clinicalNotes.pv")
+				.append("pa", "$clinicalNotes.pa")
+				.append("ps", "$clinicalNotes.ps")
+				.append("ecgDetails", "$clinicalNotes.ecgDetails")
+				.append("xRayDetails", "$clinicalNotes.xRayDetails")
+				.append("echo", "$clinicalNotes.echo")
+				.append("holter", "$clinicalNotes.holter")
+				.append("pcNose", "$clinicalNotes.pcNose")
+				.append("pcOralCavity", "$clinicalNotes.pcOralCavity")
+				.append("pcThroat", "$clinicalNotes.pcThroat")
+				.append("pcEars", "$clinicalNotes.pcEars")
+				.append("noseExam", "$clinicalNotes.noseExam")
+				.append("oralCavityThroatExam", "$clinicalNotes.oralCavityThroatExam")
+				.append("indirectLarygoscopyExam", "$clinicalNotes.indirectLarygoscopyExam")
+				.append("neckExam", "$clinicalNotes.neckExam")
+				.append("earsExam", "$clinicalNotes.earsExam")
+				.append("vitalSigns", "$clinicalNotes.vitalSigns")
+				.append("time", "$clinicalNotes.time")
+				.append("fromDate", "$clinicalNotes.fromDate")
+				.append("lmp", "$clinicalNotes.lmp")
+				.append("edd", "$clinicalNotes.edd")
+				.append("noOfFemaleChildren", "$clinicalNotes.noOfFemaleChildren")
+				.append("noOfMaleChildren", "$clinicalNotes.noOfMaleChildren")
+				.append("procedureNote", "$clinicalNotes.procedureNote")
+				.append("pastHistory", "$clinicalNotes.pastHistory")
+				.append("familyHistory", "$clinicalNotes.familyHistory")
+				.append("personalHistoryTobacco", "$clinicalNotes.personalHistoryTobacco")
+				.append("personalHistoryAlcohol", "$clinicalNotes.personalHistoryAlcohol")
+				.append("personalHistorySmoking", "$clinicalNotes.personalHistorySmoking")
+				.append("personalHistoryOccupation", "$clinicalNotes.personalHistoryOccupation")
+				.append("personalHistoryDiet", "$clinicalNotes.personalHistoryDiet")
+				.append("generalHistoryDrugs", "$clinicalNotes.generalHistoryDrugs")
+				.append("generalHistoryMedicine", "$clinicalNotes.generalHistoryMedicine")
+				.append("generalHistoryAllergies", "$clinicalNotes.generalHistoryAllergies")
+				.append("generalHistorySurgical", "$clinicalNotes.generalHistorySurgical")
+				.append("painScale", "$clinicalNotes.painScale")
+				.append("priorConsultations", "$clinicalNotes.priorConsultations")
+				.append("isPatientDiscarded", "$clinicalNotes.isPatientDiscarded")
+				.append("eyeObservation", "$clinicalNotes.eyeObservation")
+				.append("physioExamination", "$clinicalNotes.physioExamination")
+
+//				.append("diagrams", "$diagrams")
+
+				
+//				.append("clinicalNotesid", "$clinicalNotes._id").append("clinicalNotesDiagrams._id", "$diagrams._id")
+				.append("diagrams.diagramUrl", "$diagrams.diagramUrl")
+				.append("diagrams.tags", "$diagrams.tags")
+				
+				.append("clinicalNotesDiagrams.diagramUrl", "$diagrams.diagramUrl")
+				.append("clinicalNotesDiagrams.tags", "$diagrams.tags")
+				.append("clinicalNotesDiagrams.doctorId", "$diagrams.doctorId")
+				.append("clinicalNotesDiagrams.locationId", "$diagrams.locationId")
+				.append("clinicalNotesDiagrams.hospitalId", "$diagrams.hospitalId")
+				.append("clinicalNotesDiagrams.fileExtension", "$diagrams.fileExtension")
+				.append("clinicalNotesDiagrams.discarded", "$diagrams.discarded")
+				.append("clinicalNotesDiagrams.speciality", "$diagrams.speciality")
+				.append("clinicalNotesDiagrams.clinicalNotesId", "$clinicalNotes._id")));
+	}
+
+	private AggregationOperation clinicalNotesFirstGroupAggregationOperation() {
+		return new CustomAggregationOperation(new Document("$group",
+				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+						.append("patientId", new BasicDBObject("$first", "$patientId"))
+						.append("locationId", new BasicDBObject("$first", "$locationId"))
+						.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+						.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+						.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+						.append("discarded", new BasicDBObject("$first", "$discarded"))
+//						.append("visitedTime", new BasicDBObject("$first", "$visitedTime"))
+//						.append("visitedFor", new BasicDBObject("$first", "$visitedFor"))
+//						.append("prescriptions", new BasicDBObject("$first", "$prescriptions"))
+//						.append("clinicalNotes", new BasicDBObject("$first", "$clinicalNotes"))
+						
+						.append("observation", new BasicDBObject("$first", "$observation"))
+						.append("diagnosis", new BasicDBObject("$first", "$diagnosis"))
+						.append("generalExam", new BasicDBObject("$first", "$generalExam"))
+						.append("investigation", new BasicDBObject("$first", "$investigation"))
+
+						.append("note", new BasicDBObject("$first", "$note"))
+						.append("provisionalDiagnosis", new BasicDBObject("$first", "$provisionalDiagnosis"))
+						.append("systemExam", new BasicDBObject("$first", "$systemExam"))
+						.append("complaint", new BasicDBObject("$first", "$complaint"))
+						.append("presentComplaint", new BasicDBObject("$first", "$presentComplaint"))
+						.append("procedureNote", new BasicDBObject("$first", "$procedureNote"))
+						.append("presentComplaintHistory", new BasicDBObject("$first", "$presentComplaintHistory"))
+						.append("menstrualHistory", new BasicDBObject("$first", "$menstrualHistory"))
+						.append("obstetricHistory", new BasicDBObject("$first", "$obstetricHistory"))
+						.append("indicationOfUSG", new BasicDBObject("$first", "$indicationOfUSG"))
+
+						.append("pv", new BasicDBObject("$first", "$pv"))
+						.append("pa", new BasicDBObject("$first", "$pa"))
+						.append("ps", new BasicDBObject("$first", "$ps"))
+						.append("ecgDetails", new BasicDBObject("$first", "$ecgDetails"))
+						.append("xRayDetails", new BasicDBObject("$first", "$xRayDetails"))
+						.append("echo", new BasicDBObject("$first", "$echo"))
+						.append("holter", new BasicDBObject("$first", "$holter"))
+						.append("pcNose", new BasicDBObject("$first", "$pcNose"))
+						.append("pcOralCavity", new BasicDBObject("$first", "$pcOralCavity"))
+						.append("pcThroat", new BasicDBObject("$first", "$pcThroat"))
+						.append("pcEars", new BasicDBObject("$first", "$pcEars"))
+						.append("noseExam", new BasicDBObject("$first", "$noseExam"))
+						.append("oralCavityThroatExam", new BasicDBObject("$first", "$oralCavityThroatExam"))
+						.append("indirectLarygoscopyExam", new BasicDBObject("$first", "$indirectLarygoscopyExam"))
+						.append("neckExam", new BasicDBObject("$first", "$neckExam"))
+						.append("earsExam", new BasicDBObject("$first", "$earsExam"))
+
+						.append("pastHistory", new BasicDBObject("$first", "$pastHistory"))
+						.append("familyHistory", new BasicDBObject("$first", "$familyHistory"))
+						.append("personalHistoryTobacco", new BasicDBObject("$first", "$personalHistoryTobacco"))
+						.append("personalHistoryAlcohol", new BasicDBObject("$first", "$personalHistoryAlcohol"))
+						.append("personalHistorySmoking", new BasicDBObject("$first", "$earsExam"))
+						.append("personalHistorySmoking", new BasicDBObject("$first", "$personalHistorySmoking"))
+						.append("personalHistoryDiet", new BasicDBObject("$first", "$personalHistoryDiet"))
+						.append("personalHistoryOccupation", new BasicDBObject("$first", "$personalHistoryOccupation"))
+						.append("generalHistoryDrugs", new BasicDBObject("$first", "$generalHistoryDrugs"))
+						.append("generalHistoryMedicine", new BasicDBObject("$first", "$generalHistoryMedicine"))
+						.append("generalHistoryAllergies", new BasicDBObject("$first", "$generalHistoryAllergies"))
+						.append("generalHistorySurgical", new BasicDBObject("$first", "$generalHistorySurgical"))
+						.append("painScale", new BasicDBObject("$first", "$painScale"))
+
+						.append("diagramUrl", new BasicDBObject("$first", "$diagrams.diagramUrl"))
+//						.append("diagramUrl", new BasicDBObject("$first", "$clinicalNotes.diagrams.diagramUrl"))
+						.append("tags", new BasicDBObject("$first", "$clinicalNotes.diagrams.tags"))
+
+						.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+						.append("visitId", new BasicDBObject("$first", "$visitId"))
+						.append("vitalSigns", new BasicDBObject("$first", "$vitalSigns"))
+						.append("time", new BasicDBObject("$first", "$time"))
+						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+						.append("lmp", new BasicDBObject("$first", "$lmp"))
+						.append("edd", new BasicDBObject("$first", "$edd"))
+						.append("noOfFemaleChildren", new BasicDBObject("$first", "$noOfFemaleChildren"))
+						.append("noOfMaleChildren", new BasicDBObject("$first", "$noOfMaleChildren"))
+						.append("priorConsultations", new BasicDBObject("$first", "$priorConsultations"))
+						.append("eyeObservation", new BasicDBObject("$first", "$eyeObservation"))
+						.append("physioExamination", new BasicDBObject("$first", "$physioExamination"))
+						.append("TreatmentObservation", new BasicDBObject("$first", "$TreatmentObservation"))
+//						.append("noOfMaleChildren", new BasicDBObject("$first", "$noOfMaleChildren"))
+
+						
+						.append("clinicalNotesDiagrams", new BasicDBObject("$push", "$clinicalNotesDiagrams"))
+//						.append("treatmentId", new BasicDBObject("$first", "$treatmentId"))
+//						.append("recordId", new BasicDBObject("$first", "$recordId"))
+//						.append("eyePrescriptionId", new BasicDBObject("$first", "$eyePrescriptionId"))
+						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
+						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
+						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
+	}
+
+	private AggregationOperation clinicalNotesSecondProjectAggregationOperation() {
+		return new CustomAggregationOperation(new Document("$project",
+				new BasicDBObject("_id", "$_id").append("uniqueEmrId", "$uniqueEmrId").append("patientId", "$patientId")
+						.append("doctorId", "$doctorId").append("locationId", "$locationId")
+						.append("hospitalId", "$hospitalId").append("visitedTime", "$visitedTime")
+//						.append("visitedFor", "$visitedFor").append("treatmentId", "$treatmentId")
+//						.append("recordId", "$recordId").append("eyePrescriptionId", "$eyePrescriptionId")
+						.append("appointmentId", "$appointmentId").append("time", "$time")
+						.append("fromDate", "$fromDate").append("discarded", "$discarded")
+						.append("appointmentRequest", "$appointmentRequest").append("createdTime", "$createdTime")
+						.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
+//						.append("prescriptions", "$prescriptions").append("clinicalNotes", "$clinicalNotes")
+						.append("clinicalNotesDiagrams", "$clinicalNotesDiagrams")));
+	}
+
+	private AggregationOperation clinicalNotesSecondGroupAggregationOperation() {
+		return new CustomAggregationOperation(new Document("$group",
+				new BasicDBObject("_id", "$_id").append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+						.append("patientId", new BasicDBObject("$first", "$patientId"))
+						.append("locationId", new BasicDBObject("$first", "$locationId"))
+						.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+						.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+						.append("discarded", new BasicDBObject("$first", "$discarded"))
+//						.append("visitedTime", new BasicDBObject("$first", "$visitedTime"))
+//						.append("visitedFor", new BasicDBObject("$first", "$visitedFor"))
+//						.append("prescriptions", new BasicDBObject("$first", "$prescriptions"))
+//						.append("clinicalNotes", new BasicDBObject("$push", "$clinicalNotes"))
+						.append("clinicalNotesDiagrams", new BasicDBObject("$first", "$clinicalNotesDiagrams"))
+//						.append("treatmentId", new BasicDBObject("$first", "$treatmentId"))
+//						.append("recordId", new BasicDBObject("$first", "$recordId"))
+//						.append("eyePrescriptionId", new BasicDBObject("$first", "$eyePrescriptionId"))
+						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+						.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
+						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
+						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+						.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public ClinicalNotes getClinicalNote(ClinicalnoteLookupBean clinicalNotesCollection) {
 		ClinicalNotes clinicalNote = new ClinicalNotes();
 		BeanUtil.map(clinicalNotesCollection, clinicalNote);
@@ -259,6 +662,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNote.setVisitId(patientVisitCollection.getId().toString());
 
 		return clinicalNote;
+	}
+	
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
 	}
 	
 	public List<Diagram> sortDiagrams(List<Diagram> mappedResults, List<ObjectId> diagrams) {

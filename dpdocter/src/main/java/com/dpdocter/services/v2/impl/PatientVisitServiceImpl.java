@@ -1331,7 +1331,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("patientTreatmentpatientId", "$patientTreatment.patientId")
 						.append("patientTreatmenttotalCost", "$patientTreatment.totalCost")
 						.append("patientTreatmenttotalDiscount", "$patientTreatment.totalDiscount")
-
+						.append("patientTreatmenttotalgrandTotal", "$patientTreatment.grandTotal")
 						.append("patientTreatmentappointmentId", "$patientTreatment.appointmentId")
 						.append("patientTreatmentvisitId", "$_id.id")
 						.append("patientTreatmentcreatedTime", "$patientTreatment.createdTime")
@@ -1374,7 +1374,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("patientTreatmentpatientId", new BasicDBObject("$first", "$patientTreatmentpatientId"))
 				.append("patientTreatmenttotalCost", new BasicDBObject("$first", "$patientTreatmenttotalCost"))
 				.append("patientTreatmenttotalDiscount", new BasicDBObject("$first", "$patientTreatmenttotalDiscount"))
-
+				.append("patientTreatmenttotalgrandTotal", new BasicDBObject("$first", "$patientTreatmenttotalgrandTotal"))
 				.append("patientTreatmentappointmentId", new BasicDBObject("$first", "$patientTreatmentappointmentId"))
 				.append("patientTreatmentvisitId", new BasicDBObject("$first", "$patientTreatmentvisitId"))
 				.append("patientTreatmentcreatedTime", new BasicDBObject("$first", "$patientTreatmentcreatedTime"))
@@ -1416,6 +1416,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("patientTreatment.patientId", "$patientTreatmentpatientId")
 						.append("patientTreatment.totalCost", "$patientTreatmenttotalCost")
 						.append("patientTreatment.totalDiscount", "$patientTreatmenttotalDiscount")
+						.append("patientTreatment.totalgrandTotal", "$patientTreatmenttotalgrandTotal")
 
 						.append("patientTreatment.appointmentId", "$patientTreatmentappointmentId")
 						.append("patientTreatment.visitId", "$patientTreatmentvisitId")
