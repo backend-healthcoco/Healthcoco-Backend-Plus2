@@ -280,18 +280,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
 						//cn
-						new CustomAggregationOperation(new Document("$unwind",
-								new BasicDBObject("path", "$_id").append("preserveNullAndEmptyArrays",
-										true))),
-						Aggregation.lookup("clinical_notes_cl", "_id", "_id", "clinicalNotes"),
-						new CustomAggregationOperation(new Document("$unwind",
-								new BasicDBObject("path", "$clinicalNotes").append("preserveNullAndEmptyArrays",
-										true))),
+//						new CustomAggregationOperation(new Document("$unwind",
+//								new BasicDBObject("path", "$_id").append("preserveNullAndEmptyArrays",
+//										true))),
+//						Aggregation.lookup("clinical_notes_cl", "_id", "_id", "clinicalNotes"),
+//						new CustomAggregationOperation(new Document("$unwind",
+//								new BasicDBObject("path", "$clinicalNotes").append("preserveNullAndEmptyArrays",
+//										true))),
 						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$diagrams")
 										.append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex5"))),
-						Aggregation.lookup("diagrams_cl", "clinicalNotes.diagrams", "_id", "diagrams"),
+						Aggregation.lookup("diagrams_cl", "diagrams", "_id", "diagrams"),
 						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$diagrams").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex6"))),
@@ -306,18 +306,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
 										true))),
 						//cn
+//						new CustomAggregationOperation(new Document("$unwind",
+//								new BasicDBObject("path", "$_id").append("preserveNullAndEmptyArrays",
+//										true))),
+//						Aggregation.lookup("clinical_notes_cl", "_id", "_id", "clinicalNotes"),
+//						new CustomAggregationOperation(new Document("$unwind",
+//								new BasicDBObject("path", "$clinicalNotes").append("preserveNullAndEmptyArrays",
+//										true))),
 						new CustomAggregationOperation(new Document("$unwind",
-								new BasicDBObject("path", "$_id").append("preserveNullAndEmptyArrays",
-										true))),
-						Aggregation.lookup("clinical_notes_cl", "_id", "_id", "clinicalNotes"),
-						new CustomAggregationOperation(new Document("$unwind",
-								new BasicDBObject("path", "$clinicalNotes").append("preserveNullAndEmptyArrays",
-										true))),
-						new CustomAggregationOperation(new Document("$unwind",
-								new BasicDBObject("path", "$clinicalNotes.diagrams")
+								new BasicDBObject("path", "$diagrams")
 										.append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex5"))),
-						Aggregation.lookup("diagrams_cl", "clinicalNotes.diagrams", "_id", "diagrams"),
+						Aggregation.lookup("diagrams_cl", "diagrams", "_id", "diagrams"),
 						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$diagrams").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex6"))),
