@@ -1817,6 +1817,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 		
 		for (Appointment appointment : response) {
+			if(!DPDoctorUtils.anyStringEmpty(appointment.getAppointmentId()))
 			appointment.setPatientTreatmentResponse(getPatientTreatmentAppointmentById(appointment.getAppointmentId()));
 		}
 		
@@ -2678,7 +2679,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 									.append("createdBy", new BasicDBObject("$first", "$createdBy"))
-									.append("treatments", new BasicDBObject("$push", "$treatments")))));
+									.append("treatments", new BasicDBObject("$addToSet", "$treatments")))));
 
 			AggregationResults<PatientTreatmentResponse> groupResults = mongoTemplate.aggregate(aggregation,
 					PatientTreatmentCollection.class, PatientTreatmentResponse.class);

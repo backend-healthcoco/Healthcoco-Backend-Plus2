@@ -224,7 +224,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp));
+			criteria.and("patientId")
 					.is(patientObjectId).and("isPatientDiscarded").ne(true);
 			
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -294,8 +295,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$diagrams").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex6"))),
-//						clinicalNotesFirstProjectAggregationOperation(), clinicalNotesFirstGroupAggregationOperation(),
-						clinicalNotesSecondProjectAggregationOperation(), clinicalNotesSecondGroupAggregationOperation(),
+						clinicalNotesFirstProjectAggregationOperation(), clinicalNotesFirstGroupAggregationOperation(),
+					//	clinicalNotesSecondProjectAggregationOperation(), clinicalNotesSecondGroupAggregationOperation(),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -332,23 +333,23 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			System.out.println(clinicalNotes);
 
 			
-			if (clinicalNotes != null) {
-				for (ClinicalNotes clinicalNote : clinicalNotes) {
-					
-					if(clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
-						List<Diagram> diagrams = null;
-						for (Diagram diagram : clinicalNote.getDiagrams()) {
-							if (diagram.getId() != null) {
-								if (diagrams == null)
-									diagrams = new ArrayList<Diagram>();
-								diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
-								diagrams.add(diagram);
-							}
-						}
-						clinicalNote.setDiagrams(diagrams);
-					}
-				}
-			}
+//			if (clinicalNotes != null) {
+//				for (ClinicalNotes clinicalNote : clinicalNotes) {
+//					
+//					if(clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
+//						List<Diagram> diagrams = null;
+//						for (Diagram diagram : clinicalNote.getDiagrams()) {
+//							if (diagram.getId() != null) {
+//								if (diagrams == null)
+//									diagrams = new ArrayList<Diagram>();
+//								diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
+//								diagrams.add(diagram);
+//							}
+//						}
+//						clinicalNote.setDiagrams(diagrams);
+//					}
+//				}
+//			}
 
 //			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 //				clinicalNotes = new ArrayList<ClinicalNotes>();
@@ -391,74 +392,74 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				.append("diagnosis", "$diagnosis")
 				.append("generalExam", "$generalExam")
 				.append("investigation", "$investigation")
-				.append("inHistory", "$clinicalNotes.inHistory")
+				.append("inHistory", "$inHistory")
 
-				.append("note", "$clinicalNotes.note")
-				.append("provisionalDiagnosis", "$clinicalNotes.provisionalDiagnosis")
-				.append("systemExam", "$clinicalNotes.systemExam")
-				.append("complaint", "$clinicalNotes.complaint")
-				.append("presentComplaint", "$clinicalNotes.presentComplaint")
-				.append("presentComplaintHistory", "$clinicalNotes.presentComplaintHistory")
-				.append("menstrualHistory", "$clinicalNotes.menstrualHistory")
-				.append("obstetricHistory", "$clinicalNotes.obstetricHistory")
-				.append("indicationOfUSG", "$clinicalNotes.indicationOfUSG")
-				.append("pv", "$clinicalNotes.pv")
-				.append("pa", "$clinicalNotes.pa")
-				.append("ps", "$clinicalNotes.ps")
-				.append("ecgDetails", "$clinicalNotes.ecgDetails")
-				.append("xRayDetails", "$clinicalNotes.xRayDetails")
-				.append("echo", "$clinicalNotes.echo")
-				.append("holter", "$clinicalNotes.holter")
-				.append("pcNose", "$clinicalNotes.pcNose")
-				.append("pcOralCavity", "$clinicalNotes.pcOralCavity")
-				.append("pcThroat", "$clinicalNotes.pcThroat")
-				.append("pcEars", "$clinicalNotes.pcEars")
-				.append("noseExam", "$clinicalNotes.noseExam")
-				.append("oralCavityThroatExam", "$clinicalNotes.oralCavityThroatExam")
-				.append("indirectLarygoscopyExam", "$clinicalNotes.indirectLarygoscopyExam")
-				.append("neckExam", "$clinicalNotes.neckExam")
-				.append("earsExam", "$clinicalNotes.earsExam")
-				.append("vitalSigns", "$clinicalNotes.vitalSigns")
-				.append("time", "$clinicalNotes.time")
-				.append("fromDate", "$clinicalNotes.fromDate")
-				.append("lmp", "$clinicalNotes.lmp")
-				.append("edd", "$clinicalNotes.edd")
-				.append("noOfFemaleChildren", "$clinicalNotes.noOfFemaleChildren")
-				.append("noOfMaleChildren", "$clinicalNotes.noOfMaleChildren")
-				.append("procedureNote", "$clinicalNotes.procedureNote")
-				.append("pastHistory", "$clinicalNotes.pastHistory")
-				.append("familyHistory", "$clinicalNotes.familyHistory")
-				.append("personalHistoryTobacco", "$clinicalNotes.personalHistoryTobacco")
-				.append("personalHistoryAlcohol", "$clinicalNotes.personalHistoryAlcohol")
-				.append("personalHistorySmoking", "$clinicalNotes.personalHistorySmoking")
-				.append("personalHistoryOccupation", "$clinicalNotes.personalHistoryOccupation")
-				.append("personalHistoryDiet", "$clinicalNotes.personalHistoryDiet")
-				.append("generalHistoryDrugs", "$clinicalNotes.generalHistoryDrugs")
-				.append("generalHistoryMedicine", "$clinicalNotes.generalHistoryMedicine")
-				.append("generalHistoryAllergies", "$clinicalNotes.generalHistoryAllergies")
-				.append("generalHistorySurgical", "$clinicalNotes.generalHistorySurgical")
-				.append("painScale", "$clinicalNotes.painScale")
-				.append("priorConsultations", "$clinicalNotes.priorConsultations")
-				.append("isPatientDiscarded", "$clinicalNotes.isPatientDiscarded")
-				.append("eyeObservation", "$clinicalNotes.eyeObservation")
-				.append("physioExamination", "$clinicalNotes.physioExamination")
-
-//				.append("diagrams", "$diagrams")
+				.append("note", "$note")
+				.append("provisionalDiagnosis", "$provisionalDiagnosis")
+				.append("systemExam", "$systemExam")
+				.append("complaint", "$complaint")
+				.append("presentComplaint", "$presentComplaint")
+				.append("presentComplaintHistory", "$presentComplaintHistory")
+				.append("menstrualHistory", "$menstrualHistory")
+				.append("obstetricHistory", "$obstetricHistory")
+				.append("indicationOfUSG", "$indicationOfUSG")
+				.append("pv", "$pv")
+				.append("pa", "$pa")
+				.append("ps", "$ps")
+				.append("ecgDetails", "$ecgDetails")
+				.append("xRayDetails", "$xRayDetails")
+				.append("echo", "$echo")
+				.append("holter", "$holter")
+				.append("pcNose", "$pcNose")
+				.append("pcOralCavity", "$pcOralCavity")
+				.append("pcThroat", "$pcThroat")
+				.append("pcEars", "$pcEars")
+				.append("noseExam", "$noseExam")
+				.append("oralCavityThroatExam", "$oralCavityThroatExam")
+				.append("indirectLarygoscopyExam", "$indirectLarygoscopyExam")
+				.append("neckExam", "$neckExam")
+				.append("earsExam", "$earsExam")
+				.append("vitalSigns", "$vitalSigns")
+				.append("time", "$time")
+				.append("fromDate", "$fromDate")
+				.append("lmp", "$lmp")
+				.append("edd", "$edd")
+				.append("noOfFemaleChildren", "$noOfFemaleChildren")
+				.append("noOfMaleChildren", "$noOfMaleChildren")
+				.append("procedureNote", "$procedureNote")
+				.append("pastHistory", "$pastHistory")
+				.append("familyHistory", "$familyHistory")
+				.append("personalHistoryTobacco", "$personalHistoryTobacco")
+				.append("personalHistoryAlcohol", "$personalHistoryAlcohol")
+				.append("personalHistorySmoking", "$personalHistorySmoking")
+				.append("personalHistoryOccupation", "$personalHistoryOccupation")
+				.append("personalHistoryDiet", "$personalHistoryDiet")
+				.append("generalHistoryDrugs", "$generalHistoryDrugs")
+				.append("generalHistoryMedicine", "$generalHistoryMedicine")
+				.append("generalHistoryAllergies", "$generalHistoryAllergies")
+				.append("generalHistorySurgical", "$generalHistorySurgical")
+				.append("painScale", "$painScale")
+				.append("priorConsultations", "$priorConsultations")
+				.append("isPatientDiscarded", "$isPatientDiscarded")
+				.append("eyeObservation", "$eyeObservation")
+				.append("physioExamination", "$physioExamination")
+				.append("diagrams", "$diagrams")
 
 				
 //				.append("clinicalNotesid", "$clinicalNotes._id").append("clinicalNotesDiagrams._id", "$diagrams._id")
-				.append("diagrams.diagramUrl", "$diagrams.diagramUrl")
-				.append("diagrams.tags", "$diagrams.tags")
+//				.append("diagrams.diagramUrl", "$diagrams.diagramUrl")
+//				.append("diagrams.tags", "$diagrams.tags")
 				
-				.append("clinicalNotesDiagrams.diagramUrl", "$diagrams.diagramUrl")
-				.append("clinicalNotesDiagrams.tags", "$diagrams.tags")
-				.append("clinicalNotesDiagrams.doctorId", "$diagrams.doctorId")
-				.append("clinicalNotesDiagrams.locationId", "$diagrams.locationId")
-				.append("clinicalNotesDiagrams.hospitalId", "$diagrams.hospitalId")
-				.append("clinicalNotesDiagrams.fileExtension", "$diagrams.fileExtension")
-				.append("clinicalNotesDiagrams.discarded", "$diagrams.discarded")
-				.append("clinicalNotesDiagrams.speciality", "$diagrams.speciality")
-				.append("clinicalNotesDiagrams.clinicalNotesId", "$clinicalNotes._id")));
+//				.append("clinicalNotesDiagrams.diagramUrl", "$diagrams.diagramUrl")
+//				.append("clinicalNotesDiagrams.tags", "$diagrams.tags")
+//				.append("clinicalNotesDiagrams.doctorId", "$diagrams.doctorId")
+//				.append("clinicalNotesDiagrams.locationId", "$diagrams.locationId")
+//				.append("clinicalNotesDiagrams.hospitalId", "$diagrams.hospitalId")
+//				.append("clinicalNotesDiagrams.fileExtension", "$diagrams.fileExtension")
+//				.append("clinicalNotesDiagrams.discarded", "$diagrams.discarded")
+//				.append("clinicalNotesDiagrams.speciality", "$diagrams.speciality")
+//				.append("clinicalNotesDiagrams.clinicalNotesId", "$clinicalNotes._id")
+				));
 	}
 
 	private AggregationOperation clinicalNotesFirstGroupAggregationOperation() {
@@ -522,9 +523,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						.append("generalHistorySurgical", new BasicDBObject("$first", "$generalHistorySurgical"))
 						.append("painScale", new BasicDBObject("$first", "$painScale"))
 
-						.append("diagramUrl", new BasicDBObject("$first", "$diagrams.diagramUrl"))
+//						.append("diagramUrl", new BasicDBObject("$first", "$diagrams.diagramUrl"))
 //						.append("diagramUrl", new BasicDBObject("$first", "$clinicalNotes.diagrams.diagramUrl"))
-						.append("tags", new BasicDBObject("$first", "$clinicalNotes.diagrams.tags"))
+						//.append("tags", new BasicDBObject("$first", "$clinicalNotes.diagrams.tags"))
 
 						.append("inHistory", new BasicDBObject("$first", "$inHistory"))
 						.append("visitId", new BasicDBObject("$first", "$visitId"))
@@ -542,7 +543,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 //						.append("noOfMaleChildren", new BasicDBObject("$first", "$noOfMaleChildren"))
 
 						
-						.append("clinicalNotesDiagrams", new BasicDBObject("$push", "$clinicalNotesDiagrams"))
+						.append("diagrams", new BasicDBObject("$addToSet", "$diagrams"))
 //						.append("treatmentId", new BasicDBObject("$first", "$treatmentId"))
 //						.append("recordId", new BasicDBObject("$first", "$recordId"))
 //						.append("eyePrescriptionId", new BasicDBObject("$first", "$eyePrescriptionId"))
