@@ -269,7 +269,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size),
-						Aggregation.lookup("appointment_cl", "appointmentId", "_id", "appointmentRequest"),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 						new CustomAggregationOperation(
 								new Document("$unwind", new BasicDBObject("path", "$appointmentRequest")
 										.append("preserveNullAndEmptyArrays", true))),
@@ -318,7 +318,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 //						clinicalNotesSecondProjectAggregationOperation(), clinicalNotesSecondGroupAggregationOperation(),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
-			System.out.println(aggregation);
 			AggregationResults<ClinicalNotes> aggregationResults = mongoTemplate.aggregate(aggregation,
 					ClinicalNotesCollection.class, ClinicalNotes.class);
 			clinicalNotes = aggregationResults.getMappedResults();
