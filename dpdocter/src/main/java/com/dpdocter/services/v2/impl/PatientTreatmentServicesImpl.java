@@ -302,6 +302,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
@@ -321,11 +323,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										.append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex8"))),
 						patientTreatmentFirstProjectAggregationOperation(),
-						patientTreatmentFirstGroupAggregationOperation(),
+						patientTreatmentFirstGroupAggregationOperation()
 //						patientTreatmentSecondProjectAggregationOperation(),
 //						patientTreatmentSecondGroupAggregationOperation(),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
+						);
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
