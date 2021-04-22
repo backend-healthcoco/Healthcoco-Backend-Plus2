@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,9 +21,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-(PathProxy.SYMPTOM_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON_VALUE)
-@Consumes(MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value=PathProxy.SYMPTOM_BASE_URL,consumes =MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.SYMPTOM_BASE_URL, description = "Endpoints for user Symptoms")
 
 public class UserSymptomApi {

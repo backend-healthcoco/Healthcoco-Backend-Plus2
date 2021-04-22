@@ -5,7 +5,9 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dpdocter.exceptions.BusinessException;
@@ -20,7 +22,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-(PathProxy.RAZORPAY_BASE_URL)
+@RequestMapping(value=PathProxy.RAZORPAY_BASE_URL,consumes =MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.RAZORPAY_BASE_URL, description = "Endpoint for razorPay settlement api")
 public class RazorPayPaymentApi {
 

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -57,9 +58,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-(PathProxy.HISTORY_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON_VALUE)
-@Consumes(MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value=PathProxy.HISTORY_BASE_URL,consumes =MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.HISTORY_BASE_URL, description = "Endpoint for history")
 public class HistoryApi {
 

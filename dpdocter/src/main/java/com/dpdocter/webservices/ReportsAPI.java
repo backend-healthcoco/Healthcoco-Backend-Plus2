@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,9 +41,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-(PathProxy.REPORTS_BASE_URL)
-@Consumes(MediaType.APPLICATION_JSON_VALUE)
-@Produces(MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value=PathProxy.REPORTS_BASE_URL,consumes =MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 @Api(value = PathProxy.REPORTS_BASE_URL, description = "Endpoint for Medical Report Register")
 public class ReportsAPI {
 
