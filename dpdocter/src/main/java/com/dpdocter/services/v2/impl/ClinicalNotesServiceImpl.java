@@ -276,6 +276,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 								new Document("$unwind", new BasicDBObject("path", "$appointmentRequest")
 										.append("preserveNullAndEmptyArrays", true))),
 						// cn
+
 //						new CustomAggregationOperation(new Document("$unwind",
 //								new BasicDBObject("path", "$_id").append("preserveNullAndEmptyArrays",
 //										true))),
