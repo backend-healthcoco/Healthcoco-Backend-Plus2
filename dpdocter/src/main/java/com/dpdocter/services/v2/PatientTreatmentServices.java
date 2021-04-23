@@ -16,4 +16,8 @@ public interface PatientTreatmentServices {
 
 	List<PatientTreatment> getPatientTreatmentByIds(List<ObjectId> treatmentId, ObjectId visitId);
 
+	List<PatientTreatmentResponse> getPatientTreatmentsOLD(int page, int size, String doctorId, String locationId,
+			String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, String from, String to,
+			Boolean discarded, Boolean inHistory, String status);
+
 }
