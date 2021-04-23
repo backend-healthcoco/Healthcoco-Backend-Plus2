@@ -69,7 +69,7 @@ public class InitialAssessmentCollection extends GenericCollection {
 	private String treatmentsPlan;
 	
 	@Field
-	private String IPDNumber;
+	private String ipdNumber;
 
 	public ObjectId getId() {
 		return id;
@@ -224,13 +224,14 @@ public class InitialAssessmentCollection extends GenericCollection {
 		this.treatmentsPlan = treatmentsPlan;
 	}
 
-	public String getIPDNumber() {
-		return IPDNumber;
+	public String getIpdNumber() {
+		return ipdNumber;
 	}
 
-	public void setIPDNumber(String iPDNumber) {
-		IPDNumber = iPDNumber;
+	public void setIpdNumber(String ipdNumber) {
+		this.ipdNumber = ipdNumber;
 	}
+
 	
 	
 	

@@ -53,6 +53,9 @@ public class PreOperationFormCollection extends GenericCollection {
 	@Field
 	private String localExam;
 
+	@Field
+	private String ipdNumber;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -172,6 +175,15 @@ public class PreOperationFormCollection extends GenericCollection {
 	public void setLocalExam(String localExam) {
 		this.localExam = localExam;
 	}
+
+	public String getIpdNumber() {
+		return ipdNumber;
+	}
+
+	public void setIpdNumber(String ipdNumber) {
+		this.ipdNumber = ipdNumber;
+	}
+	
 	
 	
 }

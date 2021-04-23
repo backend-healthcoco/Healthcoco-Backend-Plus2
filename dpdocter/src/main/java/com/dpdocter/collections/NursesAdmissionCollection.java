@@ -52,7 +52,7 @@ public class NursesAdmissionCollection extends GenericCollection{
 	private String uniqueEmrId;
 	
 	@Field
-	private String IPDNumber;
+	private String ipdNumber;
 	
 	public ObjectId getId() {
 		return id;
@@ -178,13 +178,15 @@ public class NursesAdmissionCollection extends GenericCollection{
 		this.uniqueEmrId = uniqueEmrId;
 	}
 
-	public String getIPDNumber() {
-		return IPDNumber;
+	public String getIpdNumber() {
+		return ipdNumber;
 	}
 
-	public void setIPDNumber(String iPDNumber) {
-		IPDNumber = iPDNumber;
+	public void setIpdNumber(String ipdNumber) {
+		this.ipdNumber = ipdNumber;
 	}
+
+	
 	
 	
 

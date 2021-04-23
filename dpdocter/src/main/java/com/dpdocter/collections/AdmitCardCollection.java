@@ -74,6 +74,9 @@ public class AdmitCardCollection extends GenericCollection {
 	private String preOprationalOrders;
 	@Field
 	private String nursingCare;
+	@Field
+	private String ipdNumber;
+
 	
 	public String getIp() {
 		return ip;
@@ -309,6 +312,15 @@ public class AdmitCardCollection extends GenericCollection {
 
 	public void setNursingCare(String nursingCare) {
 		this.nursingCare = nursingCare;
+	}
+
+	
+	public String getIpdNumber() {
+		return ipdNumber;
+	}
+
+	public void setIpdNumber(String ipdNumber) {
+		this.ipdNumber = ipdNumber;
 	}
 
 	@Override

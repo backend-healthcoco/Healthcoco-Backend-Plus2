@@ -27,11 +27,10 @@ private String id;
 	private String treatmentsPlan;
 
 	private boolean discarded = false;
-
-	private String IPDNumber;
 	
 	private String localExam;
 
+	private String ipdNumber;
 
 	public String getId() {
 		return id;
@@ -129,13 +128,7 @@ private String id;
 		this.discarded = discarded;
 	}
 
-	public String getIPDNumber() {
-		return IPDNumber;
-	}
-
-	public void setIPDNumber(String iPDNumber) {
-		IPDNumber = iPDNumber;
-	}
+	
 
 	public String getLocalExam() {
 		return localExam;
@@ -145,5 +138,14 @@ private String id;
 		this.localExam = localExam;
 	}
 
+	public String getIpdNumber() {
+		return ipdNumber;
+	}
+
+	public void setIpdNumber(String ipdNumber) {
+		this.ipdNumber = ipdNumber;
+	}
+
+	
 	
 }

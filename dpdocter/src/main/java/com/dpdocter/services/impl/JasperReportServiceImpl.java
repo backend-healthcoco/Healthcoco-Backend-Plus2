@@ -803,15 +803,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addItems(jasperDesign, columnWidth, "$P{TreatingDoctor}", "$P{treatingDoctor}", fieldWidth, false, 0,
 					false);
 		}
-
+		show = (Boolean) parameters.get("showIpdNumber");
+		if (show) {
+			addItems(jasperDesign, columnWidth, "$P{IpdNumber}", "$P{ipdNumber}", fieldWidth, false, 0,
+					false);
+		}
 		show = (Boolean) parameters.get("showNurseNm");
 		if (show) {
 			addItems(jasperDesign, columnWidth, "$P{NurseName}", "$P{nurseName}", fieldWidth, false, 0, false);
 		}
 		// new fields
 		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$P{vitalSigns}", fieldWidth, false, 0, false);
-
-		System.out.println(parameters);
 
 		show = (Boolean) parameters.get("showCoMo");
 		if (show) {
@@ -1234,7 +1236,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addItems(jasperDesign, columnWidth, "$P{TreatingDoctor}", "$P{treatingDoctor}", fieldWidth, false, 0,
 					false);
 		}
-
+		show = (Boolean) parameters.get("showIpdNumber");
+		if (show) {
+			addItems(jasperDesign, columnWidth, "$P{IpdNumber}", "$P{ipdNumber}", fieldWidth, false, 0,
+					false);
+		}
 		show = (Boolean) parameters.get("showcompl");
 		if (show) {
 			addItems(jasperDesign, columnWidth, "$P{Complaints}", "$P{complaints}", fieldWidth, false, 0, false);
@@ -1310,7 +1316,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addItems(jasperDesign, columnWidth, "$P{TreatingDoctor}", "$P{treatingDoctor}", fieldWidth, false, 0,
 					false);
 		}
-
+		show = (Boolean) parameters.get("showIpdNumber");
+		if (show) {
+			addItems(jasperDesign, columnWidth, "$P{IpdNumber}", "$P{ipdNumber}", fieldWidth, false, 0,
+					false);
+		}
 		show = (Boolean) parameters.get("showcompl");
 		if (show) {
 			addItems(jasperDesign, columnWidth, "$P{Complaints}", "$P{complaints}", fieldWidth, false, 0, false);
@@ -7470,6 +7480,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 
 		// new fields
+		
+		show = (Boolean) parameters.get("showIpdNumber");
+		if (show) {
+			addItems(jasperDesign, columnWidth, "$P{IpdNumber}", "$P{ipdNumber}", fieldWidth, false, 0,
+					false);
+		}
 		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$P{vitalSigns}", fieldWidth, false, 0, false);
 
 		show = (Boolean) parameters.get("showPH");

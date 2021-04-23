@@ -542,6 +542,13 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		}
 		parameters.put("showNCare", show);
 		
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getIpdNumber())) {
+			show = true;
+			parameters.put("ipdNumber", admitCardCollection.getIpdNumber());
+		}
+		parameters.put("showIpdNumber", show);
+		
 		if (admitCardCollection.getVitalSigns() != null) {
 			String vitalSigns = null;
 

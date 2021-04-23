@@ -749,6 +749,13 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 			parameters.put("earsExam", initialAssessmentCollection.getGeneralExam());
 		}
 		parameters.put("showEarsEx", show);
+		
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getIpdNumber())) {
+			show = true;
+			parameters.put("ipdNumber", initialAssessmentCollection.getIpdNumber());
+		}
+		parameters.put("showIpdNumber", show);
 
 		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getGeneralExam())) {
@@ -934,6 +941,13 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 		}
 		parameters.put("showLocalEx", show);
 
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(preOperationFormCollection.getIpdNumber())) {
+			show = true;
+			parameters.put("ipdNumber", preOperationFormCollection.getIpdNumber());
+		}
+		parameters.put("showIpdNumber", show);
+		
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 						? printSettings.getContentLineSpace()
@@ -1083,6 +1097,13 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 			parameters.put("advice", nursesAdmissionCollection.getAdvice());
 		}
 		parameters.put("showAdvice", show);
+		
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(nursesAdmissionCollection.getIpdNumber())) {
+			show = true;
+			parameters.put("ipdNumber", nursesAdmissionCollection.getIpdNumber());
+		}
+		parameters.put("showIpdNumber", show);
 
 //		if (!DPDoctorUtils.allStringsEmpty(nursesAdmissionCollection.getTreatmentsPlan())) {
 //			show = true;

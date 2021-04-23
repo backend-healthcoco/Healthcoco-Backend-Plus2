@@ -41,7 +41,7 @@ public class InitialAssessmentRequest extends GenericCollection {
 
 	private String treatmentsPlan;
  
-	private String IPDNumber;
+	private String ipdNumber;
 
 
 	public String getId() {
@@ -188,13 +188,15 @@ public class InitialAssessmentRequest extends GenericCollection {
 		this.treatmentsPlan = treatmentsPlan;
 	}
 
-	public String getIPDNumber() {
-		return IPDNumber;
+	public String getIpdNumber() {
+		return ipdNumber;
 	}
 
-	public void setIPDNumber(String iPDNumber) {
-		IPDNumber = iPDNumber;
+	public void setIpdNumber(String ipdNumber) {
+		this.ipdNumber = ipdNumber;
 	}
+
+	
 	
 		
 	

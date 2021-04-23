@@ -38,7 +38,7 @@ private String id;
 	
 	private boolean discarded = false;
 	
-	private String IPDNumber;
+	private String ipdNumber;
 
 
 
@@ -155,12 +155,12 @@ private String id;
 		this.discarded = discarded;
 	}
 
-	public String getIPDNumber() {
-		return IPDNumber;
+	public String getIpdNumber() {
+		return ipdNumber;
 	}
 
-	public void setIPDNumber(String iPDNumber) {
-		IPDNumber = iPDNumber;
+	public void setIpdNumber(String ipdNumber) {
+		this.ipdNumber = ipdNumber;
 	}
 
 	
