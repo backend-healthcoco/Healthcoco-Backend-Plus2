@@ -341,7 +341,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					treatmentId.add(id);
 					patientVisitCollection.setTreatmentId(treatmentId);
 				} else {
-					if (!patientVisitCollection.getTreatmentId().add(id))
+					if (!patientVisitCollection.getTreatmentId().contains(id))
 						patientVisitCollection.getTreatmentId().add(id);
 				}
 			}
@@ -352,7 +352,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 			patientVisitCollection.setUpdatedTime(new Date());
-			patientVisitCollection.setCreatedTime(new Date());
+			patientVisitCollection.setCreatedTime(patientVisitCollection.getCreatedTime());
 			patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -48,7 +48,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	PushNotificationServices pushNotificationServices;
 	
 
-//	@Override
+	@Override
 	@Transactional
 	public List<PatientTreatmentResponse> getPatientTreatmentsOLD(int page, int size, String doctorId,
 			String locationId, String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified,
@@ -255,8 +255,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp))
+			.and("patientId")
 					.is(patientObjectId).and("isPatientDiscarded").ne(true);
+
 
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
@@ -304,7 +306,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						
 						Aggregation.limit(size),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 						new CustomAggregationOperation(
@@ -323,10 +325,11 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 								"treatmentService"),
 						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$treatmentService")
-										.append("preserveNullAndEmptyArrays", true)
+										//.append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex8"))),
 						patientTreatmentFirstProjectAggregationOperation(),
-						patientTreatmentFirstGroupAggregationOperation()
+						patientTreatmentFirstGroupAggregationOperation(),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size)
 //						patientTreatmentSecondProjectAggregationOperation(),
 //						patientTreatmentSecondGroupAggregationOperation(),
 				);
@@ -349,7 +352,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 								"treatmentService"),
 						new CustomAggregationOperation(new Document("$unwind",
 								new BasicDBObject("path", "$treatmentService")
-										.append("preserveNullAndEmptyArrays", true)
+										//.append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex8"))),
 						patientTreatmentFirstProjectAggregationOperation(),
 						patientTreatmentFirstGroupAggregationOperation(),
@@ -358,6 +361,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
+			
 			AggregationResults<PatientTreatmentResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientTreatmentCollection.class, PatientTreatmentResponse.class);
 			response = aggregationResults.getMappedResults();

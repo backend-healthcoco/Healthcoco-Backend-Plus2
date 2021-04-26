@@ -495,7 +495,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	
 
-//	@Override
+	@Override
 	@Transactional
 	public List<PatientVisitResponse> getVisitOLDCODE(String doctorId, String locationId, String hospitalId, String patientId,
 			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor,String from,String to, Boolean discarded) {
@@ -1380,7 +1380,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.append("patientTreatmentcreatedTime", new BasicDBObject("$first", "$patientTreatmentcreatedTime"))
 				.append("patientTreatmentcreatedBy", new BasicDBObject("$first", "$patientTreatmentcreatedBy"))
 				.append("patientTreatmentupdatedTime", new BasicDBObject("$first", "$patientTreatmentupdatedTime"))
-				.append("treatments", new BasicDBObject("$push", "$treatments"))
+				.append("treatments", new BasicDBObject("$addToSet", "$treatments"))
 				.append("recordId", new BasicDBObject("$first", "$recordId"))
 				.append("eyePrescriptionId", new BasicDBObject("$first", "$eyePrescriptionId"))
 				.append("fromDate", new BasicDBObject("$first", "$fromDate"))
@@ -1440,7 +1440,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						.append("prescriptions", new BasicDBObject("$first", "$prescriptions"))
 						.append("clinicalNotes", new BasicDBObject("$first", "$clinicalNotes"))
 						.append("clinicalNotesDiagrams", new BasicDBObject("$first", "$clinicalNotesDiagrams"))
-						.append("patientTreatment", new BasicDBObject("$push", "$patientTreatment"))
+						.append("patientTreatment", new BasicDBObject("$addToSet", "$patientTreatment"))
 						.append("recordId", new BasicDBObject("$first", "$recordId"))
 						.append("eyePrescriptionId", new BasicDBObject("$first", "$eyePrescriptionId"))
 						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
