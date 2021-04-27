@@ -19,8 +19,14 @@ public class UIPermissions {
 	private String landingPagePermissions = "CONTACTS";
 	private List<String> patientCertificatePermissions = new ArrayList<String>();
 	private Boolean showSidePanels = true;
-	private Boolean isIPDIvoice=false;
-	
+	private Boolean isIPDIvoice = false;
+	private Boolean isIPDSection = true;
+
+	// IPD Module
+	private List<String> nursingAdmissionFormPermissions = new ArrayList<String>();
+	private List<String> preOperationAssessmentFormPerimissions = new ArrayList<String>();
+	private List<String> initialAssessmentFormPermissions = new ArrayList<String>();
+
 	public List<String> getTabPermissions() {
 		return tabPermissions;
 	}
@@ -108,8 +114,6 @@ public class UIPermissions {
 	public void setShowSidePanels(Boolean showSidePanels) {
 		this.showSidePanels = showSidePanels;
 	}
-	
-	
 
 	public Boolean getIsIPDIvoice() {
 		return isIPDIvoice;
@@ -117,6 +121,38 @@ public class UIPermissions {
 
 	public void setIsIPDIvoice(Boolean isIPDIvoice) {
 		this.isIPDIvoice = isIPDIvoice;
+	}
+
+	public Boolean getIsIPDSection() {
+		return isIPDSection;
+	}
+
+	public void setIsIPDSection(Boolean isIPDSection) {
+		this.isIPDSection = isIPDSection;
+	}
+
+	public List<String> getNursingAdmissionFormPermissions() {
+		return nursingAdmissionFormPermissions;
+	}
+
+	public void setNursingAdmissionFormPermissions(List<String> nursingAdmissionFormPermissions) {
+		this.nursingAdmissionFormPermissions = nursingAdmissionFormPermissions;
+	}
+
+	public List<String> getPreOperationAssessmentFormPerimissions() {
+		return preOperationAssessmentFormPerimissions;
+	}
+
+	public void setPreOperationAssessmentFormPerimissions(List<String> preOperationAssessmentFormPerimissions) {
+		this.preOperationAssessmentFormPerimissions = preOperationAssessmentFormPerimissions;
+	}
+
+	public List<String> getInitialAssessmentFormPermissions() {
+		return initialAssessmentFormPermissions;
+	}
+
+	public void setInitialAssessmentFormPermissions(List<String> initialAssessmentFormPermissions) {
+		this.initialAssessmentFormPermissions = initialAssessmentFormPermissions;
 	}
 
 	@Override
