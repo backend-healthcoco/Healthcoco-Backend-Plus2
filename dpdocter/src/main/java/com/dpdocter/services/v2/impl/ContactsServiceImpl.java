@@ -312,20 +312,20 @@ public class ContactsServiceImpl implements ContactsService {
 				patientCard.setId(patientCard.getUserId());
 				patientCard.setUser(null);
 				//calculate age of patient upto today
-				if (patientCard.getDob() != null) {
-					if(patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0 && patientCard.getDob().getYears() > 0) {
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-					LocalDate today = LocalDate.now();
-					LocalDate birthday = LocalDate.parse(patientCard.getDob().getDays()+"/"+patientCard.getDob().getMonths()
-							+"/"+patientCard.getDob().getYears(), formatter);
-
-					Period p = Period.between(birthday, today);
-									
-					patientCard.getDob().getAge().setDays(p.getDays());
-					patientCard.getDob().getAge().setMonths(p.getMonths());
-					patientCard.getDob().getAge().setYears(p.getYears());
-					}
-				}
+//				if (patientCard.getDob() != null) {
+//					if(patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0 && patientCard.getDob().getYears() > 0) {
+//					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+//					LocalDate today = LocalDate.now();
+//					LocalDate birthday = LocalDate.parse(patientCard.getDob().getDays()+"/"+patientCard.getDob().getMonths()
+//							+"/"+patientCard.getDob().getYears(), formatter);
+//
+//					Period p = Period.between(birthday, today);
+//									
+//					patientCard.getDob().getAge().setDays(p.getDays());
+//					patientCard.getDob().getAge().setMonths(p.getMonths());
+//					patientCard.getDob().getAge().setYears(p.getYears());
+//					}
+//				}
 			}
 			response = new DoctorContactsResponse();
 			response.setPatientCards(patientCards);
