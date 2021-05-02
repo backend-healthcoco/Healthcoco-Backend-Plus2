@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.v2.Appointment;
+import com.dpdocter.beans.v2.ClinicalNotes;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -96,11 +97,24 @@ public class AppointmentApi {
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "status") String status, @QueryParam(value = "sortBy") String sortBy,
 			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime ,@DefaultValue("false") @QueryParam("isRegisteredPatientRequired") Boolean isRegisteredPatientRequired,
-			@DefaultValue(value = "false") @QueryParam(value = "isWeb") Boolean isWeb, @DefaultValue("true") @QueryParam("discarded") Boolean discarded,@QueryParam("branch") String branch) {
+			@DefaultValue(value = "false") @QueryParam(value = "isWeb") Boolean isWeb,
+			@DefaultValue(value = "false") @QueryParam(value = "isTest") Boolean isTest,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,@QueryParam("branch") String branch) {
 
+		if(isTest == true) {
+			System.out.println(isTest);
+			List<Appointment> appointment = appointmentService.getAppointmentsForWebNew(locationId, doctorId, patientId, from, to,
+					page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb, discarded,branch);
+			
+			Response<Appointment> response = new Response<Appointment>();
+			response.setDataList(appointment);
+			return response;
+
+		}else {
 		Response<Appointment> response = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
 				page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb, discarded,branch);
 		return response;
+		}
 	}
 
 	@Path(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)

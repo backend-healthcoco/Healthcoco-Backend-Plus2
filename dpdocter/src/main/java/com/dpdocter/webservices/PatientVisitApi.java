@@ -268,5 +268,22 @@ public class PatientVisitApi {
 		response.setData(patientVisit);
 		return response;
 	}
+	
+	@Path(value = PathProxy.PatientVisitUrls.GET_PATIENT_FIRST_VISIT)
+	@GET
+	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_PATIENT_FIRST_VISIT, notes = PathProxy.PatientVisitUrls.GET_PATIENT_FIRST_VISIT)
+	public Response<PatientVisitResponse> getPatientFirstVisit(@PathParam(value = "doctorId") String doctorId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "patientId") String patientId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		PatientVisitResponse patientVisit = patientVisitService.getPatientFirstVisit(doctorId, locationId, hospitalId,
+				patientId);
+		Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
+		response.setData(patientVisit);
+		return response;
+	}
 
 }

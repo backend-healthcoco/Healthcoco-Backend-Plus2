@@ -77,4 +77,6 @@ public interface PatientVisitService {
 			Map<String, Object> parameters, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD,
 			Boolean showNoOfChildren, ClinicalNotesCollection clinicalNotesCollection, Boolean showVitalSign);
 
+	PatientVisitResponse getPatientFirstVisit(String doctorId, String locationId, String hospitalId, String patientId);
+
 }
