@@ -1799,11 +1799,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 					AppointmentCollection.class, Appointment.class).getMappedResults();
 		}
 
+
 		for (Appointment appointment : response) {
 			if (!DPDoctorUtils.anyStringEmpty(appointment.getAppointmentId()))
 				appointment.setPatientTreatmentResponse(
 						getPatientTreatmentAppointmentById(appointment.getAppointmentId()));
 		}
+
 
 		return response;
 	}

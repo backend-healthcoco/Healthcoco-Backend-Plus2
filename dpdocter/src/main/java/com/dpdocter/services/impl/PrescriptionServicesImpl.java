@@ -3157,7 +3157,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									smsDetail.setUserName(patientCollection.getLocalPatientName());
 								SMS sms = new SMS();
 								sms.setSmsText("Hi " + patientName + ", your prescription "
-										+ prescriptionCollection.getUniqueEmrId() + " by " + doctorName + ". "
+										+ prescriptionCollection.getUniqueEmrId() + " by " + doctorName + ". Your medicines are - "
 										+ prescriptionDetails + ". For queries,contact Doctor" + clinicContactNum
 										+ ".-Healthcoco");
 
@@ -6701,7 +6701,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							smsDetail.setUserName(patientCollection.getLocalPatientName());
 						SMS sms = new SMS();
 						sms.setSmsText("Hi " + patientName + ", your prescription "
-								+ prescriptionCollection.getUniqueEmrId() + " by " + doctorName + ". "
+								+ prescriptionCollection.getUniqueEmrId() + " by " + doctorName + ". Your medicines are - "
 								+ prescriptionDetails + ". For queries,contact Doctor" + clinicContactNum + ".-Healthcoco");
 
 						SMSAddress smsAddress = new SMSAddress();

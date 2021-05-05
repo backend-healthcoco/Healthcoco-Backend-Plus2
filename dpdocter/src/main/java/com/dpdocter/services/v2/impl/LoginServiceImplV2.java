@@ -319,7 +319,7 @@ public class LoginServiceImplV2 implements LoginService {
 							List<String> parentSpecialities = (List<String>) CollectionUtils
 									.collect(specialityCollections, new BeanToPropertyValueTransformer("speciality"));
 							user.setParentSpecialities(parentSpecialities);
-
+							user.setIsTransactionalSms(doctorCollection.getIsTransactionalSms());
 						}
 	//comment for new signup
 						//	user.setIsSuperstarAssociated(mongoTemplate.count(new Query(new Criteria("doctorId").is(userCollection.getId())), DoctorSchoolAssociationCollection.class) > 0 ? true : false);
