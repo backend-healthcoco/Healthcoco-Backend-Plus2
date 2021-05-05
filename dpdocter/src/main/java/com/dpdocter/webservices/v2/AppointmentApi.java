@@ -103,11 +103,10 @@ public class AppointmentApi {
 
 		if(isTest == true) {
 			System.out.println(isTest);
-			List<Appointment> appointment = appointmentService.getAppointmentsForWebNew(locationId, doctorId, patientId, from, to,
+			Response<Appointment> response  = appointmentService.getAppointmentsForWebNew(locationId, doctorId, patientId, from, to,
 					page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb, discarded,branch);
 			
-			Response<Appointment> response = new Response<Appointment>();
-			response.setDataList(appointment);
+			
 			return response;
 
 		}else {

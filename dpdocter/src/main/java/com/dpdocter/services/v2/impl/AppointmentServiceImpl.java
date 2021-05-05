@@ -39,11 +39,13 @@ import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.Slot;
+import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.beans.v2.Appointment;
 import com.dpdocter.beans.v2.PatientCard;
+import com.dpdocter.beans.v2.PatientTreatment;
 import com.dpdocter.collections.AppointmentBookedSlotCollection;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.AppointmentWorkFlowCollection;
@@ -56,6 +58,7 @@ import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
@@ -93,6 +96,7 @@ import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.SpecialityRepository;
+import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserResourceFavouriteRepository;
 import com.dpdocter.repository.UserRoleRepository;
@@ -102,6 +106,8 @@ import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.response.v2.AppointmentLookupResponse;
+import com.dpdocter.response.v2.PatientVisitResponse;
+import com.dpdocter.response.TreatmentResponse;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
@@ -274,6 +280,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private RoleRepository roleRepository;
+
+	@Autowired
+	private TreatmentServicesRepository treatmentServicesRepository;
 
 	@Override
 	@Transactional
@@ -2760,17 +2769,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public List<Appointment> getAppointmentsForWebNew(String locationId, List<String> doctorId, String patientId,
+	public Response<Appointment> getAppointmentsForWebNew(String locationId, List<String> doctorId, String patientId,
 			String from, String to, int page, int size, String updatedTime, String status, String sortBy,
 			String fromTime, String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb, Boolean discarded,
 			String branch) {
 		Response<Appointment> response = new Response<Appointment>();
 		List<Appointment> appointments = null;
-		// PatientTreatmentResponse patientTreatmentResponse=null;
 
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
-//online consultation
+           //online consultation
 			Criteria criteria = new Criteria("type").is(AppointmentType.APPOINTMENT.getType()).and("updatedTime")
 					.gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").ne(true);
 
@@ -2831,7 +2839,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			if (!DPDoctorUtils.anyStringEmpty(toTime))
 				criteria.and("time.toTime").is(Integer.parseInt(toTime));
-			List<AppointmentLookupResponse> appointmentLookupResponses = null;
+			
+			Integer count = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
 
 			SortOperation sortOperation = Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"));
 
@@ -2872,10 +2881,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 						Aggregation.lookup("patient_treatment_cl", "appointmentId", "appointmentId",
 								"patientTreatment"),
 						Aggregation.unwind("patientTreatment", true),
-						Aggregation.unwind("patientTreatment.treatments", true),
 
-						Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId",
-								"_id", "treatmentService"),
+						Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+								"treatmentService"),
 						Aggregation.unwind("treatmentService", true),
 
 						appointmentFirstProjectAggregationOperation(), appointmentFirstGroupAggregationOperation(),
@@ -2902,12 +2910,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 						// treatment
 						Aggregation.lookup("patient_treatment_cl", "appointmentId", "appointmentId",
 								"patientTreatment"),
-//						Aggregation.unwind("patientTreatment", true),
-//						Aggregation.unwind("patientTreatment.treatments", true),
+						Aggregation.unwind("patientTreatment", true),
 
 						Aggregation.lookup("treatment_services_cl", "patientTreatment.treatments.treatmentServiceId",
 								"_id", "treatmentService"),
-//						Aggregation.unwind("treatmentService", true),
+						Aggregation.unwind("treatmentService", true),
 
 						appointmentFirstProjectAggregationOperation(), appointmentFirstGroupAggregationOperation(),
 
@@ -2917,15 +2924,31 @@ public class AppointmentServiceImpl implements AppointmentService {
 					AppointmentCollection.class, Appointment.class);
 			appointments = aggregationResults.getMappedResults();
 
-			System.out.println("my code" + aggregation);
+			for (Appointment appointment : appointments) {
 
+				if (appointment.getPatientTreatmentResponse() != null) {
+					if (appointment.getPatientTreatmentResponse().getTreatments() != null) {
+						for (TreatmentResponse patientTreatment : appointment.getPatientTreatmentResponse()
+								.getTreatments()) {
+							if (!DPDoctorUtils.anyStringEmpty(patientTreatment.getTreatmentServiceId())) {
+								TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
+										.findById(new ObjectId(patientTreatment.getTreatmentServiceId())).orElse(null);
+								TreatmentService treatmentService = new TreatmentService();
+								BeanUtil.map(treatmentServicesCollection, treatmentService);
+
+								patientTreatment.setTreatmentService(treatmentService);
+							}
+						}
+					}
+				}
+			}
+			response.setCount(count);
+			response.setDataList(appointments);
 		} catch (Exception e) {
 			e.printStackTrace();
-//			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-			System.out.println("my err" + e.getMessage());
-
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return appointments;
+		return response;
 	}
 
 	private AggregationOperation appointmentFirstProjectAggregationOperation() {
@@ -2978,26 +3001,27 @@ public class AppointmentServiceImpl implements AppointmentService {
 				.append("patientTreatmentResponse.hospitalId", "$patientTreatment.hospitalId")
 				.append("patientTreatmentResponse.doctorId", "$patientTreatment.doctorId")
 				.append("patientTreatmentResponse.id", "$patientTreatment._id")
-
 				.append("patientTreatmentResponse.totalCost", "$patientTreatment.totalCost")
 				.append("patientTreatmentResponse.totalDiscount", "$patientTreatment.totalDiscount")
 				.append("patientTreatmentResponse.grandTotal", "$patientTreatment.grandTotal")
 				.append("patientTreatmentResponse.appointmentId", "$patientTreatment.appointmentId")
 				.append("patientTreatmentResponse.createdTime", "$patientTreatment.createdTime")
 				.append("patientTreatmentResponse.createdBy", "$patientTreatment.createdBy")
+				
+				.append("patientTreatmentResponse.treatments", "$patientTreatment.treatments")
 
-				.append("patientTreatmentResponse.treatments.treatmentServiceId",
-						"$patientTreatments.treatments.treatmentServiceId")
-				.append("patientTreatmentResponse.treatments.treatmentService", "$treatmentService")
-
-				.append("patientTreatmentResponse.treatments.status", "$patientTreatment.treatments.status")
-				.append("patientTreatmentResponse.treatments.cost", "$treatments.cost")
-				.append("patientTreatmentResponse.treatments.note", "$patientTreatment.treatments.note")
-				.append("patientTreatmentResponse.treatments.discount", "$patientTreatment.treatments.discount")
-				.append("patientTreatmentResponse.treatments.finalCost", "$patientTreatment.treatments.finalCost")
-				.append("patientTreatmentResponse.treatments.quantity", "$patientTreatment.treatments.quantity")
-				.append("patientTreatmentResponse.treatments.treatmentFields",
-						"$patientTreatment.treatments.treatmentFields")
+//				.append("patientTreatmentResponse.treatments.treatmentServiceId",
+//						"$patientTreatments.treatments.treatmentServiceId")
+//				.append("patientTreatmentResponse.treatments.treatmentService", "$treatmentService")
+//
+//				.append("patientTreatmentResponse.treatments.status", "$patientTreatment.treatments.status")
+//				.append("patientTreatmentResponse.treatments.cost", "$treatments.cost")
+//				.append("patientTreatmentResponse.treatments.note", "$patientTreatment.treatments.note")
+//				.append("patientTreatmentResponse.treatments.discount", "$patientTreatment.treatments.discount")
+//				.append("patientTreatmentResponse.treatments.finalCost", "$patientTreatment.treatments.finalCost")
+//				.append("patientTreatmentResponse.treatments.quantity", "$patientTreatment.treatments.quantity")
+//				.append("patientTreatmentResponse.treatments.treatmentFields",
+//						"$patientTreatment.treatments.treatmentFields")
 
 		));
 	}
@@ -3045,9 +3069,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.append("createdBy", new BasicDBObject("$first", "$createdBy"))
 						.append("patient", new BasicDBObject("$first", "$patient"))
 						.append("patientTreatmentResponse", new BasicDBObject("$first", "$patientTreatmentResponse"))
-						.append("treatments", new BasicDBObject("$addToSet", "$patientTreatmentResponse.treatments"))
+//						.append("treatments", new BasicDBObject("$addToSet", "$patientTreatmentResponse.treatments"))
 
 		));
-	}	
-	
+	}
+
 }

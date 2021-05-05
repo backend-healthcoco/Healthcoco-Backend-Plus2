@@ -36,8 +36,9 @@ public interface AppointmentService {
 
 	Appointment getAppointmentById(ObjectId appointmentId);
 
-	List<Appointment> getAppointmentsForWebNew(String locationId, List<String> doctorId, String patientId, String from,
+	Response<Appointment> getAppointmentsForWebNew(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
 			String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb, Boolean discarded, String branch);
 
+	
 }
