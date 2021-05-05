@@ -1816,9 +1816,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 					.getMappedResults();
 		}
 		
-		for (Appointment appointment : response) {
-			appointment.setPatientTreatmentResponse(getPatientTreatmentAppointmentById(appointment.getAppointmentId()));
-		}
+//		for (Appointment appointment : response) {
+//			appointment.setPatientTreatmentResponse(getPatientTreatmentAppointmentById(appointment.getAppointmentId()));
+//		}
 		
 		return response;
 	}

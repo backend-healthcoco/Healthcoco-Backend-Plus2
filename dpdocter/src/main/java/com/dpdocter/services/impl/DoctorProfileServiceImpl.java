@@ -620,6 +620,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 				BeanUtil.map(doctorCollection, doctorProfile);
 
+				doctorProfile.setIsTransactionalSms(doctorCollection.getIsTransactionalSms());
 				doctorProfile.setDoctorId(doctorCollection.getUserId().toString());
 				// set specialities using speciality ids
 				if (doctorCollection.getSpecialities() != null) {

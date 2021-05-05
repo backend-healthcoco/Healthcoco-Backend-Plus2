@@ -60,6 +60,8 @@ public class User {
 	
 	private String timeZone;
 	
+	private Boolean isTransactionalSms=true;
+	
 	public User(String firstName, String mobileNumber) {
 		this.firstName = firstName;
 		this.mobileNumber = mobileNumber;
@@ -296,6 +298,14 @@ public class User {
 
 	public void setIsMedicalStudent(Boolean isMedicalStudent) {
 		this.isMedicalStudent = isMedicalStudent;
+	}
+
+	public Boolean getIsTransactionalSms() {
+		return isTransactionalSms;
+	}
+
+	public void setIsTransactionalSms(Boolean isTransactionalSms) {
+		this.isTransactionalSms = isTransactionalSms;
 	}
 	
 	
