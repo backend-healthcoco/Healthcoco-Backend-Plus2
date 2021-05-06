@@ -101,8 +101,8 @@ public class AppointmentApi {
 			@DefaultValue(value = "false") @QueryParam(value = "isTest") Boolean isTest,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,@QueryParam("branch") String branch) {
 
-		if(isTest == true) {
-			System.out.println(isTest);
+		if(isWeb == true) {
+			System.out.println("isWeb"+isWeb);
 			Response<Appointment> response  = appointmentService.getAppointmentsForWebNew(locationId, doctorId, patientId, from, to,
 					page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb, discarded,branch);
 			

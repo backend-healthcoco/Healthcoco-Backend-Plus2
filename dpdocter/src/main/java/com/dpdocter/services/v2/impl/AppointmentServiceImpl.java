@@ -2882,11 +2882,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 						// treatment
 						Aggregation.lookup("patient_treatment_cl", "appointmentId", "appointmentId",
 								"patientTreatment"),
-						Aggregation.unwind("patientTreatment", true),
-
-						Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
-								"treatmentService"),
-						Aggregation.unwind("treatmentService", true),
+						Aggregation.unwind("patientTreatment",true),
+//						new CustomAggregationOperation(new Document("$unwind",
+//								new BasicDBObject("path", "$patientTreatment")
+//										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
+//												"arrayIndex"))),
+						
+//						Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+//								"treatmentService"),
+//						Aggregation.unwind("treatmentService", true),
 
 						appointmentFirstProjectAggregationOperation(), appointmentFirstGroupAggregationOperation(),
 
@@ -2912,7 +2916,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						// treatment
 						Aggregation.lookup("patient_treatment_cl", "appointmentId", "appointmentId",
 								"patientTreatment"),
-						Aggregation.unwind("patientTreatment", true),
+						Aggregation.unwind("patientTreatment",true),
 
 						Aggregation.lookup("treatment_services_cl", "patientTreatment.treatments.treatmentServiceId",
 								"_id", "treatmentService"),
@@ -3075,5 +3079,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		));
 	}
+	
+	
 
 }

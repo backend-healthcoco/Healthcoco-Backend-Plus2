@@ -40,7 +40,8 @@ public class AdmitCardResponse extends GenericCollection {
 	private VitalSigns vitalSigns;
 	private String preOprationalOrders;
 	private String nursingCare;
-	
+	private String ipdNumber;
+
 	public String getIp() {
 		return ip;
 	}
@@ -272,6 +273,15 @@ public class AdmitCardResponse extends GenericCollection {
 
 	public void setNursingCare(String nursingCare) {
 		this.nursingCare = nursingCare;
+	}
+
+	
+	public String getIpdNumber() {
+		return ipdNumber;
+	}
+
+	public void setIpdNumber(String ipdNumber) {
+		this.ipdNumber = ipdNumber;
 	}
 
 	@Override

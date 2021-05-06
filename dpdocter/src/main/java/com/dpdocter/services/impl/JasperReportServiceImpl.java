@@ -849,7 +849,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 		if (parameters.get("RiskFactor") != null) {
 
-			System.out.println("RiskFactor");
 			band = new JRDesignBand();
 			band.setHeight(1);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
@@ -960,7 +959,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 			jrDesignLine = new JRDesignLine();
 			jrDesignLine.setX(0);
-			jrDesignLine.setY(4);
+			jrDesignLine.setY(18);
 			jrDesignLine.setHeight(15);
 			jrDesignLine.setWidth(columnWidth);
 			jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
@@ -9648,7 +9647,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jasperDesign.addStyle(normalStyle);
 
-		System.out.println(parameters);
 		band = new JRDesignBand();
 		band.setHeight(26);
 
