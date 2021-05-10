@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -37,6 +38,7 @@ import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.Slot;
+import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.beans.WorkingSchedule;
@@ -53,6 +55,7 @@ import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
@@ -90,6 +93,7 @@ import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.SpecialityRepository;
+import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserResourceFavouriteRepository;
 import com.dpdocter.repository.UserRoleRepository;
@@ -98,6 +102,7 @@ import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.SlotDataResponse;
+import com.dpdocter.response.TreatmentResponse;
 import com.dpdocter.response.v2.AppointmentLookupResponse;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LocationServices;
@@ -271,6 +276,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private RoleRepository roleRepository;
+	
+	@Autowired
+	private TreatmentServicesRepository treatmentServicesRepository;
 
 	@Override
 	@Transactional
@@ -2835,5 +2843,319 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 
 	}
+	
+	@Override
+	public Response<Appointment> getAppointmentsForWebNew(String locationId, List<String> doctorId, String patientId,
+			String from, String to, int page, int size, String updatedTime, String status, String sortBy,
+			String fromTime, String toTime, Boolean isRegisteredPatientRequired, Boolean isWeb, Boolean discarded,
+			String branch) {
+		Response<Appointment> response = new Response<Appointment>();
+		List<Appointment> appointments = null;
+
+		try {
+			long updatedTimeStamp = Long.parseLong(updatedTime);
+           //online consultation
+			Criteria criteria = new Criteria("type").is(AppointmentType.APPOINTMENT.getType()).and("updatedTime")
+					.gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").ne(true);
+
+			// Criteria criteria = new Criteria("updatedTime")
+			// .gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").ne(true);
+
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+
+			if (!DPDoctorUtils.anyStringEmpty(branch))
+				criteria.and("branch").is(branch);
+			if (doctorId != null && !doctorId.isEmpty()) {
+				List<ObjectId> doctorObjectIds = new ArrayList<ObjectId>();
+				for (String id : doctorId)
+					doctorObjectIds.add(new ObjectId(id));
+				criteria.and("doctorId").in(doctorObjectIds);
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				criteria.and("patientId").is(new ObjectId(patientId));
+
+			if (!DPDoctorUtils.anyStringEmpty(status))
+				criteria.and("status").is(status.toUpperCase()).and("state").ne(AppointmentState.CANCEL.getState());
+
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+			DateTime fromDateTime = null, toDateTime = null;
+			if (!DPDoctorUtils.anyStringEmpty(from)) {
+				localCalendar.setTime(new Date(Long.parseLong(from)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				// DateTime
+				fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+				criteria.and("fromDate").gte(fromDateTime);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(to)) {
+				localCalendar.setTime(new Date(Long.parseLong(to)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				// DateTime
+				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+				criteria.and("toDate").lte(toDateTime);
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(fromTime))
+				criteria.and("time.fromTime").is(Integer.parseInt(fromTime));
+
+			if (!DPDoctorUtils.anyStringEmpty(toTime))
+				criteria.and("time.toTime").is(Integer.parseInt(toTime));
+			
+			Integer count = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
+
+			SortOperation sortOperation = Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"));
+
+			if (!DPDoctorUtils.anyStringEmpty(status)) {
+				if (status.equalsIgnoreCase(QueueStatus.SCHEDULED.toString())) {
+					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "time.fromTime"));
+				} else if (status.equalsIgnoreCase(QueueStatus.WAITING.toString())) {
+					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "checkedInAt"));
+				} else if (status.equalsIgnoreCase(QueueStatus.ENGAGED.toString())) {
+					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "engagedAt"));
+				} else if (status.equalsIgnoreCase(QueueStatus.CHECKED_OUT.toString())) {
+					sortOperation = Aggregation.sort(new Sort(Direction.ASC, "checkedOutAt"));
+				}
+			} else if (!DPDoctorUtils.anyStringEmpty(sortBy) && sortBy.equalsIgnoreCase("updatedTime")) {
+				sortOperation = Aggregation.sort(new Sort(Direction.DESC, "updatedTime"));
+			}
+
+			Aggregation aggregation = null;
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+
+						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+
+						Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new Document("$redact",
+								new BasicDBObject("$cond",
+										new BasicDBObject("if",
+												new BasicDBObject("$eq",
+														Arrays.asList("$patientCard.locationId", "$locationId")))
+																.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+
+						Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+						Aggregation.unwind("patientUser"),
+						// treatment
+						Aggregation.lookup("patient_treatment_cl", "appointmentId", "appointmentId",
+								"patientTreatment"),
+						Aggregation.unwind("patientTreatment",true),
+//						new CustomAggregationOperation(new Document("$unwind",
+//								new BasicDBObject("path", "$patientTreatment")
+//										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
+//												"arrayIndex"))),
+						
+//						Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+//								"treatmentService"),
+//						Aggregation.unwind("treatmentService", true),
+
+						appointmentFirstProjectAggregationOperation(), appointmentFirstGroupAggregationOperation(),
+
+						sortOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+
+						Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+						new CustomAggregationOperation(new Document("$unwind",
+								new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new Document("$redact",
+								new BasicDBObject("$cond",
+										new BasicDBObject("if",
+												new BasicDBObject("$eq",
+														Arrays.asList("$patientCard.locationId", "$locationId")))
+																.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+
+						Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+						Aggregation.unwind("patientUser"),
+
+						// treatment
+						Aggregation.lookup("patient_treatment_cl", "appointmentId", "appointmentId",
+								"patientTreatment"),
+						Aggregation.unwind("patientTreatment",true),
+
+//						Aggregation.lookup("treatment_services_cl", "patientTreatment.treatments.treatmentServiceId",
+//								"_id", "treatmentService"),
+//						Aggregation.unwind("treatmentService", true),
+
+						appointmentFirstProjectAggregationOperation(), appointmentFirstGroupAggregationOperation(),
+
+						sortOperation, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			AggregationResults<Appointment> aggregationResults = mongoTemplate.aggregate(aggregation,
+					AppointmentCollection.class, Appointment.class);
+			appointments = aggregationResults.getMappedResults();
+
+			for (Appointment appointment : appointments) {
+
+				if (appointment.getPatientTreatmentResponse() != null) {
+					if (appointment.getPatientTreatmentResponse().getTreatments() != null) {
+						for (TreatmentResponse patientTreatment : appointment.getPatientTreatmentResponse()
+								.getTreatments()) {
+							if (!DPDoctorUtils.anyStringEmpty(patientTreatment.getTreatmentServiceId())) {
+								TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
+										.findById(new ObjectId(patientTreatment.getTreatmentServiceId())).orElse(null);
+								TreatmentService treatmentService = new TreatmentService();
+								BeanUtil.map(treatmentServicesCollection, treatmentService);
+
+								patientTreatment.setTreatmentService(treatmentService);
+							}
+						}
+					}else {
+						appointment.setPatientTreatmentResponse(null);
+					}
+				}
+			}
+			response.setCount(count);
+			response.setDataList(appointments);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	private AggregationOperation appointmentFirstProjectAggregationOperation() {
+		return new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
+				.append("doctorId", "$doctorId").append("locationId", "$locationId").append("hospitalId", "$hospitalId")
+				.append("patientId", "$patientId").append("time", "$time").append("state", "$state")
+				.append("isRescheduled", "$isRescheduled").append("fromDate", "$fromDate").append("toDate", "$toDate")
+				.append("appointmentId", "$appointmentId").append("subject", "$subject")
+				.append("explanation", "$explanation").append("type", "$type")
+				.append("isCalenderBlocked", "$isCalenderBlocked").append("isFeedbackAvailable", "$isFeedbackAvailable")
+				.append("isAllDayEvent", "$isAllDayEvent")
+				.append("doctorName",
+						new BasicDBObject("$concat", Arrays.asList("$doctor.title", " ", "$doctor.firstName")))
+				.append("cancelledBy", "$cancelledBy").append("notifyPatientBySms", "$notifyPatientBySms")
+				.append("notifyPatientByEmail", "$notifyPatientByEmail")
+				.append("notifyDoctorBySms", "$notifyDoctorBySms").append("notifyDoctorByEmail", "$notifyDoctorByEmail")
+				.append("visitId", "$visitId").append("status", "$status").append("waitedFor", "$waitedFor")
+				.append("engagedFor", "$engagedFor").append("engagedAt", "$engagedAt")
+				.append("checkedInAt", "$checkedInAt").append("checkedOutAt", "$checkedOutAt").append("count", "$count")
+				.append("category", "$category").append("branch", "$branch")
+				.append("treatmentFields", "$treatmentFields").append("cancelledByProfile", "$cancelledByProfile")
+				.append("adminCreatedTime", "$adminCreatedTime").append("createdTime", "$createdTime")
+				.append("updatedTime", "$updatedTime").append("createdBy", "$createdBy")
+				.append("isCreatedByPatient", "$isCreatedByPatient").append("patient._id", "$patientCard.userId")
+				.append("patient.userId", "$patientCard.userId")
+				.append("patient.localPatientName", "$patientCard.localPatientName")
+				.append("patient.PID", "$patientCard.PID").append("patient.PNUM", "$patientCard.PNUM")
+				.append("patient.imageUrl", new BasicDBObject("$cond",
+						new BasicDBObject("if", new BasicDBObject("eq", Arrays.asList("$patientCard.imageUrl", null)))
+								.append("then",
+										new BasicDBObject("$concat", Arrays.asList(imagePath, "$patientCard.imageUrl")))
+								.append("else", null)))
+				.append("patient.thumbnailUrl",
+						new BasicDBObject("$cond",
+								new BasicDBObject("if",
+										new BasicDBObject("eq", Arrays.asList("$patientCard.thumbnailUrl", null)))
+												.append("then",
+														new BasicDBObject("$concat",
+																Arrays.asList(imagePath, "$patientCard.thumbnailUrl")))
+												.append("else", null)))
+				.append("patient.mobileNumber", "$patientUser.mobileNumber")
+				.append("patient.colorCode", "$patientUser.colorCode")
+
+				.append("patientTreatmentResponse.inHistory", "$patientTreatment.inHistory")
+				.append("patientTreatmentResponse.time", "$patientTreatment.time")
+				.append("patientTreatmentResponse.fromDate", "$patientTreatment.fromDate")
+				.append("patientTreatmentResponse.patientId", "$patientTreatment.patientId")
+				.append("patientTreatmentResponse.uniqueEmrId", "$patientTreatment.uniqueEmrId")
+				.append("patientTreatmentResponse.locationId", "$patientTreatment.locationId")
+				.append("patientTreatmentResponse.hospitalId", "$patientTreatment.hospitalId")
+				.append("patientTreatmentResponse.doctorId", "$patientTreatment.doctorId")
+				.append("patientTreatmentResponse.id", "$patientTreatment._id")
+				.append("patientTreatmentResponse.totalCost", "$patientTreatment.totalCost")
+				.append("patientTreatmentResponse.totalDiscount", "$patientTreatment.totalDiscount")
+				.append("patientTreatmentResponse.grandTotal", "$patientTreatment.grandTotal")
+				.append("patientTreatmentResponse.appointmentId", "$patientTreatment.appointmentId")
+				.append("patientTreatmentResponse.createdTime", "$patientTreatment.createdTime")
+				.append("patientTreatmentResponse.createdBy", "$patientTreatment.createdBy")
+				
+				.append("patientTreatmentResponse.treatments", "$patientTreatment.treatments")
+
+//				.append("patientTreatmentResponse.treatments.treatmentServiceId",
+//						"$patientTreatments.treatments.treatmentServiceId")
+//				.append("patientTreatmentResponse.treatments.treatmentService", "$treatmentService")
+//
+//				.append("patientTreatmentResponse.treatments.status", "$patientTreatment.treatments.status")
+//				.append("patientTreatmentResponse.treatments.cost", "$treatments.cost")
+//				.append("patientTreatmentResponse.treatments.note", "$patientTreatment.treatments.note")
+//				.append("patientTreatmentResponse.treatments.discount", "$patientTreatment.treatments.discount")
+//				.append("patientTreatmentResponse.treatments.finalCost", "$patientTreatment.treatments.finalCost")
+//				.append("patientTreatmentResponse.treatments.quantity", "$patientTreatment.treatments.quantity")
+//				.append("patientTreatmentResponse.treatments.treatmentFields",
+//						"$patientTreatment.treatments.treatmentFields")
+
+		));
+	}
+
+	private AggregationOperation appointmentFirstGroupAggregationOperation() {
+		return new CustomAggregationOperation(new Document("$group",
+				new BasicDBObject("_id", "$_id").append("doctorId", new BasicDBObject("$first", "$doctorId"))
+						.append("locationId", new BasicDBObject("$first", "$locationId"))
+						.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+						.append("patientId", new BasicDBObject("$first", "$patientId"))
+						.append("time", new BasicDBObject("$first", "$time"))
+						.append("state", new BasicDBObject("$first", "$state"))
+						.append("isRescheduled", new BasicDBObject("$first", "$isRescheduled"))
+						.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+						.append("toDate", new BasicDBObject("$first", "$toDate"))
+						.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+						.append("subject", new BasicDBObject("$first", "$subject"))
+						.append("explanation", new BasicDBObject("$first", "$explanation"))
+						.append("type", new BasicDBObject("$first", "$type"))
+						.append("isCalenderBlocked", new BasicDBObject("$first", "$isCalenderBlocked"))
+						.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
+						.append("isAllDayEvent", new BasicDBObject("$first", "$isAllDayEvent"))
+						.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+						.append("cancelledBy", new BasicDBObject("$first", "$cancelledBy"))
+						.append("notifyPatientBySms", new BasicDBObject("$first", "$notifyPatientBySms"))
+						.append("notifyPatientByEmail", new BasicDBObject("$first", "$notifyPatientByEmail"))
+						.append("notifyDoctorBySms", new BasicDBObject("$first", "$notifyDoctorBySms"))
+						.append("notifyDoctorByEmail", new BasicDBObject("$first", "$notifyDoctorByEmail"))
+						.append("visitId", new BasicDBObject("$first", "$visitId"))
+						.append("status", new BasicDBObject("$first", "$status"))
+						.append("waitedFor", new BasicDBObject("$first", "$waitedFor"))
+						.append("engagedFor", new BasicDBObject("$first", "$engagedFor"))
+						.append("engagedAt", new BasicDBObject("$first", "$engagedAt"))
+						.append("checkedInAt", new BasicDBObject("$first", "$checkedInAt"))
+						.append("checkedOutAt", new BasicDBObject("$first", "$checkedOutAt"))
+						.append("count", new BasicDBObject("$first", "$count"))
+						.append("category", new BasicDBObject("$first", "$category"))
+						.append("branch", new BasicDBObject("$first", "$branch"))
+						.append("treatmentFields", new BasicDBObject("$first", "$treatmentFields"))
+						.append("cancelledByProfile", new BasicDBObject("$first", "$cancelledByProfile"))
+						.append("adminCreatedTime", new BasicDBObject("$first", "$adminCreatedTime"))
+						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+						.append("isCreatedByPatient", new BasicDBObject("$first", "$isCreatedByPatient"))
+						.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+						.append("patient", new BasicDBObject("$first", "$patient"))
+						.append("patientTreatmentResponse", new BasicDBObject("$first", "$patientTreatmentResponse"))
+//						.append("treatments", new BasicDBObject("$addToSet", "$patientTreatmentResponse.treatments"))
+
+		));
+	}
+	
+	
 
 }

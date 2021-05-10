@@ -98,9 +98,19 @@ public class AppointmentApi {
 			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime ,@DefaultValue("false") @QueryParam("isRegisteredPatientRequired") Boolean isRegisteredPatientRequired,
 			@DefaultValue(value = "false") @QueryParam(value = "isWeb") Boolean isWeb, @DefaultValue("true") @QueryParam("discarded") Boolean discarded,@QueryParam("branch") String branch) {
 
-		Response<Appointment> response = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
-				page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb, discarded,branch);
-		return response;
+		if (isWeb) {
+			Response<Appointment> response = appointmentService.getAppointmentsForWebNew(locationId, doctorId,
+					patientId, from, to, page, size, updatedTime, status, sortBy, fromTime, toTime,
+					isRegisteredPatientRequired, isWeb, discarded, branch);
+
+			return response;
+
+		} else {
+			Response<Appointment> response = appointmentService.getAppointments(locationId, doctorId, patientId, from,
+					to, page, size, updatedTime, status, sortBy, fromTime, toTime, isRegisteredPatientRequired, isWeb,
+					discarded, branch);
+			return response;
+		}
 	}
 
 	@Path(value = PathProxy.AppointmentUrls.GET_PATIENT_APPOINTMENTS)
