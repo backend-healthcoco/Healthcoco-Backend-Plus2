@@ -519,7 +519,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jasperDesign.addStyle(normalStyle);
 
-		System.out.println(parameters);
 		band = new JRDesignBand();
 		band.setHeight(26);
 
@@ -805,8 +804,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 		show = (Boolean) parameters.get("showIpdNumber");
 		if (show) {
-			addItems(jasperDesign, columnWidth, "$P{IpdNumber}", "$P{ipdNumber}", fieldWidth, false, 0,
-					false);
+			addItems(jasperDesign, columnWidth, "$P{IpdNumber}", "$P{ipdNumber}", fieldWidth, false, 0, false);
 		}
 		show = (Boolean) parameters.get("showNurseNm");
 		if (show) {
@@ -875,17 +873,15 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		}
 
-		
 		show = (Boolean) parameters.get("showNurseCare");
 		if (show) {
 			addItems(jasperDesign, columnWidth, "$P{NurseCare}", "$P{nurseCare}", fieldWidth, false, 0, false);
 		}
-		
+
 		show = (Boolean) parameters.get("showAdvice");
 		if (show) {
 			addItems(jasperDesign, columnWidth, "$P{Advice}", "$P{advice}", fieldWidth, false, 0, false);
 		}
-
 
 	}
 
@@ -908,7 +904,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jasperDesign.addStyle(normalStyle);
 
 			band = new JRDesignBand();
-			band.setHeight(20);
+			band.setHeight(26);
 
 			int dataWidth = (25 * (columnWidth - 30)) / 100;
 
@@ -959,8 +955,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 			jrDesignLine = new JRDesignLine();
 			jrDesignLine.setX(0);
-			jrDesignLine.setY(18);
-			jrDesignLine.setHeight(15);
+			jrDesignLine.setY(22);
+			jrDesignLine.setHeight(1);
 			jrDesignLine.setWidth(columnWidth);
 			jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
 			band.addElement(jrDesignLine);
@@ -1228,8 +1224,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		// new fields
 //		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$P{vitalSigns}", fieldWidth, false, 0, false);
 
-		System.out.println(parameters);
-
 		show = (Boolean) parameters.get("showTD");
 		if (show) {
 			addItems(jasperDesign, columnWidth, "$P{TreatingDoctor}", "$P{treatingDoctor}", fieldWidth, false, 0,
@@ -1237,8 +1231,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 		show = (Boolean) parameters.get("showIpdNumber");
 		if (show) {
-			addItems(jasperDesign, columnWidth, "$P{IpdNumber}", "$P{ipdNumber}", fieldWidth, false, 0,
-					false);
+			addItems(jasperDesign, columnWidth, "$P{IpdNumber}", "$P{ipdNumber}", fieldWidth, false, 0, false);
 		}
 		show = (Boolean) parameters.get("showcompl");
 		if (show) {
@@ -1317,8 +1310,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 		show = (Boolean) parameters.get("showIpdNumber");
 		if (show) {
-			addItems(jasperDesign, columnWidth, "$P{IpdNumber}", "$P{ipdNumber}", fieldWidth, false, 0,
-					false);
+			addItems(jasperDesign, columnWidth, "$P{IpdNumber}", "$P{ipdNumber}", fieldWidth, false, 0, false);
 		}
 		show = (Boolean) parameters.get("showcompl");
 		if (show) {
@@ -1733,7 +1725,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 	private void createClinicalNotes(Map<String, Object> parameters, JasperDesign jasperDesign, int columnWidth,
 			Integer contentFontSize, int pageWidth, int pageHeight, JRDesignStyle normalStyle) {
 
-		System.out.println("jasperDesign" + jasperDesign.getName());
 		int fieldWidth = 118;
 		if (contentFontSize > 13)
 			fieldWidth = 145;
@@ -7406,6 +7397,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addFlowSheet(parameters, contentFontSize,
 				columnWidth, pageWidth, pageHeight, "$P{flowsheet}", normalStyle));
+
+		if (parameters.get("monitoringChart") != null) {
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addMonitor(parameters, contentFontSize,
+					columnWidth, pageWidth, pageHeight, "$P{monitoringChart}", normalStyle));
+		}
 	}
 
 	private void createAdmitCard(JasperDesign jasperDesign, Map<String, Object> parameters, Integer contentFontSize,
@@ -7479,11 +7475,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 
 		// new fields
-		
+
 		show = (Boolean) parameters.get("showIpdNumber");
 		if (show) {
-			addItems(jasperDesign, columnWidth, "$P{IpdNumber}", "$P{ipdNumber}", fieldWidth, false, 0,
-					false);
+			addItems(jasperDesign, columnWidth, "$P{IpdNumber}", "$P{ipdNumber}", fieldWidth, false, 0, false);
 		}
 		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$P{vitalSigns}", fieldWidth, false, 0, false);
 
@@ -9594,9 +9589,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		if (parameters.get("flowsheet") != null)
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(addFlowSheet(parameters, contentFontSize,
-				columnWidth, pageWidth, pageHeight, "$P{flowsheet}", normalStyle));
-		
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addFlowSheet(parameters, contentFontSize,
+					columnWidth, pageWidth, pageHeight, "$P{flowsheet}", normalStyle));
+
 		if (parameters.get("MedicineTitle") != null) {
 
 			band = new JRDesignBand();
@@ -9629,7 +9624,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addMonitor(parameters, contentFontSize,
 					columnWidth, pageWidth, pageHeight, "$P{monitoringChart}", normalStyle));
 	}
-
 
 	private JRDesignBand addFlowSheet(Map<String, Object> parameters, Integer contentFontSize, int columnWidth,
 			int pageWidth, int pageHeight, String itemsValue, JRDesignStyle normalStyle) throws JRException {

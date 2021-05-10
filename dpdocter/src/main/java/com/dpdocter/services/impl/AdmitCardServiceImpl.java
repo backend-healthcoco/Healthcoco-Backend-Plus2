@@ -363,7 +363,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, "Exception in download Discharge Summary ");
+			throw new BusinessException(ServiceError.Unknown, "Exception in download admit card ");
 		}
 		return response;
 	}

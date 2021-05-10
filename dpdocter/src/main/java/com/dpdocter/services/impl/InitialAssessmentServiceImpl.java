@@ -117,13 +117,13 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 				}
 				request.setUpdatedTime(new Date());
 				request.setCreatedBy(initialAssessmentCollection.getCreatedBy());
-				BeanUtil.map(request, initialAssessmentCollection);
-				initialAssessmentCollection.setUniqueEmrId(
-						UniqueIdInitial.DOCTOR_INITIAL_FORM.getInitial() + "-" + DPDoctorUtils.generateRandomId());
+				BeanUtil.map(request, initialAssessmentCollection);				
 
 			} else {
 				initialAssessmentCollection = new InitialAssessmentCollection();
 				BeanUtil.map(request, initialAssessmentCollection);
+				initialAssessmentCollection.setUniqueEmrId(
+						UniqueIdInitial.DOCTOR_INITIAL_FORM.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
 						.orElse(null);
 				if (userCollection != null) {
@@ -204,11 +204,12 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 				nursesAdmissionCollection.setOldMedication(null);
 				nursesAdmissionCollection.setRiskFactor(null);
 				BeanUtil.map(request, nursesAdmissionCollection);
-				nursesAdmissionCollection.setUniqueEmrId(
-						UniqueIdInitial.NURSE_ADMISSION_FORM.getInitial() + "-" + DPDoctorUtils.generateRandomId());
+				
 			} else {
 				nursesAdmissionCollection = new NursesAdmissionCollection();
 				BeanUtil.map(request, nursesAdmissionCollection);
+				nursesAdmissionCollection.setUniqueEmrId(
+						UniqueIdInitial.NURSE_ADMISSION_FORM.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
 						.orElse(null);
 				if (userCollection != null) {
@@ -286,12 +287,13 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 				request.setUpdatedTime(new Date());
 				request.setCreatedBy(preOperationFormCollection.getCreatedBy());
 				BeanUtil.map(request, preOperationFormCollection);
-				preOperationFormCollection.setUniqueEmrId(
-						UniqueIdInitial.PRE_OPERATIONAL_FORM.getInitial() + "-" + DPDoctorUtils.generateRandomId());
+				
 
 			} else {
 				preOperationFormCollection = new PreOperationFormCollection();
 				BeanUtil.map(request, preOperationFormCollection);
+				preOperationFormCollection.setUniqueEmrId(
+						UniqueIdInitial.PRE_OPERATIONAL_FORM.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 				UserCollection userCollection = userRepository.findById(new ObjectId(request.getDoctorId()))
 						.orElse(null);
 				if (userCollection != null) {
@@ -779,7 +781,7 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 						: new Date(),
 				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		patientVisitService.generatePrintSetup(parameters, printSettings, initialAssessmentCollection.getDoctorId());
-		String pdfName = (user != null ? user.getFirstName() : "") + "DOCTORASSESSMENT"
+		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "DOCTORASSESSMENT"
 				+ initialAssessmentCollection.getUniqueEmrId() + new Date().getTime();
 
 		String layout = printSettings != null
@@ -963,7 +965,7 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 						: new Date(),
 				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		patientVisitService.generatePrintSetup(parameters, printSettings, preOperationFormCollection.getDoctorId());
-		String pdfName = (user != null ? user.getFirstName() : "") + "PREOP"
+		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PREOP"
 				+ preOperationFormCollection.getUniqueEmrId() + new Date().getTime();
 
 		String layout = printSettings != null
@@ -1279,7 +1281,7 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 						: new Date(),
 				printSettings.getHospitalUId(), printSettings.getIsPidHasDate());
 		patientVisitService.generatePrintSetup(parameters, printSettings, nursesAdmissionCollection.getDoctorId());
-		String pdfName = (user != null ? user.getFirstName() : "") + "NURSEADM"
+		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "NURSEADM"
 				+ nursesAdmissionCollection.getUniqueEmrId() + new Date().getTime();
 
 		String layout = printSettings != null

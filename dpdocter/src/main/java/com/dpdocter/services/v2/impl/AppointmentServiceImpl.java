@@ -2918,9 +2918,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 								"patientTreatment"),
 						Aggregation.unwind("patientTreatment",true),
 
-						Aggregation.lookup("treatment_services_cl", "patientTreatment.treatments.treatmentServiceId",
-								"_id", "treatmentService"),
-						Aggregation.unwind("treatmentService", true),
+//						Aggregation.lookup("treatment_services_cl", "patientTreatment.treatments.treatmentServiceId",
+//								"_id", "treatmentService"),
+//						Aggregation.unwind("treatmentService", true),
 
 						appointmentFirstProjectAggregationOperation(), appointmentFirstGroupAggregationOperation(),
 
@@ -2945,6 +2945,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 								patientTreatment.setTreatmentService(treatmentService);
 							}
 						}
+					}else {
+						appointment.setPatientTreatmentResponse(null);
 					}
 				}
 			}

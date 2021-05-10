@@ -118,6 +118,23 @@ public class ContactsApi {
 			for (PatientCard patientCard : doctorContactsResponse.getPatientCards()) {
 				//patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
 				patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
+				
+				//calculate age of patient upto today
+				if (patientCard.getDob() != null) {
+					if (patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0
+							&& patientCard.getDob().getYears() > 0) {
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+						LocalDate today = LocalDate.now();
+						LocalDate birthday = LocalDate.parse(patientCard.getDob().getDays() + "/"
+								+ patientCard.getDob().getMonths() + "/" + patientCard.getDob().getYears(), formatter);
+
+						Period p = Period.between(birthday, today);
+
+						patientCard.getDob().getAge().setDays(p.getDays());
+						patientCard.getDob().getAge().setMonths(p.getMonths());
+						patientCard.getDob().getAge().setYears(p.getYears());
+					}
+				}
 			}
 		}
 

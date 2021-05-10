@@ -1882,7 +1882,6 @@ public class BillingServiceImpl implements BillingService {
 
 				// }
 
-				System.out.println("Aggregation"+aggregation);
 				 response = mongoTemplate.aggregate(aggregation, DoctorPatientLedgerCollection.class,DoctorPatientLedgerResponse.class)
 					.getUniqueMappedResult();
 			
