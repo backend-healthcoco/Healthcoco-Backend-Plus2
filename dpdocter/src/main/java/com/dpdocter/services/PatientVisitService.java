@@ -79,4 +79,6 @@ public interface PatientVisitService {
 
 	PatientVisitResponse getPatientFirstVisit(String doctorId, String locationId, String hospitalId, String patientId);
 
+	Integer getPatientFirstVisitCount(String doctorId, String locationId, String hospitalId, String patientId);
+
 }

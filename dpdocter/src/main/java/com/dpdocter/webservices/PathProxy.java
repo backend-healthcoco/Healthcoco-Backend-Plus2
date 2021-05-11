@@ -895,6 +895,8 @@ public interface PathProxy {
 
 		public static final String GET_PATIENT_FIRST_VISIT = "/first/{doctorId}/{locationId}/{hospitalId}/{patientId}";
 
+		public static final String GET_PATIENT_VISITS_COUNT = "/count/{doctorId}/{locationId}/{hospitalId}/{patientId}";
+
 	}
 
 	public static final String ACCESS_CONTROL_BASE_URL = BASE_URL + "/accessControl";

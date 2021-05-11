@@ -756,7 +756,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	@Transactional
 	public PatientVisitResponse addMultipleData(AddMultipleDataRequest request) {
-		//System.out.println("Request"+request);
 		PatientVisitResponse response = new PatientVisitResponse();
 		String visitId = request.getVisitId();
 		Appointment appointment = null;
@@ -837,18 +836,18 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 
 			if (request.getRecord() != null) {
-
+				request.getRecord().setCreatedTime(request.getCreatedTime());
 				addRecords(request, response, patientVisitCollection, visitId, appointment,
 						patientVisitCollection.getCreatedBy());
 			}
-			System.out.println("Treatment"+request.getTreatmentRequest());
-			
-			if (request.getTreatmentRequest() != null)
-			if(request.getTreatmentRequest().getTreatments()!=null && !request.getTreatmentRequest().getTreatments().isEmpty())
-			 {
-				request.getTreatmentRequest().setCreatedTime(request.getCreatedTime());
-				addTreatments(request, response, patientVisitCollection, visitId, appointment,
-						patientVisitCollection.getCreatedBy());
+
+			if (request.getTreatmentRequest() != null) {
+				if (request.getTreatmentRequest().getTreatments() != null
+						&& !request.getTreatmentRequest().getTreatments().isEmpty()) {
+					request.getTreatmentRequest().setCreatedTime(request.getCreatedTime());
+					addTreatments(request, response, patientVisitCollection, visitId, appointment,
+							patientVisitCollection.getCreatedBy());
+				}
 			}
 			patientVisitCollection.setVisitedTime(new Date());
 			patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
@@ -4077,7 +4076,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	public PatientVisitResponse getPatientFirstVisit(String doctorId, String locationId, String hospitalId,
 			String patientId) {
@@ -4159,6 +4158,21 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					"Error while geting patient last Visit : " + e.getCause().getMessage());
 		}
 		return response;
+	}
+
+	@Override
+	public Integer getPatientFirstVisitCount(String doctorId, String locationId, String hospitalId, String patientId) {
+
+		ObjectId patientObjectId = new ObjectId(patientId), doctorObjectId = new ObjectId(doctorId),
+				locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
+
+		Criteria criteria = new Criteria("patientId").is(patientObjectId).and("doctorId").is(doctorObjectId)
+				.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("isPatientDiscarded")
+				.ne(true);
+
+		Integer count = (int) mongoTemplate.count(new Query(criteria), PatientVisitCollection.class);
+
+		return count;
 	}
 
 }

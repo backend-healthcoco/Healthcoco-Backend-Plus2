@@ -209,9 +209,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				BeanUtil.map(treatmentServicesCollection, response);
 			}
 		} catch (Exception e) {
-			logger.error("Error occurred while adding or editing services"+treatmentService);
+			logger.error("Error occurred while adding or editing services" + treatmentService);
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error occurred while adding or editing services"+treatmentService);
+			throw new BusinessException(ServiceError.Unknown,
+					"Error occurred while adding or editing services" + treatmentService);
 		}
 		return response;
 	}
@@ -311,13 +312,15 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		PatientTreatmentResponse response;
 		PatientTreatmentCollection patientTreatmentCollection = new PatientTreatmentCollection();
 		try {
-			if (request.getAppointmentRequest() != null && isAppointmentAdd) {
-				appointment = addTreatmentAppointment(request.getAppointmentRequest());
-				if (appointment != null) {
-					request.setAppointmentId(appointment.getAppointmentId());
-					request.setTime(appointment.getTime());
-					request.setFromDate(appointment.getFromDate());
+			if (isAppointmentAdd) {
+				if (request.getAppointmentRequest() != null) {
+					appointment = addTreatmentAppointment(request.getAppointmentRequest());
 				}
+			}
+			if (appointment != null) {
+				request.setAppointmentId(appointment.getAppointmentId());
+				request.setTime(appointment.getTime());
+				request.setFromDate(appointment.getFromDate());
 			}
 
 			patientTreatmentCollection = new PatientTreatmentCollection();
@@ -330,8 +333,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				} else {
 					patientTreatmentCollection.setCreatedTime(new Date());
 				}
-				
-				
+
 				patientTreatmentCollection.setAdminCreatedTime(new Date());
 				patientTreatmentCollection
 						.setUniqueEmrId(UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
@@ -367,13 +369,13 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					} else {
 						patientTreatmentCollection.setCreatedTime(oldPatientTreatmentCollection.getCreatedTime());
 					}
-					
+
 					if (request.getFromDate() != null) {
 						patientTreatmentCollection.setFromDate(request.getFromDate());
 					} else {
 						patientTreatmentCollection.setFromDate(oldPatientTreatmentCollection.getFromDate());
 					}
-					
+
 					patientTreatmentCollection.setAdminCreatedTime(oldPatientTreatmentCollection.getAdminCreatedTime());
 					patientTreatmentCollection.setUpdatedTime(new Date());
 					patientTreatmentCollection.setCreatedBy(createdBy);
@@ -1333,7 +1335,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						historyCollection = historyCollections.get(0);
 				}
 				JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user,
-						historyCollection, showPH, showPLH, showFH, showDA,PrintSettingType.EMR.getType());
+						historyCollection, showPH, showPLH, showFH, showDA, PrintSettingType.EMR.getType());
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -1384,7 +1386,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						}
 
 						JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient,
-								user, null, false, false, false, false,PrintSettingType.EMAIL.getType());
+								user, null, false, false, false, false, PrintSettingType.EMAIL.getType());
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -1450,7 +1452,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	private JasperReportResponse createJasper(PatientTreatmentCollection patientTreatmentCollection,
 			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
-			Boolean showPLH, Boolean showFH, Boolean showDA, String printSettingType) throws IOException, ParseException {
+			Boolean showPLH, Boolean showFH, Boolean showDA, String printSettingType)
+			throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
@@ -1555,15 +1558,14 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			printSettings = printSettingsRepository
 					.findByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 							patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
-							patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType(),
-							printSettingType);
-			if (printSettings == null){
+							patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType(), printSettingType);
+			if (printSettings == null) {
 				List<PrintSettingsCollection> printSettingsCollections = printSettingsRepository
 						.findListByDoctorIdAndLocationIdAndHospitalIdAndComponentTypeAndPrintSettingType(
 								patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
-								patientTreatmentCollection.getHospitalId(),ComponentType.ALL.getType(), PrintSettingType.DEFAULT.getType(),
-								new Sort(Sort.Direction.DESC, "updatedTime"));
-				if(!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
+								patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType(),
+								PrintSettingType.DEFAULT.getType(), new Sort(Sort.Direction.DESC, "updatedTime"));
+				if (!DPDoctorUtils.isNullOrEmptyList(printSettingsCollections))
 					printSettings = printSettingsCollections.get(0);
 			}
 			if (printSettings == null) {
@@ -1835,7 +1837,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				}
 
 				JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user,
-						null, false, false, false, false,PrintSettingType.EMAIL.getType());
+						null, false, false, false, false, PrintSettingType.EMAIL.getType());
 				mailAttachment = new MailAttachment();
 				mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 				mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
