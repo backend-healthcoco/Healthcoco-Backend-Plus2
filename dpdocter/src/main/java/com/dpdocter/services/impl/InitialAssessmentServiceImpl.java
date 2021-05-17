@@ -710,6 +710,12 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 			parameters.put("investigation", initialAssessmentCollection.getInvestigation());
 		}
 		parameters.put("showInvestigation", show);
+		
+		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getObservation())) {
+			show = true;
+			parameters.put("observation", initialAssessmentCollection.getObservation());
+		}
+		parameters.put("showObservation", show);
 
 		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getProvisionalDiagnosis())) {
@@ -739,16 +745,16 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 		}
 		parameters.put("showNoseEx", show);
 		show = false;
-		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getGeneralExam())) {
+		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getNeckExam())) {
 			show = true;
-			parameters.put("neckExam", initialAssessmentCollection.getGeneralExam());
+			parameters.put("neckExam", initialAssessmentCollection.getNeckExam());
 		}
 		parameters.put("showNeckEx", show);
 
 		show = false;
-		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getGeneralExam())) {
+		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getEarsExam())) {
 			show = true;
-			parameters.put("earsExam", initialAssessmentCollection.getGeneralExam());
+			parameters.put("earsExam", initialAssessmentCollection.getEarsExam());
 		}
 		parameters.put("showEarsEx", show);
 		
@@ -760,9 +766,9 @@ public class InitialAssessmentServiceImpl implements InitialAssessmentService {
 		parameters.put("showIpdNumber", show);
 
 		show = false;
-		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getGeneralExam())) {
+		if (!DPDoctorUtils.allStringsEmpty(initialAssessmentCollection.getOralCavityThroatExam())) {
 			show = true;
-			parameters.put("oralCavityThroatExam", initialAssessmentCollection.getGeneralExam());
+			parameters.put("oralCavityThroatExam", initialAssessmentCollection.getOralCavityThroatExam());
 		}
 		parameters.put("showOralCavityThroatEx", show);
 

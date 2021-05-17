@@ -1360,6 +1360,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (show) {
 			addItems(jasperDesign, columnWidth, "$P{Investigation}", "$P{investigation}", fieldWidth, false, 0, false);
 		}
+		
+		show = (Boolean) parameters.get("showObservation");
+		if (show) {
+			addItems(jasperDesign, columnWidth, "$P{Observation}", "$P{observation}", fieldWidth, false, 0, false);
+		}
 
 		show = (Boolean) parameters.get("showDiagnosis");
 		if (show) {
