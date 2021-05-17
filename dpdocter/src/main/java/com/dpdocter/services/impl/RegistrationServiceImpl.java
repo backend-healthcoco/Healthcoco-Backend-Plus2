@@ -3237,6 +3237,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (doctorClinicProfileCollection != null) {
 				doctorClinicProfileCollection.setIsActivate(isActivate);
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+				UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
+				if(userCollection!=null) {
+					if(isActivate==false)
+				pushNotificationServices.notifyUser(userCollection.getId().toString(),
+						" Your Healthcoco+ account has been deactivated", ComponentType.DEACTIVATED.getType(), null, null);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3256,6 +3262,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				doctorClinicProfileCollection.setHasLoginAccess(hasLoginAccess);
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+				UserCollection userCollection = userRepository.findById(new ObjectId(userId)).orElse(null);
+				if(userCollection!=null) {
+					if(hasLoginAccess==false)
+				pushNotificationServices.notifyUser(userCollection.getId().toString(),
+						" Your Healthcoco+ clinic login access has been removed", ComponentType.DEACTIVATED.getType(), null, null);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

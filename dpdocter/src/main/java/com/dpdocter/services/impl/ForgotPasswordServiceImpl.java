@@ -23,6 +23,7 @@ import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UserState;
@@ -40,6 +41,7 @@ import com.dpdocter.response.ForgotPasswordResponse;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.tokenstore.CustomPasswordEncoder;
 
@@ -98,6 +100,10 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	
 	@Value(value = "${reset.password.link}")
 	private String RESET_PASSWORD_LINK;
+	
+	@Autowired
+	PushNotificationServices pushNotificationServices;
+
 
 	@Override
 	@Transactional
@@ -311,6 +317,10 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 						userCollection.getTitle() + " " + userCollection.getFirstName());
 				mailService.sendEmail(userCollection.getEmailAddress(), resetPasswordSub, body, null);
 
+				pushNotificationServices.notifyUser(userCollection.getId().toString(),
+						" You have successfully changed your password.", ComponentType.RESET_PASSWORD.getType(), null, null);
+
+				
 				return "You have successfully changed your password.";
 			}
 		} catch (IllegalArgumentException argumentException) {
