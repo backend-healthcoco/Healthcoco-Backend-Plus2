@@ -105,6 +105,7 @@ import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.SlotDataResponse;
+import com.dpdocter.response.TreatmentResponse;
 import com.dpdocter.response.v2.AppointmentLookupResponse;
 import com.dpdocter.response.v2.PatientVisitResponse;
 import com.dpdocter.response.TreatmentResponse;
@@ -280,7 +281,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private RoleRepository roleRepository;
-
+	
 	@Autowired
 	private TreatmentServicesRepository treatmentServicesRepository;
 
@@ -1800,11 +1801,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 
 
-		for (Appointment appointment : response) {
-			if (!DPDoctorUtils.anyStringEmpty(appointment.getAppointmentId()))
-				appointment.setPatientTreatmentResponse(
-						getPatientTreatmentAppointmentById(appointment.getAppointmentId()));
-		}
+//		for (Appointment appointment : response) {
+//			if (!DPDoctorUtils.anyStringEmpty(appointment.getAppointmentId()))
+//				appointment.setPatientTreatmentResponse(
+//						getPatientTreatmentAppointmentById(appointment.getAppointmentId()));
+//		}
 
 
 		return response;
@@ -2769,7 +2770,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 
 	}
-
+	
 	@Override
 	public Response<Appointment> getAppointmentsForWebNew(String locationId, List<String> doctorId, String patientId,
 			String from, String to, int page, int size, String updatedTime, String status, String sortBy,
@@ -3081,6 +3082,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		));
 	}
+	
+	
+
 	
 	
 
