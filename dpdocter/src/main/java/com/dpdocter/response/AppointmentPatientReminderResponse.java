@@ -24,6 +24,10 @@ public class AppointmentPatientReminderResponse {
 
     private String googleMapShortUrl;
     
+    private String doctorId;
+    
+    private String locationId;
+    
 	public String getDoctorTitle() {
 		return doctorTitle;
 	}
@@ -94,6 +98,24 @@ public class AppointmentPatientReminderResponse {
 
 	public void setGoogleMapShortUrl(String googleMapShortUrl) {
 		this.googleMapShortUrl = googleMapShortUrl;
+	}
+	
+	
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
 	}
 
 	@Override

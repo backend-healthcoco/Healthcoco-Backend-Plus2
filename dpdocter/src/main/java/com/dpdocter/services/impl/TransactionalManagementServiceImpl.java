@@ -205,6 +205,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AdviceRepository;
 import com.dpdocter.repository.AppLinkDetailsRepository;
+import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.BabyNoteRepository;
 import com.dpdocter.repository.CementRepository;
 import com.dpdocter.repository.CityRepository;
@@ -572,6 +573,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	
 	@Autowired
 	private ESEducationQualificationRepository esEducationQualificationRepository;
+	
+	@Autowired
+	private AppointmentRepository appointmentRepository;
 	
 	@Scheduled(cron = "${mongo.to.elastic.scheduler.cron.time}", zone = "IST")
 //	@Scheduled(fixedDelay = 18000000)
@@ -1454,6 +1458,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						Fields.field("doctorName", "$user.firstName"), Fields.field("doctorTitle", "$user.title"),
 						Fields.field("patientMobileNumber", "$patient.mobileNumber"),
 						Fields.field("appointmentId", "$appointmentId"),
+						Fields.field("locationId", "$locationId"),
+						Fields.field("doctorId", "$doctorId"),
 						Fields.field("clinicNumber", "$location.clinicNumber"),
 						Fields.field("locationName", "$location.locationName"), Fields.field("time", "$time"),
 						Fields.field("fromDate", "$fromDate")));
@@ -1495,18 +1501,19 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 							SMSDetail smsDetail = new SMSDetail();
 							SMS sms = new SMS();
-							sms.setSmsText("You have an appointment " + " @ " + dateTime + " with "
-									+ appointmentPatientReminderResponse.getDoctorTitle() + " "
-									+ appointmentPatientReminderResponse.getDoctorName()
+							sms.setSmsText("Your appointment with "
+									+ appointmentPatientReminderResponse.getDoctorTitle() 
+									+ appointmentPatientReminderResponse.getDoctorName()+" has been scheduled @"+dateTime
 									+ (!DPDoctorUtils
 											.anyStringEmpty(appointmentPatientReminderResponse.getLocationName())
-													? (", " + appointmentPatientReminderResponse.getLocationName())
+													? (", at " + appointmentPatientReminderResponse.getLocationName())
 													: "")
 									+ (!DPDoctorUtils
 											.anyStringEmpty(appointmentPatientReminderResponse.getClinicNumber())
 													? ", " + appointmentPatientReminderResponse.getClinicNumber()
 													: "")
-									+ ". Download Healthcoco App- " + patientAppBitLink);
+									+ ". -Healthcoco");
+							
 
 							SMSAddress smsAddress = new SMSAddress();
 							smsAddress.setRecipient(appointmentPatientReminderResponse.getPatientMobileNumber());
@@ -1516,8 +1523,13 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
 							List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 							smsDetails.add(smsDetail);
+							smsTrackDetail.setTemplateId("1307161526616449686");
+							smsTrackDetail.setDoctorId(new ObjectId(appointmentPatientReminderResponse.getDoctorId()));
+							smsTrackDetail.setLocationId(new ObjectId(appointmentPatientReminderResponse.getLocationId()));
 							smsTrackDetail.setSmsDetails(smsDetails);
-							sMSServices.sendSMS(smsTrackDetail, false);
+					//		System.out.println(smsTrackDetail);
+							sMSServices.sendSMS(smsTrackDetail, true);
+							
 						}
 					}
 			}
