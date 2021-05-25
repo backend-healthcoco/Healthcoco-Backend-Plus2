@@ -6,7 +6,9 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.ClinicalNotesJasperDetails;
+import com.dpdocter.beans.ClinicalNotesResponseFieldWise;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientVisit;
@@ -77,7 +79,7 @@ public interface PatientVisitService {
 			Map<String, Object> parameters, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD,
 			Boolean showNoOfChildren, ClinicalNotesCollection clinicalNotesCollection, Boolean showVitalSign);
 
-	PatientVisitResponse getPatientFirstVisit(String doctorId, String locationId, String hospitalId, String patientId);
+	ClinicalNotesResponseFieldWise getPatientFirstVisit(String doctorId, String locationId, String hospitalId, String patientId, String type);
 
 	Integer getPatientFirstVisitCount(String doctorId, String locationId, String hospitalId, String patientId);
 

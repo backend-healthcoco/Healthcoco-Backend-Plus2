@@ -107,7 +107,7 @@ public class AdmitCardAPI {
 	@Path(value = PathProxy.AdmitCardUrls.DELETE_ADMIT_CARD)
 	@DELETE
 	@ApiOperation(value = PathProxy.AdmitCardUrls.DELETE_ADMIT_CARD, notes = PathProxy.AdmitCardUrls.DELETE_ADMIT_CARD)
-	public Response<AdmitCardResponse> deleteAdmitCard(@PathParam(value = "admitCardId") String admitCardId,
+	public Response<Boolean> deleteAdmitCard(@PathParam(value = "admitCardId") String admitCardId,
 			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 			@PathParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
@@ -117,9 +117,9 @@ public class AdmitCardAPI {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Discharge Summery  Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		AdmitCardResponse admitCardResponse = admitCardService.deleteAdmitCard(admitCardId, doctorId, hospitalId,
+		Boolean admitCardResponse = admitCardService.deleteAdmitCard(admitCardId, doctorId, hospitalId,
 				locationId, discarded);
-		Response<AdmitCardResponse> response = new Response<AdmitCardResponse>();
+		Response<Boolean> response = new Response<Boolean>();
 		response.setData(admitCardResponse);
 		return response;
 	}

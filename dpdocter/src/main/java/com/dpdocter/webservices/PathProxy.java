@@ -1383,6 +1383,12 @@ public interface PathProxy {
 		public static final String GET_OPD_REPORT = "OPDReport/{id}/view";
 		public static final String GET_OT_REPORT = "OTReport/{id}/view";
 		public static final String GET_DELIVERY_REPORT = "deliveryReport/{id}/view";
+		
+		public static final String DELETE_IPD_REPORT = "IPDReport/{id}/delete";
+		public static final String DELETE_DELIVERY_REPORT = "deliveryReport/{id}/delete";
+		public static final String DELETE_OT_REPORT = "OTReport/{id}/delete";
+
+
 	}
 
 	public static final String DYNAMIC_UI_BASE_URL = BASE_URL + "/dynamicUI";
@@ -1590,6 +1596,9 @@ public interface PathProxy {
 		public static final String ADD_DIAGRAM = "/addDiagram";
 		public static final String UPLOAD_DIAGRAM = "/diagram/upload";
 		public static final String UPLOAD_MULTIPART_DIAGRAM = "/diagram/multipart/upload";
+		
+		public static final String DELETE_FLOWSHEET_BY_ID = "/deleteFlowsheetById/{id}";
+
 	}
 
 	public static final String SOLR_DISCHARGE_SUMMARY_BASE_URL = BASE_URL + "/solr/dischargeSummary";
@@ -2505,11 +2514,14 @@ public interface PathProxy {
 		public static final String DELETE_MEDICINE_SHEET = "/{medicineSheetId}/{doctorId}/{locationId}/{hospitalId}/delete";
 	}
 	
-	public static final String VISIT_FIELDWISE_BASE_URL = BASE_URL + "/visit/getField";
+	public static final String VISIT_FIELDWISE_BASE_URL = BASE_URL + "/getFields";
 
 	public interface VisitFieldWiseUrls {
 		public static final String GET_DATA ="/get/{patientId}";
 		public static final String GET_ASSESSMENT_FORM ="/get";
+		public static final String GET_ADMITCARD_DATA ="/admitcard/{patientId}";
+		public static final String GET_OTNOTES_DATA ="/operationnotes/{patientId}";
+
 
 	}
 }

@@ -1,6 +1,7 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -36,9 +37,36 @@ public class VisitFieldWiseAPI {
 	@ApiOperation(value = PathProxy.VisitFieldWiseUrls.GET_DATA, notes = PathProxy.VisitFieldWiseUrls.GET_DATA)
 	public Response<Object> getData(@PathParam(value = "patientId") String patientId,
 			@QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId){
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("last")@QueryParam(value = "type") String type){
 		
 		Response<Object> response = visitfieldWiseService.getComplaintData(doctorId,locationId,hospitalId,patientId);
+
+		return response;
+	}
+	
+	@Path(value = PathProxy.VisitFieldWiseUrls.GET_ADMITCARD_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.VisitFieldWiseUrls.GET_ADMITCARD_DATA, notes = PathProxy.VisitFieldWiseUrls.GET_ADMITCARD_DATA)
+	public Response<Object> getAdmitCardData(@PathParam(value = "patientId") String patientId,
+			@QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("last")@QueryParam(value = "type") String type){
+		
+		Response<Object> response = visitfieldWiseService.getAdmitCardData(doctorId,locationId,hospitalId,patientId,type);
+
+		return response;
+	}
+	
+	@Path(value = PathProxy.VisitFieldWiseUrls.GET_OTNOTES_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.VisitFieldWiseUrls.GET_OTNOTES_DATA, notes = PathProxy.VisitFieldWiseUrls.GET_OTNOTES_DATA)
+	public Response<Object> getOperationNotesData(@PathParam(value = "patientId") String patientId,
+			@QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("last")@QueryParam(value = "type") String type){
+		
+		Response<Object> response = visitfieldWiseService.getOperationNotesData(doctorId,locationId,hospitalId,patientId,type);
 
 		return response;
 	}

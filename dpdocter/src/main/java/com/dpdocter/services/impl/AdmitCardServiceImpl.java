@@ -271,10 +271,10 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 
 	@Transactional
 	@Override
-	public AdmitCardResponse deleteAdmitCard(String cardId, String doctorId, String hospitalId, String locationId,
+	public Boolean deleteAdmitCard(String cardId, String doctorId, String hospitalId, String locationId,
 			Boolean discarded) {
 
-		AdmitCardResponse response = null;
+		Boolean response = false;
 		try {
 			AdmitCardCollection admitCardCollection = admitCardRepository.findById(new ObjectId(cardId)).orElse(null);
 			if (admitCardCollection != null) {
@@ -286,15 +286,15 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 						admitCardCollection.setDiscarded(discarded);
 						admitCardCollection.setUpdatedTime(new Date());
 						admitCardRepository.save(admitCardCollection);
-						response = new AdmitCardResponse();
-						BeanUtil.map(admitCardCollection, response);
-						PatientCollection patientCollection = patientRepository
-								.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(admitCardCollection.getPatientId(),
-										admitCardCollection.getDoctorId(), admitCardCollection.getLocationId(),
-										admitCardCollection.getHospitalId());
-						Patient patient = new Patient();
-						BeanUtil.map(patientCollection, patient);
-						response.setPatient(patient);
+						response = true;
+//						BeanUtil.map(admitCardCollection, response);
+//						PatientCollection patientCollection = patientRepository
+//								.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(admitCardCollection.getPatientId(),
+//										admitCardCollection.getDoctorId(), admitCardCollection.getLocationId(),
+//										admitCardCollection.getHospitalId());
+//						Patient patient = new Patient();
+//						BeanUtil.map(patientCollection, patient);
+//						response.setPatient(patient);
 
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -303,7 +303,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 					}
 				}
 			} else {
-				logger.warn("Discharge Summary not found!");
+				logger.warn("Admit card not found!");
 				throw new BusinessException(ServiceError.NoRecord, "Admit card  not found!");
 			}
 		} catch (Exception e) {

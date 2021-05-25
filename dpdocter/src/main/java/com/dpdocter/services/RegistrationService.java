@@ -145,7 +145,7 @@ public interface RegistrationService {
 	List<ConsentForm> getConcentForm(long page, int size, String patientId, String doctorId, String locationId,
 			String hospitalId, String PID, String searchTerm, boolean discarded, long updatedTime);
 
-	ConsentForm deleteConcentForm(String consentFormId, boolean discarded);
+	Boolean deleteConcentForm(String consentFormId, boolean discarded);
 
 	String downloadConcentForm(String consentFormId);
 

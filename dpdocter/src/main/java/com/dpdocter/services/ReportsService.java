@@ -94,4 +94,10 @@ public interface ReportsService {
 	public OTReports getOTReportById(String reportId);
 
 	public DeliveryReports getDeliveryReportById(String reportId);
+
+	public Boolean deleteIPDReportById(String reportId, Boolean discarded);
+
+	public Boolean deleteDeliveryReportById(String reportId, Boolean discarded);
+
+	public Boolean deleteOTReportById(String reportId, Boolean discarded);
 }

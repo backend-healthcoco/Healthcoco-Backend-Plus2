@@ -1045,9 +1045,9 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM)
 	@DELETE
 	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM, notes = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM)
-	public Response<ConsentForm> deleteConsentForm(@PathParam("consentFormId") String consentFormId,
+	public Response<Boolean> deleteConsentForm(@PathParam("consentFormId") String consentFormId,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-		Response<ConsentForm> response = new Response<ConsentForm>();
+		Response<Boolean> response = new Response<Boolean>();
 		response.setData(registrationService.deleteConcentForm(consentFormId, discarded));
 		return response;
 	}

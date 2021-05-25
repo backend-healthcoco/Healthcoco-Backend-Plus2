@@ -510,9 +510,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@Override
-	public DischargeSummaryResponse deleteDischargeSummary(String dischargeSummeryId, String doctorId,
+	public Boolean deleteDischargeSummary(String dischargeSummeryId, String doctorId,
 			String hospitalId, String locationId, Boolean discarded) {
-		DischargeSummaryResponse response = null;
+		Boolean response = false;
 		try {
 			DischargeSummaryCollection dischargeSummaryCollection = dischargeSummaryRepository
 					.findById(new ObjectId(dischargeSummeryId)).orElse(null);
@@ -525,22 +525,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						dischargeSummaryCollection.setDiscarded(discarded);
 						dischargeSummaryCollection.setUpdatedTime(new Date());
 						dischargeSummaryRepository.save(dischargeSummaryCollection);
-						response = new DischargeSummaryResponse();
-						BeanUtil.map(dischargeSummaryCollection, response);
-						if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPrescriptionId())) {
-							prescriptionServices
-									.getPrescriptionById(dischargeSummaryCollection.getPrescriptionId().toString());
-						}
-
-						if (dischargeSummaryCollection.getDiagrams() != null
-								&& !dischargeSummaryCollection.getDiagrams().isEmpty()) {
-							response.setDiagrams(new ArrayList<String>());
-							for (String img : response.getDiagrams()) {
-								img = getFinalImageURL(img);
-								response.getDiagrams().add(img);
-							}
-
-						}
+						response = true;
+												
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 						throw new BusinessException(ServiceError.InvalidInput,
@@ -1160,6 +1146,51 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getAssistantDoctor())) {
 			parameters.put("assistant", dischargeSummaryCollection.getAssistantDoctor());
 		}
+		if (!dischargeSummaryCollection.getMaterialForHPE()) {
+			parameters.put("materialForHPE", dischargeSummaryCollection.getMaterialForHPE());
+		}
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getRemarks())) {
+			parameters.put("remarks", dischargeSummaryCollection.getRemarks());
+		}
+		
+		if (dischargeSummaryCollection.getAnaesthesiaType() != null) {
+			parameters.put("anaesthesiaType", dischargeSummaryCollection.getAnaesthesiaType());
+		}
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getProvisionalDiagnosis())) {
+			parameters.put("provisionalDiagnosis", dischargeSummaryCollection.getProvisionalDiagnosis());
+		}
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getFinalDiagnosis())) {
+			parameters.put("finalDiagnosis", dischargeSummaryCollection.getFinalDiagnosis());
+		}
+		if (dischargeSummaryCollection.getSurgery() != null) {
+			parameters.put("surgery", dischargeSummaryCollection.getSurgery());
+		}
+		if (dischargeSummaryCollection.getAssistantDoctor() != null) {
+			parameters.put("assitingDoctors", dischargeSummaryCollection.getAssistantDoctor());
+		}
+		if (dischargeSummaryCollection.getAssitingNurses() != null) {
+			parameters.put("assitingNurses", dischargeSummaryCollection.getAssistantDoctor());
+		}
+		if (dischargeSummaryCollection.getOperatingSurgeonAndCost() != null) {
+			parameters.put("operatingSurgeonAndCost", dischargeSummaryCollection.getOperatingSurgeonAndCost());
+		}
+		if (dischargeSummaryCollection.getAnaesthetistAndCost() != null) {
+			parameters.put("anaesthetistAndCost", dischargeSummaryCollection.getAnaesthetistAndCost());
+		}
+		
+		if (dischargeSummaryCollection.getAssitingDoctorsAndCost() != null) {
+			parameters.put("assitingDoctorsAndCost", dischargeSummaryCollection.getAssitingDoctorsAndCost());
+		}
+		if (dischargeSummaryCollection.getPostOperativeOrder() != null) {
+			parameters.put("postOperativeOrder", dischargeSummaryCollection.getPostOperativeOrder());
+		}
+		if (dischargeSummaryCollection.getAssitingNursesAndCost() != null) {
+			parameters.put("assitingNursesAndCost", dischargeSummaryCollection.getAssitingNursesAndCost());
+		}
+		
+		
+		
+		
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getTimeOfEntryInOt())) {
 
 			_24HourTime = String.format("%02d:%02d",
@@ -2686,6 +2717,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			} else if (request.getDischargeSummaryId() != null) {
 				flowsheetCollection = flowsheetRepository
 						.findByDischargeSummaryId(new ObjectId(request.getDischargeSummaryId()));
+				System.out.println("enter in discharge update");
+				
 				if (flowsheetCollection == null) {
 					flowsheetCollection = new FlowsheetCollection();
 					flowsheetCollection
@@ -2721,8 +2754,10 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (request.getDischargeSummaryId() != null) {
 				dischargeSummaryCollection = dischargeSummaryRepository
 						.findById(new ObjectId(request.getDischargeSummaryId())).orElse(null);
-
+				System.out.println("enter 2 edit ");
 			} else {
+				System.out.println("enter add ");
+
 				dischargeSummaryCollection = new DischargeSummaryCollection();
 				dischargeSummaryCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 				dischargeSummaryCollection.setLocationId(new ObjectId(request.getLocationId()));
@@ -2731,6 +2766,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummaryCollection.setDiscarded(false);
 				dischargeSummaryCollection.setFlowSheets(request.getFlowSheets());
 				dischargeSummaryCollection.setMonitoringChart(request.getMonitoringChart());
+				dischargeSummaryCollection.setCreatedTime(new Date());
 				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
 			}
 			flowsheetCollection.setDischargeSummaryId(dischargeSummaryCollection.getId());
@@ -3679,6 +3715,31 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		return recordPath;
 
+	}
+
+	@Override
+	public Boolean deleteFlowSheetsById(String id, Boolean discarded) {
+		Boolean response = false;
+
+		try {
+			
+			FlowsheetCollection flowsheetCollection = flowsheetRepository.findById(new ObjectId(id)).orElse(null);
+			if (flowsheetCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
+			}
+			flowsheetCollection.setDiscarded(discarded);
+			flowsheetCollection.setUpdatedTime(new Date());
+			flowsheetCollection = flowsheetRepository.save(flowsheetCollection);
+
+			response = true;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting flow sheets : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting flow sheets : " + e.getCause().getMessage());
+		}
+		return response;
 	}
 
 }

@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.ClinicalNotes;
+import com.dpdocter.beans.ClinicalNotesResponseFieldWise;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -272,16 +274,17 @@ public class PatientVisitApi {
 	@Path(value = PathProxy.PatientVisitUrls.GET_PATIENT_FIRST_VISIT)
 	@GET
 	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_PATIENT_FIRST_VISIT, notes = PathProxy.PatientVisitUrls.GET_PATIENT_FIRST_VISIT)
-	public Response<PatientVisitResponse> getPatientFirstVisit(@PathParam(value = "doctorId") String doctorId,
+	public Response<ClinicalNotesResponseFieldWise> getPatientFirstVisit(@PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "patientId") String patientId) {
+			@PathParam(value = "patientId") String patientId,@DefaultValue("last")
+			@QueryParam(value = "type") String type) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		PatientVisitResponse patientVisit = patientVisitService.getPatientFirstVisit(doctorId, locationId, hospitalId,
-				patientId);
-		Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
+		ClinicalNotesResponseFieldWise patientVisit = patientVisitService.getPatientFirstVisit(doctorId, locationId, hospitalId,
+				patientId,type);
+		Response<ClinicalNotesResponseFieldWise> response = new Response<ClinicalNotesResponseFieldWise>();
 		response.setData(patientVisit);
 		return response;
 	}
@@ -289,7 +292,7 @@ public class PatientVisitApi {
 	@Path(value = PathProxy.PatientVisitUrls.GET_PATIENT_VISITS_COUNT)
 	@GET
 	@ApiOperation(value = PathProxy.PatientVisitUrls.GET_PATIENT_VISITS_COUNT, notes = PathProxy.PatientVisitUrls.GET_PATIENT_VISITS_COUNT)
-	public Response<PatientVisitResponse> getPatientVisitCount(@PathParam(value = "doctorId") String doctorId,
+	public Response<ClinicalNotes> getPatientVisitCount(@PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "patientId") String patientId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId)) {
@@ -298,7 +301,7 @@ public class PatientVisitApi {
 		}
 		Integer count = patientVisitService.getPatientFirstVisitCount(doctorId, locationId, hospitalId,
 				patientId);
-		Response<PatientVisitResponse> response = new Response<PatientVisitResponse>();
+		Response<ClinicalNotes> response = new Response<ClinicalNotes>();
 		response.setCount(count);
 		return response;
 	}

@@ -3865,8 +3865,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	public ConsentForm deleteConcentForm(String consentFormId, boolean discarded) {
-		ConsentForm response = null;
+	public Boolean deleteConcentForm(String consentFormId, boolean discarded) {
+		Boolean response = false;
 		try {
 			ConsentFormCollection consentFormCollection = consentFormRepository.findById(new ObjectId(consentFormId))
 					.orElse(null);
@@ -3874,9 +3874,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				consentFormCollection.setDiscarded(discarded);
 				consentFormCollection.setUpdatedTime(new Date());
 				consentFormRepository.save(consentFormCollection);
-				response = new ConsentForm();
-				BeanUtil.map(consentFormCollection, response);
-				response.setSignImageURL(getFinalImageURL(response.getSignImageURL()));
+				response = true;
 			} else {
 				logger.warn("Invalid Referrence Id!");
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid consentForm Id!");

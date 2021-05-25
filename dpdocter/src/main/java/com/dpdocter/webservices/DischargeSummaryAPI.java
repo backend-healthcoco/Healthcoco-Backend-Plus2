@@ -142,7 +142,7 @@ public class DischargeSummaryAPI {
 	@Path(value = PathProxy.DischargeSummaryUrls.DELETE_DISCHARGE_SUMMARY)
 	@DELETE
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DELETE_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.DELETE_DISCHARGE_SUMMARY)
-	public Response<DischargeSummaryResponse> deleteDischargeSummary(
+	public Response<Boolean> deleteDischargeSummary(
 			@PathParam(value = "dischargeSummeryId") String dischargeSummeryId,
 			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 			@PathParam(value = "hospitalId") String hospitalId,
@@ -153,9 +153,9 @@ public class DischargeSummaryAPI {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Discharge Summery  Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		DischargeSummaryResponse dischargeSummaryResponse = dischargeSummaryService
+		Boolean dischargeSummaryResponse = dischargeSummaryService
 				.deleteDischargeSummary(dischargeSummeryId, doctorId, hospitalId, locationId, discarded);
-		Response<DischargeSummaryResponse> response = new Response<DischargeSummaryResponse>();
+		Response<Boolean> response = new Response<Boolean>();
 		response.setData(dischargeSummaryResponse);
 		return response;
 	}
@@ -557,6 +557,21 @@ public class DischargeSummaryAPI {
 		}
 		flowsheetResponses = dischargeSummaryService.getFlowSheetsById(id);
 		response = new Response<FlowsheetResponse>();
+		response.setData(flowsheetResponses);
+
+		return response;
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.DELETE_FLOWSHEET_BY_ID)
+	@DELETE
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DELETE_FLOWSHEET_BY_ID, notes = PathProxy.DischargeSummaryUrls.GET_FLOWSHEET_BY_ID)
+	public Response<Boolean> deleteFlowSheetById(@PathParam("id") String id,@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Id is null");
+		}
+		Boolean flowsheetResponses = dischargeSummaryService.deleteFlowSheetsById(id,discarded);
+		Response<Boolean> response = new Response<Boolean>();
 		response.setData(flowsheetResponses);
 
 		return response;

@@ -5,12 +5,18 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.beans.DoctorAndCost;
 import com.dpdocter.beans.FlowSheet;
 import com.dpdocter.beans.MonitoringChart;
+import com.dpdocter.beans.OTReports;
+import com.dpdocter.beans.Surgery;
+import com.dpdocter.beans.TimeDuration;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.beans.v2.Prescription;
+import com.dpdocter.beans.v2.PrescriptionItemDetail;
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.AnaesthesiaTypeEnum;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DischargeSummaryResponse extends GenericCollection {
@@ -77,7 +83,7 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String treatmentAdviceForBaby;
 	private String pediatricianName;
 	private List<FlowSheet> flowSheets;
-	private List<MonitoringChart>monitoringChart;
+	private List<MonitoringChart> monitoringChart;
 	private List<String> diagrams;
 	private String timeOfEntryInOt;
 	private String timeOfExitFromOt;
@@ -94,7 +100,25 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String dischargeOutcome;
 	private String bedLog;
 	private String hospitalCourse;
-	
+
+	// OT fields
+	private AnaesthesiaTypeEnum anaesthesiaType;
+	private String provisionalDiagnosis;
+	private Surgery surgery;
+	private String finalDiagnosis;
+	private String operatingSurgeon;
+	private String anaesthetist;
+	private List<String> assitingDoctors;
+	private List<String> assitingNurses;
+	private Boolean materialForHPE = false;
+	private TimeDuration timeDuration;
+	private String remarks;
+	private DoctorAndCost operatingSurgeonAndCost;
+	private DoctorAndCost anaesthetistAndCost;
+	private List<DoctorAndCost> assitingDoctorsAndCost;
+	private List<DoctorAndCost> assitingNursesAndCost;
+	private List<PrescriptionItemDetail> postOperativeOrder;
+
 	public String getOperationName() {
 		return operationName;
 	}
@@ -454,8 +478,6 @@ public class DischargeSummaryResponse extends GenericCollection {
 	public void setUniqueEmrId(String uniqueEmrId) {
 		this.uniqueEmrId = uniqueEmrId;
 	}
-	
-	
 
 	public List<MonitoringChart> getMonitoringChart() {
 		return monitoringChart;
@@ -463,6 +485,134 @@ public class DischargeSummaryResponse extends GenericCollection {
 
 	public void setMonitoringChart(List<MonitoringChart> monitoringChart) {
 		this.monitoringChart = monitoringChart;
+	}
+
+	public AnaesthesiaTypeEnum getAnaesthesiaType() {
+		return anaesthesiaType;
+	}
+
+	public void setAnaesthesiaType(AnaesthesiaTypeEnum anaesthesiaType) {
+		this.anaesthesiaType = anaesthesiaType;
+	}
+
+	public String getProvisionalDiagnosis() {
+		return provisionalDiagnosis;
+	}
+
+	public void setProvisionalDiagnosis(String provisionalDiagnosis) {
+		this.provisionalDiagnosis = provisionalDiagnosis;
+	}
+
+	public Surgery getSurgery() {
+		return surgery;
+	}
+
+	public void setSurgery(Surgery surgery) {
+		this.surgery = surgery;
+	}
+
+	public String getFinalDiagnosis() {
+		return finalDiagnosis;
+	}
+
+	public void setFinalDiagnosis(String finalDiagnosis) {
+		this.finalDiagnosis = finalDiagnosis;
+	}
+
+	public String getOperatingSurgeon() {
+		return operatingSurgeon;
+	}
+
+	public void setOperatingSurgeon(String operatingSurgeon) {
+		this.operatingSurgeon = operatingSurgeon;
+	}
+
+	public String getAnaesthetist() {
+		return anaesthetist;
+	}
+
+	public void setAnaesthetist(String anaesthetist) {
+		this.anaesthetist = anaesthetist;
+	}
+
+	public List<String> getAssitingDoctors() {
+		return assitingDoctors;
+	}
+
+	public void setAssitingDoctors(List<String> assitingDoctors) {
+		this.assitingDoctors = assitingDoctors;
+	}
+
+	public List<String> getAssitingNurses() {
+		return assitingNurses;
+	}
+
+	public void setAssitingNurses(List<String> assitingNurses) {
+		this.assitingNurses = assitingNurses;
+	}
+
+	public Boolean getMaterialForHPE() {
+		return materialForHPE;
+	}
+
+	public void setMaterialForHPE(Boolean materialForHPE) {
+		this.materialForHPE = materialForHPE;
+	}
+
+	public TimeDuration getTimeDuration() {
+		return timeDuration;
+	}
+
+	public void setTimeDuration(TimeDuration timeDuration) {
+		this.timeDuration = timeDuration;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	public DoctorAndCost getOperatingSurgeonAndCost() {
+		return operatingSurgeonAndCost;
+	}
+
+	public void setOperatingSurgeonAndCost(DoctorAndCost operatingSurgeonAndCost) {
+		this.operatingSurgeonAndCost = operatingSurgeonAndCost;
+	}
+
+	public DoctorAndCost getAnaesthetistAndCost() {
+		return anaesthetistAndCost;
+	}
+
+	public void setAnaesthetistAndCost(DoctorAndCost anaesthetistAndCost) {
+		this.anaesthetistAndCost = anaesthetistAndCost;
+	}
+
+	public List<DoctorAndCost> getAssitingDoctorsAndCost() {
+		return assitingDoctorsAndCost;
+	}
+
+	public void setAssitingDoctorsAndCost(List<DoctorAndCost> assitingDoctorsAndCost) {
+		this.assitingDoctorsAndCost = assitingDoctorsAndCost;
+	}
+
+	public List<DoctorAndCost> getAssitingNursesAndCost() {
+		return assitingNursesAndCost;
+	}
+
+	public void setAssitingNursesAndCost(List<DoctorAndCost> assitingNursesAndCost) {
+		this.assitingNursesAndCost = assitingNursesAndCost;
+	}
+
+	public List<PrescriptionItemDetail> getPostOperativeOrder() {
+		return postOperativeOrder;
+	}
+
+	public void setPostOperativeOrder(List<PrescriptionItemDetail> postOperativeOrder) {
+		this.postOperativeOrder = postOperativeOrder;
 	}
 
 	@Override

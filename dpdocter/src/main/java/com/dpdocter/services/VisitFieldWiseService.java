@@ -6,4 +6,10 @@ public interface VisitFieldWiseService {
 
 	Response<Object> getComplaintData(String doctorId, String locationId, String hospitalId, String patientId);
 
+	Response<Object> getAdmitCardData(String doctorId, String locationId, String hospitalId, String patientId,
+			String type);
+
+	Response<Object> getOperationNotesData(String doctorId, String locationId, String hospitalId, String patientId,
+			String type);
+
 }
