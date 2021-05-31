@@ -3242,6 +3242,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 					if(isActivate==false)
 				pushNotificationServices.notifyUser(userCollection.getId().toString(),
 						" Your Healthcoco+ account has been deactivated", ComponentType.DEACTIVATED.getType(), null, null);
+					else
+						pushNotificationServices.notifyUser(userCollection.getId().toString(),
+								" Your Healthcoco+ account has been activated", ComponentType.SIGNED_UP.getType(), null, null);
+
+				
 				}
 			}
 		} catch (Exception e) {

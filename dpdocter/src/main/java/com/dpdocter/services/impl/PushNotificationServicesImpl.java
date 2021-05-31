@@ -2375,6 +2375,28 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 		      //      info.put("PI",userId);// Notification body
 		            data.put("notification", info);
 				}
+				else if (componentType.equalsIgnoreCase(ComponentType.EMAIL_VERIFICATION.getType())) {
+					
+					
+					
+					data.put("to",pushToken.trim());
+		            info.put("T",componentType ); // Notification title
+		            info.put("body", message);
+		            info.put("EVI",componentTypeId);
+		            
+		            //info.put("PI",userId);// Notification body
+		            data.put("notification", info);
+				}
+				
+				else if (componentType.equalsIgnoreCase(ComponentType.DEACTIVATED.getType())) {
+					data.put("to",pushToken.trim());
+		            info.put("T",componentType ); // Notification title
+		            info.put("body", message);
+		            info.put("RI",componentTypeId);
+		        //    info.put("PI",userId);// Notification body
+		            data.put("notification", info);
+				}
+				
 				else if (componentType.equalsIgnoreCase(ComponentType.REFRESH_VACCINATION.getType())) {
 					customValues.put("RI", "SILENT");
 					customValues.put("T", "VN");
@@ -2456,7 +2478,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
                 response.append(inputLine);
             }
 			
-//            System.out.println("Resonse: " + response);
+           System.out.println("Resonse: " + response);
 			
 			//2nd
 //			  ApsAlert alert =
