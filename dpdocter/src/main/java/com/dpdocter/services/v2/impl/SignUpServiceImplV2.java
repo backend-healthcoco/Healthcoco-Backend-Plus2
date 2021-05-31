@@ -552,6 +552,7 @@ public class SignUpServiceImplV2 implements SignUpService {
 					tokenCollection.setCreatedTime(new Date());
 					tokenCollection = tokenRepository.save(tokenCollection);
 
+					
 					// send activation email
 					String body = mailBodyGenerator
 							.verifyEmailBody(
@@ -560,6 +561,8 @@ public class SignUpServiceImplV2 implements SignUpService {
 									tokenCollection.getId(), "verifyDoctor.vm");
 					Boolean mail = mailService.sendEmail(userCollection.getEmailAddress(), signupRequestSubject, body,
 							null);
+					
+					
 					response = true;
 				}
 
