@@ -114,27 +114,24 @@ public class VisitFieldWiseServiceImpl implements VisitFieldWiseService {
 					.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
 					.and("isPatientDiscarded").ne(true);
 
+			Aggregation aggregation = null;
 			Integer count = (int) mongoTemplate.count(new Query(criteria), AdmitCardCollection.class);
 			response.setCount(count);
-			if (count != 0) {
-				Aggregation aggregation = null;
+			if (type.equalsIgnoreCase("first")) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")), Aggregation.limit(1));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.limit(1));
+			}
+			List<AdmitCardResponseFieldWise> patientVisitlookupbeans = mongoTemplate
+					.aggregate(aggregation, AdmitCardCollection.class, AdmitCardResponseFieldWise.class)
+					.getMappedResults();
 
-				if (type.equalsIgnoreCase("first")) {
-					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")), Aggregation.limit(1));
-				} else {
-					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.limit(1));
-				}
-				List<AdmitCardResponseFieldWise> patientVisitlookupbeans = mongoTemplate
-						.aggregate(aggregation, AdmitCardCollection.class, AdmitCardResponseFieldWise.class)
-						.getMappedResults();
-
-				if (patientVisitlookupbeans != null && !patientVisitlookupbeans.isEmpty()) {
-					System.out.println(patientVisitlookupbeans.size());
-					for (AdmitCardResponseFieldWise patientVisitlookupBean : patientVisitlookupbeans) {
-						response.setData(patientVisitlookupBean);
-					}
+			if (patientVisitlookupbeans != null && !patientVisitlookupbeans.isEmpty()) {
+				System.out.println(patientVisitlookupbeans.size());
+				for (AdmitCardResponseFieldWise patientVisitlookupBean : patientVisitlookupbeans) {
+					response.setData(patientVisitlookupBean);
 				}
 			}
 
@@ -162,25 +159,22 @@ public class VisitFieldWiseServiceImpl implements VisitFieldWiseService {
 
 			Integer count = (int) mongoTemplate.count(new Query(criteria), OTReportsCollection.class);
 			response.setCount(count);
-			if (count != 0) {
-				Aggregation aggregation = null;
+			Aggregation aggregation = null;
 
-				if (type.equalsIgnoreCase("first")) {
-					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")), Aggregation.limit(1));
-				} else {
-					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.limit(1));
-				}
-				List<OTReports> patientVisitlookupbeans = mongoTemplate
-						.aggregate(aggregation, OTReportsCollection.class, OTReports.class)
-						.getMappedResults();
+			if (type.equalsIgnoreCase("first")) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")), Aggregation.limit(1));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.limit(1));
+			}
+			List<OTReports> patientVisitlookupbeans = mongoTemplate
+					.aggregate(aggregation, OTReportsCollection.class, OTReports.class).getMappedResults();
 
-				if (patientVisitlookupbeans != null && !patientVisitlookupbeans.isEmpty()) {
-					System.out.println(patientVisitlookupbeans.size());
-					for (OTReports patientVisitlookupBean : patientVisitlookupbeans) {
-						response.setData(patientVisitlookupBean);
-					}
+			if (patientVisitlookupbeans != null && !patientVisitlookupbeans.isEmpty()) {
+				System.out.println(patientVisitlookupbeans.size());
+				for (OTReports patientVisitlookupBean : patientVisitlookupbeans) {
+					response.setData(patientVisitlookupBean);
 				}
 			}
 
@@ -194,4 +188,54 @@ public class VisitFieldWiseServiceImpl implements VisitFieldWiseService {
 		return response;
 	}
 
+	@Override
+	public Response<Object> getCountOperationNotesData(String doctorId, String locationId, String hospitalId,
+			String patientId) {
+		Response<Object> response = new Response<Object>();
+		try {
+			ObjectId patientObjectId = new ObjectId(patientId), doctorObjectId = new ObjectId(doctorId),
+					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
+
+			Criteria criteria = new Criteria("patientId").is(patientObjectId).and("doctorId").is(doctorObjectId)
+					.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
+					.and("isPatientDiscarded").ne(true).and("discarded").ne(true);
+
+			Integer count = (int) mongoTemplate.count(new Query(criteria), OTReportsCollection.class);
+			response.setCount(count);
+		} catch (Exception e) {
+			e.printStackTrace();
+//		logger.error(e + " Error while geting patient  Visit : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while geting patient admit Card count: " + e.getCause().getMessage());
+		}
+
+		return response;
+
+	}
+
+	@Override
+	public Response<Object> getCountAdmitCardData(String doctorId, String locationId, String hospitalId,
+			String patientId) {
+
+		Response<Object> response = new Response<Object>();
+		try {
+			ObjectId patientObjectId = new ObjectId(patientId), doctorObjectId = new ObjectId(doctorId),
+					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
+
+			Criteria criteria = new Criteria("patientId").is(patientObjectId).and("doctorId").is(doctorObjectId)
+					.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
+					.and("isPatientDiscarded").ne(true);
+
+			Integer count = (int) mongoTemplate.count(new Query(criteria), AdmitCardCollection.class);
+			response.setCount(count);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+//	logger.error(e + " Error while geting patient  Visit : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while geting patient admit Card : " + e.getCause().getMessage());
+		}
+
+		return response;
+	}
 }

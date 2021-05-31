@@ -2520,7 +2520,9 @@ public interface PathProxy {
 		public static final String GET_DATA ="/get/{patientId}";
 		public static final String GET_ASSESSMENT_FORM ="/get";
 		public static final String GET_ADMITCARD_DATA ="/admitcard/{patientId}";
+		public static final String GET_COUNT_ADMITCARD_DATA ="/admitcard/count/{patientId}";
 		public static final String GET_OTNOTES_DATA ="/operationnotes/{patientId}";
+		public static final String GET_COUNT_OTNOTES_DATA ="/operationnotes/count/{patientId}";
 
 
 	}

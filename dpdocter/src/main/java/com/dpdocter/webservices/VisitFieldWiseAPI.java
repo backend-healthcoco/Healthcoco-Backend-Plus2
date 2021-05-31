@@ -57,6 +57,17 @@ public class VisitFieldWiseAPI {
 
 		return response;
 	}
+//	@Path(value = PathProxy.VisitFieldWiseUrls.GET_COUNT_ADMITCARD_DATA)
+//	@GET
+//	@ApiOperation(value = PathProxy.VisitFieldWiseUrls.GET_COUNT_ADMITCARD_DATA, notes = PathProxy.VisitFieldWiseUrls.GET_COUNT_ADMITCARD_DATA)
+//	public Response<Object> getCountAdmitCardData(@PathParam(value = "patientId") String patientId,
+//			@QueryParam(value = "doctorId") String doctorId,
+//			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId){
+//		
+//		Response<Object> response = visitfieldWiseService.getCountAdmitCardData(doctorId,locationId,hospitalId,patientId);
+//
+//		return response;
+//	}
 	
 	@Path(value = PathProxy.VisitFieldWiseUrls.GET_OTNOTES_DATA)
 	@GET
@@ -70,4 +81,16 @@ public class VisitFieldWiseAPI {
 
 		return response;
 	}
+	
+//	@Path(value = PathProxy.VisitFieldWiseUrls.GET_COUNT_OTNOTES_DATA)
+//	@GET
+//	@ApiOperation(value = PathProxy.VisitFieldWiseUrls.GET_COUNT_OTNOTES_DATA, notes = PathProxy.VisitFieldWiseUrls.GET_COUNT_OTNOTES_DATA)
+//	public Response<Object> getCountOperationNotesData(@PathParam(value = "patientId") String patientId,
+//			@QueryParam(value = "doctorId") String doctorId,
+//			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId){
+//		
+//		Response<Object> response = visitfieldWiseService.getCountOperationNotesData(doctorId,locationId,hospitalId,patientId);
+//
+//		return response;
+//	}
 }
