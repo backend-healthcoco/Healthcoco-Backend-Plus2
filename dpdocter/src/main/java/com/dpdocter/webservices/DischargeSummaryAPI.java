@@ -496,7 +496,7 @@ public class DischargeSummaryAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		FlowsheetResponse flowsheetResponse = dischargeSummaryService.addEditFlowSheets(request);
+		FlowsheetResponse flowsheetResponse = dischargeSummaryService.addEditFlowSheets(request,true);
 
 		Response<FlowsheetResponse> response = new Response<FlowsheetResponse>();
 		response.setData(flowsheetResponse);

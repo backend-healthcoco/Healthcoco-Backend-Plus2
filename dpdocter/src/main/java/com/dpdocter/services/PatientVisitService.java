@@ -79,8 +79,10 @@ public interface PatientVisitService {
 			Map<String, Object> parameters, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD,
 			Boolean showNoOfChildren, ClinicalNotesCollection clinicalNotesCollection, Boolean showVitalSign);
 
-	ClinicalNotesResponseFieldWise getPatientFirstVisit(String doctorId, String locationId, String hospitalId, String patientId, String type);
+//	ClinicalNotesResponseFieldWise getPatientFirstVisit(String doctorId, String locationId, String hospitalId, String patientId, String type);
 
 	Integer getPatientFirstVisitCount(String doctorId, String locationId, String hospitalId, String patientId);
+
+	PatientVisitResponse getPatientFirstVisit(String doctorId, String locationId, String hospitalId, String patientId);
 
 }

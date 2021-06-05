@@ -8785,6 +8785,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
+			System.out.println(objectIds);
 			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository.findByIdIn(objectIds);
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				PatientCollection patient = patientRepository.findByUserIdAndDoctorIdAndLocationIdAndHospitalId(

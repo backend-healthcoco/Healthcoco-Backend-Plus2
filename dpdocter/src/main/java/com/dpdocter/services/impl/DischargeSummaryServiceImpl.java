@@ -327,7 +327,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				addEditFlowSheetRequest.setFlowSheets(dischargeSummary.getFlowSheets());
 				addEditFlowSheetRequest.setMonitoringChart(dischargeSummary.getMonitoringChart());
 				addEditFlowSheetRequest.setDischargeSummaryId(dischargeSummaryCollection.getId().toString());
-				addEditFlowSheets(addEditFlowSheetRequest);
+				Boolean isFlowsheet= false;
+				addEditFlowSheets(addEditFlowSheetRequest,isFlowsheet);
 			}
 			response = new DischargeSummaryResponse();
 			BeanUtil.map(dischargeSummaryCollection, response);
@@ -428,7 +429,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						img = getFinalImageURL(img);
 						summaryResponse.getDiagrams().add(img);
 					}
-
 				}
 				response.add(summaryResponse);
 
@@ -514,8 +514,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@Override
-	public Boolean deleteDischargeSummary(String dischargeSummeryId, String doctorId,
-			String hospitalId, String locationId, Boolean discarded) {
+	public Boolean deleteDischargeSummary(String dischargeSummeryId, String doctorId, String hospitalId,
+			String locationId, Boolean discarded) {
 		Boolean response = false;
 		try {
 			DischargeSummaryCollection dischargeSummaryCollection = dischargeSummaryRepository
@@ -530,7 +530,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						dischargeSummaryCollection.setUpdatedTime(new Date());
 						dischargeSummaryRepository.save(dischargeSummaryCollection);
 						response = true;
-												
+
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 						throw new BusinessException(ServiceError.InvalidInput,
@@ -968,18 +968,16 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			parameters.put("referenceName", dischargeSummaryCollection.getReferenceName());
 		}
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getDischargeStatus())) {
-			parameters.put("dischargeStatus",
-					 dischargeSummaryCollection.getDischargeStatus());
+			parameters.put("dischargeStatus", dischargeSummaryCollection.getDischargeStatus());
 		}
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getDischargeOutcome())) {
-			parameters.put("dischargeOutcome",
-					 dischargeSummaryCollection.getDischargeOutcome());
+			parameters.put("dischargeOutcome", dischargeSummaryCollection.getDischargeOutcome());
 		}
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getBedLog())) {
-			parameters.put("bedLog",  dischargeSummaryCollection.getBedLog());
+			parameters.put("bedLog", dischargeSummaryCollection.getBedLog());
 		}
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getHospitalCourse())) {
-			parameters.put("hospitalCourse",dischargeSummaryCollection.getHospitalCourse());
+			parameters.put("hospitalCourse", dischargeSummaryCollection.getHospitalCourse());
 		}
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getBabyNotes())) {
@@ -1151,11 +1149,11 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getAssistantDoctor())) {
 			parameters.put("assistant", dischargeSummaryCollection.getAssistantDoctor());
 		}
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getRemarks())) {
 			parameters.put("remarks", dischargeSummaryCollection.getRemarks());
 		}
-		
+
 		if (dischargeSummaryCollection.getOperationDate() != null) {
 //			SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy");
 			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
@@ -1208,7 +1206,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 		parameters.put("provisionalDiagnosis", dischargeSummaryCollection.getProvisionalDiagnosis());
 		parameters.put("surgeryTitle",
-				dischargeSummaryCollection.getSurgery() != null ? dischargeSummaryCollection.getSurgery().getTitle() : "");
+				dischargeSummaryCollection.getSurgery() != null ? dischargeSummaryCollection.getSurgery().getTitle()
+						: "");
 		parameters.put("finalDiagnosis", dischargeSummaryCollection.getFinalDiagnosis());
 		String nameAndCost = "";
 
@@ -1278,17 +1277,17 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				}
 			}
 		}
-		
-		
+
 		parameters.put("assistingNurse", nameAndCost);
-		
-		//prescription postOrder
+
+		// prescription postOrder
 		int no = 0;
 		Boolean showIntructions = false, showDirection = false, showDrugQty = false;
 
 		if (dischargeSummaryCollection.getPostOperativeOrder() != null
 				&& !dischargeSummaryCollection.getPostOperativeOrder().isEmpty())
-			for (com.dpdocter.beans.v2.PrescriptionItemDetail prescriptionItem : dischargeSummaryCollection.getPostOperativeOrder()) {
+			for (com.dpdocter.beans.v2.PrescriptionItemDetail prescriptionItem : dischargeSummaryCollection
+					.getPostOperativeOrder()) {
 				if (prescriptionItem != null && prescriptionItem.getDrug() != null) {
 					DrugCollection drug = drugRepository.findById(new ObjectId(prescriptionItem.getDrug().getId()))
 							.orElse(null);
@@ -1423,12 +1422,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		parameters.put("showIntructions", showIntructions);
 		parameters.put("showDirection", showDirection);
 		parameters.put("postOrderItems", postOrderItems);
-		
+
+		if(!dischargeSummaryCollection.getMaterialForHPE()) {
 		parameters.put("materialForHPE",
 				dischargeSummaryCollection.getMaterialForHPE() != null && dischargeSummaryCollection.getMaterialForHPE()
-						? "YES"
-						: "NO");
-		
+						? "YES"	: "NO");
+		}
+
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getTimeOfEntryInOt())) {
 
 			_24HourTime = String.format("%02d:%02d",
@@ -2935,10 +2935,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Override
 	@Transactional
-	public FlowsheetResponse addEditFlowSheets(AddEditFlowSheetRequest request) {
-
-		JSONObject jsonObj = new JSONObject(request);
-		System.out.println(jsonObj.toString(4)); // pretty print json
+	public FlowsheetResponse addEditFlowSheets(AddEditFlowSheetRequest request, Boolean isFlowsheet) {
 
 		DischargeSummaryCollection dischargeSummaryCollection = null;
 		FlowsheetResponse response = null;
@@ -2955,8 +2952,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			} else if (request.getDischargeSummaryId() != null) {
 				flowsheetCollection = flowsheetRepository
 						.findByDischargeSummaryId(new ObjectId(request.getDischargeSummaryId()));
-				System.out.println("enter in discharge update");
-				
 				if (flowsheetCollection == null) {
 					flowsheetCollection = new FlowsheetCollection();
 					flowsheetCollection
@@ -2989,25 +2984,22 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				}
 			}
 
-			if (request.getDischargeSummaryId() != null && request.getId() != null) {
+			if (request.getDischargeSummaryId() != null ) {
 				dischargeSummaryCollection = dischargeSummaryRepository
 						.findById(new ObjectId(request.getDischargeSummaryId())).orElse(null);
-				System.out.println("enter 2 edit ");
+				System.out.println(dischargeSummaryCollection);
 				
-//				dischargeSummaryCollection = new DischargeSummaryCollection();
-				dischargeSummaryCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-				dischargeSummaryCollection.setLocationId(new ObjectId(request.getLocationId()));
-				dischargeSummaryCollection.setHospitalId(new ObjectId(request.getHospitalId()));
-				dischargeSummaryCollection.setPatientId(new ObjectId(request.getPatientId()));
-				dischargeSummaryCollection.setDiscarded(false);
-				dischargeSummaryCollection.setFlowSheets(request.getFlowSheets());
-				dischargeSummaryCollection.setMonitoringChart(request.getMonitoringChart());
-				dischargeSummaryCollection.setCreatedTime(new Date());
-				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
-				
-			} else {
-				System.out.println("enter add ");
-
+				if(isFlowsheet) {
+					System.out.println("true edit");
+//					dischargeSummaryCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+//					dischargeSummaryCollection.setPatientId(new ObjectId(request.getPatientId()));
+//					dischargeSummaryCollection.setDiscarded(false);
+					dischargeSummaryCollection.setFlowSheets(request.getFlowSheets());
+					dischargeSummaryCollection.setMonitoringChart(request.getMonitoringChart());
+//					dischargeSummaryCollection.setCreatedTime(new Date());
+					dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
+				}
+			}else {
 				dischargeSummaryCollection = new DischargeSummaryCollection();
 				dischargeSummaryCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 				dischargeSummaryCollection.setLocationId(new ObjectId(request.getLocationId()));
@@ -3119,15 +3111,18 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 		String pattern = "dd/MM/yyyy hh.mm a";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
+
 		List<FlowSheetJasperBean> jasperBeans = null;
 		List<MonitoringChartJasperBean> monitorBeans = null;
+		System.out.println(flowSheets);
 		if (flowSheets != null) {
+			int i = 1;
+			jasperBeans = new ArrayList<FlowSheetJasperBean>();
+			FlowSheetJasperBean jasperBean = null;
 
 			for (FlowSheet flowsheet : flowSheets) {
-				jasperBeans = new ArrayList<FlowSheetJasperBean>();
-				FlowSheetJasperBean jasperBean = null;
-				int i = 1;
-
+				
 				jasperBean = new FlowSheetJasperBean();
 				jasperBean.setNo(i);
 				if (!DPDoctorUtils.anyStringEmpty(flowsheet.getAdvice())) {
@@ -3271,7 +3266,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			parameters.put("flowsheet", jasperBeans);
 		}
 
-		if (monitoringChart != null){
+		if (monitoringChart != null) {
 			pattern = "dd/MM/yyyy hh.mm a";
 			simpleDateFormat = new SimpleDateFormat(pattern);
 			monitorBeans = new ArrayList<MonitoringChartJasperBean>();
@@ -3287,7 +3282,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				}
 				if (flowsheet.getTime() != null) {
 //					jasperBean.setTime("<b>Time:- </b>" + flowsheet.getTime().getFromTime().toString());
-					
+
 					SimpleDateFormat sdfForMins = new SimpleDateFormat("mm");
 					Date dt = sdfForMins.parse(flowsheet.getTime().getFromTime().toString());
 					sdfForMins = new SimpleDateFormat("hh:mm a");
@@ -3345,6 +3340,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
 		List<FlowSheetJasperBean> jasperBeans = null;
 		List<MonitoringChartJasperBean> monitorBeans = null;
 		PrintSettingsCollection printSettings = null;
@@ -3386,6 +3382,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		if (flowsheetCollection.getFlowSheets() != null && !flowsheetCollection.getFlowSheets().isEmpty()) {
 			pattern = "dd/MM/yyyy hh.mm a";
 			simpleDateFormat = new SimpleDateFormat(pattern);
+			simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Kolkata"));
+
 			jasperBeans = new ArrayList<FlowSheetJasperBean>();
 			FlowSheetJasperBean jasperBean = null;
 			int i = 1;
@@ -3986,7 +3984,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		Boolean response = false;
 
 		try {
-			
+
 			FlowsheetCollection flowsheetCollection = flowsheetRepository.findById(new ObjectId(id)).orElse(null);
 			if (flowsheetCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");

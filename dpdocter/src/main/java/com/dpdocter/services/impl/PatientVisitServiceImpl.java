@@ -2575,11 +2575,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 				if (patientDetails.getShowDOB()) {
 					if (!DPDoctorUtils.anyStringEmpty(age, gender))
-						patientDetailList.add("<b>Age | Gender: </b>" + dob+(age) + " | " + gender);
+						patientDetailList.add("<b>DOB(Age) | Gender: </b>" + dob+" ("+age+")"+ " | " + gender);
 					else if (!DPDoctorUtils.anyStringEmpty(age))
-						patientDetailList.add("<b>Age | Gender: </b>" + dob+(age) + " | --");
+						patientDetailList.add("<b>DOB(Age) | Gender: </b>" + dob+" ("+age+")" + " | --");
 					else if (!DPDoctorUtils.anyStringEmpty(gender))
-						patientDetailList.add("<b>Age | Gender: </b>-- | " + gender);
+						patientDetailList.add("<b>DOB(Age) | Gender: </b>-- | " + gender);
 				}
 			}
 			if (!DPDoctorUtils.anyStringEmpty(uniqueEMRId))
@@ -4088,9 +4088,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	@Override
-	public ClinicalNotesResponseFieldWise getPatientFirstVisit(String doctorId, String locationId, String hospitalId,
-			String patientId,String type) {
-		ClinicalNotesResponseFieldWise response = null;
+	public PatientVisitResponse getPatientFirstVisit(String doctorId, String locationId, String hospitalId,
+			String patientId) {
+		PatientVisitResponse response = null;
 		try {
 
 			ObjectId patientObjectId = new ObjectId(patientId), doctorObjectId = new ObjectId(doctorId),
@@ -4100,23 +4100,85 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
 					.and("isPatientDiscarded").ne(true);
 
-			Aggregation aggregation = null;
-			if(type.equalsIgnoreCase("first")){
-			 aggregation = Aggregation.newAggregation(Aggregation.match(criteria),					
-					Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")), Aggregation.limit(1));
-			}else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),					
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.limit(1));
-			}
-			List<ClinicalNotesResponseFieldWise> patientVisitlookupbeans = mongoTemplate
-					.aggregate(aggregation, ClinicalNotesCollection.class, ClinicalNotesResponseFieldWise.class)
-					.getMappedResults();
+//			Aggregation aggregation = null;
+//			if(type.equalsIgnoreCase("first")){
+//			 aggregation = Aggregation.newAggregation(Aggregation.match(criteria),					
+//					Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")), Aggregation.limit(1));
+//			}else {
+//				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),					
+//						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.limit(1));
+//			}
+//			List<ClinicalNotesResponseFieldWise> patientVisitlookupbeans = mongoTemplate
+//					.aggregate(aggregation, ClinicalNotesCollection.class, ClinicalNotesResponseFieldWise.class)
+//					.getMappedResults();
+//			
+//			if (patientVisitlookupbeans != null && !patientVisitlookupbeans.isEmpty()) {
+//				for (ClinicalNotesResponseFieldWise patientVisitlookupBean : patientVisitlookupbeans) {
+//					response = new ClinicalNotesResponseFieldWise();
+//					BeanUtil.map(patientVisitlookupBean, response);
+//				}
+//			}
 			
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+					new CustomAggregationOperation(new Document("$unwind",
+							new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
+									true))),
+					Aggregation.sort(new Sort(Sort.Direction.ASC, "createdTime")), Aggregation.limit(1));
+
+			List<PatientVisitLookupBean> patientVisitlookupbeans = mongoTemplate
+					.aggregate(aggregation, PatientVisitCollection.class, PatientVisitLookupBean.class)
+					.getMappedResults();
+
 			if (patientVisitlookupbeans != null && !patientVisitlookupbeans.isEmpty()) {
-				for (ClinicalNotesResponseFieldWise patientVisitlookupBean : patientVisitlookupbeans) {
-					response = new ClinicalNotesResponseFieldWise();
+				for (PatientVisitLookupBean patientVisitlookupBean : patientVisitlookupbeans) {
+					response = new PatientVisitResponse();
 					BeanUtil.map(patientVisitlookupBean, response);
+
+					if (patientVisitlookupBean.getPrescriptionId() != null) {
+						List<Prescription> prescriptions = prescriptionServices.getPrescriptionsByIds(
+								patientVisitlookupBean.getPrescriptionId(), patientVisitlookupBean.getId());
+						response.setPrescriptions(prescriptions);
+					}
+
+					if (patientVisitlookupBean.getClinicalNotesId() != null) {
+						List<ClinicalNotes> clinicalNotes = new ArrayList<ClinicalNotes>();
+						for (ObjectId clinicalNotesId : patientVisitlookupBean.getClinicalNotesId()) {
+							ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(clinicalNotesId.toString(),
+									patientVisitlookupBean.getId());
+							if (clinicalNote != null) {
+								if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
+									clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
+								}
+								clinicalNotes.add(clinicalNote);
+							}
+						}
+						response.setClinicalNotes(clinicalNotes);
+					}
+
+					if (patientVisitlookupBean.getRecordId() != null) {
+						List<Records> records = recordsService.getRecordsByIds(patientVisitlookupBean.getRecordId(),
+								patientVisitlookupBean.getId());
+						response.setRecords(records);
+					}
+
+					if (patientVisitlookupBean.getTreatmentId() != null) {
+						List<PatientTreatment> patientTreatment = patientTreatmentServices.getPatientTreatmentByIds(
+								patientVisitlookupBean.getTreatmentId(), patientVisitlookupBean.getId());
+						response.setPatientTreatment(patientTreatment);
+					}
+
+					if (patientVisitlookupBean.getEyePrescriptionId() != null) {
+						EyePrescription eyePrescription = prescriptionServices
+								.getEyePrescription(String.valueOf(patientVisitlookupBean.getEyePrescriptionId()));
+						response.setEyePrescription(eyePrescription);
+
+					}
+					break;
 				}
+			} else {
+				throw new BusinessException(ServiceError.NotFound,
+						"Error while geting patient first Visit : first Visit not found");
 			}
 
 		} catch (Exception e) {

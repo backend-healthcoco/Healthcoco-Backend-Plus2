@@ -71,7 +71,7 @@ public interface DischargeSummaryService {
 	void emailDischargeSummaryForWeb(String dischargeSummeryId, String doctorId, String locationId, String hospitalId,
 			String emailAddress);
 
-	FlowsheetResponse addEditFlowSheets(AddEditFlowSheetRequest request);
+	FlowsheetResponse addEditFlowSheets(AddEditFlowSheetRequest request,Boolean isFlowsheet);
 
 	List<FlowsheetResponse> getFlowSheets(String doctorId, String locationId, String hospitalId, String patientId,
 			int page, int size, String updatedTime, Boolean discarded);
@@ -87,4 +87,5 @@ public interface DischargeSummaryService {
 	String uploadDischargeSummaryMultipart(FormDataBodyPart file);
 
 	Boolean deleteFlowSheetsById(String id, Boolean discarded);
+
 }

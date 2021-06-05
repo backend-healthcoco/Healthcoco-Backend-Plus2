@@ -302,6 +302,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 
 		if (componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType())) {
+			
 			if (parameters.get("clinicalNotes") != null)
 				((JRDesignSection) jasperDesign.getDetailSection()).addBand(createClinicalNotesSubreport(parameters,
 						contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));

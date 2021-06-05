@@ -3,6 +3,8 @@ package com.dpdocter.services.impl;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -2249,6 +2251,12 @@ public class BillingServiceImpl implements BillingService {
 
 			if (patientCard != null && patientCard.getDob() != null && patientCard.getDob().getAge() != null) {
 				Age ageObj = patientCard.getDob().getAge();
+				LocalDate dob = null;
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+				if(patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0 && patientCard.getDob().getYears() > 0) {
+				 dob = LocalDate.parse(patientCard.getDob().getDays()+"/"+patientCard.getDob().getMonths()
+						+"/"+patientCard.getDob().getYears(), formatter);
+				}
 				if (ageObj.getYears() > 14)
 					age = ageObj.getYears() + "yrs";
 				else {
@@ -2274,11 +2282,11 @@ public class BillingServiceImpl implements BillingService {
 
 				if (patientDetails.getShowDOB()) {
 					if (!DPDoctorUtils.anyStringEmpty(age, gender))
-						patientDetailList.add("<b>Age | Gender: </b>" + age + " | " + gender);
+						patientDetailList.add("<b>DOB(Age) | Gender: </b>" + dob+" ("+age+")"+ " | " + gender);
 					else if (!DPDoctorUtils.anyStringEmpty(age))
-						patientDetailList.add("<b>Age | Gender: </b>" + age + " | --");
+						patientDetailList.add("<b>DOB(Age) | Gender: </b>" + dob+" ("+age+")" + " | --");
 					else if (!DPDoctorUtils.anyStringEmpty(gender))
-						patientDetailList.add("<b>Age | Gender: </b>-- | " + gender);
+						patientDetailList.add("<b>DOB(Age) | Gender: </b>-- | " + gender);
 				}
 			}
 			if (!DPDoctorUtils.anyStringEmpty(uniqueEMRId))
