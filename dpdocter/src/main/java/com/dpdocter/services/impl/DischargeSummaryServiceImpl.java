@@ -1423,7 +1423,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		parameters.put("showDirection", showDirection);
 		parameters.put("postOrderItems", postOrderItems);
 
-		if(!dischargeSummaryCollection.getMaterialForHPE()) {
+		if(dischargeSummaryCollection.getMaterialForHPE()) {
 		parameters.put("materialForHPE",
 				dischargeSummaryCollection.getMaterialForHPE() != null && dischargeSummaryCollection.getMaterialForHPE()
 						? "YES"	: "NO");
