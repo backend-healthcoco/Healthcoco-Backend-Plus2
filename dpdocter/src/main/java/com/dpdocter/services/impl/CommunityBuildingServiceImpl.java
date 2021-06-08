@@ -204,5 +204,48 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 		}
 		return response;
 	}
+	
+	@Override
+	public Comment deleteCommentsById(String id,String userId) {
+		Comment response = null;
+		try {
+			CommentCollection collection = commentRepository.findByIdAndUserId(new ObjectId(id),new ObjectId(userId));
+			if (collection == null)
+				throw new BusinessException(ServiceError.NoRecord, "No record found");
+			else {
+				collection.setDiscarded(true);
+				commentRepository.save(collection);
+				response = new Comment();
+				BeanUtil.map(collection, response);
+			}
+
+		} catch (BusinessException e) {
+			logger.error("Error while deleting comments " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while deleting comments");
+		}
+		return response;
+	}
+	
+	
+	@Override
+	public ForumResponse deleteForumResponseById(String id,String userId) {
+		ForumResponse response = null;
+		try {
+			ForumResponseCollection collection = forumRepository.findByIdAndUserId(new ObjectId(id),new ObjectId(userId)).orElse(null);
+			if (collection == null)
+				throw new BusinessException(ServiceError.NoRecord, "No recound found");
+			else {
+				collection.setDiscarded(true);
+				forumRepository.save(collection);
+				response = new ForumResponse();
+				BeanUtil.map(collection, response);
+			}
+
+		} catch (BusinessException e) {
+			logger.error("Error while get by forum " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while get by forum");
+		}
+		return response;
+	}
 
 }

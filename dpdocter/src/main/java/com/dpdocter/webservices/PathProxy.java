@@ -2534,5 +2534,7 @@ public interface PathProxy {
 		public static final String GET_FORUM_RESPONSES = "forum/get";
 		public static final String GET_FORUM_RESPONSE_BY_ID = "forum/{id}/get";
 		public static final String ADD_EDIT_COMMENTS = "/addEditComments";
+		public static final String DELETE_COMMENT_BY_ID = "comment/delete";
+		public static final String DELETE_FORUM_BY_ID = "forum/delete";
 	}
 }

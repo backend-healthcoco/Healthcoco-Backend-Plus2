@@ -16,4 +16,8 @@ public interface CommunityBuildingService {
 	ForumResponse getForumResponseById(String id);
 
 	Comment addEditComment(CommentRequest request);
+
+	Comment deleteCommentsById(String id, String userId);
+
+	ForumResponse deleteForumResponseById(String id, String userId);
 }

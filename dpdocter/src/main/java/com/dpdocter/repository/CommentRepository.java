@@ -10,6 +10,6 @@ import com.dpdocter.collections.ForumResponseCollection;
 
 public interface CommentRepository extends MongoRepository<CommentCollection,ObjectId>{
 
-	Optional<CommentCollection> findByIdAndUserId(ObjectId id, ObjectId userId);
+	CommentCollection findByIdAndUserId(ObjectId id, ObjectId userId);
 
 }
