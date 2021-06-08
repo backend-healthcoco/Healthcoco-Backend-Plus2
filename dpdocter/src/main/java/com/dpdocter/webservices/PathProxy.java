@@ -2526,4 +2526,13 @@ public interface PathProxy {
 
 
 	}
+	
+	public static final String COMMUNITY_BUILDING_BASE_URL = BASE_URL + "/communityBuilding";
+
+	public interface CommunityBuildingUrls {
+		public static final String ADD_EDIT_FORUM = "forum/addEdit";
+		public static final String GET_FORUM_RESPONSES = "forum/get";
+		public static final String GET_FORUM_RESPONSE_BY_ID = "forum/{id}/get";
+		public static final String ADD_EDIT_COMMENTS = "/addEditComments";
+	}
 }
