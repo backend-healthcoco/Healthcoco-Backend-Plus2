@@ -2,12 +2,10 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.dpdocter.enums.CommunityType;
-
 public class CommentRequest {
-	
+
 	private String id;
-	
+
 	private String postId;
 
 	private String userName;
@@ -15,10 +13,8 @@ public class CommentRequest {
 	private String userId;
 
 	private String comment;
-	
-	private CommunityType type;
-	
-	private Boolean discarded=false;
+
+	private Boolean discarded = false;
 
 	public String getPostId() {
 		return postId;
@@ -52,16 +48,6 @@ public class CommentRequest {
 		this.comment = comment;
 	}
 
-	
-
-	public CommunityType getType() {
-		return type;
-	}
-
-	public void setType(CommunityType type) {
-		this.type = type;
-	}
-
 	public Boolean getDiscarded() {
 		return discarded;
 	}
@@ -77,6 +63,5 @@ public class CommentRequest {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
-	
+
 }

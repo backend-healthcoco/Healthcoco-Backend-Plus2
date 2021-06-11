@@ -21,6 +21,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -1599,7 +1600,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 	}
 
 	public void broadcastPushNotificationOnAndroidDevices(List<String> deviceIds, List<String> pushTokens,
-			String message, String imageURL, String role, String deviceType) {
+			String message, String imageURL, String role, String deviceType, String string) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			Sender sender = null;
@@ -2552,70 +2553,70 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 		} 
 	}
 	
-	public void broadcastPushNotificationOnIosDevices(List<String> deviceIds, List<String> pushToken, String message,
-			String imageURL, String deviceType, String role) {
-		try {
-			ApnsService service = null;
-			if (isEnvProduction) {
-				if (deviceType.equalsIgnoreCase(DeviceType.IOS.getType())) {
-					if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
-						service = APNS.newService()
-								.withCert(iosCertificateFileNameDoctorApp, iosCertificatePasswordDoctorApp)
-								.withProductionDestination().build();
-					} else {
-						service = APNS.newService()
-								.withCert(iosCertificateFileNamePatientApp, iosCertificatePasswordPatientApp)
-								.withProductionDestination().build();
-					}
-				} else {
-					if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
-						service = APNS.newService()
-								.withCert(ipadCertificateFileNameDoctorApp, ipadCertificatePasswordDoctorApp)
-								.withProductionDestination().build();
-					} else {
-						service = APNS.newService()
-								.withCert(ipadCertificateFileNamePatientApp, ipadCertificatePasswordPatientApp)
-								.withProductionDestination().build();
-					}
-				}
-			} else {
-				if (deviceType.equalsIgnoreCase(DeviceType.IOS.getType())) {
-					if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
-						service = APNS.newService()
-								.withCert(iosCertificateFileNameDoctorApp, iosCertificatePasswordDoctorApp)
-								.withSandboxDestination().build();
-					} else {
-						service = APNS.newService()
-								.withCert(iosCertificateFileNamePatientApp, iosCertificatePasswordPatientApp)
-								.withSandboxDestination().build();
-					}
-				} else {
-					if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
-						service = APNS.newService()
-								.withCert(ipadCertificateFileNameDoctorApp, ipadCertificatePasswordDoctorApp)
-								.withSandboxDestination().build();
-					} else {
-						service = APNS.newService()
-								.withCert(ipadCertificateFileNamePatientApp, ipadCertificatePasswordPatientApp)
-								.withSandboxDestination().build();
-					}
-				}
-			}
-
-			Map<String, Object> customValues = new HashMap<String, Object>();
-			if (!DPDoctorUtils.anyStringEmpty(imageURL))
-				customValues.put("img", imageURL);
-			String payload = APNS.newPayload().alertBody(message).sound(iosNotificationSoundFilepath)
-					.customFields(customValues).build();
-			service.push(pushToken, payload);
-
-			PushNotificationCollection pushNotificationCollection = new PushNotificationCollection(null, deviceIds,
-					message, DeviceType.valueOf(deviceType.toUpperCase()), null, PushNotificationType.BROADCAST);
-			pushNotificationRepository.save(pushNotificationCollection);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	public void broadcastPushNotificationOnIosDevices(List<String> deviceIds, List<String> pushToken, String message,
+//			String imageURL, String deviceType, String role) {
+//		try {
+//			ApnsService service = null;
+//			if (isEnvProduction) {
+//				if (deviceType.equalsIgnoreCase(DeviceType.IOS.getType())) {
+//					if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
+//						service = APNS.newService()
+//								.withCert(iosCertificateFileNameDoctorApp, iosCertificatePasswordDoctorApp)
+//								.withProductionDestination().build();
+//					} else {
+//						service = APNS.newService()
+//								.withCert(iosCertificateFileNamePatientApp, iosCertificatePasswordPatientApp)
+//								.withProductionDestination().build();
+//					}
+//				} else {
+//					if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
+//						service = APNS.newService()
+//								.withCert(ipadCertificateFileNameDoctorApp, ipadCertificatePasswordDoctorApp)
+//								.withProductionDestination().build();
+//					} else {
+//						service = APNS.newService()
+//								.withCert(ipadCertificateFileNamePatientApp, ipadCertificatePasswordPatientApp)
+//								.withProductionDestination().build();
+//					}
+//				}
+//			} else {
+//				if (deviceType.equalsIgnoreCase(DeviceType.IOS.getType())) {
+//					if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
+//						service = APNS.newService()
+//								.withCert(iosCertificateFileNameDoctorApp, iosCertificatePasswordDoctorApp)
+//								.withSandboxDestination().build();
+//					} else {
+//						service = APNS.newService()
+//								.withCert(iosCertificateFileNamePatientApp, iosCertificatePasswordPatientApp)
+//								.withSandboxDestination().build();
+//					}
+//				} else {
+//					if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
+//						service = APNS.newService()
+//								.withCert(ipadCertificateFileNameDoctorApp, ipadCertificatePasswordDoctorApp)
+//								.withSandboxDestination().build();
+//					} else {
+//						service = APNS.newService()
+//								.withCert(ipadCertificateFileNamePatientApp, ipadCertificatePasswordPatientApp)
+//								.withSandboxDestination().build();
+//					}
+//				}
+//			}
+//
+//			Map<String, Object> customValues = new HashMap<String, Object>();
+//			if (!DPDoctorUtils.anyStringEmpty(imageURL))
+//				customValues.put("img", imageURL);
+//			String payload = APNS.newPayload().alertBody(message).sound(iosNotificationSoundFilepath)
+//					.customFields(customValues).build();
+//			service.push(pushToken, payload);
+//
+//			PushNotificationCollection pushNotificationCollection = new PushNotificationCollection(null, deviceIds,
+//					message, DeviceType.valueOf(deviceType.toUpperCase()), null, PushNotificationType.BROADCAST);
+//			pushNotificationRepository.save(pushNotificationCollection);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -2644,7 +2645,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				if (pushTokens != null && !pushTokens.isEmpty()) {
 					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
 							new ArrayList<String>(pushTokens), request.getMessage(), imageUrl,
-							RoleEnum.DOCTOR.getRole(), DeviceType.ANDROID.getType());
+							RoleEnum.DOCTOR.getRole(), DeviceType.ANDROID.getType(), imageUrl);
 				}
 
 				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.DOCTOR.getRole(),
@@ -2655,7 +2656,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				if (pushTokens != null && !pushTokens.isEmpty()) {
 					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
 							new ArrayList<String>(pushTokens), request.getMessage(), imageUrl,
-							RoleEnum.DOCTOR.getRole(), DeviceType.ANDROID_PAD.getType());
+							RoleEnum.DOCTOR.getRole(), DeviceType.ANDROID_PAD.getType(), imageUrl);
 				}
 
 				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.DOCTOR.getRole(),
@@ -2688,7 +2689,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				if (pushTokens != null && !pushTokens.isEmpty()) {
 					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
 							new ArrayList<String>(pushTokens), request.getMessage(), imageUrl,
-							RoleEnum.PATIENT.getRole(), DeviceType.ANDROID.getType());
+							RoleEnum.PATIENT.getRole(), DeviceType.ANDROID.getType(), imageUrl);
 				}
 
 				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.PATIENT.getRole(),
@@ -2699,7 +2700,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				if (pushTokens != null && !pushTokens.isEmpty()) {
 					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
 							new ArrayList<String>(pushTokens), request.getMessage(), imageUrl,
-							RoleEnum.PATIENT.getRole(), DeviceType.ANDROID_PAD.getType());
+							RoleEnum.PATIENT.getRole(), DeviceType.ANDROID_PAD.getType(), imageUrl);
 				}
 
 				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.PATIENT.getRole(),
@@ -2732,7 +2733,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				if (pushTokens != null && !pushTokens.isEmpty()) {
 					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
 							new ArrayList<String>(pushTokens), request.getMessage(), imageUrl,
-							RoleEnum.DOCTOR.getRole(), DeviceType.ANDROID.getType());
+							RoleEnum.DOCTOR.getRole(), DeviceType.ANDROID.getType(), imageUrl);
 				}
 
 				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.DOCTOR.getRole(),
@@ -2743,7 +2744,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				if (pushTokens != null && !pushTokens.isEmpty()) {
 					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
 							new ArrayList<String>(pushTokens), request.getMessage(), imageUrl,
-							RoleEnum.DOCTOR.getRole(), DeviceType.ANDROID_PAD.getType());
+							RoleEnum.DOCTOR.getRole(), DeviceType.ANDROID_PAD.getType(), imageUrl);
 				}
 
 				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.DOCTOR.getRole(),
@@ -2776,7 +2777,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				if (pushTokens != null && !pushTokens.isEmpty()) {
 					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
 							new ArrayList<String>(pushTokens), request.getMessage(), imageUrl,
-							RoleEnum.PATIENT.getRole(), DeviceType.ANDROID.getType());
+							RoleEnum.PATIENT.getRole(), DeviceType.ANDROID.getType(), imageUrl);
 				}
 
 				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.PATIENT.getRole(),
@@ -2787,7 +2788,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				if (pushTokens != null && !pushTokens.isEmpty()) {
 					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
 							new ArrayList<String>(pushTokens), request.getMessage(), imageUrl,
-							RoleEnum.PATIENT.getRole(), DeviceType.ANDROID_PAD.getType());
+							RoleEnum.PATIENT.getRole(), DeviceType.ANDROID_PAD.getType(), imageUrl);
 				}
 
 				deviceCollections = userDeviceRepository.findByRoleAndDeviceType(RoleEnum.PATIENT.getRole(),
@@ -3017,7 +3018,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 		deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
 		if (pushTokens != null && !pushTokens.isEmpty() && deviceIds != null && !deviceIds.isEmpty()) {
 			broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
-					new ArrayList<String>(pushTokens), message, null, role.toString(), DeviceType.ANDROID.getType());
+					new ArrayList<String>(pushTokens), message, null, role.toString(), DeviceType.ANDROID.getType(), message);
 			response = true;
 		}
 
@@ -4124,7 +4125,292 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public Boolean notifyAll(RoleEnum role, List<ObjectId>userIds, String message) {
+		Boolean response = false;
+		System.out.println("userIds"+userIds.size());
+		List<UserDeviceCollection> deviceCollections = null;
+		Collection<String> pushTokens = null;
+		Collection<String> deviceIds = null;
+		if (role.getRole().equals(RoleEnum.PHARMIST.getRole())) {
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria().and("role").is(role)
+					.and("deviceType").is(DeviceType.ANDROID.getType()).and("localeId").in(userIds)));
+			deviceCollections = mongoTemplate
+					.aggregate(aggregation, UserDeviceCollection.class, UserDeviceCollection.class).getMappedResults();
+			pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));
+			deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
+			if (pushTokens != null && !pushTokens.isEmpty() && deviceIds != null && !deviceIds.isEmpty()) {
+				broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
+						new ArrayList<String>(pushTokens), message, null, null, role.toString(),
+						DeviceType.ANDROID.getType());
+			}
+		} else if(role.getRole().equals(RoleEnum.PATIENT.getRole())) {
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria().and("role").is(role)
+					.and("deviceType").is(DeviceType.ANDROID.getType()).and("userIds").in(userIds)));
+			deviceCollections = mongoTemplate
+					.aggregate(aggregation, UserDeviceCollection.class, UserDeviceCollection.class).getMappedResults();
+			pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));
+			deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
+			if (pushTokens != null && !pushTokens.isEmpty() && deviceIds != null && !deviceIds.isEmpty()) {
+				broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
+						new ArrayList<String>(pushTokens), message,null, null, role.toString(),
+						DeviceType.ANDROID.getType());
+//				broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
+//						new ArrayList<String>(pushTokens), message, null, DeviceType.ANDROID.getType(), role);
+			}
 
+			aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria().and("role").is(role)
+					.and("deviceType").is(DeviceType.ANDROID_PAD.getType()).and("userIds").in(userIds)));
+			deviceCollections = mongoTemplate
+					.aggregate(aggregation, UserDeviceCollection.class, UserDeviceCollection.class).getMappedResults();
+			pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));
+			deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
+			if (pushTokens != null && !pushTokens.isEmpty() && deviceIds != null && !deviceIds.isEmpty()) {
+				broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
+						new ArrayList<String>(pushTokens), message, null, null, role.toString(),
+						DeviceType.ANDROID_PAD.getType());
+			}
+			aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria().and("role").is(role)
+					.and("deviceType").is(DeviceType.IOS.getType()).and("userIds").in(userIds)));
+			deviceCollections = mongoTemplate
+					.aggregate(aggregation, UserDeviceCollection.class, UserDeviceCollection.class).getMappedResults();
+			pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));
+			deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
+			if (pushTokens != null && !pushTokens.isEmpty()) {
+				broadcastPushNotificationOnIosDevices(new ArrayList<String>(deviceIds),
+						new ArrayList<String>(pushTokens), message, null, DeviceType.IOS.getType(), role.toString());
+			}
+			aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria().and("role").is(role)
+					.and("deviceType").is(DeviceType.IPAD.getType()).and("userIds").in(userIds)));
+			deviceCollections = mongoTemplate
+					.aggregate(aggregation, UserDeviceCollection.class, UserDeviceCollection.class).getMappedResults();
+			pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));
+			deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
+			if (pushTokens != null && !pushTokens.isEmpty()) {
+				broadcastPushNotificationOnIosDevices(new ArrayList<String>(deviceIds),
+						new ArrayList<String>(pushTokens), message, null, DeviceType.IPAD.getType(), role.toString());
+			}
+		}
 
+		else if(role.getRole().equals(RoleEnum.DOCTOR.getRole())) {
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria().and("role").is(role)
+					.and("deviceType").is(DeviceType.ANDROID.getType()).and("userIds").in(userIds)));
+			deviceCollections = mongoTemplate
+					.aggregate(aggregation, UserDeviceCollection.class, UserDeviceCollection.class).getMappedResults();
+			pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));
+			deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
+			if (pushTokens != null && !pushTokens.isEmpty() && deviceIds != null && !deviceIds.isEmpty()) {
+				broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
+						new ArrayList<String>(pushTokens), message, null, null, role.toString(),
+						DeviceType.ANDROID.getType());
+//				broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
+//						new ArrayList<String>(pushTokens), message, null, DeviceType.ANDROID.getType(), role);
+
+			}
+
+			aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria().and("role").is(role)
+					.and("deviceType").is(DeviceType.ANDROID_PAD.getType()).and("userIds").in(userIds)));
+			deviceCollections = mongoTemplate
+					.aggregate(aggregation, UserDeviceCollection.class, UserDeviceCollection.class).getMappedResults();
+			pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));
+			deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
+			if (pushTokens != null && !pushTokens.isEmpty() && deviceIds != null && !deviceIds.isEmpty()) {
+				broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
+						new ArrayList<String>(pushTokens), message, null, null, role.toString(),
+						DeviceType.ANDROID_PAD.getType());
+			}
+			aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria().and("role").is(role)
+					.and("deviceType").is(DeviceType.IOS.getType()).and("userIds").in(userIds)));
+			deviceCollections = mongoTemplate
+					.aggregate(aggregation, UserDeviceCollection.class, UserDeviceCollection.class).getMappedResults();
+			pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));
+			deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
+			if (pushTokens != null && !pushTokens.isEmpty()) {
+				broadcastPushNotificationOnIosDevices(new ArrayList<String>(deviceIds),
+						new ArrayList<String>(pushTokens), message, null, DeviceType.IOS.getType(), role.toString());
+			}
+			aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria().and("role").is(role)
+					.and("deviceType").is(DeviceType.IPAD.getType()).and("userIds").in(userIds)));
+			deviceCollections = mongoTemplate
+					.aggregate(aggregation, UserDeviceCollection.class, UserDeviceCollection.class).getMappedResults();
+			pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));
+			deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
+			if (pushTokens != null && !pushTokens.isEmpty()) {
+				broadcastPushNotificationOnIosDevices(new ArrayList<String>(deviceIds),
+						new ArrayList<String>(pushTokens), message, null, DeviceType.IPAD.getType(), role.toString());
+			}
+		}
+
+		
+		response = true;
+
+		return response;
+	}
+
+	
+	public void broadcastPushNotificationOnIosDevices(List<String> deviceIds, List<String> pushToken, String message,
+			String imageURL, String deviceType, String role) {
+		
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			
+			 JSONObject data = new JSONObject();
+	            JSONObject info = new JSONObject();
+			
+			
+			JSONObject notification = new JSONObject();
+			JSONObject send = new JSONObject();
+			JSONArray devices = new JSONArray();
+		//	pushToken.add("d486pxyUVUbxizOkUSPOqc:APA91bEJ8U8DlLsBZass7rQBNcY7M1HjOZWY77g9JmgAiBkK-wwO6lVSNTtTKm7IiExX0jxc6YefDFhcB_3eE2T3zAE2U7SpXk7o8YsHsk433FacK7v78Bda817Y3FcPqeo2GOUrwxKL");
+			devices.put(pushToken);
+			for (int i = 0; i < pushToken.size(); i++) {
+				devices.put(pushToken.get(i));
+            }
+			
+			System.out.println("pushToken"+devices.length()); 
+			Boolean isSilent = false;
+			Map<String, Object> customValues = new HashMap<String, Object>();
+							
+					data.put("registration_ids",devices);
+		            info.put("title","Broadcast Notification" ); // Notification title
+		            info.put("body", message);
+		         //   info.put("RI",componentTypeId);
+		        //    info.put("PI",userId);// Notification body
+		            data.put("notification", info);
+			
+			
+		//	String jsonOutput = mapper.writeValueAsString(notification);
+	//1st
+//			com.google.firebase.messaging.Message messageObj=com.google.firebase.messaging.Message.builder().putData("Message",customValues.toString()).setToken(pushToken).build();
+//			System.out.println("messageObj"+messageObj);
+//			System.out.println("pushToken"+pushToken);
+//	
+//			
+//			System.out.println("send"+send);
+			
+		//	account = rayzorpayClient.VirtualAccounts.create(orderRequest);
+			
+			String url="https://fcm.googleapis.com/fcm/send";
+//			 
+//			// String authStringEnc = Base64.getEncoder().encodeToString(authStr.getBytes());
+			URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+//
+//			
+			con.setDoOutput(true);
+//			
+//			System.out.println(con.getErrorStream());
+			con.setDoInput(true);
+//			// optional default is POST
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Content-Type","application/json");
+			con.setRequestProperty("Authorization","key="+DOCTOR_IOS_SERVICES_API_KEY  );
+
+			if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
+				// sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
+				if (deviceType.equalsIgnoreCase(DeviceType.IOS.getType())) {
+					con.setRequestProperty("Authorization","key="+DOCTOR_IOS_SERVICES_API_KEY);
+				}
+				//	else {
+//					sender = new FCMSender(DOCTOR_PAD_GEOCODING_SERVICES_API_KEY);
+//				}
+
+			} else {
+				// sender = new Sender(PATIENT_GEOCODING_SERVICES_API_KEY);
+				con.setRequestProperty("Authorization","key="+PATIENT_IOS_SERVICES_API_KEY);
+			}
+			
+            
+            System.out.println(data.toString());
+            OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
+            wr.write(data.toString());
+            wr.flush();
+            wr.close();
+
+            int responseCode = con.getResponseCode();
+            System.out.println("Response Code : " + responseCode);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+			
+            System.out.println("Resonse: " + response);
+			
+			//2nd
+//			  ApsAlert alert =
+//	                    ApsAlert.builder()
+//	                        .setTitle("title")
+//	                        .setBody(message)
+//	                        .build();
+//			  System.out.println("alert"+alert);
+//	                 Aps aps =
+//	                    Aps.builder()
+//	                        .setAlert(alert)
+//	                        .setContentAvailable(false)
+//	                        .setMutableContent(true)
+//	                        .setSound("default")
+//	                        .build();
+//	                 
+//	                 System.out.println("Aps"+aps);
+//	                 ApnsConfig apnsConfig =
+//	                    ApnsConfig.builder()
+//	                        .setAps(aps).putAllCustomData(customValues)
+//	                        
+//	                        .build();
+//	                 System.out.println("apnsConfig"+apnsConfig);
+//	   com.google.firebase.messaging.Message         messageObj =
+//	                    com.google.firebase.messaging.Message.builder()
+//	                        .setToken(pushToken)
+//	                        .setApnsConfig(apnsConfig)
+//	                        .build();
+//	
+//		//	sender.send(messageObj,pushToken, 1);
+//	   System.out.println("pushToken"+pushToken);
+//	   
+//	           //     System.out.println("messageObj"+messageObj);
+//	   FileInputStream serviceAccount =
+//               new FileInputStream(DOCTOR_FIREBASE_JSON);
+//	   FirebaseOptions options = new FirebaseOptions.Builder().setCredentials(GoogleCredentials.fromStream(serviceAccount))
+//	              
+//               .setDatabaseUrl("https://healthcocoplus-1383.firebaseio.com")
+//     
+//               .build();
+//	   
+//	 
+//	  // FirebaseApp fire=FirebaseApp.initializeApp(options);
+//	   
+//	   FirebaseApp fire = null;
+//	    List<FirebaseApp> firebaseApps = FirebaseApp.getApps();
+//	    if(firebaseApps!=null && !firebaseApps.isEmpty()){
+//	        for(FirebaseApp app : firebaseApps){
+//	            if(app.getName().equals(FirebaseApp.DEFAULT_APP_NAME))
+//	                fire = app;
+//	        }
+//	    }
+//	    else
+//	        fire = FirebaseApp.initializeApp(options); 
+//	   
+//	   System.out.println(""+pushToken);
+//	   String response=FirebaseMessaging.getInstance(fire).send(messageObj);
+			
+			PushNotificationCollection pushNotificationCollection = new PushNotificationCollection(null, deviceIds,
+					message, DeviceType.IOS, null, PushNotificationType.INDIVIDUAL);
+			pushNotificationRepository.save(pushNotificationCollection);
+			logger.info("Message Result: " + response.toString());
+		} 
+//		catch (FirebaseMessagingException jpe) {
+//			jpe.printStackTrace();
+//		} 
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+
+	}
 
 }

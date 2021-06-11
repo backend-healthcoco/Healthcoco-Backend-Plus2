@@ -13,7 +13,7 @@ public class LanguageCollection extends GenericCollection {
 	
 	@Field
 	private String name;
-	
+	@Field
 	private Boolean discarded=Boolean.FALSE;
 
 	public ObjectId getId() {

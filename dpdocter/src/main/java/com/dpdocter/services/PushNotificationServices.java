@@ -31,5 +31,7 @@ public interface PushNotificationServices {
 
 	void notifyUserTwilio(String userId, String message, String componentType, String componentTypeId, String room,
 			String title, List<UserDeviceCollection> userDevices, String callType);
+	
+	public Boolean notifyAll(RoleEnum role, List<ObjectId>userIds, String message);
 
 }

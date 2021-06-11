@@ -2,6 +2,8 @@ package com.dpdocter.services.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,16 +19,23 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.Comment;
 import com.dpdocter.beans.CommentRequest;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.FeedsRequest;
+import com.dpdocter.beans.FeedsResponse;
 import com.dpdocter.beans.ForumRequest;
 import com.dpdocter.beans.ForumResponse;
 import com.dpdocter.collections.CommentCollection;
+import com.dpdocter.collections.FeedsCollection;
 import com.dpdocter.collections.ForumResponseCollection;
+import com.dpdocter.collections.LanguageCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CommentRepository;
+import com.dpdocter.repository.FeedsRepository;
 import com.dpdocter.repository.ForumResponseRepository;
+import com.dpdocter.repository.LanguageRepository;
 import com.dpdocter.services.CommunityBuildingService;
+import com.dpdocter.services.PushNotificationServices;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -45,6 +54,15 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 	
 	@Autowired
 	private CommentRepository commentRepository;
+	
+	@Autowired
+	private FeedsRepository feedsRepository;
+	
+	@Autowired
+	private LanguageRepository languageRepository;
+	
+	@Autowired
+	private PushNotificationServices pushNotificationService;
 
 	@Override
 	public ForumResponse addEditForumResponse(ForumRequest request) {
@@ -110,7 +128,7 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
-						Aggregation.lookup("comment_cl","postId" ,"_id","comments"),
+						Aggregation.lookup("comment_cl", "_id","postId", "comments"),
 						Aggregation.unwind("comments"),
 						Aggregation.match(new Criteria("comments.discarded").is(false)),
 						Aggregation.match(criteria),group,
@@ -119,7 +137,7 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 
 			} else {
 				aggregation = Aggregation.newAggregation(
-						Aggregation.lookup("comment_cl","postId" ,"_id","comments"),
+						Aggregation.lookup("comment_cl", "_id","postId", "comments"),
 						Aggregation.unwind("comments"),
 						Aggregation.match(new Criteria("comments.discarded").is(false)),
 						Aggregation.match(criteria),group,
@@ -155,7 +173,7 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 			Aggregation aggregation = null;
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("_id").is(new ObjectId(id))),
-					Aggregation.lookup("comment_cl","postId" ,"_id","comments"),
+					Aggregation.lookup("comment_cl", "_id","postId", "comments"),
 					Aggregation.unwind("comments"),
 					Aggregation.match(new Criteria("comments.discarded").is(false)),
 					group,
@@ -247,5 +265,261 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 		}
 		return response;
 	}
+	
+	@Override
+	public List<FeedsResponse> getLearningSession(int page, int size, Boolean discarded, String searchTerm,
+			String languageId, String type) {
+		List<FeedsResponse> response = null;
+		try {
+			Criteria criteria = new Criteria();
+			if (discarded != null)
+				criteria.and("discarded").is(discarded);
+
+			LanguageCollection collection = null;
+			if (DPDoctorUtils.anyStringEmpty(languageId)) {
+				collection = languageRepository.findByName("English");
+				languageId = collection.getId().toString();
+			}
+//			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+//				criteria = criteria.orOperator(new Criteria("multilingual.text").regex("^" + searchTerm, "i"),
+//						new Criteria("multilingual.text").regex("^" + searchTerm));
+			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
+					new BasicDBObject("_id", "$_id").append("user", "$user")
+					.append("multilingual.languageId", "$multilingual.languageId")
+					.append("multilingual.name", "$multilingual.name")
+					.append("multilingual.text", "$multilingual.text")
+					.append("multilingual.imageUrl", "$multilingual.imageUrl")
+					.append("multilingual.thumbnailUrl", "$multilingual.thumbnailUrl")
+					.append("multilingual.videoUrl", "$multilingual.videoUrl")
+					.append("type", "$type")
+					.append("postByAdminId", "$postByAdminId")
+					.append("type", "$type")
+					.append("postByAdminName", "$postByAdminName")
+					.append("postByDoctorId", "$postByDoctorId")
+					.append("doctorName", "$doctorName")
+					.append("postByExpertName", "$postByExpertName")
+					.append("postByExpertId", "$postByExpertId")
+					.append("userIds", "$userIds")
+					.append("isSaved", "$isSaved")
+					.append("likes", "$likes")
+					.append("discarded", "$discarded")
+					.append("comments", "$comments")));
+			
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
+					new BasicDBObject("_id", "$_id")
+					.append("user", new BasicDBObject("$first", "$user"))
+					.append("multilingual", new BasicDBObject("$first", "$multilingual"))
+					.append("type", new BasicDBObject("$first", "$type"))
+					.append("postByAdminId", new BasicDBObject("$first", "$postByAdminId"))
+					.append("postByAdminName", new BasicDBObject("$first", "$postByAdminName"))
+					.append("postByDoctorId", new BasicDBObject("$first", "$postByDoctorId"))
+					.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+					.append("postByExpertName", new BasicDBObject("$first", "$postByExpertName"))
+					.append("postByExpertId", new BasicDBObject("$first", "$postByExpertId"))
+					.append("comments", new BasicDBObject("$addToSet", "$comments"))
+					.append("comments", new BasicDBObject("$addToSet", "$comments"))
+					.append("userIds", new BasicDBObject("$addToSet", "$userIds"))
+					.append("user", new BasicDBObject("$first", "$user"))
+					.append("isSaved", new BasicDBObject("$first", "$isSaved"))
+					.append("user", new BasicDBObject("$first", "$user"))
+					.append("likes", new BasicDBObject("$first", "$likes"))
+						.append("title", new BasicDBObject("$first", "$title"))
+						.append("discarded", new BasicDBObject("$first", "$discarded"))
+						.append("comments", new BasicDBObject("$addToSet", "$comments"))));
+
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation =  Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size),
+						Aggregation.lookup("comment_cl", "_id","postId", "comments"),
+						Aggregation.unwind("comments"),
+						Aggregation.match(new Criteria("comments.discarded").is(false)),group,
+						Aggregation.unwind("multilingual", true),
+						Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),
+						 Aggregation.match(criteria));
+
+			} else {
+				aggregation = Aggregation.newAggregation(
+						Aggregation.lookup("comment_cl", "_id","postId", "comments"),
+						Aggregation.unwind("comments"),
+						Aggregation.match(new Criteria("comments.discarded").is(false)),group,
+						Aggregation.unwind("multilingual", true),
+						Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),
+						
+//						
+//						Aggregation.match(new Criteria("user.isUser").is(true)),
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			}
+			response = mongoTemplate.aggregate(aggregation, FeedsCollection.class, FeedsResponse.class)
+					.getMappedResults();
+
+		} catch (BusinessException e) {
+			logger.error("Error while getting feeds " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while getting feeds");
+		}
+		return response;
+	}
+	
+	
+	@Override
+	public FeedsResponse getArticleById(String id, String languageId) {
+		FeedsResponse response = null;
+		try {
+			LanguageCollection collection=null;
+			if (DPDoctorUtils.anyStringEmpty(languageId)) {
+				collection = languageRepository.findByName("English");
+				languageId = collection.getId().toString();
+			}
+			
+			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
+					new BasicDBObject("_id", "$_id").append("user", "$user")
+					.append("multilingual.languageId", "$multilingual.languageId")
+					.append("multilingual.name", "$multilingual.name")
+					.append("multilingual.text", "$multilingual.text")
+					.append("multilingual.imageUrl", "$multilingual.imageUrl")
+					.append("multilingual.thumbnailUrl", "$multilingual.thumbnailUrl")
+					.append("multilingual.videoUrl", "$multilingual.videoUrl")
+					.append("type", "$type")
+					.append("postByAdminId", "$postByAdminId")
+					.append("type", "$type")
+					.append("postByAdminName", "$postByAdminName")
+					.append("postByDoctorId", "$postByDoctorId")
+					.append("doctorName", "$doctorName")
+					.append("postByExpertName", "$postByExpertName")
+					.append("postByExpertId", "$postByExpertId")
+					.append("userIds", "$userIds")
+					.append("isSaved", "$isSaved")
+					.append("likes", "$likes")
+					.append("discarded", "$discarded")
+					.append("comments", "$comments")));
+			
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
+					new BasicDBObject("_id", "$_id")
+					.append("user", new BasicDBObject("$first", "$user"))
+					.append("multilingual", new BasicDBObject("$first", "$multilingual"))
+					.append("type", new BasicDBObject("$first", "$type"))
+					.append("postByAdminId", new BasicDBObject("$first", "$postByAdminId"))
+					.append("postByAdminName", new BasicDBObject("$first", "$postByAdminName"))
+					.append("postByDoctorId", new BasicDBObject("$first", "$postByDoctorId"))
+					.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+					.append("postByExpertName", new BasicDBObject("$first", "$postByExpertName"))
+					.append("postByExpertId", new BasicDBObject("$first", "$postByExpertId"))
+					
+					.append("userIds", new BasicDBObject("$addToSet", "$userIds"))
+					.append("user", new BasicDBObject("$first", "$user"))
+					.append("isSaved", new BasicDBObject("$first", "$isSaved"))
+					.append("user", new BasicDBObject("$first", "$user"))
+					.append("likes", new BasicDBObject("$first", "$likes"))
+						.append("title", new BasicDBObject("$first", "$title"))
+						.append("discarded", new BasicDBObject("$first", "$discarded"))
+						.append("comments", new BasicDBObject("$addToSet", "$comments"))));
+
+			
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.match(new Criteria("_id").is(new ObjectId(id))),
+					Aggregation.unwind("multilingual", true),
+					Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),
+					Aggregation.lookup("comment_cl", "_id","postId", "comments"),
+					Aggregation.unwind("comments"),
+					Aggregation.match(new Criteria("comments.discarded").is(false)),group
+					);
+
+			System.out.println("Aggregation"+aggregation);
+			response = mongoTemplate.aggregate(aggregation, FeedsCollection.class, FeedsResponse.class)
+					.getUniqueMappedResult();
+
+			if (response == null)
+				throw new BusinessException(ServiceError.NoRecord, "No record found");
+
+		} catch (BusinessException e) {
+			logger.error("Error while getting records byId " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while get by records Id");
+		}
+		return response;
+	}
+	
+	
+	@Override
+	public FeedsResponse deleteFeedsById(String id,String doctorId) {
+		FeedsResponse response = null;
+		try {
+			FeedsCollection collection = feedsRepository.findByIdAndPostByDoctorId(new ObjectId(id),new ObjectId(doctorId));
+			if (collection == null)
+				throw new BusinessException(ServiceError.NoRecord, "No recound found");
+			else {
+				collection.setDiscarded(true);
+				feedsRepository.save(collection);
+				response = new FeedsResponse();
+				BeanUtil.map(collection, response);
+			}
+
+		} catch (BusinessException e) {
+			logger.error("Error while get by forum " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while get by forum");
+		}
+		return response;
+	}
+	
+	
+	@Override
+	public FeedsResponse addEditPost(FeedsRequest request) {
+		FeedsResponse response = null;
+		try {
+			FeedsCollection collection = null;
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				collection = feedsRepository.findById(new ObjectId(request.getId())).orElse(null);
+				if (collection != null) {
+
+					BeanUtil.map(request, collection);
+					
+					if (request.getMultilingual() != null) {
+						collection.setMultilingual(null);
+						collection.setMultilingual(request.getMultilingual());
+					}
+
+					collection.setUpdatedTime(new Date());
+					feedsRepository.save(collection);
+				} else
+					throw new BusinessException(ServiceError.NoRecord);
+			} else {
+				collection = new FeedsCollection();
+				BeanUtil.map(request, collection);
+				collection.setCreatedTime(new Date());
+				collection.setUpdatedTime(new Date());
+				feedsRepository.save(collection);
+				if(collection.getUser()!=null)
+				notify(collection);
+			}
+			response = new FeedsResponse();
+			BeanUtil.map(collection, response);
+			
+
+		} catch (BusinessException e) {
+			logger.error("Error while addEdit post " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while addEdit post");
+		}
+		return response;
+	}
+	
+	void notify(FeedsCollection collection)
+	{
+		Aggregation aggregation=null;
+		
+		 aggregation = Aggregation.newAggregation(
+				Aggregation.match(new Criteria("user.userId").exists(true)),
+				Aggregation.match(new Criteria("user.userId").nin(collection.getUser().getUserId())),
+				 Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+		List<FeedsCollection>feeds=mongoTemplate.aggregate(aggregation,FeedsCollection.class,FeedsCollection.class).getMappedResults();
+		Stream<FeedsCollection> stream=feeds.stream();
+		List<String>userIds=stream.map(feed->feed.getUser().getUserId()).collect(Collectors.toList());
+		List<ObjectId>userObjectIds=userIds.stream().map(ObjectId::new).collect(Collectors.toList());
+		
+		String message="New message from "+collection.getUser().getUserName()+"in the forum.";		
+		pushNotificationService.notifyAll(null, userObjectIds,message);
+	}
+
 
 }

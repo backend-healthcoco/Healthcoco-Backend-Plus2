@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.dpdocter.beans.Comment;
 import com.dpdocter.beans.CommentRequest;
+import com.dpdocter.beans.FeedsRequest;
+import com.dpdocter.beans.FeedsResponse;
 import com.dpdocter.beans.ForumRequest;
 import com.dpdocter.beans.ForumResponse;
 import com.dpdocter.exceptions.BusinessException;
@@ -114,6 +116,55 @@ private static Logger logger = LogManager.getLogger(CommunityBuildingApi.class.g
 			@QueryParam( value = "doctorId") String doctorId) {
 		Response<ForumResponse> response = new Response<ForumResponse>();
 		response.setData(communityBuildingServices.deleteForumResponseById(id, doctorId));
+		return response;
+	}
+	
+	@DELETE
+	@Path(value = PathProxy.CommunityBuildingUrls.DELETE_ARTICLE_BY_ID)
+	@ApiOperation(value = PathProxy.CommunityBuildingUrls.DELETE_ARTICLE_BY_ID, notes = PathProxy.CommunityBuildingUrls.DELETE_ARTICLE_BY_ID)
+	public Response<FeedsResponse> deleteFeeds(
+			@QueryParam( value = "id") String id,@QueryParam( value = "doctorId") String doctorId) {
+		Response<FeedsResponse> response = new Response<FeedsResponse>();
+		response.setData(communityBuildingServices.deleteFeedsById(id,doctorId));
+		return response;
+	}
+	
+	@POST
+	@Path(value = PathProxy.CommunityBuildingUrls.ADD_EDIT_ARTICLES)
+	@ApiOperation(value = PathProxy.CommunityBuildingUrls.ADD_EDIT_ARTICLES, notes = PathProxy.CommunityBuildingUrls.ADD_EDIT_ARTICLES)
+	public Response<FeedsResponse> addEditFeeds(@RequestBody FeedsRequest request) {
+
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		
+
+		Response<FeedsResponse> response = new Response<FeedsResponse>();
+		response.setData(communityBuildingServices.addEditPost(request));
+		return response;
+	}
+	
+	@GET
+	@Path(value = PathProxy.CommunityBuildingUrls.GET_ARTICLE_BY_ID)
+	@ApiOperation(value = PathProxy.CommunityBuildingUrls.GET_ARTICLE_BY_ID, notes = PathProxy.CommunityBuildingUrls.GET_ARTICLE_BY_ID)
+	public Response<FeedsResponse> getArticlesById(@PathParam(value = "id") String id,
+			@QueryParam(value = "languageId") String languageId) {
+		Response<FeedsResponse> response = new Response<FeedsResponse>();
+		response.setData(communityBuildingServices.getArticleById(id, languageId));
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.CommunityBuildingUrls.GET_ARTICLES)
+	@ApiOperation(value = PathProxy.CommunityBuildingUrls.GET_ARTICLES, notes = PathProxy.CommunityBuildingUrls.GET_ARTICLES)
+	public Response<FeedsResponse> getLearningSession(@DefaultValue("0")@QueryParam(value ="size") int size, 
+			@DefaultValue("0")	@QueryParam( value ="page") int page,
+			@QueryParam(value ="discarded") Boolean discarded, 
+			@QueryParam(value ="searchTerm") String searchTerm,
+			@QueryParam(value ="languageId") String languageId) {
+		Response<FeedsResponse> response = new Response<FeedsResponse>();
+		response.setDataList(communityBuildingServices.getLearningSession(page, size, discarded, searchTerm, languageId,null));
 		return response;
 	}
 	

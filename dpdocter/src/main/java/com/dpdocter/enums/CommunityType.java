@@ -2,7 +2,8 @@ package com.dpdocter.enums;
 
 public enum CommunityType {
 
-POST("POST"),LEARNING_SESSION("LEARNING_SESSION"),ARTICLES("ARTICLES"),FORUM("FORUM");
+
+	POST("POST"),LEARNING_SESSION("LEARNING_SESSION"),ARTICLES("ARTICLES"),FORUM("FORUM");
 	
 	private String type;
 

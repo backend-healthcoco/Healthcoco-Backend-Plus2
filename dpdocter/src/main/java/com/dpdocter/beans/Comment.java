@@ -1,7 +1,8 @@
 package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.CommunityType;
+import com.dpdocter.enums.CommunityDignosed;
+
 
 public class Comment extends GenericCollection {
 	
@@ -15,7 +16,7 @@ public class Comment extends GenericCollection {
 
 	private String postId;
 
-	private CommunityType type;
+	
 	
 	private Boolean discarded=false;
 
@@ -53,13 +54,7 @@ public class Comment extends GenericCollection {
 
 	
 
-	public CommunityType getType() {
-		return type;
-	}
-
-	public void setType(CommunityType type) {
-		this.type = type;
-	}
+	
 
 	public Boolean getDiscarded() {
 		return discarded;

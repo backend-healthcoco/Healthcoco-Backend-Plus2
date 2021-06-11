@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.MedicineOrderImages;
 import com.dpdocter.beans.MedicineOrderItems;
+import com.dpdocter.beans.RxNotes;
 import com.dpdocter.beans.UserAddress;
 import com.dpdocter.enums.DeliveryPreferences;
 import com.dpdocter.enums.OrderStatus;
@@ -44,6 +45,8 @@ public class MedicineOrderCollection extends GenericCollection {
 	private List<MedicineOrderItems> items;
 	@Field
 	private List<MedicineOrderImages> rxImage;
+	@Field
+	private List<RxNotes>rxNotes;
 	@Field
 	private Float totalAmount;
 	@Field
@@ -298,5 +301,15 @@ public class MedicineOrderCollection extends GenericCollection {
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
 	}
+
+	public List<RxNotes> getRxNotes() {
+		return rxNotes;
+	}
+
+	public void setRxNotes(List<RxNotes> rxNotes) {
+		this.rxNotes = rxNotes;
+	}
+	
+	
 
 }
