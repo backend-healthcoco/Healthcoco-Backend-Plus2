@@ -23,6 +23,7 @@ public class MedicineOrder extends GenericCollection {
 	private String uniqueOrderId;
 	private List<MedicineOrderAddEditItems> items;
 	private List<MedicineOrderImages> rxImage;
+	private List<RxNotes>rxNotes;
 	private Float totalAmount;
 	private Float discountedAmount;
 	private Float discountedPercentage;
@@ -260,6 +261,16 @@ public class MedicineOrder extends GenericCollection {
 
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
+	}
+	
+	
+
+	public List<RxNotes> getRxNotes() {
+		return rxNotes;
+	}
+
+	public void setRxNotes(List<RxNotes> rxNotes) {
+		this.rxNotes = rxNotes;
 	}
 
 	@Override
