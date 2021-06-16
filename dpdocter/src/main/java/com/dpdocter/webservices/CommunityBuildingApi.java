@@ -24,8 +24,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.dpdocter.beans.Comment;
 import com.dpdocter.beans.CommentRequest;
+import com.dpdocter.beans.Feeds;
 import com.dpdocter.beans.FeedsRequest;
 import com.dpdocter.beans.FeedsResponse;
+import com.dpdocter.beans.Forum;
 import com.dpdocter.beans.ForumRequest;
 import com.dpdocter.beans.ForumResponse;
 import com.dpdocter.exceptions.BusinessException;
@@ -70,12 +72,15 @@ private static Logger logger = LogManager.getLogger(CommunityBuildingApi.class.g
 	@GET
 	@Path(value = PathProxy.CommunityBuildingUrls.GET_FORUM_RESPONSES)
 	@ApiOperation(value = PathProxy.CommunityBuildingUrls.GET_FORUM_RESPONSES, notes = PathProxy.CommunityBuildingUrls.GET_FORUM_RESPONSES)
-	public Response<ForumResponse> getForumResponse(@DefaultValue("0")@QueryParam(value ="size") int size, 
+	public Response<Object> getForumResponse(@DefaultValue("0")@QueryParam(value ="size") int size, 
 			@DefaultValue("0")	@QueryParam( value ="page") int page,
 			@QueryParam(value ="discarded") Boolean discarded, 
 			@QueryParam(value ="searchTerm") String searchTerm) {
-		Response<ForumResponse> response = new Response<ForumResponse>();
-		response.setDataList(communityBuildingServices.getForumResponse(page, size, searchTerm, discarded));
+		
+		Response<Object> response=communityBuildingServices.getForumResponse(page, size, searchTerm, discarded);
+		//Response<Forum> response = new Response<Forum>();
+		//response.setCount(communityBuildingServices.getForumCount(searchTerm, discarded));
+		//response.setDataList(communityBuildingServices.getForumResponse(page, size, searchTerm, discarded));
 		return response;
 	}
 	
@@ -155,16 +160,19 @@ private static Logger logger = LogManager.getLogger(CommunityBuildingApi.class.g
 		return response;
 	}
 	
-	
+	@GET
 	@Path(value = PathProxy.CommunityBuildingUrls.GET_ARTICLES)
 	@ApiOperation(value = PathProxy.CommunityBuildingUrls.GET_ARTICLES, notes = PathProxy.CommunityBuildingUrls.GET_ARTICLES)
-	public Response<FeedsResponse> getLearningSession(@DefaultValue("0")@QueryParam(value ="size") int size, 
+	public Response<Object> getLearningSession(@DefaultValue("0")@QueryParam(value ="size") int size, 
 			@DefaultValue("0")	@QueryParam( value ="page") int page,
 			@QueryParam(value ="discarded") Boolean discarded, 
 			@QueryParam(value ="searchTerm") String searchTerm,
 			@QueryParam(value ="languageId") String languageId) {
-		Response<FeedsResponse> response = new Response<FeedsResponse>();
-		response.setDataList(communityBuildingServices.getLearningSession(page, size, discarded, searchTerm, languageId,null));
+	
+		Response<Object> response=communityBuildingServices.getLearningSession(page, size, discarded, searchTerm, languageId, null);
+		//	Response<Feeds> response = new Response<Feeds>();
+	//	response.setCount(communityBuildingServices.getArticlesCount(discarded, searchTerm, languageId,null));
+	//	response.setDataList(communityBuildingServices.getLearningSession(page, size, discarded, searchTerm, languageId,null));
 		return response;
 	}
 	

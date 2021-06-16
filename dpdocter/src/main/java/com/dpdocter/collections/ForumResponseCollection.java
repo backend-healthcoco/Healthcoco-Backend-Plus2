@@ -17,6 +17,9 @@ public class ForumResponseCollection extends GenericCollection {
 	@Field
 	private ObjectId userId;
 	@Field
+	private String userName;
+	
+	@Field
 	private String text;
 
 	@Field
@@ -63,5 +66,17 @@ public class ForumResponseCollection extends GenericCollection {
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	
+	
+	
 
 }

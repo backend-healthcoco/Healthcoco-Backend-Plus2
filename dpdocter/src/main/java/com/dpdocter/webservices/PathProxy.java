@@ -2541,4 +2541,14 @@ public interface PathProxy {
 		public static final String DELETE_ARTICLE_BY_ID = "articles/delete";
 		public static final String GET_ARTICLES = "articles/get";
 	}
+	
+	public static final String LANGUAGE_BASE_URL = BASE_URL + "/language";
+	
+	public interface LanguageUrls {
+
+		public static final String GET_LANGUAGE_BY_ID = "/{id}/get";
+		public static final String GET_LANGUAGES = "/get";
+	
+	}
+
 }

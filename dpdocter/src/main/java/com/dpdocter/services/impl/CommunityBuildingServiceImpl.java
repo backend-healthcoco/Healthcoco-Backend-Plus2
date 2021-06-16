@@ -14,13 +14,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.Comment;
 import com.dpdocter.beans.CommentRequest;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.Feeds;
 import com.dpdocter.beans.FeedsRequest;
 import com.dpdocter.beans.FeedsResponse;
+import com.dpdocter.beans.Forum;
 import com.dpdocter.beans.ForumRequest;
 import com.dpdocter.beans.ForumResponse;
 import com.dpdocter.collections.CommentCollection;
@@ -39,6 +42,7 @@ import com.dpdocter.services.PushNotificationServices;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
 
 @Service
 public class CommunityBuildingServiceImpl implements CommunityBuildingService{
@@ -102,8 +106,9 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 	}
 
 	@Override
-	public List<ForumResponse> getForumResponse(int page, int size, String searchTerm, Boolean discarded) {
-		List<ForumResponse> response = null;
+	public Response<Object> getForumResponse(int page, int size, String searchTerm, Boolean discarded) {
+		Response<Object> response=new Response<Object>();
+		List<Forum> forum = null;
 		try {
 			Criteria criteria = new Criteria();
 			if (discarded != null)
@@ -112,6 +117,8 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				criteria = criteria.orOperator(new Criteria("text").regex("^" + searchTerm, "i"),
 						new Criteria("text").regex("^" + searchTerm));
+			
+			long count=mongoTemplate.count(new Query(criteria),ForumResponseCollection.class);
 			
 			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
 					new BasicDBObject("_id", "$_id").append("userId", "$userId").append("userName", "$userName")
@@ -128,28 +135,69 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 			Aggregation aggregation = null;
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
-						Aggregation.lookup("comment_cl", "_id","postId", "comments"),
-						Aggregation.unwind("comments"),
-						Aggregation.match(new Criteria("comments.discarded").is(false)),
-						Aggregation.match(criteria),group,
+					//	Aggregation.lookup("comment_cl", "_id","postId", "comments"),
+					//	Aggregation.unwind("comments"),
+					//	Aggregation.match(new Criteria("comments.discarded").is(false)),
+						Aggregation.match(criteria),
+				//		group,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 
 			} else {
 				aggregation = Aggregation.newAggregation(
-						Aggregation.lookup("comment_cl", "_id","postId", "comments"),
-						Aggregation.unwind("comments"),
-						Aggregation.match(new Criteria("comments.discarded").is(false)),
-						Aggregation.match(criteria),group,
+				//		Aggregation.lookup("comment_cl", "_id","postId", "comments"),
+				//		Aggregation.unwind("comments"),
+				//		Aggregation.match(new Criteria("comments.discarded").is(false)),
+						Aggregation.match(criteria),
+				//		group,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			}
-			response = mongoTemplate.aggregate(aggregation, ForumResponseCollection.class, ForumResponse.class)
+			forum = mongoTemplate.aggregate(aggregation, ForumResponseCollection.class, Forum.class)
 					.getMappedResults();
+			
+			response.setDataList(forum);
 
 		} catch (BusinessException e) {
 			logger.error("Error while getting forum "+e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error while getting forum");
+		}
+		return response;
+	}
+	
+	@Override
+	public Integer getForumCount( String searchTerm, Boolean discarded) {
+		Integer response=0;
+		try{
+			Criteria criteria = new Criteria();
+			if (discarded != null)
+				criteria.and("discarded").is(discarded);
+			
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("text").regex("^" + searchTerm, "i"),
+						new Criteria("text").regex("^" + searchTerm));
+
+			Aggregation aggregation = null;
+		
+				aggregation = Aggregation.newAggregation(
+					//	Aggregation.lookup("comment_cl", "_id","postId", "comments"),
+					//	Aggregation.unwind("comments"),
+					//	Aggregation.match(new Criteria("comments.discarded").is(false)),
+						Aggregation.match(criteria),
+				//		group,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			
+		List<Forum>forum = mongoTemplate.aggregate(aggregation, ForumResponseCollection.class, Forum.class)
+					.getMappedResults();
+		
+		response=forum.size();
+
+			
+		}
+		catch (BusinessException e) {
+			logger.error("Error while counting forum "+e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while counting forum");
 		}
 		return response;
 	}
@@ -267,13 +315,120 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 	}
 	
 	@Override
-	public List<FeedsResponse> getLearningSession(int page, int size, Boolean discarded, String searchTerm,
+	public Response<Object> getLearningSession(int page, int size, Boolean discarded, String searchTerm,
 			String languageId, String type) {
-		List<FeedsResponse> response = null;
+		Response<Object> response=new Response<Object>();
+		List<Feeds> feeds = null;
 		try {
 			Criteria criteria = new Criteria();
 			if (discarded != null)
 				criteria.and("discarded").is(discarded);
+			
+			criteria.and("type").is("ARTICLES");
+
+			LanguageCollection collection = null;
+			if (DPDoctorUtils.anyStringEmpty(languageId)) {
+				collection = languageRepository.findByName("English");
+				languageId = collection.getId().toString();
+			}
+			
+			long count=mongoTemplate.count(new Query(criteria),FeedsCollection.class);
+//			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+//				criteria = criteria.orOperator(new Criteria("multilingual.text").regex("^" + searchTerm, "i"),
+//						new Criteria("multilingual.text").regex("^" + searchTerm));
+			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
+					new BasicDBObject("_id", "$_id").append("user", "$user")
+					.append("multilingual.languageId", "$multilingual.languageId")
+					.append("multilingual.name", "$multilingual.name")
+					.append("multilingual.text", "$multilingual.text")
+					.append("multilingual.imageUrl", "$multilingual.imageUrl")
+					.append("multilingual.thumbnailUrl", "$multilingual.thumbnailUrl")
+					.append("multilingual.videoUrl", "$multilingual.videoUrl")
+					.append("type", "$type")
+					.append("postByAdminId", "$postByAdminId")
+					.append("type", "$type")
+					.append("postByAdminName", "$postByAdminName")
+					.append("postByDoctorId", "$postByDoctorId")
+					.append("doctorName", "$doctorName")
+					.append("postByExpertName", "$postByExpertName")
+					.append("postByExpertId", "$postByExpertId")
+					.append("userIds", "$userIds")
+					.append("isSaved", "$isSaved")
+					.append("likes", "$likes")
+					.append("discarded", "$discarded")
+					.append("comments", "$comments")));
+			
+			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
+					new BasicDBObject("_id", "$_id")
+					.append("user", new BasicDBObject("$first", "$user"))
+					.append("multilingual", new BasicDBObject("$first", "$multilingual"))
+					.append("type", new BasicDBObject("$first", "$type"))
+					.append("postByAdminId", new BasicDBObject("$first", "$postByAdminId"))
+					.append("postByAdminName", new BasicDBObject("$first", "$postByAdminName"))
+					.append("postByDoctorId", new BasicDBObject("$first", "$postByDoctorId"))
+					.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+					.append("postByExpertName", new BasicDBObject("$first", "$postByExpertName"))
+					.append("postByExpertId", new BasicDBObject("$first", "$postByExpertId"))
+					.append("comments", new BasicDBObject("$addToSet", "$comments"))
+					.append("comments", new BasicDBObject("$addToSet", "$comments"))
+					.append("userIds", new BasicDBObject("$addToSet", "$userIds"))
+					.append("user", new BasicDBObject("$first", "$user"))
+					.append("isSaved", new BasicDBObject("$first", "$isSaved"))
+					.append("user", new BasicDBObject("$first", "$user"))
+					.append("likes", new BasicDBObject("$first", "$likes"))
+						.append("title", new BasicDBObject("$first", "$title"))
+						.append("discarded", new BasicDBObject("$first", "$discarded"))
+						.append("comments", new BasicDBObject("$addToSet", "$comments"))));
+
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation =  Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size),
+				//		Aggregation.lookup("comment_cl", "_id","postId", "comments"),
+				//		Aggregation.unwind("comments"),
+				//		Aggregation.match(new Criteria("comments.discarded").is(false)),group,
+						Aggregation.unwind("multilingual", true),
+						Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),
+						 Aggregation.match(criteria));
+
+			} else {
+				aggregation = Aggregation.newAggregation(
+				//		Aggregation.lookup("comment_cl", "_id","postId", "comments"),
+				//		Aggregation.unwind("comments"),
+				//		Aggregation.match(new Criteria("comments.discarded").is(false)),group,
+						Aggregation.unwind("multilingual", true),
+						Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),
+						
+//						
+//						Aggregation.match(new Criteria("user.isUser").is(true)),
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			}
+			feeds = mongoTemplate.aggregate(aggregation, FeedsCollection.class, Feeds.class)
+					.getMappedResults();
+			
+			response.setDataList(feeds);
+			response.setCount((int) count);
+
+		} catch (BusinessException e) {
+			logger.error("Error while getting feeds " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while getting feeds");
+		}
+		return response;
+	}
+
+	
+	@Override
+	public Integer getArticlesCount(Boolean discarded, String searchTerm,
+			String languageId, String type) {
+		Integer response = null;
+		try {
+			Criteria criteria = new Criteria();
+			if (discarded != null)
+				criteria.and("discarded").is(discarded);
+			
+			criteria.and("type").is("ARTICLES");
 
 			LanguageCollection collection = null;
 			if (DPDoctorUtils.anyStringEmpty(languageId)) {
@@ -329,31 +484,20 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 
 
 			Aggregation aggregation = null;
-			if (size > 0) {
+		
 				aggregation =  Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-						Aggregation.skip((page) * size), Aggregation.limit(size),
-						Aggregation.lookup("comment_cl", "_id","postId", "comments"),
-						Aggregation.unwind("comments"),
-						Aggregation.match(new Criteria("comments.discarded").is(false)),group,
+						
+					//	Aggregation.lookup("comment_cl", "_id","postId", "comments"),
+					//	Aggregation.unwind("comments"),
+					//	Aggregation.match(new Criteria("comments.discarded").is(false)),group,
 						Aggregation.unwind("multilingual", true),
 						Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),
 						 Aggregation.match(criteria));
 
-			} else {
-				aggregation = Aggregation.newAggregation(
-						Aggregation.lookup("comment_cl", "_id","postId", "comments"),
-						Aggregation.unwind("comments"),
-						Aggregation.match(new Criteria("comments.discarded").is(false)),group,
-						Aggregation.unwind("multilingual", true),
-						Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),
-						
-//						
-//						Aggregation.match(new Criteria("user.isUser").is(true)),
-						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-
-			}
-			response = mongoTemplate.aggregate(aggregation, FeedsCollection.class, FeedsResponse.class)
+		
+			List<FeedsResponse>feeds = mongoTemplate.aggregate(aggregation, FeedsCollection.class, FeedsResponse.class)
 					.getMappedResults();
+			response=feeds.size();
 
 		} catch (BusinessException e) {
 			logger.error("Error while getting feeds " + e.getMessage());
@@ -361,6 +505,7 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 		}
 		return response;
 	}
+
 	
 	
 	@Override

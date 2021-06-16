@@ -1,20 +1,20 @@
 package com.dpdocter.beans;
 
-import java.util.List;
+import com.dpdocter.collections.GenericCollection;
 
-public class ForumRequest {
+public class Forum extends GenericCollection {
 
-private String id;
-	
+	private String id;
+
 	private String userName;;
-	
+
 	private String userId;
-	
+
 	private String text;
-		
+
 	private String title;
-	
-	private Boolean discarded=false;
+
+	private Boolean discarded = false;
 
 	public String getId() {
 		return id;
@@ -48,7 +48,6 @@ private String id;
 		this.text = text;
 	}
 
-	
 	public String getTitle() {
 		return title;
 	}
@@ -64,7 +63,5 @@ private String id;
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
-	
-	
 
 }

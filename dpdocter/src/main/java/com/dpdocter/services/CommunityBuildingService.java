@@ -4,16 +4,20 @@ import java.util.List;
 
 import com.dpdocter.beans.Comment;
 import com.dpdocter.beans.CommentRequest;
+import com.dpdocter.beans.Feeds;
 import com.dpdocter.beans.FeedsRequest;
 import com.dpdocter.beans.FeedsResponse;
+import com.dpdocter.beans.Forum;
 import com.dpdocter.beans.ForumRequest;
 import com.dpdocter.beans.ForumResponse;
+
+import common.util.web.Response;
 
 public interface CommunityBuildingService {
 
 	ForumResponse addEditForumResponse(ForumRequest request);
 	
-	List<ForumResponse> getForumResponse(int page, int size, String searchTerm, Boolean discarded);
+	Response<Object> getForumResponse(int page, int size, String searchTerm, Boolean discarded);
 
 	ForumResponse getForumResponseById(String id);
 
@@ -27,8 +31,12 @@ public interface CommunityBuildingService {
 
 	FeedsResponse deleteFeedsById(String id, String doctorId);
 
-	List<FeedsResponse> getLearningSession(int page, int size, Boolean discarded, String searchTerm, String languageId,
+	Response<Object> getLearningSession(int page, int size, Boolean discarded, String searchTerm, String languageId,
 			String type);
 
 	FeedsResponse addEditPost(FeedsRequest request);
+
+	Integer getForumCount(String searchTerm, Boolean discarded);
+
+	Integer getArticlesCount(Boolean discarded, String searchTerm, String languageId, String type);
 }
