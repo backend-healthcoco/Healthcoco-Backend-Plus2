@@ -39,4 +39,6 @@ public interface CommunityBuildingService {
 	Integer getForumCount(String searchTerm, Boolean discarded);
 
 	Integer getArticlesCount(Boolean discarded, String searchTerm, String languageId, String type);
+
+	Response<Object> getComments(int size, int page, Boolean discarded, String searchTerm, String feedId, String doctorId);
 }

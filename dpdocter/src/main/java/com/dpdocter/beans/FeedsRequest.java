@@ -2,6 +2,9 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.enums.CommunityType;
 
 public class FeedsRequest {
@@ -18,7 +21,11 @@ public class FeedsRequest {
 
 	private String postByDoctorId;
 
-	private String doctorName;
+	private String postByDoctorName;
+	
+	private String postByUserId;
+	
+	private String postByUserName;
 
 	private String postByExpertName;
 
@@ -74,12 +81,32 @@ public class FeedsRequest {
 		this.postByDoctorId = postByDoctorId;
 	}
 
-	public String getDoctorName() {
-		return doctorName;
+
+
+	public String getPostByDoctorName() {
+		return postByDoctorName;
 	}
 
-	public void setDoctorName(String doctorName) {
-		this.doctorName = doctorName;
+	public void setPostByDoctorName(String postByDoctorName) {
+		this.postByDoctorName = postByDoctorName;
+	}
+
+	
+
+	public String getPostByUserId() {
+		return postByUserId;
+	}
+
+	public void setPostByUserId(String postByUserId) {
+		this.postByUserId = postByUserId;
+	}
+
+	public String getPostByUserName() {
+		return postByUserName;
+	}
+
+	public void setPostByUserName(String postByUserName) {
+		this.postByUserName = postByUserName;
 	}
 
 	public String getPostByExpertName() {

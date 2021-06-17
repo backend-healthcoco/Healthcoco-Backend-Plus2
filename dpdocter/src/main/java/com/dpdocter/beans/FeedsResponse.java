@@ -21,7 +21,11 @@ public class FeedsResponse extends GenericCollection{
 	
 	private String postByDoctorId;
 	
-	private String doctorName;
+	private String postByDoctorName;
+	
+	private String postByUserId;
+
+	private String postByUserName;
 	
 	private String postByExpertName;
 	
@@ -97,13 +101,7 @@ public class FeedsResponse extends GenericCollection{
 		this.postByDoctorId = postByDoctorId;
 	}
 
-	public String getDoctorName() {
-		return doctorName;
-	}
-
-	public void setDoctorName(String doctorName) {
-		this.doctorName = doctorName;
-	}
+	
 
 	public String getPostByExpertName() {
 		return postByExpertName;
@@ -159,6 +157,30 @@ public class FeedsResponse extends GenericCollection{
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getPostByDoctorName() {
+		return postByDoctorName;
+	}
+
+	public void setPostByDoctorName(String postByDoctorName) {
+		this.postByDoctorName = postByDoctorName;
+	}
+
+	public String getPostByUserId() {
+		return postByUserId;
+	}
+
+	public void setPostByUserId(String postByUserId) {
+		this.postByUserId = postByUserId;
+	}
+
+	public String getPostByUserName() {
+		return postByUserName;
+	}
+
+	public void setPostByUserName(String postByUserName) {
+		this.postByUserName = postByUserName;
 	}
 	
 	

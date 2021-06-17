@@ -157,6 +157,7 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 					.getMappedResults();
 			
 			response.setDataList(forum);
+			response.setCount((int) count);
 
 		} catch (BusinessException e) {
 			logger.error("Error while getting forum "+e.getMessage());
@@ -221,10 +222,10 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 			Aggregation aggregation = null;
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("_id").is(new ObjectId(id))),
-					Aggregation.lookup("comment_cl", "_id","postId", "comments"),
-					Aggregation.unwind("comments"),
-					Aggregation.match(new Criteria("comments.discarded").is(false)),
-					group,
+				//	Aggregation.lookup("comment_cl", "_id","postId", "comments"),
+				//	Aggregation.unwind("comments"),
+				//	Aggregation.match(new Criteria("comments.discarded").is(false)),
+				//	group,
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			response = mongoTemplate.aggregate(aggregation, ForumResponseCollection.class, ForumResponse.class)
@@ -333,6 +334,7 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 			}
 			
 			long count=mongoTemplate.count(new Query(criteria),FeedsCollection.class);
+			System.out.println("Articles");
 //			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 //				criteria = criteria.orOperator(new Criteria("multilingual.text").regex("^" + searchTerm, "i"),
 //						new Criteria("multilingual.text").regex("^" + searchTerm));
@@ -366,7 +368,9 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 					.append("postByAdminId", new BasicDBObject("$first", "$postByAdminId"))
 					.append("postByAdminName", new BasicDBObject("$first", "$postByAdminName"))
 					.append("postByDoctorId", new BasicDBObject("$first", "$postByDoctorId"))
-					.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+					.append("postByDoctorName", new BasicDBObject("$first", "$postByDoctorName"))
+					.append("postByUserId", new BasicDBObject("$first", "$postByUserId"))
+					.append("postByUserName", new BasicDBObject("$first", "$postByUserName"))
 					.append("postByExpertName", new BasicDBObject("$first", "$postByExpertName"))
 					.append("postByExpertId", new BasicDBObject("$first", "$postByExpertId"))
 					.append("comments", new BasicDBObject("$addToSet", "$comments"))
@@ -548,7 +552,9 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 					.append("postByAdminId", new BasicDBObject("$first", "$postByAdminId"))
 					.append("postByAdminName", new BasicDBObject("$first", "$postByAdminName"))
 					.append("postByDoctorId", new BasicDBObject("$first", "$postByDoctorId"))
-					.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+					.append("postByDoctorName", new BasicDBObject("$first", "$postByDoctorName"))
+					.append("postByUserId", new BasicDBObject("$first", "$postByUserId"))
+					.append("postByUserName", new BasicDBObject("$first", "$postByUserName"))
 					.append("postByExpertName", new BasicDBObject("$first", "$postByExpertName"))
 					.append("postByExpertId", new BasicDBObject("$first", "$postByExpertId"))
 					
@@ -653,17 +659,77 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 		Aggregation aggregation=null;
 		
 		 aggregation = Aggregation.newAggregation(
-				Aggregation.match(new Criteria("user.userId").exists(true)),
-				Aggregation.match(new Criteria("user.userId").nin(collection.getUser().getUserId())),
+			//	Aggregation.match(new Criteria("user.userId").exists(true)),
+				Aggregation.match(new Criteria("postByDoctorId").nin(collection.getPostByDoctorId())),
 				 Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 		List<FeedsCollection>feeds=mongoTemplate.aggregate(aggregation,FeedsCollection.class,FeedsCollection.class).getMappedResults();
 		Stream<FeedsCollection> stream=feeds.stream();
-		List<String>userIds=stream.map(feed->feed.getUser().getUserId()).collect(Collectors.toList());
-		List<ObjectId>userObjectIds=userIds.stream().map(ObjectId::new).collect(Collectors.toList());
+		//List<String>userIds=stream.map(feed->feed.getPostByUserId()).collect(Collectors.toList());
+		List<ObjectId>userObjectIds=stream.map(feed->feed.getPostByUserId()).collect(Collectors.toList());
 		
-		String message="New message from "+collection.getUser().getUserName()+"in the forum.";		
+		String message="New message from "+collection.getPostByDoctorName()+"in the forum.";		
 		pushNotificationService.notifyAll(null, userObjectIds,message);
+	}
+	
+	
+	@Override
+	public Response<Object> getComments(int size, int page, Boolean discarded,String searchTerm,String feedId,String userId) {
+		Response<Object> response=new Response<Object>();
+		List<Comment> comment = null;
+		try {
+			Criteria criteria = new Criteria();
+			if (discarded != null)
+				criteria.and("discarded").is(discarded);
+			
+			if(feedId!=null)
+			{
+				criteria.and("postId").is(new ObjectId(feedId));
+			}
+			
+			
+	
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = criteria.orOperator(new Criteria("comment").regex("^" + searchTerm, "i"),
+						new Criteria("comment").regex("^" + searchTerm),
+						new Criteria("userName").regex("^" + searchTerm,"i"),
+						new Criteria("userName").regex("^" + searchTerm));
+			
+			long count=mongoTemplate.count(new Query(criteria),ForumResponseCollection.class);
+
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(
+					
+					//	Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),					
+//						Aggregation.match(new Criteria("user.isUser").is(true)),
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
+
+			} else {
+				aggregation = Aggregation.newAggregation(
+						//Aggregation.lookup("comment_cl", "_id", "postId","comments"),
+						//Aggregation.unwind("comments"),
+						//Aggregation.match(new Criteria("comments.discarded").is(false)),group,
+					
+					//	Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),
+//						
+//						Aggregation.match(new Criteria("user.isUser").is(true)),
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			}
+			System.out.println("Aggregation"+aggregation);
+			comment = mongoTemplate.aggregate(aggregation, CommentCollection.class, Comment.class)
+					.getMappedResults();
+			
+			response.setDataList(comment);
+			response.setCount((int) count);
+
+		} catch (BusinessException e) {
+			logger.error("Error while getting feeds "+e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while getting feeds");
+		}
+		return response;
 	}
 
 

@@ -176,4 +176,18 @@ private static Logger logger = LogManager.getLogger(CommunityBuildingApi.class.g
 		return response;
 	}
 	
+	@GET
+	@Path(value = PathProxy.CommunityBuildingUrls.GET_COMMENTS)
+	@ApiOperation(value = PathProxy.CommunityBuildingUrls.GET_COMMENTS, notes = PathProxy.CommunityBuildingUrls.GET_COMMENTS)
+	public Response<Object> getComment(@DefaultValue("0")@QueryParam( value ="page") int page,
+			@DefaultValue("0")@QueryParam(value ="size") int size,
+			@QueryParam(value = "searchTerm") String searchTerm,
+			@QueryParam(value = "feedId") String feedId,@QueryParam(value = "doctorId") String doctorId,
+			
+			@DefaultValue("false")@QueryParam(value ="discarded") boolean discarded) {
+		Response<Object> response = new Response<Object>();
+		response=communityBuildingServices.getComments(size, page, discarded,searchTerm, feedId,doctorId);
+		return response;
+	}
+	
 }

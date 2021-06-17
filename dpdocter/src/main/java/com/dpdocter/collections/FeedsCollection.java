@@ -30,7 +30,11 @@ public class FeedsCollection extends GenericCollection{
 	@Field
 	private ObjectId postByDoctorId;
 	@Field
-	private String doctorName;
+	private String postByDoctorName;
+	@Field
+	private ObjectId postByUserId;
+	@Field
+	private String postByUserName;
 	@Field
 	private String postByExpertName;
 	@Field
@@ -88,11 +92,24 @@ public class FeedsCollection extends GenericCollection{
 	public void setPostByDoctorId(ObjectId postByDoctorId) {
 		this.postByDoctorId = postByDoctorId;
 	}
-	public String getDoctorName() {
-		return doctorName;
+	
+	public String getPostByDoctorName() {
+		return postByDoctorName;
 	}
-	public void setDoctorName(String doctorName) {
-		this.doctorName = doctorName;
+	public void setPostByDoctorName(String postByDoctorName) {
+		this.postByDoctorName = postByDoctorName;
+	}
+	public ObjectId getPostByUserId() {
+		return postByUserId;
+	}
+	public void setPostByUserId(ObjectId postByUserId) {
+		this.postByUserId = postByUserId;
+	}
+	public String getPostByUserName() {
+		return postByUserName;
+	}
+	public void setPostByUserName(String postByUserName) {
+		this.postByUserName = postByUserName;
 	}
 	public String getPostByExpertName() {
 		return postByExpertName;

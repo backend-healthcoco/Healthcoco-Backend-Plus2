@@ -2540,6 +2540,7 @@ public interface PathProxy {
 		public static final String GET_ARTICLE_BY_ID = "articles/{id}/get";
 		public static final String DELETE_ARTICLE_BY_ID = "articles/delete";
 		public static final String GET_ARTICLES = "articles/get";
+		public static final String GET_COMMENTS = "comments/get";
 	}
 	
 	public static final String LANGUAGE_BASE_URL = BASE_URL + "/language";

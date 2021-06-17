@@ -4,9 +4,9 @@ public class ArticleDetails {
 
 	private String languageId;
 	
-	private String name;
+	private String title;
 	
-	private String text;
+	private String shortDescription;
 	
 	private String imageUrl;
 	
@@ -31,30 +31,7 @@ public class ArticleDetails {
 	/**
 	 * @return the name
 	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * @return the text
-	 */
-	public String getText() {
-		return text;
-	}
-
-	/**
-	 * @param text the text to set
-	 */
-	public void setText(String text) {
-		this.text = text;
-	}
+	
 
 	public String getImageUrl() {
 		return imageUrl;
@@ -78,6 +55,22 @@ public class ArticleDetails {
 
 	public void setVideoUrl(String videoUrl) {
 		this.videoUrl = videoUrl;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getShortDescription() {
+		return shortDescription;
+	}
+
+	public void setShortDescription(String shortDescription) {
+		this.shortDescription = shortDescription;
 	}
 	
 	

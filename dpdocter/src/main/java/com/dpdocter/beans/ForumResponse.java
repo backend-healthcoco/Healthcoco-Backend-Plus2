@@ -15,8 +15,10 @@ public class ForumResponse extends GenericCollection {
 	private String text;
 
 	private String title;
+	
+	private String languageId;
 
-	private List<Comment> comments;
+	//private List<Comment> comments;
 
 	private Boolean discarded = false;
 
@@ -68,12 +70,16 @@ public class ForumResponse extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public List<Comment> getComments() {
-		return comments;
+	
+
+	public String getLanguageId() {
+		return languageId;
 	}
 
-	public void setComments(List<Comment> comments) {
-		this.comments = comments;
+	public void setLanguageId(String languageId) {
+		this.languageId = languageId;
 	}
+	
+	
 
 }
