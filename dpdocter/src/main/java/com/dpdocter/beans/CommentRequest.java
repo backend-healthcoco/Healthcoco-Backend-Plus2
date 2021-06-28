@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import com.dpdocter.enums.UserType;
+
 public class CommentRequest {
 
 	private String id;
@@ -11,6 +13,12 @@ public class CommentRequest {
 	private String userName;
 
 	private String userId;
+	
+	private UserType userType;
+
+	private String userImageUrl;
+	
+	private String speciality;
 
 	private String comment;
 
@@ -63,5 +71,31 @@ public class CommentRequest {
 	public void setId(String id) {
 		this.id = id;
 	}
+
+	public UserType getUserType() {
+		return userType;
+	}
+
+	public void setUserType(UserType userType) {
+		this.userType = userType;
+	}
+
+	public String getUserImageUrl() {
+		return userImageUrl;
+	}
+
+	public void setUserImageUrl(String userImageUrl) {
+		this.userImageUrl = userImageUrl;
+	}
+
+	public String getSpeciality() {
+		return speciality;
+	}
+
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
+	}
+	
+	
 
 }

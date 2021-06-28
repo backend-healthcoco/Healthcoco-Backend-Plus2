@@ -10,6 +10,6 @@ import com.dpdocter.collections.ForumResponseCollection;
 
 public interface FeedsRepository extends MongoRepository<FeedsCollection,ObjectId>{
 
-	FeedsCollection findByIdAndPostByDoctorId(ObjectId id,ObjectId doctorId);
+	FeedsCollection findByIdAndUserId(ObjectId id,ObjectId doctorId);
 
 }

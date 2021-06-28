@@ -2,6 +2,7 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.CommunityDignosed;
+import com.dpdocter.enums.UserType;
 
 
 public class Comment extends GenericCollection {
@@ -15,6 +16,12 @@ public class Comment extends GenericCollection {
 	private String comment;
 
 	private String postId;
+	
+	private UserType userType;
+
+	private String userImageUrl;
+	
+	private String speciality;
 
 	
 	
@@ -70,6 +77,30 @@ public class Comment extends GenericCollection {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public UserType getUserType() {
+		return userType;
+	}
+
+	public void setUserType(UserType userType) {
+		this.userType = userType;
+	}
+
+	public String getUserImageUrl() {
+		return userImageUrl;
+	}
+
+	public void setUserImageUrl(String userImageUrl) {
+		this.userImageUrl = userImageUrl;
+	}
+
+	public String getSpeciality() {
+		return speciality;
+	}
+
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
 	}
 	
 	

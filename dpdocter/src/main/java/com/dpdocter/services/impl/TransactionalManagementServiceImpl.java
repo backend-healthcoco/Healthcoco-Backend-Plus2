@@ -810,7 +810,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		try {
 			if (sendSMS) {
 				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-
+				List<String>msg=new ArrayList<String>();
 				localCalendar.setTime(new Date());
 				int currentDay = localCalendar.get(Calendar.DATE);
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
@@ -857,6 +857,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 									.get(appointmentDoctorReminderResponse.getDoctorId().toString());
 							response.setMessage(response.getMessage() + "%0a" + patientCollection.getLocalPatientName()
 									+ "(" + _12HourSDF.format(_24HourDt) + ")");
+							msg.add(patientCollection.getLocalPatientName()
+									+ "(" + _12HourSDF.format(_24HourDt) + ")");
 							response.setNoOfAppointments(response.getNoOfAppointments() + 1);
 							response.setLocationId(appointmentDoctorReminderResponse.getLocationId());
 							doctorAppointmentSMSResponseMap
@@ -866,6 +868,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
 							response.setMessage(
 									patientCollection.getLocalPatientName() + "(" + _12HourSDF.format(_24HourDt) + ")");
+							msg.add(patientCollection.getLocalPatientName()
+									+ "(" + _12HourSDF.format(_24HourDt) + ")");
 							response.setNoOfAppointments(1);
 							response.setLocationId(appointmentDoctorReminderResponse.getLocationId());
 							response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());

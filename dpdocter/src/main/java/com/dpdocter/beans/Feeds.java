@@ -2,7 +2,11 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.enums.CommunityType;
+import com.dpdocter.enums.UserType;
 
 public class Feeds {
 
@@ -14,17 +18,15 @@ private String id;
 
 	private CommunityType type;
 	
-	private String postByAdminId;
+	private String userId;
+
+	private String userName;
 	
-	private String postByAdminName;
+	private UserType userType;
+
+	private String userImageUrl;
 	
-	private String postByDoctorId;
-	
-	private String doctorName;
-	
-	private String postByExpertName;
-	
-	private String postByExpertId;
+	private String speciality;
 	
 	
 	
@@ -68,52 +70,45 @@ private String id;
 		this.type = type;
 	}
 
-	public String getPostByAdminId() {
-		return postByAdminId;
+	
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setPostByAdminId(String postByAdminId) {
-		this.postByAdminId = postByAdminId;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
-	public String getPostByAdminName() {
-		return postByAdminName;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setPostByAdminName(String postByAdminName) {
-		this.postByAdminName = postByAdminName;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
-	public String getPostByDoctorId() {
-		return postByDoctorId;
+	public UserType getUserType() {
+		return userType;
 	}
 
-	public void setPostByDoctorId(String postByDoctorId) {
-		this.postByDoctorId = postByDoctorId;
+	public void setUserType(UserType userType) {
+		this.userType = userType;
 	}
 
-	public String getDoctorName() {
-		return doctorName;
+	public String getUserImageUrl() {
+		return userImageUrl;
 	}
 
-	public void setDoctorName(String doctorName) {
-		this.doctorName = doctorName;
+	public void setUserImageUrl(String userImageUrl) {
+		this.userImageUrl = userImageUrl;
 	}
 
-	public String getPostByExpertName() {
-		return postByExpertName;
+	public String getSpeciality() {
+		return speciality;
 	}
 
-	public void setPostByExpertName(String postByExpertName) {
-		this.postByExpertName = postByExpertName;
-	}
-
-	public String getPostByExpertId() {
-		return postByExpertId;
-	}
-
-	public void setPostByExpertId(String postByExpertId) {
-		this.postByExpertId = postByExpertId;
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
 	}
 
 	public List<String> getUserIds() {

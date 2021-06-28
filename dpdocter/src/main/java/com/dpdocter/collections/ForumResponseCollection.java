@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Comment;
+import com.dpdocter.enums.UserType;
 
 @Document(collection = "forum_response_cl")
 public class ForumResponseCollection extends GenericCollection {
@@ -20,7 +21,13 @@ public class ForumResponseCollection extends GenericCollection {
 	private String userName;
 	
 	@Field
-	private String text;
+	private String shortDescription;
+	@Field
+	private UserType userType;
+	@Field
+	private String userImageUrl;
+	@Field
+	private ObjectId languageId;
 
 	@Field
 	private String title;
@@ -43,12 +50,30 @@ public class ForumResponseCollection extends GenericCollection {
 		this.userId = userId;
 	}
 
-	public String getText() {
-		return text;
+	
+
+	public String getShortDescription() {
+		return shortDescription;
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public void setShortDescription(String shortDescription) {
+		this.shortDescription = shortDescription;
+	}
+
+	public UserType getUserType() {
+		return userType;
+	}
+
+	public void setUserType(UserType userType) {
+		this.userType = userType;
+	}
+
+	public String getUserImageUrl() {
+		return userImageUrl;
+	}
+
+	public void setUserImageUrl(String userImageUrl) {
+		this.userImageUrl = userImageUrl;
 	}
 
 	public String getTitle() {
@@ -73,6 +98,14 @@ public class ForumResponseCollection extends GenericCollection {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	public ObjectId getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(ObjectId languageId) {
+		this.languageId = languageId;
 	}
 
 	

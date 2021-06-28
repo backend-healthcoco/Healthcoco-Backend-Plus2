@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.CommunityType;
+import com.dpdocter.enums.UserType;
 
 public class FeedsResponse extends GenericCollection{
 	
@@ -15,21 +16,15 @@ public class FeedsResponse extends GenericCollection{
 
 	private CommunityType type;
 	
-	private String postByAdminId;
-	
-	private String postByAdminName;
-	
-	private String postByDoctorId;
-	
-	private String postByDoctorName;
-	
-	private String postByUserId;
+	private String userId;
 
-	private String postByUserName;
+	private String userName;
 	
-	private String postByExpertName;
+	private UserType userType;
+
+	private String userImageUrl;
 	
-	private String postByExpertId;
+	private String speciality;
 	
 	private List<Comment>comments;
 	
@@ -77,48 +72,7 @@ public class FeedsResponse extends GenericCollection{
 		this.type = type;
 	}
 
-	public String getPostByAdminId() {
-		return postByAdminId;
-	}
-
-	public void setPostByAdminId(String postByAdminId) {
-		this.postByAdminId = postByAdminId;
-	}
-
-	public String getPostByAdminName() {
-		return postByAdminName;
-	}
-
-	public void setPostByAdminName(String postByAdminName) {
-		this.postByAdminName = postByAdminName;
-	}
-
-	public String getPostByDoctorId() {
-		return postByDoctorId;
-	}
-
-	public void setPostByDoctorId(String postByDoctorId) {
-		this.postByDoctorId = postByDoctorId;
-	}
-
 	
-
-	public String getPostByExpertName() {
-		return postByExpertName;
-	}
-
-	public void setPostByExpertName(String postByExpertName) {
-		this.postByExpertName = postByExpertName;
-	}
-
-	public String getPostByExpertId() {
-		return postByExpertId;
-	}
-
-	public void setPostByExpertId(String postByExpertId) {
-		this.postByExpertId = postByExpertId;
-	}
-
 	public List<Comment> getComments() {
 		return comments;
 	}
@@ -159,32 +113,47 @@ public class FeedsResponse extends GenericCollection{
 		this.discarded = discarded;
 	}
 
-	public String getPostByDoctorName() {
-		return postByDoctorName;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setPostByDoctorName(String postByDoctorName) {
-		this.postByDoctorName = postByDoctorName;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
-	public String getPostByUserId() {
-		return postByUserId;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setPostByUserId(String postByUserId) {
-		this.postByUserId = postByUserId;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
-	public String getPostByUserName() {
-		return postByUserName;
+	public UserType getUserType() {
+		return userType;
 	}
 
-	public void setPostByUserName(String postByUserName) {
-		this.postByUserName = postByUserName;
+	public void setUserType(UserType userType) {
+		this.userType = userType;
 	}
-	
-	
-	
+
+	public String getUserImageUrl() {
+		return userImageUrl;
+	}
+
+	public void setUserImageUrl(String userImageUrl) {
+		this.userImageUrl = userImageUrl;
+	}
+
+	public String getSpeciality() {
+		return speciality;
+	}
+
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
+	}
+
+
 
 
 }

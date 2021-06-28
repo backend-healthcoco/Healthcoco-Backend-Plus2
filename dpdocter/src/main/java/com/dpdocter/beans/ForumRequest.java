@@ -2,19 +2,31 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
+import com.dpdocter.enums.UserType;
+
 public class ForumRequest {
 
-private String id;
-	
-	private String userName;;
-	
+	private String id;
+
+	private String userName;
+
 	private String userId;
-	
-	private String text;
-		
+
+	private UserType userType;
+
+	private String userImageUrl;
+
+	private String shortDescription;
+
 	private String title;
+
+	private String speciality;
 	
-	private Boolean discarded=false;
+	private String languageId;
+
+	private Boolean discarded = false;
 
 	public String getId() {
 		return id;
@@ -40,15 +52,30 @@ private String id;
 		this.userId = userId;
 	}
 
-	public String getText() {
-		return text;
+	public UserType getUserType() {
+		return userType;
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public void setUserType(UserType userType) {
+		this.userType = userType;
 	}
 
-	
+	public String getUserImageUrl() {
+		return userImageUrl;
+	}
+
+	public void setUserImageUrl(String userImageUrl) {
+		this.userImageUrl = userImageUrl;
+	}
+
+	public String getShortDescription() {
+		return shortDescription;
+	}
+
+	public void setShortDescription(String shortDescription) {
+		this.shortDescription = shortDescription;
+	}
+
 	public String getTitle() {
 		return title;
 	}
@@ -63,6 +90,22 @@ private String id;
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getSpeciality() {
+		return speciality;
+	}
+
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
+	}
+
+	public String getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(String languageId) {
+		this.languageId = languageId;
 	}
 	
 	

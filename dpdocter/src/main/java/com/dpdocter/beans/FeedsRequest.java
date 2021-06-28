@@ -6,6 +6,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.CommunityType;
+import com.dpdocter.enums.UserType;
 
 public class FeedsRequest {
 
@@ -15,21 +16,15 @@ public class FeedsRequest {
 
 	private CommunityType type;
 
-	private String postByAdminId;
+	private String userId;
 
-	private String postByAdminName;
-
-	private String postByDoctorId;
-
-	private String postByDoctorName;
+	private String userName;
 	
-	private String postByUserId;
+	private UserType userType;
+
+	private String userImageUrl;
 	
-	private String postByUserName;
-
-	private String postByExpertName;
-
-	private String postByExpertId;
+	private String speciality;
 
 	private Boolean discarded = false;
 
@@ -57,72 +52,45 @@ public class FeedsRequest {
 		this.type = type;
 	}
 
-	public String getPostByAdminId() {
-		return postByAdminId;
-	}
-
-	public void setPostByAdminId(String postByAdminId) {
-		this.postByAdminId = postByAdminId;
-	}
-
-	public String getPostByAdminName() {
-		return postByAdminName;
-	}
-
-	public void setPostByAdminName(String postByAdminName) {
-		this.postByAdminName = postByAdminName;
-	}
-
-	public String getPostByDoctorId() {
-		return postByDoctorId;
-	}
-
-	public void setPostByDoctorId(String postByDoctorId) {
-		this.postByDoctorId = postByDoctorId;
-	}
-
-
-
-	public String getPostByDoctorName() {
-		return postByDoctorName;
-	}
-
-	public void setPostByDoctorName(String postByDoctorName) {
-		this.postByDoctorName = postByDoctorName;
-	}
-
 	
-
-	public String getPostByUserId() {
-		return postByUserId;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setPostByUserId(String postByUserId) {
-		this.postByUserId = postByUserId;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
-	public String getPostByUserName() {
-		return postByUserName;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setPostByUserName(String postByUserName) {
-		this.postByUserName = postByUserName;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
-	public String getPostByExpertName() {
-		return postByExpertName;
+	public UserType getUserType() {
+		return userType;
 	}
 
-	public void setPostByExpertName(String postByExpertName) {
-		this.postByExpertName = postByExpertName;
+	public void setUserType(UserType userType) {
+		this.userType = userType;
 	}
 
-	public String getPostByExpertId() {
-		return postByExpertId;
+	public String getUserImageUrl() {
+		return userImageUrl;
 	}
 
-	public void setPostByExpertId(String postByExpertId) {
-		this.postByExpertId = postByExpertId;
+	public void setUserImageUrl(String userImageUrl) {
+		this.userImageUrl = userImageUrl;
+	}
+
+	public String getSpeciality() {
+		return speciality;
+	}
+
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
 	}
 
 	public Boolean getDiscarded() {
