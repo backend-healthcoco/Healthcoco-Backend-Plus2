@@ -341,72 +341,69 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 				criteria = criteria.orOperator(new Criteria("multilingual.title").regex("^" + searchTerm, "i"),
 						new Criteria("multilingual.title").regex("^" + searchTerm));
-			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
-					new BasicDBObject("_id", "$_id").append("user", "$user")
-					.append("multilingual.languageId", "$multilingual.languageId")
-					.append("multilingual.name", "$multilingual.name")
-					.append("multilingual.text", "$multilingual.text")
-					.append("multilingual.imageUrl", "$multilingual.imageUrl")
-					.append("multilingual.thumbnailUrl", "$multilingual.thumbnailUrl")
-					.append("multilingual.videoUrl", "$multilingual.videoUrl")
-					.append("type", "$type")
-					.append("postByAdminId", "$postByAdminId")
-					.append("type", "$type")
-					.append("postByAdminName", "$postByAdminName")
-					.append("postByDoctorId", "$postByDoctorId")
-					.append("doctorName", "$doctorName")
-					.append("postByExpertName", "$postByExpertName")
-					.append("postByExpertId", "$postByExpertId")
-					.append("userIds", "$userIds")
-					.append("isSaved", "$isSaved")
-					.append("likes", "$likes")
-					.append("discarded", "$discarded")
-					.append("comments", "$comments")));
-			
 			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id")
-					.append("user", new BasicDBObject("$first", "$user"))
+					
 					.append("multilingual", new BasicDBObject("$first", "$multilingual"))
 					.append("type", new BasicDBObject("$first", "$type"))
-					.append("postByAdminId", new BasicDBObject("$first", "$postByAdminId"))
-					.append("postByAdminName", new BasicDBObject("$first", "$postByAdminName"))
-					.append("postByDoctorId", new BasicDBObject("$first", "$postByDoctorId"))
-					.append("postByDoctorName", new BasicDBObject("$first", "$postByDoctorName"))
-					.append("postByUserId", new BasicDBObject("$first", "$postByUserId"))
-					.append("postByUserName", new BasicDBObject("$first", "$postByUserName"))
-					.append("postByExpertName", new BasicDBObject("$first", "$postByExpertName"))
-					.append("postByExpertId", new BasicDBObject("$first", "$postByExpertId"))
-					.append("comments", new BasicDBObject("$addToSet", "$comments"))
-					.append("comments", new BasicDBObject("$addToSet", "$comments"))
-					.append("userIds", new BasicDBObject("$addToSet", "$userIds"))
+					
+					.append("userId", new BasicDBObject("$first", "$userId"))
+					.append("userName", new BasicDBObject("$first", "$userName"))
+					.append("userType", new BasicDBObject("$first", "$userType"))
+					.append("userImageUrl", new BasicDBObject("$first", "$userImageUrl"))
+					.append("speciality", new BasicDBObject("$first", "$speciality"))
+					.append("userIds", new BasicDBObject("$first", "$userIds"))
 					.append("user", new BasicDBObject("$first", "$user"))
 					.append("isSaved", new BasicDBObject("$first", "$isSaved"))
 					.append("user", new BasicDBObject("$first", "$user"))
 					.append("likes", new BasicDBObject("$first", "$likes"))
 						.append("title", new BasicDBObject("$first", "$title"))
 						.append("discarded", new BasicDBObject("$first", "$discarded"))
-						.append("comments", new BasicDBObject("$addToSet", "$comments"))));
+						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))));
+			
+		 	
+			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
+					new BasicDBObject("_id", "$_id").append("user", "$user")
+					.append("multilingual.languageId", "$multilingual.languageId")
+					.append("multilingual.title", "$multilingual.title")
+					.append("multilingual.shortDescription", "$multilingual.shortDescription")
+					.append("multilingual.imageUrl", "$multilingual.imageUrl")
+					.append("multilingual.thumbnailUrl", "$multilingual.thumbnailUrl")
+					.append("multilingual.videoUrl", "$multilingual.videoUrl")
+					.append("type", "$type")
+					.append("postByAdminId", "$postByAdminId")
+					.append("postByAdminName", "$postByAdminName")
+					.append("postByDoctorId", "$postByDoctorId")
+					.append("postByDoctorName", "$postByDoctorName")
+					.append("userId", "$userId")
+					.append("userName", "$userName")
+					.append("userImageUrl", "$userImageUrl")
+					.append("userType", "$userType")
+					.append("userIds", "$userIds")
+					.append("isSaved", "$isSaved")
+					.append("likes", "$likes")
+					.append("discarded", "$discarded")
+					.append("createdTime", "$createdTime")
+					.append("updatedTime", "$updatedTime")));
+			
 
 
 			Aggregation aggregation = null;
 			if (size > 0) {
-				aggregation =  Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-						Aggregation.skip((page) * size), Aggregation.limit(size),
-				//		Aggregation.lookup("comment_cl", "_id","postId", "comments"),
-				//		Aggregation.unwind("comments"),
-				//		Aggregation.match(new Criteria("comments.discarded").is(false)),group,
-						Aggregation.unwind("multilingual", true),
-						Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),
-						 Aggregation.match(criteria));
+				aggregation =  Aggregation.newAggregation(
+						group,
+						Aggregation.unwind("multilingual"),
+						Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),project,					
+					//	Aggregation.unwind("userIds"),project
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.skip((page) * size), Aggregation.limit(size));
 
 			} else {
 				aggregation = Aggregation.newAggregation(
-				//		Aggregation.lookup("comment_cl", "_id","postId", "comments"),
-				//		Aggregation.unwind("comments"),
-				//		Aggregation.match(new Criteria("comments.discarded").is(false)),group,
-						Aggregation.unwind("multilingual", true),
-						Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),
-						
+						group,
+						Aggregation.unwind("multilingual"),
+				    	Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),project,
 //						
 //						Aggregation.match(new Criteria("user.isUser").is(true)),
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
@@ -445,65 +442,66 @@ public class CommunityBuildingServiceImpl implements CommunityBuildingService{
 //			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 //				criteria = criteria.orOperator(new Criteria("multilingual.text").regex("^" + searchTerm, "i"),
 //						new Criteria("multilingual.text").regex("^" + searchTerm));
-			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
-					new BasicDBObject("_id", "$_id").append("user", "$user")
-					.append("multilingual.languageId", "$multilingual.languageId")
-					.append("multilingual.name", "$multilingual.name")
-					.append("multilingual.text", "$multilingual.text")
-					.append("multilingual.imageUrl", "$multilingual.imageUrl")
-					.append("multilingual.thumbnailUrl", "$multilingual.thumbnailUrl")
-					.append("multilingual.videoUrl", "$multilingual.videoUrl")
-					.append("type", "$type")
-					.append("postByAdminId", "$postByAdminId")
-					.append("type", "$type")
-					.append("postByAdminName", "$postByAdminName")
-					.append("postByDoctorId", "$postByDoctorId")
-					.append("doctorName", "$doctorName")
-					.append("postByExpertName", "$postByExpertName")
-					.append("postByExpertId", "$postByExpertId")
-					.append("userIds", "$userIds")
-					.append("isSaved", "$isSaved")
-					.append("likes", "$likes")
-					.append("discarded", "$discarded")
-					.append("comments", "$comments")));
-			
 			CustomAggregationOperation group = new CustomAggregationOperation(new Document("$group",
 					new BasicDBObject("_id", "$_id")
-					.append("user", new BasicDBObject("$first", "$user"))
+					
 					.append("multilingual", new BasicDBObject("$first", "$multilingual"))
 					.append("type", new BasicDBObject("$first", "$type"))
-					.append("postByAdminId", new BasicDBObject("$first", "$postByAdminId"))
-					.append("postByAdminName", new BasicDBObject("$first", "$postByAdminName"))
-					.append("postByDoctorId", new BasicDBObject("$first", "$postByDoctorId"))
-					.append("doctorName", new BasicDBObject("$first", "$doctorName"))
-					.append("postByExpertName", new BasicDBObject("$first", "$postByExpertName"))
-					.append("postByExpertId", new BasicDBObject("$first", "$postByExpertId"))
-					.append("comments", new BasicDBObject("$addToSet", "$comments"))
-					.append("comments", new BasicDBObject("$addToSet", "$comments"))
-					.append("userIds", new BasicDBObject("$addToSet", "$userIds"))
+					
+					.append("userId", new BasicDBObject("$first", "$userId"))
+					.append("userName", new BasicDBObject("$first", "$userName"))
+					.append("userType", new BasicDBObject("$first", "$userType"))
+					.append("userImageUrl", new BasicDBObject("$first", "$userImageUrl"))
+					.append("speciality", new BasicDBObject("$first", "$speciality"))
+					.append("userIds", new BasicDBObject("$first", "$userIds"))
 					.append("user", new BasicDBObject("$first", "$user"))
 					.append("isSaved", new BasicDBObject("$first", "$isSaved"))
 					.append("user", new BasicDBObject("$first", "$user"))
 					.append("likes", new BasicDBObject("$first", "$likes"))
 						.append("title", new BasicDBObject("$first", "$title"))
 						.append("discarded", new BasicDBObject("$first", "$discarded"))
-						.append("comments", new BasicDBObject("$addToSet", "$comments"))));
+						.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+						.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))));
+			
+			
+			CustomAggregationOperation project = new CustomAggregationOperation(new Document("$project",
+					new BasicDBObject("_id", "$_id").append("user", "$user")
+					.append("multilingual.languageId", "$multilingual.languageId")
+					.append("multilingual.title", "$multilingual.title")
+					.append("multilingual.shortDescription", "$multilingual.shortDescription")
+					.append("multilingual.imageUrl", "$multilingual.imageUrl")
+					.append("multilingual.thumbnailUrl", "$multilingual.thumbnailUrl")
+					.append("multilingual.videoUrl", "$multilingual.videoUrl")
+					.append("type", "$type")
+					.append("postByAdminId", "$postByAdminId")
+					.append("postByAdminName", "$postByAdminName")
+					.append("postByDoctorId", "$postByDoctorId")
+					.append("postByDoctorName", "$postByDoctorName")
+					.append("userId", "$userId")
+					.append("userName", "$userName")
+					.append("userImageUrl", "$userImageUrl")
+					.append("userType", "$userType")
+					.append("userIds", "$userIds")
+					.append("isSaved", "$isSaved")
+					.append("likes", "$likes")
+					.append("discarded", "$discarded")
+					.append("createdTime", "$createdTime")
+					.append("updatedTime", "$updatedTime")));
+			
 
 
 			Aggregation aggregation = null;
-		
-				aggregation =  Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
-						
-					//	Aggregation.lookup("comment_cl", "_id","postId", "comments"),
-					//	Aggregation.unwind("comments"),
-					//	Aggregation.match(new Criteria("comments.discarded").is(false)),
+			
+				aggregation = Aggregation.newAggregation(
 						group,
-						Aggregation.unwind("multilingual", true),
-						Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),
-						 Aggregation.match(criteria));
+						Aggregation.unwind("multilingual"),
+				    	Aggregation.match(new Criteria("multilingual.languageId").is(languageId)),project,
+//						
+//						Aggregation.match(new Criteria("user.isUser").is(true)),
+						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
-		
-			List<FeedsResponse>feeds = mongoTemplate.aggregate(aggregation, FeedsCollection.class, FeedsResponse.class)
+			
+		List<Feeds>	feeds = mongoTemplate.aggregate(aggregation, FeedsCollection.class, Feeds.class)
 					.getMappedResults();
 			response=feeds.size();
 
