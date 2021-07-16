@@ -3568,7 +3568,7 @@ public class BillingServiceImpl implements BillingService {
 
 				sms.setSmsText("Hi " + patient.getFirstName() + ", your receipt for the invoice "
 						+ doctorPatientReceiptCollection.getUniqueInvoiceId() + " by "
-						+ locationCollection.getLocationName() + ". " + " and the total amount paid is "
+						+ locationCollection.getLocationName() + " Clinic and the total amount paid is "
 						+ doctorPatientReceiptCollection.getAmountPaid() + " on Date:"
 						+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate())
 						+ ". For queries,contact clinic " + clinicNumber + ".-Healthcoco");
