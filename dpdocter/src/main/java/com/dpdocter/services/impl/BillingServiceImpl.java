@@ -2766,6 +2766,7 @@ public class BillingServiceImpl implements BillingService {
 				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 				smsDetails.add(smsDetail);
 				smsTrackDetail.setSmsDetails(smsDetails);
+				smsTrackDetail.setTemplateId("1307162814840424789");
 				smsServices.sendSMS(smsTrackDetail, true);
 				response = true;
 			}
