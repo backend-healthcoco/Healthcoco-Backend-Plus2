@@ -1118,6 +1118,10 @@ public class SMSServicesImpl implements SMSServices {
 				}
 				
 				String type="TXN";
+				if(smsTrackDetail.getType()!=null)
+				if(smsTrackDetail.getType().equals("BIRTHDAY WISH TO PATIENT"))
+					type="MKT";
+				
 				String message=smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText();
 				String mobileNumber=smsTrackDetail.getSmsDetails().get(0).getSms().getSmsAddress().getRecipient();
 				String strUrl = "https://api.ap.kaleyra.io/v1/"+SID+"/messages";

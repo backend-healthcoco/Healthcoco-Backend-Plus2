@@ -1501,6 +1501,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 							SMSDetail smsDetail = new SMSDetail();
 							SMS sms = new SMS();
+							smsTrackDetail.setType("Reminder To Patient");
 							sms.setSmsText("Your appointment with "
 									+ appointmentPatientReminderResponse.getDoctorTitle() 
 									+ appointmentPatientReminderResponse.getDoctorName()+" has been scheduled @"+dateTime

@@ -62,7 +62,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 
 
 
-	@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
+	@Scheduled(cron = "0 15 10 * * ?", zone = "IST")
 	@Override
 	public void sendBirthdaySMSToPatients() {
 		try {
@@ -104,7 +104,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 								.findById(new ObjectId(birthdaySMSDetailsForPatient.getPatient().getUserId())).orElse(null);
 						String message = birthdayWishSMStoPatient;
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-						smsTrackDetail.setTemplateId("1307162644058041487");
+						smsTrackDetail.setTemplateId("1307162676825087554");
 						smsTrackDetail.setDoctorId(birthdaySMSDetailsForPatient.getDoctorId());
 						smsTrackDetail.setLocationId(birthdaySMSDetailsForPatient.getLocationId());
 						smsTrackDetail.setHospitalId(birthdaySMSDetailsForPatient.getHospitalId());
