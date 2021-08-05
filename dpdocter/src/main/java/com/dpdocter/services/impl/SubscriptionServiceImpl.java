@@ -547,7 +547,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 			sms.setSmsText(" Your Subscription Plan Changed " + oldPackageName + " to " + newPackageName
 					+ ". Stay Healthy and Happy!");
-
+			smsTrackDetail.setTemplateId("1307162160395400042");
 			SMSAddress smsAddress = new SMSAddress();
 			smsAddress.setRecipient(mobileNumber);
 			sms.setSmsAddress(smsAddress);
