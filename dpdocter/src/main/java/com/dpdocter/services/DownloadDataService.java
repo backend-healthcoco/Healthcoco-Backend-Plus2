@@ -29,4 +29,6 @@ public interface DownloadDataService {
 
 	Boolean update(String doctorId, String locationId, String hospitalId);
 
+	Boolean downloadfiles(String doctorId, String locationId, String hospitalId, int page, int size);
+
 }

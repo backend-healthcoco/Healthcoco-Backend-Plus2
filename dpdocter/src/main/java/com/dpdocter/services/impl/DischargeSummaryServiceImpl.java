@@ -284,14 +284,18 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				request.setDoctorId(dischargeSummary.getDoctorId());
 				request.setPatientId(dischargeSummary.getPatientId());
 				prescription = new Prescription();
+				System.out.println("pres " + request.toString());
 				if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+					System.out.println("add Prescrition" + request.getId());
 					addEditResponseDetails = prescriptionServices.addPrescriptionHandheld(request);
 					if (addEditResponseDetails != null) {
 						String visitId = patientVisitService.addRecord(addEditResponseDetails, VisitedFor.PRESCRIPTION,
 								addEditResponseDetails.getVisitId());
 						addEditResponseDetails.setVisitId(visitId);
+						System.out.println("addEditResponseDetails" + addEditResponseDetails.getId());
 					}
 				} else {
+					System.out.println("Edit Prescrition" + request.getId());
 					addEditResponseDetails = prescriptionServices.editPrescription(request);
 					if (addEditResponseDetails != null) {
 						String visitId = patientVisitService.editRecord(addEditResponseDetails.getId(),
@@ -327,8 +331,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				addEditFlowSheetRequest.setFlowSheets(dischargeSummary.getFlowSheets());
 				addEditFlowSheetRequest.setMonitoringChart(dischargeSummary.getMonitoringChart());
 				addEditFlowSheetRequest.setDischargeSummaryId(dischargeSummaryCollection.getId().toString());
-				Boolean isFlowsheet= false;
-				addEditFlowSheets(addEditFlowSheetRequest,isFlowsheet);
+				Boolean isFlowsheet = false;
+				addEditFlowSheets(addEditFlowSheetRequest, isFlowsheet);
 			}
 			response = new DischargeSummaryResponse();
 			BeanUtil.map(dischargeSummaryCollection, response);
@@ -785,7 +789,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			int no = 0;
 			Boolean showIntructions = false, showDirection = false;
 
-			if (prescription.getItems() != null && !prescription.getItems().isEmpty())
+			if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
 
 				for (PrescriptionItem prescriptionItem : prescription.getItems()) {
 
@@ -835,6 +839,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 								}
 							}
 							if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
+
 								if (printSettings.getContentSetup() != null) {
 									if (printSettings.getContentSetup().getInstructionAlign() != null && printSettings
 											.getContentSetup().getInstructionAlign().equals(FieldAlign.HORIZONTAL)) {
@@ -854,8 +859,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 													? prescriptionItem.getInstructions()
 													: null);
 								}
-
 								showIntructions = true;
+
 							}
 							String duration = "";
 							if (durationValue == "" && durationValue == "")
@@ -906,10 +911,21 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						}
 					}
 				}
-
+			}
+//			if (prescriptionItems.get(0).getInstruction() != null) {
+//				parameters.put("showIntructions", true);
+//			} else {
+				parameters.put("showIntructions", showIntructions);
+//			}
+//			if (prescriptionItems.get(0).getDirection() != null) {
+//				parameters.put("showDirection", true);
+//			} else {
+				parameters.put("showDirection", showDirection);
+//			}
 			parameters.put("prescriptionItems", prescriptionItems);
-			parameters.put("showIntructions", showIntructions);
-			parameters.put("showDirection", showDirection);
+			System.out.println("disch" + showIntructions + showDirection);
+
+
 			if (!DPDoctorUtils.allStringsEmpty(prescription.getAdvice())) {
 				parameters.put("advice", prescription.getAdvice());
 			}
@@ -1282,7 +1298,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 		// prescription postOrder
 		int no = 0;
-		Boolean showIntructions = false, showDirection = false, showDrugQty = false;
 
 		if (dischargeSummaryCollection.getPostOperativeOrder() != null
 				&& !dischargeSummaryCollection.getPostOperativeOrder().isEmpty())
@@ -1334,7 +1349,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 						String directions = "";
 						if (prescriptionItem.getDirection() != null && !prescriptionItem.getDirection().isEmpty()) {
-							showDirection = true;
 							if (prescriptionItem.getDirection().get(0).getDirection() != null) {
 								if (directions == "")
 									directions = directions + (prescriptionItem.getDirection().get(0).getDirection());
@@ -1343,6 +1357,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 											+ (prescriptionItem.getDirection().get(0).getDirection());
 							}
 						}
+
 						if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
 							if (printSettings.getContentSetup() != null) {
 								if (printSettings.getContentSetup().getInstructionAlign() != null && printSettings
@@ -1364,7 +1379,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 												: null);
 							}
 
-							showIntructions = true;
 						}
 						String duration = "";
 						if (durationValue == "" && durationValue == "")
@@ -1411,22 +1425,18 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						if (prescriptionItem.getDrugQuantity() == null) {
 							prescriptionJasperDetails.setDrugQuantity("0");
 						} else {
-							showDrugQty = true;
 							prescriptionJasperDetails.setDrugQuantity(prescriptionItem.getDrugQuantity().toString());
 						}
 						postOrderItems.add(prescriptionJasperDetails);
 					}
 				}
 			}
-
-		parameters.put("showIntructions", showIntructions);
-		parameters.put("showDirection", showDirection);
 		parameters.put("postOrderItems", postOrderItems);
 
-		if(dischargeSummaryCollection.getMaterialForHPE()) {
-		parameters.put("materialForHPE",
-				dischargeSummaryCollection.getMaterialForHPE() != null && dischargeSummaryCollection.getMaterialForHPE()
-						? "YES"	: "NO");
+
+		if (dischargeSummaryCollection.getMaterialForHPE()) {
+			parameters.put("materialForHPE", dischargeSummaryCollection.getMaterialForHPE() != null
+					&& dischargeSummaryCollection.getMaterialForHPE() ? "YES" : "NO");
 		}
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getTimeOfEntryInOt())) {
@@ -2984,12 +2994,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				}
 			}
 
-			if (request.getDischargeSummaryId() != null ) {
+			if (request.getDischargeSummaryId() != null) {
 				dischargeSummaryCollection = dischargeSummaryRepository
 						.findById(new ObjectId(request.getDischargeSummaryId())).orElse(null);
 				System.out.println(dischargeSummaryCollection);
-				
-				if(isFlowsheet) {
+
+				if (isFlowsheet) {
 					System.out.println("true edit");
 //					dischargeSummaryCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 //					dischargeSummaryCollection.setPatientId(new ObjectId(request.getPatientId()));
@@ -2999,7 +3009,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 //					dischargeSummaryCollection.setCreatedTime(new Date());
 					dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
 				}
-			}else {
+			} else {
 				dischargeSummaryCollection = new DischargeSummaryCollection();
 				dischargeSummaryCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 				dischargeSummaryCollection.setLocationId(new ObjectId(request.getLocationId()));
@@ -3122,7 +3132,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			FlowSheetJasperBean jasperBean = null;
 
 			for (FlowSheet flowsheet : flowSheets) {
-				
+
 				jasperBean = new FlowSheetJasperBean();
 				jasperBean.setNo(i);
 				if (!DPDoctorUtils.anyStringEmpty(flowsheet.getAdvice())) {

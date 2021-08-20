@@ -1,10 +1,12 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -159,6 +161,21 @@ public class DownloadDataApi {
 		
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(downloadDataService.update("5927cdc6e4b098e7a0b9dd90", "5927cdc7e4b098e7a0b9dd93", "5927cdc6e4b098e7a0b9dd92"));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DownloadDataUrls.GET_FILES)
+	@GET
+	@ApiOperation(value = PathProxy.DownloadDataUrls.GET_FILES, notes = PathProxy.DownloadDataUrls.GET_FILES)
+	public Response<Boolean> downloadfiles(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			 @QueryParam("page") int page,@QueryParam("size") @DefaultValue("0") int size) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(downloadDataService.downloadfiles(doctorId, locationId, hospitalId,page,size));
 		return response;
 	}
 }

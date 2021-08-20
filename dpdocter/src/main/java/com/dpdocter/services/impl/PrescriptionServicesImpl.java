@@ -4033,7 +4033,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								}
 							}
 							if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
+								
 								if (printSettings.getContentSetup() != null) {
+									
 									if (printSettings.getContentSetup().getInstructionAlign() != null && printSettings
 											.getContentSetup().getInstructionAlign().equals(FieldAlign.HORIZONTAL)) {
 										prescriptionItem.setInstructions(
