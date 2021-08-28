@@ -598,13 +598,12 @@ public class DownloadDataServiceImpl implements DownloadDataService {
 					new CustomAggregationOperation(new Document("$project", new BasicDBObject("_id", "$_id")
 							.append("doctorName", "$user.firstName").append("patientName", "$patient.localPatientName")
 							.append("patientId", "$patient.PID")
-							.append("date",
-									new BasicDBObject("$dateToString",
-											new BasicDBObject("format", "%Y-%m-%d").append("date", "$fromDate")))
+							.append("date", "$fromDate")
 							.append("startTime", "$time.fromTime").append("endTime", "$time.toTime")
-							.append("status", "$state").append("explanation", "$explanation"))),
+							.append("status", "$state").append("explanation", "$explanation")))
 
-					new CustomAggregationOperation(new Document("$sort", new BasicDBObject("date", 1))));
+//					new CustomAggregationOperation(new Document("$sort", new BasicDBObject("date", 1)))
+							);
 
 			List<AppointmentDownloadData> appointmentDownloadDatas = mongoTemplate
 					.aggregate(aggregation.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build()),
