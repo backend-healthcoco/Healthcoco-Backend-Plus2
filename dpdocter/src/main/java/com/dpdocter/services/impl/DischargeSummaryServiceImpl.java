@@ -679,6 +679,15 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (!DPDoctorUtils.allStringsEmpty(pulse))
 				vitalSigns = pulse;
 
+			//new field
+			String pefr = dischargeSummaryCollection.getVitalSigns().getPefr();
+			pefr = (pefr != null && !pefr.isEmpty()
+					? "PEFR: " + pefr + " " + VitalSignsUnit.PEFR.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(pefr))
+				vitalSigns = pefr;
+			
+			
 			String temp = dischargeSummaryCollection.getVitalSigns().getTemperature();
 			temp = (temp != null && !temp.isEmpty()
 					? "Temperature: " + temp.trim() + " " + VitalSignsUnit.TEMPERATURE.getUnit()

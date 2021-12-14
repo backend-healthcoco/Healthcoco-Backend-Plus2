@@ -4520,6 +4520,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					: "");
 			if (!DPDoctorUtils.allStringsEmpty(pulse))
 				vitalSigns = pulse;
+			
+			
+			//new field
+			String pefr = clinicalNotesCollection.getVitalSigns().getPefr();
+			pefr = (pefr != null && !pefr.isEmpty()
+					? "PEFR: " + pefr + " " + VitalSignsUnit.PEFR.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(pefr))
+				vitalSigns = pefr;
+
 
 			String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
 			temp = (temp != null && !temp.isEmpty()

@@ -23,6 +23,8 @@ public class VitalSigns {
 
 	private String bsa;
 
+	private String pefr;
+
 	public String getPulse() {
 		return pulse;
 	}
@@ -93,6 +95,16 @@ public class VitalSigns {
 
 	public void setBsa(String bsa) {
 		this.bsa = bsa;
+	}
+	
+	
+
+	public String getPefr() {
+		return pefr;
+	}
+
+	public void setPefr(String pefr) {
+		this.pefr = pefr;
 	}
 
 	@Override

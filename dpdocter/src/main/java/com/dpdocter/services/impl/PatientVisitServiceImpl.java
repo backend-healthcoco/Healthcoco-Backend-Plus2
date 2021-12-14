@@ -2788,6 +2788,16 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								else
 									vitalSigns = bsa;
 							}
+							
+							//new field
+							String pefr = clinicalNotesCollection.getVitalSigns().getPefr();
+							pefr = (pefr != null && !pefr.isEmpty()
+									? "PEFR: " + pefr + " " + VitalSignsUnit.PEFR.getUnit()
+									: "");
+							if (!DPDoctorUtils.allStringsEmpty(pefr))
+								vitalSigns = pefr;
+							
+							
 							clinicalNotesJasperDetails
 									.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 						}

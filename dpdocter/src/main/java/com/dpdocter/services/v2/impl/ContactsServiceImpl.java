@@ -278,27 +278,39 @@ public class ContactsServiceImpl implements ContactsService {
 							.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
 
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-						projectOperations, groupOperations,
-						new CustomAggregationOperation(
-								new Document("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))),
-						Aggregation.skip((page) * size), Aggregation.limit(size));
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+								projectOperations, groupOperations,
+								new CustomAggregationOperation(
+										new Document("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))),
+								Aggregation.skip((page) * size), Aggregation.limit(size))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-						projectOperations, groupOperations, new CustomAggregationOperation(
-								new Document("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))));
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+								projectOperations, groupOperations,
+								new CustomAggregationOperation(
+										new Document("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
 		} else {
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+								Aggregation.skip((page) * size), Aggregation.limit(size))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")))
+						.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
 		}
 
 		AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -311,7 +323,7 @@ public class ContactsServiceImpl implements ContactsService {
 				patientCard.setDoctorSepecificPatientId(patientCard.getUserId().toString());
 				patientCard.setId(patientCard.getUserId());
 				patientCard.setUser(null);
-				//calculate age of patient upto today
+				// calculate age of patient upto today
 //				if (patientCard.getDob() != null) {
 //					if(patientCard.getDob().getDays() > 0 && patientCard.getDob().getMonths() > 0 && patientCard.getDob().getYears() > 0) {
 //					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
@@ -679,8 +691,8 @@ public class ContactsServiceImpl implements ContactsService {
 				locationObjectId = new ObjectId(request.getLocationId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
-			PatientCollection patientCollection = patientRepository.findByUserIdAndLocationIdAndHospitalId(patientObjecId,
-					locationObjectId, hospitalObjectId);
+			PatientCollection patientCollection = patientRepository
+					.findByUserIdAndLocationIdAndHospitalId(patientObjecId, locationObjectId, hospitalObjectId);
 			;
 			List<String> groupIds = new ArrayList<String>();
 			List<PatientGroupCollection> patientGroupCollections = patientGroupRepository
@@ -780,7 +792,9 @@ public class ContactsServiceImpl implements ContactsService {
 
 				}
 			}
-			if (!smsServices.getBulkSMSResponse(mobileNumbers, message,request.getDoctorId(), request.getLocationId(),0L).equalsIgnoreCase("FAILED")) {
+			if (!smsServices
+					.getBulkSMSResponse(mobileNumbers, message, request.getDoctorId(), request.getLocationId(), 0L)
+					.equalsIgnoreCase("FAILED")) {
 				status = true;
 			}
 
@@ -802,7 +816,7 @@ public class ContactsServiceImpl implements ContactsService {
 		Aggregation aggregation = null;
 		List<Boolean> discards = new ArrayList<Boolean>();
 		discards.add(false);
-		List<String> groupIdList  = null;
+		List<String> groupIdList = null;
 
 		try {
 			if (discarded)
@@ -872,8 +886,8 @@ public class ContactsServiceImpl implements ContactsService {
 					registeredPatientDetail.setPID(patientCard.getPID());
 					registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
 					registeredPatientDetail.setBackendPatientId(patientCard.getId());
-				//	registeredPatientDetail.setImageUrl(patientCard.getImageUrl());
-				//	registeredPatientDetail.setThumbnailUrl(patientCard.getThumbnailUrl());
+					// registeredPatientDetail.setImageUrl(patientCard.getImageUrl());
+					// registeredPatientDetail.setThumbnailUrl(patientCard.getThumbnailUrl());
 					registeredPatientDetail.setColorCode(patientCard.getUser().getColorCode());
 					if (groupIds != null) {
 						groupIdList = new ArrayList<>();

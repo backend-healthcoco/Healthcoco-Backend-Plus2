@@ -74,6 +74,9 @@ public class RegisteredPatientDetails extends GenericCollection {
 
 	private String landlineNumber;
 	
+	private String language;
+
+	
 	private Boolean isSuperStar = false;
 	
 	public List<UserNutritionSubscriptionResponse> getUserNutritionSubscriptions() {
@@ -340,6 +343,14 @@ public class RegisteredPatientDetails extends GenericCollection {
 
 	public void setIsSuperStar(Boolean isSuperStar) {
 		this.isSuperStar = isSuperStar;
+	}
+	
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 
 	@Override
