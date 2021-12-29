@@ -136,6 +136,7 @@ public class RegistrationApi {
 			throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
 		}
 
+		System.out.println("lang"+request.getLanguage());
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 		RegisteredPatientDetails registeredPatientDetails = null;
 
@@ -195,6 +196,9 @@ public class RegistrationApi {
 				throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
 			}
 		}
+		
+		System.out.println("lang"+request.getLanguage());
+
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request,
 				infoType);

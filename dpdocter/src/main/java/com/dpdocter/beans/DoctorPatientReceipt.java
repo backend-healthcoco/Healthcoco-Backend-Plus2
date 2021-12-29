@@ -51,6 +51,18 @@ public class DoctorPatientReceipt extends GenericCollection{
 	
 	private PaymentDetails paymentDetails;
 	
+	private String paymentInfo;
+
+	
+	
+	public String getPaymentInfo() {
+		return paymentInfo;
+	}
+
+	public void setPaymentInfo(String paymentInfo) {
+		this.paymentInfo = paymentInfo;
+	}
+
 	public String getId() {
 		return id;
 	}

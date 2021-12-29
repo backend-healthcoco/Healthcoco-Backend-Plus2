@@ -4118,6 +4118,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("observations", clinicalNotesCollection.getObservation());
 		parameters.put("notes", clinicalNotesCollection.getNote());
 		parameters.put("investigations", clinicalNotesCollection.getInvestigation());
+		parameters.put("newvaccination", clinicalNotesCollection.getVaccinationHistory());
 
 		parameters.put("diagnosis", clinicalNotesCollection.getDiagnosis());
 

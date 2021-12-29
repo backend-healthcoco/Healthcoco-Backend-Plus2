@@ -85,6 +85,9 @@ public class PatientCollectionResponse {
 	
 	private String landlineNumber;
 	
+	private String language;
+
+	
 	public String getId() {
 		return id;
 	}
@@ -371,6 +374,16 @@ public class PatientCollectionResponse {
 
 	public void setLandlineNumber(String landlineNumber) {
 		this.landlineNumber = landlineNumber;
+	}
+	
+	
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 
 	@Override

@@ -1987,6 +1987,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		addItems(jasperDesign, columnWidth, "$P{ProvisionalDiagnosis}", "$P{provisionalDiagnosis}", fieldWidth, false,
 				0, false);
+		
+		
+		addItems(jasperDesign, columnWidth, "$P{VaccinationDetails}", "$P{newvaccination}", fieldWidth, false, 0, false);
 
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$P{notes}", fieldWidth, false, 0, false);
 		if (parameters.get("eyeObservation") != null) {

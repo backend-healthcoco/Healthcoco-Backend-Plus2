@@ -273,6 +273,8 @@ public class ClinicalNotesAddRequest {
 	
 	private PhysioExamination physioExamination;	
 	
+	private String vaccinationHistory;
+
 //	private TreatmentObservationRequest treatmentObservation;
 
 
@@ -1274,6 +1276,14 @@ public class ClinicalNotesAddRequest {
 //	public void setTreatmentObservation(TreatmentObservationRequest treatmentObservation) {
 //		this.treatmentObservation = treatmentObservation;
 //	}
+
+	public String getVaccinationHistory() {
+		return vaccinationHistory;
+	}
+
+	public void setVaccinationHistory(String vaccinationHistory) {
+		this.vaccinationHistory = vaccinationHistory;
+	}
 
 	@Override
 	public String toString() {

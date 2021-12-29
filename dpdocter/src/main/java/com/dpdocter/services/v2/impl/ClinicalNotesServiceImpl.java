@@ -359,7 +359,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						.append("observation", "$observation").append("diagnosis", "$diagnosis")
 						.append("generalExam", "$generalExam").append("investigation", "$investigation")
 						.append("inHistory", "$inHistory")
-
+						.append("vaccinationHistory", "$vaccinationHistory")
 						.append("note", "$note").append("provisionalDiagnosis", "$provisionalDiagnosis")
 						.append("systemExam", "$systemExam").append("complaint", "$complaint")
 						.append("presentComplaint", "$presentComplaint")
@@ -424,6 +424,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						.append("diagnosis", new BasicDBObject("$first", "$diagnosis"))
 						.append("generalExam", new BasicDBObject("$first", "$generalExam"))
 						.append("investigation", new BasicDBObject("$first", "$investigation"))
+						
+						.append("vaccinationHistory", new BasicDBObject("$first", "$vaccinationHistorys"))
 
 						.append("note", new BasicDBObject("$first", "$note"))
 						.append("provisionalDiagnosis", new BasicDBObject("$first", "$provisionalDiagnosis"))

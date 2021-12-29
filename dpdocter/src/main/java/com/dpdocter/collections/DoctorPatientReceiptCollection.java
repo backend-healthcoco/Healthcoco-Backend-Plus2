@@ -79,7 +79,19 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 	
 	@Field
 	private Double refundAmount=0.0;
+	@Field
+	private String paymentInfo;
+
 	
+	
+	public String getPaymentInfo() {
+		return paymentInfo;
+	}
+
+	public void setPaymentInfo(String paymentInfo) {
+		this.paymentInfo = paymentInfo;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}

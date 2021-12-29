@@ -582,6 +582,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				PatientCollection patientCollection = new PatientCollection();
 				patientCollection.setCreatedTime(new Date());
 				patientCollection.setFirstName(request.getLocalPatientName());
+				patientCollection.setLanguage(request.getLanguage());
 				patientCollection.setLocalPatientName(request.getLocalPatientName());
 				patientCollection.setUserId(userCollection.getId());
 				patientCollection.setRegistrationDate(request.getRegistrationDate());
@@ -590,6 +591,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			// save Patient Info
 			PatientCollection patientCollection = new PatientCollection();
 			BeanUtil.map(request, patientCollection);
+			patientCollection.setLanguage(request.getLanguage());
 			patientCollection.setFirstName(request.getLocalPatientName());
 			patientCollection.setUserId(userCollection.getId());
 			patientCollection.setIsChild(request.getIsChild());
@@ -712,6 +714,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 			registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
 			registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
+			
+			registeredPatientDetails.setLanguage(patientCollection.getLanguage());
 			if (referencesCollection != null) {
 				Reference reference = new Reference();
 				BeanUtil.map(referencesCollection, reference);
@@ -912,6 +916,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 					if (!DPDoctorUtils.anyStringEmpty(request.getPID())) {
 						patientCollection.setPID(request.getPID());
+					}
+
+					if (!DPDoctorUtils.anyStringEmpty(request.getLanguage())) {
+						patientCollection.setLanguage(request.getLanguage());
 					}
 
 					if (!DPDoctorUtils.anyStringEmpty(request.getFatherName())) {

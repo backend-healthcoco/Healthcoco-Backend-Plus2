@@ -964,7 +964,7 @@ public class BillingServiceImpl implements BillingService {
 				// doctorPatientReceiptCollection.getUsedAdvanceAmount();
 
 				doctorPatientReceiptCollection.setModeOfPayment(request.getModeOfPayment());
-
+				doctorPatientReceiptCollection.setPaymentInfo(request.getPaymentInfo());
 				doctorPatientReceiptCollection.setBalanceAmount(0.0);
 				doctorPatientReceiptCollection.setRemainingAdvanceAmount(0.0);
 				if (request.getInvoiceIds() != null && !request.getInvoiceIds().isEmpty()) {
