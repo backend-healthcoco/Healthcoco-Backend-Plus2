@@ -281,7 +281,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private RoleRepository roleRepository;
-	
+
 	@Autowired
 	private TreatmentServicesRepository treatmentServicesRepository;
 
@@ -1437,30 +1437,36 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			DateTime fromDateTime = null, toDateTime = null;
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
-				localCalendar.setTime(new Date(Long.parseLong(from)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+			} else
+				localCalendar.setTime(new Date());
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
 
-				// DateTime
-				fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			// DateTime
+			fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-				criteria.and("fromDate").gte(fromDateTime);
-			}
+			criteria.and("fromDate").gte(fromDateTime);
+
+			System.out.println("fromDateTime" + fromDateTime);
+
 			if (!DPDoctorUtils.anyStringEmpty(to)) {
 				localCalendar.setTime(new Date(Long.parseLong(to)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
+			} else
+				localCalendar.setTime(new Date());
+			int currentDay1 = localCalendar.get(Calendar.DATE);
+			int currentMonth1 = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear1 = localCalendar.get(Calendar.YEAR);
 
-				// DateTime
-				toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			// DateTime
+			toDateTime = new DateTime(currentYear1, currentMonth1, currentDay1, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-				criteria.and("toDate").lte(toDateTime);
-			}
+			criteria.and("toDate").lte(toDateTime);
+			System.out.println("toDateTime" + toDateTime);
 
+	
 			if (!DPDoctorUtils.anyStringEmpty(fromTime))
 				criteria.and("time.fromTime").is(Integer.parseInt(fromTime));
 
@@ -1800,13 +1806,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 					AppointmentCollection.class, Appointment.class).getMappedResults();
 		}
 
-
 //		for (Appointment appointment : response) {
 //			if (!DPDoctorUtils.anyStringEmpty(appointment.getAppointmentId()))
 //				appointment.setPatientTreatmentResponse(
 //						getPatientTreatmentAppointmentById(appointment.getAppointmentId()));
 //		}
-
 
 		return response;
 	}
@@ -2770,7 +2774,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 
 	}
-	
+
 	@Override
 	public Response<Appointment> getAppointmentsForWebNew(String locationId, List<String> doctorId, String patientId,
 			String from, String to, int page, int size, String updatedTime, String status, String sortBy,
@@ -2781,7 +2785,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
-           //online consultation
+			// online consultation
 			Criteria criteria = new Criteria("type").is(AppointmentType.APPOINTMENT.getType()).and("updatedTime")
 					.gte(new Date(updatedTimeStamp)).and("isPatientDiscarded").ne(true);
 
@@ -2842,7 +2846,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			if (!DPDoctorUtils.anyStringEmpty(toTime))
 				criteria.and("time.toTime").is(Integer.parseInt(toTime));
-			
+
 			Integer count = (int) mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
 
 			SortOperation sortOperation = Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"));
@@ -2883,12 +2887,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 						// treatment
 						Aggregation.lookup("patient_treatment_cl", "appointmentId", "appointmentId",
 								"patientTreatment"),
-						Aggregation.unwind("patientTreatment",true),
+						Aggregation.unwind("patientTreatment", true),
 //						new CustomAggregationOperation(new Document("$unwind",
 //								new BasicDBObject("path", "$patientTreatment")
 //										.append("preserveNullAndEmptyArrays", true).append("includeArrayIndex",
 //												"arrayIndex"))),
-						
+
 //						Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 //								"treatmentService"),
 //						Aggregation.unwind("treatmentService", true),
@@ -2917,7 +2921,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						// treatment
 						Aggregation.lookup("patient_treatment_cl", "appointmentId", "appointmentId",
 								"patientTreatment"),
-						Aggregation.unwind("patientTreatment",true),
+						Aggregation.unwind("patientTreatment", true),
 
 //						Aggregation.lookup("treatment_services_cl", "patientTreatment.treatments.treatmentServiceId",
 //								"_id", "treatmentService"),
@@ -2946,7 +2950,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								patientTreatment.setTreatmentService(treatmentService);
 							}
 						}
-					}else {
+					} else {
 						appointment.setPatientTreatmentResponse(null);
 					}
 				}
@@ -3016,7 +3020,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				.append("patientTreatmentResponse.appointmentId", "$patientTreatment.appointmentId")
 				.append("patientTreatmentResponse.createdTime", "$patientTreatment.createdTime")
 				.append("patientTreatmentResponse.createdBy", "$patientTreatment.createdBy")
-				
+
 				.append("patientTreatmentResponse.treatments", "$patientTreatment.treatments")
 
 //				.append("patientTreatmentResponse.treatments.treatmentServiceId",
@@ -3082,10 +3086,5 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		));
 	}
-	
-	
-
-	
-	
 
 }
