@@ -425,7 +425,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						.append("generalExam", new BasicDBObject("$first", "$generalExam"))
 						.append("investigation", new BasicDBObject("$first", "$investigation"))
 						
-						.append("vaccinationHistory", new BasicDBObject("$first", "$vaccinationHistorys"))
+						.append("vaccinationHistory", new BasicDBObject("$first", "$vaccinationHistory"))
 
 						.append("note", new BasicDBObject("$first", "$note"))
 						.append("provisionalDiagnosis", new BasicDBObject("$first", "$provisionalDiagnosis"))

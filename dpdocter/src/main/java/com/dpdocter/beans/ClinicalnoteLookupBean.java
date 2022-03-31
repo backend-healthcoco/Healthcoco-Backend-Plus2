@@ -127,6 +127,7 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 	private String generalHistorySurgical;
 	private String painScale;
 	private String priorConsultations;
+	private String vaccinationHistory;
 
 	private PatientCollection patient;
 
@@ -691,6 +692,14 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 	}
 	
 	
+
+	public String getVaccinationHistory() {
+		return vaccinationHistory;
+	}
+
+	public void setVaccinationHistory(String vaccinationHistory) {
+		this.vaccinationHistory = vaccinationHistory;
+	}
 
 	public List<Observation> getTreatmentObservation() {
 		return treatmentObservation;
