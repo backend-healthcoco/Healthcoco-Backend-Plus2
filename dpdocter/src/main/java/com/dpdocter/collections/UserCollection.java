@@ -94,7 +94,11 @@ public class UserCollection extends GenericCollection {
 	@Field
 	private String timeZone ;
 	
-	
+	@Field
+	private Boolean isDentalChainVerified = false;
+
+	@Field
+	private Boolean isDentalChainPatient = false;
 	
 	
 	

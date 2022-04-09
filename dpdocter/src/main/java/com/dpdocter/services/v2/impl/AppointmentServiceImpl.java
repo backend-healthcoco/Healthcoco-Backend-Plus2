@@ -1432,6 +1432,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(status))
 				criteria.and("status").is(status.toUpperCase()).and("state").ne(AppointmentState.CANCEL.getState());
 
+			criteria.and("state").ne(AppointmentState.PENDING.getState());
+//			and("type")
+//					.is(AppointmentType.DENTAL_CHAIN_APPOINTMENT.getType());
+
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 
