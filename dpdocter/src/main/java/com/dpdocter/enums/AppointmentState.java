@@ -2,7 +2,7 @@ package com.dpdocter.enums;
 
 public enum AppointmentState {
 
-    CONFIRM("CONFIRM"), NEW("NEW"), CANCEL("CANCEL"), RESCHEDULE("RESCHEDULE");
+    CONFIRM("CONFIRM"), NEW("NEW"), CANCEL("CANCEL"), RESCHEDULE("RESCHEDULE"),PENDING("PENDING");
 
     private String state;
 
